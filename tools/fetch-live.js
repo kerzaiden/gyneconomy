@@ -243,6 +243,15 @@ async function cnnFearGreed() {
       'user-agent': 'gyneconomy-data/1.0 (+https://github.com/kerzaiden/gyneconomy)'
     }
   });
+  /* 418 is CNN's edge REFUSING an automated client — the first run from a GitHub runner got
+     exactly that. It is not an outage and not a wrong URL, and it will not clear by retrying.
+     The only way past it is to send a browser's user-agent and pretend not to be a script, which
+     is evading a block rather than reading something published, and this repo does not do that.
+     Anyone reading this in a run log: the answer is CNN's, and it is no. */
+  if (r.status === 418 || r.status === 403) {
+    throw new Error('CNN refused an automated request (HTTP ' + r.status + ') — not retryable, '
+                  + 'and not to be worked around by impersonating a browser');
+  }
   if (!r.ok) throw new Error('CNN: HTTP ' + r.status);
   return fearGreedFromPayload(await r.json());
 }

@@ -31,6 +31,13 @@ jobs:
         with:
           node-version: 20
 
+      # Until V541 this workflow installed nothing, because the fetcher used only Node's built-in
+      # fetch. CAPE needs a spreadsheet reader, so it needs an install — and the first run after
+      # V541 failed on exactly that, correctly and loudly. `npm ci` installs optionalDependencies,
+      # which is where xlsx lives (see package.json's //xlsx note).
+      - name: Install
+        run: npm ci
+
       - name: Fetch
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
@@ -73,6 +80,18 @@ jobs:
           git add data/live.json
           git commit -m "Data: $(node -p "require('./data/live.json')._meta.ok.join(', ')")
 
-          Fetched by tools/fetch-live.js from Treasury and FRED. Values that failed their
-          sanity band or could not be fetched are left out, and the previous ones stand."
-          git push
+          Fetched by tools/fetch-live.js from its sources. Values that failed their sanity
+          band or could not be fetched are left out, and the previous ones stand."
+
+          # PULL BEFORE PUSHING — the same rule CLAUDE.md gives a person, and this workflow was
+          # the one writer not following it. The remote moves under a run: a commit pushed from
+          # Keren's machine, or the previous data run, lands between this job's checkout and its
+          # push, and the push is rejected with "fetch first". That happened on Data #2.
+          # Rebasing is safe here because this job only ever touches data/live.json and a run
+          # that changed nothing has already exited above.
+          for attempt in 1 2 3; do
+            if git push; then echo "pushed on attempt $attempt"; exit 0; fi
+            echo "push rejected — rebasing onto the remote and retrying"
+            git pull --rebase --autostash origin main || exit 1
+          done
+          echo "::error::could not push after 3 attempts"; exit 1
