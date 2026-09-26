@@ -149,7 +149,7 @@ can see all the others. Getting this wrong silently destroys work, so it is writ
 | Thing | Canonical copy | Who else holds one |
 |---|---|---|
 | The app | **The published artifact** — `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF` | the git repo's `index.html`, stale by design |
-| The docs | **The git repo** — `CLAUDE.md`, `docs/WORKING-DOC.md` | the Mrs. Market project's `claude/CLAUDE-CODE.md` |
+| The docs | **The git repo** — `CLAUDE.md`, `docs/ARCHITECTURE.md` | the Mrs. Market project's `claude/CLAUDE-CODE.md` |
 | Version history | **Append-only, two writers** — see below | repo `docs/ARCHIVE.md` and project `claude/ARCHIVE.md` |
 
 **The app: the artifact wins, always.** The nightly refresh task edits the artifact and CANNOT write

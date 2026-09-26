@@ -11,7 +11,7 @@ overrule one; if it seems wrong, say so and ask.
 
 ## Read this before changing anything
 
-`docs/WORKING-DOC.md` is the working document — the app, the design system and the mechanics,
+`docs/ARCHITECTURE.md` is the working document — the app, the design system and the mechanics,
 in one place, roughly 19,000 words. **Read the part that covers what you are touching before
 you touch it.** It is not optional reading and it is not a summary of the code; it records why
 things are the way they are, including several decisions that look like bugs and are not.
@@ -42,7 +42,7 @@ to see whether it is current.
    goes stale by a day every day. **Read the live version first** (`Artifact action:"read"` on the
    artifact url), edit THAT, publish it, and commit the result back here. Editing the repo's copy
    and publishing it silently reverts every nightly refresh since the last commit. This is the
-   easiest serious mistake to make in this project. `docs/WORKING-DOC.md` → "Which copy is
+   easiest serious mistake to make in this project. `docs/ARCHITECTURE.md` → "Which copy is
    canonical" has the whole picture.
 
 ## The three governing rules
@@ -53,6 +53,13 @@ to see whether it is current.
   call, and the (i) says which. A target is never relabelled "normal".
 - **One figure, one number.** A figure is computed in one place and read everywhere else. Two
   places computing the same number will drift, and have.
+
+## Pushing
+
+The remote is often ahead of you: the Data workflow commits fresh figures to
+`data/live.json` on weekdays at 22:40 UTC. So **`git pull --rebase` before pushing** —
+your commits replay on top of the data commits instead of leaving a merge bubble in
+the history. Nothing conflicts; the bot only ever touches that one file.
 
 ## Commands
 
@@ -88,7 +95,7 @@ keeping, fold the probe into the suite rather than throwing it away. That is how
 Never hand-edit a large region, and never re-type a region from tool output. Copy
 `tools/build-template.py`, express each edit as an asserted replacement, and run it: the file is
 written once at the end, so a failed assertion means nothing was written. For multi-line
-deletions use line-index surgery applied **bottom-up**. `docs/WORKING-DOC.md` has the escaping
+deletions use line-index surgery applied **bottom-up**. `docs/ARCHITECTURE.md` has the escaping
 traps, which are real and have cost hours.
 
 ## The step registry (V531)
@@ -257,7 +264,7 @@ and belong in `index.html`, not in a fetcher that would drift from them. `applyL
 |---|---|
 | `index.html` | the app |
 | `sources.html` | the published citation page — **generated, never hand-edited** |
-| `docs/WORKING-DOC.md` | the working document: app, design system, mechanics |
+| `docs/ARCHITECTURE.md` | the working document: app, design system, mechanics |
 | `docs/ARCHIVE.md` | version history and retired ideas |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |

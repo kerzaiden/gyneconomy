@@ -219,7 +219,7 @@ w("**%d render at load** (side effect only) and **%d compute a value**, %d in al
   % (n_side, n_val, len(iifes)))
 w("order and there is **no boot or re-render function** \u2014 which is why a derived value cannot be")
 w("repainted, and why the live-data cache has to apply itself above every consumer instead. See")
-w("`WORKING-DOC.md` \u2192 the cache section. **These counts are measured here, so this table is the")
+w("`ARCHITECTURE.md` \u2192 the cache section. **These counts are measured here, so this table is the")
 w("authority for them** and the working document quotes it.")
 w("")
 w("| Lines | Assigns to | Section it sits in |")

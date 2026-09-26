@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `e1e293b` on 2026-09-26.
+Generated from commit `34cc52c` on 2026-09-26.
 
 ## The five regions
 
@@ -853,7 +853,7 @@ _line 12,928_ · 1 declaration
 **0 render at load** (side effect only) and **4 compute a value**, 4 in all. They run in source
 order and there is **no boot or re-render function** — which is why a derived value cannot be
 repainted, and why the live-data cache has to apply itself above every consumer instead. See
-`WORKING-DOC.md` → the cache section. **These counts are measured here, so this table is the
+`ARCHITECTURE.md` → the cache section. **These counts are measured here, so this table is the
 authority for them** and the working document quotes it.
 
 | Lines | Assigns to | Section it sits in |
