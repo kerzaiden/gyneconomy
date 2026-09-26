@@ -410,13 +410,13 @@ Other charts. Spread history: 10Y−3M / 10Y−2Y (a menu choice), quarterly, NB
 
 **PRESSURE HAS NO BAND, BY DECISION.** Keren was offered three options and chose none. There is no published normal range for an interest rate, and the percentile construction fails here specifically: the 87 quarters held contain a decade of a zero-pinned short end, so the 3-month's deciles come out at 0.04–4.80% — the whole track. The declined alternatives: the 10-year's own deciles (1.6–4.5%) with the ZIRP caveat stated, and a definitional line at the inflation rate. **Do not draw one without asking her again.** Left open with it: `levelZone`'s 2% lower edge is the same undefended claim in word form (the 4.5% upper edge is defended); raise it before touching that function.
 
-**Before culling a CSS rule, run the coverage proof**: `cover.js` collects every class the app renders across two viewports, four tabs, five cycles, every sheet and every control, and the rendered count must drop by exactly the classes being retired and nothing else.
+**Before culling a CSS rule, run the coverage proof**: `npm run test:full` collects every class the app renders across two viewports, four tabs, five cycles, every sheet and every control, and the rendered count must drop by exactly the classes being retired and nothing else.
 
 ## Editorial slots
 
 Data, not markup — fill and they render.
 
-`sources.html` (published beside the app as a second file) is GENERATED, never hand-edited: `gen-sources.js` in the scratchpad opens the app's own in-app Sources screen, reads the grouped result its builder produced, and lifts the `:root` token blocks out of the app file. Regenerate and republish with `files` whenever a citation changes. **If the in-app screen shows an "Other" group, the generator refuses to write** — a cited source matched none of the patterns in `groups`, and the fix is a pattern, not a bucket. The app does not link to it (its back arrow goes to `index.html#menu`, which opens the menu on load), but keep regenerating so the two lists match; keep its head as it is (preconnects plus the non-blocking font stylesheet, `media="print" onload`) and the app's `<link rel="prefetch" href="sources.html">`.
+`sources.html` (published beside the app as a second file) is GENERATED, never hand-edited. **Its generator is NOT in this repo** — it lived in a session scratchpad and was never committed, so `sources.html` cannot currently be regenerated from here. Until it is rewritten into `tools/`, a citation change means the file has to be rebuilt by hand or by a session that still has the script. It opens the app's own in-app Sources screen, reads the grouped result its builder produced, and lifts the `:root` token blocks out of the app file. Regenerate and republish with `files` whenever a citation changes. **If the in-app screen shows an "Other" group, the generator refuses to write** — a cited source matched none of the patterns in `groups`, and the fix is a pattern, not a bucket. The app does not link to it (its back arrow goes to `index.html#menu`, which opens the menu on load), but keep regenerating so the two lists match; keep its head as it is (preconnects plus the non-blocking font stylesheet, `media="print" onload`) and the app's `<link rel="prefetch" href="sources.html">`.
 
 About the book (`#sheet-book`, plain HTML in the menu markup): the author paragraph is a placeholder until the book is out — add title, publisher and link when Keren supplies them; the About copy is hers to edit. `seasonReading[season].fromTheBook` = `[{title, text}]` per season, all empty. `seasonReading.springdeflation` ships with empty `body`/`economy`/`next`/`watch` by her choice, and the Content tab renders without breaking on it. `marketCycles[i].blurb` = five era blurbs, an AI first draft awaiting her voice. `cycleNowNote` = the Cycle tab's one line on the present moment; revisit each refresh so it matches the computed season. The federal deficit page's head has **no mark** and renders title-and-dots until she picks one.
 
@@ -489,17 +489,30 @@ def rep(old, new, label, n=1):
 
 The file is written **at the end**, so a failed assertion means nothing was written and nothing lost. For multi-line deletions use line-index surgery with `check(line, fragment)` assertions applied **bottom-up** so earlier indices stay valid. The file contains literal `\uXXXX` escapes as text in places — match the bytes, not what they render as. Comments describe what the code *is*, not what it used to be.
 
-**Verify, in this order.** Everything runs headless Chromium at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome` with `NODE_PATH=/home/claude/.npm-global/lib/node_modules`.
+**Verify, in this order.** Everything below is an npm script, so it runs the same way here, on a
+laptop and in CI. The sandbox paths, `reg269.js` and `cover.js` that this list used to name were
+from before the repo existed; the suite absorbed all three.
 
-1. **Parse**: extract the `<script>` and run it through `new Function(scriptBody)` in Node (an unescaped apostrophe in a single-quoted JS string is the classic slip — use ’).
-2. **The suite**: `NODE_PATH=/home/claude/.npm-global/lib/node_modules node /home/claude/test/gyn-test.js <abspath>` — **50 committed checks, one command, exit 0 or 1**, against `/home/claude/test/baseline.json`. It asserts the four spacing tokens and `COL_FILL`/`AXIS` in the source, no page error at 414px and 1280px in both schemes, the head title and the `⋯` note on all eleven history pages, the cycle picker's capital-T `Today`, and the eight live-cache checks. `--full` adds the class-coverage walk (2–4 min). `--bless` rewrites the baseline: a deliberate act, never a way to clear a failure. **The suite itself lives in the project** as `claude/gyn-test.js` and `claude/gyn-test-baseline.json`, because `/home/claude/test/` dies with the session — a fresh session copies them out to that path before running. **Proved to fail on deliberate breakage** (`--gap`, `COL_FILL`). A change the suite does not cover still needs its own probe — and if the claim is worth keeping, fold the probe INTO the suite rather than throwing it away, which is how it grew from 42 checks to 50.
-3. **`reg269.js <abspath>`** — six viewport/scheme combinations: `errs` empty, `css.ok` true, `allInPage` and `allPilled` true, `empty` `[]`.
-4. **The probe for what you changed**: open the pages it touches and assert the claim in the DOM. A screenshot is for judging design, an assertion for proving behaviour — both, for anything visible. Look at the screenshots in light, dark, 390px and any modal touched, and watch for JS errors at 390px and 1280px in both schemes.
-5. **`cover.js`** before AND after any CSS cull; the rendered class count may only drop by exactly the classes retired. It takes 2–4 minutes, so give the Bash call a long timeout.
-6. Cross-check every `getElementById("…")` against an `id="…"`, and every CSS class or id against the markup.
-7. **Assert the stylesheet** in Playwright: walk `document.styleSheets`, read `cssRules` inside try/catch (a cross-origin font sheet throws and must be skipped), total the rules and note the last selector. **The count is 1,166 as of Version 528 and the last selector is `a:hover`** (measured, not remembered — the 1,190 this doc carried was stale) — update those two facts here when a version changes them. A sudden drop, or a last selector from the middle of the sheet, means an unclosed brace has killed every rule after it.
-8. **Diff against the live file** and confirm only intended lines changed.
-9. **`npm run email` passes** — no address of any kind in the markup. Anything else: stop and fix, do not publish.
+1. **`npm test`** — 60 checks, one command, exit 0 or 1. Parse (every `<script>` block separately),
+   the email gate, the spacing tokens and `COL_FILL`/`AXIS`, page errors at 414px and 1280px in
+   both schemes, the head title and `⋯` note on all eleven history pages, the cycle picker's
+   capital-T `Today`, the live-data cache, the repaint layer, and the registry invariant.
+2. **`npm run test:full`** before AND after any CSS cull — it adds the class-coverage walk, and the
+   rendered class count may only drop by exactly the classes retired. Two to four minutes.
+3. **`npm run snap`** for any refactor that should change nothing: 32 DOM states, deterministic, so
+   a difference is a real difference. Compare with `node tools/snapshot.js a.json b.json --diff`.
+4. **`npm run classify`** if you touched a registered step — it measures what each one does and
+   flags a declared kind it disagrees with.
+5. **`npm run css`** — the rule count is 1,166 and the last selector `a:hover`. A sudden drop, or a
+   last selector from the middle of the sheet, means an unclosed brace killed every rule after it.
+6. **The probe for what you changed**: open the pages it touches and assert the claim in the DOM. A
+   screenshot is for judging design, an assertion for proving behaviour — both, for anything
+   visible. If the claim is worth keeping, fold the probe into the suite rather than throwing it
+   away; that is how it grew from 42 checks to 60.
+7. Cross-check every `getElementById("…")` against an `id="…"`, and every CSS class or id against
+   the markup.
+8. **Diff against the live artifact** and confirm only intended lines changed.
+9. **`npm run email` passes.** Anything else: stop and fix, do not publish.
 10. If any `src` list changed, regenerate `sources.html` and publish it alongside; if the in-app Sources screen shows an "Other" group, **stop**.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url` (always update in place, never create a new artifact), the file path, and a `label` of **60 characters or fewer** — a name for the version, not a description. If refused because a newer version exists, read that version in full, merge onto it and publish again; never resend your own file unchanged, and never use `force` without Keren's explicit say-so.
