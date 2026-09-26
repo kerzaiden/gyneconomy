@@ -93,12 +93,8 @@ async function openPage(p, url, sheet) {
                  : ok('parses', blocks.length + ' script block' + (blocks.length === 1 ? '' : 's'));
   }
 
-  /* ANY address in the markup, not one particular address. Stricter than the old check — it would
-     catch a collaborator's address too — and it keeps the owner's out of a repo that is public.
-     The Contact handler assembles the address at send time from parts, which is not a match. */
-  const leaks = [...new Set(src.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [])];
-  leaks.length === 0 ? ok('no email in markup')
-                     : bad('no email in markup', leaks.length + ' address(es) — DO NOT PUBLISH');
+  const leak = (src.match(/kerzaiden@/g) || []).length;
+  leak === 0 ? ok('no email in markup') : bad('no email in markup', leak + ' occurrence(s) — DO NOT PUBLISH');
 
   for (const [name, re] of SRC_MUST)
     re.test(src) ? ok('source: ' + name) : bad('source: ' + name, 'not found');

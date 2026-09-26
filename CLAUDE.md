@@ -64,6 +64,7 @@ npm run css              # stylesheet rule count + last selector
 npm run email            # must print ok
 npm run map              # regenerate docs/MAP.md after a structural change
 npm run map:check        # is the map current?
+npm run snap             # 32-state DOM snapshot, to prove a refactor changed nothing
 ```
 
 **Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
@@ -120,9 +121,33 @@ built into the category sheets — the documented "catItem consumes its source" 
 original hosts are gone by design. Re-running it would require rebuilding the static skeleton first.
 
 **So full re-rendering is the wrong target.** The elements that hold the printed figures
-(`#subj-value-*`) survive the move, which is why `repaintPolicy()` has always worked. The design to
-follow is **one small repaint function per live figure**, called by the refresher — not a whole-page
-render. `GYN.render()` stays a diagnostic for finding non-idempotency, not a production path.
+(`#subj-value-*`) survive the move, which is why `repaintPolicy()` has always worked. `GYN.render()`
+stays a diagnostic for finding non-idempotency, not a production path.
+
+## The repaint layer (V533)
+
+Live data arriving mid-session is applied by **`applyLive(name, value)`**, one document at a time:
+it assigns the module var, **re-derives whatever was computed from it at load**, then runs that
+document's repaints. The re-derivation is the subtle part — `valuation.tag` and the Volume/Pulse
+tags are computed once at load, so a new object without them would print a fresh number beside a
+stale verdict, which is precisely the drift ONE FIGURE / ONE NUMBER forbids. The derive steps are
+reused by name, never duplicated.
+
+`REPAINT` maps each document to its repaints. **An empty list is a statement, not an omission**:
+the VIX row and the Desire/Volume/Pulse rows live on inner pages that redraw on open from these same
+vars, so they need nothing. A figure needs a repaint only if it is visible WITHOUT opening a page.
+
+**Repaints edit in place — a text node and a tag, never the row's `innerHTML`.** `catItem`
+normalises `.unit` to `.ci-unit` when it moves a row, so rebuilding that markup would silently undo
+the normalisation and the row would return at the wrong type size.
+
+The refresher now applies every document that actually CHANGED, not only the policy rate, comparing
+against the cache the page rendered from. `LIVE_CACHE` is swapped in first so `LIVE()` does the
+shape-decoding — one decoder, not two.
+
+Proved in the suite, mid-session and with no reload: the figure moves 36 → 82, and the DERIVED mood
+class moves `serious-ink` → `critical-ink`; the yield pair moves 5.18/4.24 → 4.05/5.55; and null,
+a wrong shape and an unknown document are each refused. `window.__GYN.applyLive` is the test seam.
 
 `window.__GYN` is a **test seam, not an API**. Nothing in the app may depend on it.
 

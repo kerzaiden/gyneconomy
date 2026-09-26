@@ -3898,6 +3898,98 @@
      correct on this load if the cache was warm, and will be on the next load if it was not.
      It never blocks, never prompts on load beyond the capability's own consent, and a refusal is not an error:
      the page is already rendered from the literals or from the previous cache. */
+  /* THE REPAINT LAYER (Version 533).
+
+     Version 532 measured what re-rendering costs and found the answer: do not re-render. The
+     category builder MOVES the subject rows out of the markup that produced them, so a renderer
+     cannot be run twice — but the ELEMENTS holding the printed figures survive the move, which is
+     why `repaintPolicy()` has always worked. This generalises that one working case.
+
+     Each repaint edits in place and touches as little as possible: the figure's own text node and
+     its tag, never the row's innerHTML. That is deliberate. `catItem` normalises `.unit` to
+     `.ci-unit` when it moves a row, so rebuilding the markup here would quietly undo the
+     normalisation and the row would come back at the wrong type size.
+
+     Everything else needs no repaint: the inner pages draw on open, from these same module vars,
+     through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT opening a page. */
+  function repaintFigureText(id, text){
+    var el = document.getElementById(id);
+    if (!el) return false;
+    var n = el.firstChild;
+    if (!n || n.nodeType !== 3) return false;
+    n.nodeValue = String(text);
+    return true;
+  }
+  function repaintTag(id, text, state){
+    var el = document.getElementById(id);
+    var tag = el && el.querySelector(".tag");
+    if (!tag) return false;
+    tag.textContent = text;
+    tag.className = "tag " + (state || "");
+    return true;
+  }
+  function repaintSentiment(){
+    var score = fearGreed.value, mood = moodFrom(score);
+    repaintFigureText("subj-value-sentiment", score);
+    repaintTag("subj-value-sentiment", fearGreed.label, mood.state);
+    var ring = document.getElementById("subj-ring-sentiment");
+    if (ring) ring.innerHTML = vitalRingSvg(score, "accent", "Fear and Greed at " + score + " out of 100");
+    // the mood word beside the gauge carries the DERIVED state, which is the whole point of
+    // repainting rather than just reprinting a number
+    var w = document.querySelector(".fg-w");
+    if (w){ w.textContent = fearGreed.label; w.className = "fg-w " + mood.state + "-ink"; }
+  }
+  function repaintYieldRow(){
+    var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
+    var y10 = pick("10Y"), y3m = pick("3M");
+    if (y10 == null || y3m == null) return;
+    var pv = document.querySelector("#subj-value-yield .pv");
+    if (pv && pv.firstChild && pv.firstChild.nodeType === 3)
+      pv.firstChild.nodeValue = y10.toFixed(2) + "/" + y3m.toFixed(2);
+  }
+  function repaintValuationRow(){
+    var row = valRow("cape");
+    if (!row) return;
+    repaintFigureText("subj-value-valuation", row.flagValue);
+    if (valuation.tag) repaintTag("subj-value-valuation", valuation.tag.text, valuation.tag.state);
+  }
+  /* Which repaints each document owes. An empty list is a statement, not an omission: the VIX row
+     and the Desire/Volume/Pulse rows live on inner pages that redraw on open. */
+  var REPAINT = {
+    fedFunds:   [repaintPolicy],
+    fearGreed:  [repaintSentiment],
+    yieldCurve: [repaintYieldRow],
+    valuation:  [repaintValuationRow],
+    sentiment:  [],
+    coincident: []
+  };
+  /* Assign a freshly-arrived document to the module var it belongs to, re-derive whatever was
+     computed FROM it at load, then repaint. The re-derivation is the subtle part: `valuation.tag`
+     and the Volume/Pulse tags are computed once at load from these objects, so a new object without
+     them would print a stale verdict beside a fresh number — exactly the drift ONE FIGURE / ONE
+     NUMBER forbids. The derive steps are reused by name rather than duplicated. */
+  function applyLive(name, value){
+    if (value == null) return false;
+    try {
+      switch (name){
+        case "fedFunds":   if (typeof value.lo !== "number") return false; fedFunds = value; break;
+        case "yieldCurve": if (!Array.isArray(value) || !value.length) return false; yieldCurve = value; break;
+        case "sentiment":  sentiment = value; break;
+        case "valuation":  valuation = value;
+                           if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
+                           break;
+        case "coincident": if (!Array.isArray(value) || !value.length) return false;
+                           coincident = value; deriveVolumeTag(); derivePulseTag(); break;
+        case "fearGreed":  if (typeof value.value !== "number") return false; fearGreed = value; break;
+        default: return false;
+      }
+    } catch (e) { return false; }
+    (REPAINT[name] || []).forEach(function(fn){
+      try { fn(); } catch (e) { if (window.console) console.warn("repaint " + name + " failed", e); }
+    });
+    return true;
+  }
+
   function repaintPolicy(){
     var ph = document.getElementById("pressure-highlights");
     var box = ph && ph.querySelector(".highlights");
@@ -3948,7 +4040,7 @@
       return this.repeatable().length;
     }
   };
-  try { window.__GYN = GYN; } catch (e) {}   // a test seam, not an API
+  try { window.__GYN = GYN; GYN.applyLive = applyLive; } catch (e) {}   // a test seam, not an API
 
   function refreshLiveData(){
     if (!window.claude || typeof window.claude.use !== "function") return;
@@ -3964,12 +4056,18 @@
         rows.forEach(function(r){ if (r){ next[r[0]] = r[1]; got++; } });
         if (!got) return;
         try { window.localStorage.setItem("gyn.live", JSON.stringify(next)); } catch (e) {}
-        // the policy rate is the one value nothing derives from, so it can land on THIS load
-        var ff = LIVE("fedFunds", null);
-        if (ff && typeof ff.lo === "number" && typeof ff.hi === "number" && ff.asOf !== fedFunds.asOf){
-          fedFunds = ff; repaintPolicy();
-        }
+        /* V533: every document that actually CHANGED lands on this load, not only the policy rate.
+           The comparison is against the cache we rendered from, so an unchanged document costs
+           nothing. LIVE_CACHE is swapped in FIRST so that LIVE() does the shape-decoding — one
+           decoder, not two. */
+        var prev = LIVE_CACHE;
         LIVE_CACHE = next;
+        LIVE_DOCS.forEach(function(name){
+          var before = prev && prev[name], after = next[name];
+          if (!after) return;
+          try { if (before && JSON.stringify(before) === JSON.stringify(after)) return; } catch (e) {}
+          applyLive(name, LIVE(name, null));
+        });
       });
     }).catch(function(){});
   }
