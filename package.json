@@ -1,0 +1,15 @@
+{
+  "name": "gyneconomy",
+  "version": "528.0.0",
+  "private": true,
+  "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
+  "scripts": {
+    "test": "node test/gyn-test.js index.html",
+    "test:full": "node test/gyn-test.js index.html --full",
+    "bless": "node test/gyn-test.js index.html --bless",
+    "css": "node tools/css-count.js index.html"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}
