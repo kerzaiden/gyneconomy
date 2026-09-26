@@ -3,7 +3,7 @@
 <div class="wrap">
 
   <!-- The top bar sits directly in .wrap (not inside <header>) so position:sticky can hold it for the whole page. -->
-  <div class="topbar">
+  <header class="topbar">
     <button type="button" class="menu-btn back-btn" id="topbar-back" aria-label="Back to all cycles" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
     </button>
@@ -11,16 +11,21 @@
     <button type="button" class="menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="more-menu">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 12h11M4 17h16"/></svg>
     </button>
-  </div>
+  </header>
 
-  <header>
+  <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
       <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
       <button type="button" class="tab-btn" data-tab="content" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-1.6-1.4-3.8-2-6.5-2H4v13h1.5c2.7 0 4.9.6 6.5 2 1.6-1.4 3.8-2 6.5-2H20v-13h-1.5c-2.7 0-4.9.6-6.5 2z"/><path d="M12 6.5v13"/></svg><span>Content</span></button>
     </div>
-  </header>
+  </nav>
+
+  <!-- V539: the tab panels are the document's main content. Without this, axe reports every block
+       outside a landmark and no main landmark at all, which is a screen reader having no way to
+       skip the chrome. The modal below stays OUTSIDE main: it is a dialog, not content. -->
+  <main id="main">
 
   <!-- ============ TAB: CYCLE — the cycle view, for the current cycle. The view (#cycle-view) is ONE element that
        the Calendar tab borrows to show a past cycle; renderCycleView() fills it for whichever cycle is asked for.
@@ -529,7 +534,7 @@
          because every bull year already drawn on the dial and the Calendar is that colour and a legend that
          disagreed with the picture would be worse than one that names an unexpected hue. -->
     <section class="journal-about" aria-label="The cycle model">
-      <h4>The Cycle Model</h4>
+      <h2>The Cycle Model</h2>
       <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
         it: the recovery, the boom, and the bleed the boom pays for.</p>
       <div class="legend-rows">
@@ -539,12 +544,12 @@
     </section>
 
     <section class="journal-about" aria-label="The season model">
-      <h4 id="seasons-kicker">The Season Model</h4>
+      <h2 id="seasons-kicker">The Season Model</h2>
       <div class="lag-rows seasons-rows" id="seasons-rows"></div>
     </section>
 
     <section class="journal-about" aria-label="The framework">
-      <h4 id="framework-kicker">The framework</h4>
+      <h2 id="framework-kicker">The framework</h2>
       <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
       <div class="lag-rows framework-rows" id="framework-rows"></div>
     </section>
@@ -715,6 +720,8 @@
     </div>
   </div>
 
+
+  </main>
 
   <div class="detail-backdrop" id="detail-backdrop">
     <div class="detail-modal" role="dialog" aria-modal="true" aria-label="Indicator detail">

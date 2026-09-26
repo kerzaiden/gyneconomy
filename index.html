@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#f7f3ee" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#100d12" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Gyneconomy"><link rel="apple-touch-icon" href="assets/appicon-180.png"><link rel="icon" type="image/svg+xml" href="assets/appicon-square.svg"><link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#f7f3ee;color:#1c1620}@media (prefers-color-scheme:dark){:root{color-scheme:dark}body{background:#100d12;color:#f6f3f7}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#f7f3ee" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#100d12" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Gyneconomy"><link rel="apple-touch-icon" href="assets/appicon-180.png"><link rel="icon" type="image/svg+xml" href="assets/appicon-square.svg"><link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#f7f3ee;color:#1c1620}@media (prefers-color-scheme:dark){:root{color-scheme:dark}body{background:#100d12;color:#f6f3f7}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Gyneconomy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="prefetch" href="sources.html">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Public+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;700&display=swap">
@@ -311,8 +311,8 @@
   .menu-prose p{ font-size:15px; line-height:1.6; color:var(--text-primary); margin:12px 0; }
   .menu-prose b{ font-weight:600; }
   .menu-lede .serif{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; }
-  header .lede{ max-width: 64ch; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 22px; }
-  header .lede b{ color:var(--text-primary); font-weight:600; }
+  .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 22px; }
+  .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
 
   /* the daily Feeling/Energy readout — reuses .tag's existing good/warning/serious/critical colors, no new palette.
@@ -647,7 +647,7 @@
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; } /* the label in primary text; only the chip is purple (the DSM) */
     .tab-btn.active svg{ background:var(--accent-wash); }
     .wrap{ padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)); }
-    header{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
+    .tabnav{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
   .tab-panel[hidden]{ display:none; }
@@ -900,12 +900,12 @@
 
   /* ---------- journal (editorial content tab) ---------- */
   .journal-about{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow: var(--shadow); }
-  .journal-about h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
+  .journal-about h2, .journal-about h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
   .journal-about p{ font-size:15px; color:var(--text-secondary); line-height:1.65; margin:0 0 12px; }
   .journal-about p:last-child{ margin-bottom:0; }
   .journal-about a{ color:var(--accent-ink); font-weight:600; }
   /* ---------- content tab: reading companion ---------- */
-  .journal-about h4{ display:flex; align-items:center; gap:2px; }
+  .journal-about h2, .journal-about h4{ display:flex; align-items:center; gap:2px; }
   .reading-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px 28px; margin-top:4px; }
   .reading-block h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; color:var(--text-primary); margin:0 0 6px; }
   .reading-block p{ margin:0; font-size:15px; line-height:1.6; }
@@ -1553,7 +1553,7 @@
   .reading-box > .panel-row:first-child{ border-top:0; }
   /* One reading, already named by the head above it — the figure and its spectrum are the whole row, which is
      what the blood-test panel Keren sent shows. The name stays in the markup for the screen reader. */
-  .reading-box.solo .pbr-name h4{ position:absolute; width:1px; height:1px; overflow:hidden;
+  .reading-box.solo .pbr-name h3, .reading-box.solo .pbr-name h4{ position:absolute; width:1px; height:1px; overflow:hidden;
     clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
   /* V522: with the name gone the figure is the whole left column, so it sizes to the figure rather than to a
      share of the row — 28% of a phone is 95px and "+0.94 pts" wants 120, which broke Horizon's onto two lines. */
@@ -1565,17 +1565,17 @@
   /* Version 485: block, not inline-flex. A two-line name (Money stock (M2), Velocity of money (M2)) left the
      (i) parked on the first flex line at the right of the column, detached from the words it belongs to. As a
      block the button flows after the last word, wherever that lands. */
-  .panel-row .pbr-name h4{ margin:0; font-size:13.5px; font-weight:600; color:var(--text-primary);
+  .panel-row .pbr-name h3, .panel-row .pbr-name h4{ margin:0; font-size:13.5px; font-weight:600; color:var(--text-primary);
                            display:block; line-height:1.25; }
-  .panel-row .pbr-name h4 .expand-btn{ vertical-align:middle; margin-left:3px; }
-  .panel-row .pbr-name h4 .pbr-last{ white-space:nowrap; }
+  .panel-row .pbr-name h3 .expand-btn, .panel-row .pbr-name h4 .expand-btn{ vertical-align:middle; margin-left:3px; }
+  .panel-row .pbr-name h3 .pbr-last, .panel-row .pbr-name h4 .pbr-last{ white-space:nowrap; }
   .panel-row .pbr-name .wb-read{ font-size:19px; margin:1px 0 0; }
   .panel-row .pbar-labels{ margin:0 0 6px; font-size:10.5px; }
   .panel-row .pbar{ margin-bottom:0; }
   .pulsebox > #desire-trend{ margin-top:12px; }
   @media (max-width:400px){
     .panel-row{ grid-template-columns:minmax(0, 41%) 1fr; gap:10px; }
-    .panel-row .pbr-name h4{ font-size:12.5px; }
+    .panel-row .pbr-name h3, .panel-row .pbr-name h4{ font-size:12.5px; }
     .panel-row .pbr-name .wb-read{ font-size:17px; }
     .panel-row .pbar-labels{ font-size:9.5px; gap:2%; }
   }
@@ -1855,7 +1855,9 @@
   .tp-k{ font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
   .tp-v{ font-family:"Public Sans",sans-serif; font-size:13px; font-weight:700; color:var(--text-primary); text-align:right; }
   .tp-v.quiet{ color:var(--text-muted); font-weight:600; }
-  .tp-v em{ font-style:normal; font-weight:400; color:var(--text-muted); }
+  /* V539: --text-secondary for the same reason .cycsel-yr took it — muted is measured against
+     --surface and this sits on the pill's own ground, where dark mode fell under 4.5:1. */
+  .tp-v em{ font-style:normal; font-weight:400; color:var(--text-secondary); }
   .tp-arrow{ width:15px; height:15px; vertical-align:-2px; margin-right:5px; fill:none; stroke:currentColor;
     stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
   .trendpill[aria-pressed="true"] .tp-v em{ color:color-mix(in srgb, var(--on-accent) 78%, transparent); }
@@ -2044,7 +2046,11 @@
   .cycsel-tick{ width:15px; height:15px; flex:none; border-radius:50%; border:1.5px solid var(--border); }  /* V420: one choice, so a radio */
   .cycsel-opt.on .cycsel-tick{ background:var(--accent); border-color:var(--accent); }
   .cycsel-nm{ font-weight:600; }
-  .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-muted); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
+  /* V539: --text-secondary, not --text-muted. The muted token is documented at 5.0:1 and that is
+     measured against --surface; this label sits on --track, the control's grey ground, where it
+     came out at 4.48 light and 4.19 dark — under the 4.5 floor this design system sets for itself.
+     Secondary keeps the year quieter than the cycle name beside it, which is the hierarchy. */
+  .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
   .page-chart .dchart{ margin:6px 0 0; }   /* V497, as .vh-host */
   /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
   .page-chart .trendpill{ margin:12px 0 14px; }
@@ -2907,7 +2913,7 @@
 <div class="wrap">
 
   <!-- The top bar sits directly in .wrap (not inside <header>) so position:sticky can hold it for the whole page. -->
-  <div class="topbar">
+  <header class="topbar">
     <button type="button" class="menu-btn back-btn" id="topbar-back" aria-label="Back to all cycles" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
     </button>
@@ -2915,16 +2921,21 @@
     <button type="button" class="menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="more-menu">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 12h11M4 17h16"/></svg>
     </button>
-  </div>
+  </header>
 
-  <header>
+  <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
       <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
       <button type="button" class="tab-btn" data-tab="content" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-1.6-1.4-3.8-2-6.5-2H4v13h1.5c2.7 0 4.9.6 6.5 2 1.6-1.4 3.8-2 6.5-2H20v-13h-1.5c-2.7 0-4.9.6-6.5 2z"/><path d="M12 6.5v13"/></svg><span>Content</span></button>
     </div>
-  </header>
+  </nav>
+
+  <!-- V539: the tab panels are the document's main content. Without this, axe reports every block
+       outside a landmark and no main landmark at all, which is a screen reader having no way to
+       skip the chrome. The modal below stays OUTSIDE main: it is a dialog, not content. -->
+  <main id="main">
 
   <!-- ============ TAB: CYCLE — the cycle view, for the current cycle. The view (#cycle-view) is ONE element that
        the Calendar tab borrows to show a past cycle; renderCycleView() fills it for whichever cycle is asked for.
@@ -3433,7 +3444,7 @@
          because every bull year already drawn on the dial and the Calendar is that colour and a legend that
          disagreed with the picture would be worse than one that names an unexpected hue. -->
     <section class="journal-about" aria-label="The cycle model">
-      <h4>The Cycle Model</h4>
+      <h2>The Cycle Model</h2>
       <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
         it: the recovery, the boom, and the bleed the boom pays for.</p>
       <div class="legend-rows">
@@ -3443,12 +3454,12 @@
     </section>
 
     <section class="journal-about" aria-label="The season model">
-      <h4 id="seasons-kicker">The Season Model</h4>
+      <h2 id="seasons-kicker">The Season Model</h2>
       <div class="lag-rows seasons-rows" id="seasons-rows"></div>
     </section>
 
     <section class="journal-about" aria-label="The framework">
-      <h4 id="framework-kicker">The framework</h4>
+      <h2 id="framework-kicker">The framework</h2>
       <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
       <div class="lag-rows framework-rows" id="framework-rows"></div>
     </section>
@@ -3619,6 +3630,8 @@
     </div>
   </div>
 
+
+  </main>
 
   <div class="detail-backdrop" id="detail-backdrop">
     <div class="detail-modal" role="dialog" aria-modal="true" aria-label="Indicator detail">
@@ -5729,7 +5742,10 @@
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' +
       (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
-      '<h4 class="bh-title">' + t + '</h4>' +
+      // V539: h2, not h4. On an inner page the only heading above this is the top bar's h1, so an
+      // h4 skips two levels and a screen reader's heading list reads as if content is missing.
+      // The style is class-based (.bh-title), so the level changes and nothing moves.
+      '<h2 class="bh-title">' + t + '</h2>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
         'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") +
         '" aria-label="More about this chart">' + DOTS + '</button>' +
@@ -5810,7 +5826,9 @@
        already named — see the .solo rule there. */
     return '<div' + door.replace('class="', (o.head ? 'data-head="' + o.head + '" class="' : 'class="')) + '>' +
       '<div class="pbr-name">' +
-        '<h4>' + nameWithMark(o.name, mark) + '</h4>' +
+        // V539: h3. It sits under the card head's h2 (.bh-title), so h4 skipped a level. The style
+        // rules are keyed on .pbr-name, and they now name h3 as well, so nothing about it moves.
+        '<h3>' + nameWithMark(o.name, mark) + '</h3>' +
         '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>' +
       '</div>' +
       '<div class="pbr-scale">' + panelBar(o.bar) + '</div>' +

@@ -76,6 +76,7 @@ npm run classify         # measure what each step does, to check the declared ki
 npm run build            # assemble index.html from src/
 npm run build:check      # does index.html match src/?
 npm run sources          # regenerate sources.html from the app's own Sources screen
+npm run a11y             # axe-core across 24 states; a11y:check fails on serious or critical
 ```
 
 **Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
@@ -280,6 +281,25 @@ without passing the suite.**
 `vixClose` and `hyOas` are published as bare scalars rather than whole objects, because they are
 single readings inside objects the app owns — the bands, notes and words around them are editorial
 and belong in `index.html`, not in a fetcher that would drift from them. `applyLive` places them.
+
+## Accessibility (V539)
+
+**`npm run a11y` — axe-core across 24 states**: two viewports, both colour schemes, four tabs, an
+inner page, an open modal and the open menu. `a11y:check` runs in CI and fails on serious or
+critical. **It reports zero violations**, which is a measured claim rather than a design intention;
+before V539 nothing had ever been tested.
+
+What it found and what changed: `<html>` had no `lang`, so a screen reader had no pronunciation to
+pick. Two labels failed the 4.5:1 floor this design system sets for itself — `.cycsel-yr` at 4.48
+light and 4.19 dark, and `.tp-v em` in dark — both because `--text-muted` is measured against
+`--surface` and both sit on a control's own grey ground; both took `--text-secondary`, which keeps
+them quieter than the text beside them. The page had no landmarks, so 96 nodes sat outside one: the
+top bar is a `<header>` now, the tab bar a `<nav class="tabnav">`, and the tab panels a `<main>`.
+And the heading levels skipped — h1 to h4 in three places — so the section headings are h2, the
+history card head h2 and the panel row name h3.
+
+**Heading levels are semantic, and the styles are keyed on classes, so a level can change without
+anything moving.** Verified: pixel-identical screenshots at 414 light, 414 dark and 1280 light.
 
 ## Repo map
 

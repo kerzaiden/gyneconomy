@@ -38,7 +38,10 @@
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' +
       (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
-      '<h4 class="bh-title">' + t + '</h4>' +
+      // V539: h2, not h4. On an inner page the only heading above this is the top bar's h1, so an
+      // h4 skips two levels and a screen reader's heading list reads as if content is missing.
+      // The style is class-based (.bh-title), so the level changes and nothing moves.
+      '<h2 class="bh-title">' + t + '</h2>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
         'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") +
         '" aria-label="More about this chart">' + DOTS + '</button>' +
@@ -119,7 +122,9 @@
        already named — see the .solo rule there. */
     return '<div' + door.replace('class="', (o.head ? 'data-head="' + o.head + '" class="' : 'class="')) + '>' +
       '<div class="pbr-name">' +
-        '<h4>' + nameWithMark(o.name, mark) + '</h4>' +
+        // V539: h3. It sits under the card head's h2 (.bh-title), so h4 skipped a level. The style
+        // rules are keyed on .pbr-name, and they now name h3 as well, so nothing about it moves.
+        '<h3>' + nameWithMark(o.name, mark) + '</h3>' +
         '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>' +
       '</div>' +
       '<div class="pbr-scale">' + panelBar(o.bar) + '</div>' +

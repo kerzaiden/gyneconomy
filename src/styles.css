@@ -306,8 +306,8 @@
   .menu-prose p{ font-size:15px; line-height:1.6; color:var(--text-primary); margin:12px 0; }
   .menu-prose b{ font-weight:600; }
   .menu-lede .serif{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; }
-  header .lede{ max-width: 64ch; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 22px; }
-  header .lede b{ color:var(--text-primary); font-weight:600; }
+  .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 22px; }
+  .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
 
   /* the daily Feeling/Energy readout — reuses .tag's existing good/warning/serious/critical colors, no new palette.
@@ -642,7 +642,7 @@
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; } /* the label in primary text; only the chip is purple (the DSM) */
     .tab-btn.active svg{ background:var(--accent-wash); }
     .wrap{ padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)); }
-    header{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
+    .tabnav{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
   .tab-panel[hidden]{ display:none; }
@@ -895,12 +895,12 @@
 
   /* ---------- journal (editorial content tab) ---------- */
   .journal-about{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow: var(--shadow); }
-  .journal-about h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
+  .journal-about h2, .journal-about h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
   .journal-about p{ font-size:15px; color:var(--text-secondary); line-height:1.65; margin:0 0 12px; }
   .journal-about p:last-child{ margin-bottom:0; }
   .journal-about a{ color:var(--accent-ink); font-weight:600; }
   /* ---------- content tab: reading companion ---------- */
-  .journal-about h4{ display:flex; align-items:center; gap:2px; }
+  .journal-about h2, .journal-about h4{ display:flex; align-items:center; gap:2px; }
   .reading-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px 28px; margin-top:4px; }
   .reading-block h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; color:var(--text-primary); margin:0 0 6px; }
   .reading-block p{ margin:0; font-size:15px; line-height:1.6; }
@@ -1548,7 +1548,7 @@
   .reading-box > .panel-row:first-child{ border-top:0; }
   /* One reading, already named by the head above it — the figure and its spectrum are the whole row, which is
      what the blood-test panel Keren sent shows. The name stays in the markup for the screen reader. */
-  .reading-box.solo .pbr-name h4{ position:absolute; width:1px; height:1px; overflow:hidden;
+  .reading-box.solo .pbr-name h3, .reading-box.solo .pbr-name h4{ position:absolute; width:1px; height:1px; overflow:hidden;
     clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
   /* V522: with the name gone the figure is the whole left column, so it sizes to the figure rather than to a
      share of the row — 28% of a phone is 95px and "+0.94 pts" wants 120, which broke Horizon's onto two lines. */
@@ -1560,17 +1560,17 @@
   /* Version 485: block, not inline-flex. A two-line name (Money stock (M2), Velocity of money (M2)) left the
      (i) parked on the first flex line at the right of the column, detached from the words it belongs to. As a
      block the button flows after the last word, wherever that lands. */
-  .panel-row .pbr-name h4{ margin:0; font-size:13.5px; font-weight:600; color:var(--text-primary);
+  .panel-row .pbr-name h3, .panel-row .pbr-name h4{ margin:0; font-size:13.5px; font-weight:600; color:var(--text-primary);
                            display:block; line-height:1.25; }
-  .panel-row .pbr-name h4 .expand-btn{ vertical-align:middle; margin-left:3px; }
-  .panel-row .pbr-name h4 .pbr-last{ white-space:nowrap; }
+  .panel-row .pbr-name h3 .expand-btn, .panel-row .pbr-name h4 .expand-btn{ vertical-align:middle; margin-left:3px; }
+  .panel-row .pbr-name h3 .pbr-last, .panel-row .pbr-name h4 .pbr-last{ white-space:nowrap; }
   .panel-row .pbr-name .wb-read{ font-size:19px; margin:1px 0 0; }
   .panel-row .pbar-labels{ margin:0 0 6px; font-size:10.5px; }
   .panel-row .pbar{ margin-bottom:0; }
   .pulsebox > #desire-trend{ margin-top:12px; }
   @media (max-width:400px){
     .panel-row{ grid-template-columns:minmax(0, 41%) 1fr; gap:10px; }
-    .panel-row .pbr-name h4{ font-size:12.5px; }
+    .panel-row .pbr-name h3, .panel-row .pbr-name h4{ font-size:12.5px; }
     .panel-row .pbr-name .wb-read{ font-size:17px; }
     .panel-row .pbar-labels{ font-size:9.5px; gap:2%; }
   }
@@ -1850,7 +1850,9 @@
   .tp-k{ font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
   .tp-v{ font-family:"Public Sans",sans-serif; font-size:13px; font-weight:700; color:var(--text-primary); text-align:right; }
   .tp-v.quiet{ color:var(--text-muted); font-weight:600; }
-  .tp-v em{ font-style:normal; font-weight:400; color:var(--text-muted); }
+  /* V539: --text-secondary for the same reason .cycsel-yr took it — muted is measured against
+     --surface and this sits on the pill's own ground, where dark mode fell under 4.5:1. */
+  .tp-v em{ font-style:normal; font-weight:400; color:var(--text-secondary); }
   .tp-arrow{ width:15px; height:15px; vertical-align:-2px; margin-right:5px; fill:none; stroke:currentColor;
     stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
   .trendpill[aria-pressed="true"] .tp-v em{ color:color-mix(in srgb, var(--on-accent) 78%, transparent); }
@@ -2039,7 +2041,11 @@
   .cycsel-tick{ width:15px; height:15px; flex:none; border-radius:50%; border:1.5px solid var(--border); }  /* V420: one choice, so a radio */
   .cycsel-opt.on .cycsel-tick{ background:var(--accent); border-color:var(--accent); }
   .cycsel-nm{ font-weight:600; }
-  .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-muted); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
+  /* V539: --text-secondary, not --text-muted. The muted token is documented at 5.0:1 and that is
+     measured against --surface; this label sits on --track, the control's grey ground, where it
+     came out at 4.48 light and 4.19 dark — under the 4.5 floor this design system sets for itself.
+     Secondary keeps the year quieter than the cycle name beside it, which is the hierarchy. */
+  .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
   .page-chart .dchart{ margin:6px 0 0; }   /* V497, as .vh-host */
   /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
   .page-chart .trendpill{ margin:12px 0 14px; }

@@ -50,6 +50,11 @@ jobs:
       - name: Navigation map is current
         run: npm run map:check
 
+      # Accessibility was designed with care and documented in detail, and until V539 none of it had
+      # been measured. This fails on serious or critical only; moderate findings are reported.
+      - name: Accessibility
+        run: npm run a11y:check
+
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
