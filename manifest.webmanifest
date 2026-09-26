@@ -1,0 +1,18 @@
+{
+  "name": "Gyneconomy",
+  "short_name": "Gyneconomy",
+  "description": "A reading companion to Mrs. Market: the economy as a body with seasons.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f3ee",
+  "theme_color": "#f7f3ee",
+  "categories": ["finance", "education", "books"],
+  "icons": [
+    { "src": "assets/icon-192.png",  "sizes": "192x192",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/appicon-square.svg", "sizes": "any",  "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

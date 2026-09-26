@@ -89,6 +89,31 @@ written once at the end, so a failed assertion means nothing was written. For mu
 deletions use line-index surgery applied **bottom-up**. `docs/WORKING-DOC.md` has the escaping
 traps, which are real and have cost hours.
 
+## Hosting (V530)
+
+The app is becoming a real site, not only an Artifact. Both targets are served from the **same
+`index.html`** — there is no host-specific build, and there must not be one.
+
+- **GitHub Pages**, deployed by `.github/workflows/ci.yml` on every push to `main`. The `deploy`
+  job **needs** `test`, so a commit that fails the suite never reaches the site. The workflow
+  assembles a `_site/` of only what a reader needs: `index.html`, `sources.html`,
+  `manifest.webmanifest`, `sw.js` and the icons. Docs, tests and tooling stay in the repo and off
+  the web.
+- **The Claude Artifact**, still published by hand and by the nightly refresh. Unchanged.
+
+**Installable.** `manifest.webmanifest` plus `sw.js` make it a PWA: standalone display, the lotus
+icon, and it works offline. The service worker is **network-first for HTML and cache-first for
+everything else**, and that asymmetry is deliberate — the figures are baked into `index.html`, so a
+cached page is a stale economic reading, while an icon never goes stale. Bump `VERSION` in `sw.js`
+on any release that changes the shell.
+
+**The registration is a second `<script>` block, outside the app's IIFE, and guarded three ways**
+(not framed, https-or-localhost, feature present) because the same file runs inside the Artifact's
+sandboxed cross-origin iframe, where a service worker cannot register and throws if you try. It must
+stay silent there. Anything added to that block must keep that property. The suite's parse check
+reads every `<script>` block separately for this reason — a greedy match spans both and chokes on
+the boundary.
+
 ## Repo map
 
 | Path | What |
@@ -100,6 +125,8 @@ traps, which are real and have cost hours.
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
 | `tools/` | the map generator, the build template, the stylesheet check |
+| `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
+| `.github/workflows/ci.yml` | test on every push; deploy to Pages only if the suite passes |
 | `assets/` | app icon artwork (not referenced by the page) |
 
 Versions are **commits now**. The old `curve-and-cycle-vNNN.html` chain is retired — don't

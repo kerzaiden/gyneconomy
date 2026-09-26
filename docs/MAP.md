@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-`index.html` is **12,711 lines**, about 1046 KB, roughly **297 thousand tokens**. No session can read it
+`index.html` is **12,733 lines**, about 1047 KB, roughly **298 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `c9b250a` on 2026-09-26.
+Generated from commit `31591fd` on 2026-09-26.
 
 ## The five regions
 
@@ -20,7 +20,7 @@ Generated from commit `c9b250a` on 2026-09-26.
 | **Styles** | 5–2,905 | the whole stylesheet, every token and rule |
 | **Markup** | 2,906–3,631 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | **Script** | 3,632–12,709 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 12,710–12,711 | </body></html> |
+| **Close** | 12,710–12,733 | </body></html> |
 
 Counts: **204** top-level functions, **174** top-level vars, **32** top-level IIFEs in the script.
 

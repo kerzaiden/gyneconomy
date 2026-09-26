@@ -1,0 +1,78 @@
+# Test, then deploy. Deploy NEEDS test, so a commit that fails the suite never reaches the site.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # The rule that outranks every other rule in this project.
+      - name: Keren's email must not be in the markup
+        run: |
+          n=$(grep -c "owner@" index.html || true)
+          if [ "$n" != "0" ]; then echo "::error::email appears $n time(s) in index.html"; exit 1; fi
+          echo "ok: 0 occurrences"
+
+      - name: Test suite
+        run: npm test
+
+      # A map that has drifted is worse than none, because it invites trust in a stale number.
+      - name: Navigation map is current
+        run: npm run map:check
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the site
+        # Only what the site serves. The docs, the suite and the tooling stay in the repo
+        # and off the web: they are for whoever works on the app, not for a reader.
+        run: |
+          mkdir -p _site/assets
+          cp index.html sources.html manifest.webmanifest sw.js _site/
+          cp assets/icon-192.png assets/icon-512.png assets/appicon-180.png \
+             assets/appicon-square.svg _site/assets/
+          touch _site/.nojekyll
+          echo "--- site ---"; find _site -type f | sort
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
