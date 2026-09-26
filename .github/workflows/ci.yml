@@ -19,11 +19,14 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # v5 of the actions runs on Node 24; v4 targeted Node 20, which GitHub deprecated on its
+      # runners. `node-version` is a separate thing — the Node that runs THIS project's scripts —
+      # and 22 is the current LTS. Playwright, axe-core and the fetcher all run on it.
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install
@@ -71,7 +74,7 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Assemble the site
         # Only what the site serves. The docs, the suite and the tooling stay in the repo
