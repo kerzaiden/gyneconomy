@@ -7034,7 +7034,7 @@
   }
   function moreRow(fullHtml, label){
     if (!fullHtml) return "";
-    var idx = detailTexts.push(fullHtml) - 1;
+    var idx = detailSlot(fullHtml);
     return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' +
       '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
   }
@@ -8604,6 +8604,34 @@
   // markup for each (reference-range bar, full note/caption, aux stat, sources), opened in one shared modal
   // rather than a popover, since there's more to show here than a paragraph of text.
   var detailTexts = [];
+  /* A CONTENT-ADDRESSED slot table (Version 532).
+
+     `detailTexts` was append-only: every `expandBtn` and `moreRow` pushed a fresh entry and handed
+     back its index, so re-rendering a block allocated NEW slots and `data-detail-idx` climbed. That
+     made the array grow as a reader browsed, and it made rendering twice impossible — the DOM came
+     back 22KB larger with different indices, which is how Version 531's registry found it.
+
+     The key is the note's own HTML, so identical content resolves to the same slot however many
+     times it is built, and no call site has to pass anything. Strings are immutable and shared by
+     reference in JS, so the map's key and the array's entry are the same string — the table costs
+     bookkeeping, not a second copy of every note.
+
+     A note whose text genuinely changes (a figure moved) takes a new slot, which is correct: it is
+     a different note. Growth is therefore bounded by DISTINCT content rather than by render count.
+
+     `headNoteIdx` and `hubDetailIdx` already keyed their slots by hand — by page id and by being
+     allocated once — and are left exactly as they were. This generalises what they were doing. */
+  var detailSlots = Object.create(null);
+  function detailSlot(html){
+    var key = String(html == null ? "" : html);
+    var idx = detailSlots[key];
+    if (idx === undefined){
+      idx = detailTexts.length;
+      detailTexts.push(key);
+      detailSlots[key] = idx;
+    }
+    return idx;
+  }
   // V491: the two multi-reading panels, built once at init and placed by their page's renderer (see above).
   var powerPanelHtml = "", valuationPanelHtml = "";
   /* V492: Growth's and Households' rows, built on first use and kept. Same reason as V491's two — a renderer
@@ -8633,9 +8661,8 @@
     return facts(parts.filter(function(x){ return x.trim(); }));
   }
   function expandBtn(fullHtml){
-    var idx = detailTexts.length;
-    detailTexts.push(fullHtml);
-    return '<button type="button" class="expand-btn" data-detail-idx="' + idx + '" aria-label="Expand details">i</button>';
+    return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
+           '" aria-label="Expand details">i</button>';
   }
   // The modal is back to what it was built for (Version 256): one note, opened by an (i), closed and forgotten.
   // Metric pages left it — see openMetricPage below.
@@ -10199,7 +10226,7 @@
       '<p class="caption">An open cycle\u2019s ring is scaled to <b>' + typicalCycleYears + ' years</b>, and the pale dots are what is left of one: a typical full cycle \u2014 one bull market and the bear market that ends it \u2014 has run about five to six and a half years across the long record. A cycle that outlasts it extends the ring instead of overflowing it, which is why the Dot-Com ring spans twelve. It is a typical length, not a forecast.</p>' +
       '<div class="src">' + srcHtml(typicalCycleSrc) + '</div>' +
       '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
-    var idx = detailTexts.length; detailTexts.push(html);
+    var idx = detailSlot(html);
     document.getElementById("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
   }
   GYN.step("renderCycleKicker", renderCycleKicker, "render"); renderCycleKicker();
@@ -11266,7 +11293,15 @@
                      flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) });
         tempCaptionFull = ind.caption;                      // its long form joins the page's own, in one row (V287)
         tempLeadShown = ind.lead || ind.shortCaption || "";  // \u2026 minus whatever the page is already showing (V288)
-        document.getElementById("sheet-metric-temp").appendChild(d.querySelector(".sign-detail"));
+        /* V532: REPLACE, never append. A second render would otherwise leave two `.sign-detail`
+           blocks in the sheet, and the page-foot seater reads `:scope > .sign-detail`, so it would
+           then find the stale one. Idempotent by construction rather than by being called once. */
+        (function(){
+          var sheet = document.getElementById("sheet-metric-temp");
+          var fresh = d.querySelector(".sign-detail");
+          var prev = sheet.querySelector(":scope > .sign-detail");
+          if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
+        })();
       } else { host.appendChild(row); host.appendChild(d); }
       return d;
     }

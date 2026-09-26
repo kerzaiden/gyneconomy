@@ -99,13 +99,30 @@ Kinds are counted from each body, never asserted: **check** (6, data assertions,
 (3, module state) · **wire** (1, listeners only, must run once) · **render** (8, DOM only) · **mixed**
 (9, listeners AND DOM — cannot be re-run until split) · **live** (1, the database refresher).
 
-`GYN.render()` re-runs only what is safe to repeat today. **It is not yet idempotent, and the reason
-is known and measured**: rendering twice grows the DOM by about 22KB because `expandBtn()` and
-`infoIcon()` APPEND to `detailTexts` and return a fresh index, so `data-detail-idx` climbs on every
-pass. Until the detail store takes a **stable key per call site** instead of an append-only index,
-no render step can repeat cleanly. That is the next change, and everything else in Stage B waits on
-it. `deriveUninversionDetail` has the same shape of bug — it appends to `allSources` — and is
-excluded from `repeatable()` until fixed.
+`detailTexts` is **content-addressed** (V532): `detailSlot(html)` keys a slot by the note's own
+HTML, so identical content reuses its slot and the array grows with DISTINCT notes rather than with
+render count. This fixed a real leak — the array had been growing as a reader browsed — and removed
+the climbing `data-detail-idx`. `deriveUninversionDetail` still appends to `allSources` and stays
+out of `repeatable()` until that is keyed too.
+
+**Measured, per step (V532):** of the 14 repeatable steps, **10 are already idempotent**. The four
+that are not:
+
+| Step | Re-running it |
+|---|---|
+| `renderSignsList` | grows the DOM ~22KB — essentially the whole delta, several append-not-replace sites |
+| `renderHorizonPage` | grows 38 bytes |
+| `renderPsychologyTag` | same length, different content |
+| `renderSubjectRows` | **throws** — its hosts no longer exist |
+
+That last one is architectural, not sloppy. `renderSignsList` MOVES the DOM `renderSubjectRows`
+built into the category sheets — the documented "catItem consumes its source" behaviour — so its
+original hosts are gone by design. Re-running it would require rebuilding the static skeleton first.
+
+**So full re-rendering is the wrong target.** The elements that hold the printed figures
+(`#subj-value-*`) survive the move, which is why `repaintPolicy()` has always worked. The design to
+follow is **one small repaint function per live figure**, called by the refresher — not a whole-page
+render. `GYN.render()` stays a diagnostic for finding non-idempotency, not a production path.
 
 `window.__GYN` is a **test seam, not an API**. Nothing in the app may depend on it.
 
