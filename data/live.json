@@ -61,18 +61,22 @@
  "fedFunds": {
   "kind": "object",
   "lo": 3.75,
-  "hi": 4,
-  "asOf": "2026-09-26"
+  "hi": 4
  },
  "vixClose": {
   "kind": "scalar",
   "value": 14.21,
   "asOf": "2026-09-22"
  },
- "hyOas": {
+ "hyOasNow": {
   "kind": "scalar",
   "value": 2.8,
   "asOf": "2026-09-24"
+ },
+ "vix3mClose": {
+  "kind": "scalar",
+  "value": 17.61,
+  "asOf": "2026-09-22"
  },
  "capeValue": {
   "kind": "scalar",
@@ -80,12 +84,13 @@
   "asOf": "2026-09-01"
  },
  "_meta": {
-  "fetchedAt": "2026-09-26T19:46:57Z",
+  "fetchedAt": "2026-09-26T20:49:49Z",
   "ok": [
    "yieldCurve",
    "fedFunds",
    "vixClose",
-   "hyOas",
+   "hyOasNow",
+   "vix3mClose",
    "capeValue"
   ],
   "failed": [],
