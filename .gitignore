@@ -1,5 +1,5 @@
 node_modules/
 .DS_Store
 *.bak
-# throwaway probes and build scripts live in tools/ only when they are worth keeping
 scratch/
+snap*.json

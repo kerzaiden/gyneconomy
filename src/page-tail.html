@@ -1,0 +1,25 @@
+</script>
+<script>
+/* Version 530. Installability, added without touching the app.
+
+   This runs OUTSIDE the app's IIFE on purpose: it is a hosting concern, not an app concern, and
+   nothing in the app may depend on it. It must be silent wherever it cannot work — the same
+   file is published as a Claude Artifact, which serves it inside a sandboxed cross-origin
+   iframe where registration is not permitted and throws. Framed, insecure, or unsupported:
+   do nothing at all, and the page is exactly what it was before.
+
+   Note for the test suite: this is a SECOND <script> block. A greedy /<script>([\s\S]*)<\/script>/
+   spans both and chokes on the boundary — match non-greedily, per block. */
+(function () {
+  try {
+    if (!("serviceWorker" in navigator)) return;
+    if (window.top !== window.self) return;                        // the artifact's iframe
+    if (location.protocol !== "https:" && location.hostname !== "localhost") return;
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () { /* nothing to do */ });
+    });
+  } catch (e) { /* a browser that objects to any of the above keeps the plain page */ }
+})();
+</script>
+
+</body></html>

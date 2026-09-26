@@ -39,10 +39,14 @@ file.
 4. **Don't force-push over a newer version** without asking Keren about that specific
    publish.
 
-## How to change `index.html`
+## How to change the app
 
-It is one file of about 13,000 lines — roughly 297,000 tokens, more than a person or
-a model can hold at once. Two habits make that workable:
+**`index.html` is built, not written.** Edit `src/` — 17 parts listed in `src/manifest.json`,
+the largest about 1,600 lines — then `npm run build`. The build is a concatenation, so the
+order in the manifest is the semantics. `npm run build:check` runs in CI, so the output
+cannot drift from the source.
+
+The whole is still about 13,000 lines, so two habits make it workable:
 
 - **`docs/MAP.md`** is a generated index: the regions, every section, every top-level
   function and var, and the registries. Each entry carries a **grep anchor**; line

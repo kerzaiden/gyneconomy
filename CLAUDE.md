@@ -73,6 +73,9 @@ npm run map              # regenerate docs/MAP.md after a structural change
 npm run map:check        # is the map current?
 npm run snap             # 32-state DOM snapshot, to prove a refactor changed nothing
 npm run classify         # measure what each step does, to check the declared kinds
+npm run build            # assemble index.html from src/
+npm run build:check      # does index.html match src/?
+npm run sources          # regenerate sources.html from the app's own Sources screen
 ```
 
 **Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
@@ -90,7 +93,27 @@ A change the suite does not cover needs its own probe as well — and if the cla
 keeping, fold the probe into the suite rather than throwing it away. That is how it grew from
 42 checks to 50.
 
-## How to edit `index.html`
+## `index.html` is BUILT — edit `src/`, never the output
+
+`index.html` is assembled by `npm run build` from the 17 parts listed in `src/manifest.json`: the
+page shell, the stylesheet, and the script in 13 files by layer (refresh/season, live data, data
+literals, components, history, charts, forms, model, render core, render pages, dial/cycle,
+pages/nav, tabs/menu). The largest is about 1,600 lines.
+
+**The build is `parts.join("\n")` and nothing else.** The script is one IIFE sharing a closure, so
+concatenating the pieces back in order reproduces that scope exactly — which is why the split was
+provable rather than merely plausible: the first build reproduced the previous `index.html` **byte
+for byte**.
+
+**The order in `src/manifest.json` IS the semantics.** Module-level vars are assigned between parts,
+so moving one can change behaviour even when nothing inside it changed. Add a part by adding it to
+the manifest, in position.
+
+`index.html` stays committed, because it is what gets published and its diff is worth reading.
+`npm run build:check` runs in CI, so it cannot drift from `src/` — if someone edits the output
+instead of the source, CI says so.
+
+## How to edit a part
 
 Never hand-edit a large region, and never re-type a region from tool output. Copy
 `tools/build-template.py`, express each edit as an asserted replacement, and run it: the file is
@@ -262,13 +285,14 @@ and belong in `index.html`, not in a fetcher that would drift from them. `applyL
 
 | Path | What |
 |---|---|
-| `index.html` | the app |
+| `src/` | the app's source — 17 parts, listed in `src/manifest.json` |
+| `index.html` | the app, **built** from `src/` by `npm run build` |
 | `sources.html` | the published citation page — **generated, never hand-edited** |
 | `docs/ARCHITECTURE.md` | the working document: app, design system, mechanics |
 | `docs/ARCHIVE.md` | version history and retired ideas |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
-| `tools/` | the map generator, the snapshot harness, the build template, the stylesheet check |
+| `tools/` | the build, the sources and map generators, the snapshot harness, the step classifier, the stylesheet check |
 | `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
 | `data/live.json` | the fetched figures — generated, committed by the Data workflow, never hand-edited |
 | `tools/fetch-live.js` | the fetcher: primary sources, sanity bands, silence on failure |

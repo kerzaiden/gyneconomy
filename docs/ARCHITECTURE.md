@@ -141,6 +141,45 @@ document (`5.18/4.24` → `4.05/5.55`), and five malformed caches each fall back
 The procedure is one place: **Procedures → Build → verify → publish**, at the end of this part. It is not
 restated here.
 
+## The source layout (V538)
+
+`index.html` is a BUILD OUTPUT. The source is `src/`, 17 parts listed in `src/manifest.json`:
+
+| Part | What |
+|---|---|
+| `page-head.html` | doctype, meta, the boot stylesheet, `<style>` |
+| `styles.css` | the stylesheet body, ~2,900 lines |
+| `page-body.html` | `</style>` through the static markup and `<script>` |
+| `js/01-refresh-season.js` | `DATA_COMPILED`, the season constants |
+| `js/02-live.js` | the live cache, the step registry, the database reader, the site feed |
+| `js/03-data.js` | the data literals |
+| `js/04-components.js` | the timeline, the windowed record chart, sentiment and valuation |
+| `js/05-history.js` | the history card and its head |
+| `js/06-charts.js` | range bars, highlights, record rows, the inner pages' charts and axes |
+| `js/07-forms.js` | the peek forms, eras, households |
+| `js/08-model.js` | the season computed, one cycle as the cycle view reads it |
+| `js/09-render-core.js` | render helpers, the compile pill, the maturity chart |
+| `js/10-render-pages.js` | spread history, Horizon, Valuation, Sentiment, the subject rows |
+| `js/11-dial-cycle.js` | the dial, the hub, the temperature and growth charts, the cycle view |
+| `js/12-pages-nav.js` | the cycle list and the inner pages — the largest part, ~1,600 lines |
+| `js/13-tabs-menu.js` | the Content tab, tab navigation, the menu, the contact form |
+| `page-tail.html` | `</script>`, the service-worker registration, `</body></html>` |
+
+**Why a build step, in an app that proudly had none:** the Artifact and the service worker need one
+self-contained file, and a 13,000-line file is not something a person can hold. Both are true, so
+the source is split and the deliverable is assembled.
+
+**Why concatenation and nothing cleverer:** the script is a single IIFE sharing one closure scope.
+Joining the pieces in order reproduces that scope EXACTLY — no module wrapper, no bundler
+semantics, no import order to reason about. That is what made the split provable: the first build
+reproduced the previous `index.html` byte for byte.
+
+**The order in the manifest is the semantics.** Module-level vars are assigned between parts, so
+moving a part can change behaviour with nothing inside it changed.
+
+`index.html` stays committed because it is what ships, and `npm run build:check` runs in CI ahead
+of the suite, so the output cannot drift from the source.
+
 ## Which copy is canonical
 
 The same material now lives in three places, each reachable by a different reader, and none of them

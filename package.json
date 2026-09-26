@@ -4,6 +4,8 @@
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
+    "build": "node tools/build.js",
+    "build:check": "node tools/build.js --check",
     "setup": "playwright install chromium",
     "test": "node test/gyn-test.js index.html",
     "test:full": "node test/gyn-test.js index.html --full",

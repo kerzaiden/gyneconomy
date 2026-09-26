@@ -33,7 +33,8 @@ npm test                 # 60 checks
 
 | Path | What |
 |---|---|
-| `index.html` | the app |
+| `src/` | the app's source — 17 parts, assembled by `npm run build` |
+| `index.html` | the app, **built** from `src/`; committed because it is what ships |
 | `sources.html` | the published citation list — **generated, never hand-edited** |
 | `manifest.webmanifest`, `sw.js` | installable and offline |
 | `data/live.json` | fetched figures — **generated**, committed by the Data workflow |

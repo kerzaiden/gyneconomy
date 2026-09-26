@@ -39,6 +39,10 @@ jobs:
           if [ "$n" != "0" ]; then echo "::error::$n email address(es) in index.html"; exit 1; fi
           echo "ok: no address in markup"
 
+      # index.html is BUILT from src/. If they disagree, someone edited the output.
+      - name: index.html matches src/
+        run: npm run build:check
+
       - name: Test suite
         run: npm test
 
