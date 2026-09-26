@@ -1,0 +1,78 @@
+# The data pipeline. Fetches the figures that move every trading day and COMMITS them, so each
+# refresh is a diff you can read, blame or revert — the reason Pages+Actions was chosen over a
+# platform that would hide the same data in a key-value store.
+#
+# Committing to main triggers ci.yml, which tests and then deploys. So a data commit cannot reach
+# the site without passing the suite.
+name: Data
+
+on:
+  schedule:
+    # 22:40 UTC on weekdays — after the US close, ten minutes behind the nightly Artifact task so
+    # the two never race for the same figures. Cron here is best-effort; a late run is fine,
+    # because the script publishes observation DATES and the page shows them.
+    - cron: '40 22 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node tools/fetch-live.js
+
+      - name: Sanity — the file must be valid JSON with at least one document
+        run: |
+          node -e "
+            const d = require('./data/live.json');
+            const keys = Object.keys(d).filter(k => k !== '_meta');
+            if (!keys.length) { console.error('no documents'); process.exit(1); }
+            for (const k of keys) if (!d[k].kind) { console.error(k + ' has no kind'); process.exit(1); }
+            console.log('ok: ' + keys.length + ' documents — ' + keys.join(', '));
+            if ((d._meta.failed || []).length) console.log('left alone: ' + d._meta.failed.join(' | '));
+          "
+
+      - name: Commit if anything moved
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # _meta.fetchedAt changes on every run, so compare only the DOCUMENTS. A run that found
+          # nothing new must leave no commit behind, or the history fills with noise and stops
+          # being the audit trail it exists to be.
+          if git diff --quiet -- data/live.json; then
+            echo "no change at all"; exit 0
+          fi
+          changed=$(node -e "
+            const { execSync } = require('child_process');
+            const now = require('./data/live.json');
+            let was = {};
+            try { was = JSON.parse(execSync('git show HEAD:data/live.json', {encoding:'utf8'})); } catch (e) {}
+            const strip = o => { const c = { ...o }; delete c._meta; return JSON.stringify(c); };
+            console.log(strip(now) === strip(was) ? 'no' : 'yes');
+          ")
+          if [ "$changed" != "yes" ]; then
+            echo "only the timestamp moved — not committing"
+            git checkout -- data/live.json
+            exit 0
+          fi
+          git add data/live.json
+          git commit -m "Data: $(node -p "require('./data/live.json')._meta.ok.join(', ')")
+
+          Fetched by tools/fetch-live.js from Treasury and FRED. Values that failed their
+          sanity band or could not be fetched are left out, and the previous ones stand."
+          git push

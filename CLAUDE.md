@@ -182,6 +182,43 @@ stay silent there. Anything added to that block must keep that property. The sui
 reads every `<script>` block separately for this reason — a greedy match spans both and chokes on
 the boundary.
 
+## The data pipeline (V534)
+
+**Two sources, one decoder, one repaint layer.** On the hosted site the figures arrive as
+`data/live.json`, fetched same-origin; in the Artifact they arrive from the database. Both hand
+their documents to `applyLive`, and `LIVE()` decodes the shapes for both. `fetchSiteData()` runs
+only where the file can exist — not framed, and over http(s) — so it is inert in the Artifact and
+on a `file://` open.
+
+`tools/fetch-live.js`, run by `.github/workflows/data.yml` on weekdays at 22:40 UTC (ten minutes
+behind the nightly Artifact task, so the two never race), fetches:
+
+| Document | Source | Key |
+|---|---|---|
+| `yieldCurve` | Treasury daily par yield curve | none |
+| `fedFunds` | FRED `DFEDTARU` / `DFEDTARL` | `FRED_API_KEY` |
+| `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
+| `hyOas` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
+
+**NOT fetched, deliberately:** Shiller CAPE has no FRED series and would mean scraping a site that
+is itself quoting Shiller; CNN's Fear & Greed cannot be fetched at all. Both stay with the nightly
+human-in-the-loop task. **Writing a scraped or guessed value would be worse than leaving them.**
+
+**A failure leaves the previous value standing.** A document that cannot be fetched, or whose value
+falls outside its sanity band, is left OUT of the file and the last committed one stands. The bands
+are wide on purpose — they catch a decimal slip or an error page, not a market that moved. The run
+records what it skipped in `_meta.failed`.
+
+**The data is committed, not stored.** Every refresh is a diff you can read, blame or revert, which
+is why Pages and Actions were chosen over a platform that would hide the same figures in a
+key-value store. A run where only the timestamp moved commits nothing, or the history stops being
+an audit trail. And because the commit lands on `main`, `ci.yml` runs: **data cannot reach the site
+without passing the suite.**
+
+`vixClose` and `hyOas` are published as bare scalars rather than whole objects, because they are
+single readings inside objects the app owns — the bands, notes and words around them are editorial
+and belong in `index.html`, not in a fetcher that would drift from them. `applyLive` places them.
+
 ## Repo map
 
 | Path | What |
@@ -194,6 +231,8 @@ the boundary.
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
 | `tools/` | the map generator, the snapshot harness, the build template, the stylesheet check |
 | `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
+| `data/live.json` | the fetched figures — generated, committed by the Data workflow, never hand-edited |
+| `tools/fetch-live.js` | the fetcher: primary sources, sanity bands, silence on failure |
 | `.github/workflows/ci.yml` | test on every push; deploy to Pages only if the suite passes |
 | `assets/` | app icon artwork (not referenced by the page) |
 

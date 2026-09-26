@@ -63,10 +63,12 @@ jobs:
         # Only what the site serves. The docs, the suite and the tooling stay in the repo
         # and off the web: they are for whoever works on the app, not for a reader.
         run: |
-          mkdir -p _site/assets
+          mkdir -p _site/assets _site/data
           cp index.html sources.html manifest.webmanifest sw.js _site/
           cp assets/icon-192.png assets/icon-512.png assets/appicon-180.png \
              assets/appicon-square.svg _site/assets/
+          # the data the page fetches same-origin, written by the Data workflow
+          cp data/live.json _site/data/
           touch _site/.nojekyll
           echo "--- site ---"; find _site -type f | sort
 

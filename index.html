@@ -3968,6 +3968,15 @@
      and the Volume/Pulse tags are computed once at load from these objects, so a new object without
      them would print a stale verdict beside a fresh number — exactly the drift ONE FIGURE / ONE
      NUMBER forbids. The derive steps are reused by name rather than duplicated. */
+  /* A scalar document carries its observation date beside its value, and the row it lands in
+     PRINTS that date. Kept here rather than threaded through applyLive's signature, because only
+     the scalars have one and a second parameter would be empty for every other document. */
+  var liveAsOf = {};
+  function fmtAsOf(iso){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    if (!m) return "";
+    return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
+  }
   function applyLive(name, value){
     if (value == null) return false;
     try {
@@ -3981,6 +3990,30 @@
         case "coincident": if (!Array.isArray(value) || !value.length) return false;
                            coincident = value; deriveVolumeTag(); derivePulseTag(); break;
         case "fearGreed":  if (typeof value.value !== "number") return false; fearGreed = value; break;
+        /* The VIX close and the high-yield spread are single numbers inside objects the app owns
+           outright — the bands, the notes and the words around them are editorial and belong here,
+           not in a fetcher. So the pipeline publishes them as bare scalars and this is where they
+           are placed, next to the prose they have to agree with. Both rows are drawn when their
+           page opens, so neither owes a repaint; the figure is right on the next load either way,
+           because the cache carries it. */
+        case "vixClose": {
+          if (typeof value !== "number" || value < 5 || value > 100) return false;
+          var vrow = sentiment && sentiment.rows && sentiment.rows[0];
+          if (!vrow || !vrow.meter) return false;
+          vrow.meter.value = value;
+          vrow.flagValue = value.toFixed(1);
+          if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
+          break;
+        }
+        case "hyOas": {
+          if (typeof value !== "number" || value < 1 || value > 30) return false;
+          var drow = coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0];
+          if (!drow || !drow.meter) return false;
+          drow.meter.value = value;
+          drow.metric = value.toFixed(2) + "%";
+          if (liveAsOf.hyOas) drow.metricSub = "high-yield OAS, " + liveAsOf.hyOas;
+          break;
+        }
         default: return false;
       }
     } catch (e) { return false; }
@@ -4072,6 +4105,47 @@
     }).catch(function(){});
   }
   GYN.step("refreshLiveData", refreshLiveData, "live"); refreshLiveData();
+  /* THE SITE FEED (Version 534).
+
+     On the hosted site the figures arrive as a plain file that a scheduled GitHub Action commits:
+     same origin, no key, no CORS, and every refresh is a diff in the repository's history. In the
+     Artifact there is no such file and the database remains the route. TWO SOURCES, ONE DECODER,
+     ONE REPAINT LAYER — both hand their documents to `applyLive`, and `LIVE()` decodes the shapes
+     for both.
+
+     It runs only where the file can exist: not framed (the Artifact is an iframe) and over http(s),
+     never on a file:// open. A miss is silence — the literals and the cache already rendered the
+     page, and a feed that is briefly unreachable must never be visible to a reader. */
+  function fetchSiteData(){
+    try {
+      if (window.top !== window.self) return;
+      if (location.protocol !== "http:" && location.protocol !== "https:") return;
+      if (typeof fetch !== "function") return;
+    } catch (e) { return; }
+    fetch("data/live.json", { cache: "no-store" }).then(function(r){
+      return r.ok ? r.json() : null;
+    }).then(function(doc){
+      if (!doc || typeof doc !== "object") return;
+      var next = {};
+      for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k];
+      // the cache is what the NEXT load renders from, so it is written whether or not anything
+      // repaints now
+      var merged = {};
+      for (var a in LIVE_CACHE) merged[a] = LIVE_CACHE[a];
+      for (var b in next) merged[b] = next[b];
+      try { window.localStorage.setItem("gyn.live", JSON.stringify(merged)); } catch (e) {}
+      var prev = LIVE_CACHE;
+      LIVE_CACHE = merged;
+      Object.keys(next).forEach(function(name){
+        try {
+          if (next[name] && next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
+          if (prev && prev[name] && JSON.stringify(prev[name]) === JSON.stringify(next[name])) return;
+        } catch (e) {}
+        applyLive(name, LIVE(name, null));
+      });
+    }).catch(function(){ /* silence: the page already rendered */ });
+  }
+  GYN.step("fetchSiteData", fetchSiteData, "live"); fetchSiteData();
   function fedFundsRange(){
     return (fedFunds.lo === fedFunds.hi ? fedFunds.lo.toFixed(2)
             : fedFunds.lo.toFixed(2) + "\u2013" + fedFunds.hi.toFixed(2)) + "%";
