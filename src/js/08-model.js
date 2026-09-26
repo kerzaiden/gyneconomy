@@ -220,11 +220,17 @@
   // redrawn in the dial's own grammar: a track carrying the whole of what is possible, the healthy band marked
   // inside it, direct labels and few, and a disc for "here" with a --surface fill and a coloured core. No needle,
   // no wedges, no gradient. The band is the same 45–55 the linear meter used, so the two cannot disagree.
-  function fearGauge(value, state, o){
+  /* The half-dial. It was `fearGauge`, hard-wired to Fear & Greed's 0-100 scale and its three words;
+     V546 made it take them, because the reading it draws is no longer that one. Everything else is
+     unchanged, including the 0-100 GEOMETRY — a caller with another scale maps onto it and says so.
+     `band` is the healthy stretch, `labels` the three that sit on the arc (the dial's rule: direct,
+     and few), `aria` the sentence a screen reader gets instead of the picture. */
+  function arcGauge(value, state, o){
     o = o || {};
     // drawn close to the size it renders at: an SVG scaled up magnifies its own type, and a 10px label in a
     // 160-unit box arrives on screen at 18px (Version 277)
     var mini = !!o.mini, R = o.r || 112, SW = o.sw || 22;
+    var band = o.band || [45, 55], lab = o.labels || {};
     var pad = mini ? 4 : 30;                       // room above the arc for the one label that sits there
     var cx = R + SW / 2 + 2, cy = R + SW / 2 + pad;
     var W = cx * 2, H = cy + (mini ? 6 : 20);
@@ -236,25 +242,26 @@
       var p0 = pt(v0, rad), p1 = pt(v1, rad);
       return "M" + p0[0] + "," + p0[1] + "A" + rad + "," + rad + " 0 0 1 " + p1[0] + "," + p1[1];
     }
-    var out = ['<path class="fg-track" stroke-width="' + SW + '" d="' + arc(0, 100, R) + '"/>',
-               '<path class="fg-band" stroke-width="' + SW + '" d="' + arc(45, 55, R) + '"/>'];
+    var out = ['<path class="gauge-track" stroke-width="' + SW + '" d="' + arc(0, 100, R) + '"/>',
+               '<path class="gauge-band" stroke-width="' + SW + '" d="' + arc(band[0], band[1], R) + '"/>'];
     if (!mini){
-      // the band's own edges, cut out of the track rather than drawn on top of it
-      [45, 55].forEach(function(v){
+      // the band's own edges, cut out of the track rather than drawn on top of it; an edge sitting on
+      // the end of the scale is not drawn, because there is no track beyond it to cut
+      band.forEach(function(v){
+        if (v <= 0 || v >= 100) return;
         var a = pt(v, R - SW / 2), b = pt(v, R + SW / 2);
-        out.push('<path class="fg-tick" d="M' + a[0] + ',' + a[1] + 'L' + b[0] + ',' + b[1] + '"/>');
+        out.push('<path class="gauge-tick" d="M' + a[0] + ',' + a[1] + 'L' + b[0] + ',' + b[1] + '"/>');
       });
-      // three labels, no more: the two ends of the scale and the healthy middle (the dial's rule \u2014 direct, and few)
-      out.push('<text class="fg-lab" x="' + cx + '" y="' + (cy - R - SW / 2 - 9).toFixed(1) + '" text-anchor="middle">Neutral</text>');
-      out.push('<text class="fg-lab" x="' + (cx - R - SW / 2 + 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="start">Fear</text>');
-      out.push('<text class="fg-lab" x="' + (cx + R + SW / 2 - 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="end">Greed</text>');
+      // three labels, no more: the two ends of the scale and the healthy middle (the dial's rule)
+      if (lab.top)   out.push('<text class="gauge-lab" x="' + cx + '" y="' + (cy - R - SW / 2 - 9).toFixed(1) + '" text-anchor="middle">' + lab.top + '</text>');
+      if (lab.left)  out.push('<text class="gauge-lab" x="' + (cx - R - SW / 2 + 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="start">' + lab.left + '</text>');
+      if (lab.right) out.push('<text class="gauge-lab" x="' + (cx + R + SW / 2 - 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="end">' + lab.right + '</text>');
     }
     var here = pt(value, R);
-    out.push('<circle class="fg-here ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 8 : 12) + '"/>');
-    out.push('<circle class="fg-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
-    return '<svg class="fg-gauge' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + ' ' + H.toFixed(1) + '" role="img" ' +
-      'aria-label="Fear and Greed at ' + value + ' out of 100, between extreme fear and extreme greed">' +
-      out.join("") + '</svg>';
+    out.push('<circle class="gauge-here ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 8 : 12) + '"/>');
+    out.push('<circle class="gauge-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
+    return '<svg class="gauge-arc' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + ' ' + H.toFixed(1) + '" role="img" ' +
+      'aria-label="' + (o.aria || "") + '">' + out.join("") + '</svg>';
   }
 
   function vitalRingSvg(pct, state, label){

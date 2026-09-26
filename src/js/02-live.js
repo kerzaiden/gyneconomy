@@ -42,7 +42,7 @@
   }
   /* The six the nightly refresh moves. Histories are deliberately not cached: they change a few times a year,
      they are the bulk of the payload, and a stale one would be a worse trade than a stale daily print. */
-  var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident", "fearGreed"];
+  var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident"];
   // the scalars the pipeline publishes, which land INSIDE the objects above (V533, V541)
   /* V545: `hyOasNow`, not `hyOas`. The app already has a var called `hyOas` — the 787-point
      history the Desire chart draws — and a live document of the same name is a trap with a fuse
@@ -50,7 +50,7 @@
      someone wraps that array the scalar would answer instead and the chart would get one number.
      A live document's name is a name in the same space as the file's own vars, so it has to be
      unique against them. `vixClose` and `capeValue` already were; this one was not. */
-  var LIVE_SCALARS = ["vixClose", "hyOasNow", "capeValue"];
+  var LIVE_SCALARS = ["vixClose", "vix3mClose", "hyOasNow", "capeValue"];
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
@@ -101,19 +101,32 @@
     tag.className = "tag " + (state || "");
     return true;
   }
-  function repaintSentiment(){
-    var score = fearGreed.value, mood = moodFrom(score);
-    repaintFigureText("subj-value-sentiment", score);
-    repaintTag("subj-value-sentiment", fearGreed.label, mood.state);
+  /* The curve is DERIVED from two figures that arrive separately, so either leg landing repaints it,
+     and it is RECOMPUTED here rather than read from a stored copy. One figure, one number. */
+  function repaintFearCurve(){
+    var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "\u2014" : r.toFixed(2);
+    repaintFigureText("subj-value-sentiment", txt);
+    repaintTag("subj-value-sentiment", tag.text, tag.state);
     var ring = document.getElementById("subj-ring-sentiment");
-    if (ring) ring.innerHTML = vitalRingSvg(score, "accent", "Fear and Greed at " + score + " out of 100");
-    // the mood word beside the gauge carries the DERIVED state, which is the whole point of
-    // repainting rather than just reprinting a number
-    var w = document.querySelector(".fg-w");
-    if (w){ w.textContent = fearGreed.label; w.className = "fg-w " + mood.state + "-ink"; }
-    // the date under the gauge, for the reason given at its render site
-    var a = document.getElementById("fg-asof");
-    if (a && fearGreed.asOf) a.textContent = "CNN, " + fearGreed.asOf;
+    if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
+      : "Fear curve at " + txt + ", where 1.00 is flat");
+    var w = document.querySelector(".curve-w");
+    if (w){ w.textContent = tag.text; w.className = "curve-w " + tag.state + "-ink"; }
+    var v = document.querySelector(".curve-v");
+    if (v) v.textContent = txt;
+    /* The dial is redrawn, not just relabelled: the needle's position and the sentence a screen
+       reader is given both live inside the SVG, so leaving it would show a moved figure on a
+       picture that had not moved, and read out the old number. */
+    var arc = document.querySelector(".gauge-arc");
+    if (arc) arc.outerHTML = arcGauge(curvePct(r), tag.state, {
+      band: [0, 50],
+      labels: { left:"Steep", top:"Flat", right:"Inverted" },
+      aria: r == null ? "Fear curve: no reading"
+            : "Fear curve at " + txt + ", " + tag.text.toLowerCase() +
+              "; flat is 1.00, above it the curve is inverted"
+    });
+    var d = document.getElementById("curve-asof");
+    if (d && liveAsOf.vixClose) d.textContent = "Cboe, " + liveAsOf.vixClose;
   }
   function repaintYieldRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
@@ -133,7 +146,7 @@
      and the Desire/Volume/Pulse rows live on inner pages that redraw on open. */
   var REPAINT = {
     fedFunds:   [repaintPolicy],
-    fearGreed:  [repaintSentiment],
+    vix3mClose: [repaintFearCurve],
     yieldCurve: [repaintYieldRow],
     valuation:  [repaintValuationRow],
     capeValue:  [repaintValuationRow],
@@ -175,16 +188,9 @@
                            break;
         case "coincident": if (!Array.isArray(value) || !value.length) return false;
                            coincident = value; deriveVolumeTag(); derivePulseTag(); break;
-        /* V542: every document in data/live.json carries an ISO asOf, but this object's asOf is
-           PRINTED ("CNN, Sep 25 2026"), and the hard-coded literal is already in that form. So the
-           incoming date is formatted when it is ISO and left alone when it is not — one shape in the
-           data contract, one shape on screen, and no second date format to remember. */
-        case "fearGreed": {
-          if (typeof value.value !== "number") return false;
-          var fgd = {}; for (var fk in value) fgd[fk] = value[fk];
-          var fgIso = fmtAsOf(fgd.asOf);
-          if (fgIso) fgd.asOf = fgIso;
-          fearGreed = fgd;
+        case "vix3mClose": {
+          if (typeof value !== "number" || value < 5 || value > 100) return false;
+          vix3mClose = value;
           break;
         }
         /* The VIX close and the high-yield spread are single numbers inside objects the app owns
@@ -200,6 +206,7 @@
           vrow.meter.value = value;
           vrow.flagValue = value.toFixed(1);
           if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
+          repaintFearCurve();   // the VIX is the curve's near leg, so the shape moved as well
           break;
         }
         /* V541: CAPE arrives from Shiller's own dataset, monthly. It lands in the valuation row and
@@ -277,7 +284,7 @@
      `while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
      rows, consuming its own source, which is the documented "catItem consumes its source"
      behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
-     it again throws on a host that no longer exists. `renderPsychologyTag` reads a note a later
+     it again throws on a host that no longer exists. `renderFearCurve` reads a note a later
      step fills, so a second call renders MORE than the first. None of these is sloppy; all three
      are one-shot by design, and calling them builders says so instead of pretending a fix is
      pending.

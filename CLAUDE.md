@@ -299,6 +299,7 @@ close, so the day's curve and VIX are posted — fetches:
 | `fedFunds` | FRED `DFEDTARU` / `DFEDTARL` | `FRED_API_KEY` |
 | `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
 | `hyOasNow` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
+| `vix3mClose` | FRED `VXVCLS` (Cboe 3-month VIX) | `FRED_API_KEY` |
 | `capeValue` | Shiller's own spreadsheet, `shillerdata.com` | none |
 
 **CAPE comes from the originator, not from a site quoting him (V541).** Shiller publishes the series

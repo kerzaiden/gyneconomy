@@ -141,7 +141,7 @@
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
       ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/],
-      ["Sentiment", /VIXCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10|fear-and-greed/],
+      ["Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
       ["Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl/],
       ["Financial resilience", /cbo\.gov|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/]
     ];

@@ -21,10 +21,9 @@
    than a compilation. It costs freshness — he updates monthly, where multpl interpolates daily —
    and that is the right trade for a ratio whose whole claim is about the next decade.
 
-   What is still NOT here: CNN's Fear & Greed. CNN publishes no dataset and no public API for it;
-   the only machine route is an undocumented internal endpoint, which is theirs and not ours to
-   automate against. It stays with a human in the loop. Writing a scraped or guessed value here
-   would be worse than leaving it alone. */
+   CNN's Fear & Greed is gone from the app entirely (V546). CNN publishes no dataset and no public
+   API, and their edge answers HTTP 418 to an automated client — so the figure could never be kept
+   current honestly. It is replaced by the VIX term structure, which this script can fetch. */
 
 const fs = require('fs');
 const path = require('path');
@@ -244,6 +243,16 @@ else (async () => {
     say('vix         ' + vix.value + '  ' + vix.date);
   } catch (e) { failed.push('vix: ' + e.message); vix = null; }
 
+  /* V546: the 3-month VIX, so the app can read the SHAPE of expected volatility and not only its
+     level. Same exchange, same route, same FRED key as VIXCLS — no new source and no new permission
+     question. The app divides the two; the ratio is derived in one place, there. */
+  let vix3m = null;
+  try {
+    vix3m = await fredLatest('VXVCLS');
+    if (vix3m.value < 5 || vix3m.value > 100) throw new Error('VIX3M ' + vix3m.value + ' out of band');
+    say('vix3m       ' + vix3m.value + '  ' + vix3m.date);
+  } catch (e) { failed.push('vix3mClose: ' + e.message); vix3m = null; }
+
   let oas = null;
   try {
     oas = await fredLatest('BAMLH0A0HYM2');
@@ -258,6 +267,7 @@ else (async () => {
      the app's job, where the surrounding text lives. */
   if (vix) out.vixClose = { kind: 'scalar', value: vix.value, asOf: vix.date };
   if (oas) out.hyOasNow = { kind: 'scalar', value: oas.value, asOf: oas.date };   // NOT `hyOas` — see 02-live.js
+  if (vix3m) out.vix3mClose = { kind: 'scalar', value: vix3m.value, asOf: vix3m.date };
 
   // ---- Shiller CAPE, from Shiller (monthly) ----
   try {

@@ -109,14 +109,6 @@
     '</button>';
   }
 
-  function moodFrom(g){
-    if (g == null)  return {word:"No reading",    state:"norm",     score:null};
-    if (g <= 24)    return {word:"Extreme fear",  state:"critical", score:g};
-    if (g <= 44)    return {word:"Fear",          state:"serious",  score:g};
-    if (g <= 55)    return {word:"Neutral",       state:"good",     score:g};
-    if (g <= 75)    return {word:"Greed",         state:"serious",  score:g};
-    return          {word:"Extreme greed", state:"critical", score:g};
-  }
   // Sentiment's mark: SentimentFace from the Gyneconomy DSM (Version 244) — built there on Keren's ask and imported path
   // for path, the same discipline as SproutMark: src/components/gyneconomy/icons/SentimentFace.tsx in
   // https://lovable.dev/projects/342f83b9-eb2b-4ba2-96e9-7627a1f9cdc1. Change it THERE first, then here.
@@ -467,13 +459,33 @@
     2014:13.69, 2015:1.38, 2016:11.96, 2017:21.83, 2018:-4.38, 2019:31.49, 2020:18.40, 2021:28.71,
     2022:-18.11, 2023:26.29, 2024:25.02, 2025:17.88, 2026:14.40
   };
-  // Today's mood, computed once and read everywhere (Version 231) — the Feeling tile, the drawer's row, the ring and the
-  // panel's lead row are one reading, never two models that could disagree. Same discipline as Economic power in V229.
-  var greedScore = fearGreed.value;
-  var moodNow = moodFrom(greedScore);
-  var fgSub = "CNN, " + fearGreed.asOf;
-  function fgDetailHtml(){ return '<h4>Fear &amp; Greed</h4><div class="marker-sub">' + fgSub + '</div>' + factsFrom(fgNoteFull); }
-  var fgNoteFull = "CNN's index, published daily and read contrarian: 0% is extreme fear, 100% extreme greed, with Fear below 45%, Neutral to 55% and Greed above. It averages seven measures of how the market has been behaving lately \u2014 the S&P against its 125-day average, new highs against new lows, advancing against declining volume, the put/call ratio, the VIX against its 50-day average, stocks against bonds over 20 days, and the high-yield spread against its recent range \u2014 each scored against its own recent range rather than its record. Five of the seven are momentum and breadth, which is why it can read Fear while the VIX itself is calm and spreads sit near their tightest ever, exactly the case today: it says how sentiment has MOVED in recent weeks, not how much fear is priced in against history, which is what the two markers below measure against their own record extremes. Weigh it accordingly: alone among the figures on this page it cannot be reproduced from a primary series, being CNN's own composite rather than an official statistic \u2014 the formula is not disclosed, there is no downloadable history, and the method could change without notice, so CNN is the right source for it (the index is theirs) but it is a widely watched gauge rather than a measurement. Today " + fearGreed.value + "% (" + fearGreed.label + "), against " + fearGreed.weekAgo + "% a week ago and " + fearGreed.monthAgo + "% a month ago \u2014 sentiment falling while volatility stays low and credit stays tight.";
+  // Today's curve, computed once and read everywhere (the discipline Version 231 set for the reading
+  // this replaced) — the gauge, the ring, the subject row and the Highlights card are ONE number.
+  var curveNow = fearCurve();
+  var curveTag = curveVerdict(curveNow);
+  var curveSub = "Cboe, " + vixRow.sub;
+  /* The 0-100 the half-dial and the ring are drawn on. 0.80 to 1.20 puts the flat curve — the only
+     threshold there is — exactly at the middle of the arc, where the dial's one top label sits. It
+     is a drawing scale, not a band: nothing is judged by it. */
+  function curvePct(r){ return r == null ? 0 : Math.max(0, Math.min(100, (r - 0.8) / 0.4 * 100)); }
+  var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
+    "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +
+    "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " +
+    "costs more than three-month fear \u2014 the options market pricing something immediate. That threshold is the " +
+    "definition of the shape rather than a level anyone chose, which is why this reading carries no band of " +
+    "ours. It says what the VIX beside it cannot: the VIX is how MUCH fear is priced, this is WHERE IN TIME it " +
+    "sits. A calm VIX on a steep curve is ordinary quiet; the same calm VIX on an inverted curve is a market " +
+    "braced for something close. Read contrarian, like the rest of this panel \u2014 an inversion is uncomfortable " +
+    "and inversions cluster near bottoms, while a very steep curve is the market paying almost nothing to be " +
+    "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " +
+    "the same VIX the row below prints." +
+    (curveNow == null ? " No reading today: one of the two legs is missing."
+      : " Today " + curveNow.toFixed(2) + " \u2014 " + (curveNow >= 1
+          ? "inverted, with the near month priced above the three-month."
+          : "the ordinary upward slope, with the near month priced below the three-month."));
+  function curveDetailHtml(){
+    return '<h4>Fear curve</h4><div class="marker-sub">' + curveSub + '</div>' + factsFrom(curveNoteFull);
+  }
 
   // The calendar-year figures are S&P Dow Jones Indices' own total-return numbers (index originator). S&P DJI
   // publishes them in its factsheets but not as a free full-history table, so the compiled table is linked too,

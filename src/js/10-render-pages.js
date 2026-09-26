@@ -378,61 +378,56 @@
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
-  // ---------------- RENDER: Sentiment (fast) — the mood ring, then the Fear & Greed lead row and its markers ----------------
-  function renderPsychologyTag(){
-    var tagEl = document.getElementById("psych-tag");     // gone since Version 282; the gauge carries the word
-    if (tagEl){ tagEl.className = "tag " + moodNow.state + " longcycle-tag"; tagEl.textContent = moodNow.word; }
-    // The index leads the panel as the gauge everyone already knows how to read, and leaves the table, which is now
-    // the two markets it is built from — a linear meter under a half-dial of the same number was the same reading
-    // twice in two shapes (Version 277).
-    var fgHost = document.getElementById("fg-gauge");
-    if (fgHost) fgHost.innerHTML =
-      '<div class="fg-name">Fear &amp; Greed' + expandBtn(fgDetailHtml()) + '</div>' +
-      fearGauge(greedScore, moodNow.state) +
-      '' +
-      '<div class="fg-read"><span class="fg-v mono">' + greedScore + '</span>' +
-        '<span class="fg-w ' + moodNow.state + '-ink">' + fearGreed.label + '</span></div>' +
-      /* V542: the date line has an id because it now REPAINTS. The score arrives from the live layer
-         after the page has rendered, and a fresh figure sitting above a stale date is the figure and
-         its provenance disagreeing on screen at the same moment — which is worse than both being a
-         day old. The drawer's long note still follows on the next load, like every other note. */
-      '<div class="fg-name" id="fg-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + fgSub + '</div>';
-    /* Version 464: the page needs a reading under its gauge. The old impression argued from the VIX and the
-       high-yield spread, which have both left this page \u2014 one to a row of its own and one back to Desire, where
-       that figure already lives \u2014 so keeping it would have been a paragraph about two things no longer on screen.
-       This one is about the index: what it is made of, and where it has come from, off CNN's own look-back. */
-    /* The VIX under the gauge. It renders with shortCaption emptied so the shared builder emits no Highlights
-       of its own (the Version 378 escape) \u2014 this page has ONE Highlights block and the VIX's note is a card in
-       it, with its long form behind the (i), so nothing is lost and nothing is said twice. */
-    var fgVix = document.getElementById("fg-vix");
-    if (fgVix){
+  // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
+  function renderFearCurve(){
+    // The curve leads the panel on the half-dial, the shape every other preview on this page follows.
+    var host = document.getElementById("curve-gauge");
+    if (host) host.innerHTML =
+      '<div class="curve-name">Fear curve' + expandBtn(curveDetailHtml()) + '</div>' +
+      arcGauge(curvePct(curveNow), curveTag.state, {
+        band: [0, 50],                                  // the ordinary upward slope: everything below flat
+        labels: { left:"Steep", top:"Flat", right:"Inverted" },
+        aria: curveNow == null ? "Fear curve: no reading"
+              : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() +
+                "; flat is 1.00, above it the curve is inverted"
+      }) +
+      '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "\u2014" : curveNow.toFixed(2)) + '</span>' +
+        '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + '</span></div>' +
+      /* The date line repaints with the figure (the V542 rule): a fresh number above a stale date is
+         the figure and its provenance disagreeing on screen at the same moment. */
+      '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + '</div>';
+
+    /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
+       shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
+       escape): this page has ONE Highlights block and the VIX's note is a card in it. */
+    var vixHost = document.getElementById("curve-vix");
+    if (vixHost){
       var vixCard = Object.keys(vixInd).reduce(function(o, k){ o[k] = vixInd[k]; return o; }, {});
       vixCard.shortCaption = "";
-      fgVix.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, { bloodCard:true }) + '</div>';
+      vixHost.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, { bloodCard:true }) + '</div>';
     }
-    var fgHl = document.getElementById("fg-highlights");
-    if (fgHl){
-      var mv = fearGreed.monthAgo, wv = fearGreed.weekAgo, nv = greedScore;
-      var dir = nv < wv && wv < mv ? "falling all month"
-              : nv > wv && wv > mv ? "rising all month"
-              : nv < mv ? "lower than a month ago" : nv > mv ? "higher than a month ago" : "where it was a month ago";
-      var txt = "CNN's index reads " + nv + " today, against " + wv + " a week ago and " + mv +
-        " a month ago \u2014 " + dir + ". Five of its seven inputs are momentum and breadth, which is why it can say " +
-        "Fear while the two markets underneath say almost none is priced: the VIX is inside its usual band and " +
-        "the high-yield spread is near its tightest ever. It says how sentiment has MOVED, not how much fear is " +
-        "in the price \u2014 and read contrarian, it is the extremes that carry the signal, not the middle.";
+
+    var hl = document.getElementById("curve-highlights");
+    if (hl){
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+      var curveTxt = curveNow == null
+        ? "No reading today \u2014 one of the two legs is missing, so the shape cannot be computed. The previous reading stands."
+        : "The near month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " +
+          curveNow.toFixed(2) + ". " + (curveNow >= 1
+            ? "The curve is INVERTED: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like in prices. Read contrarian, inversions are uncomfortable and they cluster near bottoms."
+            : "That is the curve's ordinary shape \u2014 the far month costs more, as it should. The further below 1.00 it sits, the less the market is paying to be wrong about the weeks just ahead.") +
+          " The threshold is the definition of the shape, not a level anyone chose.";
       var vixTxt = vixInd.shortCaption + " At " + v.toFixed(2) + " it sits " + where + " of " + lo +
         " to " + hiB + ", against a record low of " + m.min + " and a high of " + m.max +
         ". It is the slower of the two fear gauges: credit usually cracks before equity volatility does.";
-      fgHl.innerHTML = highlightsHtml([
-        hiCard("What it is saying", moodNow.state, txt),
+      hl.innerHTML = highlightsHtml([
+        hiCard("What the shape is saying", curveTag.state, curveTxt),
         hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt)]);
     }
     addSources(sentiment.src);
   }
-  GYN.step("renderPsychologyTag", renderPsychologyTag, "build"); renderPsychologyTag();
+  GYN.step("renderFearCurve", renderFearCurve, "build"); renderFearCurve();
 
 
   // ---------------- RENDER: Analysis subjects — one headline figure per collapsible section ----------------
@@ -598,7 +593,8 @@
     // Version 260 — and it replaces a face that was drawing an emotion rather than a reading (Keren, Sep 20, 2026:
     // "you can drop the faces and line chart in the preview"). Version 277.
     document.getElementById("subj-ring-sentiment").innerHTML =
-      vitalRingSvg(greedScore, "accent", "Fear and Greed at " + greedScore + " out of 100");
+      vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
+        : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
     // the mood goes where a sign's mark goes — beside its name (Version 342)
     (function(){
       // the row does not exist yet — the builder converts the markup a moment later and MOVES the summary's
@@ -607,12 +603,13 @@
       // V524, Keren: the heart, freed when Pulse took the trace. The half-dial of V465 named the INSTRUMENT
       // the index is published as; the heart names what the instrument measures, which is the reading itself.
       if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + pulseSvg() +
-        '</span>Fear &amp; Greed';
+        '</span>Fear curve';
     })();
     // no context line (Version 232, Keren: "I already have the data below the cycle") — it only re-listed the table
     // the sentence taken off the row goes where it was always meant to be read — on the page, in full (Keren,
     // Version 277: "either put it in the inner page or if it already exists drop it"; it did not exist there)
-    set("sentiment", greedScore + '<span class="unit">% · Fear &amp; Greed</span><span class="tag ' + moodNow.state + '">' + fearGreed.label + '</span>', "");
+    set("sentiment", (curveNow == null ? "\u2014" : curveNow.toFixed(2)) +
+      '<span class="unit">VIX \u00f7 3M</span><span class="tag ' + curveTag.state + '">' + curveTag.text + '</span>', "");
     say("sentiment", "");
     // CNN publishes its own look-back with the index — a month ago, a week ago, today. Three real points, no more,
     // and the builder refuses to draw fewer (Version 252).

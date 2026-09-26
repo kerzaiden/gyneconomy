@@ -849,27 +849,27 @@
   .temp-today-date{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-muted); }
   .temp-today-value{ font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:700; fill:var(--text-primary); }
   /* the gauge's marks: the dial's own weights (Version 277) */
-  .fg-gauge{ display:block; width:100%; max-width:280px; margin:6px auto 0; overflow:visible; }
-  .fg-gauge.mini{ max-width:none; margin:0; }
-  .fg-track{ stroke:var(--border); opacity:0.6; fill:none; stroke-linecap:round; }
-  .fg-band{ stroke:var(--good); opacity:0.85; fill:none; stroke-linecap:round; }
-  .fg-tick{ stroke:var(--surface); stroke-width:2.6; fill:none; }
-  .fg-lab{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
+  .gauge-arc{ display:block; width:100%; max-width:280px; margin:6px auto 0; overflow:visible; }
+  .gauge-arc.mini{ max-width:none; margin:0; }
+  .gauge-track{ stroke:var(--border); opacity:0.6; fill:none; stroke-linecap:round; }
+  .gauge-band{ stroke:var(--good); opacity:0.85; fill:none; stroke-linecap:round; }
+  .gauge-tick{ stroke:var(--surface); stroke-width:2.6; fill:none; }
+  .gauge-lab{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
     text-transform:uppercase; fill:var(--text-muted); }
-  .fg-here{ fill:var(--surface); stroke-width:3.4; }
-  .fg-here.good{ stroke:var(--good); } .fg-here.warning{ stroke:var(--warning); }
-  .fg-here.serious{ stroke:var(--serious); } .fg-here.critical{ stroke:var(--critical); }
-  .fg-core.good{ fill:var(--good); } .fg-core.warning{ fill:var(--warning); }
-  .fg-core.serious{ fill:var(--serious); } .fg-core.critical{ fill:var(--critical); }
+  .gauge-here{ fill:var(--surface); stroke-width:3.4; }
+  .gauge-here.good{ stroke:var(--good); } .gauge-here.warning{ stroke:var(--warning); }
+  .gauge-here.serious{ stroke:var(--serious); } .gauge-here.critical{ stroke:var(--critical); }
+  .gauge-core.good{ fill:var(--good); } .gauge-core.warning{ fill:var(--warning); }
+  .gauge-core.serious{ fill:var(--serious); } .gauge-core.critical{ fill:var(--critical); }
 
-  .fg-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  .curve-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 12px; margin:4px 0 14px; }
-  .fg-read{ text-align:center; margin:6px 0 2px; }
-  .fg-read .fg-v{ font-family:"IBM Plex Mono",monospace; font-size:34px; font-weight:700; letter-spacing:-0.02em; color:var(--text-primary); }
-  .fg-read .fg-w{ display:block; font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:700; margin-top:1px; }
-  .fg-name{ display:flex; align-items:center; justify-content:center; gap:4px; font-family:"Public Sans",sans-serif;
+  .curve-read{ text-align:center; margin:6px 0 2px; }
+  .curve-read .curve-v{ font-family:"IBM Plex Mono",monospace; font-size:34px; font-weight:700; letter-spacing:-0.02em; color:var(--text-primary); }
+  .curve-read .curve-w{ display:block; font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:700; margin-top:1px; }
+  .curve-name{ display:flex; align-items:center; justify-content:center; gap:4px; font-family:"Public Sans",sans-serif;
     font-size:11.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
-  .subject-ring .fg-gauge.mini{ width:100%; }
+  .subject-ring .gauge-arc.mini{ width:100%; }
 
   /* Version 427, Keren: "add a line above total price change so that it would divide the data from the chart."
      The records used to follow a captioned chart, which did the dividing; the caption went in Version 425 and the

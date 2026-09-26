@@ -115,21 +115,42 @@
   // inverted (higher score here means calmer, not more stressed). Four words, not fourteen: legible at a glance.
   // Takes the values rather than reading today's, so the cycle view can show a closed cycle's Feeling at its
   // close; a missing credit-spread reading (not on record before 2023) leaves the VIX to speak alone.
-  // THE FEAR & GREED INDEX (Version 237, Keren: "I want the conventional Fear & Greed index"). This is CNN's published
-  // index, not a figure computed here — carried as a dated reading like every other live number on the page. Versions
-  // 231–236 computed a composite of the VIX and the high-yield spread against their record extremes; it read 86 while the
-  // published index read 29, because CNN measures seven components against their own RECENT ranges and only about one and
-  // a half of the seven overlapped. Both were arithmetically fine and one of them had to be explained every time anyone
-  // checked it, so it went. Don't rebuild it.
-  //
-  // REFRESH: update `value`, `label`, `asOf` and the two look-backs from cnn.com/markets/fear-and-greed at each compile.
-  // The label is CNN's own band word, not ours — copy what the page says rather than deriving it.
-  // REFRESH item \u2014 CNN's own published reading, copied with its own band word, never derived (V237). Sep 25 2026
-  // from production.dataviz.cnn.io/index/fearandgreed/graphdata: 36 Fear, 30.43 a week ago, 59.60 a month ago.
-  // Keren caught this at 34 against CNN's 36 \u2014 the figure was right for its date and the date was three trading
-  // days old, which is the nightly task's job and not the page's arithmetic.
-  var fearGreed = { value:36, label:"Fear", asOf:"Sep 25 2026", weekAgo:30, monthAgo:60 };
-  fearGreed = LIVE("fearGreed", fearGreed);
+  /* THE FEAR CURVE (Version 546). What replaced CNN's Fear & Greed index, which the app carried from
+     Version 237 until CNN's edge began refusing automated clients (HTTP 418) and no honest route to
+     keeping it current was left — see docs/ARCHIVE.md for the two sources that said no.
+
+     Version 237 retired a COMPUTED sentiment composite and warned "don't rebuild it", because that
+     composite scored seven-ish components against record extremes and had to be explained to anyone
+     who checked it. This is not that. It is one ratio of two published Cboe indices, and its only
+     threshold is definitional: the 30-day VIX over the 3-month VIX. Below 1.00 the volatility curve
+     slopes up, which is its ordinary shape — the market pays more to insure a longer window, as it
+     should. At 1.00 the curve is flat. Above it the curve is INVERTED: near-term fear costs more
+     than three-month fear, which is what panic looks like priced rather than described.
+
+     It says something the VIX level beside it cannot. The VIX says how much fear is priced; this
+     says WHERE in time it sits. A calm VIX with an inverted curve is a market braced for something
+     immediate; a calm VIX on a steep curve is ordinary quiet.
+
+     Read contrarian, like everything on this panel: inversions cluster near bottoms.
+     Both readings come from FRED, both originate at Cboe, and the ratio is derived HERE and nowhere
+     else. Sep 22 2026 is the newest close the published series carry. */
+  /* The 30-day leg is NOT read again here. It already lives in `vixRow.meter.value`, which is where
+     the VIX row keeps it and where applyLive updates it — so the ratio derives from the same number
+     the row prints, and the two can never disagree. ONE FIGURE, ONE NUMBER. Only the 3-month leg is
+     new, and its date rides with the VIX's, since both are the same exchange's close. */
+  var vix3mClose = LIVE("vix3mClose", 17.61);
+  function fearCurve(){
+    var near = vixRow && vixRow.meter && vixRow.meter.value;
+    if (typeof near !== "number" || typeof vix3mClose !== "number" || !(vix3mClose > 0)) return null;
+    return Math.round((near / vix3mClose) * 1000) / 1000;
+  }
+  /* One threshold, and it is the definition of the thing rather than a level anyone chose.
+     BAND PROVENANCE: nothing here is editorial, so there is nothing to attribute. */
+  function curveVerdict(r){
+    return r == null   ? { text:"No reading", state:"norm" }
+         : r >= 1      ? { text:"Inverted",   state:"serious" }
+                       : { text:"Normal",     state:"good" };
+  }
   // CAPE's long-run fair value, in one place: the Valuations chart draws its midline here and the verdict is
   // measured from it, so the picture and the word cannot drift apart (Version 290).
   var CAPE_FAIR = 17;

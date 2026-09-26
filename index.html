@@ -854,27 +854,27 @@
   .temp-today-date{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-muted); }
   .temp-today-value{ font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:700; fill:var(--text-primary); }
   /* the gauge's marks: the dial's own weights (Version 277) */
-  .fg-gauge{ display:block; width:100%; max-width:280px; margin:6px auto 0; overflow:visible; }
-  .fg-gauge.mini{ max-width:none; margin:0; }
-  .fg-track{ stroke:var(--border); opacity:0.6; fill:none; stroke-linecap:round; }
-  .fg-band{ stroke:var(--good); opacity:0.85; fill:none; stroke-linecap:round; }
-  .fg-tick{ stroke:var(--surface); stroke-width:2.6; fill:none; }
-  .fg-lab{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
+  .gauge-arc{ display:block; width:100%; max-width:280px; margin:6px auto 0; overflow:visible; }
+  .gauge-arc.mini{ max-width:none; margin:0; }
+  .gauge-track{ stroke:var(--border); opacity:0.6; fill:none; stroke-linecap:round; }
+  .gauge-band{ stroke:var(--good); opacity:0.85; fill:none; stroke-linecap:round; }
+  .gauge-tick{ stroke:var(--surface); stroke-width:2.6; fill:none; }
+  .gauge-lab{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
     text-transform:uppercase; fill:var(--text-muted); }
-  .fg-here{ fill:var(--surface); stroke-width:3.4; }
-  .fg-here.good{ stroke:var(--good); } .fg-here.warning{ stroke:var(--warning); }
-  .fg-here.serious{ stroke:var(--serious); } .fg-here.critical{ stroke:var(--critical); }
-  .fg-core.good{ fill:var(--good); } .fg-core.warning{ fill:var(--warning); }
-  .fg-core.serious{ fill:var(--serious); } .fg-core.critical{ fill:var(--critical); }
+  .gauge-here{ fill:var(--surface); stroke-width:3.4; }
+  .gauge-here.good{ stroke:var(--good); } .gauge-here.warning{ stroke:var(--warning); }
+  .gauge-here.serious{ stroke:var(--serious); } .gauge-here.critical{ stroke:var(--critical); }
+  .gauge-core.good{ fill:var(--good); } .gauge-core.warning{ fill:var(--warning); }
+  .gauge-core.serious{ fill:var(--serious); } .gauge-core.critical{ fill:var(--critical); }
 
-  .fg-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  .curve-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 12px; margin:4px 0 14px; }
-  .fg-read{ text-align:center; margin:6px 0 2px; }
-  .fg-read .fg-v{ font-family:"IBM Plex Mono",monospace; font-size:34px; font-weight:700; letter-spacing:-0.02em; color:var(--text-primary); }
-  .fg-read .fg-w{ display:block; font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:700; margin-top:1px; }
-  .fg-name{ display:flex; align-items:center; justify-content:center; gap:4px; font-family:"Public Sans",sans-serif;
+  .curve-read{ text-align:center; margin:6px 0 2px; }
+  .curve-read .curve-v{ font-family:"IBM Plex Mono",monospace; font-size:34px; font-weight:700; letter-spacing:-0.02em; color:var(--text-primary); }
+  .curve-read .curve-w{ display:block; font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:700; margin-top:1px; }
+  .curve-name{ display:flex; align-items:center; justify-content:center; gap:4px; font-family:"Public Sans",sans-serif;
     font-size:11.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
-  .subject-ring .fg-gauge.mini{ width:100%; }
+  .subject-ring .gauge-arc.mini{ width:100%; }
 
   /* Version 427, Keren: "add a line above total price change so that it would divide the data from the chart."
      The records used to follow a captioned chart, which did the dividing; the caption went in Version 425 and the
@@ -3293,7 +3293,7 @@
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
-        <div class="subject-label">Fear &amp; Greed</div>
+        <div class="subject-label">Fear curve</div>
         <div class="subject-value" id="subj-value-sentiment"></div>
         <p class="subject-say" id="subj-say-sentiment"></p>
         <div id="subj-spark-sentiment"></div>
@@ -3308,9 +3308,9 @@
          paragraph went with them, on Keren's reading of it. -->
     <section class="longcycle" aria-labelledby="psych-title">
       <!-- the published index, as the half-dial it is published as (Version 277) -->
-      <div class="fg-card" id="fg-gauge"></div>
-      <div id="fg-vix"></div>
-      <div id="fg-highlights"></div>
+      <div class="curve-card" id="curve-gauge"></div>
+      <div id="curve-vix"></div>
+      <div id="curve-highlights"></div>
 
       <!-- Version 464/466: the two markets the index is built from used to sit here as rings. The high-yield
            spread went for good \u2014 it is Desire's own figure, and was tagged good there and warning here (Keren:
@@ -3533,7 +3533,7 @@
 
       <h3 class="menu-section">Sentiment and rates</h3>
       <div class="menu-card menu-prose">
-        <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the Fear &amp; Greed index and the two markets it is mostly built on — the VIX and the high-yield spread. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
+        <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the two markets it is read beside: the VIX and the high-yield spread. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
         <p>Her energy is a drawer of its own, <b>Power</b>: a battery charged to what the three structural markers leave in reserve, read exhausted to energetic. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those five markers are structural, so the charge moves slowly, by design; the fast reads are Feeling and Pulse. Industrial activity is still here, under <b>Industrial output</b> \u2014 folded into the <b>Activity</b> page, beside the labour market, because industrial output and employment are the same question asked of two parts of the body.</p>
       </div>
 
@@ -3901,7 +3901,7 @@
   }
   /* The six the nightly refresh moves. Histories are deliberately not cached: they change a few times a year,
      they are the bulk of the payload, and a stale one would be a worse trade than a stale daily print. */
-  var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident", "fearGreed"];
+  var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident"];
   // the scalars the pipeline publishes, which land INSIDE the objects above (V533, V541)
   /* V545: `hyOasNow`, not `hyOas`. The app already has a var called `hyOas` — the 787-point
      history the Desire chart draws — and a live document of the same name is a trap with a fuse
@@ -3909,7 +3909,7 @@
      someone wraps that array the scalar would answer instead and the chart would get one number.
      A live document's name is a name in the same space as the file's own vars, so it has to be
      unique against them. `vixClose` and `capeValue` already were; this one was not. */
-  var LIVE_SCALARS = ["vixClose", "hyOasNow", "capeValue"];
+  var LIVE_SCALARS = ["vixClose", "vix3mClose", "hyOasNow", "capeValue"];
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
@@ -3960,19 +3960,32 @@
     tag.className = "tag " + (state || "");
     return true;
   }
-  function repaintSentiment(){
-    var score = fearGreed.value, mood = moodFrom(score);
-    repaintFigureText("subj-value-sentiment", score);
-    repaintTag("subj-value-sentiment", fearGreed.label, mood.state);
+  /* The curve is DERIVED from two figures that arrive separately, so either leg landing repaints it,
+     and it is RECOMPUTED here rather than read from a stored copy. One figure, one number. */
+  function repaintFearCurve(){
+    var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "\u2014" : r.toFixed(2);
+    repaintFigureText("subj-value-sentiment", txt);
+    repaintTag("subj-value-sentiment", tag.text, tag.state);
     var ring = document.getElementById("subj-ring-sentiment");
-    if (ring) ring.innerHTML = vitalRingSvg(score, "accent", "Fear and Greed at " + score + " out of 100");
-    // the mood word beside the gauge carries the DERIVED state, which is the whole point of
-    // repainting rather than just reprinting a number
-    var w = document.querySelector(".fg-w");
-    if (w){ w.textContent = fearGreed.label; w.className = "fg-w " + mood.state + "-ink"; }
-    // the date under the gauge, for the reason given at its render site
-    var a = document.getElementById("fg-asof");
-    if (a && fearGreed.asOf) a.textContent = "CNN, " + fearGreed.asOf;
+    if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
+      : "Fear curve at " + txt + ", where 1.00 is flat");
+    var w = document.querySelector(".curve-w");
+    if (w){ w.textContent = tag.text; w.className = "curve-w " + tag.state + "-ink"; }
+    var v = document.querySelector(".curve-v");
+    if (v) v.textContent = txt;
+    /* The dial is redrawn, not just relabelled: the needle's position and the sentence a screen
+       reader is given both live inside the SVG, so leaving it would show a moved figure on a
+       picture that had not moved, and read out the old number. */
+    var arc = document.querySelector(".gauge-arc");
+    if (arc) arc.outerHTML = arcGauge(curvePct(r), tag.state, {
+      band: [0, 50],
+      labels: { left:"Steep", top:"Flat", right:"Inverted" },
+      aria: r == null ? "Fear curve: no reading"
+            : "Fear curve at " + txt + ", " + tag.text.toLowerCase() +
+              "; flat is 1.00, above it the curve is inverted"
+    });
+    var d = document.getElementById("curve-asof");
+    if (d && liveAsOf.vixClose) d.textContent = "Cboe, " + liveAsOf.vixClose;
   }
   function repaintYieldRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
@@ -3992,7 +4005,7 @@
      and the Desire/Volume/Pulse rows live on inner pages that redraw on open. */
   var REPAINT = {
     fedFunds:   [repaintPolicy],
-    fearGreed:  [repaintSentiment],
+    vix3mClose: [repaintFearCurve],
     yieldCurve: [repaintYieldRow],
     valuation:  [repaintValuationRow],
     capeValue:  [repaintValuationRow],
@@ -4034,16 +4047,9 @@
                            break;
         case "coincident": if (!Array.isArray(value) || !value.length) return false;
                            coincident = value; deriveVolumeTag(); derivePulseTag(); break;
-        /* V542: every document in data/live.json carries an ISO asOf, but this object's asOf is
-           PRINTED ("CNN, Sep 25 2026"), and the hard-coded literal is already in that form. So the
-           incoming date is formatted when it is ISO and left alone when it is not — one shape in the
-           data contract, one shape on screen, and no second date format to remember. */
-        case "fearGreed": {
-          if (typeof value.value !== "number") return false;
-          var fgd = {}; for (var fk in value) fgd[fk] = value[fk];
-          var fgIso = fmtAsOf(fgd.asOf);
-          if (fgIso) fgd.asOf = fgIso;
-          fearGreed = fgd;
+        case "vix3mClose": {
+          if (typeof value !== "number" || value < 5 || value > 100) return false;
+          vix3mClose = value;
           break;
         }
         /* The VIX close and the high-yield spread are single numbers inside objects the app owns
@@ -4059,6 +4065,7 @@
           vrow.meter.value = value;
           vrow.flagValue = value.toFixed(1);
           if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
+          repaintFearCurve();   // the VIX is the curve's near leg, so the shape moved as well
           break;
         }
         /* V541: CAPE arrives from Shiller's own dataset, monthly. It lands in the valuation row and
@@ -4136,7 +4143,7 @@
      `while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
      rows, consuming its own source, which is the documented "catItem consumes its source"
      behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
-     it again throws on a host that no longer exists. `renderPsychologyTag` reads a note a later
+     it again throws on a host that no longer exists. `renderFearCurve` reads a note a later
      step fills, so a second call renders MORE than the first. None of these is sloppy; all three
      are one-shot by design, and calling them builders says so instead of pretending a fix is
      pending.
@@ -5355,7 +5362,7 @@
     ],
     shortImpression:"The published gauge says fear; the two markets it is built on say almost none is priced.",
     impression:"Two things are true at once and the panel shows both. The headline index reads Fear, because it is built mostly of momentum and breadth and the market has been sliding for a month. The two markets underneath it read the opposite: the option market is paying almost nothing for protection and lenders are asking almost nothing to take credit risk, which is the same sentence said twice. Sentiment has turned while almost no fear is priced in against forty years of history. None of this forecasts a fall \u2014 a contrarian read is not a timer, and complacency can last for years \u2014 but it is the condition in which a shock is expensive.",
-    src:[{t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},{t:"Cboe \u2014 Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)", u:"https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"},{t:"Federal Reserve \u2014 FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"S&P DJI via FRED \u2014 S&P 500 daily closes (SP500)", u:"https://fred.stlouisfed.org/series/SP500"},{t:"S&P DJI via FRED \u2014 Dow Jones Industrial Average daily closes (DJIA)", u:"https://fred.stlouisfed.org/series/DJIA"},{t:"Federal Reserve via FRED \u2014 10-year Treasury constant-maturity yield, daily (DGS10)", u:"https://fred.stlouisfed.org/series/DGS10"},{t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"CNN \u2014 Fear & Greed Index, daily", u:"https://www.cnn.com/markets/fear-and-greed"}]
+    src:[{t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)", u:"https://fred.stlouisfed.org/series/VXVCLS"},{t:"Cboe \u2014 Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)", u:"https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"},{t:"Federal Reserve \u2014 FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"S&P DJI via FRED \u2014 S&P 500 daily closes (SP500)", u:"https://fred.stlouisfed.org/series/SP500"},{t:"S&P DJI via FRED \u2014 Dow Jones Industrial Average daily closes (DJIA)", u:"https://fred.stlouisfed.org/series/DJIA"},{t:"Federal Reserve via FRED \u2014 10-year Treasury constant-maturity yield, daily (DGS10)", u:"https://fred.stlouisfed.org/series/DGS10"},{t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"}]
   };
   sentiment = LIVE("sentiment", sentiment);
   var valuation = {
@@ -6900,21 +6907,42 @@
   // inverted (higher score here means calmer, not more stressed). Four words, not fourteen: legible at a glance.
   // Takes the values rather than reading today's, so the cycle view can show a closed cycle's Feeling at its
   // close; a missing credit-spread reading (not on record before 2023) leaves the VIX to speak alone.
-  // THE FEAR & GREED INDEX (Version 237, Keren: "I want the conventional Fear & Greed index"). This is CNN's published
-  // index, not a figure computed here — carried as a dated reading like every other live number on the page. Versions
-  // 231–236 computed a composite of the VIX and the high-yield spread against their record extremes; it read 86 while the
-  // published index read 29, because CNN measures seven components against their own RECENT ranges and only about one and
-  // a half of the seven overlapped. Both were arithmetically fine and one of them had to be explained every time anyone
-  // checked it, so it went. Don't rebuild it.
-  //
-  // REFRESH: update `value`, `label`, `asOf` and the two look-backs from cnn.com/markets/fear-and-greed at each compile.
-  // The label is CNN's own band word, not ours — copy what the page says rather than deriving it.
-  // REFRESH item \u2014 CNN's own published reading, copied with its own band word, never derived (V237). Sep 25 2026
-  // from production.dataviz.cnn.io/index/fearandgreed/graphdata: 36 Fear, 30.43 a week ago, 59.60 a month ago.
-  // Keren caught this at 34 against CNN's 36 \u2014 the figure was right for its date and the date was three trading
-  // days old, which is the nightly task's job and not the page's arithmetic.
-  var fearGreed = { value:36, label:"Fear", asOf:"Sep 25 2026", weekAgo:30, monthAgo:60 };
-  fearGreed = LIVE("fearGreed", fearGreed);
+  /* THE FEAR CURVE (Version 546). What replaced CNN's Fear & Greed index, which the app carried from
+     Version 237 until CNN's edge began refusing automated clients (HTTP 418) and no honest route to
+     keeping it current was left — see docs/ARCHIVE.md for the two sources that said no.
+
+     Version 237 retired a COMPUTED sentiment composite and warned "don't rebuild it", because that
+     composite scored seven-ish components against record extremes and had to be explained to anyone
+     who checked it. This is not that. It is one ratio of two published Cboe indices, and its only
+     threshold is definitional: the 30-day VIX over the 3-month VIX. Below 1.00 the volatility curve
+     slopes up, which is its ordinary shape — the market pays more to insure a longer window, as it
+     should. At 1.00 the curve is flat. Above it the curve is INVERTED: near-term fear costs more
+     than three-month fear, which is what panic looks like priced rather than described.
+
+     It says something the VIX level beside it cannot. The VIX says how much fear is priced; this
+     says WHERE in time it sits. A calm VIX with an inverted curve is a market braced for something
+     immediate; a calm VIX on a steep curve is ordinary quiet.
+
+     Read contrarian, like everything on this panel: inversions cluster near bottoms.
+     Both readings come from FRED, both originate at Cboe, and the ratio is derived HERE and nowhere
+     else. Sep 22 2026 is the newest close the published series carry. */
+  /* The 30-day leg is NOT read again here. It already lives in `vixRow.meter.value`, which is where
+     the VIX row keeps it and where applyLive updates it — so the ratio derives from the same number
+     the row prints, and the two can never disagree. ONE FIGURE, ONE NUMBER. Only the 3-month leg is
+     new, and its date rides with the VIX's, since both are the same exchange's close. */
+  var vix3mClose = LIVE("vix3mClose", 17.61);
+  function fearCurve(){
+    var near = vixRow && vixRow.meter && vixRow.meter.value;
+    if (typeof near !== "number" || typeof vix3mClose !== "number" || !(vix3mClose > 0)) return null;
+    return Math.round((near / vix3mClose) * 1000) / 1000;
+  }
+  /* One threshold, and it is the definition of the thing rather than a level anyone chose.
+     BAND PROVENANCE: nothing here is editorial, so there is nothing to attribute. */
+  function curveVerdict(r){
+    return r == null   ? { text:"No reading", state:"norm" }
+         : r >= 1      ? { text:"Inverted",   state:"serious" }
+                       : { text:"Normal",     state:"good" };
+  }
   // CAPE's long-run fair value, in one place: the Valuations chart draws its midline here and the verdict is
   // measured from it, so the picture and the word cannot drift apart (Version 290).
   var CAPE_FAIR = 17;
@@ -8005,14 +8033,6 @@
     '</button>';
   }
 
-  function moodFrom(g){
-    if (g == null)  return {word:"No reading",    state:"norm",     score:null};
-    if (g <= 24)    return {word:"Extreme fear",  state:"critical", score:g};
-    if (g <= 44)    return {word:"Fear",          state:"serious",  score:g};
-    if (g <= 55)    return {word:"Neutral",       state:"good",     score:g};
-    if (g <= 75)    return {word:"Greed",         state:"serious",  score:g};
-    return          {word:"Extreme greed", state:"critical", score:g};
-  }
   // Sentiment's mark: SentimentFace from the Gyneconomy DSM (Version 244) — built there on Keren's ask and imported path
   // for path, the same discipline as SproutMark: src/components/gyneconomy/icons/SentimentFace.tsx in
   // https://lovable.dev/projects/342f83b9-eb2b-4ba2-96e9-7627a1f9cdc1. Change it THERE first, then here.
@@ -8363,13 +8383,33 @@
     2014:13.69, 2015:1.38, 2016:11.96, 2017:21.83, 2018:-4.38, 2019:31.49, 2020:18.40, 2021:28.71,
     2022:-18.11, 2023:26.29, 2024:25.02, 2025:17.88, 2026:14.40
   };
-  // Today's mood, computed once and read everywhere (Version 231) — the Feeling tile, the drawer's row, the ring and the
-  // panel's lead row are one reading, never two models that could disagree. Same discipline as Economic power in V229.
-  var greedScore = fearGreed.value;
-  var moodNow = moodFrom(greedScore);
-  var fgSub = "CNN, " + fearGreed.asOf;
-  function fgDetailHtml(){ return '<h4>Fear &amp; Greed</h4><div class="marker-sub">' + fgSub + '</div>' + factsFrom(fgNoteFull); }
-  var fgNoteFull = "CNN's index, published daily and read contrarian: 0% is extreme fear, 100% extreme greed, with Fear below 45%, Neutral to 55% and Greed above. It averages seven measures of how the market has been behaving lately \u2014 the S&P against its 125-day average, new highs against new lows, advancing against declining volume, the put/call ratio, the VIX against its 50-day average, stocks against bonds over 20 days, and the high-yield spread against its recent range \u2014 each scored against its own recent range rather than its record. Five of the seven are momentum and breadth, which is why it can read Fear while the VIX itself is calm and spreads sit near their tightest ever, exactly the case today: it says how sentiment has MOVED in recent weeks, not how much fear is priced in against history, which is what the two markers below measure against their own record extremes. Weigh it accordingly: alone among the figures on this page it cannot be reproduced from a primary series, being CNN's own composite rather than an official statistic \u2014 the formula is not disclosed, there is no downloadable history, and the method could change without notice, so CNN is the right source for it (the index is theirs) but it is a widely watched gauge rather than a measurement. Today " + fearGreed.value + "% (" + fearGreed.label + "), against " + fearGreed.weekAgo + "% a week ago and " + fearGreed.monthAgo + "% a month ago \u2014 sentiment falling while volatility stays low and credit stays tight.";
+  // Today's curve, computed once and read everywhere (the discipline Version 231 set for the reading
+  // this replaced) — the gauge, the ring, the subject row and the Highlights card are ONE number.
+  var curveNow = fearCurve();
+  var curveTag = curveVerdict(curveNow);
+  var curveSub = "Cboe, " + vixRow.sub;
+  /* The 0-100 the half-dial and the ring are drawn on. 0.80 to 1.20 puts the flat curve — the only
+     threshold there is — exactly at the middle of the arc, where the dial's one top label sits. It
+     is a drawing scale, not a band: nothing is judged by it. */
+  function curvePct(r){ return r == null ? 0 : Math.max(0, Math.min(100, (r - 0.8) / 0.4 * 100)); }
+  var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
+    "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +
+    "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " +
+    "costs more than three-month fear \u2014 the options market pricing something immediate. That threshold is the " +
+    "definition of the shape rather than a level anyone chose, which is why this reading carries no band of " +
+    "ours. It says what the VIX beside it cannot: the VIX is how MUCH fear is priced, this is WHERE IN TIME it " +
+    "sits. A calm VIX on a steep curve is ordinary quiet; the same calm VIX on an inverted curve is a market " +
+    "braced for something close. Read contrarian, like the rest of this panel \u2014 an inversion is uncomfortable " +
+    "and inversions cluster near bottoms, while a very steep curve is the market paying almost nothing to be " +
+    "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " +
+    "the same VIX the row below prints." +
+    (curveNow == null ? " No reading today: one of the two legs is missing."
+      : " Today " + curveNow.toFixed(2) + " \u2014 " + (curveNow >= 1
+          ? "inverted, with the near month priced above the three-month."
+          : "the ordinary upward slope, with the near month priced below the three-month."));
+  function curveDetailHtml(){
+    return '<h4>Fear curve</h4><div class="marker-sub">' + curveSub + '</div>' + factsFrom(curveNoteFull);
+  }
 
   // The calendar-year figures are S&P Dow Jones Indices' own total-return numbers (index originator). S&P DJI
   // publishes them in its factsheets but not as a free full-history table, so the compiled table is linked too,
@@ -8697,11 +8737,17 @@
   // redrawn in the dial's own grammar: a track carrying the whole of what is possible, the healthy band marked
   // inside it, direct labels and few, and a disc for "here" with a --surface fill and a coloured core. No needle,
   // no wedges, no gradient. The band is the same 45–55 the linear meter used, so the two cannot disagree.
-  function fearGauge(value, state, o){
+  /* The half-dial. It was `fearGauge`, hard-wired to Fear & Greed's 0-100 scale and its three words;
+     V546 made it take them, because the reading it draws is no longer that one. Everything else is
+     unchanged, including the 0-100 GEOMETRY — a caller with another scale maps onto it and says so.
+     `band` is the healthy stretch, `labels` the three that sit on the arc (the dial's rule: direct,
+     and few), `aria` the sentence a screen reader gets instead of the picture. */
+  function arcGauge(value, state, o){
     o = o || {};
     // drawn close to the size it renders at: an SVG scaled up magnifies its own type, and a 10px label in a
     // 160-unit box arrives on screen at 18px (Version 277)
     var mini = !!o.mini, R = o.r || 112, SW = o.sw || 22;
+    var band = o.band || [45, 55], lab = o.labels || {};
     var pad = mini ? 4 : 30;                       // room above the arc for the one label that sits there
     var cx = R + SW / 2 + 2, cy = R + SW / 2 + pad;
     var W = cx * 2, H = cy + (mini ? 6 : 20);
@@ -8713,25 +8759,26 @@
       var p0 = pt(v0, rad), p1 = pt(v1, rad);
       return "M" + p0[0] + "," + p0[1] + "A" + rad + "," + rad + " 0 0 1 " + p1[0] + "," + p1[1];
     }
-    var out = ['<path class="fg-track" stroke-width="' + SW + '" d="' + arc(0, 100, R) + '"/>',
-               '<path class="fg-band" stroke-width="' + SW + '" d="' + arc(45, 55, R) + '"/>'];
+    var out = ['<path class="gauge-track" stroke-width="' + SW + '" d="' + arc(0, 100, R) + '"/>',
+               '<path class="gauge-band" stroke-width="' + SW + '" d="' + arc(band[0], band[1], R) + '"/>'];
     if (!mini){
-      // the band's own edges, cut out of the track rather than drawn on top of it
-      [45, 55].forEach(function(v){
+      // the band's own edges, cut out of the track rather than drawn on top of it; an edge sitting on
+      // the end of the scale is not drawn, because there is no track beyond it to cut
+      band.forEach(function(v){
+        if (v <= 0 || v >= 100) return;
         var a = pt(v, R - SW / 2), b = pt(v, R + SW / 2);
-        out.push('<path class="fg-tick" d="M' + a[0] + ',' + a[1] + 'L' + b[0] + ',' + b[1] + '"/>');
+        out.push('<path class="gauge-tick" d="M' + a[0] + ',' + a[1] + 'L' + b[0] + ',' + b[1] + '"/>');
       });
-      // three labels, no more: the two ends of the scale and the healthy middle (the dial's rule \u2014 direct, and few)
-      out.push('<text class="fg-lab" x="' + cx + '" y="' + (cy - R - SW / 2 - 9).toFixed(1) + '" text-anchor="middle">Neutral</text>');
-      out.push('<text class="fg-lab" x="' + (cx - R - SW / 2 + 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="start">Fear</text>');
-      out.push('<text class="fg-lab" x="' + (cx + R + SW / 2 - 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="end">Greed</text>');
+      // three labels, no more: the two ends of the scale and the healthy middle (the dial's rule)
+      if (lab.top)   out.push('<text class="gauge-lab" x="' + cx + '" y="' + (cy - R - SW / 2 - 9).toFixed(1) + '" text-anchor="middle">' + lab.top + '</text>');
+      if (lab.left)  out.push('<text class="gauge-lab" x="' + (cx - R - SW / 2 + 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="start">' + lab.left + '</text>');
+      if (lab.right) out.push('<text class="gauge-lab" x="' + (cx + R + SW / 2 - 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="end">' + lab.right + '</text>');
     }
     var here = pt(value, R);
-    out.push('<circle class="fg-here ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 8 : 12) + '"/>');
-    out.push('<circle class="fg-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
-    return '<svg class="fg-gauge' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + ' ' + H.toFixed(1) + '" role="img" ' +
-      'aria-label="Fear and Greed at ' + value + ' out of 100, between extreme fear and extreme greed">' +
-      out.join("") + '</svg>';
+    out.push('<circle class="gauge-here ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 8 : 12) + '"/>');
+    out.push('<circle class="gauge-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
+    return '<svg class="gauge-arc' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + ' ' + H.toFixed(1) + '" role="img" ' +
+      'aria-label="' + (o.aria || "") + '">' + out.join("") + '</svg>';
   }
 
   function vitalRingSvg(pct, state, label){
@@ -9975,61 +10022,56 @@
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
-  // ---------------- RENDER: Sentiment (fast) — the mood ring, then the Fear & Greed lead row and its markers ----------------
-  function renderPsychologyTag(){
-    var tagEl = document.getElementById("psych-tag");     // gone since Version 282; the gauge carries the word
-    if (tagEl){ tagEl.className = "tag " + moodNow.state + " longcycle-tag"; tagEl.textContent = moodNow.word; }
-    // The index leads the panel as the gauge everyone already knows how to read, and leaves the table, which is now
-    // the two markets it is built from — a linear meter under a half-dial of the same number was the same reading
-    // twice in two shapes (Version 277).
-    var fgHost = document.getElementById("fg-gauge");
-    if (fgHost) fgHost.innerHTML =
-      '<div class="fg-name">Fear &amp; Greed' + expandBtn(fgDetailHtml()) + '</div>' +
-      fearGauge(greedScore, moodNow.state) +
-      '' +
-      '<div class="fg-read"><span class="fg-v mono">' + greedScore + '</span>' +
-        '<span class="fg-w ' + moodNow.state + '-ink">' + fearGreed.label + '</span></div>' +
-      /* V542: the date line has an id because it now REPAINTS. The score arrives from the live layer
-         after the page has rendered, and a fresh figure sitting above a stale date is the figure and
-         its provenance disagreeing on screen at the same moment — which is worse than both being a
-         day old. The drawer's long note still follows on the next load, like every other note. */
-      '<div class="fg-name" id="fg-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + fgSub + '</div>';
-    /* Version 464: the page needs a reading under its gauge. The old impression argued from the VIX and the
-       high-yield spread, which have both left this page \u2014 one to a row of its own and one back to Desire, where
-       that figure already lives \u2014 so keeping it would have been a paragraph about two things no longer on screen.
-       This one is about the index: what it is made of, and where it has come from, off CNN's own look-back. */
-    /* The VIX under the gauge. It renders with shortCaption emptied so the shared builder emits no Highlights
-       of its own (the Version 378 escape) \u2014 this page has ONE Highlights block and the VIX's note is a card in
-       it, with its long form behind the (i), so nothing is lost and nothing is said twice. */
-    var fgVix = document.getElementById("fg-vix");
-    if (fgVix){
+  // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
+  function renderFearCurve(){
+    // The curve leads the panel on the half-dial, the shape every other preview on this page follows.
+    var host = document.getElementById("curve-gauge");
+    if (host) host.innerHTML =
+      '<div class="curve-name">Fear curve' + expandBtn(curveDetailHtml()) + '</div>' +
+      arcGauge(curvePct(curveNow), curveTag.state, {
+        band: [0, 50],                                  // the ordinary upward slope: everything below flat
+        labels: { left:"Steep", top:"Flat", right:"Inverted" },
+        aria: curveNow == null ? "Fear curve: no reading"
+              : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() +
+                "; flat is 1.00, above it the curve is inverted"
+      }) +
+      '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "\u2014" : curveNow.toFixed(2)) + '</span>' +
+        '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + '</span></div>' +
+      /* The date line repaints with the figure (the V542 rule): a fresh number above a stale date is
+         the figure and its provenance disagreeing on screen at the same moment. */
+      '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + '</div>';
+
+    /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
+       shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
+       escape): this page has ONE Highlights block and the VIX's note is a card in it. */
+    var vixHost = document.getElementById("curve-vix");
+    if (vixHost){
       var vixCard = Object.keys(vixInd).reduce(function(o, k){ o[k] = vixInd[k]; return o; }, {});
       vixCard.shortCaption = "";
-      fgVix.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, { bloodCard:true }) + '</div>';
+      vixHost.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, { bloodCard:true }) + '</div>';
     }
-    var fgHl = document.getElementById("fg-highlights");
-    if (fgHl){
-      var mv = fearGreed.monthAgo, wv = fearGreed.weekAgo, nv = greedScore;
-      var dir = nv < wv && wv < mv ? "falling all month"
-              : nv > wv && wv > mv ? "rising all month"
-              : nv < mv ? "lower than a month ago" : nv > mv ? "higher than a month ago" : "where it was a month ago";
-      var txt = "CNN's index reads " + nv + " today, against " + wv + " a week ago and " + mv +
-        " a month ago \u2014 " + dir + ". Five of its seven inputs are momentum and breadth, which is why it can say " +
-        "Fear while the two markets underneath say almost none is priced: the VIX is inside its usual band and " +
-        "the high-yield spread is near its tightest ever. It says how sentiment has MOVED, not how much fear is " +
-        "in the price \u2014 and read contrarian, it is the extremes that carry the signal, not the middle.";
+
+    var hl = document.getElementById("curve-highlights");
+    if (hl){
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+      var curveTxt = curveNow == null
+        ? "No reading today \u2014 one of the two legs is missing, so the shape cannot be computed. The previous reading stands."
+        : "The near month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " +
+          curveNow.toFixed(2) + ". " + (curveNow >= 1
+            ? "The curve is INVERTED: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like in prices. Read contrarian, inversions are uncomfortable and they cluster near bottoms."
+            : "That is the curve's ordinary shape \u2014 the far month costs more, as it should. The further below 1.00 it sits, the less the market is paying to be wrong about the weeks just ahead.") +
+          " The threshold is the definition of the shape, not a level anyone chose.";
       var vixTxt = vixInd.shortCaption + " At " + v.toFixed(2) + " it sits " + where + " of " + lo +
         " to " + hiB + ", against a record low of " + m.min + " and a high of " + m.max +
         ". It is the slower of the two fear gauges: credit usually cracks before equity volatility does.";
-      fgHl.innerHTML = highlightsHtml([
-        hiCard("What it is saying", moodNow.state, txt),
+      hl.innerHTML = highlightsHtml([
+        hiCard("What the shape is saying", curveTag.state, curveTxt),
         hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt)]);
     }
     addSources(sentiment.src);
   }
-  GYN.step("renderPsychologyTag", renderPsychologyTag, "build"); renderPsychologyTag();
+  GYN.step("renderFearCurve", renderFearCurve, "build"); renderFearCurve();
 
 
   // ---------------- RENDER: Analysis subjects — one headline figure per collapsible section ----------------
@@ -10195,7 +10237,8 @@
     // Version 260 — and it replaces a face that was drawing an emotion rather than a reading (Keren, Sep 20, 2026:
     // "you can drop the faces and line chart in the preview"). Version 277.
     document.getElementById("subj-ring-sentiment").innerHTML =
-      vitalRingSvg(greedScore, "accent", "Fear and Greed at " + greedScore + " out of 100");
+      vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
+        : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
     // the mood goes where a sign's mark goes — beside its name (Version 342)
     (function(){
       // the row does not exist yet — the builder converts the markup a moment later and MOVES the summary's
@@ -10204,12 +10247,13 @@
       // V524, Keren: the heart, freed when Pulse took the trace. The half-dial of V465 named the INSTRUMENT
       // the index is published as; the heart names what the instrument measures, which is the reading itself.
       if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + pulseSvg() +
-        '</span>Fear &amp; Greed';
+        '</span>Fear curve';
     })();
     // no context line (Version 232, Keren: "I already have the data below the cycle") — it only re-listed the table
     // the sentence taken off the row goes where it was always meant to be read — on the page, in full (Keren,
     // Version 277: "either put it in the inner page or if it already exists drop it"; it did not exist there)
-    set("sentiment", greedScore + '<span class="unit">% · Fear &amp; Greed</span><span class="tag ' + moodNow.state + '">' + fearGreed.label + '</span>', "");
+    set("sentiment", (curveNow == null ? "\u2014" : curveNow.toFixed(2)) +
+      '<span class="unit">VIX \u00f7 3M</span><span class="tag ' + curveTag.state + '">' + curveTag.text + '</span>', "");
     say("sentiment", "");
     // CNN publishes its own look-back with the index — a month ago, a week ago, today. Three real points, no more,
     // and the builder refuses to draw fewer (Version 252).
@@ -11616,7 +11660,7 @@
      { key:"horizon", title:"Horizon", timing:"leading" },
      // NB a real "&": cfg.title is written with setAttribute and read back with textContent, so an entity
      // here would render literally in the row (it did, once).
-     { key:"sentiment", title:"Fear & Greed", timing:"leading" }].forEach(function(cfg){
+     { key:"sentiment", title:"Fear curve", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
@@ -11828,7 +11872,7 @@
            dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves \u2014 all
            three about NOW \u2014 and Horizon what it expects of the future. Today they disagree, which is the point:
            36 and Fear beside a curve reading optimistic. */
-        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations \u00b7 Fear &amp; Greed \u00b7 Desire \u00b7 Horizon",
+        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations \u00b7 Fear curve \u00b7 Desire \u00b7 Horizon",
           /* Version 466, Keren: "the VIX is called the fear index \u2014 we don't need two fear meters on the Mood
              page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
              of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
@@ -13052,7 +13096,7 @@
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
       ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/],
-      ["Sentiment", /VIXCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10|fear-and-greed/],
+      ["Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
       ["Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl/],
       ["Financial resilience", /cbo\.gov|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/]
     ];

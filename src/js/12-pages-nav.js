@@ -287,7 +287,7 @@
      { key:"horizon", title:"Horizon", timing:"leading" },
      // NB a real "&": cfg.title is written with setAttribute and read back with textContent, so an entity
      // here would render literally in the row (it did, once).
-     { key:"sentiment", title:"Fear & Greed", timing:"leading" }].forEach(function(cfg){
+     { key:"sentiment", title:"Fear curve", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
@@ -499,7 +499,7 @@
            dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves \u2014 all
            three about NOW \u2014 and Horizon what it expects of the future. Today they disagree, which is the point:
            36 and Fear beside a curve reading optimistic. */
-        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations \u00b7 Fear &amp; Greed \u00b7 Desire \u00b7 Horizon",
+        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations \u00b7 Fear curve \u00b7 Desire \u00b7 Horizon",
           /* Version 466, Keren: "the VIX is called the fear index \u2014 we don't need two fear meters on the Mood
              page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
              of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
