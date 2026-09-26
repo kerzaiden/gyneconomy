@@ -227,7 +227,13 @@ else (async () => {
   try {
     const [hi, lo] = await Promise.all([fredLatest('DFEDTARU'), fredLatest('DFEDTARL')]);
     if (hi.value < 0 || hi.value > 25 || lo.value > hi.value) throw new Error('target range out of band');
-    out.fedFunds = { kind: 'object', lo: lo.value, hi: hi.value, asOf: hi.date };
+    /* lo and hi ONLY — no asOf. The app's `fedFunds.asOf` is the date of the FOMC DECISION, which
+       is what the page prints beside "Last Fed move", and this date is the latest observation of
+       the target-rate series, which is simply today. Publishing it here overwrote a meaningful date
+       with a meaningless one and made the page say the Fed moved today. The decision date, the vote
+       and the next meeting are editorial and stay in the file, exactly as they do for the VIX and
+       the spread. (V544.) */
+    out.fedFunds = { kind: 'object', lo: lo.value, hi: hi.value };
     say('fedFunds    ' + lo.value + '-' + hi.value + '%  ' + hi.date);
   } catch (e) { failed.push('fedFunds: ' + e.message); }
 

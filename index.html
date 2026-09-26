@@ -3880,8 +3880,19 @@
     try {
       if (d.kind === "series") return Array.isArray(d.rows) && d.rows.length ? d.rows : fallback;
       if (d.kind === "scalar") return d.value === undefined ? fallback : d.value;
+      /* V544: an object document MERGES over the literal instead of replacing it. It replaced,
+         and that was a live bug: the pipeline publishes `fedFunds` as {lo, hi, asOf}, while the
+         file's own object also carries `lastMove`, `lastMoveLabel`, `vote` and `next` — editorial
+         facts about an FOMC meeting that no fetcher knows. Replacing dropped all four, so the
+         hosted site printed "Last Fed move: undefined" and "Next decision: undefined".
+         The rule now: a live document supplies the fields it carries, and every field it does not
+         carry keeps the value in the file. That is the same principle the literals already serve
+         under — they are the floor, not a duplicate — extended one level down, into the object. */
       if (d.kind === "object"){
         var o = {}, any = false;
+        if (fallback && typeof fallback === "object" && !Array.isArray(fallback)){
+          for (var f in fallback) if (Object.prototype.hasOwnProperty.call(fallback, f)) o[f] = fallback[f];
+        }
         for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)){ o[k] = d[k]; any = true; }
         return any ? o : fallback;
       }
@@ -4000,7 +4011,16 @@
     if (value == null) return false;
     try {
       switch (name){
-        case "fedFunds":   if (typeof value.lo !== "number") return false; fedFunds = value; break;
+        /* MERGE, for the same reason LIVE merges (V544): a refresh carries lo and hi, and the
+           editorial fields around them — the FOMC date, the vote, the next meeting — belong to
+           the file. Replacing here would drop them the moment a refresh arrived mid-session. */
+        case "fedFunds": {
+          if (!value || typeof value.lo !== "number") return false;
+          var ff = {}; for (var ffk in fedFunds) ff[ffk] = fedFunds[ffk];
+          for (var nk in value) if (Object.prototype.hasOwnProperty.call(value, nk)) ff[nk] = value[nk];
+          fedFunds = ff;
+          break;
+        }
         case "yieldCurve": if (!Array.isArray(value) || !value.length) return false; yieldCurve = value; break;
         case "sentiment":  sentiment = value; break;
         case "valuation":  valuation = value;
