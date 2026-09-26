@@ -204,7 +204,11 @@ async function shillerCape() {
    the arrangement that held before V542. */
 
 /* Required as a module (the tests do this), export the pure parts and run nothing. */
-if (require.main !== module) { module.exports = { capeFromRows }; }
+/* shillerCape is exported too, so the FETCH can be tried by hand from a machine with real
+   internet — which neither the cloud sandbox nor the local VM has:
+     node -e "require('./tools/fetch-live.js').shillerCape().then(console.log).catch(e=>console.error('FAILED:',e.message))"
+   It prints and writes nothing, so it cannot dirty data/live.json. */
+if (require.main !== module) { module.exports = { capeFromRows, shillerCape }; }
 else (async () => {
   const out = {};
   const failed = [];
