@@ -254,6 +254,63 @@ async function openPage(p, url, sheet) {
       : bad('live cache falls back: ' + label, JSON.stringify(g.r) + ' ' + g.errs.join(' | '));
   }
 
+  // ---- 2e. the repaint layer (Version 533)
+  // Live data arriving MID-SESSION must move the derived readings, not only the printed numbers,
+  // and must refuse anything malformed rather than paint nonsense. applyLive is a test seam.
+  {
+    const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
+    const g = await c.newPage();
+    const perr = [];
+    g.on('pageerror', e => perr.push(String(e).slice(0, 140)));
+    await g.goto('file://' + url); await g.waitForTimeout(1400);
+
+    const read = () => g.evaluate(() => {
+      const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim().replace(/\s+/g, ' ') : null; };
+      const k = s => { const e = document.querySelector(s); return e ? e.className : null; };
+      return { sentiment: t('#subj-value-sentiment'), mood: t('.fg-w'), moodClass: k('.fg-w'),
+               yield: t('#subj-value-yield'), valuation: t('#subj-value-valuation') };
+    });
+
+    const seam = await g.evaluate(() => !!(window.__GYN && window.__GYN.applyLive));
+    seam ? ok('repaint seam present') : bad('repaint seam present', 'window.__GYN.applyLive missing');
+
+    if (seam) {
+      const before = await read();
+      const rv = await g.evaluate(() => {
+        const G = window.__GYN;
+        return {
+          fg: G.applyLive('fearGreed', { value: 82, label: 'Greed', asOf: 'x', weekAgo: 79, monthAgo: 71 }),
+          yc: G.applyLive('yieldCurve', [{m:'3M',y:5.55},{m:'2Y',y:4.60},{m:'10Y',y:4.05}]),
+          nul: G.applyLive('fearGreed', null),
+          bad: G.applyLive('fearGreed', { nope: 1 }),
+          unk: G.applyLive('notADocument', { a: 1 })
+        };
+      });
+      await g.waitForTimeout(250);
+      const after = await read();
+
+      (rv.fg && /^82/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
+        ? ok('repaint fearGreed figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
+        : bad('repaint fearGreed figure', JSON.stringify(after.sentiment));
+
+      // the DERIVED class is the real claim: a number can be printed, a verdict must be recomputed
+      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Greed')
+        ? ok('repaint derived mood', before.moodClass + ' -> ' + after.moodClass)
+        : bad('repaint derived mood', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
+
+      (rv.yc && /4\.05\/5\.55/.test(after.yield || ''))
+        ? ok('repaint yieldCurve pair', (before.yield || '').slice(0, 12) + ' -> ' + (after.yield || '').slice(0, 12))
+        : bad('repaint yieldCurve pair', JSON.stringify(after.yield));
+
+      (rv.nul === false && rv.bad === false && rv.unk === false)
+        ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')
+        : bad('repaint refuses bad input', JSON.stringify(rv));
+
+      perr.length ? bad('no errors while repainting', perr.join(' | ')) : ok('no errors while repainting');
+    }
+    await c.close();
+  }
+
   // ---- 3. the slow one
   if (FULL) {
     const q = await b.newPage({ viewport: { width: 414, height: 1000 } });
