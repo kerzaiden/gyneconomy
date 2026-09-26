@@ -7590,8 +7590,11 @@
 
      NB: pulseSvg() is already taken — it is the sign's heartbeat ICON. A second declaration of that name in
      this scope would silently win and the icon would vanish, so the trace is pulseTraceSvg(). */
-  var PULSE_WINDOW = 5;        // years drawn in every lane; the span is held equal, which is what makes it a comparison
-  var PULSE_PRE2008 = 1.857;   // mean of FRED M2V, 1959 Q1 - 2007 Q4 (196 quarters; median 1.808, range 1.652-2.192)
+  // PULSE_WINDOW and PULSE_PRE2008 are declared once, with the Pulse chart that first needed them
+  // (search `var PULSE_WINDOW`). They were declared a second time here, with the same values, until
+  // Version 529: same scope, so the file held one number in two places — the thing ONE FIGURE /
+  // ONE NUMBER exists to prevent. Found by `docs/MAP.md`, which lists every top-level declaration
+  // and so makes a redeclaration visible for the first time.
   var pulseClipN = 0;
   function beatPath(x0, x1, y, period, amp){
     // one beat = one turnover: flat, then Q-R-S, then flat. Drawn past the right edge and clipped, the way a
