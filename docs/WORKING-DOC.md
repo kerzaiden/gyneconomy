@@ -137,6 +137,38 @@ document (`5.18/4.24` → `4.05/5.55`), and five malformed caches each fall back
 The procedure is one place: **Procedures → Build → verify → publish**, at the end of this part. It is not
 restated here.
 
+## Which copy is canonical
+
+The same material now lives in three places, each reachable by a different reader, and none of them
+can see all the others. Getting this wrong silently destroys work, so it is written down.
+
+| Thing | Canonical copy | Who else holds one |
+|---|---|---|
+| The app | **The published artifact** — `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF` | the git repo's `index.html`, stale by design |
+| The docs | **The git repo** — `CLAUDE.md`, `docs/WORKING-DOC.md` | the Mrs. Market project's `claude/CLAUDE-CODE.md` |
+| Version history | **Append-only, two writers** — see below | repo `docs/ARCHIVE.md` and project `claude/ARCHIVE.md` |
+
+**The app: the artifact wins, always.** The nightly refresh task edits the artifact and CANNOT write
+to the git repo, so the repo's `index.html` falls a day behind every night. Any session that edits
+the app must `Artifact action:"read"` the live version FIRST, edit that, publish it, and commit the
+result back. Editing the repo's copy and publishing it reverts every nightly refresh since the last
+commit — quietly, with a green test suite, because the suite checks structure and not whether the
+figures are current.
+
+**The docs: the repo wins, and mirroring runs ONE direction.** Edit `CLAUDE.md` and this file in the
+repo, then copy this file up to the project as `claude/CLAUDE-CODE.md` with `project_write`. Never
+the reverse. The project copy exists because a scheduled or cloud session can reach the project and
+cannot reach the repo; it is a read-only mirror for those readers, not a second original.
+
+**Version history is the one exception, and it is append-only.** The nightly task appends its line to
+the PROJECT's `claude/ARCHIVE.md`, because that is the only copy it can write. A repo session picks
+those lines up when it next mirrors, and adds its own entries in the repo. Entries are only ever
+added, never rewritten, so the two converge instead of fighting. If they disagree, take the union.
+
+**A cloud or scheduled session cannot reach the git repo. That is expected and is never a reason to
+stop.** No credentials exist outside Keren's own machine, and none should. A run that cannot see the
+repo carries on with the project copy and says so in one line of its report.
+
 ## The two documents
 
 This file is everything needed to work on the app. `ARCHIVE.md` is everything that is no longer true: the

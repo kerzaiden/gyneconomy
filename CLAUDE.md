@@ -30,6 +30,13 @@ whether something was already tried.
    nobody set is not a range — say so and ask.
 4. **Don't publish while the nightly refresh may be running** (22:30 UTC). A stale-version
    refusal means it beat you; merge onto its version.
+5. **This repo's `index.html` is NOT the live app — the published artifact is.** A scheduled task
+   refreshes the artifact's figures nightly and cannot write to this repo, so the file you cloned
+   goes stale by a day every day. **Read the live version first** (`Artifact action:"read"` on the
+   artifact url), edit THAT, publish it, and commit the result back here. Editing the repo's copy
+   and publishing it silently reverts every nightly refresh since the last commit. This is the
+   easiest serious mistake to make in this project. `docs/WORKING-DOC.md` → "Which copy is
+   canonical" has the whole picture.
 
 ## The three governing rules
 
