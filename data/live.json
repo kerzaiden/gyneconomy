@@ -74,18 +74,21 @@
   "value": 2.8,
   "asOf": "2026-09-24"
  },
+ "capeValue": {
+  "kind": "scalar",
+  "value": 40.58,
+  "asOf": "2026-09-01"
+ },
  "_meta": {
-  "fetchedAt": "2026-09-26T18:48:03Z",
+  "fetchedAt": "2026-09-26T19:46:57Z",
   "ok": [
    "yieldCurve",
    "fedFunds",
    "vixClose",
-   "hyOas"
+   "hyOas",
+   "capeValue"
   ],
-  "failed": [
-   "capeValue: xlsx is not installed — run npm i; CAPE needs it to read Shiller's .xls",
-   "fearGreed: CNN: HTTP 418"
-  ],
-  "note": "Every figure here is fetched from its own source. The weekly task only copies them into the artifact's database, which is the one thing an Action cannot do."
+  "failed": [],
+  "note": "Fetched from primary sources. CNN Fear & Greed is not here and cannot be — see the note in tools/fetch-live.js. The weekly task supplies it and copies everything into the artifact's database."
  }
 }
