@@ -1,0 +1,115 @@
+/* DOM snapshot harness.
+
+   Walks the app the way a reader does and serialises what is on screen, so a refactor can be
+   proved to change nothing. Two modes:
+
+     node snapshot.js <file.html> out.json          capture
+     node snapshot.js <a.json> <b.json> --diff      compare
+
+   Normalisation matters more than coverage here: anything that legitimately varies between two
+   loads (today's date, a generated id, a measured width) must be neutralised, or the harness
+   cries wolf and stops being trusted. Everything it neutralises is listed in NORMALISERS below,
+   so the list itself is auditable — a refactor that changed one of those would slip through, and
+   that is the deliberate trade. */
+const { chromium } = require('playwright');
+const fs = require('fs');
+
+const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+
+const CATS = ['sheet-cat-weather', 'sheet-cat-circulation', 'sheet-cat-mood', 'sheet-cat-energy'];
+const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity','sheet-metric-power',
+  'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
+  'sheet-sign-horizon','sheet-sign-yield','sheet-sign-desire'];
+const TABS = ['cycle','analysis','portfolio','content'];
+
+const NORMALISERS = [
+  [/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+/g, ''],                  // weekday names
+  [/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4}\b/g, '<DATE>'],
+  [/\bToday,\s*[^<·]{0,24}/g, 'Today,<DATE>'],
+  [/id="[^"]*-\d{4,}"/g, 'id="<GEN>"'],                            // generated ids
+  [/url\(#[^)]*\d{4,}\)/g, 'url(#<GEN>)'],
+  [/\s+/g, ' ']
+];
+const norm = s => NORMALISERS.reduce((acc, [re, to]) => acc.replace(re, to), s || '').trim();
+
+const click = (p, sel) => p.evaluate(s => {
+  const e = [...document.querySelectorAll(s)].filter(x => x.offsetParent !== null)[0];
+  if (!e) return false; e.scrollIntoView(); e.click(); return true;
+}, sel);
+
+const grab = (p, label) => p.evaluate(() => {
+  const pick = sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML).join('\n');
+  return {
+    body: document.body.innerHTML.length,
+    main: pick('#metric-page, #cycle-view, #today-analysis, .tabpanel:not([hidden])'),
+    values: [...document.querySelectorAll('[id^="subj-value-"], .cv-stat-v, .panel-row, .trendpill, .hist-read')]
+              .map(e => e.id + '|' + e.textContent).join('\n')
+  };
+}).then(r => ({ label, body: r.body, main: r.main, values: r.values }));
+
+async function capture(file, out) {
+  const b = await chromium.launch({ executablePath: CHROME });
+  const snaps = [];
+  const errs = [];
+  for (const w of [414, 1280]) {
+    const ctx = await b.newContext({ viewport: { width: w, height: 1000 } });
+    const p = await ctx.newPage();
+    /* Block every external request. Google Fonts is unreachable in this sandbox, so each load
+       would otherwise sit waiting on it — and a font that sometimes arrives is a nondeterminism
+       the harness would report as a difference. The app is self-contained; nothing it needs is
+       off-origin. */
+    await p.route('**/*', r => {
+      const u = r.request().url();
+      (u.startsWith('file://') || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort();
+    });
+    p.on('pageerror', e => errs.push(w + ': ' + String(e).slice(0, 140)));
+    await p.goto('file://' + file); await p.waitForTimeout(1500);
+    snaps.push(await grab(p, w + '/home'));
+    for (const t of TABS) {
+      await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
+      await p.waitForTimeout(500);
+      snaps.push(await grab(p, w + '/tab:' + t));
+    }
+    for (const sheet of SHEETS) {
+      await p.goto('file://' + file); await p.waitForTimeout(1100);
+      let opened = false;
+      for (const c of CATS) {
+        if (!await click(p, '[data-open="' + c + '"]')) continue;
+        await p.waitForTimeout(380);
+        if (await click(p, '.cat-item[data-open="' + sheet + '"]')) { opened = true; break; }
+        await p.goto('file://' + file); await p.waitForTimeout(900);
+      }
+      if (opened) { await p.waitForTimeout(800); snaps.push(await grab(p, w + '/page:' + sheet)); }
+      else snaps.push({ label: w + '/page:' + sheet, body: 0, main: 'NOT REACHED', values: '' });
+    }
+    await ctx.close();
+  }
+  await b.close();
+  const clean = snaps.map(s => ({ label: s.label, body: s.body, main: norm(s.main), values: norm(s.values) }));
+  fs.writeFileSync(out, JSON.stringify({ file, errs, snaps: clean }, null, 1));
+  console.log('captured ' + clean.length + ' states -> ' + out + (errs.length ? '  PAGE ERRORS: ' + errs.length : '  no page errors'));
+}
+
+function diff(af, bf) {
+  const a = JSON.parse(fs.readFileSync(af)), b = JSON.parse(fs.readFileSync(bf));
+  let bad = 0;
+  for (let i = 0; i < Math.max(a.snaps.length, b.snaps.length); i++) {
+    const x = a.snaps[i] || {}, y = b.snaps[i] || {};
+    if (x.label !== y.label) { console.log('  LABEL ' + x.label + ' != ' + y.label); bad++; continue; }
+    for (const k of ['main', 'values']) {
+      if (x[k] !== y[k]) {
+        bad++;
+        const at = [...x[k]].findIndex((c, j) => c !== y[k][j]);
+        console.log('  DIFF ' + x.label + ' .' + k + ' at char ' + at);
+        console.log('    a: …' + (x[k] || '').slice(Math.max(0, at - 60), at + 90));
+        console.log('    b: …' + (y[k] || '').slice(Math.max(0, at - 60), at + 90));
+      }
+    }
+  }
+  console.log(bad ? '\n' + bad + ' difference(s)' : '\n' + a.snaps.length + ' states identical');
+  process.exit(bad ? 1 : 0);
+}
+
+const args = process.argv.slice(2);
+if (args.includes('--diff')) diff(args[0], args[1]);
+else capture(args[0], args[1] || 'snap.json');

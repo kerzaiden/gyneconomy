@@ -3907,7 +3907,50 @@
              f.value + '</b></div>';
     }).join("");
   }
-  (function(){
+  /* THE STEP REGISTRY (Version 531).
+
+     Until now the script ran as 28 anonymous IIFEs in source order. They still run in exactly
+     that order and at exactly those points — module-level vars are assigned between them, so the
+     order is load-bearing and moving the calls would break the page. What changed is that each
+     one now has a NAME, a measured KIND, and an entry here, so the app can be asked what it does
+     at load rather than having it inferred from source order.
+
+     The kinds are counted from each body, not asserted:
+       check   a data assertion, no DOM — safe to re-run
+       derive  computes module state — mostly safe, but see the caveat below
+       wire    binds event listeners — must run ONCE, ever
+       render  writes DOM — the candidates for re-running when data lands
+       mixed   binds listeners AND writes DOM — cannot be re-run until it is split
+       live    the database refresher
+
+     This is the seam, not the destination. `GYN.render()` deliberately runs only the steps that
+     are safe to repeat today; `mixed` steps are excluded because re-running one would bind its
+     listeners a second time. Splitting those is the next stage, one at a time, each proved by
+     rendering twice and diffing the DOM.
+
+     Known non-idempotency, found while classifying: `deriveUninversionDetail` appends to
+     `allSources`, so running it twice would duplicate citations. It is marked derive but excluded
+     from repeat below until that is fixed. */
+  var GYN = {
+    steps: [],
+    step: function(name, fn, kind){ this.steps.push({ name: name, fn: fn, kind: kind }); return fn; },
+    of: function(kind){ return this.steps.filter(function(s){ return s.kind === kind; }); },
+    // the steps that may safely run again today
+    repeatable: function(){
+      return this.steps.filter(function(s){
+        return (s.kind === "check" || s.kind === "render") && s.name !== "deriveUninversionDetail";
+      });
+    },
+    render: function(){
+      this.repeatable().forEach(function(s){
+        try { s.fn(); } catch (e) { if (window.console) console.warn("GYN.render: " + s.name, e); }
+      });
+      return this.repeatable().length;
+    }
+  };
+  try { window.__GYN = GYN; } catch (e) {}   // a test seam, not an API
+
+  function refreshLiveData(){
     if (!window.claude || typeof window.claude.use !== "function") return;
     window.claude.use("db").then(function(db){
       if (!db) return;
@@ -3929,7 +3972,8 @@
         LIVE_CACHE = next;
       });
     }).catch(function(){});
-  })();
+  }
+  GYN.step("refreshLiveData", refreshLiveData, "live"); refreshLiveData();
   function fedFundsRange(){
     return (fedFunds.lo === fedFunds.hi ? fedFunds.lo.toFixed(2)
             : fedFunds.lo.toFixed(2) + "\u2013" + fedFunds.hi.toFixed(2)) + "%";
@@ -4456,11 +4500,12 @@
      a recession and today's has none. */
   var DEF_RECESSION_FY = {1949:1,1950:1,1954:1,1958:1,1960:1,1961:1,1970:1,1971:1,1974:1,1975:1,
                           1980:1,1981:1,1982:1,1983:1,1990:1,1991:1,2001:1,2002:1,2008:1,2009:1,2020:1};
-  (function(){
+  function checkDeficitHistory(){
     var hi = Math.max.apply(null, deficitHistory), lo = Math.min.apply(null, deficitHistory);
     if (deficitHistory.length !== 80 || Math.abs(hi - 4.30) > 0.005 || Math.abs(lo + 14.48) > 0.005)
       console.warn("deficitHistory failed its check", deficitHistory.length, hi, lo);
-  })();
+  }
+  GYN.step("checkDeficitHistory", checkDeficitHistory, "check"); checkDeficitHistory();
 
   /* Version 359, Keren, with ARK's own chart beside it: "I want the title to be federal budget deficit or
      surplus. All the text can be in an info icon next to the title. Also I want a timeline menu — year to
@@ -4973,12 +5018,13 @@
   var HY_NORM_LO = 3.5, HY_NORM_HI = 6;
   var hyDates = "230925 230926 230927 230928 230929 230930 231002 231003 231004 231005 231006 231009 231010 231011 231012 231013 231016 231017 231018 231019 231020 231023 231024 231025 231026 231027 231030 231031 231101 231102 231103 231106 231107 231108 231109 231110 231113 231114 231115 231116 231117 231120 231121 231122 231123 231124 231127 231128 231129 231130 231201 231204 231205 231206 231207 231208 231211 231212 231213 231214 231215 231218 231219 231220 231221 231222 231226 231227 231228 231229 231231 240102 240103 240104 240105 240108 240109 240110 240111 240112 240115 240116 240117 240118 240119 240122 240123 240124 240125 240126 240129 240130 240131 240201 240202 240205 240206 240207 240208 240209 240212 240213 240214 240215 240216 240219 240220 240221 240222 240223 240226 240227 240228 240229 240301 240304 240305 240306 240307 240308 240311 240312 240313 240314 240315 240318 240319 240320 240321 240322 240325 240326 240327 240328 240331 240401 240402 240403 240404 240405 240408 240409 240410 240411 240412 240415 240416 240417 240418 240419 240422 240423 240424 240425 240426 240429 240430 240501 240502 240503 240506 240507 240508 240509 240510 240513 240514 240515 240516 240517 240520 240521 240522 240523 240524 240527 240528 240529 240530 240531 240603 240604 240605 240606 240607 240610 240611 240612 240613 240614 240617 240618 240619 240620 240621 240624 240625 240626 240627 240628 240630 240701 240702 240703 240704 240705 240708 240709 240710 240711 240712 240715 240716 240717 240718 240719 240722 240723 240724 240725 240726 240729 240730 240731 240801 240802 240805 240806 240807 240808 240809 240812 240813 240814 240815 240816 240819 240820 240821 240822 240823 240826 240827 240828 240829 240830 240831 240902 240903 240904 240905 240906 240909 240910 240911 240912 240913 240916 240917 240918 240919 240920 240923 240924 240925 240926 240927 240930 241001 241002 241003 241004 241007 241008 241009 241010 241011 241014 241015 241016 241017 241018 241021 241022 241023 241024 241025 241028 241029 241030 241031 241101 241104 241105 241106 241107 241108 241111 241112 241113 241114 241115 241118 241119 241120 241121 241122 241125 241126 241127 241128 241129 241130 241202 241203 241204 241205 241206 241209 241210 241211 241212 241213 241216 241217 241218 241219 241220 241223 241224 241226 241227 241230 241231 250102 250103 250106 250107 250108 250109 250110 250113 250114 250115 250116 250117 250120 250121 250122 250123 250124 250127 250128 250129 250130 250131 250203 250204 250205 250206 250207 250210 250211 250212 250213 250214 250217 250218 250219 250220 250221 250224 250225 250226 250227 250228 250303 250304 250305 250306 250307 250310 250311 250312 250313 250314 250317 250318 250319 250320 250321 250324 250325 250326 250327 250328 250331 250401 250402 250403 250404 250407 250408 250409 250410 250411 250414 250415 250416 250417 250421 250422 250423 250424 250425 250428 250429 250430 250501 250502 250505 250506 250507 250508 250509 250512 250513 250514 250515 250516 250519 250520 250521 250522 250523 250526 250527 250528 250529 250530 250531 250602 250603 250604 250605 250606 250609 250610 250611 250612 250613 250616 250617 250618 250619 250620 250623 250624 250625 250626 250627 250630 250701 250702 250703 250704 250707 250708 250709 250710 250711 250714 250715 250716 250717 250718 250721 250722 250723 250724 250725 250728 250729 250730 250731 250801 250804 250805 250806 250807 250808 250811 250812 250813 250814 250815 250818 250819 250820 250821 250822 250825 250826 250827 250828 250829 250831 250901 250902 250903 250904 250905 250908 250909 250910 250911 250912 250915 250916 250917 250918 250919 250922 250923 250924 250925 250926 250929 250930 251001 251002 251003 251006 251007 251008 251009 251010 251013 251014 251015 251016 251017 251020 251021 251022 251023 251024 251027 251028 251029 251030 251031 251103 251104 251105 251106 251107 251110 251111 251112 251113 251114 251117 251118 251119 251120 251121 251124 251125 251126 251127 251128 251130 251201 251202 251203 251204 251205 251208 251209 251210 251211 251212 251215 251216 251217 251218 251219 251222 251223 251224 251226 251229 251230 251231 260102 260105 260106 260107 260108 260109 260112 260113 260114 260115 260116 260119 260120 260121 260122 260123 260126 260127 260128 260129 260130 260131 260202 260203 260204 260205 260206 260209 260210 260211 260212 260213 260216 260217 260218 260219 260220 260223 260224 260225 260226 260227 260228 260302 260303 260304 260305 260306 260309 260310 260311 260312 260313 260316 260317 260318 260319 260320 260323 260324 260325 260326 260327 260330 260331 260401 260402 260403 260406 260407 260408 260409 260410 260413 260414 260415 260416 260417 260420 260421 260422 260423 260424 260427 260428 260429 260430 260501 260504 260505 260506 260507 260508 260511 260512 260513 260514 260515 260518 260519 260520 260521 260522 260525 260526 260527 260528 260529 260531 260601 260602 260603 260604 260605 260608 260609 260610 260611 260612 260615 260616 260617 260618 260619 260622 260623 260624 260625 260626 260629 260630 260701 260702 260703 260706 260707 260708 260709 260710 260713 260714 260715 260716 260717 260720 260721 260722 260723 260724 260727 260728 260729 260730 260731 260803 260804 260805 260806 260807 260810 260811 260812 260813 260814 260817 260818 260819 260820 260821 260824 260825 260826 260827 260828 260831 260901 260902 260903 260904 260907 260908 260909 260910 260911 260914 260915 260916 260917 260918 260921 260922 260923".split(" ");
   var hyOas = "3.97 4.04 4.03 4.09 4.03 4.03 4.11 4.26 4.37 4.38 4.33 4.34 4.26 4.25 4.25 4.3 4.27 4.25 4.32 4.37 4.52 4.51 4.41 4.37 4.5 4.53 4.5 4.42 4.47 4.15 4.04 4 4.08 4.08 4.04 4.03 4.03 3.92 3.89 4.02 3.99 3.92 3.95 3.9 3.9 3.85 3.89 3.9 3.8 3.84 3.87 3.8 3.8 3.79 3.77 3.75 3.79 3.76 3.79 3.47 3.51 3.51 3.46 3.43 3.41 3.39 3.37 3.34 3.32 3.34 3.39 3.54 3.71 3.69 3.68 3.63 3.59 3.5 3.55 3.56 3.54 3.58 3.62 3.58 3.54 3.49 3.51 3.44 3.45 3.39 3.41 3.42 3.59 3.56 3.47 3.5 3.52 3.43 3.38 3.33 3.35 3.36 3.38 3.35 3.34 3.34 3.37 3.34 3.22 3.23 3.23 3.26 3.31 3.29 3.32 3.26 3.31 3.27 3.27 3.26 3.26 3.2 3.15 3.15 3.16 3.13 3.1 3.14 3.05 3.08 3.11 3.15 3.15 3.12 3.15 3.12 3.23 3.23 3.24 3.18 3.15 3.14 3.1 3.16 3.25 3.28 3.36 3.42 3.39 3.37 3.29 3.2 3.19 3.24 3.16 3.12 3.18 3.21 3.16 3.08 3.03 3.06 3.1 3.14 3.12 3.14 3.14 3.13 3.08 3.09 3.07 3.07 3.11 3.1 3.11 3.12 3.09 3.15 3.19 3.2 3.17 3.22 3.2 3.2 3.15 3.15 3.19 3.09 3.2 3.29 3.26 3.24 3.24 3.23 3.21 3.19 3.19 3.18 3.21 3.18 3.21 3.21 3.23 3.25 3.25 3.27 3.2 3.21 3.17 3.18 3.19 3.13 3.08 3.09 3.09 3.09 3.05 3.02 3.1 3.08 3.1 3.13 3.2 3.25 3.35 3.72 3.93 3.67 3.57 3.48 3.49 3.52 3.54 3.46 3.31 3.29 3.21 3.25 3.27 3.21 3.19 3.15 3.17 3.19 3.15 3.13 3.17 3.17 3.31 3.35 3.29 3.39 3.36 3.46 3.44 3.39 3.37 3.32 3.25 3.21 3.1 3.15 3.15 3.21 3.19 3.14 3.14 3.03 3.07 3.06 3.04 2.89 2.95 2.99 2.94 2.99 2.98 2.97 2.93 2.9 2.89 2.88 2.88 2.92 2.95 2.93 2.89 2.82 2.85 2.8 2.88 2.83 2.87 2.86 2.74 2.73 2.63 2.63 2.61 2.64 2.6 2.72 2.72 2.69 2.67 2.61 2.61 2.64 2.68 2.69 2.69 2.72 2.74 2.68 2.66 2.66 2.66 2.67 2.67 2.67 2.64 2.66 2.68 2.69 2.75 2.73 2.91 2.86 2.85 2.86 2.86 2.84 2.94 2.92 2.88 2.81 2.76 2.79 2.84 2.82 2.81 2.85 2.8 2.72 2.73 2.64 2.64 2.61 2.59 2.61 2.6 2.66 2.66 2.68 2.67 2.68 2.73 2.71 2.69 2.66 2.67 2.66 2.66 2.65 2.65 2.62 2.62 2.62 2.68 2.66 2.78 2.78 2.84 2.81 2.81 2.87 2.94 2.99 2.88 2.99 2.97 3.16 3.22 3.2 3.4 3.25 3.18 3.23 3.19 3.17 3.21 3.05 3.09 3.19 3.27 3.47 3.55 3.5 3.42 4.01 4.45 4.61 4.57 4.37 4.42 4.26 4.14 4.09 4.16 4.02 4.16 3.99 3.75 3.73 3.67 3.73 3.74 3.94 3.78 3.6 3.6 3.66 3.67 3.51 3.53 3.15 3.09 3.1 3.2 3.16 3.21 3.2 3.25 3.32 3.4 3.4 3.24 3.23 3.22 3.31 3.32 3.27 3.19 3.23 3.18 3.09 3.12 3.12 3.12 3.17 3.18 3.1 3.17 3.16 3.16 3.13 3.12 3.06 3.04 3.04 3.02 2.96 2.91 2.88 2.8 2.8 2.86 2.92 2.94 2.92 2.97 2.95 2.95 3 2.91 2.93 2.89 2.9 2.83 2.82 2.84 2.82 2.86 2.89 2.86 3.13 3.02 2.98 2.98 2.95 2.94 2.94 2.93 2.9 2.89 2.88 2.88 2.9 2.94 2.95 2.88 2.8 2.78 2.78 2.75 2.82 2.84 2.84 2.92 2.88 2.84 2.83 2.84 2.87 2.84 2.78 2.79 2.75 2.79 2.79 2.71 2.72 2.69 2.71 2.7 2.76 2.75 2.74 2.8 2.81 2.81 2.8 2.76 2.82 2.84 2.95 3.18 3.18 3.11 2.95 3.04 3.04 2.99 2.97 3.01 2.96 2.88 2.8 2.82 2.76 2.85 2.94 3.04 3.13 3.05 3.13 3.15 3.02 3.02 3.02 3.09 3.07 3.13 3.2 3.17 3.17 3.19 3.15 3.1 3 3 2.95 2.92 2.94 2.92 2.89 2.88 2.85 2.89 2.89 2.91 2.88 2.91 2.91 2.98 2.99 2.95 2.9 2.88 2.83 2.84 2.86 2.87 2.84 2.81 2.83 2.81 2.79 2.79 2.76 2.74 2.74 2.75 2.76 2.71 2.65 2.65 2.73 2.69 2.64 2.68 2.69 2.71 2.72 2.77 2.8 2.88 2.81 2.85 2.86 2.97 2.87 2.84 2.86 2.84 2.92 2.95 2.94 2.94 2.86 2.88 2.86 2.95 2.97 2.94 2.98 3.1 3.12 3.03 3.08 2.97 3 3.13 3.19 3.06 3.09 3.17 3.28 3.27 3.22 3.2 3.27 3.24 3.19 3.19 3.17 3.21 3.42 3.46 3.28 3.16 3.17 3.13 3.05 3.12 2.94 2.9 2.94 2.95 2.84 2.85 2.86 2.83 2.87 2.85 2.84 2.86 2.86 2.84 2.85 2.82 2.83 2.77 2.78 2.77 2.75 2.79 2.81 2.79 2.82 2.82 2.76 2.8 2.83 2.86 2.8 2.78 2.74 2.74 2.72 2.71 2.72 2.72 2.74 2.72 2.71 2.75 2.74 2.76 2.75 2.78 2.8 2.78 2.71 2.66 2.71 2.63 2.66 2.66 2.65 2.71 2.76 2.78 2.83 2.8 2.75 2.74 2.75 2.74 2.72 2.67 2.7 2.7 2.69 2.69 2.72 2.71 2.71 2.73 2.69 2.69 2.68 2.77 2.79 2.81 2.84 2.87 2.84 2.85 2.78 2.73 2.75 2.71 2.7 2.7 2.72 2.71 2.71 2.67 2.7 2.75 2.73 2.75 2.7 2.69 2.7 2.67 2.63 2.6 2.63 2.65 2.66 2.65 2.68 2.68 2.67 2.71 2.7 2.65 2.71 2.76 2.7 2.7 2.68 2.66 2.68 2.73".split(" ").map(Number);
-  (function(){
+  function checkDesireWindow(){
     if (hyDates.length !== hyOas.length) console.warn("Desire: dates and values out of step");
     var hi = Math.max.apply(null, hyOas), lo = Math.min.apply(null, hyOas);
     if (hi.toFixed(2) !== "4.61" || lo.toFixed(2) !== "2.59")
       console.warn("Desire: window extremes moved — expected 4.61 / 2.59, got " + hi + " / " + lo);
-  })();
+  }
+  GYN.step("checkDesireWindow", checkDesireWindow, "check"); checkDesireWindow();
   function hyAt(i){
     var t = hyDates[i];
     return { y:2000 + +t.slice(0, 2), m:+t.slice(2, 4), d:+t.slice(4, 6) };
@@ -5156,10 +5202,11 @@
     }
   ];
   coincident = LIVE("coincident", coincident);
-  (function(){
+  function deriveVolumeTag(){
     var vol = coincident.filter(function(c){ return c.bodyTerm === "Volume"; })[0];
     if (vol) vol.tag = volumeVerdict(vol.meter.value);
-  })();
+  }
+  GYN.step("deriveVolumeTag", deriveVolumeTag, "derive"); deriveVolumeTag();
 
   // Version 298, Keren: "I'm not sure 'Recovering' is appropriate — I would rather have an indicator that tells
   // me: is the velocity fast or slow." "Recovering" was a DIRECTION hand-written into the data, and it belonged to
@@ -5832,11 +5879,12 @@
   }
 
   // the data has to be right before anything draws it: FRED states both records, so assert them
-  (function(){
+  function checkVelocityHistory(){
     var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
     if (m2vHistory.length !== 270 || Math.abs(hi - 2.192) > 1e-9 || Math.abs(lo - 1.126) > 1e-9)
       console.warn("m2vHistory failed its check", m2vHistory.length, hi, lo);
-  })();
+  }
+  GYN.step("checkVelocityHistory", checkVelocityHistory, "check"); checkVelocityHistory();
 
 
   /* ---------------- Volume: how much blood there is (Version 306) ----------------
@@ -5925,14 +5973,15 @@
     var y = UNEMP_FROM_YEAR + ((i / 12) | 0), mo = (i % 12) + 1;
     return { m:y + "-" + ("0" + mo).slice(-2), v:(t === "x" ? null : Number(t)) };
   });
-  (function(){   // the data has to be right before anything draws it (the V305 rule)
+  function checkUnemploymentHistory(){   // the data has to be right before anything draws it (the V305 rule)
     var vs = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
     var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
     if (unempHistory.length !== 944 || Math.abs(hi - 14.8) > 1e-9 || Math.abs(lo - 2.5) > 1e-9 ||
         unempHistory[0].m !== "1948-01" || unempHistory[unempHistory.length - 1].m !== "2026-08")
       console.warn("unempHistory failed its check", unempHistory.length, lo, hi,
                    unempHistory[0].m, unempHistory[unempHistory.length - 1].m);
-  })();
+  }
+  GYN.step("checkUnemploymentHistory", checkUnemploymentHistory, "check"); checkUnemploymentHistory();
   /* Version 498: Activity's history. Modelled on cpiHistoryChart part for part — same window handling, same
      axis emitter, same fit group, same geometry object — because they draw the same PICTURE: a monthly series
      in columns out of zero, with the window's average and one reference line. They are not the same READING,
@@ -6385,12 +6434,13 @@
       out.join("") + '</svg>';
   }
 
-  (function(){
+  function checkMoneyStock(){
     var g = m2Yoy.filter(function(x){ return x != null; });
     var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
     if (m2Level.length !== 271 || Math.abs(hi - 25.61) > 0.02 || Math.abs(lo + 4.64) > 0.02)
       console.warn("m2Level failed its check", m2Level.length, hi.toFixed(2), lo.toFixed(2));
-  })();
+  }
+  GYN.step("checkMoneyStock", checkMoneyStock, "check"); checkMoneyStock();
 
   function velocityVerdict(v){
     var r = v / PULSE_PRE2008;
@@ -6400,10 +6450,11 @@
          : r < 1.25 ? { text:"Fast",      state:"warning" }
                     : { text:"Very fast", state:"serious" };
   }
-  (function(){
+  function derivePulseTag(){
     var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
     if (pulse) pulse.tag = velocityVerdict(pulse.meter.value);
-  })();
+  }
+  GYN.step("derivePulseTag", derivePulseTag, "derive"); derivePulseTag();
 
   var lagging = [
     {
@@ -7964,14 +8015,15 @@
   ).split(" ").map(Number);
   // the data has to be right before anything draws it (the Version 305 rule): both series state their own
   // extremes at FRED, so assert them rather than trusting the transcription
-  (function(){
+  function checkHouseholdHistories(){
     var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
     if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6)
       console.warn("dsrHistory failed its check", dsrHistory.length, dHi, dLo);
     var sHi = Math.max.apply(null, savHistory), sLo = Math.min.apply(null, savHistory);
     if (savHistory.length !== 318 || Math.abs(sHi - 24.4) > 1e-9 || Math.abs(sLo - 1.8) > 1e-9)
       console.warn("savHistory failed its check", savHistory.length, sHi, sLo);
-  })();
+  }
+  GYN.step("checkHouseholdHistories", checkHouseholdHistories, "check"); checkHouseholdHistories();
   // the saving rate on the debt series' clock, so one index reads both
   var SAV_OFFSET = (DSR_FROM_YEAR - SAV_FROM_YEAR) * 4;
   var dsrNow = dsrHistory[dsrHistory.length - 1];
@@ -8622,7 +8674,7 @@
                     "ylm-range":"10y", "hzn-range":"10y", "desire-range":"max",
                     "sheet-metric-households":"10y",
                     "sheet-sign-activity":"10y" };   // V498
-  (function(){
+  function wireDetailModal(){
     var backdrop = document.getElementById('detail-backdrop');
     var body = document.getElementById('detail-modal-body');
     function openFrom(idx, btn){
@@ -8652,7 +8704,8 @@
       if (openIndicatorsPage) openIndicatorsPage(chip.getAttribute('data-ind-tab'));
     });
     document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
-  })();
+  }
+  GYN.step("wireDetailModal", wireDetailModal, "mixed"); wireDetailModal();
 
 
   // ---------------- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----------------
@@ -8860,7 +8913,7 @@
 
 
   // ---------------- RENDER: yield-by-maturity comparison chart (multiselect by maturity) ----------------
-  (function(){
+  function renderPressurePage(){
     var svg = document.getElementById("ylm-svg");
     // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
     // drawn at the size it will occupy rather than scaled down from 780. The values here are only a seed.
@@ -9224,10 +9277,11 @@
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
     renderLegend();
     drawYlm();   // V518: which paints the head itself, so the second identical write is gone
-  })();
+  }
+  GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();
 
   // ---------------- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----------------
-  (function(){
+  function renderSpreadHistory(){
     var svg = document.getElementById("spread-history-svg");
     // Version 496: recomputed per draw from the host's width (see draw). A fixed 780-unit viewBox scaled to
     // a phone made this the smallest chart in the app, with labels shrunk by the same factor.
@@ -9434,10 +9488,11 @@
 
     drawSpreadWindow = draw;   // V472: the band drives it, so the window and the series both live outside
     draw("3m");
-  })();
+  }
+  GYN.step("renderSpreadHistory", renderSpreadHistory, "mixed"); renderSpreadHistory();
 
   // ---------------- RENDER: un-inversion-to-recession historical lag panel ----------------
-  (function(){
+  function deriveUninversionDetail(){
 
     var rowsHtml = '<div class="lag-rows"><div class="lag-row lag-row-head"><span>Cycle</span><span>Un-inverted</span><span>Recession began</span><span>Lag</span></div>' +
       uninvLagCycles.map(function(c){
@@ -9466,7 +9521,8 @@
     allSources = allSources.concat([
       {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
     ]);
-  })();
+  }
+  GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive"); deriveUninversionDetail();
 
   /* ---------------- RENDER: Horizon — the spread's own page (Version 473) ----------------
      Everything drawn here was on the Pressure page until this version and is MOVED, not rebuilt (the Version 314
@@ -9474,7 +9530,7 @@
      installed, the same un-inversion (i). What is new is the order of the two controls — the window first, then
      which spread — and the reason for the verdict, which is the part a relocated chart could not bring with it.
      This runs AFTER the lag panel, because the first thing its Highlights ask for is `UNINV_DETAIL`. */
-  (function(){
+  function renderHorizonPage(){
     var host = document.getElementById("hzn-timeline"); if (!host) return;
     var HZN_STOPS = ["5y", "10y", "max"];   // the V263 rule: 25Y is unanswerable on a series that starts in 2005
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
@@ -9555,10 +9611,11 @@
       '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
       '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>' +
       '</section>';
-  })();
+  }
+  GYN.step("renderHorizonPage", renderHorizonPage, "render"); renderHorizonPage();
 
   // ---------------- RENDER: Valuation (slow) — split off Sentiment in Version 231 ----------------
-  (function(){
+  function renderValuationTag(){
     var tagEl = document.getElementById("valuation-tag");
     tagEl.className = "tag " + valuation.tag.state + " longcycle-tag";
     tagEl.textContent = valuation.tag.text;
@@ -9573,12 +9630,13 @@
                         flagged:meterFlagged(row.meter), bar:panelFromMeter(row.meter) });
     }).join("");
     allSources = allSources.concat(valuation.src);
-  })();
+  }
+  GYN.step("renderValuationTag", renderValuationTag, "render"); renderValuationTag();
 
   // ---------------- RENDER: lab panel (long cycle) — overall stress composite is the table's own lead row ----------------
   // Each row shows its full reference-range bar inline (marker, meter, flag); the (i) button next to the marker
   // name opens the fuller written note in the shared detail modal — text only there, since the bar is already visible.
-  (function(){
+  function renderLongCycleTag(){
     var powerSub = "what the 3 markers below leave in reserve";
     var stressDetail = '<h4>Power supply</h4><div class="marker-sub">' + powerSub + '</div>' + factsFrom(stressNoteFull);
     powerPageNote = stressDetail;   // the Economic power page's own long form, read by its Highlights (Version 287)
@@ -9598,10 +9656,11 @@
     var flaggedCount = labPanel.filter(function(r){ return !!r.flagState; }).length;
     document.getElementById("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
     allSources = allSources.concat(longCycleSrc);
-  })();
+  }
+  GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
   // ---------------- RENDER: Sentiment (fast) — the mood ring, then the Fear & Greed lead row and its markers ----------------
-  (function(){
+  function renderPsychologyTag(){
     var tagEl = document.getElementById("psych-tag");     // gone since Version 282; the gauge carries the word
     if (tagEl){ tagEl.className = "tag " + moodNow.state + " longcycle-tag"; tagEl.textContent = moodNow.word; }
     // The index leads the panel as the gauge everyone already knows how to read, and leaves the table, which is now
@@ -9649,13 +9708,14 @@
         hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt)]);
     }
     allSources = allSources.concat(sentiment.src);
-  })();
+  }
+  GYN.step("renderPsychologyTag", renderPsychologyTag, "render"); renderPsychologyTag();
 
 
   // ---------------- RENDER: Analysis subjects — one headline figure per collapsible section ----------------
   // Each summary shows the single number a reader would want before deciding to expand. All values are read from
   // the same objects the section itself renders from, so a summary can't drift from its section.
-  (function(){
+  function renderSubjectRows(){
     function ring(key, pct, state){
       document.getElementById("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
     }
@@ -9843,7 +9903,8 @@
     set("valuation", valRow("cape").flagValue + '<span class="unit">CAPE</span><span class="tag ' + valuation.tag.state + '">' + valuation.tag.text + '</span>', "");
     say("valuation", valuation.shortImpression);
 
-  })();
+  }
+  GYN.step("renderSubjectRows", renderSubjectRows, "render"); renderSubjectRows();
 
   // ---------------- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----------------
   // Per-cycle growth = US real GDP over the cycle's CLOSED years (the in-progress year is excluded, as it is for
@@ -10100,7 +10161,7 @@
     hubShowDefault();
   }
   // ---- the Appearance row (Version 198): System · Light · Dark, kept in localStorage; System clears the choice ----
-  (function(){
+  function wireThemeChoice(){
     var group = document.getElementById("theme-toggle"), current = document.getElementById("appearance-current"); if (!group) return;
     var names = { system:"Use system setting", light:"Light mode", dark:"Dark mode" };
     function paint(){
@@ -10116,11 +10177,12 @@
       paint();
     });
     paint();
-  })();
+  }
+  GYN.step("wireThemeChoice", wireThemeChoice, "mixed"); wireThemeChoice();
   // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale (Version 176; the six seasons' colours
   // before), the market band's colors, one line on the badge. Built once — nothing in it changes per cycle — and opened by
   // the legend button in the card's corner.
-  (function(){
+  function renderCycleKicker(){
     var html = '<h4>Legend</h4><span class="marker-sub">The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.</span>' +
       '<div class="legend-head">Seasons</div><div class="legend-rows">' +
       [["winter","Winter","below the range"],["spring","Spring","below or within the range"],["summer","Summer","above the range"],["autumn","Autumn","within or above the range"]].map(function(r){ // Winter first (Version 193)
@@ -10139,7 +10201,8 @@
       '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailTexts.length; detailTexts.push(html);
     document.getElementById("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
-  })();
+  }
+  GYN.step("renderCycleKicker", renderCycleKicker, "render"); renderCycleKicker();
   // ---- the hub: the reading inside the circle ----
   // The default is the cycle's own reading (today's for the open cycle, the closing quarter's for a closed one); hovering
   // or tapping a moon, or scrubbing the badge round the ring, swaps in that quarter until the pointer leaves.
@@ -10225,7 +10288,7 @@
   // out in the hub (Keren, Sep 19, 2026): hover or tap a moon for that quarter, hover or tap a band segment for that
   // year, and press and hold the year badge, then drag round the ring, to scrub quarter by quarter — the badge rides
   // along and snaps home on release.
-  (function(){
+  function renderCycleDial(){
     var dial = document.getElementById("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
     var active = null; // the quarter's path and, at a year's end, the stub that rounds it
     function mark(i){
@@ -10314,7 +10377,8 @@
     }
     dial.addEventListener("pointerup", endScrub);
     dial.addEventListener("pointercancel", endScrub);
-  })();
+  }
+  GYN.step("renderCycleDial", renderCycleDial, "mixed"); renderCycleDial();
 
   // ---- the temperature chart: a line through the cycle's months, against the 2% target (a line chart since Version 156) ----
   // Drawn at one of two widths so the phone gets a chart as tall as the reference's rather than a shrunken copy
@@ -10678,10 +10742,11 @@
     function hide(){ crosshair.setAttribute("opacity", 0); hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
     attachHoverTracking(hit, svg, W, padL + sc.slotW / 2, innerW - sc.slotW, sc.slots, showAt, hide); // its own crosshair (Version 206)
   }
-  (function(){
+  function wireResize(){
     var resizeTimer = null;
     window.addEventListener("resize", function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(function(){ if (tempState.model) drawTemperature(tempState.model); }, 150); });
-  })();
+  }
+  GYN.step("wireResize", wireResize, "wire"); wireResize();
 
   var growthDetail = '<h4>Growth per cycle</h4>' +
     '<p class="lede">Real GDP across this cycle, quarter by quarter, on the Temperature chart\u2019s axis so the years line up.</p>' +
@@ -10943,7 +11008,7 @@
   })());
 
   // ---------------- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----------------
-  (function(){
+  function renderCycleList(){
     var list = document.getElementById("cycle-list");
     // Version 517: the two-pass scale is gone with it. It existed to find the longest cycle on the board and
     // draw every other row against that; the scale is a typical cycle now, which every row can work out for
@@ -11023,7 +11088,8 @@
     // for the current cycle (see the tab wiring below).
     calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; document.getElementById("topbar-back").hidden = true; };
     allSources = allSources.concat(sp500AnnualReturnSource).concat(typicalCycleSrc);
-  })();
+  }
+  GYN.step("renderCycleList", renderCycleList, "mixed"); renderCycleList();
 
   // First paint: the current cycle on the Cycle tab.
   renderCycleView(nowModel);
@@ -11032,7 +11098,7 @@
   // The five signs as subjects of their own (Version 247). Each row's face is the card's face — mark, name, figure,
   // one sentence — and its body is the card's full detail, so nothing is lost and nothing is nested. The Temperature
   // Temperature chart is not in here — since Version 249 it sits open on the page, under the dial.
-  (function(){
+  function renderSignsList(){
     var host = document.getElementById("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };   // signs whose card in the peek row stands in for their row
     // Version 306, Keren: "put Effort inside the Activity page \u2014 it belongs next to the labour market, it's not
@@ -11273,13 +11339,14 @@
         .forEach(function(x){ sheet.appendChild(x.el); });
     });
     Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
-  })();
+  }
+  GYN.step("renderSignsList", renderSignsList, "render"); renderSignsList();
 
   // The peek pair (Version 253). Today's readings only — it lives in #today-analysis, not in the cycle view, so a past
   // cycle opened from the Calendar never borrows it. Both figures are taken from the same place the row below takes
   // them, so the peek and its drawer can never disagree: Temperature from its own indicator, Growth from the season
   // model's latest quarter, which is also what the Growth chart reads at its end line.
-  (function(){
+  function renderPagesAndNav(){
     var host = document.getElementById("peek-row"); if (!host) return;
     var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
     var r = nowModel.reading, era = nowModel.era;
@@ -12507,14 +12574,15 @@
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape" && openSheet && !document.getElementById("detail-backdrop").classList.contains("show")) backFromPage();
     });
-  })();
+  }
+  GYN.step("renderPagesAndNav", renderPagesAndNav, "mixed"); renderPagesAndNav();
 
   // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page
   // whenever this list changes: build-sources.js in the project scratchpad reads window.__sources below.
   window.__sources = { all: allSources, cards: coincident.concat(lagging).map(function(c){ return {name:c.bodyTerm, src:c.src}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
 
   // ---------------- RENDER: Content tab — reading companion (season reading · flagged now · framework) ----------------
-  (function(){
+  function renderSeasonRows(){
     var meta = wheelMeta[currentSeason];
 
     // Version 505: the season reading that stood here moved into `quarterPopup` — three of its five blocks
@@ -12573,10 +12641,11 @@
         {t:"Schularick & Taylor — Credit Booms Gone Bust (NBER w15512)", u:"https://www.nber.org/papers/w15512"},
         {t:"StatPearls — Fertility Awareness-Based Methods (NCBI)", u:"https://www.ncbi.nlm.nih.gov/books/NBK546666/"}
       ]) + '</div>');
-  })();
+  }
+  GYN.step("renderSeasonRows", renderSeasonRows, "render"); renderSeasonRows();
 
   // ---------------- TAB NAVIGATION (Cycle / Calendar / Analysis / Content) ----------------
-  (function(){
+  function renderTopbar(){
     var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
     var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
     var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", portfolio:"Portfolio", content:"Content" }; // the top bar's title per tab (Keren's names)
@@ -12606,10 +12675,11 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-  })();
+  }
+  GYN.step("renderTopbar", renderTopbar, "mixed"); renderTopbar();
 
   // ---------------- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----------------
-  (function(){
+  function wireContactForm(){
     var menu = document.getElementById("more-menu"), open = document.getElementById("menu-btn"), back = document.getElementById("menu-back");
     var prevOverflow = "";
     // Sliding a thing that is display:none takes two steps: un-hide it, let the browser lay it out at its start
@@ -12704,7 +12774,8 @@
         setTimeout(function(){ hint.textContent = "If nothing opened, this device has no mail app set up."; }, 2500);
       });
     })();
-  })();
+  }
+  GYN.step("wireContactForm", wireContactForm, "mixed"); wireContactForm();
 })();
 </script>
 <script>

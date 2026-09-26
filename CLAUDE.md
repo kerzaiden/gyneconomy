@@ -89,6 +89,32 @@ written once at the end, so a failed assertion means nothing was written. For mu
 deletions use line-index surgery applied **bottom-up**. `docs/WORKING-DOC.md` has the escaping
 traps, which are real and have cost hours.
 
+## The step registry (V531)
+
+The script used to be 28 anonymous IIFEs running in source order. Each now has a **name, a measured
+kind, and an entry in `GYN`**, and still runs at exactly the same point — module vars are assigned
+between them, so the order is load-bearing and the calls did not move.
+
+Kinds are counted from each body, never asserted: **check** (6, data assertions, no DOM) · **derive**
+(3, module state) · **wire** (1, listeners only, must run once) · **render** (8, DOM only) · **mixed**
+(9, listeners AND DOM — cannot be re-run until split) · **live** (1, the database refresher).
+
+`GYN.render()` re-runs only what is safe to repeat today. **It is not yet idempotent, and the reason
+is known and measured**: rendering twice grows the DOM by about 22KB because `expandBtn()` and
+`infoIcon()` APPEND to `detailTexts` and return a fresh index, so `data-detail-idx` climbs on every
+pass. Until the detail store takes a **stable key per call site** instead of an append-only index,
+no render step can repeat cleanly. That is the next change, and everything else in Stage B waits on
+it. `deriveUninversionDetail` has the same shape of bug — it appends to `allSources` — and is
+excluded from `repeatable()` until fixed.
+
+`window.__GYN` is a **test seam, not an API**. Nothing in the app may depend on it.
+
+**Proving a refactor changed nothing:** `npm run snap` captures 32 states (two viewports × home,
+four tabs, eleven pages), normalised for dates and generated ids, and
+`npm run snap:diff a.json b.json --diff` compares them. It is deterministic — two captures of one
+file are identical — so a difference means a real difference. V531 was proved this way: 32 of 32
+identical against V530.
+
 ## Hosting (V530)
 
 The app is becoming a real site, not only an Artifact. Both targets are served from the **same
@@ -124,7 +150,7 @@ the boundary.
 | `docs/ARCHIVE.md` | version history and retired ideas |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
-| `tools/` | the map generator, the build template, the stylesheet check |
+| `tools/` | the map generator, the snapshot harness, the build template, the stylesheet check |
 | `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
 | `.github/workflows/ci.yml` | test on every push; deploy to Pages only if the suite passes |
 | `assets/` | app icon artwork (not referenced by the page) |
