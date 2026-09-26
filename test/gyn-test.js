@@ -22,6 +22,15 @@ const CHROME = (function () {
 
 if (!FILE) { console.error('usage: node gyn-test.js <file.html> [--full] [--bless]'); process.exit(2); }
 
+/* `npm i` installs Playwright but NOT its browser, so a fresh clone lands here. Say the fix
+   rather than failing inside launch() with a stack trace. */
+if (!CHROME || !fs.existsSync(CHROME)) {
+  console.error('Chromium not found' + (CHROME ? ' at ' + CHROME : '') + '.');
+  console.error('Run:  npm run setup      (i.e. playwright install chromium)');
+  console.error('Or point GYN_CHROME at an existing Chromium binary.');
+  process.exit(2);
+}
+
 const CATS = ['sheet-cat-weather','sheet-cat-circulation','sheet-cat-mood','sheet-cat-energy'];
 const PAGES = [
   ['sheet-metric-temp','sheet-metric-temp','Temperature'],

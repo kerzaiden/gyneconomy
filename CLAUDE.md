@@ -50,12 +50,17 @@ whether something was already tried.
 ## Commands
 
 ```sh
-npm i                  # once — installs Playwright and its Chromium
-npm test               # the suite: 50 checks, exit 0 or 1
-npm run test:full      # adds the class-coverage walk (2–4 min)
-npm run css            # stylesheet rule count + last selector
-grep -c "owner@" index.html    # must be 0
+npm i && npm run setup   # once — npm i alone does NOT fetch the browser
+npm test                 # the suite: 50 checks, exit 0 or 1
+npm run test:full        # adds the class-coverage walk (2–4 min)
+npm run css              # stylesheet rule count + last selector
+npm run email            # must print ok
 ```
+
+**Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
+fetches the Chromium it drives (~130MB, once per machine). In the Anthropic cloud sandbox skip
+`setup` — a Chromium is preinstalled and the suite finds it, and `playwright install` is not to be
+run there. Anywhere else, or to use a browser you already have, set `GYN_CHROME` to its binary.
 
 `npm test` is the gate. It asserts the spacing tokens and `COL_FILL`/`AXIS` in the source, zero
 page errors at two widths in both colour schemes, the head title and `⋯` note on all eleven

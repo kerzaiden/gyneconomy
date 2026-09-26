@@ -15,9 +15,12 @@ always present as the fallback.
 ## Working on it
 
 ```sh
-npm i        # Playwright, for the test suite only
-npm test     # 50 checks
+npm i && npm run setup   # Playwright and its Chromium, for the test suite only
+npm test                 # 50 checks
 ```
+
+`npm i` does not fetch the browser on its own — `npm run setup` does, once per machine. The app
+itself has no dependencies; this is test tooling only.
 
 Read `CLAUDE.md` first — it has the rules that are not negotiable. Read
 `docs/WORKING-DOC.md` before changing anything real; it records why the app is the way it is.
