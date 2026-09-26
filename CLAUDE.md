@@ -19,6 +19,13 @@ things are the way they are, including several decisions that look like bugs and
 `docs/ARCHIVE.md` is the version history and the retired ideas. Read it when you want to know
 whether something was already tried.
 
+**`docs/MAP.md` is how you navigate `index.html` without reading it.** The file is 12,708 lines and
+about 297,000 tokens, so you cannot hold it in context — the map gives you the five regions, every
+section, every top-level function and var, the IIFEs, and the registries that route behaviour. Each
+entry carries a **grep anchor**; line numbers in it are orientation only and go stale on every
+insertion. Generated, never hand-edited: `npm run map` after a structural change, `npm run map:check`
+to see whether it is current.
+
 ## The four things that are never negotiable
 
 1. **Keren's email must never appear in the markup.** It is assembled at send time inside the
@@ -55,6 +62,8 @@ npm test                 # the suite: 50 checks, exit 0 or 1
 npm run test:full        # adds the class-coverage walk (2–4 min)
 npm run css              # stylesheet rule count + last selector
 npm run email            # must print ok
+npm run map              # regenerate docs/MAP.md after a structural change
+npm run map:check        # is the map current?
 ```
 
 **Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
@@ -89,7 +98,8 @@ traps, which are real and have cost hours.
 | `docs/WORKING-DOC.md` | the working document: app, design system, mechanics |
 | `docs/ARCHIVE.md` | version history and retired ideas |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
-| `tools/` | the build template and the stylesheet check |
+| `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
+| `tools/` | the map generator, the build template, the stylesheet check |
 | `assets/` | app icon artwork (not referenced by the page) |
 
 Versions are **commits now**. The old `curve-and-cycle-vNNN.html` chain is retired — don't

@@ -88,8 +88,11 @@ The pattern every further series must follow:
 
 ### The cache — how a derived figure goes live without a render refactor (V528)
 
-**The structural problem, measured (V526).** The script has **31 top-level IIFEs that render at load and no
-global boot or re-render function**. A value that is only PRINTED can be repainted cheaply, which is why the
+**The structural problem, measured (V528).** The script has **28 top-level IIFEs that render at load and no
+global boot or re-render function** — plus four more that compute a value (`LIVE_CACHE`, `horizonRead`,
+`seasonTrackAll`, `regimeByQ`), 32 in all. (V526 recorded "31 that render at load"; that was the TOTAL at
+the time, before `LIVE_CACHE` existed, and it conflated the two kinds. `tools/make-map.py` counts them
+both and `docs/MAP.md` lists every one, so the figure is now measured rather than remembered.) A value that is only PRINTED can be repainted cheaply, which is why the
 policy rate worked from V525. A value that is DERIVED before it is printed cannot: Fear & Greed alone feeds
 `greedScore`, `moodNow`, the gauge, the ring, the subject row, the roster row and two long notes, all computed
 at load. Repainting those means a full render refactor of a 12,400-line file.
