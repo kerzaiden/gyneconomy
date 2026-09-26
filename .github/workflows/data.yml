@@ -43,15 +43,26 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: node tools/fetch-live.js
 
+      # A figure that fails leaves the previous value standing — correct for the DATA, but it also
+      # meant a figure failing on EVERY run showed a green tick and said so only deep in a log.
+      # The outcome goes on the run's front page now, and each failure raises a warning annotation,
+      # so "which figures are actually arriving?" is answerable at a glance instead of by digging.
       - name: Sanity — the file must be valid JSON with at least one document
         run: |
           node -e "
+            const fs = require('fs');
             const d = require('./data/live.json');
             const keys = Object.keys(d).filter(k => k !== '_meta');
             if (!keys.length) { console.error('no documents'); process.exit(1); }
             for (const k of keys) if (!d[k].kind) { console.error(k + ' has no kind'); process.exit(1); }
+            const failed = d._meta.failed || [];
+            const rows = keys.map(k => '| \`' + k + '\` | ok | ' + (d[k].asOf || '') + ' |')
+              .concat(failed.map(f => '| \`' + f.split(':')[0] + '\` | **left alone** | ' + f.slice(f.indexOf(':') + 1).trim() + ' |'));
+            const md = ['### Data run', '', '| figure | outcome | as of / why |', '|---|---|---|']
+              .concat(rows, ['', failed.length ? '**' + failed.length + ' figure(s) did not arrive.** The previous values stand.' : 'Every figure arrived.']);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md.join('\n') + '\n');
             console.log('ok: ' + keys.length + ' documents — ' + keys.join(', '));
-            if ((d._meta.failed || []).length) console.log('left alone: ' + d._meta.failed.join(' | '));
+            failed.forEach(f => console.log('::warning title=Figure left alone::' + f));
           "
 
       - name: Commit if anything moved
