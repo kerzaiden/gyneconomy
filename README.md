@@ -43,9 +43,9 @@ npm test                 # 60 checks
 | `tools/` | the fetcher, the map generator, the snapshot harness, the step classifier, the build template |
 | `.github/workflows/` | `ci.yml` tests then deploys; `data.yml` fetches then commits |
 
-Two files in there are generated and should never be edited by hand: `docs/MAP.md`
-(`npm run map`) and `data/live.json` (the Data workflow). `sources.html` is generated
-too, from the app's own Sources screen.
+Three files in there are generated and should never be edited by hand: `docs/MAP.md`
+(`npm run map`), `data/live.json` (the Data workflow) and `sources.html`
+(`npm run sources`, from the app's own Sources screen).
 
 ## Data
 

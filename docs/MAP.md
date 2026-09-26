@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-`index.html` is **13,051 lines**, about 1066 KB, roughly **303 thousand tokens**. No session can read it
+`index.html` is **13,056 lines**, about 1066 KB, roughly **303 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `34cc52c` on 2026-09-26.
+Generated from commit `f1cc128` on 2026-09-26.
 
 ## The five regions
 
@@ -19,8 +19,8 @@ Generated from commit `34cc52c` on 2026-09-26.
 | **Boot** | 1–4 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist — mirrors `--page` on purpose, so hex literals here are deliberate |
 | **Styles** | 5–2,905 | the whole stylesheet, every token and rule |
 | **Markup** | 2,906–3,631 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| **Script** | 3,632–13,027 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 13,028–13,051 | </body></html> |
+| **Script** | 3,632–13,032 | one IIFE containing everything: data, model, renderers, wiring |
+| **Close** | 13,033–13,056 | </body></html> |
 
 Counts: **242** top-level functions, **178** top-level vars, **4** top-level IIFEs in the script.
 

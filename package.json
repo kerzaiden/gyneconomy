@@ -14,7 +14,9 @@
     "map:check": "python3 tools/make-map.py --check",
     "snap": "node tools/snapshot.js index.html snap.json",
     "snap:diff": "node tools/snapshot.js",
-    "classify": "node tools/classify.js index.html"
+    "classify": "node tools/classify.js index.html",
+    "sources": "node tools/gen-sources.js",
+    "sources:check": "node tools/gen-sources.js --check"
   },
   "devDependencies": {
     "playwright": "^1.49.0"
