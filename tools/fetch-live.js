@@ -16,9 +16,15 @@
    4. The shapes match what the page already decodes — {kind:"series"|"object"|"scalar"} — so
       nothing downstream has to learn a second format.
 
-   What is NOT here, and why: Shiller CAPE has no FRED series and would mean scraping multpl.com;
-   CNN's Fear & Greed cannot be fetched at all. Both stay with the nightly human-in-the-loop task.
-   Writing a scraped or guessed value here would be worse than leaving them alone. */
+   CAPE comes from Robert Shiller's OWN published dataset (Version 541), not from multpl, which is a
+   site quoting him. That is a provenance upgrade, not merely an automation: the originator rather
+   than a compilation. It costs freshness — he updates monthly, where multpl interpolates daily —
+   and that is the right trade for a ratio whose whole claim is about the next decade.
+
+   What is still NOT here: CNN's Fear & Greed. CNN publishes no dataset and no public API for it;
+   the only machine route is an undocumented internal endpoint, which is theirs and not ours to
+   automate against. It stays with a human in the loop. Writing a scraped or guessed value here
+   would be worse than leaving it alone. */
 
 const fs = require('fs');
 const path = require('path');
@@ -88,7 +94,97 @@ async function treasuryCurve() {
   return { rows, date };
 }
 
-(async () => {
+/* Shiller publishes his stock-market dataset as a spreadsheet on shillerdata.com and has done for
+   decades — it is the source every CAPE figure ultimately comes from. The download link has moved
+   more than once, so the landing page is read first and the .xls found on it, rather than a URL
+   pinned here going quietly stale.
+
+   NOTHING here is found by position. The page carries MORE THAN ONE spreadsheet — the stock-market
+   dataset (ie_data.xls) and a housing-price one — so taking "the first .xls link" was picking the
+   right file by luck; and inside the workbook the sheet has grown columns over the years, so a
+   hard-coded column index would one day return the wrong number while looking perfectly fine. Every
+   link on the page is therefore a CANDIDATE: the one named like the dataset is tried first, and a
+   candidate only counts if its own header row names both a Date and a CAPE column. A file that does
+   not is skipped, not guessed at. */
+/* The sheet -> reading step, as a pure function of the rows, so it can be tested without the
+   network. Everything it needs it finds by READING, never by position:
+
+     * the header row is whichever of the first 30 rows names BOTH a date and a CAPE column,
+     * the reading is the last row below it that carries a number,
+     * and the date is parsed from Shiller's own YYYY.MM notation.
+
+   It throws rather than guessing. A caller with several candidate workbooks can treat a throw as
+   "not this file" and move on. */
+function capeFromRows(rows) {
+  let hdr = -1, dateCol = -1, capeCol = -1;
+  for (let i = 0; i < Math.min(rows.length, 30); i++) {
+    const r = (rows[i] || []).map(c => String(c == null ? '' : c).trim());
+    const d = r.findIndex(c => /^date$/i.test(c));
+    const c = r.findIndex(x => /^(cape|cape ratio|p\/e10|pe10)$/i.test(x));
+    if (d >= 0 && c >= 0) { hdr = i; dateCol = d; capeCol = c; break; }
+  }
+  if (hdr < 0) throw new Error('no header row naming Date and CAPE');
+
+  // the last row that actually carries a reading — the file trails blank and footnote rows
+  let val = null, when = null;
+  for (let i = rows.length - 1; i > hdr; i--) {
+    const v = Number((rows[i] || [])[capeCol]);
+    if (!isFinite(v) || v <= 0) continue;
+    val = v; when = (rows[i] || [])[dateCol]; break;
+  }
+  if (val == null) throw new Error('no CAPE reading below the header');
+  if (val < 4 || val > 60) throw new Error('CAPE ' + val + ' out of band');
+
+  /* Shiller dates a month as YYYY.MM, and 2026.1 means OCTOBER, not January — the decimal is a
+     month NUMBER, so a single digit is that digit times ten. Reading it as a fraction is the
+     mistake this comment exists for, and the one the test below pins. */
+  const str = String(when).trim();
+  const md = /^(\d{4})\.(\d{1,2})$/.exec(str);
+  if (!md) throw new Error('unparsable Shiller date ' + JSON.stringify(str));
+  const mm = md[2].length === 1 ? Number(md[2]) * 10 : Number(md[2]);
+  if (!(mm >= 1 && mm <= 12)) throw new Error('impossible month in ' + JSON.stringify(str));
+
+  return {
+    value: Math.round(val * 100) / 100,
+    date: md[1] + '-' + String(mm).padStart(2, '0') + '-01',
+    headerRow: hdr + 1
+  };
+}
+
+async function shillerCape() {
+  const XLSX = require('xlsx');
+  const page = await getText('https://shillerdata.com/', 'shiller page');
+
+  // the whole href, query string included — wsimg serves these with a ?ver= cache key
+  const hrefs = [];
+  for (const m of page.matchAll(/href="([^"]*\.xls[x]?(?:\?[^"]*)?)"/gi)) {
+    const u = new URL(m[1], 'https://shillerdata.com/').href;
+    if (!hrefs.includes(u)) hrefs.push(u);
+  }
+  if (!hrefs.length) throw new Error('no .xls link found on shillerdata.com');
+  // the stock-market dataset first, BY NAME; the rest only as fallbacks
+  hrefs.sort((a, b) => (/ie_data/i.test(b) ? 1 : 0) - (/ie_data/i.test(a) ? 1 : 0));
+
+  const why = [];
+  for (const url of hrefs) {
+    const name = decodeURIComponent(url.split('/').pop().split('?')[0]);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const wb = XLSX.read(Buffer.from(await res.arrayBuffer()), { type: 'buffer' });
+      const sheet = wb.SheetNames.find(n => /^data$/i.test(n)) || wb.SheetNames[1] || wb.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header: 1, blankrows: false });
+      const got = capeFromRows(rows);
+      say('  CAPE from ' + name + ', sheet "' + sheet + '", header row ' + got.headerRow);
+      return { value: got.value, date: got.date };
+    } catch (e) { why.push(name + ': ' + e.message); }
+  }
+  throw new Error('no workbook on shillerdata.com yielded a CAPE reading — ' + why.join('; '));
+}
+
+/* Required as a module (the tests do this), export the pure parts and run nothing. */
+if (require.main !== module) { module.exports = { capeFromRows }; }
+else (async () => {
   const out = {};
   const failed = [];
 
@@ -128,6 +224,13 @@ async function treasuryCurve() {
   if (vix) out.vixClose = { kind: 'scalar', value: vix.value, asOf: vix.date };
   if (oas) out.hyOas   = { kind: 'scalar', value: oas.value, asOf: oas.date };
 
+  // ---- Shiller CAPE, from Shiller (monthly) ----
+  try {
+    const c = await shillerCape();
+    out.capeValue = { kind: 'scalar', value: c.value, asOf: c.date };
+    say('capeValue   ' + c.value + '  ' + c.date + '  (Shiller\'s own dataset)');
+  } catch (e) { failed.push('capeValue: ' + e.message); }
+
   if (!Object.keys(out).length) {
     console.error('\nNOTHING FETCHED — writing nothing, previous data stands.');
     failed.forEach(f => console.error('  ' + f));
@@ -138,7 +241,7 @@ async function treasuryCurve() {
     fetchedAt: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
     ok: Object.keys(out).filter(k => k !== '_meta'),
     failed: failed,
-    note: 'Shiller CAPE and CNN Fear & Greed are not fetchable and stay with the nightly task.'
+    note: 'CNN Fear & Greed is not fetchable and stays with the weekly task.'
   };
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });

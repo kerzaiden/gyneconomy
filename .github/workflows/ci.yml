@@ -46,6 +46,11 @@ jobs:
       - name: Test suite
         run: npm test
 
+      # The fetcher's pure parts, with no network in them. The date arithmetic here is off by nine
+      # months if read wrong (Shiller writes 2026.1 for October), so it is pinned rather than trusted.
+      - name: Fetcher unit tests
+        run: npm run test:tools
+
       # A map that has drifted is worse than none, because it invites trust in a stale number.
       - name: Navigation map is current
         run: npm run map:check

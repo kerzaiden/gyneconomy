@@ -1,8 +1,10 @@
 # Gyneconomy
 
 A reading companion to Keren's book *Mrs. Market*, which reads the economy as a body with
-seasons. **`index.html` is the whole app** — one self-contained file, no build step, no
-bundler, no framework. It ships as a Claude Artifact at
+seasons. **`index.html` is the whole app** — one self-contained file, no bundler, no framework.
+Since V538 it is BUILT from `src/` by `npm run build`, which is `parts.join("\n")` and nothing
+else, so the shipped file is still one file with no module system in it. It ships as a Claude
+Artifact at
 `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`.
 
 Keren owns every design and editorial decision here. The code comments carry her voice on
@@ -19,14 +21,14 @@ things are the way they are, including several decisions that look like bugs and
 `docs/ARCHIVE.md` is the version history and the retired ideas. Read it when you want to know
 whether something was already tried.
 
-**`docs/MAP.md` is how you navigate `index.html` without reading it.** The file is 12,708 lines and
-about 297,000 tokens, so you cannot hold it in context — the map gives you the five regions, every
+**`docs/MAP.md` is how you navigate `index.html` without reading it.** The file is about 13,100 lines
+and 297,000 tokens, so you cannot hold it in context — the map gives you the five regions, every
 section, every top-level function and var, the IIFEs, and the registries that route behaviour. Each
 entry carries a **grep anchor**; line numbers in it are orientation only and go stale on every
 insertion. Generated, never hand-edited: `npm run map` after a structural change, `npm run map:check`
 to see whether it is current.
 
-## The four things that are never negotiable
+## The five things that are never negotiable
 
 1. **No email address may appear in the markup.** Keren's is assembled at send time inside the
    Contact handler, from parts, and nowhere else. `npm run email` must pass before every publish
@@ -35,15 +37,15 @@ to see whether it is current.
    publish. Read the newer version, merge onto it, publish again.
 3. **Never invent a number, a source or a band.** Every figure cites a primary source. A range
    nobody set is not a range — say so and ask.
-4. **Don't publish while the nightly refresh may be running** (22:30 UTC). A stale-version
-   refusal means it beat you; merge onto its version.
-5. **This repo's `index.html` is NOT the live app — the published artifact is.** A scheduled task
-   refreshes the artifact's figures nightly and cannot write to this repo, so the file you cloned
-   goes stale by a day every day. **Read the live version first** (`Artifact action:"read"` on the
-   artifact url), edit THAT, publish it, and commit the result back here. Editing the repo's copy
-   and publishing it silently reverts every nightly refresh since the last commit. This is the
-   easiest serious mistake to make in this project. `docs/ARCHITECTURE.md` → "Which copy is
-   canonical" has the whole picture.
+4. **Never pass `capabilities` on a republish.** Omitting it carries the artifact's stored `db`
+   grant forward. Passing anything else REVOKES it, and every live figure on the published page
+   dies with it — silently, because the hard-coded fallbacks still render.
+5. **Read the live artifact before publishing over it** (`Artifact action:"read"` on the artifact
+   url) and diff it against this repo's `index.html`. Since V540 the scheduled task writes the
+   artifact's DATABASE and no longer republishes its HTML, so the two should be identical and this
+   repo is the canonical source of the page — but a publish from anywhere else would break that,
+   and the diff is the only thing that would tell you. A difference is a merge, not a `force`.
+   `docs/ARCHITECTURE.md` → "Which copy is canonical" has the whole picture.
 
 ## The three governing rules
 
@@ -65,8 +67,9 @@ the history. Nothing conflicts; the bot only ever touches that one file.
 
 ```sh
 npm i && npm run setup   # once — npm i alone does NOT fetch the browser
-npm test                 # the suite: 50 checks, exit 0 or 1
+npm test                 # the suite: 60 checks, exit 0 or 1
 npm run test:full        # adds the class-coverage walk (2–4 min)
+npm run test:tools       # the fetcher's pure parts — no network, no browser
 npm run css              # stylesheet rule count + last selector
 npm run email            # must print ok
 npm run map              # regenerate docs/MAP.md after a structural change
@@ -230,7 +233,7 @@ The app is becoming a real site, not only an Artifact. Both targets are served f
   assembles a `_site/` of only what a reader needs: `index.html`, `sources.html`,
   `manifest.webmanifest`, `sw.js` and the icons. Docs, tests and tooling stay in the repo and off
   the web.
-- **The Claude Artifact**, still published by hand and by the nightly refresh. Unchanged.
+- **The Claude Artifact**, published by hand from this repo. Its figures arrive separately, from its own database — see below — so a data refresh is not a republish.
 
 **Installable.** `manifest.webmanifest` plus `sw.js` make it a PWA: standalone display, the lotus
 icon, and it works offline. The service worker is **network-first for HTML and cache-first for
@@ -253,8 +256,8 @@ their documents to `applyLive`, and `LIVE()` decodes the shapes for both. `fetch
 only where the file can exist — not framed, and over http(s) — so it is inert in the Artifact and
 on a `file://` open.
 
-`tools/fetch-live.js`, run by `.github/workflows/data.yml` on weekdays at 22:40 UTC (ten minutes
-behind the nightly Artifact task, so the two never race), fetches:
+`tools/fetch-live.js`, run by `.github/workflows/data.yml` on weekdays at 22:40 UTC — after the New York
+close, so the day's curve and VIX are posted — fetches:
 
 | Document | Source | Key |
 |---|---|---|
@@ -262,10 +265,18 @@ behind the nightly Artifact task, so the two never race), fetches:
 | `fedFunds` | FRED `DFEDTARU` / `DFEDTARL` | `FRED_API_KEY` |
 | `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
 | `hyOas` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
+| `capeValue` | Shiller's own spreadsheet, `shillerdata.com` | none |
 
-**NOT fetched, deliberately:** Shiller CAPE has no FRED series and would mean scraping a site that
-is itself quoting Shiller; CNN's Fear & Greed cannot be fetched at all. Both stay with the nightly
-human-in-the-loop task. **Writing a scraped or guessed value would be worse than leaving them.**
+**CAPE comes from the originator, not from a site quoting him (V541).** Shiller publishes the series
+as an `.xls` for exactly this purpose, so the fetcher scrapes the download link off the page, parses
+the sheet, **finds the header row by READING it rather than by column index**, and takes the last row
+that carries a CAPE value. Two traps, both handled: Shiller's dates are `YYYY.MM` with a one-digit
+month, so `.1` is **October, not January**; and the sheet's column order has moved before.
+
+**NOT fetched, and there is no honest route:** CNN's Fear & Greed. CNN publishes no dataset and no
+public API, cnn.com cannot be fetched, and the only machine-readable endpoint is an undocumented
+internal one that is theirs and not ours to automate against. It stays with the weekly
+human-in-the-loop task. **Writing a scraped or guessed value would be worse than leaving it.**
 
 **A failure leaves the previous value standing.** A document that cannot be fetched, or whose value
 falls outside its sanity band, is left OUT of the file and the last committed one stands. The bands

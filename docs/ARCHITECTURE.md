@@ -14,9 +14,13 @@ file, verify it in a headless browser, and publish it as a Claude Artifact.
 1. **No email address may appear in the page markup.** Hers is assembled at send time from parts inside
    the Contact handler. `npm run email` — which greps for ANY address, not one particular one — must pass
    before every publish. No exceptions.
-2. **Never publish while the nightly refresh may be running.** The scheduled task fires at **22:30 UTC**. If a
-   publish is refused because a newer version is live, the refresh beat you: read the live file, merge its
+2. **Read the live artifact and diff it before publishing over it.** Since V540 the scheduled task writes the
+   artifact's DATABASE and no longer republishes its HTML, so the live page and this repo's `index.html`
+   should be byte-identical apart from the wrapper the publish adds. Verify that rather than assuming it. If a
+   publish is refused because a newer version is live, something else published: read that file, merge its
    changes into yours, and publish the merge.
+   **And never pass `capabilities` on a republish.** Omitting it carries the stored `db` grant forward;
+   passing anything else revokes it and every live figure on the page dies silently behind its fallback.
 3. **Never pass `force:true` to a publish without Keren saying so for that specific publish.** It discards the
    newer version. It has been granted exactly once (V511).
 4. **Never invent a number, a source or a band.** If a figure is not sourced, say so and ask. A band that
@@ -122,9 +126,9 @@ file, a test run, and for a viewer without the grant, and a first-ever visit has
 what most loads render. They are not a duplicate of the database; they are the floor under it.
 
 **The cost, stated plainly: a returning viewer sees the previous visit's figures.** One load behind — which for
-a daily series is the yesterday the nightly republish would have given anyway. **So the nightly task still
-republishes the HTML, and should.** That is what fixes the first-ever visit, the notes, and anything a new
-reader sees.
+a daily series is yesterday. **The hard-coded literals are what a first-ever visit renders, so they are what a
+new reader sees**, and only a republish from `src/` moves them. Since V540 the task does not republish the HTML;
+that is a session's job, and it is why a source change and a data change are two different events here.
 
 **What the cache does NOT do.** Notes, captions and long-form (i) texts are concatenated at load, so the cache
 feeds the figures inside them only on the NEXT load; nothing re-writes a note mid-load. And a cached figure that
@@ -187,11 +191,11 @@ what this division removes.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **The Data workflow** (`data.yml`) | the Treasury curve, the Fed funds target, the VIX close, the high-yield spread | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
-| **The scheduled task** | Shiller CAPE and CNN Fear & Greed — the only two no pipeline can fetch | weekly, Sunday 22:47 UTC | the ARTIFACT, by writing its database |
+| **The Data workflow** (`data.yml`) | the Treasury curve, the Fed funds target, the VIX close, the high-yield spread, **Shiller CAPE** (V541) | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
+| **The scheduled task** | CNN Fear & Greed — the only figure no pipeline can fetch | weekly, Sunday 22:47 UTC | the ARTIFACT, by writing its database |
 | **A session** (you) | the source itself | when something changes | both, by building and publishing |
 
-**The task does not re-fetch the pipeline's four.** It READS `data/live.json` from
+**The task does not re-fetch the pipeline's five.** It READS `data/live.json` from
 `raw.githubusercontent.com` and copies those documents into the artifact's database unchanged, so
 there is one fetch of each figure and one validation of it, and the two surfaces cannot disagree
 about a number.
@@ -200,9 +204,18 @@ about a number.
 and a published artifact cannot fetch an external host. The database is the only route in. Without
 the task the artifact would freeze at whatever version was last published while the site carried on.
 
-**The cost, stated:** CAPE and Fear & Greed can be up to seven days old while the other four are at
-most a day. Every figure prints its own date, so no reader is misled — and the task moves back to
-daily the moment that trade stops being worth it.
+**The cost, stated:** Fear & Greed can be up to seven days old while the other five are at most a
+day. Every figure prints its own date, so no reader is misled — and the task moves back to daily the
+moment that trade stops being worth it.
+
+**Why CAPE moved to the pipeline (V541).** It had been the task's because there is no FRED series for
+it and the alternative looked like scraping a site quoting Shiller. That framing was wrong: **Shiller
+publishes the series himself**, as an `.xls` linked from `shillerdata.com`, for exactly this use. So
+the fetcher scrapes the link off that page, downloads the sheet, **locates the columns by reading the
+header row rather than by index**, and takes the last row carrying a CAPE value, banded 4–60. The
+date format is a trap worth naming: Shiller writes `YYYY.MM` with a one-digit month, so **`.1` is
+October, not January.** This is the originator rather than a compilation, which also moves the
+citation up a rung. One figure left that no machine can reach honestly, and it is CNN's.
 
 ## Which copy is canonical
 
@@ -211,26 +224,33 @@ can see all the others. Getting this wrong silently destroys work, so it is writ
 
 | Thing | Canonical copy | Who else holds one |
 |---|---|---|
-| The app | **The published artifact** — `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF` | the git repo's `index.html`, stale by design |
+| The app | **The git repo's `src/`** — `index.html` is built from it | the published artifact, which should be byte-identical |
 | The docs | **The git repo** — `CLAUDE.md`, `docs/ARCHITECTURE.md` | the Mrs. Market project's `claude/CLAUDE-CODE.md` |
 | Version history | **Append-only, two writers** — see below | repo `docs/ARCHIVE.md` and project `claude/ARCHIVE.md` |
 
-**The app: the artifact wins, always.** The nightly refresh task edits the artifact and CANNOT write
-to the git repo, so the repo's `index.html` falls a day behind every night. Any session that edits
-the app must `Artifact action:"read"` the live version FIRST, edit that, publish it, and commit the
-result back. Editing the repo's copy and publishing it reverts every nightly refresh since the last
-commit — quietly, with a green test suite, because the suite checks structure and not whether the
-figures are current.
+**The app: the repo wins now, and that is a change (V540/V541).** It used not to. The task used to
+republish the artifact's HTML nightly and could not write to the repo, so the repo's `index.html`
+fell a day behind every night and the artifact was canonical. **The task no longer touches the HTML
+— it writes the artifact's DATABASE**, which the page reads at load. So the page comes from `src/`
+and the figures come from the live layer, and the two no longer compete for the same bytes.
+
+**What this costs you: one diff, every time.** Before publishing, `Artifact action:"read"` the live
+version and diff it against the repo's `index.html`. They should differ only by the wrapper the
+publish adds — a skeleton `<head>` before the document and a duplicated `</body></html>` after it.
+**Verified on V541: identical apart from that wrapper and V541's own lines.** If they differ any
+other way, something published from outside this repo, and that is a merge — never a `force`.
 
 **The docs: the repo wins, and mirroring runs ONE direction.** Edit `CLAUDE.md` and this file in the
 repo, then copy this file up to the project as `claude/CLAUDE-CODE.md` with `project_write`. Never
 the reverse. The project copy exists because a scheduled or cloud session can reach the project and
 cannot reach the repo; it is a read-only mirror for those readers, not a second original.
 
-**Version history is the one exception, and it is append-only.** The nightly task appends its line to
-the PROJECT's `claude/ARCHIVE.md`, because that is the only copy it can write. A repo session picks
-those lines up when it next mirrors, and adds its own entries in the repo. Entries are only ever
-added, never rewritten, so the two converge instead of fighting. If they disagree, take the union.
+**Version history is append-only, and that is why it has two copies.** The repo's `docs/ARCHIVE.md` is
+where a session writes; the project's `claude/ARCHIVE.md` is the copy a cloud or scheduled session can
+read, and the only one it could ever write. The weekly task no longer adds entries — it changes no
+source, so it has no version to record — but the append-only rule stands for whatever writes next.
+Entries are only ever added, never rewritten, so the two converge instead of fighting. If they
+disagree, take the union.
 
 **A cloud or scheduled session cannot reach the git repo. That is expected and is never a reason to
 stop.** No credentials exist outside Keren's own machine, and none should. A run that cannot see the
@@ -251,10 +271,10 @@ version history, the long narratives, retired figures and the superseded doc set
 
 ## The app in one page
 
-*Mrs. Market*'s Seasonal Behaviour indicator table as a data product; Clue-style market cycle tracker; companion to the manuscript, not part of it. ONE self-contained HTML file; no build, bundler, framework. Live `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`. Working file: newest `curve-and-cycle-vNNN.html` in scratchpad. Owner Keren; code comment naming a Version + quoting her = a decision. Build complete; only editorial slots open.
+*Mrs. Market*'s Seasonal Behaviour indicator table as a data product; Clue-style market cycle tracker; companion to the manuscript, not part of it. ONE self-contained HTML file, built from `src/` by `npm run build` (V538); no bundler, no framework, no module system in the shipped file. Live `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF` and at the hosted site. Edit `src/`, never `index.html`. Owner Keren; code comment naming a Version + quoting her = a decision. Build complete; only editorial slots open.
 
 - No email address in markup; hers is assembled at send time in the Contact handler. `npm run email` (any address, not one) passes before every publish.
-- No publish while the nightly refresh may run (22:30 UTC). Stale refusal → read live, merge, publish merge. No `force:true` without her say-so for that publish.
+- Read the live artifact and diff it against the repo before publishing over it. Stale refusal → read live, merge, publish merge. No `force:true` without her say-so for that publish, and **never pass `capabilities`** (omitting carries the `db` grant; anything else revokes it).
 - Never invent a number, source or band.
 - **HISTORY COMPONENT IS ONE COMPONENT**: a change to one history page is a change to ALL; a page that can't take it is a finding to report, not a page to skip.
 - **BAND PROVENANCE**: every normal range sourced or explicitly Keren's call; (i) says which; a target is never relabelled "normal".
@@ -515,7 +535,7 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 
 1. **Read the live artifact first** (`Artifact action:"read"`), never a local copy.
 2. Set **`DATA_COMPILED`** (top of the script) to the compile date. It flows to the "Data compiled" phrase in the Sources sheet's opening paragraph (`#asof-text`), the year-to-date label and the era lookup. Nothing else needs a date edit.
-3. Update live figures from **primary** sources: yield curve (Treasury), spreads (FRED), VIX (FRED VIXCLS; its note's market-reaction sentence from FRED SP500/DJIA/DGS10), OAS (FRED BAMLH0A0HYM2), PMI (ISM's release on PR Newswire plus the ismworld.org report page), unemployment and claims (BLS/DOL), CPI (BLS release text), M2V (FRED), CAPE (multpl's daily read of Shiller's series), Buffett (recompute NCBEILQ027S ÷ GDP when a new Z.1 quarter posts; raise the meter `max` if it sets a record), the resilience markers (CBO outlook; FRED fiscal series for actuals; FRED OPHNFB for productivity YoY). The stress score, power reading, insights, vitals, Feeling and season all re-derive. **If a primary source is unreachable, leave the figure and its date and say so — never substitute a secondary.**
+3. Update live figures from **primary** sources: yield curve (Treasury), spreads (FRED), VIX (FRED VIXCLS; its note's market-reaction sentence from FRED SP500/DJIA/DGS10), OAS (FRED BAMLH0A0HYM2), PMI (ISM's release on PR Newswire plus the ismworld.org report page), unemployment and claims (BLS/DOL), CPI (BLS release text), M2V (FRED), CAPE (**Shiller's own spreadsheet via the pipeline** since V541 — never multpl, never a site quoting him), Buffett (recompute NCBEILQ027S ÷ GDP when a new Z.1 quarter posts; raise the meter `max` if it sets a record), the resilience markers (CBO outlook; FRED fiscal series for actuals; FRED OPHNFB for productivity YoY). The stress score, power reading, insights, vitals, Feeling and season all re-derive. **If a primary source is unreachable, leave the figure and its date and say so — never substitute a secondary.**
 4. Series upkeep:
 
 | Series | Upkeep |
@@ -526,28 +546,53 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 | `cpiYoYHistory` | append the newest month's CPI YoY (FRED CPIAUCSL, two decimals), **never drop earlier months**; a month BLS never published is simply absent |
 | `fedFunds` | after each FOMC decision set `lo`/`hi`, `lastMove`, `lastMoveLabel`, `asOf`, `next` (`fedFundsMid` derives) |
 | `gdpPeers` | each quarter with the US release |
-| `hyDates`/`hyOas` | **not a nightly item** — the row's figure is, but the series is re-downloaded and replaced whole, roughly quarterly |
+| `hyDates`/`hyOas` | **not a pipeline item** — the row's figure is, but the series is re-downloaded and replaced whole, roughly quarterly |
 | `deficitHistory` | append a fiscal year only when FRED FYFSGDA188S carries the closed year (the federal year ends Sep 30, the figure lands in late autumn) — two decimals, positive is a surplus, never drop earlier years, never move the 1946 start, never put a projection in the series. `DEF_RECESSION_FY` changes only if NBER dates a new recession — say so in the notification |
 | `powerHistory` | append a year once the CBO/OMB actuals are out |
 
 5. **Fixed or editorial content is never touched by a refresh**: all `min`/`max`/band values, `stressHistory`, `wheelMeta`/`actionIcons`, `seasonRules`, `seasonReading`/`frameworkRows`, `cycleEndReadings`, the annual GDP series, the spread/yield histories and lag panel, era names and blurbs. **To close the open cycle** also add its `cycleEndReadings` entry — Fed funds, VIX close, PMI for its last month — or its ring and Feeling tile have nothing to read. `currentSeason` is computed: don't set it, check the (i)'s reasoning after a refresh, touch `seasonOverride` only if Keren asks.
 6. **Do not touch**: `RISK_REWARD` / `RISK_RISK` (Desire's Risk / Reward grid), `PRESSURE_ZONES`, `PREVIEW_CYCLES`, `DEF_RECESSION_FY`, `deficitHistory`'s 1946 start, the `opens` field making the Deficit rate row a door, `TIMELINE_STOPS` and the per-page `*_STOPS` arrays, and `cycleStrip`'s contract of returning the strip only so the caller supplies the container.
 
-### The nightly refresh contract (the scheduled task reads this)
+### The scheduled task's contract (the task reads this)
 
-**One** scheduled task exists: a **daily 22:30 UTC** refresh (`trig_01JF1LVovJqVQGCt9HSL6o8r`) that re-researches live figures and republishes. No morning email task exists; if Keren wants one it must be recreated — don't assume it is running. **This section is the canonical contract; the task's prompt carries a working copy** and says this doc supersedes it *when readable*. A scheduled run starts a fresh session **not attached to the Mrs. Market project**, so `project_read` is unavailable to it: **never write a hard stop into a scheduled prompt that depends on a resource the run may not have.** When a rule changes here, change it there too.
+**One** scheduled task exists (`trig_01JF1LVovJqVQGCt9HSL6o8r`), **weekly, Sunday 22:47 UTC**, and since V540
+its scope is small on purpose. It does **not** re-research the app's figures and it does **not** republish the
+HTML. It fetches CNN's Fear & Greed — the one figure no pipeline can reach honestly — reads the pipeline's own
+`data/live.json` for the other five, and writes all six into the **artifact's database**, which is the only
+route into a published artifact. No morning email task exists; if Keren wants one it must be recreated.
 
-**WHEN TO PUBLISH — read this before anything else.** 22:30 UTC = 18:30 New York, a few hours after the close, so the day's Treasury curve and Cboe VIX close are posted. On any US **trading day** there IS new daily data — five figures move every session: the Treasury par yield curve, the VIX close, the ICE BofA high-yield OAS, the Shiller CAPE reading, the CNN Fear & Greed score. **A trading-day run that publishes nothing is a FAILED run, not a quiet one.** Check those five **by date, not by value**; if any carries an observation newer than the page's, refresh it, advance `DATA_COMPILED` to that day and publish. Only when all five already hold their newest observation — weekend, market holiday, or a day the sources genuinely have not posted — change nothing, and then **state in the run summary which date each of the five carries**. Never let the page fall more than one trading day behind: `DATA_COMPILED` is what the dial prints as "Today". **An instruction that lets an unattended task decide it has nothing to do will eventually be the reason it does nothing** — give it a positive test it must pass.
+**This section is the canonical contract; the task's prompt carries a working copy.** When a rule changes here,
+change it there too — with `update_trigger`, keeping the task's run history, never delete-and-recreate. A
+scheduled run starts a fresh session **not attached to the Mrs. Market project**, so `project_read` is
+unavailable to it: **never write a hard stop into a scheduled prompt that depends on a resource the run may
+not have.**
 
-**ONE FIGURE, ONE NUMBER.** When you rewrite a note, check every figure in it against the data object that owns it; if a note cites a figure the page holds elsewhere, refresh **both** or cite neither. A market-reaction sentence is not exempt.
+**A run that writes nothing must say why.** The old daily contract had a positive test it had to pass, because
+an instruction that lets an unattended task decide it has nothing to do will eventually be the reason it does
+nothing. The weekly task keeps that property in a smaller form: every run reports the five dates it took from
+the pipeline, CNN's score and its source, the documents it wrote, and the season the page computes.
 
-**Never set the season.** `currentSeason` is computed; never assign it, never set `seasonOverride`. After publishing, read what the page now computes (the (i) states its reasoning) and report it; if it changed, revise `cycleNowNote` and say that you did.
+**Never derive CNN's label from CNN's number.** Copy the score and the band word CNN itself prints. The bands
+are theirs, and the app's own note calls the index a widely watched gauge rather than a measurement.
 
-**The Fed's inflation objective — a standing check.** On the first run of each month and after any FOMC meeting, read the Statement on Longer-Run Goals and confirm the objective is still 2 percent on PCE. If it changed, **do not** move the 1–3% band, the season thresholds or the 2% line — notify with the link and add one sentence to the Temperature (i). Log the result either way in one line of the run summary.
+**Never set the season.** `currentSeason` is computed; never assign it, never set `seasonOverride`. Read what
+the page computes (the (i) states its reasoning) and report it; if it changed, say so.
 
-**Notify only if**: the computed season changed; the yield-curve regime flipped (inverted ↔ normal); the Fed changed rates; the Fed's inflation objective changed; a lab-panel marker's flag status changed; the Overall Stress Score crossed a band; or a primary source was unreachable and a figure left stale. Otherwise finish quietly — **"quietly" means no notification, not no publish.**
+**The Fed's inflation objective — a standing check.** On the first run of each month, read the Statement on
+Longer-Run Goals and confirm the objective is still 2 percent on PCE. If it changed, **do not** move the 1–3%
+band, the season thresholds or the 2% line — notify with the link. Log the result either way, one line.
 
-**Re-check both prompts after any structural change.** The refresh prompt is told to update itself and has not always done so; it must describe the current four tabs, the signs and their inner pages, the Indicators page and the Risk / Reward grid, and it names deleted features (e.g. the Mrs. Market's wisdom card) and says not to reintroduce them. Verify it yourself.
+**Notify only if**: the pipeline's file was missing a document or is more than four days old; a database write
+failed; CNN's index could not be found at all; the computed season changed; or the Fed's objective changed.
+Otherwise finish quietly.
+
+**If the task ever needs to republish** — only when the SOURCE changed, which on a normal run it has not —
+it reads the live version first, **never passes `capabilities`** (omitting carries the `db` grant forward;
+anything else revokes it and kills every live figure), never uses `force`, and checks that a grep for any
+email address in the markup returns 0.
+
+**ONE FIGURE, ONE NUMBER** still binds any session that rewrites a note: check every figure in it against the
+data object that owns it; refresh **both** or cite neither. A market-reaction sentence is not exempt.
 
 ### Build → verify → publish
 
@@ -569,23 +614,29 @@ from before the repo existed; the suite absorbed all three.
    the email gate, the spacing tokens and `COL_FILL`/`AXIS`, page errors at 414px and 1280px in
    both schemes, the head title and `⋯` note on all eleven history pages, the cycle picker's
    capital-T `Today`, the live-data cache, the repaint layer, and the registry invariant.
-2. **`npm run test:full`** before AND after any CSS cull — it adds the class-coverage walk, and the
+2. **`npm run test:tools`** — 17 cases over `capeFromRows`, the sheet-reading step of
+   `tools/fetch-live.js`. No network and no browser, so it runs anywhere and runs in CI. It pins the
+   trap that matters: Shiller writes a month as `YYYY.MM` with a ONE-DIGIT month, so `2026.1` is
+   October and reading it as January is wrong by nine months. The FETCHING is not tested here and
+   cannot be — neither the cloud sandbox nor the local VM is allowed out to `shillerdata.com`. Its
+   proof is the Data workflow's own run, which fails loudly rather than writing a wrong number.
+3. **`npm run test:full`** before AND after any CSS cull — it adds the class-coverage walk, and the
    rendered class count may only drop by exactly the classes retired. Two to four minutes.
-3. **`npm run snap`** for any refactor that should change nothing: 32 DOM states, deterministic, so
+4. **`npm run snap`** for any refactor that should change nothing: 32 DOM states, deterministic, so
    a difference is a real difference. Compare with `node tools/snapshot.js a.json b.json --diff`.
-4. **`npm run classify`** if you touched a registered step — it measures what each one does and
+5. **`npm run classify`** if you touched a registered step — it measures what each one does and
    flags a declared kind it disagrees with.
-5. **`npm run css`** — the rule count is 1,166 and the last selector `a:hover`. A sudden drop, or a
+6. **`npm run css`** — the rule count is 1,166 and the last selector `a:hover`. A sudden drop, or a
    last selector from the middle of the sheet, means an unclosed brace killed every rule after it.
-6. **The probe for what you changed**: open the pages it touches and assert the claim in the DOM. A
+7. **The probe for what you changed**: open the pages it touches and assert the claim in the DOM. A
    screenshot is for judging design, an assertion for proving behaviour — both, for anything
    visible. If the claim is worth keeping, fold the probe into the suite rather than throwing it
    away; that is how it grew from 42 checks to 60.
-7. Cross-check every `getElementById("…")` against an `id="…"`, and every CSS class or id against
+8. Cross-check every `getElementById("…")` against an `id="…"`, and every CSS class or id against
    the markup.
-8. **Diff against the live artifact** and confirm only intended lines changed.
-9. **`npm run email` passes.** Anything else: stop and fix, do not publish.
-10. If any `src` list changed, regenerate `sources.html` and publish it alongside; if the in-app Sources screen shows an "Other" group, **stop**.
+9. **Diff against the live artifact** and confirm only intended lines changed.
+10. **`npm run email` passes.** Anything else: stop and fix, do not publish.
+11. If any `src` list changed, regenerate `sources.html` and publish it alongside; if the in-app Sources screen shows an "Other" group, **stop**.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url` (always update in place, never create a new artifact), the file path, and a `label` of **60 characters or fewer** — a name for the version, not a description. If refused because a newer version exists, read that version in full, merge onto it and publish again; never resend your own file unchanged, and never use `force` without Keren's explicit say-so.
 

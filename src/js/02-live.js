@@ -32,6 +32,8 @@
   /* The six the nightly refresh moves. Histories are deliberately not cached: they change a few times a year,
      they are the bulk of the payload, and a stale one would be a worse trade than a stale daily print. */
   var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident", "fearGreed"];
+  // the scalars the pipeline publishes, which land INSIDE the objects above (V533, V541)
+  var LIVE_SCALARS = ["vixClose", "hyOas", "capeValue"];
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
@@ -114,6 +116,7 @@
     fearGreed:  [repaintSentiment],
     yieldCurve: [repaintYieldRow],
     valuation:  [repaintValuationRow],
+    capeValue:  [repaintValuationRow],
     sentiment:  [],
     coincident: []
   };
@@ -157,6 +160,22 @@
           vrow.meter.value = value;
           vrow.flagValue = value.toFixed(1);
           if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
+          break;
+        }
+        /* V541: CAPE arrives from Shiller's own dataset, monthly. It lands in the valuation row and
+           the VERDICT is recomputed from it — `valuation.tag` is derived at load, so a fresh number
+           beside a stale word is exactly the drift ONE FIGURE / ONE NUMBER forbids. */
+        case "capeValue": {
+          if (typeof value !== "number" || value < 4 || value > 60) return false;
+          var crow = valRow("cape");
+          if (!crow || !crow.meter) return false;
+          crow.meter.value = value;
+          // the row PRINTS flagValue, and it carries its own unit: "41.3×", not "41.3".
+          // Taking the suffix from the value already there keeps it right without hard-coding it.
+          var suffix = String(crow.flagValue || "").replace(/^[\d.,\s-]+/, "");
+          crow.flagValue = value.toFixed(1) + suffix;
+          if (liveAsOf.capeValue) crow.sub = liveAsOf.capeValue;
+          valuation.tag = valuationVerdict(value);
           break;
         }
         case "hyOas": {
