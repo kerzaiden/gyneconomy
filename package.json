@@ -13,7 +13,8 @@
     "map": "python3 tools/make-map.py",
     "map:check": "python3 tools/make-map.py --check",
     "snap": "node tools/snapshot.js index.html snap.json",
-    "snap:diff": "node tools/snapshot.js"
+    "snap:diff": "node tools/snapshot.js",
+    "classify": "node tools/classify.js index.html"
   },
   "devDependencies": {
     "playwright": "^1.49.0"

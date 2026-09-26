@@ -354,9 +354,9 @@ async function openPage(p, url, sheet) {
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       // the kinds are a measured fact about the file; a change here is a real change
       const k = inv.kinds;
-      (k.build === 3 && k.mixed === 9 && k.wire === 1)
+      (k.build === 3 && k.mixed === 2 && k.wire === 7)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 3, mixed 9, wire 1');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 3, mixed 2, wire 7');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

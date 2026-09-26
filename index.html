@@ -4047,6 +4047,17 @@
        render  writes DOM and may be run again
        build   CONSUMES or MOVES static markup, or depends on state a later step sets — one-shot
        mixed   binds listeners AND writes DOM — cannot be re-run until it is split
+
+     THE KINDS ARE MEASURED BY RUNNING THE STEP, not read off its source (Version 536). Counting
+     DOM writes in a body counts the writes inside its event HANDLERS too, which fire later and say
+     nothing about the step itself — that mislabelled six pure wirers as mixed, and hid that the
+     1,228-line `renderPagesAndNav` binds nothing at all and converges. Measuring means patching
+     `addEventListener`, running the step, and watching: listeners bound means it must run once;
+     DOM settled and no listeners means it may run again. `tools/classify.js` does it.
+
+     A name here describes what a step BUILT the first time; the kind describes whether it may run
+     AGAIN. `renderCycleDial` draws a dial on the first pass and only binds handlers on a second,
+     so it is named render and classified wire. The two are answering different questions.
        live    a data source: the database refresher, the site feed
 
      `build` is the honest kind, added in Version 535 after measuring. `renderSignsList` runs
@@ -8933,7 +8944,7 @@
     });
     document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
   }
-  GYN.step("wireDetailModal", wireDetailModal, "mixed"); wireDetailModal();
+  GYN.step("wireDetailModal", wireDetailModal, "wire"); wireDetailModal();
 
 
   // ---------------- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----------------
@@ -10406,7 +10417,7 @@
     });
     paint();
   }
-  GYN.step("wireThemeChoice", wireThemeChoice, "mixed"); wireThemeChoice();
+  GYN.step("wireThemeChoice", wireThemeChoice, "wire"); wireThemeChoice();
   // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale (Version 176; the six seasons' colours
   // before), the market band's colors, one line on the badge. Built once — nothing in it changes per cycle — and opened by
   // the legend button in the card's corner.
@@ -10606,7 +10617,7 @@
     dial.addEventListener("pointerup", endScrub);
     dial.addEventListener("pointercancel", endScrub);
   }
-  GYN.step("renderCycleDial", renderCycleDial, "mixed"); renderCycleDial();
+  GYN.step("renderCycleDial", renderCycleDial, "wire"); renderCycleDial();
 
   // ---- the temperature chart: a line through the cycle's months, against the 2% target (a line chart since Version 156) ----
   // Drawn at one of two widths so the phone gets a chart as tall as the reference's rather than a shrunken copy
@@ -11317,7 +11328,7 @@
     calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; document.getElementById("topbar-back").hidden = true; };
     addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
   }
-  GYN.step("renderCycleList", renderCycleList, "mixed"); renderCycleList();
+  GYN.step("renderCycleList", renderCycleList, "wire"); renderCycleList();
 
   // First paint: the current cycle on the Cycle tab.
   renderCycleView(nowModel);
@@ -12811,7 +12822,7 @@
       if (e.key === "Escape" && openSheet && !document.getElementById("detail-backdrop").classList.contains("show")) backFromPage();
     });
   }
-  GYN.step("renderPagesAndNav", renderPagesAndNav, "mixed"); renderPagesAndNav();
+  GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
   // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page
   // whenever this list changes: build-sources.js in the project scratchpad reads window.__sources below.
@@ -12912,7 +12923,7 @@
       });
     });
   }
-  GYN.step("renderTopbar", renderTopbar, "mixed"); renderTopbar();
+  GYN.step("renderTopbar", renderTopbar, "wire"); renderTopbar();
 
   // ---------------- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----------------
   function wireContactForm(){
@@ -13011,7 +13022,7 @@
       });
     })();
   }
-  GYN.step("wireContactForm", wireContactForm, "mixed"); wireContactForm();
+  GYN.step("wireContactForm", wireContactForm, "wire"); wireContactForm();
 })();
 </script>
 <script>

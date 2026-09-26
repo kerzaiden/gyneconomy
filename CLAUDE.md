@@ -65,6 +65,7 @@ npm run email            # must print ok
 npm run map              # regenerate docs/MAP.md after a structural change
 npm run map:check        # is the map current?
 npm run snap             # 32-state DOM snapshot, to prove a refactor changed nothing
+npm run classify         # measure what each step does, to check the declared kinds
 ```
 
 **Both setup steps, always.** `npm i` installs Playwright's library and stops there; `npm run setup`
@@ -96,9 +97,18 @@ The script used to be 28 anonymous IIFEs running in source order. Each now has a
 kind, and an entry in `GYN`**, and still runs at exactly the same point — module vars are assigned
 between them, so the order is load-bearing and the calls did not move.
 
-Kinds: **check** (6, data assertions) · **derive** (3, module state) · **wire** (1, listeners only,
-must run once) · **render** (5, DOM, repeatable) · **build** (3, one-shot) · **mixed** (9, listeners
-AND DOM) · **live** (2, the database refresher and the site feed).
+Kinds: **check** (6) · **derive** (3) · **wire** (7, listeners only, must run once) · **render** (6,
+repeatable) · **build** (3, one-shot) · **mixed** (2) · **live** (2).
+
+**The kinds are MEASURED by running each step (`npm run classify`), never read off the source.**
+Counting DOM writes in a body counts the writes inside its event HANDLERS, which fire later and say
+nothing about the step — that mislabelled six pure wirers as mixed and hid that the 1,228-line
+`renderPagesAndNav` binds nothing and converges. Patch `addEventListener`, run the step, watch:
+listeners bound means run once; DOM settled with no listeners means it may run again.
+
+**A name says what a step BUILT; a kind says whether it may run AGAIN.** `renderCycleDial` draws a
+dial on the first pass and only binds handlers on a second, so it is named render and classified
+wire. They answer different questions, and renaming to match would lose the first answer.
 
 **`build` is the honest kind (V535), and it was earned by measurement.** `renderSignsList` MOVES the
 static markup into the category rows, consuming its own source — the documented "catItem consumes
