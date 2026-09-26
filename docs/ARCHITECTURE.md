@@ -191,8 +191,8 @@ what this division removes.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **The Data workflow** (`data.yml`) | every live figure: the Treasury curve, the Fed funds target, the VIX close, the high-yield spread, **Shiller CAPE** (V541) and **CNN Fear & Greed** (V542) | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
-| **The scheduled task** | nothing — it fetches no figure at all now | weekly, Sunday 22:47 UTC | the ARTIFACT, by copying that file into its database |
+| **The Data workflow** (`data.yml`) | five figures: the Treasury curve, the Fed funds target, the VIX close, the high-yield spread and **Shiller CAPE** (V541) | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
+| **The scheduled task** | CNN Fear & Greed, from a news report quoting it — the one figure no pipeline MAY fetch | weekly, Sunday 22:47 UTC | the ARTIFACT, by copying that file plus its own figure into the database |
 | **A session** (you) | the source itself | when something changes | both, by building and publishing |
 
 **The task is a courier, and since V542 that is all it is.** It fetches nothing. It READS
@@ -211,14 +211,48 @@ What remains is a one-week lag on the ARTIFACT's copy, because the courier runs 
 a day behind its sources, the artifact up to a week behind the site. Every figure prints its own date,
 so no reader is misled, and the courier moves back to daily the moment that trade stops being worth it.
 
-**CNN's Fear & Greed comes from CNN's private interface, and that is Keren's decision (V542).** There
-is no dataset and no documented API; the endpoint is the one CNN's own public chart calls, so it
-carries no terms, no stability promise, and it can change or close without notice. This script offers
-what mitigation it can: one read per run, a user-agent naming the project, **CNN's own band word
-copied rather than a band derived from the score**, and a failure that leaves the previous value
-standing. **Nothing about the app's provenance changes.** The note on the page still says the formula
-is undisclosed, that there is no downloadable history, and that this is a widely watched gauge rather
-than a measurement — automating it made it fresher and removed a human step; it did not promote it.
+## The two sources that said no (V543)
+
+**CNN refused, at the protocol level.** V542 fetched Fear & Greed from the endpoint CNN's own public
+chart calls. The first run from a GitHub runner got **HTTP 418** — their edge declining an automated
+client. That is an answer, not an outage: it will not clear by retrying, and the only way past it is
+to send a browser's user-agent and pretend not to be a script. **That is evading a block rather than
+reading something published, and this project does not do it.** The fetcher was removed the same day.
+
+**AAII refused, in writing, in its own file.** The survey was investigated as a replacement and looked
+ideal — the originator's own weekly poll, 2,042 readings back to 1987, and a band better than CNN's
+because AAII carries its own long-run mean (37.6%) and ±1 standard deviation (27.6–47.6%) as columns
+in the workbook. The parser was written and **proved against the real file on the first run**. Then
+the workbook's third sheet, "Terms of Service", was read: it prohibits **"automated downloading (bots,
+scrapers, APIs)"** without a commercial licence, and prohibits integration into commercial products.
+Keren has confirmed the app is commercial. So it was not shipped.
+
+**The order of those two steps is the lesson.** The parser was built before the terms were read, which
+wasted the work and would have wasted worse if nobody had thought to open that tab. **Read the terms
+first.** A source's own file is where they are most likely to be, and an empty-looking sheet is worth
+opening in a real spreadsheet program rather than trusting a parser's silence about it.
+
+**What that leaves.** Fear & Greed stays with the weekly task, which reads a news report QUOTING CNN's
+score and band word — journalism citing an index, not an automated fetch, and the arrangement that
+held before V542. The page's note is unchanged and still correct: the formula is undisclosed, there is
+no downloadable history, and this is a widely watched gauge rather than a measurement.
+
+**The open question is what replaces it.** The leading candidate is a **VIX term-structure ratio**,
+`VIXCLS ÷ VXVCLS` — both Cboe series on FRED, one of which the app already fetches. It needs no new
+source, no new permission, no new dependency and no new way to fail, and it is daily rather than
+weekly. Its threshold is DEFINITIONAL rather than editorial, which puts it in the same band-provenance
+category as Horizon's zero: above 1.00 means near-term fear exceeds three-month fear. The cost is real
+— it is a ratio around 0.8–1.1, so the Mood tab's 0–100 gauge would have to be redrawn, and the words
+on it are Keren's. Nothing is built pending that decision.
+
+**A licensing gap, recorded rather than sat on.** Keren has confirmed the app is commercial: it
+accompanies a book for sale. Treasury, BLS and FRED's own series are straightforwardly fine. The
+EXCHANGE-sourced ones are what nobody has checked — FRED publishes Cboe's VIX under *"Copyright,
+Chicago Board Options Exchange, Inc. Reprinted with permission"*, which is not a public-domain notice.
+This is **pre-existing and unchanged** by anything in V541–543, and adding VXVCLS would add no new
+exposure, since it is the same exchange by the same route. It is written down so that the next person
+does not assume it was settled, and so that "is this source's licence compatible with a commercial
+app?" becomes the FIRST question asked of any new source rather than the last.
 
 **Why CAPE moved to the pipeline (V541).** It had been the task's because there is no FRED series for
 it and the alternative looked like scraping a site quoting Shiller. That framing was wrong: **Shiller

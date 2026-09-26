@@ -266,7 +266,6 @@ close, so the day's curve and VIX are posted — fetches:
 | `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
 | `hyOas` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
 | `capeValue` | Shiller's own spreadsheet, `shillerdata.com` | none |
-| `fearGreed` | CNN's own chart endpoint (V542) | none |
 
 **CAPE comes from the originator, not from a site quoting him (V541).** Shiller publishes the series
 as an `.xls` for exactly this purpose, so the fetcher scrapes the download link off the page, parses
@@ -274,13 +273,26 @@ the sheet, **finds the header row by READING it rather than by column index**, a
 that carries a CAPE value. Two traps, both handled: Shiller's dates are `YYYY.MM` with a one-digit
 month, so `.1` is **October, not January**; and the sheet's column order has moved before.
 
-**CNN's Fear & Greed is fetched from CNN's private interface, and that was Keren's decision to make
-(V542).** CNN publishes no dataset and no documented API; what exists is the endpoint its own public
-chart calls. It carries no terms and no stability promise and can change or close without notice. The
-mitigations: read once per run, a user-agent that names the project, **CNN's OWN band word copied
-rather than a band derived from the score**, and a failure that leaves the previous score standing.
-Nothing about the app's provenance changes — the note on the page still calls the index a widely
-watched gauge rather than a measurement, because that is what it is.
+**CNN's Fear & Greed is NOT fetched, and two sources have now said so themselves (V543).** V542 read
+it from the endpoint CNN's own chart calls; the first run from a GitHub runner got **HTTP 418**, their
+edge refusing an automated client. The only way past that is to send a browser's user-agent and
+pretend not to be a script, which is evading a block rather than reading something published, so the
+fetcher was removed. **AAII's sentiment survey was then investigated as a replacement and is also out,
+by its own terms** — the workbook's Terms of Service sheet prohibits "automated downloading (bots,
+scrapers, APIs)" without a commercial licence, and prohibits integration into commercial products
+besides. The parser was written and proved against the real file *before* those terms were read; it
+was not shipped, and that order is the lesson: **read the terms first.**
+
+The figure stays with the weekly task, which reads a news report QUOTING CNN's score and band word —
+journalism citing an index, not an automated fetch. **A replacement is an open question**, and the
+leading candidate is a VIX term-structure ratio (`VIXCLS ÷ VXVCLS`), which needs no new source, no new
+permission and no new failure mode, but does need the 0–100 gauge redrawn.
+
+**A known gap, recorded rather than sat on.** Keren has confirmed the app is commercial — it
+accompanies a book for sale. Treasury, BLS and FRED's own series are straightforwardly fine. The
+EXCHANGE-sourced series are the ones nobody has checked: FRED shows Cboe's VIX under "Reprinted with
+permission", which is not a public-domain notice. This is pre-existing and unchanged by anything
+recent; it is written down so the next person does not assume it was settled.
 
 **Never invent a number and never derive a band.** Both fetchers refuse rather than guess: an
 unrecognised CNN rating, a missing field, a value outside its band, an unparsable date — each leaves
