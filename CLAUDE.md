@@ -63,6 +63,40 @@ The remote is often ahead of you: the Data workflow commits fresh figures to
 your commits replay on top of the data commits instead of leaving a merge bubble in
 the history. Nothing conflicts; the bot only ever touches that one file.
 
+## Which assistant, and when
+
+Two work on this project and they are not interchangeable. The split is not "code vs design" — it
+is **what each one can reach**.
+
+**Only a Claude session with this project attached can:**
+
+- **publish the artifact** and **write its database**. A GitHub Action cannot do either, and a
+  terminal has no route to them. Every `Artifact` publish in the history came from one.
+- **change the scheduled task** (`trig_01JF1LVovJqVQGCt9HSL6o8r`), which is the only thing that
+  carries figures into the published artifact.
+- **keep working while nobody is watching** — research, a long audit, anything you start and walk
+  away from.
+
+**Claude Code, in a terminal in this folder, is better at:**
+
+- **iterating on `src/`** — no file bridge in the way, so an edit-build-test loop is immediate.
+- **chasing a failing suite or a failing workflow**, where the loop is run, read, fix, run again.
+- **anything git-shaped**: rebases, bisects, reading history, resolving a conflict.
+
+**Either can do** the docs, the research and the reasoning. Pick by where you already are.
+
+**The handoff is the repo, and that is the whole point of it being one.** Both read this file,
+`docs/ARCHITECTURE.md` and `docs/MAP.md`; both run the same `npm` scripts; both commit to the same
+branch. Nothing lives in a conversation any more. **So the rule is: finish a piece of work by
+committing it**, and whichever assistant you open next starts from where the other stopped. An
+uncommitted change is the only thing that does not survive the switch.
+
+**One asymmetry worth remembering.** A terminal session can change `src/` and commit, and the SITE
+will deploy — CI does that on every push to `main`. But the **artifact** will not move, because
+publishing it needs a session with the `Artifact` tool. So a change made in a terminal reaches the
+site by itself and reaches the artifact only when someone asks a project session to publish it.
+That is the one way the two targets can silently drift apart.
+
 ## Commands
 
 ```sh
