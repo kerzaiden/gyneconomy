@@ -28,9 +28,9 @@ to see whether it is current.
 
 ## The four things that are never negotiable
 
-1. **Keren's email must never appear in the markup.** It is assembled at send time inside the
-   Contact handler and nowhere else. `grep -c "owner@" index.html` must print `0` before
-   every publish. Anything else: stop.
+1. **No email address may appear in the markup.** Keren's is assembled at send time inside the
+   Contact handler, from parts, and nowhere else. `npm run email` must pass before every publish
+   — it greps for ANY address, not one particular one. Anything else: stop.
 2. **Never `force` a publish** over a newer version without Keren saying so for that specific
    publish. Read the newer version, merge onto it, publish again.
 3. **Never invent a number, a source or a band.** Every figure cites a primary source. A range

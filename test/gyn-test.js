@@ -80,11 +80,25 @@ async function openPage(p, url, sheet) {
   const src = fs.readFileSync(url, 'utf8');
 
   // ---- 1. static checks, no browser needed
-  const m = src.match(/<script>([\s\S]*)<\/script>/);
-  try { new Function(m[1]); ok('parses'); } catch (e) { bad('parses', e.message); }
+  /* Every inline <script>, each on its own. A GREEDY match across the whole file would run from
+     the first <script> to the LAST </script> and swallow the `</script><script>` boundary between
+     them, failing with "Unexpected token '<'" on a file that is perfectly valid — which is exactly
+     what happened when Version 530 added the service-worker registration as a second block. */
+  const blocks = [...src.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(x => x[1]);
+  if (!blocks.length) bad('parses', 'no <script> block found');
+  else {
+    const fails = [];
+    blocks.forEach((b, i) => { try { new Function(b); } catch (e) { fails.push('#' + i + ': ' + e.message); } });
+    fails.length ? bad('parses', fails.join(' | '))
+                 : ok('parses', blocks.length + ' script block' + (blocks.length === 1 ? '' : 's'));
+  }
 
-  const leak = (src.match(/owner@/g) || []).length;
-  leak === 0 ? ok('no email in markup') : bad('no email in markup', leak + ' occurrence(s) — DO NOT PUBLISH');
+  /* ANY address in the markup, not one particular address. Stricter than the old check — it would
+     catch a collaborator's address too — and it keeps the owner's out of a repo that is public.
+     The Contact handler assembles the address at send time from parts, which is not a match. */
+  const leaks = [...new Set(src.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [])];
+  leaks.length === 0 ? ok('no email in markup')
+                     : bad('no email in markup', leaks.length + ' address(es) — DO NOT PUBLISH');
 
   for (const [name, re] of SRC_MUST)
     re.test(src) ? ok('source: ' + name) : bad('source: ' + name, 'not found');

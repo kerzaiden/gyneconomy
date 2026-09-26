@@ -33,3 +33,12 @@ Two figures are computed in-house and say so. The citation list is on the app's 
 screen and mirrored in `sources.html`.
 
 Nothing here is investment advice.
+
+## Rights
+
+© 2026 Keren. All rights reserved. The source is public so the app can be hosted and read, not
+as a grant of licence — the design, the writing and the framework are part of the book *Mrs.
+Market*. Ask before reusing them.
+
+The underlying economic data belongs to the agencies that publish it, each cited on the app's
+Sources screen.

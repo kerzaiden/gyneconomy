@@ -33,11 +33,11 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       # The rule that outranks every other rule in this project.
-      - name: Keren's email must not be in the markup
+      - name: No email address in the markup
         run: |
-          n=$(grep -c "owner@" index.html || true)
-          if [ "$n" != "0" ]; then echo "::error::email appears $n time(s) in index.html"; exit 1; fi
-          echo "ok: 0 occurrences"
+          n=$(grep -cE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' index.html || true)
+          if [ "$n" != "0" ]; then echo "::error::$n email address(es) in index.html"; exit 1; fi
+          echo "ok: no address in markup"
 
       - name: Test suite
         run: npm test

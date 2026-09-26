@@ -11,8 +11,9 @@ file, verify it in a headless browser, and publish it as a Claude Artifact.
 
 ## Standing constraints — these are not negotiable
 
-1. **Her email must never appear in the page markup.** It is assembled at send time from parts inside the
-   Contact handler. `grep -c "owner@" <file>` must print `0` before every publish. No exceptions.
+1. **No email address may appear in the page markup.** Hers is assembled at send time from parts inside
+   the Contact handler. `npm run email` — which greps for ANY address, not one particular one — must pass
+   before every publish. No exceptions.
 2. **Never publish while the nightly refresh may be running.** The scheduled task fires at **22:30 UTC**. If a
    publish is refused because a newer version is live, the refresh beat you: read the live file, merge its
    changes into yours, and publish the merge.
@@ -189,7 +190,7 @@ version history, the long narratives, retired figures and the superseded doc set
 
 *Mrs. Market*'s Seasonal Behaviour indicator table as a data product; Clue-style market cycle tracker; companion to the manuscript, not part of it. ONE self-contained HTML file; no build, bundler, framework. Live `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`. Working file: newest `curve-and-cycle-vNNN.html` in scratchpad. Owner Keren; code comment naming a Version + quoting her = a decision. Build complete; only editorial slots open.
 
-- Email never in markup; assembled at send time in the Contact handler. `grep -c "owner@" <file>` = `0` before every publish.
+- No email address in markup; hers is assembled at send time in the Contact handler. `npm run email` (any address, not one) passes before every publish.
 - No publish while the nightly refresh may run (22:30 UTC). Stale refusal → read live, merge, publish merge. No `force:true` without her say-so for that publish.
 - Never invent a number, source or band.
 - **HISTORY COMPONENT IS ONE COMPONENT**: a change to one history page is a change to ALL; a page that can't take it is a finding to report, not a page to skip.
@@ -498,7 +499,7 @@ The file is written **at the end**, so a failed assertion means nothing was writ
 6. Cross-check every `getElementById("…")` against an `id="…"`, and every CSS class or id against the markup.
 7. **Assert the stylesheet** in Playwright: walk `document.styleSheets`, read `cssRules` inside try/catch (a cross-origin font sheet throws and must be skipped), total the rules and note the last selector. **The count is 1,166 as of Version 528 and the last selector is `a:hover`** (measured, not remembered — the 1,190 this doc carried was stale) — update those two facts here when a version changes them. A sudden drop, or a last selector from the middle of the sheet, means an unclosed brace has killed every rule after it.
 8. **Diff against the live file** and confirm only intended lines changed.
-9. **`grep -c "owner@"` → 0.** Anything else: stop and fix, do not publish.
+9. **`npm run email` passes** — no address of any kind in the markup. Anything else: stop and fix, do not publish.
 10. If any `src` list changed, regenerate `sources.html` and publish it alongside; if the in-app Sources screen shows an "Other" group, **stop**.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url` (always update in place, never create a new artifact), the file path, and a `label` of **60 characters or fewer** — a name for the version, not a description. If refused because a newer version exists, read that version in full, merge onto it and publish again; never resend your own file unchanged, and never use `force` without Keren's explicit say-so.

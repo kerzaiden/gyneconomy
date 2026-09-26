@@ -42,7 +42,9 @@ def check(lines, idx, fragment):
 # rep("var OLD = 1;", "var OLD = 2;", "the thing")
 # -------------------------------------------------------------------------
 
-assert "owner@" not in s, "the email reached the markup — refusing to write"
+import re as _re
+assert not _re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", s), \
+    "an email address reached the markup — refusing to write"
 
 open(OUT, "w", encoding="utf-8").write(s)
 print("wrote %s (%d bytes)" % (OUT, len(s)))
