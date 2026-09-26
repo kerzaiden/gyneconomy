@@ -4042,28 +4042,35 @@
 
      The kinds are counted from each body, not asserted:
        check   a data assertion, no DOM — safe to re-run
-       derive  computes module state — mostly safe, but see the caveat below
+       derive  computes module state — idempotent since Version 535
        wire    binds event listeners — must run ONCE, ever
-       render  writes DOM — the candidates for re-running when data lands
+       render  writes DOM and may be run again
+       build   CONSUMES or MOVES static markup, or depends on state a later step sets — one-shot
        mixed   binds listeners AND writes DOM — cannot be re-run until it is split
-       live    the database refresher
+       live    a data source: the database refresher, the site feed
 
-     This is the seam, not the destination. `GYN.render()` deliberately runs only the steps that
-     are safe to repeat today; `mixed` steps are excluded because re-running one would bind its
-     listeners a second time. Splitting those is the next stage, one at a time, each proved by
-     rendering twice and diffing the DOM.
+     `build` is the honest kind, added in Version 535 after measuring. `renderSignsList` runs
+     `while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
+     rows, consuming its own source, which is the documented "catItem consumes its source"
+     behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
+     it again throws on a host that no longer exists. `renderPsychologyTag` reads a note a later
+     step fills, so a second call renders MORE than the first. None of these is sloppy; all three
+     are one-shot by design, and calling them builders says so instead of pretending a fix is
+     pending.
 
-     Known non-idempotency, found while classifying: `deriveUninversionDetail` appends to
-     `allSources`, so running it twice would duplicate citations. It is marked derive but excluded
-     from repeat below until that is fixed. */
+     `GYN.render()` runs check, derive and render. The suite asserts that every step it runs is
+     idempotent, so a step that stops being repeatable fails the build rather than rotting quietly.
+     One allowance: a width-aware chart re-measures its host, so a differing viewBox WIDTH is not
+     counted as a difference — `renderHorizonPage` legitimately redraws at 334 then 360. */
   var GYN = {
     steps: [],
     step: function(name, fn, kind){ this.steps.push({ name: name, fn: fn, kind: kind }); return fn; },
     of: function(kind){ return this.steps.filter(function(s){ return s.kind === kind; }); },
-    // the steps that may safely run again today
+    // the steps that may safely run again. `build`, `wire`, `mixed` and `live` are excluded by
+    // kind rather than by name — a named exception is a note that goes stale, a kind is a fact.
     repeatable: function(){
       return this.steps.filter(function(s){
-        return (s.kind === "check" || s.kind === "render") && s.name !== "deriveUninversionDetail";
+        return s.kind === "check" || s.kind === "derive" || s.kind === "render";
       });
     },
     render: function(){
@@ -8684,6 +8691,28 @@
     {t:"FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}
   ];
 
+  /* ADDING A SOURCE IS IDEMPOTENT (Version 535).
+
+     Eight places concatenated onto this list, and six of them sit inside render steps. Running one
+     of those twice appended the same citations again, so the Sources screen would list a source
+     two, three, four times — a real bug the moment anything re-rendered, and the reason two steps
+     had to be excluded from the repeatable set by name.
+
+     De-duplicating by URL fixes all eight at once, and is the correct rule anyway: a source is the
+     same source whoever cites it, and several pages legitimately cite the same series. Order of
+     first appearance is kept, because the Sources screen groups by it. */
+  function addSources(list){
+    if (!list) return;
+    var seen = Object.create(null), i;
+    for (i = 0; i < allSources.length; i++) if (allSources[i] && allSources[i].u) seen[allSources[i].u] = 1;
+    var add = Array.isArray(list) ? list : [list];
+    for (i = 0; i < add.length; i++){
+      var s = add[i];
+      if (!s || !s.u || seen[s.u]) continue;
+      allSources.push(s); seen[s.u] = 1;
+    }
+  }
+
   // ================================================================================================
   // RENDER — everything above this line is data (embedded series, computed indicators, source lists);
   // everything below turns that data into DOM, in the order each panel appears in the tabs:
@@ -8756,7 +8785,7 @@
 
   // (the standalone GDP comparison chart of Versions 16–208 — six countries, 2010–2025, a dropdown picker — is folded into the
   // cycle's Growth chart since Version 209: see the peers in drawGrowth and renderPeerPills)
-  allSources = allSources.concat(gdpSrc).concat(gdpPeerSrc);
+  addSources(gdpSrc); addSources(gdpPeerSrc);
 
   // ---------------- RENDER: range bars + card helpers ----------------
   function clampPct(v, lo, hi){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
@@ -9144,7 +9173,7 @@
           '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury stopped issuing 30-year bonds between October 2001 and February 2006, so there is no actual traded yield for that stretch — shown here as a break rather than a guessed figure.</p>' +
           '<div class="src">' + srcHtml([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}]) + '</div>'}
     ];
-    allSources = allSources.concat([
+    addSources([
       {t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"},
       {t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}
     ]);
@@ -9535,7 +9564,7 @@
       }
     };
     // Both series' sources are listed on the "view all sources" page regardless of which is toggled on-screen.
-    allSources = allSources.concat(series["3m"].sources).concat(series["2y"].sources);
+    addSources(series["3m"].sources); addSources(series["2y"].sources);
 
     function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
     function x(i, n){ return padL + (innerW * i) / (n - 1); }
@@ -9717,7 +9746,7 @@
        \u2014 four cycles, one to ten months, what today's count is measured from \u2014 was always in the (i). The page ends
        on one list of five facts and no prose at all. */
     UNINV_DETAIL = detail;
-    allSources = allSources.concat([
+    addSources([
       {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
     ]);
   }
@@ -9828,7 +9857,7 @@
                         metric:row.flagValue,
                         flagged:meterFlagged(row.meter), bar:panelFromMeter(row.meter) });
     }).join("");
-    allSources = allSources.concat(valuation.src);
+    addSources(valuation.src);
   }
   GYN.step("renderValuationTag", renderValuationTag, "render"); renderValuationTag();
 
@@ -9854,7 +9883,7 @@
     powerPanelHtml = stressRowHtml + rowsHtml;   // V491: placed by the renderer, inside the history container
     var flaggedCount = labPanel.filter(function(r){ return !!r.flagState; }).length;
     document.getElementById("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
-    allSources = allSources.concat(longCycleSrc);
+    addSources(longCycleSrc);
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
@@ -9906,9 +9935,9 @@
         hiCard("What it is saying", moodNow.state, txt),
         hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt)]);
     }
-    allSources = allSources.concat(sentiment.src);
+    addSources(sentiment.src);
   }
-  GYN.step("renderPsychologyTag", renderPsychologyTag, "render"); renderPsychologyTag();
+  GYN.step("renderPsychologyTag", renderPsychologyTag, "build"); renderPsychologyTag();
 
 
   // ---------------- RENDER: Analysis subjects — one headline figure per collapsible section ----------------
@@ -10103,7 +10132,7 @@
     say("valuation", valuation.shortImpression);
 
   }
-  GYN.step("renderSubjectRows", renderSubjectRows, "render"); renderSubjectRows();
+  GYN.step("renderSubjectRows", renderSubjectRows, "build"); renderSubjectRows();
 
   // ---------------- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----------------
   // Per-cycle growth = US real GDP over the cycle's CLOSED years (the in-progress year is excluded, as it is for
@@ -11286,7 +11315,7 @@
     // Leaving for another tab and coming back always lands on the list; the Cycle tab always takes the view back
     // for the current cycle (see the tab wiring below).
     calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; document.getElementById("topbar-back").hidden = true; };
-    allSources = allSources.concat(sp500AnnualReturnSource).concat(typicalCycleSrc);
+    addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
   }
   GYN.step("renderCycleList", renderCycleList, "mixed"); renderCycleList();
 
@@ -11547,7 +11576,7 @@
     });
     Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
   }
-  GYN.step("renderSignsList", renderSignsList, "render"); renderSignsList();
+  GYN.step("renderSignsList", renderSignsList, "build"); renderSignsList();
 
   // The peek pair (Version 253). Today's readings only — it lives in #today-analysis, not in the cycle view, so a past
   // cycle opened from the Calendar never borrows it. Both figures are taken from the same place the row below takes

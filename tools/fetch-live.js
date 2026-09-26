@@ -78,7 +78,14 @@ async function treasuryCurve() {
   }
   if (rows.length < 10) throw new Error('treasury: only ' + rows.length + ' maturities parsed');
   for (const r of rows) if (r.y < 0 || r.y > 20) throw new Error('treasury: ' + r.m + ' = ' + r.y + ' out of band');
-  return { rows, date: cells[head.indexOf('Date')] };
+  /* Treasury dates the file MM/DD/YYYY; FRED uses ISO. Every asOf this script writes is ISO, because
+     the page parses them with one function — the first run shipped 09/25/2026 and would have failed
+     that parse silently the day the curve started printing its own date. */
+  const raw = cells[head.indexOf('Date')] || '';
+  const us = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(raw.trim());
+  const date = us ? us[3] + '-' + us[1] + '-' + us[2] : raw.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('treasury: unparsable date ' + JSON.stringify(raw));
+  return { rows, date };
 }
 
 (async () => {

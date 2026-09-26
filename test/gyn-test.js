@@ -311,6 +311,58 @@ async function openPage(p, url, sheet) {
     await c.close();
   }
 
+  // ---- 2f. the registry invariant (Version 535)
+  // EVERY step GYN.render() runs must converge: run it to settle, then running it again changes
+  // nothing. Convergence rather than first-run equality, because a width-aware chart re-measures
+  // its host and legitimately redraws once at the new width. A step that APPENDS keeps growing and
+  // still fails, which is what this exists to catch. This is what makes the kinds trustworthy: a
+  // step that stops being repeatable fails the build instead of rotting quietly.
+  {
+    const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
+    const g = await c.newPage();
+    const perr = [];
+    g.on('pageerror', e => perr.push(String(e).slice(0, 140)));
+    await g.goto('file://' + url); await g.waitForTimeout(1400);
+
+    const inv = await g.evaluate(() => {
+      const G = window.__GYN;
+      if (!G || !G.repeatable) return null;
+      const norm = h => h.replace(/viewBox="0 0 \d+ /g, 'viewBox="0 0 W ');
+      const failed = [];
+      for (const s of G.repeatable()) {
+        let err = '';
+        try { s.fn(); } catch (e) { err = String(e).slice(0, 70); }
+        const settled = norm(document.body.innerHTML);
+        try { if (!err) s.fn(); } catch (e) { err = String(e).slice(0, 70); }
+        const again = norm(document.body.innerHTML);
+        if (err) failed.push(s.name + ' threw ' + err);
+        else if (settled !== again) failed.push(s.name + ' delta ' + (again.length - settled.length));
+      }
+      const before = norm(document.body.innerHTML);
+      G.render();
+      return { n: G.repeatable().length, failed,
+               whole: norm(document.body.innerHTML) === before,
+               kinds: G.steps.reduce((a, s) => (a[s.kind] = (a[s.kind] || 0) + 1, a), {}) };
+    });
+
+    if (!inv) bad('registry invariant', 'no registry');
+    else {
+      inv.failed.length === 0
+        ? ok('every repeatable step converges', inv.n + ' steps')
+        : bad('every repeatable step converges', inv.failed.join(' | '));
+      inv.whole ? ok('GYN.render() leaves the DOM unchanged')
+                : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
+      // the kinds are a measured fact about the file; a change here is a real change
+      const k = inv.kinds;
+      (k.build === 3 && k.mixed === 9 && k.wire === 1)
+        ? ok('step kinds', JSON.stringify(k))
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 3, mixed 9, wire 1');
+      perr.length ? bad('no errors while re-running steps', perr.join(' | '))
+                  : ok('no errors while re-running steps');
+    }
+    await c.close();
+  }
+
   // ---- 3. the slow one
   if (FULL) {
     const q = await b.newPage({ viewport: { width: 414, height: 1000 } });

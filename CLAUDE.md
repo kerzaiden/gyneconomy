@@ -96,9 +96,19 @@ The script used to be 28 anonymous IIFEs running in source order. Each now has a
 kind, and an entry in `GYN`**, and still runs at exactly the same point — module vars are assigned
 between them, so the order is load-bearing and the calls did not move.
 
-Kinds are counted from each body, never asserted: **check** (6, data assertions, no DOM) · **derive**
-(3, module state) · **wire** (1, listeners only, must run once) · **render** (8, DOM only) · **mixed**
-(9, listeners AND DOM — cannot be re-run until split) · **live** (1, the database refresher).
+Kinds: **check** (6, data assertions) · **derive** (3, module state) · **wire** (1, listeners only,
+must run once) · **render** (5, DOM, repeatable) · **build** (3, one-shot) · **mixed** (9, listeners
+AND DOM) · **live** (2, the database refresher and the site feed).
+
+**`build` is the honest kind (V535), and it was earned by measurement.** `renderSignsList` MOVES the
+static markup into the category rows, consuming its own source — the documented "catItem consumes
+its source" behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so a
+second call throws on a host that no longer exists. `renderPsychologyTag` reads a note a later step
+fills, so a second call renders MORE than the first. None is sloppy; all three are one-shot by
+design, and naming them builders says so rather than implying a fix is pending.
+
+**Exclusions are by KIND, never by name.** A named exception is a note that goes stale; a kind is a
+fact about the step.
 
 `detailTexts` is **content-addressed** (V532): `detailSlot(html)` keys a slot by the note's own
 HTML, so identical content reuses its slot and the array grows with DISTINCT notes rather than with
@@ -150,6 +160,18 @@ class moves `serious-ink` → `critical-ink`; the yield pair moves 5.18/4.24 →
 a wrong shape and an unknown document are each refused. `window.__GYN.applyLive` is the test seam.
 
 `window.__GYN` is a **test seam, not an API**. Nothing in the app may depend on it.
+
+**The invariant that keeps this honest (V535):** the suite asserts that every step `GYN.render()`
+runs **converges** — run it to settle, run it again, nothing changes — and that `GYN.render()` as a
+whole leaves the DOM untouched. Convergence rather than first-run equality, because a width-aware
+chart re-measures its host and legitimately redraws once at the new width; a step that APPENDS keeps
+growing and still fails. The suite also pins the kind counts, so a step changing character is a
+build failure rather than a quiet rot.
+
+**Adding a source is idempotent (V535).** Eight places concatenated onto `allSources`, six inside
+render steps, so a re-render listed the same citation twice, three times, four. `addSources()`
+de-duplicates by URL — which is the correct rule anyway, since several pages legitimately cite the
+same series — and keeps first-appearance order, because the Sources screen groups by it.
 
 **Proving a refactor changed nothing:** `npm run snap` captures 32 states (two viewports × home,
 four tabs, eleven pages), normalised for dates and generated ids, and
