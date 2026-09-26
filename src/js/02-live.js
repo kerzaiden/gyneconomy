@@ -44,7 +44,13 @@
      they are the bulk of the payload, and a stale one would be a worse trade than a stale daily print. */
   var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident", "fearGreed"];
   // the scalars the pipeline publishes, which land INSIDE the objects above (V533, V541)
-  var LIVE_SCALARS = ["vixClose", "hyOas", "capeValue"];
+  /* V545: `hyOasNow`, not `hyOas`. The app already has a var called `hyOas` — the 787-point
+     history the Desire chart draws — and a live document of the same name is a trap with a fuse
+     in it: nothing reads the history through LIVE() today, so the two never met, but the day
+     someone wraps that array the scalar would answer instead and the chart would get one number.
+     A live document's name is a name in the same space as the file's own vars, so it has to be
+     unique against them. `vixClose` and `capeValue` already were; this one was not. */
+  var LIVE_SCALARS = ["vixClose", "hyOasNow", "capeValue"];
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
@@ -212,13 +218,13 @@
           valuation.tag = valuationVerdict(value);
           break;
         }
-        case "hyOas": {
+        case "hyOasNow": {
           if (typeof value !== "number" || value < 1 || value > 30) return false;
           var drow = coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0];
           if (!drow || !drow.meter) return false;
           drow.meter.value = value;
           drow.metric = value.toFixed(2) + "%";
-          if (liveAsOf.hyOas) drow.metricSub = "high-yield OAS, " + liveAsOf.hyOas;
+          if (liveAsOf.hyOasNow) drow.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
           break;
         }
         default: return false;

@@ -298,7 +298,7 @@ close, so the day's curve and VIX are posted — fetches:
 | `yieldCurve` | Treasury daily par yield curve | none |
 | `fedFunds` | FRED `DFEDTARU` / `DFEDTARL` | `FRED_API_KEY` |
 | `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
-| `hyOas` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
+| `hyOasNow` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
 | `capeValue` | Shiller's own spreadsheet, `shillerdata.com` | none |
 
 **CAPE comes from the originator, not from a site quoting him (V541).** Shiller publishes the series
@@ -343,7 +343,7 @@ key-value store. A run where only the timestamp moved commits nothing, or the hi
 an audit trail. And because the commit lands on `main`, `ci.yml` runs: **data cannot reach the site
 without passing the suite.**
 
-`vixClose` and `hyOas` are published as bare scalars rather than whole objects, because they are
+`vixClose` and `hyOasNow` are published as bare scalars rather than whole objects, because they are
 single readings inside objects the app owns — the bands, notes and words around them are editorial
 and belong in `index.html`, not in a fetcher that would drift from them. `applyLive` places them.
 

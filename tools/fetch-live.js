@@ -257,7 +257,7 @@ else (async () => {
      published as plain scalars under their own names, and applying them into those objects stays
      the app's job, where the surrounding text lives. */
   if (vix) out.vixClose = { kind: 'scalar', value: vix.value, asOf: vix.date };
-  if (oas) out.hyOas   = { kind: 'scalar', value: oas.value, asOf: oas.date };
+  if (oas) out.hyOasNow = { kind: 'scalar', value: oas.value, asOf: oas.date };   // NOT `hyOas` — see 02-live.js
 
   // ---- Shiller CAPE, from Shiller (monthly) ----
   try {
