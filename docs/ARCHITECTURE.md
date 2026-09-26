@@ -180,6 +180,30 @@ moving a part can change behaviour with nothing inside it changed.
 `index.html` stays committed because it is what ships, and `npm run build:check` runs in CI ahead
 of the suite, so the output cannot drift from the source.
 
+## Who refreshes what (V540)
+
+Three things can change a figure, and they no longer overlap. They did, and that duplication is
+what this division removes.
+
+| | Refreshes | How often | Reaches |
+|---|---|---|---|
+| **The Data workflow** (`data.yml`) | the Treasury curve, the Fed funds target, the VIX close, the high-yield spread | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
+| **The scheduled task** | Shiller CAPE and CNN Fear & Greed — the only two no pipeline can fetch | weekly, Sunday 22:47 UTC | the ARTIFACT, by writing its database |
+| **A session** (you) | the source itself | when something changes | both, by building and publishing |
+
+**The task does not re-fetch the pipeline's four.** It READS `data/live.json` from
+`raw.githubusercontent.com` and copies those documents into the artifact's database unchanged, so
+there is one fetch of each figure and one validation of it, and the two surfaces cannot disagree
+about a number.
+
+**Why the task exists at all:** a GitHub Action cannot publish an Artifact or write its database,
+and a published artifact cannot fetch an external host. The database is the only route in. Without
+the task the artifact would freeze at whatever version was last published while the site carried on.
+
+**The cost, stated:** CAPE and Fear & Greed can be up to seven days old while the other four are at
+most a day. Every figure prints its own date, so no reader is misled — and the task moves back to
+daily the moment that trade stops being worth it.
+
 ## Which copy is canonical
 
 The same material now lives in three places, each reachable by a different reader, and none of them
