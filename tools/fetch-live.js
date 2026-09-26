@@ -109,19 +109,23 @@ async function treasuryCurve() {
 /* The sheet -> reading step, as a pure function of the rows, so it can be tested without the
    network. Everything it needs it finds by READING, never by position:
 
-     * the header row is whichever of the first 30 rows names BOTH a date and a CAPE column,
+     * the header row is the LOWEST of the first 30 rows that names BOTH a date and a CAPE column,
      * the reading is the last row below it that carries a number,
      * and the date is parsed from Shiller's own YYYY.MM notation.
 
    It throws rather than guessing. A caller with several candidate workbooks can treat a throw as
    "not this file" and move on. */
 function capeFromRows(rows) {
+  /* Shiller's headings are STACKED, one word per row, and two of those rows qualify: the one above
+     the real header reads "Date" over "Fraction" and "CAPE" over "Excess … Yield". Taking the first
+     match read the Excess CAPE Yield (0.0101) as CAPE, and every run from V541 on failed the band.
+     The line a stacked heading ends on is the one sitting on the data, so the LAST match wins. */
   let hdr = -1, dateCol = -1, capeCol = -1;
   for (let i = 0; i < Math.min(rows.length, 30); i++) {
     const r = (rows[i] || []).map(c => String(c == null ? '' : c).trim());
     const d = r.findIndex(c => /^date$/i.test(c));
     const c = r.findIndex(x => /^(cape|cape ratio|p\/e10|pe10)$/i.test(x));
-    if (d >= 0 && c >= 0) { hdr = i; dateCol = d; capeCol = c; break; }
+    if (d >= 0 && c >= 0) { hdr = i; dateCol = d; capeCol = c; }
   }
   if (hdr < 0) throw new Error('no header row naming Date and CAPE');
 

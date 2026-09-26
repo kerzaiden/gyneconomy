@@ -62,6 +62,26 @@ ok('reads the column by NAME, not position',
    capeFromRows([['CAPE', 'Dividend', 'Date'], [41.3, 75, '2026.03']]),
    { value: 41.3, date: '2026-03-01', headerRow: 1 });
 
+/* The real workbook's STACKED heading, rows 4–7 of ie_data.xls as served in September 2026, cut at
+   column 17. Two rows name both Date and CAPE: row 6 ("Date" over "Fraction", "CAPE" over "Excess
+   … Yield") and row 7, the real one. Taking the first read the yield (0.0101) and failed the band
+   on every run from V541 to this fix. */
+const stacked = [
+  ['Stock Market Data Used in "Irrational Exuberance"'],
+  ['Robert J. Shiller '],
+  [],
+  [null, null, null, null, '  Consumer', null, null, null, null, 'Real', null, 'Real', 'Earnings', null, 'Earnings'],
+  [null, 'S&P', null, null, 'Price', null, 'Long', null, null, 'Total', null, 'TR', 'Ratio', null, 'Ratio', null, 'Excess'],
+  [null, 'Comp.', 'Dividend', 'Earnings', 'Index', 'Date  ', 'Interest', 'Real', 'Real', 'Return', 'Real', 'Scaled', 'P/E10 or', null, 'TR P/E10 or', null, 'CAPE'],
+  ['Date', 'P', 'D', 'E', 'CPI', 'Fraction', 'Rate GS10', 'Price', 'Dividend', 'Price', 'Earnings', 'Earnings', 'CAPE', null, 'TR CAPE', null, 'Yield'],
+  [2026.07, 7481.34, null, null, 333.918, 2026.5416666665253, 4.6, 7480.77, null, 5102978.73, null, null, 40.00863615205683, null, 42.646, null, 0.012301592728882472],
+  [2026.08, 7711.32, null, null, 333.901, 2026.6249999998586, 4.68, 7711.13, null, 5260117.47, null, null, 41.11984417915712, null, 43.808, null, 0.010726033068752007],
+  [2026.09, 7631.47, null, null, 333.8925, 2026.7083333331918, 4.75, 7631.47, null, 5205779.71, null, null, 40.575838200376445, null, 43.207, null, 0.010101399206805896],
+  [null, 'Sept price is Sept 1st close']
+];
+ok("Shiller's stacked heading: the LOWEST match", capeFromRows(stacked),
+   { value: 40.58, date: '2026-09-01', headerRow: 7 });
+
 throws('a sheet with no CAPE column',   [['Date', 'Home price index'], ['2026.03', 312.4]], /no header row/);
 throws('a sheet with no Date column',   [['Month', 'CAPE'], ['2026.03', 41.3]],            /no header row/);
 throws('a header but no readings',      sheet([['2026.03', 6100, 75, '']]),                /no CAPE reading/);

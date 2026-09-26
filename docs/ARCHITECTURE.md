@@ -260,7 +260,7 @@ publishes the series himself**, as an `.xls` linked from `shillerdata.com`, for 
 the fetcher scrapes the link off that page, downloads the sheet, **locates the columns by reading the
 header row rather than by index**, and takes the last row carrying a CAPE value, banded 4–60. The
 date format is a trap worth naming: Shiller writes `YYYY.MM` with a one-digit month, so **`.1` is
-October, not January.** This is the originator rather than a compilation, which also moves the
+October, not January.** A second trap, found after every run from V541 on had failed: Shiller's headings are STACKED one word per row, and the row above the real header also reads "Date" (over "Fraction") and "CAPE" (over "Excess … Yield"). Taking the first such row read the Excess CAPE Yield, 0.0101, which the band refused. **The lowest qualifying row is the header** — the line a stacked heading ends on is the one sitting on the data — and `npm run test:tools` pins it with the real rows. This is the originator rather than a compilation, which also moves the
 citation up a rung. One figure left that no machine can reach honestly, and it is CNN's.
 
 ## Which copy is canonical
