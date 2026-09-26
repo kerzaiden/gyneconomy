@@ -266,6 +266,7 @@ close, so the day's curve and VIX are posted — fetches:
 | `vixClose` | FRED `VIXCLS` | `FRED_API_KEY` |
 | `hyOas` | FRED `BAMLH0A0HYM2` | `FRED_API_KEY` |
 | `capeValue` | Shiller's own spreadsheet, `shillerdata.com` | none |
+| `fearGreed` | CNN's own chart endpoint (V542) | none |
 
 **CAPE comes from the originator, not from a site quoting him (V541).** Shiller publishes the series
 as an `.xls` for exactly this purpose, so the fetcher scrapes the download link off the page, parses
@@ -273,10 +274,17 @@ the sheet, **finds the header row by READING it rather than by column index**, a
 that carries a CAPE value. Two traps, both handled: Shiller's dates are `YYYY.MM` with a one-digit
 month, so `.1` is **October, not January**; and the sheet's column order has moved before.
 
-**NOT fetched, and there is no honest route:** CNN's Fear & Greed. CNN publishes no dataset and no
-public API, cnn.com cannot be fetched, and the only machine-readable endpoint is an undocumented
-internal one that is theirs and not ours to automate against. It stays with the weekly
-human-in-the-loop task. **Writing a scraped or guessed value would be worse than leaving it.**
+**CNN's Fear & Greed is fetched from CNN's private interface, and that was Keren's decision to make
+(V542).** CNN publishes no dataset and no documented API; what exists is the endpoint its own public
+chart calls. It carries no terms and no stability promise and can change or close without notice. The
+mitigations: read once per run, a user-agent that names the project, **CNN's OWN band word copied
+rather than a band derived from the score**, and a failure that leaves the previous score standing.
+Nothing about the app's provenance changes — the note on the page still calls the index a widely
+watched gauge rather than a measurement, because that is what it is.
+
+**Never invent a number and never derive a band.** Both fetchers refuse rather than guess: an
+unrecognised CNN rating, a missing field, a value outside its band, an unparsable date — each leaves
+the document out and the committed value standing. `npm run test:tools` pins those refusals.
 
 **A failure leaves the previous value standing.** A document that cannot be fetched, or whose value
 falls outside its sanity band, is left OUT of the file and the last committed one stands. The bands

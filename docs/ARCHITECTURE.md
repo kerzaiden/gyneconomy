@@ -191,22 +191,34 @@ what this division removes.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **The Data workflow** (`data.yml`) | the Treasury curve, the Fed funds target, the VIX close, the high-yield spread, **Shiller CAPE** (V541) | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
-| **The scheduled task** | CNN Fear & Greed — the only figure no pipeline can fetch | weekly, Sunday 22:47 UTC | the ARTIFACT, by writing its database |
+| **The Data workflow** (`data.yml`) | every live figure: the Treasury curve, the Fed funds target, the VIX close, the high-yield spread, **Shiller CAPE** (V541) and **CNN Fear & Greed** (V542) | weekdays, 22:40 UTC | the SITE, by committing `data/live.json` |
+| **The scheduled task** | nothing — it fetches no figure at all now | weekly, Sunday 22:47 UTC | the ARTIFACT, by copying that file into its database |
 | **A session** (you) | the source itself | when something changes | both, by building and publishing |
 
-**The task does not re-fetch the pipeline's five.** It READS `data/live.json` from
-`raw.githubusercontent.com` and copies those documents into the artifact's database unchanged, so
-there is one fetch of each figure and one validation of it, and the two surfaces cannot disagree
-about a number.
+**The task is a courier, and since V542 that is all it is.** It fetches nothing. It READS
+`data/live.json` from `raw.githubusercontent.com` and copies every document into the artifact's
+database unchanged, so each figure is fetched once and validated once and the two surfaces cannot
+disagree about a number. That it still exists at all is not redundancy — see below.
 
-**Why the task exists at all:** a GitHub Action cannot publish an Artifact or write its database,
-and a published artifact cannot fetch an external host. The database is the only route in. Without
-the task the artifact would freeze at whatever version was last published while the site carried on.
+**Why the task still exists, now that it fetches nothing:** a GitHub Action cannot publish an
+Artifact or write its database, and a published artifact cannot fetch an external host. **The database
+is the only route in, and only a Claude session can write it.** Delete the task and the artifact
+freezes at whatever version was last published while the site carries on. That is the whole reason,
+and it is the one thing on this page that no amount of pipeline work can remove.
 
-**The cost, stated:** Fear & Greed can be up to seven days old while the other five are at most a
-day. Every figure prints its own date, so no reader is misled — and the task moves back to daily the
-moment that trade stops being worth it.
+**The cost, as of V542: none in freshness.** Every figure is fetched on the same weekday schedule.
+What remains is a one-week lag on the ARTIFACT's copy, because the courier runs weekly — the site is
+a day behind its sources, the artifact up to a week behind the site. Every figure prints its own date,
+so no reader is misled, and the courier moves back to daily the moment that trade stops being worth it.
+
+**CNN's Fear & Greed comes from CNN's private interface, and that is Keren's decision (V542).** There
+is no dataset and no documented API; the endpoint is the one CNN's own public chart calls, so it
+carries no terms, no stability promise, and it can change or close without notice. This script offers
+what mitigation it can: one read per run, a user-agent naming the project, **CNN's own band word
+copied rather than a band derived from the score**, and a failure that leaves the previous value
+standing. **Nothing about the app's provenance changes.** The note on the page still says the formula
+is undisclosed, that there is no downloadable history, and that this is a widely watched gauge rather
+than a measurement — automating it made it fresher and removed a human step; it did not promote it.
 
 **Why CAPE moved to the pipeline (V541).** It had been the task's because there is no FRED series for
 it and the alternative looked like scraping a site quoting Shiller. That framing was wrong: **Shiller
@@ -555,11 +567,15 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 
 ### The scheduled task's contract (the task reads this)
 
-**One** scheduled task exists (`trig_01JF1LVovJqVQGCt9HSL6o8r`), **weekly, Sunday 22:47 UTC**, and since V540
-its scope is small on purpose. It does **not** re-research the app's figures and it does **not** republish the
-HTML. It fetches CNN's Fear & Greed — the one figure no pipeline can reach honestly — reads the pipeline's own
-`data/live.json` for the other five, and writes all six into the **artifact's database**, which is the only
-route into a published artifact. No morning email task exists; if Keren wants one it must be recreated.
+**One** scheduled task exists (`trig_01JF1LVovJqVQGCt9HSL6o8r`), **weekly, Sunday 22:47 UTC**, and since V542
+it is a **courier and nothing else**. It fetches no figure, researches nothing, and does not republish the HTML.
+It reads the pipeline's own `data/live.json` and writes every document in it into the **artifact's database**,
+which is the only route into a published artifact. No morning email task exists; if Keren wants one it must be
+recreated.
+
+**A run that fetches a figure itself is a run doing the wrong thing.** The whole point of V540 and V542 is that
+each figure is fetched once, by the Action, and validated once. If a document is missing from the file, that is
+the pipeline failing and the report must say so — it is not a gap for the task to fill.
 
 **This section is the canonical contract; the task's prompt carries a working copy.** When a rule changes here,
 change it there too — with `update_trigger`, keeping the task's run history, never delete-and-recreate. A
@@ -572,8 +588,10 @@ an instruction that lets an unattended task decide it has nothing to do will eve
 nothing. The weekly task keeps that property in a smaller form: every run reports the five dates it took from
 the pipeline, CNN's score and its source, the documents it wrote, and the season the page computes.
 
-**Never derive CNN's label from CNN's number.** Copy the score and the band word CNN itself prints. The bands
-are theirs, and the app's own note calls the index a widely watched gauge rather than a measurement.
+**Never derive CNN's label from CNN's number.** The pipeline does the copying now, and refuses a rating CNN
+does not publish. The rule is recorded here because it is a BAND PROVENANCE rule and outlives whichever
+component happens to be doing the fetching: the bands are CNN's, and a word nobody published is not a word
+this app prints.
 
 **Never set the season.** `currentSeason` is computed; never assign it, never set `seasonOverride`. Read what
 the page computes (the (i) states its reasoning) and report it; if it changed, say so.
@@ -614,12 +632,15 @@ from before the repo existed; the suite absorbed all three.
    the email gate, the spacing tokens and `COL_FILL`/`AXIS`, page errors at 414px and 1280px in
    both schemes, the head title and `⋯` note on all eleven history pages, the cycle picker's
    capital-T `Today`, the live-data cache, the repaint layer, and the registry invariant.
-2. **`npm run test:tools`** — 17 cases over `capeFromRows`, the sheet-reading step of
-   `tools/fetch-live.js`. No network and no browser, so it runs anywhere and runs in CI. It pins the
-   trap that matters: Shiller writes a month as `YYYY.MM` with a ONE-DIGIT month, so `2026.1` is
-   October and reading it as January is wrong by nine months. The FETCHING is not tested here and
-   cannot be — neither the cloud sandbox nor the local VM is allowed out to `shillerdata.com`. Its
-   proof is the Data workflow's own run, which fails loudly rather than writing a wrong number.
+2. **`npm run test:tools`** — 29 cases over the two pure steps of `tools/fetch-live.js`,
+   `capeFromRows` and `fearGreedFromPayload`. No network and no browser, so it runs anywhere and runs
+   in CI. It pins the traps that matter. Shiller writes a month as `YYYY.MM` with a ONE-DIGIT month,
+   so `2026.1` is October and reading it as January is wrong by nine months. CNN's band word must be
+   COPIED, never derived from the score. And `Number(null)` is `0`, which sits inside a 0–100 band —
+   so a field CNN stopped sending would have printed a confident `0%`; that case is a throw, and the
+   test is why. **The FETCHING is not tested and cannot be**: neither the cloud sandbox nor the local
+   VM is allowed out to `shillerdata.com` or `dataviz.cnn.io`. Its proof is the Data workflow's own
+   run, which fails loudly rather than writing a wrong number.
 3. **`npm run test:full`** before AND after any CSS cull — it adds the class-coverage walk, and the
    rendered class count may only drop by exactly the classes retired. Two to four minutes.
 4. **`npm run snap`** for any refactor that should change nothing: 32 DOM states, deterministic, so

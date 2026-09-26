@@ -8,7 +8,7 @@
    and reading it as a fraction (or as January) is wrong by nine months.
 
    Usage: node test/fetch-live.test.js        Exit 0 = every case passed. */
-const { capeFromRows } = require('../tools/fetch-live.js');
+const { capeFromRows, fearGreedFromPayload } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -69,6 +69,42 @@ throws('a value below the band',        sheet([['2026.03', 6100, 75, 2]]),      
 throws('a value above the band',        sheet([['2026.03', 6100, 75, 900]]),               /out of band/);
 throws('an unparsable date',            sheet([['March 2026', 6100, 75, 41.3]]),           /unparsable/);
 throws('an impossible month',           sheet([['2026.13', 6100, 75, 41.3]]),              /impossible month/);
+
+/* ---- fearGreedFromPayload: CNN's payload -> the page's own object ----
+   The shape here is the one the live endpoint actually returns, observed once before this was
+   written. The important assertion is that the BAND WORD is copied and never derived: CNN owns
+   those thresholds, and a score of 37 must print CNN's word for 37, whatever that word is. */
+const fg = (over) => ({ fear_and_greed: Object.assign({
+  score: 37, rating: 'fear', timestamp: '2026-09-25T23:59:59+00:00',
+  previous_close: 36.1142857142857, previous_1_week: 30.4285714285714,
+  previous_1_month: 59.60000000000001, previous_1_year: 50.65714285714286
+}, over) });
+
+console.log('\nfearGreedFromPayload — tools/fetch-live.js\n');
+
+ok('the live shape, all five fields', fearGreedFromPayload(fg()),
+   { value: 37, label: 'Fear', asOf: '2026-09-25', weekAgo: 30, monthAgo: 60 });
+ok('two-word ratings are title-cased', fearGreedFromPayload(fg({ rating: 'extreme greed', score: 84 })).label,
+   'Extreme Greed');
+ok('the word is COPIED, not derived from the score',
+   fearGreedFromPayload(fg({ score: 37, rating: 'neutral' })).label, 'Neutral');
+ok('fractional history rounds', fearGreedFromPayload(fg({ previous_1_week: 30.49 })).weekAgo, 30);
+ok('a boundary score is fine', fearGreedFromPayload(fg({ score: 0 })).value, 0);
+
+function fgThrows(label, payload, re) {
+  try { fearGreedFromPayload(payload); fail++; console.log('  FAIL ' + label + ' — did not throw'); }
+  catch (e) {
+    if (re.test(e.message)) { pass++; console.log('  ok   ' + label.padEnd(44) + 'threw'); }
+    else { fail++; console.log('  FAIL ' + label + ' — wrong error: ' + e.message); }
+  }
+}
+fgThrows('an empty payload',            {},                                  /no fear_and_greed/);
+fgThrows('a rating CNN does not use',   fg({ rating: 'panic' }),             /unrecognised CNN rating/);
+fgThrows('a missing rating',            fg({ rating: null }),                /unrecognised CNN rating/);
+fgThrows('a score above 100',           fg({ score: 137 }),                  /score .* out of band/);
+fgThrows('a non-numeric score',         fg({ score: 'high' }),               /score .* out of band/);
+fgThrows('a missing week-ago figure',   fg({ previous_1_week: null }),       /previous_1_week/);
+fgThrows('an unparsable timestamp',     fg({ timestamp: 'last Friday' }),    /unparsable timestamp/);
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

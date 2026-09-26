@@ -392,7 +392,11 @@
       '' +
       '<div class="fg-read"><span class="fg-v mono">' + greedScore + '</span>' +
         '<span class="fg-w ' + moodNow.state + '-ink">' + fearGreed.label + '</span></div>' +
-      '<div class="fg-name" style="text-transform:none;letter-spacing:0;font-weight:400">' + fgSub + '</div>';
+      /* V542: the date line has an id because it now REPAINTS. The score arrives from the live layer
+         after the page has rendered, and a fresh figure sitting above a stale date is the figure and
+         its provenance disagreeing on screen at the same moment — which is worse than both being a
+         day old. The drawer's long note still follows on the next load, like every other note. */
+      '<div class="fg-name" id="fg-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + fgSub + '</div>';
     /* Version 464: the page needs a reading under its gauge. The old impression argued from the VIX and the
        high-yield spread, which have both left this page \u2014 one to a row of its own and one back to Desire, where
        that figure already lives \u2014 so keeping it would have been a paragraph about two things no longer on screen.

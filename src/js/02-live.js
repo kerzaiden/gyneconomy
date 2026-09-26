@@ -94,6 +94,9 @@
     // repainting rather than just reprinting a number
     var w = document.querySelector(".fg-w");
     if (w){ w.textContent = fearGreed.label; w.className = "fg-w " + mood.state + "-ink"; }
+    // the date under the gauge, for the reason given at its render site
+    var a = document.getElementById("fg-asof");
+    if (a && fearGreed.asOf) a.textContent = "CNN, " + fearGreed.asOf;
   }
   function repaintYieldRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
@@ -146,7 +149,18 @@
                            break;
         case "coincident": if (!Array.isArray(value) || !value.length) return false;
                            coincident = value; deriveVolumeTag(); derivePulseTag(); break;
-        case "fearGreed":  if (typeof value.value !== "number") return false; fearGreed = value; break;
+        /* V542: every document in data/live.json carries an ISO asOf, but this object's asOf is
+           PRINTED ("CNN, Sep 25 2026"), and the hard-coded literal is already in that form. So the
+           incoming date is formatted when it is ISO and left alone when it is not — one shape in the
+           data contract, one shape on screen, and no second date format to remember. */
+        case "fearGreed": {
+          if (typeof value.value !== "number") return false;
+          var fgd = {}; for (var fk in value) fgd[fk] = value[fk];
+          var fgIso = fmtAsOf(fgd.asOf);
+          if (fgIso) fgd.asOf = fgIso;
+          fearGreed = fgd;
+          break;
+        }
         /* The VIX close and the high-yield spread are single numbers inside objects the app owns
            outright — the bands, the notes and the words around them are editorial and belong here,
            not in a fetcher. So the pipeline publishes them as bare scalars and this is where they

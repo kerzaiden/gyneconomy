@@ -152,7 +152,11 @@ function capeFromRows(rows) {
 }
 
 async function shillerCape() {
-  const XLSX = require('xlsx');
+  let XLSX;
+  // an OPTIONAL dependency (see package.json's //xlsx note), so say what is missing rather than
+  // throwing a module-not-found stack at whoever reads the run log
+  try { XLSX = require('xlsx'); }
+  catch (e) { throw new Error('xlsx is not installed — run npm i; CAPE needs it to read Shiller\'s .xls'); }
   const page = await getText('https://shillerdata.com/', 'shiller page');
 
   // the whole href, query string included — wsimg serves these with a ?ver= cache key
@@ -182,8 +186,69 @@ async function shillerCape() {
   throw new Error('no workbook on shillerdata.com yielded a CAPE reading — ' + why.join('; '));
 }
 
+/* CNN's Fear & Greed index (Version 542, Keren's decision).
+
+   CNN publishes no dataset and no documented API for this. What exists is the endpoint its own
+   public chart calls, and reading it is a decision Keren made knowingly rather than a route this
+   script found acceptable on its own: it is CNN's private interface, so it carries no terms, no
+   stability promise, and it can change or close without notice. The mitigations are all this script
+   can offer — it is read once per run, it identifies itself, it copies CNN's OWN band word instead
+   of deriving one, and a failure leaves the previous score standing.
+
+   Nothing about the app's PROVENANCE changes here, and the note on the page already says so: the
+   index is CNN's composite by an undisclosed method, "a widely watched gauge rather than a
+   measurement". Automating it makes it fresher and removes a human step. It does not promote it. */
+const FG_BANDS = ['extreme fear', 'fear', 'neutral', 'greed', 'extreme greed'];
+
+/* The payload -> the document, as a pure function so it can be tested without the network.
+   THE BAND WORD IS CNN'S, never derived from the score: the thresholds are their editorial, and
+   BAND PROVENANCE means a word nobody published is not a word this app prints. An unrecognised
+   rating is a refusal, not something to pass through. */
+function fearGreedFromPayload(j) {
+  const fg = j && j.fear_and_greed;
+  if (!fg) throw new Error('no fear_and_greed in the payload');
+
+  /* `Number(null)` and `Number('')` are both 0, which is INSIDE this band — so a field CNN stopped
+     sending would have printed a confident 0% instead of failing. Absent is checked before numeric. */
+  const num = (v, label) => {
+    if (v == null || v === '') throw new Error(label + ' is missing');
+    const n = Number(v);
+    if (!isFinite(n) || n < 0 || n > 100) throw new Error(label + ' ' + JSON.stringify(v) + ' out of band');
+    return Math.round(n);
+  };
+  const rating = String(fg.rating == null ? '' : fg.rating).trim().toLowerCase();
+  if (FG_BANDS.indexOf(rating) < 0) throw new Error('unrecognised CNN rating ' + JSON.stringify(fg.rating));
+
+  const t = new Date(fg.timestamp);
+  if (isNaN(t.getTime())) throw new Error('unparsable timestamp ' + JSON.stringify(fg.timestamp));
+  const iso = t.toISOString().slice(0, 10);   // ISO, like every other document in the file
+
+  /* ALL FIVE FIELDS OR NONE. The page replaces its whole `fearGreed` object with this one and then
+     prints every field, so a document missing `weekAgo` would render "undefined%" rather than fall
+     back. The throws above are what keep that from happening quietly. */
+  return {
+    value: num(fg.score, 'score'),
+    label: rating.replace(/\b[a-z]/g, c => c.toUpperCase()),   // "extreme fear" -> "Extreme Fear"
+    asOf: iso,
+    weekAgo: num(fg.previous_1_week, 'previous_1_week'),
+    monthAgo: num(fg.previous_1_month, 'previous_1_month')
+  };
+}
+
+async function cnnFearGreed() {
+  const r = await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {
+    headers: {
+      'accept': 'application/json',
+      // say who is calling, so CNN can see what this is and block it if they would rather
+      'user-agent': 'gyneconomy-data/1.0 (+https://github.com/kerzaiden/gyneconomy)'
+    }
+  });
+  if (!r.ok) throw new Error('CNN: HTTP ' + r.status);
+  return fearGreedFromPayload(await r.json());
+}
+
 /* Required as a module (the tests do this), export the pure parts and run nothing. */
-if (require.main !== module) { module.exports = { capeFromRows }; }
+if (require.main !== module) { module.exports = { capeFromRows, fearGreedFromPayload }; }
 else (async () => {
   const out = {};
   const failed = [];
@@ -231,6 +296,14 @@ else (async () => {
     say('capeValue   ' + c.value + '  ' + c.date + '  (Shiller\'s own dataset)');
   } catch (e) { failed.push('capeValue: ' + e.message); }
 
+  // ---- CNN Fear & Greed (daily) ----
+  try {
+    const fg = await cnnFearGreed();
+    out.fearGreed = { kind: 'object', value: fg.value, label: fg.label, asOf: fg.asOf,
+                      weekAgo: fg.weekAgo, monthAgo: fg.monthAgo };
+    say('fearGreed   ' + fg.value + '% ' + fg.label + '  ' + fg.asOf + '  (CNN\'s own band word)');
+  } catch (e) { failed.push('fearGreed: ' + e.message); }
+
   if (!Object.keys(out).length) {
     console.error('\nNOTHING FETCHED — writing nothing, previous data stands.');
     failed.forEach(f => console.error('  ' + f));
@@ -241,7 +314,7 @@ else (async () => {
     fetchedAt: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
     ok: Object.keys(out).filter(k => k !== '_meta'),
     failed: failed,
-    note: 'CNN Fear & Greed is not fetchable and stays with the weekly task.'
+    note: 'Every figure here is fetched from its own source. The weekly task only copies them into the artifact\'s database, which is the one thing an Action cannot do.'
   };
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
