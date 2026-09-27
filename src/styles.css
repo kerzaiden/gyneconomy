@@ -1268,6 +1268,10 @@
   .ci-mini > *{ flex:1 1 auto; min-width:0; max-height:var(--mini-h); }
   .ci-mini > .peek-chart{ width:100%; margin:0; }
   .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }   /* a square ring keeps its ratio */
+  /* V585: the reserve ring is a peek art, so it carries .peek-chart and would take that class's width:100%
+     and stretch to an ellipse. It is square, so it sizes off the slot's HEIGHT like every other ring here. */
+  .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
+  .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
   /* Version 504, Keren: "use light purple for the previews \u2014 we don't really understand from the preview
      what's going on inside, and it looks better for consistency." Twelve miniatures in five forms were each
      carrying their subject's own state colour: a lot of colour spent on a picture too small to read it by.
@@ -1290,9 +1294,6 @@
   .ci-mini .vital-ring-fill{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .pt-ref{ stroke:var(--border-strong) !important; opacity:0.6; }
   .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
-  .ci-mini .rg-seg{ stroke:var(--border-strong) !important; opacity:0.5; }
-  /* the gauge's lit run IS its reading — the level, not a last mark — so all of it takes the ink */
-  .ci-mini .rg-seg.on{ stroke:var(--accent-ink) !important; opacity:1; }
   /* V499: a sign row in a category list spaces its unit like a peek card's — `.subject-value` is a flex
      with a gap, but computes to block here, so the gap never applied and the unit sat flush against the
      figure. Takes `.peek-unit`'s own 4px rather than a number of its own (the V311 rule). */
@@ -1359,20 +1360,6 @@
      where a reader has stopped to look rather than glanced. */
   .peek-word{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; margin-top:6px;
     letter-spacing:0.01em; color:var(--text-secondary); }
-  /* The segmented gauge (Version 258). The lit segments are the reserve, the pale ones are what has already gone —
-     which is why they stay visible rather than being left out. preserveAspectRatio="none" lets one drawing stretch to a
-     peek card and to a page, so there is one component and not two. */
-  .rgauge{ display:block; width:100%; margin:11px 0 0; }
-  /* the segments run the full height of the box, so a taller box is a taller bar and the caps stay round */
-  .rg-seg{ stroke-linecap:round; }
-  .rgauge svg{ display:block; width:100%; height:52px; overflow:visible; } /* the picture slot's height — the same the columns get */
-  .rg-seg{ stroke:var(--border); opacity:0.55; stroke-linecap:round; fill:none; vector-effect:non-scaling-stroke; }
-  .rgauge.good .rg-seg.on{ stroke:var(--good); opacity:1; }
-  .rgauge.warning .rg-seg.on{ stroke:var(--warning); opacity:1; }
-  .rgauge.serious .rg-seg.on{ stroke:var(--serious); opacity:1; }
-  .rgauge.critical .rg-seg.on{ stroke:var(--critical); opacity:1; }
-  .metric-sheet .rgauge{ margin:var(--gap) 0 4px; }
-  .metric-sheet .rgauge svg{ height:40px; }
   /* Load's two lines. Both are shares of disposable income, so they share one axis; the bill wears the
      accent because it is the reading the row is named for, and what is kept wears plain secondary ink
      rather than a state colour, because a green or red line would be grading the household. */
@@ -1393,17 +1380,10 @@
      old normal is the reading this page is about, so that side takes the warning ink and above it the good. */
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
-  /* … except inside a category row, where the gauge is a thumbnail and not a gauge standing on a page: those
-     two rules gave it a 15px margin and a 40px height, which pushed Power's row 7px taller than its neighbours
-     and stretched the viewBox out of ratio. They sit HERE rather than with the rest of the row, because
-     `.ci-mini > .rgauge` and `.metric-sheet .rgauge` are the same specificity \u2014 so the later one wins. Third
-     time this tie has decided something (Version 441's overhang, Version 457's pills); it is a house hazard. */
-  .ci-mini > .rgauge{ margin:0; }
-  .ci-mini > .rgauge svg{ height:var(--mini-h); }
 
   .peek-text{ display:flex; flex-direction:column; align-items:stretch; width:100%; }
   /* the picture sits between the name and the reading, with the same air on both sides */
-  .peek-text > .peek-chart, .peek-text > .rgauge{ margin:12px 0 13px; }
+  .peek-text > .peek-chart{ margin:12px 0 13px; }
   .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
   /* the miniature's marks keep their real weight under the stretch, the same rule the peek line follows */
@@ -1430,7 +1410,7 @@
      only lit thing on the card either way, so it can afford to say WHICH reading it is while it says that.
      Nothing here is repainted by hand: the two `!important` overrides simply come off, and every mark falls
      back to the class it has carried all along (.temp-col.s0-s5, .gdp-col, .dv-bar.over/.under, .m2-col,
-     .rgauge.<state> .rg-seg.on) — which is, by construction, the class its own page's chart paints with, so the
+     .vital-ring-fill.<state>) — which is, by construction, the class its own page's chart paints with, so the
      door and the room cannot drift apart. Today that lands exactly where Keren said it would: Temperature
      orange (CPI above the band), Growth gold (expanding), Power red (critical), Valuations red (overvalued).
      The zero rule keeps the brand colour: Keren asked for that line specifically in Version 312 to read above
@@ -2398,7 +2378,7 @@
   @media (min-width:760px){
     .peek{ padding:var(--pad); }
     .peek-value{ font-size:23px; }
-    .peek-chart svg, .rgauge svg{ height:calc(var(--mini-h) + 11px); }
+    .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
   }
 
   #slot-temp .card, #slot-growth .card{ border:0; border-radius:0; background:transparent; box-shadow:none; padding:16px 0 18px; border-bottom:1px solid var(--border); margin-bottom:6px; } /* a chart inside a drawer is not a card inside a card (Version 206) */

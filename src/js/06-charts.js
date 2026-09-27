@@ -968,22 +968,6 @@
   // The number of bars then follows from the spacing rather than the other way round: in a peek, twelve slots across
   // the same 152-wide frame the columns use, so a charge and a column land on the same x at the same width, at every
   // screen width (Version 266).
-  function reserveGauge(value, state, id, o){
-    o = o || {};
-    var SEG = o.segs || 20, W = o.W || 200, H = o.H || 34;
-    var slot = W / SEG, sw = Math.max(1.6, Math.min(7, slot * 0.62));
-    var lit = Math.round(Math.max(0, Math.min(100, value)) / 100 * SEG);
-    var out = [];
-    for (var i = 0; i < SEG; i++){
-      var x = (slot * (i + 0.5)).toFixed(2);
-      out.push('<path class="rg-seg' + (i < lit ? " on" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + x + ',' + (H - sw / 2).toFixed(2) + 'L' + x + ',' + (sw / 2).toFixed(2) + '"/>');
-    }
-    // Version 448: a caller may add a class. Four of the five peek arts carried `.peek-chart` and this one
-    // did not, which is why Power's row arrived with no miniature in Version 447 and why catItem had to guess
-    // at "whatever sits between the kicker and the value" instead of naming what it wanted.
-    return '<span class="rgauge ' + state + (o.cls ? " " + o.cls : "") + '"' + (id ? ' id="' + id + '"' : '') +
-      '><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + '</svg></span>';
-  }
 
   // A miniature of the Temperature page (Version 260): the same columns, the same ramp, the same average line, at
   // peek size. A peek should be a small picture of what it opens, not a different picture of the same reading.
@@ -1007,7 +991,6 @@
   // Version 507: the same story as PEEK_W, one axis over. Four builders each carried their own 52 and the CSS
   // a fifth, so "make the preview shorter" was five edits that could disagree. It is --mini-h in the sheet.
   var PEEK_H = 42;
-  var PEEK_GAUGE = { segs:PEEK_MARKS, W:PEEK_W, H:PEEK_H, cls:"peek-chart" };
   // `rule` draws a hairline at the base (Version 312, Keren: "in the Volume preview put a purple line so I can
   // understand what is above the line and what is below"). It is the right answer to a peek whose series crosses
   // its base \u2014 better than making the bars taller, which would have meant moving the base off zero and losing

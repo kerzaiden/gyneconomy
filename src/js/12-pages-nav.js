@@ -386,9 +386,9 @@
       // Version 353, Keren: "in the power page, change the title to economic power." The card keeps the short
       // noun Version 304 gave it \u2014 four tiles in a grid, and "Economic power" wraps where "Power" does not \u2014
       // while the page it opens takes the full name back.
-      peekCard({ kicker:"Power", title:"Economic power", mark:vitalRingSvg(powerScore, "", "", "mark"), value:powerScore + "%",
+      peekCard({ kicker:"Power", title:"Economic power", mark:boltSvg(), value:powerScore + "%",
                  unit:"reserve", word:powerWord.word,
-                 state:powerWord.state, target:"sheet-metric-power", gauge:powerScore }) +
+                 state:powerWord.state, target:"sheet-metric-power", ring:powerScore }) +
       // a miniature of its own diverging page (Version 262): bars out of the 17\u00d7 fair line, both ways
       peekCard({ kicker:"Valuations",
                  mark:diamondSvg(),

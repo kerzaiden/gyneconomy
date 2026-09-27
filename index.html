@@ -882,6 +882,9 @@
   .ci-mini > .peek-chart{ width:100%; margin:0; }
   .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }
 
+  .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
+  .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
+
   .ci-mini .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.5; }
   .ci-mini .peek-chart.heat .now{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .peek-base{ stroke:var(--border-strong) !important; opacity:0.6; }
@@ -889,9 +892,6 @@
   .ci-mini .vital-ring-fill{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .pt-ref{ stroke:var(--border-strong) !important; opacity:0.6; }
   .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
-  .ci-mini .rg-seg{ stroke:var(--border-strong) !important; opacity:0.5; }
-
-  .ci-mini .rg-seg.on{ stroke:var(--accent-ink) !important; opacity:1; }
 
   .cat-item .subject-value .unit{ margin-left:4px; }
   .cat-item .subject-say{ margin:3px 0 0; }
@@ -932,18 +932,6 @@
   .peek-word{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; margin-top:6px;
     letter-spacing:0.01em; color:var(--text-secondary); }
 
-  .rgauge{ display:block; width:100%; margin:11px 0 0; }
-
-  .rg-seg{ stroke-linecap:round; }
-  .rgauge svg{ display:block; width:100%; height:52px; overflow:visible; }
-  .rg-seg{ stroke:var(--border); opacity:0.55; stroke-linecap:round; fill:none; vector-effect:non-scaling-stroke; }
-  .rgauge.good .rg-seg.on{ stroke:var(--good); opacity:1; }
-  .rgauge.warning .rg-seg.on{ stroke:var(--warning); opacity:1; }
-  .rgauge.serious .rg-seg.on{ stroke:var(--serious); opacity:1; }
-  .rgauge.critical .rg-seg.on{ stroke:var(--critical); opacity:1; }
-  .metric-sheet .rgauge{ margin:var(--gap) 0 4px; }
-  .metric-sheet .rgauge svg{ height:40px; }
-
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-kept{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-col{ fill:none; stroke-linecap:round; }
@@ -957,12 +945,9 @@
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
 
-  .ci-mini > .rgauge{ margin:0; }
-  .ci-mini > .rgauge svg{ height:var(--mini-h); }
-
   .peek-text{ display:flex; flex-direction:column; align-items:stretch; width:100%; }
 
-  .peek-text > .peek-chart, .peek-text > .rgauge{ margin:12px 0 13px; }
+  .peek-text > .peek-chart{ margin:12px 0 13px; }
   .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
 
@@ -1482,7 +1467,7 @@
   @media (min-width:760px){
     .peek{ padding:var(--pad); }
     .peek-value{ font-size:23px; }
-    .peek-chart svg, .rgauge svg{ height:calc(var(--mini-h) + 11px); }
+    .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
   }
 
   #slot-temp .card, #slot-growth .card{ border:0; border-radius:0; background:transparent; box-shadow:none; padding:16px 0 18px; border-bottom:1px solid var(--border); margin-bottom:6px; }
@@ -9338,9 +9323,7 @@
       title: "Unemployment rate"
     },
     "sheet-metric-power": {
-      mark: function() {
-        return vitalRingSvg(powerScore, "", "", "mark");
-      },
+      mark: boltSvg,
       title: "Power supply"
     },
     "sheet-metric-valuation": {
@@ -10905,27 +10888,9 @@
       return b.v > a.v ? b : a;
     }) : null;
   }
-  function reserveGauge(value, state, id, o) {
-    o = o || {};
-    var SEG = o.segs || 20, W = o.W || 200, H = o.H || 34;
-    var slot = W / SEG, sw = Math.max(1.6, Math.min(7, slot * .62));
-    var lit = Math.round(Math.max(0, Math.min(100, value)) / 100 * SEG);
-    var out = [];
-    for (var i = 0; i < SEG; i++) {
-      var x = (slot * (i + .5)).toFixed(2);
-      out.push('<path class="rg-seg' + (i < lit ? " on" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + x + "," + (H - sw / 2).toFixed(2) + "L" + x + "," + (sw / 2).toFixed(2) + '"/>');
-    }
-    return '<span class="rgauge ' + state + (o.cls ? " " + o.cls : "") + '"' + (id ? ' id="' + id + '"' : "") + '><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
-  }
   var PEEK_MARKS = 12;
   var PEEK_W = 80;
   var PEEK_H = 42;
-  var PEEK_GAUGE = {
-    segs: PEEK_MARKS,
-    W: PEEK_W,
-    H: PEEK_H,
-    cls: "peek-chart"
-  };
   function colPeek(all, classOf, base, rule) {
     if (!all || !all.length) return "";
     var from = Math.max(0, all.length - PEEK_MARKS), vals = all.slice(from);
@@ -11223,7 +11188,7 @@
   }
   var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
   function peekCard(o) {
-    var art = o.gauge != null ? reserveGauge(o.gauge, o.state, null, PEEK_GAUGE) : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
+    var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open">' + '<span class="peek-text">' + '<span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + "</span></span>" + '<span class="peek-word">' + o.word + "</span>" + "</span>" + "</button>";
   }
   function dropSvg(sw) {
@@ -13042,7 +13007,7 @@
         return order.indexOf(st) > order.indexOf(w) ? st : w;
       }, "good");
     }
-    iconMark("resilience", powerWord.state, vitalRingSvg(powerScore, "", "", "mark"));
+    iconMark("resilience", powerWord.state, boltSvg());
     set("resilience", powerScore + '<span class="unit">%</span><span class="tag ' + powerWord.state + '">' + powerWord.word + "</span>", "");
     say("resilience", longCycleImpressionShort);
     var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
@@ -14741,13 +14706,13 @@
     }) + peekCard({
       kicker: "Power",
       title: "Economic power",
-      mark: vitalRingSvg(powerScore, "", "", "mark"),
+      mark: boltSvg(),
       value: powerScore + "%",
       unit: "reserve",
       word: powerWord.word,
       state: powerWord.state,
       target: "sheet-metric-power",
-      gauge: powerScore
+      ring: powerScore
     }) + peekCard({
       kicker: "Valuations",
       mark: diamondSvg(),

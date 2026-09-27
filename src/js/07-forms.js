@@ -88,7 +88,10 @@
   var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
   // One card, one order, whatever the picture is: the NAME, then the picture, then the reading (Version 264).
   function peekCard(o){
-    var art = o.gauge != null ? reserveGauge(o.gauge, o.state, null, PEEK_GAUGE)
+    /* V585: `ring` is the reserve drawn as a ring \u2014 a full ring is 100%, so 26% is a little over a quarter
+       round. It replaces `gauge`, which drew twenty lit segments: a battery laid on its side, which is the
+       "battery kind of look" the ring was asked for instead. Same slot, same place under the date. */
+    var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring")
             : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref)
             : o.meter ? meterPeek(o.meter, o.state)
             : o.cols ? colPeek(o.cols, o.colClass, o.colBase, o.colRule)
@@ -294,6 +297,13 @@
   // A bolt: the one glyph in the set with no curve in it, which is how it stays apart from the flame and the drop
   // at 15px. It is drawn as an outline like every other mark, not the solid bolt of a charging indicator, because
   // Power's battery sits directly below it in the same list and a filled bolt would read as that battery's state.
+  /* V585, Keren: "bring back the lightning in the power icon." V583 read "I want the power preview to be a
+     ring" as the MARK and put the ring here, which was the wrong slot twice over \u2014 it took the glyph's job and
+     left the battery-shaped preview, the actual picture of the reserve, untouched. A mark says WHICH reading;
+     the preview says HOW MUCH. This bolt already existed as the ENERGY category's own mark, so Power now wears
+     its category's glyph rather than a second drawing of the same idea. (A V585 draft added a second boltSvg
+     a hundred lines up; two function declarations in one scope means the later one silently wins, which is a
+     coin-flip waiting on file order. There is one bolt.) */
   function boltSvg(){ return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>'); }
   // Households' mark: a house. The plainest thing in the set, and deliberately so \u2014 this is the one reading
   // about the people rather than about the system, and a reader should not have to decode it.

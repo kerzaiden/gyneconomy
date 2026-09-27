@@ -486,7 +486,7 @@
     // Economic power — the composite, read as what is left in the battery (Version 229): the mark is the battery at that
     // charge, the number is the reserve, the word is energyFromReserve()'s. The word tile that said the same thing in the
     // vitals strip is gone, so this row is the one place the reading lives.
-    iconMark("resilience", powerWord.state, vitalRingSvg(powerScore, "", "", "mark"));
+    iconMark("resilience", powerWord.state, boltSvg());
     // Version 361, Keren: the context line went. It said what the table underneath it says in full — the
     // table IS the three structural markers, each with its own flag — so it was a caption introducing a thing
     // that introduces itself. `.subject-body > .subject-context:empty` hides the paragraph, so passing "" is
