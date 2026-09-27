@@ -1626,8 +1626,8 @@
 
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
-  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
-             text-transform:uppercase; color:var(--text-muted); }
+
+  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); }
 
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
@@ -7563,7 +7563,7 @@
     el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG + 8) * scale).toFixed(1) + "px";
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;
-    var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 10;
+    var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 5;
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
     if (!plate.__placed) {

@@ -2562,8 +2562,11 @@
      surface rather than sinking into it, which is what Apple's does. */
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
-  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
-             text-transform:uppercase; color:var(--text-muted); }
+  /* V565, Keren: "I want August 2026 to be in the same size font like Average 3.3." The two ARE both 11px —
+     what made the date look bigger was that it was set in caps with tracking, and caps at a size read taller
+     than lowercase at the same size. It is the legend's own line now, to the letter: same face, same size,
+     same case, same ink. They are the two small labels on one picture and should not disagree. */
+  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); }
   /* V559, Keren: "the number is too big." 29px was the size of a card's own headline figure, which is what
      this block was when it described the window and nothing else; as a plate that rides a column it is a
      reading, and a reading answers to the chart rather than competing with it. */

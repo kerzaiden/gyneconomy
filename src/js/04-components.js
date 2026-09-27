@@ -271,7 +271,8 @@
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
     // inset from the plot's own ends, so the resting plate sits inside the picture rather than in its corner
-    var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 10;
+    // (V565: the right inset comes back to 5 — 10 read as a margin rather than as breathing room)
+    var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 5;
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
