@@ -1042,6 +1042,10 @@
         '<div class="panel-stack in-hist">' + powerPanelHtml + '</div>' +
         '<div class="gdp-tooltip mono hist-tip" id="power-hist-tooltip" hidden></div></div>';
       var pBox = document.querySelector("#power-chart .page-chart");
+      refitHistory(pBox, function(w){
+        return reserveChart({ vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
+                              fit:powerTrend.fit, alt:"Power supply, one charge per year" }, w);
+      });
       if (pBox){ pBox.__geom = lastHistGeom; wireHistHover(pBox, "power-hist-tooltip"); }
     };
     // The deficit's page (Version 360, Keren: "the federal budget deficit needs to be expandable from the
@@ -1101,6 +1105,7 @@
         '<div class="panel-stack in-hist">' + householdsPanelHtml() + '</div>' +
         '<div class="gdp-tooltip mono hist-tip" id="households-hist-tooltip" hidden></div></div>';
       var box = host.querySelector(".page-chart");
+      refitHistory(box, function(w){ return householdsChart(w, from, to); });
       if (box){ box.__geom = lastHistGeom; wireHistHover(box, "households-hist-tooltip"); }
       var hl = document.getElementById("households-highlights");
       if (hl) hl.innerHTML = householdsHighlights();
@@ -1149,6 +1154,11 @@
         '<div class="panel-stack in-hist">' + valuationPanelHtml + '</div>' +
         '<div class="gdp-tooltip mono hist-tip" id="valuation-hist-tooltip" hidden></div></div>';
       var vBox = document.querySelector("#valuation-chart .page-chart");
+      refitHistory(vBox, function(w){
+        return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7",
+                              fmt:capeFmt1, tickFmt:function(v){ return v + "\u00d7"; }, fit:capeTrend.fit,
+                              alt:"Shiller CAPE against its long-run fair value, each January" }, w);
+      });
       if (vBox){ vBox.__geom = lastHistGeom; wireHistHover(vBox, "valuation-hist-tooltip"); }
     };
     function redrawSheet(id){

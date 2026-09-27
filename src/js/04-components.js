@@ -408,6 +408,27 @@
   }
   // called by a chart that does its own hover tracking (Horizon's), so every history feeds the same block
   window.__histRead = function(host, d, i){ if (host) histReadFill(host, d, i); };
+  /* Version 579. A chart drawn at the wrong width, redrawn at the right one.
+     Eight of the histories build from `host.clientWidth`; three were handed the SHEET's width instead, which
+     is the container's padding and border wider — 360 against 332 — so their svg was scaled to fit and every
+     unit inside it came out at 0.92 of what it said. That is the Version 303 rule broken: type renders small,
+     and, since Version 574, the reading's band is reserved in svg units while the plate that sits in it is
+     HTML at full size, so the band came up about 5px short and the plate's two tens stopped being equal.
+     Keren: "the padding above and below the tooltip has to be even … every time I see an exception I don't
+     understand why." There is no exception now: if what the svg says it is does not match what it is, it is
+     built again at the width it actually has. */
+  function refitHistory(box, build){
+    if (!box || !build) return;
+    var svg = box.querySelector("svg.vh-svg, svg.hist-svg");
+    if (!svg) return;
+    // the SVG's own rendered width, not the container's: clientWidth carries the container's padding with it,
+    // and these containers pad 14 a side, which is exactly the error this is here to remove
+    var w = Math.round(svg.getBoundingClientRect().width);
+    if (!w) return;
+    var vb = parseFloat((svg.getAttribute("viewBox") || "").split(" ")[2]);
+    if (!(vb > 0) || Math.abs(vb - w) <= 1) return;
+    svg.outerHTML = build(w);
+  }
   function wireHistHover(host, tipId){
     if (!host) return;
     // the readout is ensured and refreshed on EVERY draw, because its resting state describes the window and

@@ -12,7 +12,7 @@
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP, YoY" },
     "sheet-sign-activity":     { mark:ecgSvg,     title:"Unemployment rate" },
     "sheet-metric-power":      { mark:function(){ return batteryIconSvg(powerWord.bars); },
-                                 title:"Power supply, one charge per year" },
+                                 title:"Power supply" },   // V579: "one charge per year" is what the x axis says
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
     "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
