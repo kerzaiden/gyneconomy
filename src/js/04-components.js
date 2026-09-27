@@ -149,6 +149,7 @@
       var anchor = svg;
       while (anchor && anchor.parentNode !== cont) anchor = anchor.parentNode;
       cont.insertBefore(el, anchor || cont.firstChild);
+      cont.classList.add("has-hist-read");   // it is the plate's positioning context now (Version 560)
     }
     if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate")
       el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
@@ -196,23 +197,20 @@
     var fmt = function(v){
       return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212");
     };
-    var lab, val;
-    if (d && d.v != null){
-      lab = g.at(d, i);
-      val = fmt(d.v);
-    } else {
-      var vals = (g.vals || []).filter(function(x){ return x && x.v != null && isFinite(x.v); });
-      /* The average is taken from `refs` when the chart drew one, never recomputed: the line on the chart and
-         the figure above it have to be the same number, and two averages computed twice is exactly how they
-         stop being (the ONE NUMBER rule). Only where a chart draws no average is one computed here. */
-      var ref = (g.refs || []).filter(function(r){ return /^average$/i.test(String(r.label)); })[0];
-      var m = ref ? ref.v
-            : (vals.length ? vals.reduce(function(a, b){ return a + b.v; }, 0) / vals.length : null);
-      lab = "Average";
-      val = m == null ? "\u2014" : fmt(m);
-      // V497, Keren: the span went. The x axis names the years and the control above names the window, so this
-      // was the third statement of one thing.
+    /* Version 560, Keren: "the default tooltip that writes the average is redundant because I can already see
+       it" — the legend has stated the window's average since Version 556, on the same chart, two inches away.
+       So the resting state goes entirely: the plate appears when a column is being read and at no other time.
+       Everything else follows from that. A block with nothing to say at rest cannot go on reserving a row
+       above the chart, and with the row gone there is nowhere above the grid for it to appear, so it moves
+       INSIDE the grid — which is what Keren proposed in the same breath. It floats over the plot, out of the
+       flow, in the band directly under the legend's strip, still sliding to the column it reads.
+       The average is no longer computed here at all: the chart draws the line and the legend names it, which
+       is the ONE NUMBER rule getting shorter rather than being restated. */
+    if (!d || d.v == null){
+      el.classList.remove("on");   // the words stay as they were, so the fade has something to fade
+      return;
     }
+    var lab = g.at(d, i), val = fmt(d.v);
     /* Version 556, Keren: "average 3.3%, Fed target 2.0% — that never changes, so we don't need it in the
        changing tooltip." Version 486 put the reference values in here because the chart printed them
        permanently and a reader comparing a bar to a line had nowhere to read them. That was the right move
@@ -223,7 +221,6 @@
        Version 558 removes the third line with them. It was there to hold the block's height while the
        references came and went, and with nothing left to come and go it was 16px of nothing under every
        reading — Keren: "the tooltip is bigger than the numbers that it presents." */
-    var live = !!(d && d.v != null);
     var plate = el.firstElementChild;
     if (!plate) return;
     plate.children[0].textContent = lab;
@@ -235,19 +232,26 @@
        month: before this the reader had a number above a picture and had to take on trust that the two were
        about the same thing. At rest it goes back to what V520 and V521 made it — bare, flush left, the card's
        own headline — because there is no one column for it to sit over.
-       It moves by MARGIN, not by absolute positioning, so the block keeps its place in the flow and its
-       height, and the page cannot jump under a reader scrubbing across it. */
-    el.classList.toggle("on", live);
-    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
-    if (!live || !svg){ plate.style.marginLeft = ""; return; }   // "" hands it back to the stylesheet's rest position
+       It moves by MARGIN rather than by `left`, so the two axes are set by two different things and never
+       fight: the stylesheet owns where the band is, this owns where along it the plate sits. */
+    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
+    if (!svg){ el.classList.remove("on"); return; }
     var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
-    if (!sb.width || !eb.width){ plate.style.marginLeft = ""; return; }
+    if (!sb.width || !eb.width){ el.classList.remove("on"); return; }
+    el.classList.add("on");
     var scale = sb.width / g.W || 1;
+    /* The band: directly under the legend's strip, so the two never meet however far right the reader
+       scrubs. Measured off the frame the chart drew, like the legend's own inset. */
+    var fr = svg.querySelector(".bt-frame");
+    var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+    var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
+    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG) * scale).toFixed(1) + "px";
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
+    var lo = (sb.left - eb.left) + g.L * scale, hi = (sb.left - eb.left) + g.R * scale;
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
-    plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
+    plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
     if (!plate.__placed){ void plate.offsetWidth; plate.style.transition = ""; plate.__placed = true; }
   }
   /* Version 556. The reference legend: one line per reference, in the strip AXIS.LEG opened inside the frame

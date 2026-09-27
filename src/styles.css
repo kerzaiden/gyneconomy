@@ -2537,17 +2537,24 @@
      starts now. */
   /* Version 558: the block gives back the pixels it was not using. The empty third line went with the
      references (V556), and the space under it was set when there was a line there to separate. */
-  .hist-read{ padding:0; margin:0; }
+  /* Version 560: the block floats over the plot instead of holding a row above it. With the resting summary
+     gone (the legend states the average) there is nothing to reserve a row FOR, and a reading that appears
+     only while a column is being read can sit on the picture it is reading — Keren: "maybe we can put the
+     tooltip inside the grid." `pointer-events:none` so the hover it is answering to passes straight through
+     it; without that the plate would chase the pointer out from under itself. */
+  .has-hist-read{ position:relative; }
+  .hist-read{ position:absolute; left:0; right:0; top:0; z-index:3; pointer-events:none; padding:0; margin:0; }
   /* The plate (Version 555). Its padding is there in BOTH states and the rest position pulls it back out by
      the same amount, so the figure still starts exactly where the badge above it starts (the V521 rule) and
      the block's height never changes when the wash arrives. */
-  .hr-plate{ display:inline-block; padding:3px 9px 4px; margin-left:-9px; border-radius:var(--radius);
-             transition:margin-left 0.12s ease-out; }
+  .hr-plate{ display:inline-block; padding:3px 9px 4px; border-radius:var(--radius); opacity:0;
+             transition:margin-left 0.12s ease-out, opacity 0.12s ease-out; }
+  .hist-read.on .hr-plate{ opacity:1; }
   /* 6% of the page's own ink, not --surface-2: on white that token is a 2% wash and the plate did not read as
      a plate at all, and mixing from the ink gets the dark theme right for free — there the plate lifts off the
      surface rather than sinking into it, which is what Apple's does. */
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
-  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
+  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
   /* V559, Keren: "the number is too big." 29px was the size of a card's own headline figure, which is what

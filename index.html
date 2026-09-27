@@ -1615,13 +1615,15 @@
 
   .gdp-tooltip .tip-now{ font-size:13px; font-weight:700; margin:1px 0 3px; }
 
-  .hist-read{ padding:0; margin:0; }
+  .has-hist-read{ position:relative; }
+  .hist-read{ position:absolute; left:0; right:0; top:0; z-index:3; pointer-events:none; padding:0; margin:0; }
 
-  .hr-plate{ display:inline-block; padding:3px 9px 4px; margin-left:-9px; border-radius:var(--radius);
-             transition:margin-left 0.12s ease-out; }
+  .hr-plate{ display:inline-block; padding:3px 9px 4px; border-radius:var(--radius); opacity:0;
+             transition:margin-left 0.12s ease-out, opacity 0.12s ease-out; }
+  .hist-read.on .hr-plate{ opacity:1; }
 
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
-  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
+  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
 
@@ -7488,6 +7490,7 @@
       var anchor = svg;
       while (anchor && anchor.parentNode !== cont) anchor = anchor.parentNode;
       cont.insertBefore(el, anchor || cont.firstChild);
+      cont.classList.add("has-hist-read");
     }
     if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate") el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
     host.__readEl = el;
@@ -7514,44 +7517,36 @@
     var fmt = function(v) {
       return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "−");
     };
-    var lab, val;
-    if (d && d.v != null) {
-      lab = g.at(d, i);
-      val = fmt(d.v);
-    } else {
-      var vals = (g.vals || []).filter(function(x) {
-        return x && x.v != null && isFinite(x.v);
-      });
-      var ref = (g.refs || []).filter(function(r) {
-        return /^average$/i.test(String(r.label));
-      })[0];
-      var m = ref ? ref.v : vals.length ? vals.reduce(function(a, b) {
-        return a + b.v;
-      }, 0) / vals.length : null;
-      lab = "Average";
-      val = m == null ? "—" : fmt(m);
+    if (!d || d.v == null) {
+      el.classList.remove("on");
+      return;
     }
-    var live = !!(d && d.v != null);
+    var lab = g.at(d, i), val = fmt(d.v);
     var plate = el.firstElementChild;
     if (!plate) return;
     plate.children[0].textContent = lab;
     plate.children[1].innerHTML = val;
-    el.classList.toggle("on", live);
-    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
-    if (!live || !svg) {
-      plate.style.marginLeft = "";
+    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
+    if (!svg) {
+      el.classList.remove("on");
       return;
     }
     var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
     if (!sb.width || !eb.width) {
-      plate.style.marginLeft = "";
+      el.classList.remove("on");
       return;
     }
+    el.classList.add("on");
     var scale = sb.width / g.W || 1;
+    var fr = svg.querySelector(".bt-frame");
+    var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+    var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
+    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG) * scale).toFixed(1) + "px";
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;
+    var lo = sb.left - eb.left + g.L * scale, hi = sb.left - eb.left + g.R * scale;
     if (!plate.__placed) plate.style.transition = "none";
-    plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
+    plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
     if (!plate.__placed) {
       void plate.offsetWidth;
       plate.style.transition = "";
