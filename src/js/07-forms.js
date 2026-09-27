@@ -169,14 +169,16 @@
   // three markers behind it are structural, so this word moves slowly, by design: Feeling and Pulse carry the fast reads.
   // The bands are the stress score's own, mirrored, so the word and the panel can never disagree: stress 70+ is Critical,
   // so a reserve of 30 or less is Exhausted; 50+ Serious is Tired; 30+ Elevated is Steady; below that she has her energy.
-  // `bars` is the battery's charge, 0–5, so the icon, the word and the number are one reading (Version 229).
+  // V583: `bars` went with the battery. It was a 0–5 charge for the icon, and the ring the icon became reads
+  // the reserve itself, so the field had no consumer left. The WORD still bins — the number is continuous and
+  // the verdict beside it is not — which is the part Version 229 was actually right about.
   function energyFromReserve(reserve){
-    if (reserve == null) return {word:"No reading", state:"norm", bars:0};
-    if (reserve <= 30) return {word:"Exhausted", state:"critical", bars:1};
-    if (reserve <= 50) return {word:"Tired", state:"serious", bars:2};
-    if (reserve <= 70) return {word:"Steady", state:"warning", bars:3};
-    if (reserve <= 85) return {word:"Energetic", state:"good", bars:4};
-    return {word:"Energetic", state:"good", bars:5};
+    if (reserve == null) return {word:"No reading", state:"norm"};
+    if (reserve <= 30) return {word:"Exhausted", state:"critical"};
+    if (reserve <= 50) return {word:"Tired", state:"serious"};
+    if (reserve <= 70) return {word:"Steady", state:"warning"};
+    if (reserve <= 85) return {word:"Energetic", state:"good"};
+    return {word:"Energetic", state:"good"};
   }
   // The GDP growth mark: SproutMark from the Gyneconomy DSM (Version 215) — built there on Keren's ask and imported path
   // for path, so the design system stays the source of the drawing: src/components/gyneconomy/SproutMark.tsx in
@@ -332,13 +334,6 @@
   // Economic power's mark (Version 229, Keren: "the battery icon is a really good metaphor for economic power — low power
   // is a depleted energy, high power is fully charged"). level 0–5 → how much of the body is filled, five equal steps;
   // the level comes from energyFromReserve() below, so the charge and the word can never disagree.
-  function batteryIconSvg(level){
-    var w = Math.max(0, Math.min(5, level)) * 2.8;
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true">' +
-      '<rect x="1.6" y="5" width="18" height="14" rx="3"/><path d="M21.7 10v4"/>' +
-      (w > 0 ? '<rect x="3.8" y="7.3" width="' + w.toFixed(1) + '" height="9.4" rx="1.2" fill="currentColor" stroke="none"/>' : '') +
-    '</svg>';
-  }
 
   // ---------------- Market eras & yearly returns (Calendar tab + Cycle tab era headline) ----------------
   // The page's ONLY market-history model, by design (Keren's call — an earlier monthly streak-rule model was

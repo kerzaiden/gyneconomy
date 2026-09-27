@@ -699,6 +699,17 @@
     transition:stroke-dashoffset 0.6s ease;
   }
   .vital-ring-fill.accent{ stroke:var(--accent); }
+  /* V583, Keren: "in the energy page, I want the power preview to be a ring. So a full ring is 100% and 26%
+     would be less than third full." The battery drew powerWord.bars \u2014 five bins \u2014 so 26% and 39% lit the
+     same two bars and the glyph could not move while the number did. A ring is the reading itself: 26% is
+     26/100 of the way round, and it is the app's OWN ring, the one the vitals and the rates level already
+     wear, so nothing new was drawn to say this.
+     Only the stroke changes at mark size. The same 120 box at 15px scales a 9-wide stroke to 1.1px, which is
+     a hairline beside the 1.9px the other glyphs are stroked at; 15 lands on 1.9. The fill takes currentColor
+     rather than a state hue, so the mark keeps whatever ink its slot already gave the battery \u2014 a head mark
+     stays quiet grey, and the reading is never carried by colour alone. */
+  .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
+  .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
   /* the face inside the ring: the app's own five mouths, in the quiet ink a mark wears (Version 309) while the
      ring keeps the brand colour and the word beside it keeps the verdict */
   /* the mood beside the name, at the size every other row's mark is drawn (Version 342) */

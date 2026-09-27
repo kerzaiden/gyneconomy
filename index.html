@@ -496,6 +496,9 @@
   }
   .vital-ring-fill.accent{ stroke:var(--accent); }
 
+  .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
+  .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
+
   .subject-label .mood-mark{ width:16px; height:16px; margin-right:5px; color:var(--text-secondary); }
   .sign-row .subject-label{ display:inline-flex; align-items:center; }
   .vital-ring-fill.good{ stroke:var(--good); } .vital-ring-fill.warning{ stroke:var(--warning); }
@@ -9336,7 +9339,7 @@
     },
     "sheet-metric-power": {
       mark: function() {
-        return batteryIconSvg(powerWord.bars);
+        return vitalRingSvg(powerScore, "", "", "mark");
       },
       title: "Power supply"
     },
@@ -11238,33 +11241,27 @@
   function energyFromReserve(reserve) {
     if (reserve == null) return {
       word: "No reading",
-      state: "norm",
-      bars: 0
+      state: "norm"
     };
     if (reserve <= 30) return {
       word: "Exhausted",
-      state: "critical",
-      bars: 1
+      state: "critical"
     };
     if (reserve <= 50) return {
       word: "Tired",
-      state: "serious",
-      bars: 2
+      state: "serious"
     };
     if (reserve <= 70) return {
       word: "Steady",
-      state: "warning",
-      bars: 3
+      state: "warning"
     };
     if (reserve <= 85) return {
       word: "Energetic",
-      state: "good",
-      bars: 4
+      state: "good"
     };
     return {
       word: "Energetic",
-      state: "good",
-      bars: 5
+      state: "good"
     };
   }
   function sproutSvg() {
@@ -11327,10 +11324,6 @@
     Volume: speakerSvg,
     Pressure: gaugeSvg
   };
-  function batteryIconSvg(level) {
-    var w = Math.max(0, Math.min(5, level)) * 2.8;
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true">' + '<rect x="1.6" y="5" width="18" height="14" rx="3"/><path d="M21.7 10v4"/>' + (w > 0 ? '<rect x="3.8" y="7.3" width="' + w.toFixed(1) + '" height="9.4" rx="1.2" fill="currentColor" stroke="none"/>' : "") + "</svg>";
-  }
   var DSR_FROM_YEAR = 2005;
   var dsrHistory = [ 14.799802, 14.828576, 15.139959, 15.02855, 14.989443, 15.044255, 15.367228, 15.509711, 15.526607, 15.63251, 15.712123, 15.846367, 15.775857, 15.326612, 15.546547, 15.72136, 15.5975, 15.251967, 15.08588, 14.896385, 14.51494, 14.069775, 13.917807, 13.580863, 13.30846, 13.057706, 12.944597, 12.749684, 12.237059, 12.034065, 12.083107, 11.754033, 12.006598, 11.794391, 11.837713, 11.985283, 11.883758, 11.62114, 11.646947, 11.631993, 11.556634, 11.485147, 11.606488, 11.738976, 11.763247, 11.766109, 11.769855, 11.865818, 11.723758, 11.756991, 11.818444, 11.816704, 11.644589, 11.598389, 11.619573, 11.666416, 11.49992, 11.626991, 11.646611, 11.727653, 11.591164, 9.739844, 10.05851, 10.389381, 9.051457, 9.841025, 10.009597, 10.228796, 10.472393, 10.684739, 10.567838, 10.736945, 10.564109, 10.577002, 10.747842, 11.096141, 11.058908, 11.01936, 11.138762, 11.12249, 11.105386, 11.124247, 11.229457, 11.322763, 11.158929, 11.111439 ];
   var SAV_FROM_YEAR = 1947;
@@ -11754,10 +11747,10 @@
     out.push('<circle class="gauge-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
     return '<svg class="gauge-arc' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + " " + H.toFixed(1) + '" role="img" ' + 'aria-label="' + (o.aria || "") + '">' + out.join("") + "</svg>";
   }
-  function vitalRingSvg(pct, state, label) {
+  function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
     var offset = c * (1 - clampPct(pct, 0, 100) / 100);
-    return '<svg class="vital-ring" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + ">" + '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' + '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' + 'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' + "</svg>";
+    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + ">" + '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' + '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' + 'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' + "</svg>";
   }
   var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
   var HZN_SPREADS = [ {
@@ -13053,7 +13046,7 @@
         return order.indexOf(st) > order.indexOf(w) ? st : w;
       }, "good");
     }
-    iconMark("resilience", powerWord.state, batteryIconSvg(powerWord.bars));
+    iconMark("resilience", powerWord.state, vitalRingSvg(powerScore, "", "", "mark"));
     set("resilience", powerScore + '<span class="unit">%</span><span class="tag ' + powerWord.state + '">' + powerWord.word + "</span>", "");
     say("resilience", longCycleImpressionShort);
     var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
@@ -14752,7 +14745,7 @@
     }) + peekCard({
       kicker: "Power",
       title: "Economic power",
-      mark: batteryIconSvg(powerWord.bars),
+      mark: vitalRingSvg(powerScore, "", "", "mark"),
       value: powerScore + "%",
       unit: "reserve",
       word: powerWord.word,

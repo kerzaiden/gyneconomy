@@ -264,10 +264,13 @@
       'aria-label="' + (o.aria || "") + '">' + out.join("") + '</svg>';
   }
 
-  function vitalRingSvg(pct, state, label){
+  /* V583: `cls` is the only addition \u2014 the ring is drawn once and worn at two sizes. At mark size the
+     geometry is identical and only the stroke thickens, because a 9-wide stroke on a 120 box is a hairline
+     at 15px. See `.vital-ring.mark`. */
+  function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;
     var offset = c * (1 - clampPct(pct, 0, 100) / 100);
-    return '<svg class="vital-ring" viewBox="0 0 120 120"' +
+    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' +
       (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
       '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' +
       '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' +

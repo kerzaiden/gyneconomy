@@ -11,7 +11,7 @@
     "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI, YoY" },
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP, YoY" },
     "sheet-sign-activity":     { mark:ecgSvg,     title:"Unemployment rate" },
-    "sheet-metric-power":      { mark:function(){ return batteryIconSvg(powerWord.bars); },
+    "sheet-metric-power":      { mark:function(){ return vitalRingSvg(powerScore, "", "", "mark"); },
                                  title:"Power supply" },   // V579: "one charge per year" is what the x axis says
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
