@@ -18,7 +18,10 @@ in one place, roughly 19,000 words. **Read the part that covers what you are tou
 you touch it.** It is not optional reading and it is not a summary of the code; it records why
 things are the way they are, including several decisions that look like bugs and are not.
 
-`docs/ARCHIVE.md` is the version history and the retired ideas. Read it when you want to know
+`docs/ARCHIVE.md` is the version history and the retired ideas.
+
+`docs/task.md` is what the weekly refresh task does. It is the task's ONLY copy of its instructions —
+the task's prompt just fetches that URL — so change the task by editing that file and pushing. Read it when you want to know
 whether something was already tried.
 
 **`docs/MAP.md` is how you navigate `index.html` without reading it.** The file is about 13,100 lines

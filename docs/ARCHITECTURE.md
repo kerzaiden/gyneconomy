@@ -605,7 +605,7 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 5. **Fixed or editorial content is never touched by a refresh**: all `min`/`max`/band values, `stressHistory`, `wheelMeta`/`actionIcons`, `seasonRules`, `seasonReading`/`frameworkRows`, `cycleEndReadings`, the annual GDP series, the spread/yield histories and lag panel, era names and blurbs. **To close the open cycle** also add its `cycleEndReadings` entry — Fed funds, VIX close, PMI for its last month — or its ring and Feeling tile have nothing to read. `currentSeason` is computed: don't set it, check the (i)'s reasoning after a refresh, touch `seasonOverride` only if Keren asks.
 6. **Do not touch**: `RISK_REWARD` / `RISK_RISK` (Desire's Risk / Reward grid), `PRESSURE_ZONES`, `PREVIEW_CYCLES`, `DEF_RECESSION_FY`, `deficitHistory`'s 1946 start, the `opens` field making the Deficit rate row a door, `TIMELINE_STOPS` and the per-page `*_STOPS` arrays, and `cycleStrip`'s contract of returning the strip only so the caller supplies the container.
 
-### The scheduled task's contract (the task reads this)
+### The scheduled task
 
 **One** scheduled task exists (`trig_01JF1LVovJqVQGCt9HSL6o8r`), **weekly, Sunday 22:47 UTC**, and since V542
 it is a **courier and nothing else**. It fetches no figure, researches nothing, and does not republish the HTML.
@@ -617,12 +617,24 @@ recreated.
 each figure is fetched once, by the Action, and validated once. If a document is missing from the file, that is
 the pipeline failing and the report must say so — it is not a gap for the task to fill.
 
-**This section is the canonical contract; the task's prompt carries a working copy.** When a rule changes here,
-change it there too — with `update_trigger`, keeping the task's run history, never delete-and-recreate. A
-scheduled run starts a fresh session **not attached to the Mrs. Market project**, so `project_read` is
-unavailable to it: **never write a hard stop into a scheduled prompt that depends on a resource the run may
-not have.** What it can always reach is the public repo over plain HTTPS, which is how it gets
-`data/live.json` and how it would get any doc it needed.
+**Its instructions are `docs/task.md` in this repo, and that is the ONLY copy (V549).** The task's own prompt
+is three lines: fetch that file, follow it, and if you cannot fetch it do nothing at all. So the behaviour of
+the one unattended thing in this system is version-controlled — diffable, reviewable, revertible — instead of
+living in a text box that four rewrites passed through in a single evening with no history.
+
+**Change the task by editing `docs/task.md` and pushing.** There is no second place to keep in step, which is
+the point: this section used to say "the task's prompt carries a working copy … change it there too", and that
+is the same two-copies-drifting arrangement that was deleted from the Mrs. Market project in V547. It had been
+built here and not noticed.
+
+**The prompt keeps exactly three things**, because they must survive the file being unreachable: fetch and
+follow the file, do NOTHING if the fetch fails, and the two rules that hold regardless — never invent a number,
+never set the season. A missed weekly refresh costs nothing, since every figure on the page carries its own
+date; a run improvising its own job can write a wrong number into a published app.
+
+A scheduled run starts a fresh session **not attached to the Mrs. Market project**, so `project_read` is
+unavailable to it — but the public repo over plain HTTPS always is, which is how it gets both its instructions
+and `data/live.json`.
 
 **A run that writes nothing must say why.** The old daily contract had a positive test it had to pass, because
 an instruction that lets an unattended task decide it has nothing to do will eventually be the reason it does
