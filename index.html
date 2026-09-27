@@ -1201,7 +1201,8 @@
   .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
   .seriesbar::-webkit-scrollbar{ display:none; }
   .seriesbar .range-seg{ font-size:11.5px; padding-inline:9px; white-space:nowrap; }
-  .rangebar{ display:flex; gap:3px; background:var(--track); border-radius:var(--radius); padding:3px; margin:14px 0 2px;
+
+  .rangebar{ display:flex; gap:3px; background:var(--surface-2); border-radius:var(--radius); padding:3px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--radius-inner); padding:7px 10px; cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
@@ -1301,7 +1302,7 @@
   .hist-controls > .rangebar[data-range-for] .range-seg{ padding-left:4px; padding-right:4px; }
 
   .hist-bar .rangebar,
-  .hist-bar .cycsel-btn{ background:var(--track); border:1px solid var(--border); }
+  .hist-bar .cycsel-btn{ background:var(--surface-2); border:1px solid var(--border); }
 
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
@@ -7779,7 +7780,7 @@
       out.push('<text class="bt-xl" x="' + f(X(yy - y0)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yy + "</text>");
     }
     vals.forEach(function(v, i) {
-      out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
+      out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
     out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     var y83 = Y(DEF_1983);
@@ -9151,7 +9152,7 @@
     ser.forEach(function(v, i) {
       var y1 = Y(v);
       if (Math.abs(y1 - pMidY) < .6) y1 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
-      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(pMidY) + "L" + f(X(i)) + "," + f(y1) + '"/>');
+      out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
     });
     var pvFit = trendOf(ser, "points", "quarter").fit;
     if (pvFit && pvFit.n > 1) out.push(fitGroup({
@@ -9236,7 +9237,7 @@
     var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
     ser.forEach(function(v, i) {
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
-      out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(Y(0)) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
+      out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
     return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + " to " + hyLabel(hyOas.length - 1) + ", against the normal " + HY_NORM_LO + " to " + HY_NORM_HI + ' percent band">' + out.join("") + "</svg>";
   }
@@ -9661,7 +9662,7 @@
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       if (d.v == null) return;
-      out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
+      out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
@@ -9762,7 +9763,7 @@
     var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(.7, hhSw * .62);
     bill.forEach(function(v, i) {
       var cx = X(i);
-      out.push('<g class="hcol">' + '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx - hhOff) + "," + f(Y(0)) + "L" + f(cx - hhOff) + "," + f(Y(v)) + '"/>' + '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx + hhOff) + "," + f(Y(0)) + "L" + f(cx + hhOff) + "," + f(Y(kept[i])) + '"/>' + "</g>");
+      out.push('<g class="hcol">' + '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx - hhOff, Y(0), Y(v), hhSw) + '"/>' + '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' + "</g>");
     });
     var hovAt = 0;
     lastHistGeom = {
@@ -9849,7 +9850,7 @@
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
-      out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
+      out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     if (n) {
       var avgV = vals.reduce(function(a, d) {
@@ -9975,7 +9976,7 @@
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
-      out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
+      out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var gAvg = vals.reduce(function(a, d) {
       return a + d.v;
@@ -10061,7 +10062,7 @@
     var sw = colWidth((R - L) / n);
     vals.forEach(function(v, i) {
       if (v == null) return;
-      out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
+      out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
     var vAvg = vals.filter(function(v) {
       return v != null;
@@ -10669,8 +10670,8 @@
     }));
     o.vals.forEach(function(d, i) {
       var cx = (padL + slot * (i + .5)).toFixed(1);
-      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="M' + cx + "," + (padT + ih) + "L" + cx + "," + padT + '"/>');
-      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="M' + cx + "," + (padT + ih) + "L" + cx + "," + y(d.v) + '"/>');
+      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="' + colPath(cx, padT + ih, padT, tw) + '"/>');
+      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, padT + ih, y(d.v), sw) + '"/>');
     });
     if (o.ref != null) {
       out.push('<path class="bt-ref" d="M' + padL + "," + y(o.ref) + "L" + (W - padR) + "," + y(o.ref) + '"/>');
@@ -10725,6 +10726,14 @@
     return '<path class="bt-vgrid" d="M' + (+x).toFixed(1) + "," + (+top).toFixed(1) + "L" + (+x).toFixed(1) + "," + (+bot).toFixed(1) + '"/>';
   }
   var COL_FILL = .68;
+  function colPath(cx, y0, y1, sw) {
+    var lo = Math.min(y0, y1), hi = Math.max(y0, y1), r = sw / 2, x = (+cx).toFixed(1);
+    if (hi - lo <= sw) {
+      var mid = ((lo + hi) / 2).toFixed(1);
+      return "M" + x + "," + mid + "L" + x + "," + mid;
+    }
+    return "M" + x + "," + (hi - r).toFixed(1) + "L" + x + "," + (lo + r).toFixed(1);
+  }
   function colWidth(slot) {
     if (!(slot > 0)) return 1;
     if (slot < 1.5) return slot;
@@ -10756,7 +10765,7 @@
     ticks.forEach(function(v) {
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
-      if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
+      if ((o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) && (o.base == null || Math.abs(ty - parseFloat(o.base)) > .5)) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
       var ly = ty - 5;
       out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle">' + o.fmt(v) + "</text>");
     });
@@ -10793,7 +10802,7 @@
     o.vals.forEach(function(d, i) {
       var cx = (padL + slot * (i + .5)).toFixed(1), y1 = parseFloat(y(d.v));
       if (Math.abs(y1 - midY) < .6) y1 = midY + (d.v >= o.mid ? -.6 : .6);
-      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="M' + cx + "," + midY.toFixed(1) + "L" + cx + "," + y1.toFixed(1) + '"/>');
+      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
     });
     var dAvg = o.vals.reduce(function(a, d) {
       return a + d.v;
@@ -12715,7 +12724,7 @@
       data.forEach(function(d, i) {
         var cx = x(i, data.length);
         svg.appendChild(el("path", {
-          d: "M" + cx.toFixed(1) + "," + zeroY.toFixed(1) + "L" + cx.toFixed(1) + "," + y(d.v).toFixed(1),
+          d: colPath(cx, zeroY, y(d.v), colW),
           "stroke-width": colW.toFixed(2),
           class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
         }));

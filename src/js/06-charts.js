@@ -624,8 +624,8 @@
                          fmt:function(v){ return v + "%"; } }));
     o.vals.forEach(function(d, i){
       var cx = (padL + slot * (i + 0.5)).toFixed(1);
-      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="M' + cx + ',' + (padT + ih) + 'L' + cx + ',' + padT + '"/>');
-      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="M' + cx + ',' + (padT + ih) + 'L' + cx + ',' + y(d.v) + '"/>');
+      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="' + colPath(cx, padT + ih, padT, tw) + '"/>');
+      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, padT + ih, y(d.v), sw) + '"/>');
     });
     if (o.ref != null){
       out.push('<path class="bt-ref" d="M' + padL + ',' + y(o.ref) + 'L' + (W - padR) + ',' + y(o.ref) + '"/>');
@@ -741,6 +741,20 @@
          the mark stays the mark. Four columns therefore get 20px rather than 9, which is more than twice the
          ink and still this app's shape rather than a dashboard's block.
      Between those, slot × COL_FILL, which is the rule the app always meant. */
+  /* Version 578. A column's PATH, inset by its own cap. Keren, on Economic power: "the bars are crossing over
+     and covering the years, and the tooltip is covering what's hovering above 100%." Both are one fault: these
+     columns are round-capped strokes, and a round cap reaches half the stroke's width past each end of the
+     line it caps. At 5px that is 2.5px and nobody notices; Version 577 took four-column charts to 20px, and
+     ten pixels past each end is a bar hanging into the year row underneath and a full-height track poking up
+     into the reading's band above. The line is drawn half a width short at each end now, so the CAPSULE spans
+     exactly the interval it stands for — which is also what makes a bar's length honest, since a cap that
+     overshoots is length the number never claimed. A span shorter than the width collapses to a dot, centred:
+     the smallest a round-capped mark can honestly be. */
+  function colPath(cx, y0, y1, sw){
+    var lo = Math.min(y0, y1), hi = Math.max(y0, y1), r = sw / 2, x = (+cx).toFixed(1);
+    if (hi - lo <= sw){ var mid = ((lo + hi) / 2).toFixed(1); return "M" + x + "," + mid + "L" + x + "," + mid; }
+    return "M" + x + "," + (hi - r).toFixed(1) + "L" + x + "," + (lo + r).toFixed(1);
+  }
   function colWidth(slot){
     if (!(slot > 0)) return 1;
     if (slot < 1.5) return slot;                     // no room for a gap: tile, do not overlap
@@ -819,7 +833,11 @@
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
       // `noGridAt` is for a value that earns a label but not a line — the deficit chart's zero, where the solid
       // baseline is about to be drawn and a dashed one under it would read as two rules
-      if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9)
+      /* V578: and never under the base rule either. Two 1px lines on one pixel row read as one darker line —
+         Keren: "the zero line is still a bit darker than the 50% line." `noGridAt` was the same thought, said
+         by four callers in a value; this says it in the one place that knows where the base actually is. */
+      if ((o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) &&
+          (o.base == null || Math.abs(ty - parseFloat(o.base)) > 0.5))
         out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
       /* ABOVE its line, not on it: the gridline runs the frame's full width now, and a number sitting on one
          would be struck through by it.
@@ -864,7 +882,7 @@
     o.vals.forEach(function(d, i){
       var cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(d.v));
       if (Math.abs(y1 - midY) < 0.6) y1 = midY + (d.v >= o.mid ? -0.6 : 0.6);
-      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="M' + cx + ',' + midY.toFixed(1) + 'L' + cx + ',' + y1.toFixed(1) + '"/>');
+      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
     });
     // Version 433: the window's average beside the fair-value midline. Note that BOTH are on the chart, which is
     // what makes a windowed average safe here \u2014 Version 416 kept this page's record row on the whole series

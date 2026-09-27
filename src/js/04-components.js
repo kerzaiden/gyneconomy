@@ -546,7 +546,7 @@
     }
     vals.forEach(function(v, i){
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(v)) + '"/>');
+        '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
     out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     // the 1983 level, on a plate so it reads wherever it lands (the Version 217 rule)
@@ -979,7 +979,7 @@
       var y1 = Y(v);
       if (Math.abs(y1 - pMidY) < 0.6) y1 = pMidY + (v >= PULSE_PRE2008 ? -0.6 : 0.6);
       out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' +
-        pSw.toFixed(2) + '" d="M' + f(X(i)) + ',' + f(pMidY) + 'L' + f(X(i)) + ',' + f(y1) + '"/>');
+        pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
     });
 
     /* Version 568: the marks that named the extremes and the latest point are gone. Keren, on Desire: "I'm
@@ -1073,7 +1073,7 @@
     ser.forEach(function(v, i){
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(Y(0)) + 'L' + f(X(i)) + ',' + f(Y(v)) + '"/>');
+        '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
     return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
       'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +

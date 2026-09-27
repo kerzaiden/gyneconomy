@@ -1830,7 +1830,12 @@
   .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
   .seriesbar::-webkit-scrollbar{ display:none; }
   .seriesbar .range-seg{ font-size:11.5px; padding-inline:9px; white-space:nowrap; }
-  .rangebar{ display:flex; gap:3px; background:var(--track); border-radius:var(--radius); padding:3px; margin:14px 0 2px;
+  /* V578, Keren: "I want the date picker bar to be in the same shade as the Highlights component, meaning
+     blend with the page." --track is a tan meant for a FILLED track — a battery's unlit part, a range bar's
+     ground — and against the page it read as a band of its own. --surface-2 is what Highlights sits on: a hair
+     off the page, enough to be a surface and not enough to be an object. The selected segment stays white, so
+     the one thing the control is saying still reads. */
+  .rangebar{ display:flex; gap:3px; background:var(--surface-2); border-radius:var(--radius); padding:3px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--radius-inner); padding:7px 10px; cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
@@ -2053,7 +2058,7 @@
      the New-Goal-shaped actions, and the SELECTED segment, which reverts to `.range-seg.on`'s lifted white
      paper — legible against grey, and no longer the loudest thing on the screen. */
   .hist-bar .rangebar,
-  .hist-bar .cycsel-btn{ background:var(--track); border:1px solid var(--border); }
+  .hist-bar .cycsel-btn{ background:var(--surface-2); border:1px solid var(--border); }   /* V578, as .rangebar */
   /* The two controls sit on one row, so their heights are not allowed to be an emergent property of their
      padding. They never matched exactly — the track's 3px plus a segment's 7px against the button's 9px — and
      --ctl-h was a MINIMUM, which both cleared by different amounts; adding a border pushed the mode bar to 36

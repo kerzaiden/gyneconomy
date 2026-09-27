@@ -538,7 +538,7 @@
       // a bar standing for a number that does not exist.
       if (d.v == null) return;
       out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(d.v)) + '"/>');
+        '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
@@ -634,10 +634,8 @@
     bill.forEach(function(v, i){
       var cx = X(i);
       out.push('<g class="hcol">' +
-        '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx - hhOff) + ',' + f(Y(0)) +
-          'L' + f(cx - hhOff) + ',' + f(Y(v)) + '"/>' +
-        '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx + hhOff) + ',' + f(Y(0)) +
-          'L' + f(cx + hhOff) + ',' + f(Y(kept[i])) + '"/>' +
+        '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx - hhOff, Y(0), Y(v), hhSw) + '"/>' +
+        '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
       '</g>');
     });
     /* Version 567: the two series are named by the shared legend at the head of the grid, like every other
@@ -708,7 +706,7 @@
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(d.v)) + '"/>');
+        '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     // Version 421, Keren: "now that we have a cycle-based viewpoint we can take the average CPI by cycle and put it
     // as a line \u2014 and make it so I can also view the number." The convention is the app's OWN and is reused down to
@@ -824,7 +822,7 @@
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(d.v)) + '"/>');
+        '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     // Version 431: the window's own average, the same line Temperature draws
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
@@ -882,7 +880,7 @@
     vals.forEach(function(v, i){
       if (v == null) return;
       out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) +
-        '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(v)) + '"/>');
+        '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
     // Version 434: Volume's long-run pace existed only as a record row, so the chart had nothing to read a
     // column AGAINST. windowScale already forces M2_NORM into the scale, so the line has always fitted \u2014 it was

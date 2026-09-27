@@ -132,7 +132,7 @@
       data.forEach(function(d, i){
         var cx = x(i, data.length);
         svg.appendChild(el("path", {
-          d: "M" + cx.toFixed(1) + "," + zeroY.toFixed(1) + "L" + cx.toFixed(1) + "," + y(d.v).toFixed(1),
+          d: colPath(cx, zeroY, y(d.v), colW),
           "stroke-width": colW.toFixed(2),
           class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
         }));
