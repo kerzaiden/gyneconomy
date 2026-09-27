@@ -284,7 +284,7 @@
        different amount on every chart, so a legend aligned to it would have sat at a different distance from
        the edge on each page while reading as if it were aligned. */
     var fr = svg.querySelector(".bt-frame");
-    var INSET = 4, PLATE_H = 15, PAD_X = 6;
+    var INSET = 6, PLATE_H = 15, PAD_X = 6;   // V559: 4 sat too close to the frame's ceiling; still ONE number
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var frRight = fr ? parseFloat(fr.getAttribute("x")) + parseFloat(fr.getAttribute("width")) : g.R;
     var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];

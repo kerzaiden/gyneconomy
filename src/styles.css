@@ -1453,7 +1453,7 @@
   .head-mark-disc{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
-  .vh-host{ margin:6px 0 2px; }   /* V497: the readout above it has its own edge now */
+  .vh-host{ margin:0 0 2px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
   /* a sign folded into another sign's page (Version 306): a section, not a box \u2014 the page it joins is flat */
   /* Version 346: a folded sign is a card, not a footnote under a rule \u2014 it is a reading of its own that
      happens to live on another reading's page, and the page reads as two things because it is two things. */
@@ -1470,10 +1470,11 @@
      where the record it offers is already on screen. It belongs to the page only. */
   .detail-modal .head-mark{ display:none; }
   /* the record itself */
-  /* Version 558: 14px above the plot became 4. The gap was set when the readout above it was a three-line
-     block with a reference row that came and went; it is a two-line plate now, and Keren: "it has a big
-     spacing between it and the grid, which is redundant — we want to save as many pixels as we possibly can." */
-  .vh-svg{ display:block; width:100%; height:auto; margin:4px 0 2px; overflow:visible; }
+  /* Version 558: 14px above the plot became 4; Version 559 takes the last of it. The gap was set when the
+     readout above it was a three-line block with a reference row that came and went; it is a two-line plate
+     now, and Keren: "it has a big spacing between it and the grid … make like a 10 pixels gap." The whole gap
+     is AXIS.T now — the plot's own top inset — so there is one number to tune rather than two stacked. */
+  .vh-svg{ display:block; width:100%; height:auto; margin:0 0 2px; overflow:visible; }
   .vh-plate{ fill:var(--surface); }
   /* Version 500: `.vh-line` is gone — no chart in this app draws a line any more. */
   /* the money-stock columns: one hue, and the side of zero is the reading (Version 306) */
@@ -2103,7 +2104,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:4px 0 2px; }   /* V558, as .vh-svg */
+  .dchart{ margin:0 0 2px; }   /* V558/V559, as .vh-svg */
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
   /* the pair (Version 267): the gap is the mark, so it gets the weight; the two ends are the dial's own disc, hollow
      for the reading being measured against and cored for the one being measured */
@@ -2434,7 +2435,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin: 6px -6px 4px; }   /* V497, as .vh-host */
+  .chart-shell{ position:relative; margin: 0 -6px 4px; }   /* V497, as .vh-host */
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
   /* .curve-dot/.curve-dot.end — the spread-history chart's hover dot */
   .curve-dot{ fill:var(--accent); }
@@ -2549,9 +2550,12 @@
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
-  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1;
+  /* V559, Keren: "the number is too big." 29px was the size of a card's own headline figure, which is what
+     this block was when it described the window and nothing else; as a plate that rides a column it is a
+     reading, and a reading answers to the chart rather than competing with it. */
+  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
-  @media (max-width:400px){ .hr-value{ font-size:26px; } }
+  @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
                              vertical-align:middle; margin-right:6px; }

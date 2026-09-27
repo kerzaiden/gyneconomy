@@ -725,7 +725,11 @@
      because the bottom bar already has numbers — switch the legend to the top right side of the grid"). She is
      right: the year row sits just under the frame, so a legend on the floor put two rows of small grey type a
      few pixels apart and the reader had to work out which was which. The ceiling is empty. */
-  var AXIS = { L:34, R:6, T:14, LEG:20 };
+  /* Version 559: T drops from 14 to 10 and the three plot hosts give up their top margins, so the distance
+     between the readout's plate and the grid's ceiling is T and nothing else — one number, and the 10px Keren
+     asked for. It was 6 of margin and 14 of inset stacked, which is the kind of gap nobody can tune because
+     nobody can see which half of it to change. */
+  var AXIS = { L:34, R:6, T:10, LEG:20 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs

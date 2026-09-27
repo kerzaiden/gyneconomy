@@ -990,7 +990,7 @@
   .head-mark-disc{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
-  .vh-host{ margin:6px 0 2px; }
+  .vh-host{ margin:0 0 2px; }
 
   .folded-sign{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin-top:var(--gap); padding:16px 16px 20px; }
@@ -1003,7 +1003,7 @@
 
   .detail-modal .head-mark{ display:none; }
 
-  .vh-svg{ display:block; width:100%; height:auto; margin:4px 0 2px; overflow:visible; }
+  .vh-svg{ display:block; width:100%; height:auto; margin:0 0 2px; overflow:visible; }
   .vh-plate{ fill:var(--surface); }
 
   .m2-col{ fill:none; stroke-linecap:round; }
@@ -1341,7 +1341,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:4px 0 2px; }
+  .dchart{ margin:0 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
 
   .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
@@ -1563,7 +1563,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin: 6px -6px 4px; }
+  .chart-shell{ position:relative; margin: 0 -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
 
   .curve-dot{ fill:var(--accent); }
@@ -1624,9 +1624,10 @@
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
-  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1;
+
+  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
-  @media (max-width:400px){ .hr-value{ font-size:26px; } }
+  @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
                              vertical-align:middle; margin-right:6px; }
@@ -7576,7 +7577,7 @@
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");
     var fr = svg.querySelector(".bt-frame");
-    var INSET = 4, PLATE_H = 15, PAD_X = 6;
+    var INSET = 6, PLATE_H = 15, PAD_X = 6;
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var frRight = fr ? parseFloat(fr.getAttribute("x")) + parseFloat(fr.getAttribute("width")) : g.R;
     var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
@@ -10780,7 +10781,7 @@
   var AXIS = {
     L: 34,
     R: 6,
-    T: 14,
+    T: 10,
     LEG: 20
   };
   function chartAxes(o) {
