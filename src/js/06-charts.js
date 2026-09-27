@@ -426,7 +426,13 @@
     // rendering as a button — pressing it dimmed the chart and revealed nothing, so the reader lost the picture
     // and got no trend for it. Latent until now, because a window that short was never the default; opening every
     // page on the current cycle made it the first thing three pages do.
-    if (!toggles || !t.fit) return '<div class="trendpill">' + inner + '</div>';
+    /* Version 572, Keren, with Apple Health's own empty trend row beside it: "when the trend is unavailable I
+       want it to be like empty — a light stroke with grey text, so it looks disabled." A filled pill promises
+       something to read; this one has nothing, and under eight readings it never will for this window. So it
+       drops the wash for an outline and goes grey: still there, still the same height, so the container keeps
+       its shape and the reader can see that the row exists and has nothing in it. */
+    var none = t.word === "unavailable";
+    if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + '</div>';
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" ' +
       'aria-label="Show the trend on the chart">' + inner + '</button>';
   }

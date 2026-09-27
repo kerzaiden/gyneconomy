@@ -1229,9 +1229,13 @@
   .trend-on .bt-reflab, .trend-on .bt-end{ opacity:0.35; }
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 0;
+
+    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:12px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
+
+  .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }
+  .trendpill.none .tp-k, .trendpill.none .tp-v{ color:var(--text-muted); font-weight:600; }
   .trendpill.can-toggle{ cursor:pointer; transition:background 0.14s; }
   .trendpill.can-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
@@ -10540,7 +10544,8 @@
   function trendPill(t, key, toggles, words) {
     var word = words && words[t.word] || t.word;
     var inner = '<span class="tp-k">' + (key || "Trend") + "</span>" + '<span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
-    if (!toggles || !t.fit) return '<div class="trendpill">' + inner + "</div>";
+    var none = t.word === "unavailable";
+    if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + "</div>";
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" ' + 'aria-label="Show the trend on the chart">' + inner + "</button>";
   }
   function yearOf(d) {

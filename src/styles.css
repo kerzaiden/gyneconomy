@@ -1875,9 +1875,18 @@
      line it can take the full radius without the curve crowding a second line of text, and the horizontal padding
      grows with the radius so the words keep clear of it. Version 283. */
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 0;
+    /* V572: a capsule, not the card radius. Keren, from Apple Health: "the trend button is a little bit more
+       rounded on the corners … a rounded button would be more clear." It is the shape this app already gives
+       every control the reader can press — the window switcher above the chart, the cycle picker — so the one
+       pressable thing under the chart now looks like the pressable things over it. */
+    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:12px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;   /* V428: an action button, the same height as More details */
     width:100%; text-align:left; font:inherit; }
+  /* V572: nothing to report. An outline instead of the wash, and the whole row in muted ink — the shape Apple
+     Health gives its own empty trend row. The outline is an inset shadow rather than a border, so it costs no
+     height: a window with no trend and a window with one leave the container exactly the same size, measured. */
+  .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }   /* inset, so the outline costs no height */
+  .trendpill.none .tp-k, .trendpill.none .tp-v{ color:var(--text-muted); font-weight:600; }
   .trendpill.can-toggle{ cursor:pointer; transition:background 0.14s; }
   .trendpill.can-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   /* pressed, the row itself is the accent — the same colour the line on the chart is drawn in */
