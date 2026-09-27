@@ -7616,7 +7616,7 @@
     histAxisEnds(svg, svg.querySelector(".bt-frame"));
     if (!g || g.B == null) return;
     var refs = (g.refs || []).filter(function(r) {
-      return r && r.v != null && isFinite(r.v);
+      return r && (r.v == null || isFinite(r.v));
     });
     if (!refs.length) return;
     var fmt = function(v) {
@@ -7641,7 +7641,7 @@
       var t = document.createElementNS(NS, "text");
       t.setAttribute("class", "hl-lab");
       t.setAttribute("y", (y + 3.2).toFixed(1));
-      t.textContent = r.label + " " + fmt(r.v);
+      t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
       grp.appendChild(t);
       var m = document.createElementNS(NS, "line");
       m.setAttribute("class", r.cls || (r.dash ? "vh-mean" : "temp-avg"));
@@ -9099,7 +9099,8 @@
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
     var LO = sc.lo, HI = sc.hi;
     var X = function(i) {
-      return L + (R - L) * i / Math.max(1, n - 1);
+      var h = (R - L) / (2 * Math.max(1, n));
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
     };
     var Y = function(v) {
       return B - (B - T) * (v - LO) / (HI - LO);
@@ -9201,7 +9202,8 @@
     var sc = windowScale(ser, [ 0, HY_NORM_LO ]);
     var LO = sc.lo, HI = sc.hi;
     var X = function(i) {
-      return L + (R - L) * i / Math.max(1, n - 1);
+      var h = (R - L) / (2 * Math.max(1, n));
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
     };
     var Y = function(v) {
       return B - (B - T) * (v - LO) / (HI - LO);
@@ -9762,7 +9764,8 @@
     var sc = windowScale(bill.concat(kept), [ 0 ]);
     var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * .22;
     var X = function(i) {
-      return L + (R - L) * i / Math.max(1, n - 1);
+      var h = (R - L) / (2 * Math.max(1, n));
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
     };
     var Y = function(v) {
       return B - (B - T) * (v - LO) / (HI - LO);
@@ -9803,29 +9806,6 @@
       var cx = X(i);
       out.push('<g class="hcol">' + '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx - hhOff) + "," + f(Y(0)) + "L" + f(cx - hhOff) + "," + f(Y(v)) + '"/>' + '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx + hhOff) + "," + f(Y(0)) + "L" + f(cx + hhOff) + "," + f(Y(kept[i])) + '"/>' + "</g>");
     });
-    out.push(refKey({
-      vals: bill.map(function(v) {
-        return {
-          v: v
-        };
-      }),
-      X: X,
-      Y: Y,
-      L: X(0),
-      R: X(n - 1),
-      T: T,
-      B: B,
-      avg: bill[n - 1],
-      rows: [ {
-        cls: "hh-bill",
-        txt: "paid out on debt",
-        ink: "temp-target-label"
-      }, {
-        cls: "hh-kept",
-        txt: "kept as saving",
-        ink: "temp-target-label"
-      } ]
-    }));
     var hovAt = 0;
     lastHistGeom = {
       L: L,
@@ -9834,6 +9814,13 @@
       B: B,
       W: W,
       n: n,
+      refs: [ {
+        label: "Paid out on debt",
+        cls: "hh-bill"
+      }, {
+        label: "Kept as saving",
+        cls: "hh-kept"
+      } ],
       at: function(d, i) {
         hovAt = i;
         return qAtIndex(DSR_FROM_YEAR, from + i);
@@ -9848,50 +9835,6 @@
       })
     };
     return '<svg class="hist-svg vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Household debt service and the personal saving rate, both as a share of disposable ' + "income, every quarter from " + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
-  }
-  function refKey(o) {
-    if (o.avg == null) return "";
-    var out = [], vals = o.vals, X = o.X, Y = o.Y, L = o.L, R = o.R, T = o.T, B = o.B;
-    var f = function(v) {
-      return v.toFixed(1);
-    };
-    var kRows = o.rows || [ {
-      cls: o.refCls || "vh-mean",
-      txt: o.refTxt,
-      ink: "temp-target-label"
-    } ];
-    var kW = Math.max.apply(null, kRows.map(function(r) {
-      return r.txt.length * 6.8 + 34;
-    })), kH = 17 * kRows.length;
-    var kAvgY = Y(o.refVal != null ? o.refVal : o.avg);
-    var kBest = null;
-    for (var kx = L + 4; kx + kW <= R - 4; kx += 8) {
-      var kTop = B;
-      vals.forEach(function(d, i) {
-        var px = X(i);
-        if (px < kx - 2 || px > kx + kW + 2) return;
-        kTop = Math.min(kTop, Y(d.v));
-      });
-      if (kTop - T < kH + 6) continue;
-      var ky = Math.min(Math.max(T + 3, kAvgY - kH - 6), kTop - kH - 4);
-      var kd = Math.abs(ky + kH / 2 - kAvgY);
-      if (!kBest || kd < kBest.d) kBest = {
-        x: kx,
-        y: ky,
-        d: kd
-      };
-    }
-    if (!kBest) kBest = {
-      x: L + 4,
-      y: T + 3
-    };
-    out.push('<rect class="chart-label-plate" x="' + f(kBest.x - 4) + '" y="' + f(kBest.y - 3) + '" width="' + f(kW + 8) + '" height="' + (kH + 6) + '" rx="4"/>');
-    kRows.forEach(function(row, i) {
-      var ry = kBest.y + 8 + i * 15;
-      out.push('<path class="' + row.cls + '" d="M' + f(kBest.x) + "," + f(ry) + "H" + f(kBest.x + 18) + '"/>');
-      out.push('<text class="' + row.ink + '" x="' + f(kBest.x + 25) + '" y="' + f(ry + 3.6) + '">' + row.txt + "</text>");
-    });
-    return out.join("");
   }
   var lastChartAvg = null;
   function cpiHistoryChart(Wpx, from, o) {

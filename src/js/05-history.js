@@ -603,7 +603,8 @@
        the plate wide as well as tall. The rule that the plate clears the columns under it is the same on every
        page; this chart is the one that has to be given the room to keep it. */
     var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * 0.22;
-    var X = function(i){ return L + (R - L) * i / Math.max(1, n - 1); };
+    var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));   // V567: half a slot in at each end, so a
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };  // mark can never cross the rail or the frame
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];
@@ -637,10 +638,11 @@
           'L' + f(cx + hhOff) + ',' + f(Y(kept[i])) + '"/>' +
       '</g>');
     });
-    out.push(refKey({ vals:bill.map(function(v){ return { v:v }; }), X:X, Y:Y, L:X(0), R:X(n - 1), T:T, B:B,
-      avg:bill[n - 1],
-      rows:[{ cls:"hh-bill", txt:"paid out on debt", ink:"temp-target-label" },
-            { cls:"hh-kept", txt:"kept as saving",   ink:"temp-target-label" }] }));
+    /* Version 567: the two series are named by the shared legend at the head of the grid, like every other
+       history's references. This was the last chart still carrying the old floating inline key — the plate
+       that hunted for a clear band inside the plot — which is exactly what the legend replaced in Version 556,
+       and Keren caught it: "in the household history chart the legend is not in the location that we agreed
+       on." One legend, one place, every page. The key's own function went with it. */
     // V500: the two "now" dots went with the lines \u2014 they marked where a line ended, and a column ends at
     // its own tip. The last pair is the rightmost pair, which is as findable as a dot was.
     /* The readout names both lines. `at` is evaluated before `fmt` in the tooltip's single expression, so it
@@ -648,6 +650,8 @@
        that named one of two lines would be answering half the question the chart asks. */
     var hovAt = 0;
     lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n,
+      // neither carries a value: these name the two SERIES, not a line the reader measures against
+      refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
       at:function(d, i){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
       fmt:function(v){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
       vals:bill.map(function(v){ return { v:v }; }) };
@@ -656,44 +660,6 @@
       'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
 
-  function refKey(o){
-    if (o.avg == null) return "";
-    var out = [], vals = o.vals, X = o.X, Y = o.Y, L = o.L, R = o.R, T = o.T, B = o.B;
-    var f = function(v){ return v.toFixed(1); };
-    // Version 433: the swatch wears the class of the line it names, because the four histories that use this
-    // draw their reference differently \u2014 .vh-mean on Temperature and Growth, .bt-ref on Power, .dv-mid on
-    // Valuations. A key whose swatch did not match its line would be worse than no key.
-    // Version 438, Keren: "keep the purple line, but I don't need to see 34% on the graph \u2014 it reduces visible
-    // data. Put average below the highest and lowest, so it reads strongest, weakest, average, latest." Right on
-    // both halves, and they are one move: a figure belongs in the register with the other figures, and the plot
-    // keeps only what it needs to be read \u2014 the line itself, which is the comparison, not its value.
-    // So the key names the REFERENCE line alone now. The reference still needs naming because it is a fixed
-    // benchmark the reader cannot derive; the average names itself in the rows.
-    // Version 460 takes the loop up on its offer: a chart with TWO data series hands in its own rows, and
-    // the key names both. Nothing else changes \u2014 the plate still finds the clearest band to sit in, it is
-    // just taller, and the widest row sets the width.
-    var kRows = o.rows || [{ cls:o.refCls || "vh-mean", txt:o.refTxt, ink:"temp-target-label" }];
-    var kW = Math.max.apply(null, kRows.map(function(r){ return r.txt.length * 6.8 + 34; })), kH = 17 * kRows.length;
-    var kAvgY = Y(o.refVal != null ? o.refVal : o.avg);   // it sits near the line it names
-    var kBest = null;
-    for (var kx = L + 4; kx + kW <= R - 4; kx += 8){
-      var kTop = B;
-      vals.forEach(function(d, i){ var px = X(i); if (px < kx - 2 || px > kx + kW + 2) return; kTop = Math.min(kTop, Y(d.v)); });
-      if (kTop - T < kH + 6) continue;                       // no band here tall enough to hold it
-      var ky = Math.min(Math.max(T + 3, kAvgY - kH - 6), kTop - kH - 4);
-      var kd = Math.abs(ky + kH / 2 - kAvgY);
-      if (!kBest || kd < kBest.d) kBest = { x:kx, y:ky, d:kd };
-    }
-    if (!kBest) kBest = { x:L + 4, y:T + 3 };                // nowhere clear: top-left, on its plate
-    out.push('<rect class="chart-label-plate" x="' + f(kBest.x - 4) + '" y="' + f(kBest.y - 3) + '" width="' +
-             f(kW + 8) + '" height="' + (kH + 6) + '" rx="4"/>');
-    kRows.forEach(function(row, i){
-      var ry = kBest.y + 8 + i * 15;   // one row today; the loop stays, so a second reference would cost nothing
-      out.push('<path class="' + row.cls + '" d="M' + f(kBest.x) + ',' + f(ry) + 'H' + f(kBest.x + 18) + '"/>');
-      out.push('<text class="' + row.ink + '" x="' + f(kBest.x + 25) + '" y="' + f(ry + 3.6) + '">' + row.txt + '</text>');
-    });
-    return out.join("");
-  }
   var lastChartAvg = null;   // Version 427: what the key under the chart prints, set by the drawing that owns it
   function cpiHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;

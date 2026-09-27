@@ -332,7 +332,8 @@
     if (old) old.parentNode.removeChild(old);
     histAxisEnds(svg, svg.querySelector(".bt-frame"));   // every chart, references or not
     if (!g || g.B == null) return;
-    var refs = (g.refs || []).filter(function(r){ return r && r.v != null && isFinite(r.v); });
+    // a ref with no `v` names a SERIES rather than a reference line, and prints its name alone (V567)
+    var refs = (g.refs || []).filter(function(r){ return r && (r.v == null || isFinite(r.v)); });
     if (!refs.length) return;
     var fmt = function(v){ return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); };
     var NS = "http://www.w3.org/2000/svg";
@@ -363,7 +364,7 @@
       var t = document.createElementNS(NS, "text");
       t.setAttribute("class", "hl-lab");
       t.setAttribute("y", (y + 3.2).toFixed(1));
-      t.textContent = r.label + " " + fmt(r.v);
+      t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
       grp.appendChild(t);
       /* Version 561, Keren: "the line next to Average 3.3% needs to be purple … so it matches the colours."
          The mark wears the chart's OWN class, so one stylesheet rule paints the line on the plot and the line
@@ -913,7 +914,8 @@
     // picture saying nothing (the Version 358 rule).
     var sc = windowScale(ser, [PULSE_PRE2008]);
     var LO = sc.lo, HI = sc.hi;
-    var X = function(i){ return L + (R - L) * i / Math.max(1, n - 1); };
+    var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));   // V567: half a slot in at each end, so a
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };  // mark can never cross the rail or the frame
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];
@@ -1019,7 +1021,8 @@
        kept in view for the reason V476 gives; the ceiling still runs off the top when the window is tight. */
     var sc = windowScale(ser, [0, HY_NORM_LO]);
     var LO = sc.lo, HI = sc.hi;
-    var X = function(i){ return L + (R - L) * i / Math.max(1, n - 1); };
+    var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));   // V567: half a slot in at each end, so a
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };  // mark can never cross the rail or the frame
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];

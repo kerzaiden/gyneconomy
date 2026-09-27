@@ -1367,7 +1367,7 @@
      rather than a state colour, because a green or red line would be grading the household. */
   /* Version 500: both readings are columns now (Keren: "make sure all the charts are bars"). The two classes
      keep their colours, because the key beside the chart names them by colour and a reader who has learned
-     which is which should not have to learn it again. `.hh-bill`/`.hh-kept` stay as strokes for the key's own
+     which is which should not have to learn it again. `.hh-bill`/`.hh-kept` stay as strokes for the legend's own
      swatches, which draw a short line rather than a column. */
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-kept{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
