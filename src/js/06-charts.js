@@ -739,8 +739,11 @@
      the outer frame of the grid align both in the left side and the right side … I want symmetry." The
      numbers sit inside it, in the rail the gutter opens, above their own line where no column ever reaches.
      Every caller pads with these two numbers, which is what lets the frame be derived from them here rather
-     than passed in twelve times. */
-  var AXIS = { L:32, R:6, T:10, LEG:20 };
+     than passed in twelve times.
+     Version 563 gave the rail an edge; Version 564 gives the edge air. L is 37 because the rail itself is 32 —
+     enough for "100%" — and the last five are the gap Keren asked for between that line and the first column,
+     so the rule is not something the leftmost bar leans against. */
+  var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -763,8 +766,8 @@
          line, just like the horizontal one." The rail the numbers sit in had no edge, so the plot simply
          began wherever the widest number happened to end. It is the same rule as a gridline, turned upright:
          one token, one weight, and the rail reads as a column of the grid rather than as a margin. */
-      out.push('<path class="bt-grid" d="M' + o.x0 + ',' + (+o.top).toFixed(1) +
-               'L' + o.x0 + ',' + (+o.bot).toFixed(1) + '"/>');
+      out.push('<path class="bt-grid" d="M' + (o.x0 - AXIS.RAIL) + ',' + (+o.top).toFixed(1) +
+               'L' + (o.x0 - AXIS.RAIL) + ',' + (+o.bot).toFixed(1) + '"/>');
     }
     ticks.forEach(function(v){
       var ty = parseFloat(o.y(v));
@@ -777,8 +780,10 @@
          would be struck through by it. Above the topmost line there may be no room left inside the frame, and
          there the number drops under its line instead — still in the rail, still clear of every column. */
       var ly = o.top != null && ty - 5 < o.top + 11 ? ty + 13 : ty - 5;
-      out.push('<text class="bt-yl" x="' + (fx0 + 4).toFixed(1) + '" y="' + ly.toFixed(1) +
-               '" text-anchor="start">' + o.fmt(v) + '</text>');
+      // centred in the rail rather than pushed against the frame (Keren, V564): the rail is a column of the
+      // grid now, and a column's contents sit in the middle of it
+      out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) +
+               '" text-anchor="middle">' + o.fmt(v) + '</text>');
     });
     if (o.base != null)
       out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');

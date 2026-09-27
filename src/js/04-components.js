@@ -265,10 +265,13 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG) * scale).toFixed(1) + "px";
+    // V564: a little lower than the legend's own floor — the plate is a card sitting on the plot, and a card
+    // pressed against the strip above it reads as part of that strip
+    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG + 8) * scale).toFixed(1) + "px";
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
-    var lo = (sb.left - eb.left) + g.L * scale, hi = (sb.left - eb.left) + g.R * scale;
+    // inset from the plot's own ends, so the resting plate sits inside the picture rather than in its corner
+    var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 10;
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";

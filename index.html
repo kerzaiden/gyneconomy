@@ -1620,7 +1620,7 @@
   .has-hist-read{ position:relative; }
   .hist-read{ position:absolute; left:0; right:0; top:0; z-index:3; pointer-events:none; padding:0; margin:0; }
 
-  .hr-plate{ display:inline-block; padding:3px 9px 4px; border-radius:var(--radius); opacity:0;
+  .hr-plate{ display:inline-block; padding:3px 9px 4px; border-radius:8px; opacity:0;
              transition:margin-left 0.12s ease-out, opacity 0.12s ease-out; }
   .hist-read.on .hr-plate{ opacity:1; }
 
@@ -7560,10 +7560,10 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG) * scale).toFixed(1) + "px";
+    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG + 8) * scale).toFixed(1) + "px";
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;
-    var lo = sb.left - eb.left + g.L * scale, hi = sb.left - eb.left + g.R * scale;
+    var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 10;
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
     if (!plate.__placed) {
@@ -10809,10 +10809,11 @@
   }
   var COL_FILL = .68;
   var AXIS = {
-    L: 32,
+    L: 37,
     R: 6,
     T: 10,
-    LEG: 20
+    LEG: 20,
+    RAIL: 5
   };
   function chartAxes(o) {
     var out = [], ticks = o.ticks;
@@ -10826,14 +10827,14 @@
     var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
     if (o.top != null && o.bot != null) {
       out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' + (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
-      out.push('<path class="bt-grid" d="M' + o.x0 + "," + (+o.top).toFixed(1) + "L" + o.x0 + "," + (+o.bot).toFixed(1) + '"/>');
+      out.push('<path class="bt-grid" d="M' + (o.x0 - AXIS.RAIL) + "," + (+o.top).toFixed(1) + "L" + (o.x0 - AXIS.RAIL) + "," + (+o.bot).toFixed(1) + '"/>');
     }
     ticks.forEach(function(v) {
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
       if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
       var ly = o.top != null && ty - 5 < o.top + 11 ? ty + 13 : ty - 5;
-      out.push('<text class="bt-yl" x="' + (fx0 + 4).toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="start">' + o.fmt(v) + "</text>");
+      out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle">' + o.fmt(v) + "</text>");
     });
     if (o.base != null) out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + "," + o.base + "L" + fx1.toFixed(1) + "," + o.base + '"/>');
     return out.join("");
