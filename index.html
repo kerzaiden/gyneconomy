@@ -1612,6 +1612,12 @@
   .gdp-tooltip .tip-now{ font-size:13px; font-weight:700; margin:1px 0 3px; }
 
   .hist-read{ padding:2px 0 4px; margin:2px 0 0; }
+
+  .hr-plate{ display:inline-block; padding:5px 10px; margin-left:-10px; border-radius:var(--radius);
+             transition:margin-left 0.12s ease-out; }
+
+  .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
+  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1.06;
@@ -7529,7 +7535,25 @@
       val = m == null ? "—" : fmt(m);
       sub = "";
     }
-    el.innerHTML = '<div class="hr-label">' + lab + "</div>" + '<div class="hr-value">' + val + "</div>" + '<div class="hr-sub">' + sub + "</div>";
+    var live = !!(d && d.v != null);
+    el.innerHTML = '<div class="hr-plate">' + '<div class="hr-label">' + lab + "</div>" + '<div class="hr-value">' + val + "</div>" + '<div class="hr-sub">' + sub + "</div>" + "</div>";
+    el.classList.toggle("on", live);
+    var plate = el.firstElementChild;
+    if (!plate) return;
+    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    if (!live || !svg) {
+      plate.style.marginLeft = "";
+      return;
+    }
+    var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
+    if (!sb.width || !eb.width) {
+      plate.style.marginLeft = "";
+      return;
+    }
+    var scale = sb.width / g.W || 1;
+    var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+    var w = plate.offsetWidth;
+    plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
   }
   window.__histRead = function(host, d, i) {
     if (host) histReadFill(host, d, i);

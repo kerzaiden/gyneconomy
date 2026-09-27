@@ -2525,6 +2525,16 @@
      head above it, the trend below it, the reading in the box under that. The figure starts where the badge
      starts now. */
   .hist-read{ padding:2px 0 4px; margin:2px 0 0; }
+  /* The plate (Version 555). Its padding is there in BOTH states and the rest position pulls it back out by
+     the same amount, so the figure still starts exactly where the badge above it starts (the V521 rule) and
+     the block's height never changes when the wash arrives. */
+  .hr-plate{ display:inline-block; padding:5px 10px; margin-left:-10px; border-radius:var(--radius);
+             transition:margin-left 0.12s ease-out; }
+  /* 6% of the page's own ink, not --surface-2: on white that token is a 2% wash and the plate did not read as
+     a plate at all, and mixing from the ink gets the dark theme right for free — there the plate lifts off the
+     surface rather than sinking into it, which is what Apple's does. */
+  .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
+  @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1.06;

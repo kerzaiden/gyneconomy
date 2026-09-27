@@ -212,9 +212,32 @@
       // still when the references arrive on hover.
       sub = "";
     }
-    el.innerHTML = '<div class="hr-label">' + lab + '</div>' +
-                   '<div class="hr-value">' + val + '</div>' +
-                   '<div class="hr-sub">' + sub + '</div>';
+    var live = !!(d && d.v != null);
+    el.innerHTML = '<div class="hr-plate">' +
+                     '<div class="hr-label">' + lab + '</div>' +
+                     '<div class="hr-value">' + val + '</div>' +
+                     '<div class="hr-sub">' + sub + '</div>' +
+                   '</div>';
+    /* Version 555, Keren, from Apple Health's Steps chart: "they made like a background to the current
+       statistics, and that cube is moving with the lines — so on Tuesday the data would align with the line
+       of Tuesday." While a reading is live the block becomes a plate and slides to sit centred over the
+       column it is reading, with the crosshair already dropping from it to the bar. It ties the figure to the
+       month: before this the reader had a number above a picture and had to take on trust that the two were
+       about the same thing. At rest it goes back to what V520 and V521 made it — bare, flush left, the card's
+       own headline — because there is no one column for it to sit over.
+       It moves by MARGIN, not by absolute positioning, so the block keeps its place in the flow and its
+       height, and the page cannot jump under a reader scrubbing across it. */
+    el.classList.toggle("on", live);
+    var plate = el.firstElementChild;
+    if (!plate) return;
+    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    if (!live || !svg){ plate.style.marginLeft = ""; return; }   // "" hands it back to the stylesheet's rest position
+    var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
+    if (!sb.width || !eb.width){ plate.style.marginLeft = ""; return; }
+    var scale = sb.width / g.W || 1;
+    var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+    var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
+    plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
   }
   // called by a chart that does its own hover tracking (Horizon's), so every history feeds the same block
   window.__histRead = function(host, d, i){ if (host) histReadFill(host, d, i); };
