@@ -193,10 +193,7 @@
     if (d && d.v != null){
       lab = g.at(d, i);
       val = fmt(d.v);
-      sub = (g.refs || []).map(function(r){
-        return '<span class="hr-ref"><span class="sw' + (r.dash ? " dash" : "") + '"></span>' +
-               r.label + " " + fmt(r.v) + '</span>';
-      }).join("");
+      sub = "";
     } else {
       var vals = (g.vals || []).filter(function(x){ return x && x.v != null && isFinite(x.v); });
       /* The average is taken from `refs` when the chart drew one, never recomputed: the line on the chart and
@@ -212,6 +209,14 @@
       // still when the references arrive on hover.
       sub = "";
     }
+    /* Version 556, Keren: "average 3.3%, Fed target 2.0% — that never changes, so we don't need it in the
+       changing tooltip." Version 486 put the reference values in here because the chart printed them
+       permanently and a reader comparing a bar to a line had nowhere to read them. That was the right move
+       against an inline key; against a plate that changes on every column it is the wrong one, because a
+       figure that never changes inside a readout that always does teaches the reader to stop trusting that
+       the block is about the column under the pointer. The references are constants of the WINDOW, so they
+       now sit with the window: a legend in the strip at the foot of the grid (histLegend below). `sub` is
+       kept — it is what holds the plate's height steady — and is empty in both states. */
     var live = !!(d && d.v != null);
     el.innerHTML = '<div class="hr-plate">' +
                      '<div class="hr-label">' + lab + '</div>' +
@@ -239,6 +244,60 @@
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
     plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
   }
+  /* Version 556. The reference legend: one line per reference, in the strip AXIS.LEG opened inside the frame
+     under the plot, laid out from the right so it ends on the plot's right edge — Keren: "a very gentle legend
+     on the bottom right of the grid … a line, Average 3.3%, a dashed line, Fed target 2.0%."
+     Drawn here rather than in ten renderers, for the reason V489, V495 and V520 all settled: a component each
+     page has to remember to add is a component the pages drift apart on. Everything it needs is already on the
+     geometry — the references, the plot's right edge, its foot, and the chart's own formatter, so the figure
+     in the legend and the line on the chart are the same number (the ONE NUMBER rule).
+     The marks repeat the LINE each reference stands for, solid or dashed, exactly as the readout's did: the
+     strip sits on the chart's own ground, so shape is what has to carry it. Measured after insertion, because
+     only the browser knows how wide "Ample reserve 70%" is in this font at this size. */
+  function histLegend(host){
+    var g = host.__geom;
+    var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
+    if (!svg) return;
+    var old = svg.querySelector(".hist-legend");
+    if (old) old.parentNode.removeChild(old);
+    if (!g || g.B == null) return;
+    var refs = (g.refs || []).filter(function(r){ return r && r.v != null && isFinite(r.v); });
+    if (!refs.length) return;
+    var fmt = function(v){ return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); };
+    var NS = "http://www.w3.org/2000/svg";
+    var grp = document.createElementNS(NS, "g");
+    grp.setAttribute("class", "hist-legend");
+    grp.setAttribute("aria-hidden", "true");   // every value in it is already in the chart's own aria-label
+    /* Low in the strip rather than centred in it: a column is drawn with a round cap, which reaches about half
+       a stroke below the baseline it stands on, and a legend on the middle line sat in it. */
+    var y = g.B + AXIS.LEG - 6, MARK = 12, PAD = 5, GAP = 13, items = [];
+    refs.forEach(function(r){
+      var t = document.createElementNS(NS, "text");
+      t.setAttribute("class", "hl-lab");
+      t.setAttribute("y", (y + 3.2).toFixed(1));
+      t.textContent = r.label + " " + fmt(r.v);
+      grp.appendChild(t);
+      var m = document.createElementNS(NS, "line");
+      m.setAttribute("class", "hl-mark" + (r.dash ? " dash" : ""));
+      m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1));
+      grp.appendChild(m);
+      items.push({ t:t, m:m });
+    });
+    svg.appendChild(grp);   // in the document before measuring; a text node has no width until it is
+    var total = 0;
+    items.forEach(function(it){
+      it.w = MARK + PAD + (it.t.getComputedTextLength ? it.t.getComputedTextLength() : it.t.textContent.length * 5);
+      total += it.w;
+    });
+    total += GAP * (items.length - 1);
+    var x = Math.max(g.L, g.R - total);
+    items.forEach(function(it){
+      it.m.setAttribute("x1", x.toFixed(1));
+      it.m.setAttribute("x2", (x + MARK).toFixed(1));
+      it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
+      x += it.w + GAP;
+    });
+  }
   // called by a chart that does its own hover tracking (Horizon's), so every history feeds the same block
   window.__histRead = function(host, d, i){ if (host) histReadFill(host, d, i); };
   function wireHistHover(host, tipId){
@@ -247,6 +306,7 @@
     // the window changes; only the listeners below are wired once
     histReadEnsure(host);
     histReadFill(host, null);
+    histLegend(host);   // like the readout, rebuilt on EVERY draw: the window changes and so do its references
     if (host.__hovWired) return;
     host.__hovWired = true;
     var tip = document.getElementById(tipId);
@@ -329,7 +389,7 @@
   function deficitChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -363,7 +423,7 @@
     var defTicks = [];
     for (var g = Math.ceil(LO / step) * step; g <= HI + 1e-9; g += step)
       defTicks.push(Math.abs(g) < 1e-9 ? 0 : g);
-    out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:T, bot:B,
+    out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:T, bot:(B + AXIS.LEG),
       fmt:function(at){ return (at > 0 ? "+" : "") + (step < 1 ? at.toFixed(1) : Math.round(at)) + "%"; } }));
     // the smallest year step whose labels still fit the width
     var steps = [1, 2, 5, 10, 20, 25], yrStep = 25, si, yy, cnt;
@@ -375,7 +435,7 @@
     for (yy = y0; yy <= y1; yy++){
       if (yy % yrStep) continue;
       out.unshift(vGrid(X(yy - y0), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(yy - y0)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yy + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(yy - y0)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yy + '</text>');
     }
     vals.forEach(function(v, i){
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) +
@@ -754,7 +814,7 @@
   function velocityHistoryChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     // The 1959\u20132007 average is ALWAYS inside the scale, at every stop. That is the whole reading of this chart
@@ -779,12 +839,12 @@
 
     // Pulse's readings never come near zero — velocity runs 1.1 to 2.2 — so the rule beneath is the frame,
     // not a zero anyone should measure from, the same distinction the diverging chart makes.
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:T, bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:T, bot:(B + AXIS.LEG),
       fmt:function(g){ return g.toFixed(1) + "\u00d7"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - M2V_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
 
     // the average is drawn across the years it is the average OF \u2014 which is also the clearest way to show where
@@ -853,7 +913,7 @@
   function desireHistoryChart(Wpx, from){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     // the typical band is ALWAYS inside the scale (the Version 358 rule): a window that cropped it away would
@@ -878,7 +938,7 @@
       o.push('<text class="vh-note' + cls + '" x="' + f(x) + '" y="' + f(y) + '"' +
         (anchorAt === "end" ? ' text-anchor="end"' : '') + '>' + txt + '</text>');
     }
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:T, bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:T, bot:(B + AXIS.LEG),
       fmt:function(g){ return g.toFixed(1) + "%"; } }));
     /* Version 500: the shaded band goes with the line it was drawn for. It existed so a reader could see which
        SIDE of the band the line was on; a column coloured by the band says that and how far, one reading at a
@@ -893,7 +953,7 @@
       if (seen[yr] || yr === y0){ seen[yr] = 1; continue; }
       seen[yr] = 1;
       out.unshift(vGrid(X(gi), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(gi)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(gi)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
     }
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     var hyAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);

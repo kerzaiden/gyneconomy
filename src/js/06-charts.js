@@ -605,7 +605,7 @@
     // height against a labelled scale, the four charge colours are reinforcing the bands rather than carrying
     // them alone, which is both the better encoding and the visible-label relief the amber step's contrast asks
     // for. padL opens from 8 to 30 to make the room; nothing else about the geometry moves.
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 22, iw = W - padL - padR, ih = H - padT - padB;   // V494: 26 was room for the corner figure, which has gone
+    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 22 + AXIS.LEG, iw = W - padL - padR, ih = H - padT - padB;   // V494: 26 was room for the corner figure, which has gone; +LEG is the legend strip (V556)
     var n = o.vals.length, slot = iw / n;
     var sw = Math.max(2.4, Math.min(9, slot * COL_FILL)), tw = sw + 3.4;
     function y(v){ return (padT + ih - (v / 100) * ih).toFixed(1); }
@@ -614,7 +614,7 @@
     // three labels, not the five a 0–100 span would otherwise pick, because the 70% reference line already names
     // the threshold that matters and a gridline at 75 sitting a hair under it would be noise pretending to be
     // information. The baseline is the zero these columns stand on.
-    out.push(chartAxes({ lo:0, hi:100, step:50, y:y, x0:padL, x1:(W - padR), base:y(0), top:padT, bot:(padT + ih),
+    out.push(chartAxes({ lo:0, hi:100, step:50, y:y, x0:padL, x1:(W - padR), base:y(0), top:padT, bot:(padT + ih + AXIS.LEG),
                          fmt:function(v){ return v + "%"; } }));
     o.vals.forEach(function(d, i){
       var cx = (padL + slot * (i + 0.5)).toFixed(1);
@@ -717,8 +717,13 @@
      Economic power and Valuations at 30 with an 8px right margin, and the Cycle tab's Temperature at 12. The
      gutter is where the y labels live and it is the same row of labels on every chart, so it is one number.
      `B` is deliberately NOT in here: what sits under a plot differs by chart (a year row, a legend, a marker
-     label), so the bottom margin answers to the furniture rather than to the frame. */
-  var AXIS = { L:34, R:6, T:14 };
+     label), so the bottom margin answers to the furniture rather than to the frame.
+     Version 556 adds LEG: the strip INSIDE the frame, under the plot, where the reference legend sits. Keren,
+     Sep 27, 2026: "average 3.3%, Fed target 2.0% — that never changes, so we don't need it in the changing
+     tooltip … add a few pixels below the bars and put a very gentle legend on the bottom right of the grid."
+     It is taken out of the plot's own height, not added to the chart's, so nothing below the frame moves and
+     no chart changes size: the plot is 20px shorter and the frame is unchanged. */
+  var AXIS = { L:34, R:6, T:14, LEG:20 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -759,7 +764,7 @@
     // directions, so the line under the plot is a frame rule that anchors the years, NOT a zero the reader
     // should try to measure from — the thing to measure from is the midline, which already carries its own
     // label. That is why the ticks below deliberately skip any value that lands near it.
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 22, iw = W - padL - padR, ih = H - padT - padB;   // V494: 26 was room for the corner figure, which has gone
+    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 22 + AXIS.LEG, iw = W - padL - padR, ih = H - padT - padB;   // V494: 26 was room for the corner figure, which has gone; +LEG is the legend strip (V556)
     var vs = o.vals.map(function(d){ return d.v; });
     var lo = Math.min.apply(null, vs.concat([o.mid])), hi = Math.max.apply(null, vs.concat([o.mid]));
     var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
@@ -768,7 +773,7 @@
     var n = o.vals.length, slot = iw / n, sw = Math.max(2.4, Math.min(9, slot * COL_FILL));
     // Here the rule beneath is a FRAME, not a zero: these bars hang off the fair-value midline in both
     // directions, so the thing to measure from is that line, which carries its own label — hence `skipNear`.
-    var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:padT, bot:(padT + ih),
+    var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:padT, bot:(padT + ih + AXIS.LEG),
                            base:(padT + ih), skipNear:midY, fmt:(o.tickFmt || o.fmt) })];
     // the fair line goes UNDER the bars; over them, its dashes read as part of every short bar
     out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');

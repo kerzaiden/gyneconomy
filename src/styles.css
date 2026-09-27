@@ -926,6 +926,13 @@
      (Keren: "wherever there's white space in the chart, put that number, preferably close to the purple line").
      Its .chart-key rules went with its markup rather than being left behind to style nothing. */
   .chart-label-plate{ fill:var(--surface); } /* the plate under a label that floats over the plot (the DSM, Version 217) */
+  /* The reference legend in the strip at the foot of the grid (Version 556). Gentle by instruction — muted ink,
+     11px, the axis labels' own weight — because it states two constants and the chart is what the reader came
+     for. The mark repeats the LINE it stands for, solid or dashed: the same shape-not-colour rule the readout's
+     marks were held to in Version 486, and for the same reason — one hue cannot serve both themes here. */
+  .hl-lab{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-muted); }
+  .hl-mark{ stroke:var(--text-muted); stroke-width:2; opacity:0.85; }
+  .hl-mark.dash{ stroke-dasharray:4 3; }
   .temp-today-read{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-secondary); }
   /* phones: the sub-line goes (the kicker and the (i) carry it) and the "2% target" tag goes (the axis tick says it),
      since at that width the tag would sit on the today line */
