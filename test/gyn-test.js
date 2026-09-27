@@ -395,9 +395,11 @@ async function openPage(p, url, sheet) {
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       // the kinds are a measured fact about the file; a change here is a real change
       const k = inv.kinds;
-      (k.build === 3 && k.mixed === 2 && k.wire === 7)
+      // V592: build 3 -> 4 and check 6 -> 7, both from Hormones — renderHormones is a build step and
+      // checkFedFundsHistory is the V305 data check its chart is not allowed to draw without.
+      (k.build === 4 && k.mixed === 2 && k.wire === 7)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 3, mixed 2, wire 7');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 7');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

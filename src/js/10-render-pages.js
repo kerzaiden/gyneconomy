@@ -391,6 +391,81 @@
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
+  /* ---------------- RENDER: Hormones (V592) ----------------
+     Keren: "let's add a fourth category in circulation called hormones. And hormones will be interest rates."
+     The anatomy is the argument. A hormone is a chemical MESSENGER: it is secreted deliberately, it reaches
+     everything downstream, and the whole cycle runs at the tempo it sets. That is the policy rate exactly \u2014
+     and it is the distinction this app was missing, because Pressure measures what the market CHARGES (the
+     Treasury curve) and nothing measured what the Fed SETS.
+     Two figures live here and they are not the same thing, so the page is careful to say which is which: the
+     TARGET RANGE is the decision, and the chart plots the EFFECTIVE rate, which is where money actually
+     traded. They differ right now \u2014 3.75\u20134.00% set on Sep 16 against 3.63% effective through August \u2014 and
+     that is not a contradiction but a date: August ran under the previous target. This is the V294 rule, the
+     one Keren caught on Pressure ("you write 10-year 4.94 and I see inside the container 10-year 4.70"): two
+     numbers for one thing is a fault, two numbers for two things has to be LABELLED. */
+  function renderHormones(){
+    var host = document.getElementById("hormones-history"); if (!host || !fedFundsHistory.length) return;
+    var HORM_STOPS = ["5y", "10y", "25y", "max"];
+    var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
+    function ffCycleMonths(c){
+      var to = c.to || calendarTodayY, a = -1, b = -1;
+      fedFundsHistory.forEach(function(d, i){
+        var y = parseInt(d.m.slice(0, 4), 10);
+        if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
+      });
+      return a === -1 ? null : [a, b];
+    }
+    function draw(){
+      var bar = document.getElementById("hormones-history"); if (!bar) return;
+      var id = "hormones-range";
+      var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+      var span = cyc ? ffCycleMonths(cyc) : null;
+      var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
+      var to = span ? span[1] : undefined;
+      var win = fedFundsHistory.slice(from, to);
+      bar.innerHTML =
+        '<div class="hist-bar">' + histControls(id, { series:fedFundsHistory, stops:HORM_STOPS }, FF_Y0) + '</div>' +
+        '<div class="page-chart">' + histHead(id) +
+        fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
+        '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' +
+        '<div id="hormones-trend"></div></div>';
+      var tr = document.getElementById("hormones-trend");
+      // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
+      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
+                                       null, true, { rising:"tightening", falling:"easing" });
+      // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
+      var box = bar.querySelector(".page-chart");
+      refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
+      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "hormones-hist-tooltip"); }
+    }
+    sheetRenderers["hormones-range"] = draw;
+    sheetRenderers["sheet-sign-hormones"] = draw;
+    draw();
+
+    /* The FOMC's own facts \u2014 the target, the last move and its vote, the next meeting \u2014 arguably belong to
+       the reading that IS the policy rate rather than to the Treasury curve. They are left on Pressure for
+       now, deliberately and not by oversight: they are that page's ONLY list, and moving them would leave it
+       a chart and nothing else. So this page does not repeat them; it states the target once, on its row.
+       Worth revisiting together, with something to put in their place over there. */
+
+    /* The row's figure is the TARGET, because that is the decision; the word is the direction of the last
+       move, which is a published fact rather than a judgement about the level. */
+    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
+            : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+    /* Written straight to the element: `set` and `say` are local to renderSubjectRows, and this page renders
+       from its own step. The row is the same shape either way \u2014 figure, unit, tag. */
+    var rowVal = document.getElementById("subj-value-hormones");
+    if (rowVal) rowVal.innerHTML = fedFundsRange() +
+      '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>';
+    /* The miniature every other Circulation row carries: the last two years of the EFFECTIVE rate, standing on
+       zero like the chart it opens. Without it this row was the only one on the page with an empty right-hand
+       side \u2014 the same hole V475 fixed for Desire on Mood. */
+    var rowSay = document.getElementById("subj-say-hormones");
+    if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
+                                           function(){ return "ff-col"; }, 0, true);
+  }
+  GYN.step("renderHormones", renderHormones, "build"); renderHormones();
+
   // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
   function renderFearCurve(){
     // The curve leads the panel on the half-dial, the shape every other preview on this page follows.

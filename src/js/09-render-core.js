@@ -98,19 +98,19 @@
   var pageMode = { "sheet-metric-temp":"cycles", "sheet-metric-gdp":"cycles",
                    "sheet-metric-power":"cycles", "sheet-metric-valuation":"cycles",
                    "volume-range":"cycles", "pulse-range":"cycles",
-                   "deficit-range":"cycles", "ylm-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles",
+                   "deficit-range":"cycles", "ylm-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles",
                    "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };   // V498
   // Which cycles the overlay draws. null means all of them, which is the default because the comparison IS the
   // landing view; a toggled-off cycle simply is not drawn. The handler never lets the last one be turned off.
   var pageCycles = { "sheet-metric-temp":null, "sheet-metric-gdp":null,
                      "sheet-metric-power":null, "sheet-metric-valuation":null,
                      "volume-range":null, "pulse-range":null,
-                     "deficit-range":null, "ylm-range":null, "hzn-range":null, "fear-range":null,
+                     "deficit-range":null, "ylm-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null,
                      "sheet-metric-households":null, "sheet-sign-activity":null };   // null = the open cycle (V420)
   var pageRange = { "sheet-metric-power":"10y", "sheet-metric-valuation":"10y",   // V433: "cycle" left both rulers
                     "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y", // V418/V431: "cycle" left both rulers
                     "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",   // V434\u2013435: "cycle" left all three
-                    "ylm-range":"10y", "hzn-range":"10y", "desire-range":"max", "fear-range":"10y",
+                    "ylm-range":"10y", "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y",
                     "sheet-metric-households":"10y",
                     "sheet-sign-activity":"10y" };   // V498
   function wireDetailModal(){

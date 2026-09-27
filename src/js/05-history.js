@@ -41,7 +41,8 @@
        declared (see drawYlmHead), because that list and the current pick are the yield page's own state. */
     "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets both the title and the menu
     "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" },
-    "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" }
+    "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" },
+    "hormones-range":          { mark:hormoneSvg,  title:"Effective federal funds rate" }
   };
   function histHead(id){
     var H = HIST_HEAD[id];
@@ -576,6 +577,77 @@
     return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
       'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
       ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
+  }
+  /* ---------------- V592: Hormones \u2014 the policy rate's history ----------------
+     Keren: "let's add a fourth category in circulation called hormones. And hormones will be interest rates."
+     A sibling of unempHistoryChart rather than a flag on it, for the reason V498 gives: prices are read against
+     a target, people against a band, and a POLICY RATE against neither. Folding a third subject in behind a
+     flag is how a component stops being readable.
+     What this chart deliberately does NOT have is a band. "Restrictive" and "accommodative" are real ideas and
+     the level that divides them is contested, unpublished and moves \u2014 so drawing one here would be inventing
+     a band, which is the one thing this app never does. The columns stand on zero, the window's own average is
+     drawn across them, and the reading is the height. Direction is what the trend pill is for. */
+  function checkFedFundsHistory(){   // the data has to be right before anything draws it (the V305 rule)
+    var vs = fedFundsHistory.map(function(d){ return d.v; });
+    var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
+    if (!fedFundsHistory.length || fedFundsHistory[0].m !== "1954-07" || lo < 0 || hi < 19 || hi > 20)
+      console.warn("fedFundsHistory failed its check", fedFundsHistory.length, lo, hi,
+                   fedFundsHistory[0] && fedFundsHistory[0].m);
+  }
+  GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check"); checkFedFundsHistory();
+  function fedFundsHistoryChart(Wpx, from, o){
+    o = o || {}; lastChartAvg = null;
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    from = from || 0;
+    var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+    if (!n) return "";
+    var seen = vals.filter(function(d){ return d.v != null; });
+    if (!seen.length) return "";
+    var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
+    var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);   // zero is always in view: the bars stand on it
+    var LO = sc.lo, HI = sc.hi;
+    var halfCol = (R - L) / (2 * Math.max(1, n));
+    var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+    var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
+    var f = function(v){ return v.toFixed(1); };
+    var out = [], zero = Y(0);
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
+      top:(T - AXIS.LEG - AXIS.READ), bot:B,
+      fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    if (o.cycle){
+      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
+      for (var cyr = y0; cyr <= y1; cyr += stepY){
+        var cix = (cyr - y0) * 12; if (cix >= n) break;
+        out.unshift(vGrid(X(cix), T, B));
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+      }
+    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
+      var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+    });
+    var sw = colWidth((R - L) / n);
+    vals.forEach(function(d, i){
+      if (d.v == null) return;   // a gap is the honest drawing of a month nobody measured
+      out.push('<path class="ff-col hcol" stroke-width="' + sw.toFixed(2) +
+        '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+    });
+    var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
+    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
+    lastChartAvg = avgV;
+    var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
+    if (tfit && tfit.n > 1)
+      out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(2) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
+    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
+    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
+                     refs:[{ label:"Average", v:avgV }],
+                     fmt:function(v){ return v.toFixed(2) + "%"; } };
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+      'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
   // V498: the band's edges, named once — the meter, the chart's colouring and the (i) all read these
   var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;

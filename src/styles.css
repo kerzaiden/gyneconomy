@@ -2167,6 +2167,10 @@
   .pc-legend .pc-unit{ margin-left:auto; }
   .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
   .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
+  /* V592: the policy rate's columns. ONE ink, deliberately: this chart has no band, because the level that
+     divides restrictive from accommodative is contested, unpublished and moves \u2014 colouring by it would be
+     inventing a band. The height is the reading; the trend pill says which way it is going. */
+  .ff-col{ stroke:var(--accent); fill:none; stroke-linecap:round; }
   .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
   .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
   /* Version 396: on Economic power the same four states mean CHARGE, so they take the battery steps. Scoped to

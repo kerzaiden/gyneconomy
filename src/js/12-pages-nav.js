@@ -293,7 +293,9 @@
      { key:"horizon", title:"Horizon", timing:"leading" },
      // NB a real "&": cfg.title is written with setAttribute and read back with textContent, so an entity
      // here would render literally in the row (it did, once).
-     { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
+     { key:"sentiment", title:"Fear", timing:"leading" },
+     // V592: Circulation's fourth. Leading, because the policy rate moves before what it acts on does.
+     { key:"hormones", title:"Hormones", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
@@ -313,7 +315,7 @@
          The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
          reach any list without it, and a label that already carries its glyph is left exactly as it is. */
       (function(){
-        var MARK = { yield:gaugeSvg, horizon:sunriseSvg, sentiment:umbrellaSvg };
+        var MARK = { yield:gaugeSvg, horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
           lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
@@ -510,8 +512,11 @@
       var CATS = [
         { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
           picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Pressure \u00b7 Pulse \u00b7 Volume",
-          picks:['.sign-row.press-row', '.peek[data-open="sheet-sign-pulse"]',
+        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Pressure \u00b7 Hormones \u00b7 Pulse \u00b7 Volume",
+          /* V592: Hormones sits second, straight after Pressure, because the two are the same quantity read
+             from opposite ends \u2014 what the Fed SETS and what the market CHARGES \u2014 and a reader comparing them
+             should not have to pass the other two to do it. */
+          picks:['.sign-row.press-row', '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]',
                  '.peek[data-open="sheet-sign-volume"]'] },
         /* Version 473, Keren: "calling it Horizon and judging if it\u2019s optimistic or pessimistic, which
            correlates with ovulation and menstruation \u2014 so it belongs to Mood." The fourth member, and the one
@@ -567,6 +572,9 @@
         "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
         "sheet-metric-power":     String(powerHistory[powerHistory.length - 1].y),
         "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
+        // V592: the DECISION's date, not the series' — the row states the target the FOMC set, and the
+        // date that belongs beside it is the day they set it.
+        "sheet-sign-hormones":    fedFunds.asOf,
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };

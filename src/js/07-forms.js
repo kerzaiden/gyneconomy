@@ -206,6 +206,14 @@
   function markSvg(body, extra){
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
   }
+  /* V592: Hormones. A molecule \u2014 three atoms and the bonds between them \u2014 because a hormone is a chemical
+     MESSENGER, and what the policy rate does is carry a signal into everything downstream. Drawn as an outline
+     at 1.7 like every other mark here, with no interior detail, so it survives at 13px. */
+  function hormoneSvg(){ return markSvg(
+    '<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' +
+    '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' +
+    '<circle cx="18.4" cy="16.6" r="2.6" stroke-width="1.7"/>' +
+    '<path d="M10.7 7.7 6.9 14.3M13.3 7.7 17.1 14.3M8.2 16.6h7.6" stroke-width="1.7"/>'); }
   // Desire — appetite for risk, read off the high-yield spread. A flame: what she is willing to reach for.
   function flameSvg(){ return markSvg(
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +

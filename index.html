@@ -1355,6 +1355,8 @@
   .pc-legend .pc-unit{ margin-left:auto; }
   .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
   .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
+
+  .ff-col{ stroke:var(--accent); fill:none; stroke-linecap:round; }
   .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
   .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
 
@@ -2168,7 +2170,23 @@
     </div>
     </details>
 
-<details class="subject" data-subject="sentiment">
+
+<details class="subject" data-subject="hormones">
+    <summary class="subject-summary">
+      <div class="subject-text">
+        <div class="subject-label">Hormones</div>
+        <div class="subject-value" id="subj-value-hormones"></div>
+        <p class="subject-say" id="subj-say-hormones"></p>
+      </div>
+      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
+    </summary>
+    <div class="subject-body">
+      <div id="hormones-history"></div>
+      <div id="hormones-highlights"></div>
+    </div>
+  </details>
+
+  <details class="subject" data-subject="sentiment">
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
@@ -12644,6 +12662,10 @@
     "fear-range": {
       mark: umbrellaSvg,
       title: "VIX ÷ 3-month VIX"
+    },
+    "hormones-range": {
+      mark: hormoneSvg,
+      title: "Effective federal funds rate"
     }
   };
   function histHead(id) {
@@ -12992,6 +13014,112 @@
       }
     };
     return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The unemployment rate, every month from ' + y0 + " to " + y1 + ', against the 3.5 to 5 per cent band and CBO’s estimate of the noncyclical rate">' + out.join("") + "</svg>";
+  }
+  function checkFedFundsHistory() {
+    var vs = fedFundsHistory.map(function(d) {
+      return d.v;
+    });
+    var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
+    if (!fedFundsHistory.length || fedFundsHistory[0].m !== "1954-07" || lo < 0 || hi < 19 || hi > 20) console.warn("fedFundsHistory failed its check", fedFundsHistory.length, lo, hi, fedFundsHistory[0] && fedFundsHistory[0].m);
+  }
+  GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check");
+  checkFedFundsHistory();
+  function fedFundsHistoryChart(Wpx, from, o) {
+    o = o || {};
+    lastChartAvg = null;
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    from = from || 0;
+    var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+    if (!n) return "";
+    var seen = vals.filter(function(d) {
+      return d.v != null;
+    });
+    if (!seen.length) return "";
+    var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
+    var sc = windowScale(seen.map(function(d) {
+      return d.v;
+    }), [ 0 ]);
+    var LO = sc.lo, HI = sc.hi;
+    var halfCol = (R - L) / (2 * Math.max(1, n));
+    var X = function(i) {
+      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
+    };
+    var Y = function(v) {
+      return B - (B - T) * (v - LO) / (HI - LO);
+    };
+    var f = function(v) {
+      return v.toFixed(1);
+    };
+    var out = [], zero = Y(0);
+    out.push(chartAxes({
+      ticks: sc.ticks,
+      y: Y,
+      x0: L,
+      x1: R,
+      base: zero,
+      noGridAt: 0,
+      top: T - AXIS.LEG - AXIS.READ,
+      bot: B,
+      fmt: function(g) {
+        return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
+      }
+    }));
+    if (o.cycle) {
+      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
+      for (var cyr = y0; cyr <= y1; cyr += stepY) {
+        var cix = (cyr - y0) * 12;
+        if (cix >= n) break;
+        out.unshift(vGrid(X(cix), T, B));
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+      }
+    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
+      var i = (yr - y0) * 12;
+      if (i < 0 || i >= n) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+    });
+    var sw = colWidth((R - L) / n);
+    vals.forEach(function(d, i) {
+      if (d.v == null) return;
+      out.push('<path class="ff-col hcol" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+    });
+    var avgV = seen.reduce(function(a, d) {
+      return a + d.v;
+    }, 0) / seen.length;
+    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
+    lastChartAvg = avgV;
+    var tfit = trendOf(seen.map(function(d) {
+      return d.v;
+    }), "points", "month").fit;
+    if (tfit && tfit.n > 1) out.push(fitGroup({
+      fit: tfit,
+      fmt: function(v) {
+        return v.toFixed(2) + "%";
+      }
+    }, X(0), X(n - 1), Y, R, L, 0));
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
+    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
+    lastHistGeom = {
+      L: X(0),
+      R: X(n - 1),
+      T: T,
+      B: B,
+      W: W,
+      n: n,
+      vals: vals,
+      at: atMonth,
+      refs: [ {
+        label: "Average",
+        v: avgV
+      } ],
+      fmt: function(v) {
+        return v.toFixed(2) + "%";
+      }
+    };
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The effective federal funds rate, every month from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
   }
   var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
   var CPI_TARGET = 2;
@@ -14514,6 +14642,9 @@
   function markSvg(body, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
   }
+  function hormoneSvg() {
+    return markSvg('<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' + '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<circle cx="18.4" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<path d="M10.7 7.7 6.9 14.3M13.3 7.7 17.1 14.3M8.2 16.6h7.6" stroke-width="1.7"/>');
+  }
   function flameSvg() {
     return markSvg('<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' + '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>');
   }
@@ -15217,6 +15348,7 @@
     "ylm-range": "cycles",
     "hzn-range": "cycles",
     "fear-range": "cycles",
+    "hormones-range": "cycles",
     "sheet-metric-households": "cycles",
     "sheet-sign-activity": "cycles"
   };
@@ -15231,6 +15363,7 @@
     "ylm-range": null,
     "hzn-range": null,
     "fear-range": null,
+    "hormones-range": null,
     "sheet-metric-households": null,
     "sheet-sign-activity": null
   };
@@ -15246,6 +15379,7 @@
     "hzn-range": "10y",
     "desire-range": "max",
     "fear-range": "10y",
+    "hormones-range": "10y",
     "sheet-metric-households": "10y",
     "sheet-sign-activity": "10y"
   };
@@ -16232,6 +16366,72 @@
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render");
   renderLongCycleTag();
+  function renderHormones() {
+    var host = document.getElementById("hormones-history");
+    if (!host || !fedFundsHistory.length) return;
+    var HORM_STOPS = [ "5y", "10y", "25y", "max" ];
+    var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
+    function ffCycleMonths(c) {
+      var to = c.to || calendarTodayY, a = -1, b = -1;
+      fedFundsHistory.forEach(function(d, i) {
+        var y = parseInt(d.m.slice(0, 4), 10);
+        if (y >= c.from && y <= to) {
+          if (a === -1) a = i;
+          b = i + 1;
+        }
+      });
+      return a === -1 ? null : [ a, b ];
+    }
+    function draw() {
+      var bar = document.getElementById("hormones-history");
+      if (!bar) return;
+      var id = "hormones-range";
+      var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
+      var span = cyc ? ffCycleMonths(cyc) : null;
+      var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
+      var to = span ? span[1] : undefined;
+      var win = fedFundsHistory.slice(from, to);
+      bar.innerHTML = '<div class="hist-bar">' + histControls(id, {
+        series: fedFundsHistory,
+        stops: HORM_STOPS
+      }, FF_Y0) + "</div>" + '<div class="page-chart">' + histHead(id) + fedFundsHistoryChart(bar.clientWidth || 340, from, {
+        to: to,
+        cycle: !!span
+      }) + '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' + '<div id="hormones-trend"></div></div>';
+      var tr = document.getElementById("hormones-trend");
+      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
+        return d.v;
+      }), "points", "month"), null, true, {
+        rising: "tightening",
+        falling: "easing"
+      });
+      var box = bar.querySelector(".page-chart");
+      refitHistory(box, function(w) {
+        return fedFundsHistoryChart(w, from, {
+          to: to,
+          cycle: !!span
+        });
+      });
+      if (box) {
+        box.__geom = lastHistGeom;
+        wireHistHover(box, "hormones-hist-tooltip");
+      }
+    }
+    sheetRenderers["hormones-range"] = draw;
+    sheetRenderers["sheet-sign-hormones"] = draw;
+    draw();
+    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+    var rowVal = document.getElementById("subj-value-hormones");
+    if (rowVal) rowVal.innerHTML = fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + "</span>";
+    var rowSay = document.getElementById("subj-say-hormones");
+    if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d) {
+      return d.v;
+    }), function() {
+      return "ff-col";
+    }, 0, true);
+  }
+  GYN.step("renderHormones", renderHormones, "build");
+  renderHormones();
   function renderFearCurve() {
     var host = document.getElementById("curve-gauge");
     if (host) host.innerHTML = '<div class="curve-name">Fear' + expandBtn(curveDetailHtml()) + "</div>" + arcGauge(curvePct(curveNow), curveTag.state, {
@@ -17927,6 +18127,10 @@
       key: "sentiment",
       title: "Fear",
       timing: "leading"
+    }, {
+      key: "hormones",
+      title: "Hormones",
+      timing: "leading"
     } ].forEach(function(cfg) {
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]');
       if (!det) return;
@@ -17946,7 +18150,8 @@
         var MARK = {
           yield: gaugeSvg,
           horizon: sunriseSvg,
-          sentiment: umbrellaSvg
+          sentiment: umbrellaSvg,
+          hormones: hormoneSvg
         };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg")) lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + "</span>" + lab.innerHTML;
@@ -18161,8 +18366,8 @@
         key: "circulation",
         title: "Circulation",
         mark: circulationSvg(),
-        sub: "Pressure · Pulse · Volume",
-        picks: [ ".sign-row.press-row", '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
+        sub: "Pressure · Hormones · Pulse · Volume",
+        picks: [ ".sign-row.press-row", '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
       }, {
         key: "mood",
         title: "Mood",
@@ -18193,6 +18398,7 @@
         "sheet-sign-volume": indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
         "sheet-metric-power": String(powerHistory[powerHistory.length - 1].y),
         "sheet-sign-sentiment": fmtDay(DATA_COMPILED),
+        "sheet-sign-hormones": fedFunds.asOf,
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
