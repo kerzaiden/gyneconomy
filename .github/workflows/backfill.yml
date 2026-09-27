@@ -1,0 +1,61 @@
+# The backfill. Fetches the two HISTORIES the app could not compute from what it held, writes the
+# generated source part, rebuilds index.html and COMMITS both — so the record arrives as a diff you
+# can read, blame or revert, exactly as data.yml does for the daily figures.
+#
+# On demand only. data.yml keeps TODAY current; this is the record, tens of years of it, and it
+# changes only when FRED revises. Committing to main triggers ci.yml, so a backfill that breaks the
+# suite never reaches the site.
+name: Backfill
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # The pure parts first: if the windowing or the same-day join is wrong, nothing downstream
+      # is worth fetching. No network in this step.
+      - name: Unit tests
+        run: npm run test:tools
+
+      - name: Fetch
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node tools/fetch-fred-history.js
+
+      # index.html is BUILT from src/, and the fetch just wrote a part of src/. Rebuilding here is
+      # what keeps `npm run build:check` true on the commit this job makes.
+      - name: Rebuild
+        run: npm run build && npm run build:check && npm run map
+
+      - name: Commit
+        run: |
+          if git diff --quiet; then echo "no change — FRED returned what we already had"; exit 0; fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/js/03b-history-fred.js index.html docs/MAP.md
+          git commit -m "Backfill: Fed funds and the fear curve, from FRED"
+          git push
+          {
+            echo "### Backfill committed"
+            echo ""
+            grep -oE '^   (fedFundsHistory|fearCurveHistory).*' src/js/03b-history-fred.js || true
+          } >> "$GITHUB_STEP_SUMMARY"

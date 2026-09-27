@@ -1,6 +1,6 @@
 {
   "name": "gyneconomy",
-  "version": "588.0.0",
+  "version": "589.0.0",
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
@@ -9,7 +9,7 @@
     "setup": "playwright install chromium",
     "test": "node test/gyn-test.js index.html",
     "test:full": "node test/gyn-test.js index.html --full",
-    "test:tools": "node test/fetch-live.test.js",
+    "test:tools": "node test/fetch-live.test.js && node test/fetch-fred-history.test.js",
     "bless": "node test/gyn-test.js index.html --bless",
     "css": "node tools/css-count.js index.html",
     "email": "test \"$(grep -cE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}' index.html)\" = 0 && echo 'ok: no email address in markup'",
