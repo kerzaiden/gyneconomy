@@ -643,7 +643,7 @@
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
     lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
-                     refs:(o.ref != null ? [{ label:"Average", v:rAvg }, { label:refName(o.refLabel), v:o.ref, dash:true }]
+                     refs:(o.ref != null ? [{ label:"Average", v:rAvg }, { label:refName(o.refLabel), v:o.ref, dash:true, cls:"bt-ref" }]
                                         : [{ label:"Average", v:rAvg }]),
                      vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt };
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
@@ -728,8 +728,14 @@
   /* Version 559: T drops from 14 to 10 and the three plot hosts give up their top margins, so the distance
      between the readout's plate and the grid's ceiling is T and nothing else — one number, and the 10px Keren
      asked for. It was 6 of margin and 14 of inset stacked, which is the kind of gap nobody can tune because
-     nobody can see which half of it to change. */
-  var AXIS = { L:34, R:6, T:10, LEG:20 };
+     nobody can see which half of it to change.
+     Version 561 swaps L and R. Keren: "the grid doesn't align to the left — the title and the trend buttons
+     are both aligned to the left, but the grid is a little bit more to the right." It was: the gutter WAS the
+     left margin, so every grid on every page started 34px in from the card's own text. The y labels move to
+     the right of the frame, where Apple's own chart puts them, and the left margin drops to what the first
+     year label on the x axis actually needs — half its width. The plot hosts then pull left by that much, so
+     the frame's left edge lands exactly on the title's. */
+  var AXIS = { L:14, R:34, T:10, LEG:20 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -753,8 +759,8 @@
       // baseline is about to be drawn and a dashed one under it would read as two rules
       if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9)
         out.push('<path class="bt-grid" d="M' + o.x0 + ',' + ty.toFixed(1) + 'L' + o.x1 + ',' + ty.toFixed(1) + '"/>');
-      out.push('<text class="bt-yl" x="' + (o.x0 - 6) + '" y="' + (ty + 3.4).toFixed(1) +
-               '" text-anchor="end">' + o.fmt(v) + '</text>');
+      out.push('<text class="bt-yl" x="' + (o.x1 + 6) + '" y="' + (ty + 3.4).toFixed(1) +
+               '" text-anchor="start">' + o.fmt(v) + '</text>');
     });
     if (o.base != null)
       out.push('<path class="bt-axis" d="M' + o.x0 + ',' + o.base + 'L' + o.x1 + ',' + o.base + '"/>');
@@ -808,7 +814,7 @@
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
     lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
-                     refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true }]
+                     refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
                                         : [{ label:"Average", v:dAvg }]),
                      vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt };
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';

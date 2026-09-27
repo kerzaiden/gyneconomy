@@ -264,12 +264,30 @@
      The marks repeat the LINE each reference stands for, solid or dashed, exactly as the readout's did: the
      strip sits on the chart's own ground, so shape is what has to carry it. Measured after insertion, because
      only the browser knows how wide "Ample reserve 70%" is in this font at this size. */
+  /* Version 561. The x axis's outermost labels are centred on their column, and the first column sits half a
+     slot inside the frame — so once the frame moved flush with the card's text, "2023" hung out past it on the
+     left and read as badly aligned against the title directly above it. Rather than anchoring them in eight
+     renderers, the two ends are clamped here, after the chart is drawn and measurable: a label that would
+     overrun the frame anchors to the frame's edge instead of to its column. Only the ends can ever overrun,
+     and only by their own half-width, so nothing in between moves. */
+  function histAxisEnds(svg, fr){
+    if (!fr || !svg.getBBox) return;
+    var x0 = parseFloat(fr.getAttribute("x")), x1 = x0 + parseFloat(fr.getAttribute("width"));
+    Array.prototype.forEach.call(svg.querySelectorAll(".bt-xl"), function(t){
+      var bb;
+      try { bb = t.getBBox(); } catch (e) { return; }
+      if (!bb.width) return;
+      if (bb.x < x0){ t.setAttribute("text-anchor", "start"); t.setAttribute("x", x0.toFixed(1)); }
+      else if (bb.x + bb.width > x1){ t.setAttribute("text-anchor", "end"); t.setAttribute("x", x1.toFixed(1)); }
+    });
+  }
   function histLegend(host){
     var g = host.__geom;
     var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
     if (!svg) return;
     var old = svg.querySelector(".hist-legend");
     if (old) old.parentNode.removeChild(old);
+    histAxisEnds(svg, svg.querySelector(".bt-frame"));   // every chart, references or not
     if (!g || g.B == null) return;
     var refs = (g.refs || []).filter(function(r){ return r && r.v != null && isFinite(r.v); });
     if (!refs.length) return;
@@ -304,8 +322,14 @@
       t.setAttribute("y", (y + 3.2).toFixed(1));
       t.textContent = r.label + " " + fmt(r.v);
       grp.appendChild(t);
+      /* Version 561, Keren: "the line next to Average 3.3% needs to be purple … so it matches the colours."
+         The mark wears the chart's OWN class, so one stylesheet rule paints the line on the plot and the line
+         in the legend and they cannot drift apart — colour, width, dash pattern and all. Shape alone was the
+         Version 486 rule, written for the readout, which inverted against the page and could not use colour;
+         the legend sits on the chart's own ground and can. Every history draws its average as .temp-avg and
+         its reference as .vh-mean, which is why those are the defaults; a chart whose lines differ says so. */
       var m = document.createElementNS(NS, "line");
-      m.setAttribute("class", "hl-mark" + (r.dash ? " dash" : ""));
+      m.setAttribute("class", r.cls || (r.dash ? "vh-mean" : "temp-avg"));
       m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1));
       grp.appendChild(m);
       items.push({ t:t, m:m });
