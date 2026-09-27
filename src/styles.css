@@ -1470,7 +1470,10 @@
      where the record it offers is already on screen. It belongs to the page only. */
   .detail-modal .head-mark{ display:none; }
   /* the record itself */
-  .vh-svg{ display:block; width:100%; height:auto; margin:14px 0 2px; overflow:visible; }
+  /* Version 558: 14px above the plot became 4. The gap was set when the readout above it was a three-line
+     block with a reference row that came and went; it is a two-line plate now, and Keren: "it has a big
+     spacing between it and the grid, which is redundant — we want to save as many pixels as we possibly can." */
+  .vh-svg{ display:block; width:100%; height:auto; margin:4px 0 2px; overflow:visible; }
   .vh-plate{ fill:var(--surface); }
   /* Version 500: `.vh-line` is gone — no chart in this app draws a line any more. */
   /* the money-stock columns: one hue, and the side of zero is the reading (Version 306) */
@@ -2100,7 +2103,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:14px 0 2px; }
+  .dchart{ margin:4px 0 2px; }   /* V558, as .vh-svg */
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
   /* the pair (Version 267): the gap is the mark, so it gets the weight; the two ends are the dial's own disc, hollow
      for the reading being measured against and cored for the one being measured */
@@ -2531,11 +2534,13 @@
      the CARD, which is what the reference does and what every other line in this container already does — the
      head above it, the trend below it, the reading in the box under that. The figure starts where the badge
      starts now. */
-  .hist-read{ padding:2px 0 4px; margin:2px 0 0; }
+  /* Version 558: the block gives back the pixels it was not using. The empty third line went with the
+     references (V556), and the space under it was set when there was a line there to separate. */
+  .hist-read{ padding:0; margin:0; }
   /* The plate (Version 555). Its padding is there in BOTH states and the rest position pulls it back out by
      the same amount, so the figure still starts exactly where the badge above it starts (the V521 rule) and
      the block's height never changes when the wash arrives. */
-  .hr-plate{ display:inline-block; padding:5px 10px; margin-left:-10px; border-radius:var(--radius);
+  .hr-plate{ display:inline-block; padding:3px 9px 4px; margin-left:-9px; border-radius:var(--radius);
              transition:margin-left 0.12s ease-out; }
   /* 6% of the page's own ink, not --surface-2: on white that token is a 2% wash and the plate did not read as
      a plate at all, and mixing from the ink gets the dark theme right for free — there the plate lifts off the
@@ -2544,16 +2549,8 @@
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
-  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1.06;
+  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
-  .hr-value .hr-unit{ font-size:15px; font-weight:600; color:var(--text-secondary); margin-left:3px; }
-  .hr-sub{ font-size:12px; color:var(--text-secondary); display:flex; flex-wrap:wrap; gap:6px 14px;
-           min-height:16px; }   /* the sub-line keeps ITS floor, so a hover with no references cannot shrink the block */
-  /* the reference marks repeat the LINE they stand for, solid or dashed — the V486 rule, which colour cannot
-     do here either: this block sits on the page, so one hue would have to work in both themes */
-  .hr-ref{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
-  .hr-ref .sw{ width:13px; height:2px; flex:none; background:currentColor; opacity:0.8; border-radius:1px; }
-  .hr-ref .sw.dash{ background:repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 7px); }
   @media (max-width:400px){ .hr-value{ font-size:26px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;

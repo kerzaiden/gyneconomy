@@ -1003,7 +1003,7 @@
 
   .detail-modal .head-mark{ display:none; }
 
-  .vh-svg{ display:block; width:100%; height:auto; margin:14px 0 2px; overflow:visible; }
+  .vh-svg{ display:block; width:100%; height:auto; margin:4px 0 2px; overflow:visible; }
   .vh-plate{ fill:var(--surface); }
 
   .m2-col{ fill:none; stroke-linecap:round; }
@@ -1341,7 +1341,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:14px 0 2px; }
+  .dchart{ margin:4px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
 
   .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
@@ -1615,24 +1615,17 @@
 
   .gdp-tooltip .tip-now{ font-size:13px; font-weight:700; margin:1px 0 3px; }
 
-  .hist-read{ padding:2px 0 4px; margin:2px 0 0; }
+  .hist-read{ padding:0; margin:0; }
 
-  .hr-plate{ display:inline-block; padding:5px 10px; margin-left:-10px; border-radius:var(--radius);
+  .hr-plate{ display:inline-block; padding:3px 9px 4px; margin-left:-9px; border-radius:var(--radius);
              transition:margin-left 0.12s ease-out; }
 
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:none; } }
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
              text-transform:uppercase; color:var(--text-muted); }
-  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1.06;
+  .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:29px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
-  .hr-value .hr-unit{ font-size:15px; font-weight:600; color:var(--text-secondary); margin-left:3px; }
-  .hr-sub{ font-size:12px; color:var(--text-secondary); display:flex; flex-wrap:wrap; gap:6px 14px;
-           min-height:16px; }
-
-  .hr-ref{ display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
-  .hr-ref .sw{ width:13px; height:2px; flex:none; background:currentColor; opacity:0.8; border-radius:1px; }
-  .hr-ref .sw.dash{ background:repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 7px); }
   @media (max-width:400px){ .hr-value{ font-size:26px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
@@ -7489,11 +7482,13 @@
     if (!el) {
       el = document.createElement("div");
       el.className = "hist-read";
+      el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
       var svg = cont.querySelector("svg.vh-svg") || cont.querySelector("svg.hist-svg") || cont.querySelector(".chart-shell > svg") || cont.querySelector(".dchart > svg") || cont.querySelector("svg");
       var anchor = svg;
       while (anchor && anchor.parentNode !== cont) anchor = anchor.parentNode;
       cont.insertBefore(el, anchor || cont.firstChild);
     }
+    if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate") el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
     host.__readEl = el;
     seatBandReading(cont);
     return el;
@@ -7518,11 +7513,10 @@
     var fmt = function(v) {
       return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "−");
     };
-    var lab, val, sub;
+    var lab, val;
     if (d && d.v != null) {
       lab = g.at(d, i);
       val = fmt(d.v);
-      sub = "";
     } else {
       var vals = (g.vals || []).filter(function(x) {
         return x && x.v != null && isFinite(x.v);
@@ -7535,13 +7529,13 @@
       }, 0) / vals.length : null;
       lab = "Average";
       val = m == null ? "—" : fmt(m);
-      sub = "";
     }
     var live = !!(d && d.v != null);
-    el.innerHTML = '<div class="hr-plate">' + '<div class="hr-label">' + lab + "</div>" + '<div class="hr-value">' + val + "</div>" + '<div class="hr-sub">' + sub + "</div>" + "</div>";
-    el.classList.toggle("on", live);
     var plate = el.firstElementChild;
     if (!plate) return;
+    plate.children[0].textContent = lab;
+    plate.children[1].innerHTML = val;
+    el.classList.toggle("on", live);
     var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
     if (!live || !svg) {
       plate.style.marginLeft = "";
@@ -7555,7 +7549,13 @@
     var scale = sb.width / g.W || 1;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;
+    if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
+    if (!plate.__placed) {
+      void plate.offsetWidth;
+      plate.style.transition = "";
+      plate.__placed = true;
+    }
   }
   function histLegend(host) {
     var g = host.__geom;
@@ -7575,12 +7575,16 @@
     var grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");
-    var y = g.T - AXIS.LEG / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+    var fr = svg.querySelector(".bt-frame");
+    var INSET = 4, PLATE_H = 15, PAD_X = 6;
+    var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+    var frRight = fr ? parseFloat(fr.getAttribute("x")) + parseFloat(fr.getAttribute("width")) : g.R;
+    var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
     var plate = document.createElementNS(NS, "rect");
     plate.setAttribute("class", "chart-label-plate");
     plate.setAttribute("rx", "5");
-    plate.setAttribute("y", (y - 8).toFixed(1));
-    plate.setAttribute("height", "16");
+    plate.setAttribute("y", (frTop + INSET).toFixed(1));
+    plate.setAttribute("height", String(PLATE_H));
     grp.appendChild(plate);
     refs.forEach(function(r) {
       var t = document.createElementNS(NS, "text");
@@ -7605,9 +7609,9 @@
       total += it.w;
     });
     total += GAP * (items.length - 1);
-    var x = Math.max(g.L + 6, g.R - 6 - total);
-    plate.setAttribute("x", (x - 6).toFixed(1));
-    plate.setAttribute("width", (total + 12).toFixed(1));
+    var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
+    plate.setAttribute("x", (x - PAD_X).toFixed(1));
+    plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it) {
       it.m.setAttribute("x1", x.toFixed(1));
       it.m.setAttribute("x2", (x + MARK).toFixed(1));

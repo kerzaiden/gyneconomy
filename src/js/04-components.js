@@ -134,6 +134,11 @@
     if (!el){
       el = document.createElement("div");
       el.className = "hist-read";
+      /* The plate is built ONCE and then only written into (Version 558). Rebuilding its markup on every
+         pointer move handed the transition a brand new element every time, so it animated from margin-left 0
+         on each column instead of from where it was — Keren: "whenever I hover over bars it returns to the
+         start and moves to the current location." A transition needs the same element on both sides of it. */
+      el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
       // it goes directly above the picture: find whichever child of the container holds the chart's svg and
       // insert before it, so the order is control · readout · chart whatever the page called its parts
       // One call per selector, in priority order: a comma list returns whatever comes first in the
@@ -145,6 +150,8 @@
       while (anchor && anchor.parentNode !== cont) anchor = anchor.parentNode;
       cont.insertBefore(el, anchor || cont.firstChild);
     }
+    if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate")
+      el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
     host.__readEl = el;
     seatBandReading(cont);
     return el;
@@ -189,11 +196,10 @@
     var fmt = function(v){
       return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212");
     };
-    var lab, val, sub;
+    var lab, val;
     if (d && d.v != null){
       lab = g.at(d, i);
       val = fmt(d.v);
-      sub = "";
     } else {
       var vals = (g.vals || []).filter(function(x){ return x && x.v != null && isFinite(x.v); });
       /* The average is taken from `refs` when the chart drew one, never recomputed: the line on the chart and
@@ -205,9 +211,7 @@
       lab = "Average";
       val = m == null ? "\u2014" : fmt(m);
       // V497, Keren: the span went. The x axis names the years and the control above names the window, so this
-      // was the third statement of one thing. The line still holds its height — that is what keeps the page
-      // still when the references arrive on hover.
-      sub = "";
+      // was the third statement of one thing.
     }
     /* Version 556, Keren: "average 3.3%, Fed target 2.0% — that never changes, so we don't need it in the
        changing tooltip." Version 486 put the reference values in here because the chart printed them
@@ -215,14 +219,15 @@
        against an inline key; against a plate that changes on every column it is the wrong one, because a
        figure that never changes inside a readout that always does teaches the reader to stop trusting that
        the block is about the column under the pointer. The references are constants of the WINDOW, so they
-       now sit with the window: a legend in the strip at the foot of the grid (histLegend below). `sub` is
-       kept — it is what holds the plate's height steady — and is empty in both states. */
+       now sit with the window: the legend in the strip at the head of the grid (histLegend below).
+       Version 558 removes the third line with them. It was there to hold the block's height while the
+       references came and went, and with nothing left to come and go it was 16px of nothing under every
+       reading — Keren: "the tooltip is bigger than the numbers that it presents." */
     var live = !!(d && d.v != null);
-    el.innerHTML = '<div class="hr-plate">' +
-                     '<div class="hr-label">' + lab + '</div>' +
-                     '<div class="hr-value">' + val + '</div>' +
-                     '<div class="hr-sub">' + sub + '</div>' +
-                   '</div>';
+    var plate = el.firstElementChild;
+    if (!plate) return;
+    plate.children[0].textContent = lab;
+    plate.children[1].innerHTML = val;
     /* Version 555, Keren, from Apple Health's Steps chart: "they made like a background to the current
        statistics, and that cube is moving with the lines — so on Tuesday the data would align with the line
        of Tuesday." While a reading is live the block becomes a plate and slides to sit centred over the
@@ -233,8 +238,6 @@
        It moves by MARGIN, not by absolute positioning, so the block keeps its place in the flow and its
        height, and the page cannot jump under a reader scrubbing across it. */
     el.classList.toggle("on", live);
-    var plate = el.firstElementChild;
-    if (!plate) return;
     var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
     if (!live || !svg){ plate.style.marginLeft = ""; return; }   // "" hands it back to the stylesheet's rest position
     var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
@@ -242,7 +245,10 @@
     var scale = sb.width / g.W || 1;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
+    // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
+    if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = Math.max(0, Math.min(eb.width - w, colX - w / 2)).toFixed(1) + "px";
+    if (!plate.__placed){ void plate.offsetWidth; plate.style.transition = ""; plate.__placed = true; }
   }
   /* Version 556. The reference legend: one line per reference, in the strip AXIS.LEG opened inside the frame
      under the plot, laid out from the right so it ends on the plot's right edge — Keren: "a very gentle legend
@@ -268,15 +274,25 @@
     var grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");   // every value in it is already in the chart's own aria-label
-    /* Centred in the strip at the HEAD of the grid (Version 557). A plate in the card's own colour goes behind
-       it, so a column that runs the full height of the scale passes behind the legend rather than through it —
-       the same plate the app puts under any label that floats over a plot (the DSM, Version 217). */
-    var y = g.T - AXIS.LEG / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+    /* In the strip at the HEAD of the grid (Version 557), on a plate in the card's own colour, so a column that
+       runs the full height of the scale passes behind the legend rather than through it — the same plate the
+       app puts under any label that floats over a plot (the DSM, Version 217).
+       Version 558 insets it from the frame by ONE number on both edges (Keren: "three, four pixels from the
+       top so it doesn't look so adjacent to the top of the grid … make the padding from the right be equal to
+       the padding from the top"). The inset is measured off the FRAME the chart actually drew, not off the
+       geometry: `g.R` is the last column's centre, which is a hair inside the frame's right edge and by a
+       different amount on every chart, so a legend aligned to it would have sat at a different distance from
+       the edge on each page while reading as if it were aligned. */
+    var fr = svg.querySelector(".bt-frame");
+    var INSET = 4, PLATE_H = 15, PAD_X = 6;
+    var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+    var frRight = fr ? parseFloat(fr.getAttribute("x")) + parseFloat(fr.getAttribute("width")) : g.R;
+    var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
     var plate = document.createElementNS(NS, "rect");
     plate.setAttribute("class", "chart-label-plate");
     plate.setAttribute("rx", "5");
-    plate.setAttribute("y", (y - 8).toFixed(1));
-    plate.setAttribute("height", "16");
+    plate.setAttribute("y", (frTop + INSET).toFixed(1));
+    plate.setAttribute("height", String(PLATE_H));
     grp.appendChild(plate);   // first child, so every mark and every word is drawn over it
     refs.forEach(function(r){
       var t = document.createElementNS(NS, "text");
@@ -297,9 +313,9 @@
       total += it.w;
     });
     total += GAP * (items.length - 1);
-    var x = Math.max(g.L + 6, g.R - 6 - total);
-    plate.setAttribute("x", (x - 6).toFixed(1));
-    plate.setAttribute("width", (total + 12).toFixed(1));
+    var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
+    plate.setAttribute("x", (x - PAD_X).toFixed(1));
+    plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it){
       it.m.setAttribute("x1", x.toFixed(1));
       it.m.setAttribute("x2", (x + MARK).toFixed(1));
