@@ -17,7 +17,7 @@
                 ' <b>(' + strip.years + 'Y)</b></span>' +
               CHEV + '</div>' +
             // the seasons of this cycle, the picture the old Analysis tab showed on its own (Version 259)
-            '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span) + '</div>' +
+            '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + '</div>' +
             // What the cycle did to output and to prices, side by side (Keren, Sep 20, 2026, on seeing the pair:
             // "this is so interesting — put it in the analysis tab per cycle"). Two totals computed the same way
             // over the same closed years, so the comparison is real: the Big Tech decade ran dead even, and the

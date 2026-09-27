@@ -375,13 +375,29 @@
   .strip-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .strip-name{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; line-height:1.1; color:var(--text-primary); }
   .strip-years{ font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-muted); }
-  .strip{ display:flex; align-items:center; gap:3px; height:14px; margin-top:12px; }
+  /* Version 552: NO `gap`. The separation between runs is drawn INSIDE each run, as a border in the card's own
+     colour, as an inset shadow — which paints inside the box and, unlike `gap` or a border, changes no item's
+     size, so it costs the track nothing. A border DID cost it: `flex:n 1 0` distributes free space, and each
+     item's border is part of its outer size, so the seasons strip's five borders ate 3.6px the market strip's
+     two did not. With `gap:3px` the space a strip lost to separators depended on how
+     many runs it happened to have — the seasons strip has five or six, the market strip two — so two strips over
+     one cycle, given identical flex totals, still ended on different pixels. Keren saw it on the AI and COVID
+     rows. A separator that consumes no track makes the boundary a pure function of the flex fractions, which is
+     the only way two strips can be read against each other. */
+  .strip{ display:flex; align-items:center; height:14px; margin-top:12px; }
+  .strip > * + *{ box-shadow:inset 3px 0 0 var(--surface); }
   /* A run is never narrower than it is tall (Keren, Sep 20, 2026: "the seasons are sometimes squeezed — I would rather
      have them like a round dot rather than a squeezed ellipse"). The floor used to be 6px against a 12px height, which
      turned every short season into a vertical ellipse — a shape that appears nowhere else in the app and reads as a
      rendering fault rather than a short season. At the floor a run is exactly the dot the ring draws (Version 267). */
   .strip-run{ height:12px; border-radius:var(--radius); background:var(--season); min-width:12px; }
-  .strip-run.one, .strip-run.settled{ width:12px; flex:none; border-radius:50%; } /* a one-quarter season stays a dot, as on the ring */
+  /* A one-quarter season stays a dot, as on the ring — but it KEEPS its quarter of track and paints the dot
+     inside it, centred. Fixing the run itself at 12px (Version 267) took one quarter out of the flex total, so a
+     cycle with a one-quarter season laid its seasons out on a different basis from its market years and the two
+     strips ended on different pixels: the AI and COVID rows Keren saw (Version 552). */
+  .strip-run.one{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
+  .strip-run.one::before{ content:""; width:12px; max-width:100%; height:12px; border-radius:50%; background:var(--season); }
+  .strip-run.settled{ width:12px; flex:none; border-radius:50%; }  /* the narrow-run rescue below, which does move the end */
   .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
   .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-foot{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-secondary); }

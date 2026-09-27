@@ -905,7 +905,7 @@
         // the geometry goes inline, not in a class: the flex on this same element is inline, and a class cannot
         // out-weigh it — which is why .strip-run.one had never actually taken effect (Version 268)
         return '<span class="strip-run ' + r.g + (r.n === 1 ? ' one' : '') + '" style="' +
-          (r.n === 1 ? 'flex:none;width:12px' : 'flex:' + r.n + ' 1 0') + '" title="' + groupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
+          'flex:' + r.n + ' 1 0' + '" title="' + groupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
       }).join("");
       if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + '</span>';
       var lastSeg = segs[segs.length - 1];
@@ -913,7 +913,7 @@
       var foot = cyc.ongoing
         ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
         : '<b>' + Math.round(m.elapsedYears) + ' years</b> · ended in <b>' + wheelMeta[lastSeg.season].name + '</b>';
-      return { span:span, years:(cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears)),
+      return { span:span, done:done, years:(cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears)),
                strip:'<div class="strip" role="img" aria-label="' + runs.map(function(r){ return groupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ') + '">' + pills + '</div>',
                foot:foot };
     })();
@@ -921,14 +921,30 @@
   // The market over the same span, in the same clothes (Version 321). Measured in QUARTERS like the seasons above
   // it — a closed year is four, the year in progress is as far as today — so the two strips describe the same axis
   // and can be read against each other: where the market turned, and which season it turned in.
-  function marketStripHtml(cyc, spanQ){
+  function marketStripHtml(cyc, spanQ, doneQ){
     var endY = cyc.ongoing ? calendarTodayY : cyc.to, years = [];
     for (var y = cyc.from; y <= endY; y++) if (sp500AnnualReturns[y] != null) years.push(y);
     if (!years.length) return "";
+    /* Version 552, Keren, on the AI and COVID rows: "the season bar and the bull bear bar, they don't end in
+       the same line … it looks like the bull year is longer than the season."
+
+       They did share a WIDTH; they disagreed about where NOW is. The seasons stop at the last quarter the app
+       has a reading for — Q2 2026, because that is where the GDP and CPI series end — while the year in
+       progress here was measured to today's DATE, about three quarters in. One extra quarter of colour, and
+       two bars over one cycle that refuse to end together.
+
+       The app has one now, and it is the data's edge rather than the calendar's: a season that has not been
+       computed has not happened as far as this page is concerned. So the open year takes exactly the quarters
+       the seasons have left over, and the two strips end on the same line by construction instead of by luck. */
+    var closedQ = 0;
+    years.forEach(function(yy){ if (!(cyc.ongoing && yy === calendarTodayY)) closedQ += 4; });
+    var ytdQ = typeof doneQ === "number" ? doneQ - closedQ : Math.round(cycleYtdFraction * 4);
+    if (!(ytdQ >= 1)) ytdQ = 1;   // a year that has begun is never nothing, however the arithmetic lands
+
     var runs = [];
     years.forEach(function(yy){
       var ytd = cyc.ongoing && yy === calendarTodayY;
-      var q = ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4;
+      var q = ytd ? ytdQ : 4;
       var dir = sp500AnnualReturns[yy] >= 0 ? "up" : "down";
       var last = runs[runs.length - 1];
       if (!last || last.dir !== dir || last.ytd !== ytd) runs.push(last = { dir:dir, ytd:ytd, q:0, from:yy, to:yy });
@@ -943,7 +959,7 @@
       // the geometry goes inline for the same reason the seasons' does (Version 268): the flex is inline and a
       // class cannot out-weigh it
       return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' +
-        (r.q <= 1 ? "flex:none;width:12px" : "flex:" + r.q + " 1 0") + '" title="' + when + " · S&P 500 " +
+        "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " +
         (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
     }).join("");
     if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' +

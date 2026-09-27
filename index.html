@@ -302,10 +302,15 @@
   .strip-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .strip-name{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; line-height:1.1; color:var(--text-primary); }
   .strip-years{ font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-muted); }
-  .strip{ display:flex; align-items:center; gap:3px; height:14px; margin-top:12px; }
+
+  .strip{ display:flex; align-items:center; height:14px; margin-top:12px; }
+  .strip > * + *{ box-shadow:inset 3px 0 0 var(--surface); }
 
   .strip-run{ height:12px; border-radius:var(--radius); background:var(--season); min-width:12px; }
-  .strip-run.one, .strip-run.settled{ width:12px; flex:none; border-radius:50%; }
+
+  .strip-run.one{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
+  .strip-run.one::before{ content:""; width:12px; max-width:100%; height:12px; border-radius:50%; background:var(--season); }
+  .strip-run.settled{ width:12px; flex:none; border-radius:50%; }
   .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
   .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-foot{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-secondary); }
@@ -14237,13 +14242,14 @@
         var names = Object.keys(r.seasons).map(function(k) {
           return seasonTitle(wheelMeta[k]);
         }).join(" · ");
-        return '<span class="strip-run ' + r.g + (r.n === 1 ? " one" : "") + '" style="' + (r.n === 1 ? "flex:none;width:12px" : "flex:" + r.n + " 1 0") + '" title="' + groupName[r.g] + " · " + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + " – " + qLabel(r.to)) + " · " + names + '"></span>';
+        return '<span class="strip-run ' + r.g + (r.n === 1 ? " one" : "") + '" style="' + "flex:" + r.n + " 1 0" + '" title="' + groupName[r.g] + " · " + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + " – " + qLabel(r.to)) + " · " + names + '"></span>';
       }).join("");
       if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + "</span>";
       var lastSeg = segs[segs.length - 1];
       var foot = cyc.ongoing ? "Year <b>" + m.yearIndex + "</b> · now <b>" + wheelMeta[m.season].name + "</b>" : "<b>" + Math.round(m.elapsedYears) + " years</b> · ended in <b>" + wheelMeta[lastSeg.season].name + "</b>";
       return {
         span: span,
+        done: done,
         years: cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears),
         strip: '<div class="strip" role="img" aria-label="' + runs.map(function(r) {
           return groupName[r.g] + " " + r.n + (r.n === 1 ? " quarter" : " quarters");
@@ -14252,14 +14258,20 @@
       };
     }();
   }
-  function marketStripHtml(cyc, spanQ) {
+  function marketStripHtml(cyc, spanQ, doneQ) {
     var endY = cyc.ongoing ? calendarTodayY : cyc.to, years = [];
     for (var y = cyc.from; y <= endY; y++) if (sp500AnnualReturns[y] != null) years.push(y);
     if (!years.length) return "";
+    var closedQ = 0;
+    years.forEach(function(yy) {
+      if (!(cyc.ongoing && yy === calendarTodayY)) closedQ += 4;
+    });
+    var ytdQ = typeof doneQ === "number" ? doneQ - closedQ : Math.round(cycleYtdFraction * 4);
+    if (!(ytdQ >= 1)) ytdQ = 1;
     var runs = [];
     years.forEach(function(yy) {
       var ytd = cyc.ongoing && yy === calendarTodayY;
-      var q = ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4;
+      var q = ytd ? ytdQ : 4;
       var dir = sp500AnnualReturns[yy] >= 0 ? "up" : "down";
       var last = runs[runs.length - 1];
       if (!last || last.dir !== dir || last.ytd !== ytd) runs.push(last = {
@@ -14279,7 +14291,7 @@
     var ahead = Math.max(0, span - done);
     var pills = runs.map(function(r) {
       var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
-      return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' + (r.q <= 1 ? "flex:none;width:12px" : "flex:" + r.q + " 1 0") + '" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
+      return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' + "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
     }).join("");
     if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + "</span>";
     return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' + runs.map(function(r) {
@@ -14330,7 +14342,7 @@
     });
     list.innerHTML = marketCycles.slice().reverse().map(function(cyc) {
       var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' + '<div class="era-head"><span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV + "</div>" + '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span) + "</div>" + '<div class="era-foot">' + '<span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span>" + "</div>" + "</div>";
+      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' + '<div class="era-head"><span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV + "</div>" + '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + "</div>" + '<div class="era-foot">' + '<span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span>" + "</div>" + "</div>";
     }).join("");
     var PREVIEW_CYCLES = 99;
     (function() {
