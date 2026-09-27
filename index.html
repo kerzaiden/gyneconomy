@@ -1673,7 +1673,6 @@
   .spread-history-area-neg{ fill:var(--bleed-mid); opacity:0.16; }
   .spread-history-line{ fill:none; stroke:var(--text-primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
   .spread-history-marker-line{ stroke:var(--accent); stroke-width:1.25; opacity:0.55; }
-  .spread-history-marker-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--accent-ink); }
   .spread-history-legend{ display:flex; flex-wrap:wrap; gap:16px; margin-top:8px; font-size:12.5px; color:var(--text-muted); }
   .spread-history-legend span.item{ display:inline-flex; align-items:center; gap:6px; }
   .spread-history-legend .sw{ width:10px; height:10px; border-radius:2px; flex:none; }
@@ -12646,7 +12645,8 @@
       return -1;
     }
     function x(i, n) {
-      return padL + innerW * i / (n - 1);
+      var h = innerW / (2 * Math.max(1, n));
+      return padL + h + (innerW - 2 * h) * i / (n - 1);
     }
     function y(v) {
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
@@ -12715,7 +12715,7 @@
           class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
         }));
       });
-      var mi = qIndex(data, s.uninversion.from);
+      var mi = qIndex(data, s.uninversion.from), mLabel = null;
       if (mi >= 0) {
         var mx = x(mi, data.length);
         svg.appendChild(el("line", {
@@ -12725,21 +12725,14 @@
           y2: H - padB,
           class: "spread-history-marker-line"
         }));
-        var mlbl = el("text", {
-          x: mx - 6,
-          y: padT + 10,
-          class: "spread-history-marker-label",
-          "text-anchor": "end"
-        });
-        mlbl.textContent = s.uninversion.label;
-        svg.appendChild(mlbl);
+        mLabel = s.uninversion.label.charAt(0).toUpperCase() + s.uninversion.label.slice(1);
       }
       var crosshair = el("line", {
         x1: 0,
         x2: 0,
         y1: padT,
         y2: H - padB,
-        class: "crosshair"
+        class: "hist-cross"
       });
       svg.appendChild(crosshair);
       var hoverDot = el("circle", {
@@ -12760,15 +12753,25 @@
       if (shell) {
         shell.__geom = {
           vals: data,
+          n: data.length,
+          W: W,
+          T: yTop,
+          B: yBot,
+          L: x(0, data.length),
+          R: x(data.length - 1, data.length),
           at: function(d) {
             return qLabel(d.q);
           },
           fmt: function(v) {
             return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
           },
-          refs: []
+          refs: mLabel ? [ {
+            label: mLabel,
+            cls: "spread-history-marker-line"
+          } ] : []
         };
         histReadEnsure(shell);
+        histLegend(shell);
         histReadFill(shell, null);
       }
       var onCol = null;

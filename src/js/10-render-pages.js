@@ -58,7 +58,9 @@
     addSources(series["3m"].sources); addSources(series["2y"].sources);
 
     function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
-    function x(i, n){ return padL + (innerW * i) / (n - 1); }
+    // V569: half a slot in at each end, the Version 567 rule — the last column was landing 1.5px from the
+    // frame's right edge where every other history clears it by four to fourteen
+    function x(i, n){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
     /* Version 472: the spread windows. Everything in here is indexed against `data` and its length \u2014 the
@@ -135,19 +137,24 @@
         }));
       });
 
-      // Un-inversion marker
-      var mi = qIndex(data, s.uninversion.from);
+      /* The un-inversion marker. Version 569: the LINE stays — it is the one event on this picture and the
+         page is about it — but its label goes to the legend at the head of the grid, where every other
+         history's marks are named. Keren: "there's a purple line next to it, it's called un-inverts choppy. I
+         don't know why it's there. The legend should be at the legend, top right of the grid." She could not
+         tell what it named because it was written INSIDE the plot, at the top left, in the space the reading
+         plate now occupies — so it read as a stray phrase rather than as the key to the line beside it. */
+      var mi = qIndex(data, s.uninversion.from), mLabel = null;
       if (mi >= 0){
         var mx = x(mi, data.length);
         svg.appendChild(el("line", { x1:mx, x2:mx, y1:padT, y2:H-padB, class:"spread-history-marker-line" }));
-        var mlbl = el("text", { x:mx - 6, y:padT + 10, class:"spread-history-marker-label", "text-anchor":"end" });
-        mlbl.textContent = s.uninversion.label;
-        svg.appendChild(mlbl);
+        mLabel = s.uninversion.label.charAt(0).toUpperCase() + s.uninversion.label.slice(1);
       }
 
       // Hover crosshair + tooltip (same idiom as the yield-curve chart above) — rebuilt fresh each draw, so no
       // stale listeners survive a toggle switch (svg.innerHTML = "" above already detached the old hit rect).
-      var crosshair = el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"crosshair" });
+      // V569: .hist-cross, not this chart's own .crosshair — one class, so the resting reading's thread and
+      // the hovered one look the same here as on every other history, and the stylesheet owns both weights
+      var crosshair = el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" });
       svg.appendChild(crosshair);
       var hoverDot = el("circle", { r:4.5, class:"curve-dot end", opacity:0 });
       svg.appendChild(hoverDot);
@@ -159,10 +166,17 @@
          went. */
       var shell = document.getElementById("spread-history-shell");
       if (shell){
-        shell.__geom = { vals:data, at:function(d){ return qLabel(d.q); },
+        /* V569: the geometry the shared readout and legend need. This chart tracks its own pointer, so it
+           handed over only `vals` — which left the plate with no column to sit over (it fell to the left edge,
+           outside the frame, where Keren found it) and left the legend with nothing to measure. The numbers
+           are the ones the chart just drew with, so the plate rides the same columns the hover lights. */
+        shell.__geom = { vals:data, n:data.length, W:W, T:yTop, B:yBot,
+                         L:x(0, data.length), R:x(data.length - 1, data.length),
+                         at:function(d){ return qLabel(d.q); },
                          fmt:function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; },
-                         refs:[] };
+                         refs:mLabel ? [{ label:mLabel, cls:"spread-history-marker-line" }] : [] };
         histReadEnsure(shell);
+        histLegend(shell);
         histReadFill(shell, null);
       }
       /* Version 496: with columns, the hover is the one every other history uses — the plot dims and the
