@@ -14,7 +14,7 @@
       "3m": {
         title: "10-Year minus 3-Month spread since 2005",
         lede: "Every U.S. recession since the late 1960s has followed an inversion of this spread — the Fed's own preferred near-term recession gauge. History says the recession tends to start only after the curve un-inverts, not while it's still inverted.",
-        data: t10y3mHistory, uninversion: t10y3mUninversion,
+        data: t10y3mHistory,
         detail: '<h4>10-Year minus 3-Month spread, 2005–2026</h4>' +
           '<p class="caption">Quarterly averages, not daily — so a very brief inversion (like the single-day dip on Mar 22, 2019) can be smoothed away. The point is each cycle’s shape, not every daily wiggle. Gray bands are NBER-dated recessions.</p>' +
           '<p class="caption" style="margin-top:10px;">One episode often described as a false alarm, September 1998 (the Russia default/LTCM crisis), is a closer call than that: the spread came down to +0.12 points but never actually crossed zero, so it isn’t a true exception — the popular “1998 near-miss” story more likely refers to other spreads or to credit markets, not this one. The current cycle inverted in October 2022 — the deepest (−1.89 points on May 4, 2023) and longest in the daily series’ record, which starts in 1982 — and un-inverted in a choppy transition: the monthly average first reached zero in December 2024, dipped negative again in March–April and June–August 2025, and has held positive since September 2025 (the last negative daily close was October 16, 2025). See “Time from un-inversion to recession, historically” below for what past cycles suggest happens next.</p>' +
@@ -35,7 +35,7 @@
       "2y": {
         title: "10-Year minus 2-Year spread since 2005",
         lede: "The version of this signal most widely quoted in financial media — it inverted about three months before the 3-month version did.",
-        data: t10y2yHistory, uninversion: t10y2yUninversion,
+        data: t10y2yHistory,
         detail: '<h4>10-Year minus 2-Year spread, 2005–2026</h4>' +
           '<p class="caption">Quarterly averages of the FRED T10Y2Y series, recomputed and cross-checked against the underlying 10-year and 2-year constant-maturity series (GS10, GS2). Gray bands are NBER-dated recessions.</p>' +
           '<p class="caption" style="margin-top:10px;">It inverted July 6, 2022 (first negative daily close on FRED’s series) — about three months before the 3-month version did — and un-inverted in early September 2024 (touched zero on August 27, then held positive from September 6), its first sustained positive reading in over two years. It has preceded the same recessions the 3-month spread has, though exact inversion and un-inversion dates differ slightly between the two, cycle to cycle. The “Time from un-inversion to recession” panel below uses the 3-month spread specifically, since it has the longer, more rigorously documented track record.</p>' +
@@ -137,18 +137,11 @@
         }));
       });
 
-      /* The un-inversion marker. Version 569: the LINE stays — it is the one event on this picture and the
-         page is about it — but its label goes to the legend at the head of the grid, where every other
-         history's marks are named. Keren: "there's a purple line next to it, it's called un-inverts choppy. I
-         don't know why it's there. The legend should be at the legend, top right of the grid." She could not
-         tell what it named because it was written INSIDE the plot, at the top left, in the space the reading
-         plate now occupies — so it read as a stray phrase rather than as the key to the line beside it. */
-      var mi = qIndex(data, s.uninversion.from), mLabel = null;
-      if (mi >= 0){
-        var mx = x(mi, data.length);
-        svg.appendChild(el("line", { x1:mx, x2:mx, y1:padT, y2:H-padB, class:"spread-history-marker-line" }));
-        mLabel = s.uninversion.label.charAt(0).toUpperCase() + s.uninversion.label.slice(1);
-      }
+      /* Version 570: the un-inversion marker is gone entirely. Version 569 kept the line and moved its label
+         to the legend; Keren: "the colour already shows that the graph goes from inverted to normal, so I
+         don't need it again." She is right — the quarter the columns change colour IS the un-inversion, drawn
+         by the data rather than annotated on top of it, and a rule through the plot saying the same thing was
+         the last of the duplicate furniture this component has been shedding since Version 556. */
 
       // Hover crosshair + tooltip (same idiom as the yield-curve chart above) — rebuilt fresh each draw, so no
       // stale listeners survive a toggle switch (svg.innerHTML = "" above already detached the old hit rect).
@@ -174,7 +167,12 @@
                          L:x(0, data.length), R:x(data.length - 1, data.length),
                          at:function(d){ return qLabel(d.q); },
                          fmt:function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; },
-                         refs:mLabel ? [{ label:mLabel, cls:"spread-history-marker-line" }] : [] };
+                         /* V570: the colour key moves up here from its own row under the chart. It is the
+                            same three entries, in the same colours, in the place every other history keeps
+                            its key — which is both consistent and a row of the page's height given back. */
+                         refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
+                               { label:"Normal",         swatch:"var(--good)" },
+                               { label:"Inverted",       swatch:"var(--critical)" }] };
         histReadEnsure(shell);
         histLegend(shell);
         histReadFill(shell, null);

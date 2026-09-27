@@ -308,12 +308,7 @@
           <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
           <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
         </div>
-        <!-- Version 496: the key sits under the chart it keys, as Horizon's does since V492 -->
-        <div class="spread-history-legend" id="ylm-zone-legend">
-          <span class="item"><span class="sw" style="background:var(--critical)"></span>Inverted</span>
-          <span class="item"><span class="sw" style="background:var(--season-autumn)"></span>Normal</span>
-          <span class="item"><span class="sw" style="background:var(--good)"></span>Steep</span>
-        </div>
+        <!-- V496 put the key under the chart; V570 moves it into the chart's own legend, top right of the grid -->
         <div id="ylm-trend"></div>
 
       </div>
@@ -363,12 +358,7 @@
           <svg id="spread-history-svg" viewBox="0 0 780 220" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
-        <!-- V492: the chart's colour key sits under the chart it keys, not at the foot of the container -->
-        <div class="spread-history-legend" id="hzn-zone-legend">
-          <span class="item"><span class="sw" style="background:var(--border-strong)"></span>NBER recession</span>
-          <span class="item"><span class="sw" style="background:var(--good)"></span>Normal</span>
-          <span class="item"><span class="sw" style="background:var(--critical)"></span>Inverted</span>
-        </div>
+        <!-- V492 put the key under the chart; V570 moves it into the chart's own legend, top right of the grid -->
         <div id="hzn-trend"></div>
         <!-- V492: the reading, below the trend and inside the history container (Keren) -->
         <div id="hzn-panel"></div>

@@ -371,10 +371,16 @@
          in the legend and they cannot drift apart — colour, width, dash pattern and all. Shape alone was the
          Version 486 rule, written for the readout, which inverted against the page and could not use colour;
          the legend sits on the chart's own ground and can. Every history draws its average as .temp-avg and
-         its reference as .vh-mean, which is why those are the defaults; a chart whose lines differ says so. */
-      var m = document.createElementNS(NS, "line");
-      m.setAttribute("class", r.cls || (r.dash ? "vh-mean" : "temp-avg"));
-      m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1));
+         its reference as .vh-mean, which is why those are the defaults; a chart whose lines differ says so.
+         Version 570: a ref may ask for a SWATCH instead, for a key that names what a colour means rather than
+         what a line is — the zone keys that used to sit in their own row under Horizon and Pressure. */
+      var m = document.createElementNS(NS, r.swatch ? "rect" : "line");
+      if (r.swatch){
+        m.setAttribute("class", "hl-sw"); m.setAttribute("fill", r.swatch);
+        m.setAttribute("width", "9"); m.setAttribute("height", "9"); m.setAttribute("rx", "2");
+      } else m.setAttribute("class", r.cls || (r.dash ? "vh-mean" : "temp-avg"));
+      if (r.swatch) m.setAttribute("y", (y - 4.5).toFixed(1));
+      else { m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1)); }
       grp.appendChild(m);
       items.push({ t:t, m:m });
     });
@@ -389,8 +395,8 @@
     plate.setAttribute("x", (x - PAD_X).toFixed(1));
     plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it){
-      it.m.setAttribute("x1", x.toFixed(1));
-      it.m.setAttribute("x2", (x + MARK).toFixed(1));
+      if (it.m.tagName === "rect") it.m.setAttribute("x", (x + 1.5).toFixed(1));
+      else { it.m.setAttribute("x1", x.toFixed(1)); it.m.setAttribute("x2", (x + MARK).toFixed(1)); }
       it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
       x += it.w + GAP;
     });

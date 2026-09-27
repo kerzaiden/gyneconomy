@@ -2686,10 +2686,6 @@
   .spread-history-area-pos{ fill:var(--ovulate); opacity:0.16; }           /* the market band's colours: teal above zero, red below */
   .spread-history-area-neg{ fill:var(--bleed-mid); opacity:0.16; }
   .spread-history-line{ fill:none; stroke:var(--text-primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
-  .spread-history-marker-line{ stroke:var(--accent); stroke-width:1.25; opacity:0.55; }
-  .spread-history-legend{ display:flex; flex-wrap:wrap; gap:16px; margin-top:8px; font-size:12.5px; color:var(--text-muted); }
-  .spread-history-legend span.item{ display:inline-flex; align-items:center; gap:6px; }
-  .spread-history-legend .sw{ width:10px; height:10px; border-radius:2px; flex:none; }
 
   /* ---------- yield-by-maturity comparison chart — pill toggles (the GDP chart above uses a dropdown instead,
      since six countries made a row of pills too wide); reuses .gdp-line/.gdp-dot/.gdp-tooltip for the marks

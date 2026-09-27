@@ -43,7 +43,6 @@
   // The curve inverted Oct 2022 (not July 2022 — that's the 2Y-10Y spread's inversion date, a common mix-up)
   // and un-inverted in a choppy transition: quarterly averages turn positive in Q4 2024, but daily data dipped
   // negative again briefly in late Feb 2025 before settling durably positive by Q2–Q3 2025.
-  var t10y3mUninversion = {from:"2024 Q4", label:"un-inverts (choppy)"};
 
   // 10Y-2Y spread, quarterly, Q1 2005–Q3 2026 — same methodology as the 3-month series above: quarterly
   // averages, cross-checked against FRED's own GS10/GS2 constant-maturity series (which reproduce FRED's
@@ -76,7 +75,6 @@
   // Inverted Jul 6, 2022 (about 3 months before the 3-month spread did) and un-inverted Sep 6, 2024 —
   // its first sustained positive reading in over two years. Both dates are directly readable off this series
   // crossing zero, not a separately-sourced news claim.
-  var t10y2yUninversion = {from:"2024 Q3", label:"un-inverts"};
 
   // ---- Yield LEVELS by maturity, quarterly, Q1 2005–Q3 2026 — not spreads, the actual yields themselves,
   // for the "how has each part of the curve moved" comparison chart. Cross-checked against FRED's own series

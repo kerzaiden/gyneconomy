@@ -450,6 +450,12 @@
       lastHistGeom = { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
                        n:ylmCount(), at:function(d, i){ return quarters[ylmFrom + i]; },
                        fmt:function(v){ return v.toFixed(2) + "%"; },
+                       /* V570: the zone key moves up into the legend at the head of the grid, out of the row
+                          it had under the chart. Same three entries, same colours, the place every other
+                          history keeps its key — and a row of the page's height given back. */
+                       refs:[{ label:"Inverted", swatch:"var(--critical)" },
+                             { label:"Normal",   swatch:"var(--season-autumn)" },
+                             { label:"Steep",    swatch:"var(--good)" }],
                        vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
                               return d.v == null ? null : { v:d.v }; }) : []) };
 
