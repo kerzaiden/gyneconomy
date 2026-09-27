@@ -333,11 +333,15 @@
      drops read as motion rather than rain, and a scalloped canopy with no drops is just an umbrella. Three short
      verticals under a wide canopy is what reads as raining at the size this actually renders.
      It sits on the Fear & Greed page rather than in a row beside Weather's sun-and-cloud, so the two never meet. */
+  /* V593, Keren: "make the umbrella icon without rain because it looks unclear." The three short verticals
+     V467 chose as rain were the whole ambiguity at 13px: at that size they read as scratches beside the
+     canopy rather than as weather, and the eye spends its attention deciding what they are. The canopy, the
+     shaft and the crook are unmistakably an umbrella on their own \u2014 which is the reading anyway. The canopy
+     is deepened a little to carry the meaning the drops were doing. */
   function umbrellaSvg(){ return markSvg(
     '<path d="M12 2.4v2.3" stroke-width="1.8"/>' +
-    '<path d="M2.4 12.2a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' +
-    '<path d="M12 12.2v5.5a2.2 2.2 0 0 1-4.4 0" stroke-width="1.9"/>' +
-    '<path d="M4.9 16.1v1.6M19.1 16.1v1.6M16.2 18.9v1.5" stroke-width="1.9"/>'); }
+    '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' +
+    '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>'); }
   /* Version 524, Keren: "make the pulse icon from Activity be the icon of Pulse — money velocity — because
      it is more representative of a pulse than a heart." She is right, and it is the same argument V301 made
      the other way: back then Pulse's page drew no trace, so an ECG squiggle beside it was a miniature of the

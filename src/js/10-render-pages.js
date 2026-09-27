@@ -468,22 +468,15 @@
 
   // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
   function renderFearCurve(){
-    // The curve leads the panel on the half-dial, the shape every other preview on this page follows.
-    var host = document.getElementById("curve-gauge");
-    if (host) host.innerHTML =
-      '<div class="curve-name">Fear' + expandBtn(curveDetailHtml()) + '</div>' +
-      arcGauge(curvePct(curveNow), curveTag.state, {
-        band: [0, 50],                                  // the ordinary upward slope: everything below flat
-        labels: { left:"Steep", top:"Flat", right:"Inverted" },
-        aria: curveNow == null ? "Fear curve: no reading"
-              : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() +
-                "; flat is 1.00, above it the curve is inverted"
-      }) +
-      '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "\u2014" : curveNow.toFixed(2)) + '</span>' +
-        '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + '</span></div>' +
-      /* The date line repaints with the figure (the V542 rule): a fresh number above a stale date is
-         the figure and its provenance disagreeing on screen at the same moment. */
-      '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + '</div>';
+    /* V593, Keren: "I'm still seeing the meter component. We need to drop it." The half-dial went. It was the
+       page's reading of the curve TODAY, and the history under it now carries the same number in its readout
+       plate, on a picture that also says where today sits against nineteen years of it \u2014 which is the V582
+       argument on Temperature, one reading stated once.
+       Its two companions are not lost. The DATE is the history's own, and rides in the readout. The NOTE \u2014
+       "there's info next to the title, put the info in the three dots in the history panel as convention" \u2014 is
+       filed to HIST_NOTE, which is where every other page's note lives and what the \u22ef opens: the V518 rule,
+       one string read from one place. That also retires the last (i) sitting beside a title on this page. */
+    HIST_NOTE["fear-range"] = curveDetailHtml();
 
     /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
        shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
@@ -564,6 +557,11 @@
       if (box){ box.__geom = lastHistGeom; wireHistHover(box, "fear-hist-tooltip"); }
     }
     sheetRenderers["fear-range"] = drawFearHistory;
+    /* V593: and on OPEN. Without this the chart kept its build-time drawing, made while the sheet was hidden
+       and had no width, so its viewBox was 298 inside an element rendering at 320 \u2014 the whole picture scaled
+       up 1.07, which is why the legend looked oversized and crowded to the right edge. Every other history
+       registers its sheet this way; this one only registered its range control. */
+    sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
     drawFearHistory();
 
     var hl = document.getElementById("curve-highlights");

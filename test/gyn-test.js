@@ -306,7 +306,12 @@ async function openPage(p, url, sheet) {
     const read = () => g.evaluate(() => {
       const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim().replace(/\s+/g, ' ') : null; };
       const k = s => { const e = document.querySelector(s); return e ? e.className : null; };
-      return { sentiment: t('#subj-value-sentiment'), mood: t('.curve-w'), moodClass: k('.curve-w'),
+      /* V593: the verdict moved off the half-dial when that went. It is read where it now lives \u2014 the tag on
+         the row that opens this page \u2014 which is the same claim, not a softened one: this assertion is the
+         reason the dead repaint was caught at all. */
+      return { sentiment: t('#subj-value-sentiment'),
+               mood: t('[data-open="sheet-sign-sentiment"] .tag'),
+               moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
                yield: t('#subj-value-yield'), valuation: t('#subj-value-valuation') };
     });
 

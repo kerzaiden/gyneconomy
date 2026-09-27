@@ -2201,7 +2201,6 @@
     
     <section class="longcycle" aria-labelledby="psych-title">
       
-      <div class="curve-card" id="curve-gauge"></div>
       
       <div id="fear-history"></div>
       <div id="curve-highlights"></div>
@@ -4453,25 +4452,12 @@
     repaintTag("subj-value-sentiment", tag.text, tag.state);
     var ring = document.getElementById("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", where 1.00 is flat");
-    var w = document.querySelector(".curve-w");
-    if (w) {
-      w.textContent = tag.text;
-      w.className = "curve-w " + tag.state + "-ink";
-    }
-    var v = document.querySelector(".curve-v");
-    if (v) v.textContent = txt;
-    var arc = document.querySelector(".gauge-arc");
-    if (arc) arc.outerHTML = arcGauge(curvePct(r), tag.state, {
-      band: [ 0, 50 ],
-      labels: {
-        left: "Steep",
-        top: "Flat",
-        right: "Inverted"
-      },
-      aria: r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", " + tag.text.toLowerCase() + "; flat is 1.00, above it the curve is inverted"
+    var verdicts = document.querySelectorAll('[data-open="sheet-sign-sentiment"] .tag');
+    Array.prototype.forEach.call(verdicts, function(t) {
+      var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
+      t.textContent = tag.text;
+      t.className = "tag " + tag.state + word;
     });
-    var d = document.getElementById("curve-asof");
-    if (d && liveAsOf.vixClose) d.textContent = "Cboe, " + liveAsOf.vixClose;
   }
   function repaintYieldRow() {
     var pick = function(m) {
@@ -14684,7 +14670,7 @@
     return markSvg('<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' + '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' + '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>');
   }
   function umbrellaSvg() {
-    return markSvg('<path d="M12 2.4v2.3" stroke-width="1.8"/>' + '<path d="M2.4 12.2a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' + '<path d="M12 12.2v5.5a2.2 2.2 0 0 1-4.4 0" stroke-width="1.9"/>' + '<path d="M4.9 16.1v1.6M19.1 16.1v1.6M16.2 18.9v1.5" stroke-width="1.9"/>');
+    return markSvg('<path d="M12 2.4v2.3" stroke-width="1.8"/>' + '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' + '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>');
   }
   var signMarks = {
     VIX: umbrellaSvg,
@@ -16433,16 +16419,7 @@
   GYN.step("renderHormones", renderHormones, "build");
   renderHormones();
   function renderFearCurve() {
-    var host = document.getElementById("curve-gauge");
-    if (host) host.innerHTML = '<div class="curve-name">Fear' + expandBtn(curveDetailHtml()) + "</div>" + arcGauge(curvePct(curveNow), curveTag.state, {
-      band: [ 0, 50 ],
-      labels: {
-        left: "Steep",
-        top: "Flat",
-        right: "Inverted"
-      },
-      aria: curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() + "; flat is 1.00, above it the curve is inverted"
-    }) + '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "—" : curveNow.toFixed(2)) + "</span>" + '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + "</span></div>" + '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + "</div>";
+    HIST_NOTE["fear-range"] = curveDetailHtml();
     var FEAR_STOPS = [ "5y", "10y", "max" ];
     var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
     function drawFearHistory() {
@@ -16496,6 +16473,7 @@
       }
     }
     sheetRenderers["fear-range"] = drawFearHistory;
+    sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
     drawFearHistory();
     var hl = document.getElementById("curve-highlights");
     if (hl) {

@@ -110,23 +110,23 @@
     var ring = document.getElementById("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
       : "Fear curve at " + txt + ", where 1.00 is flat");
-    var w = document.querySelector(".curve-w");
-    if (w){ w.textContent = tag.text; w.className = "curve-w " + tag.state + "-ink"; }
-    var v = document.querySelector(".curve-v");
-    if (v) v.textContent = txt;
-    /* The dial is redrawn, not just relabelled: the needle's position and the sentence a screen
-       reader is given both live inside the SVG, so leaving it would show a moved figure on a
-       picture that had not moved, and read out the old number. */
-    var arc = document.querySelector(".gauge-arc");
-    if (arc) arc.outerHTML = arcGauge(curvePct(r), tag.state, {
-      band: [0, 50],
-      labels: { left:"Steep", top:"Flat", right:"Inverted" },
-      aria: r == null ? "Fear curve: no reading"
-            : "Fear curve at " + txt + ", " + tag.text.toLowerCase() +
-              "; flat is 1.00, above it the curve is inverted"
+    /* V593: the half-dial, its figure, its verdict word and its date line all left with the meter, and taking
+       them out exposed something the dial had been hiding. repaintTag() above looks for a `.tag` INSIDE
+       #subj-value-sentiment, and there is not one: catItem lifts this reading's inline tag out of the figure
+       and into the row's own `.ci-word` (the V504 rule, because Sentiment is the one member that writes its
+       verdict inside the value). So that call has been returning false, and the only thing keeping the verdict
+       live was `.curve-w` on the dial. Remove the dial and the verdict silently stops updating.
+       It is repainted where it actually lives now \u2014 every row that opens this page \u2014 and it is still
+       RECOMPUTED from the two legs rather than relabelled, which is the claim this function exists to keep.
+       The Fear page's chart is deliberately NOT repainted from these legs: it plots the monthly record, every
+       point labelled with its month, and a live tick is not a new month. Highlights quotes today's two legs a
+       line below, which is the V294 shape \u2014 a card says today, a chart says its series, both say which. */
+    var verdicts = document.querySelectorAll('[data-open="sheet-sign-sentiment"] .tag');
+    Array.prototype.forEach.call(verdicts, function(t){
+      var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
+      t.textContent = tag.text;
+      t.className = "tag " + tag.state + word;
     });
-    var d = document.getElementById("curve-asof");
-    if (d && liveAsOf.vixClose) d.textContent = "Cboe, " + liveAsOf.vixClose;
   }
   function repaintYieldRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
