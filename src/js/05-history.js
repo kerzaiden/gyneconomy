@@ -503,7 +503,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -518,19 +518,19 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:T, bot:(B + AXIS.LEG),
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     if (o.cycle){
       var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 12; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     var sw = Math.max(1, (R - L) / n * COL_FILL);
     vals.forEach(function(d, i){
@@ -590,7 +590,7 @@
   function householdsChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
@@ -604,12 +604,12 @@
     var out = [];
     var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
     var y1 = DSR_FROM_YEAR + Math.floor((hi - 1) / 4);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:T, bot:(B + AXIS.LEG),
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return g.toFixed(0) + "%"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     function line(ser, cls){
@@ -694,7 +694,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -715,7 +715,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0), avgShown = null;   // V427: the average's value, reported to the key under the chart
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:T, bot:(B + AXIS.LEG),
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     // Version 423: a cycle picks its own years rather than borrowing windowYears(), which chooses ROUND ones and
     // gave the ten-year Big Tech cycle exactly two labels, 2010 and 2015, with neither end of the cycle shown. Here
@@ -725,12 +725,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 12; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     var sw = Math.max(1, (R - L) / n * COL_FILL);
     vals.forEach(function(d, i){
@@ -812,7 +812,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -833,7 +833,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:T, bot:(B + AXIS.LEG),
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     // Version 431: a cycle names its own first and last year rather than the round ones windowYears picks
     if (o.cycle){
@@ -841,12 +841,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 4; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     var sw = Math.max(1, (R - L) / n * COL_FILL);
     vals.forEach(function(d, i){
@@ -877,7 +877,7 @@
   function m2GrowthChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T, B = H - 38 - AXIS.LEG;   // LEG: the legend strip inside the frame (V556)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -898,12 +898,12 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:T, bot:(B + AXIS.LEG),
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + AXIS.LEG + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     var sw = Math.max(1, (R - L) / n * COL_FILL);
     vals.forEach(function(v, i){
