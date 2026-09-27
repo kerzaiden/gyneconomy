@@ -13235,23 +13235,23 @@
       }
     }
     if (peakMark) parts.push(peakMark);
-    var endDeg = ORIGIN + m.elapsedYears * degPerYear;
     var lastMoonEnd = ORIGIN + m.track.filter(function(x) {
       return !x.isNow;
     }).reduce(function(mx, x) {
       return Math.max(mx, x.to);
     }, 0) * degPerYear;
     var BADGE_R = 13, BADGE_AT = R + 3, badgeHalf = BADGE_R / BADGE_AT * 180 / Math.PI;
-    var badgeDeg = Math.max(endDeg, lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI);
+    var badgeDeg = lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI;
     if (badgeDeg + badgeHalf > SEAM_END) badgeDeg = 360;
     var bp = polar(BADGE_AT, badgeDeg);
     parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + " " + bp[1] + ')" style="pointer-events:auto">' + '<circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + "</text></g>");
     if (m.ongoing) {
-      var degPerQ = degPerYear / 4, dotFrom = badgeDeg + (BADGE_R + 4) / R * 180 / Math.PI, dotTo = SEAM_END - 1;
-      for (var q = 0; q < (m.dialYears + 2) * 4; q++) {
-        var qa = ORIGIN + (q + .5) * degPerQ;
-        if (qa <= dotFrom || qa >= dotTo) continue;
-        var qp = polar(RM, qa);
+      var degPerQ = degPerYear / 4;
+      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
+      var dotTo = SEAM_END - 1;
+      var dotN = Math.round((dotTo - dotFrom) / degPerQ);
+      for (var q = 0; q < dotN; q++) {
+        var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + .5) / dotN);
         parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
       }
     }

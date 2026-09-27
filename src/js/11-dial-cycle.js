@@ -104,14 +104,17 @@
       }
     }
     if (peakMark) parts.push(peakMark); // after the band, so it sits on top of it
-    // The badge says "Year N" — today's position for the open cycle, the cycle's length for a closed one — and sits
-    // flush after the last quarter (or at the present, whichever is later), so the ring reads as one continuous run.
+    // The badge says "Year N" — the cycle's year, and it sits flush after the LAST QUARTER WITH A SEASON, so the
+    // ring reads as one continuous run. It used to sit at the later of that and the present (Keren, Sep 27, 2026:
+    // "the year cursor is a bit far from the end, from the latest quarter Q2 2026 — I want it a bit closer"): by
+    // late September the calendar is most of a quarter past the last quarter the data has closed, and the badge
+    // was floating in that empty arc. The app's edge is the data's, not the calendar's — the same rule the two
+    // cycle strips were put on in Version 552 — so the badge follows the seasons (Version 554).
     // When the cycle fills the ring there is no room for it before the seam, so it sits on the seam itself, a clasp
     // where the cycle closed (Version 200).
-    var endDeg = ORIGIN + m.elapsedYears * degPerYear;
     var lastMoonEnd = ORIGIN + m.track.filter(function(x){ return !x.isNow; }).reduce(function(mx, x){ return Math.max(mx, x.to); }, 0) * degPerYear;
     var BADGE_R = 13, BADGE_AT = R + 3, badgeHalf = BADGE_R / BADGE_AT * 180 / Math.PI;
-    var badgeDeg = Math.max(endDeg, lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI);
+    var badgeDeg = lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI;
     if (badgeDeg + badgeHalf > SEAM_END) badgeDeg = 360;
     var bp = polar(BADGE_AT, badgeDeg);
     // ---- horizontal centring (Version 414, Keren: "make sure the padding from the left and the right of the
@@ -127,12 +130,22 @@
     // Quarter dots ahead on the inner ring — the rest of a typical cycle, as Clue dots the days ahead (open cycle only).
     // They run to the track's rounded end at the seam (Keren, Sep 19, 2026: the dots stopped short of it), not just to the
     // end of the years' arc, so the ring reads as one continuous run up to the seam.
+    //
+    // Version 554: the dots are spread EVENLY across the arc that is left, rather than pinned to the quarter grid
+    // and then clipped wherever the grid happened to fall. Keren, Sep 27, 2026: "the gray dots, they're not evenly
+    // spaced at the rest of the cycle. You have a really big gap from the last bull year to the first gray dot."
+    // Pinning them to the grid meant the first surviving dot could be anywhere from a hair to a full quarter past
+    // the band's end — on this cycle it was most of two quarters — while every other gap was exactly one quarter.
+    // The dots are a COUNT, not dated marks: the caption calls them what is left of a typical cycle. So the count
+    // is kept (the arc divided by a quarter, rounded) and the dots sit at the centres of those equal slots, which
+    // makes the gap before the first and after the last exactly half a gap, the same at both ends.
     if (m.ongoing){
-      var degPerQ = degPerYear / 4, dotFrom = badgeDeg + (BADGE_R + 4) / R * 180 / Math.PI, dotTo = SEAM_END - 1; // to the track's end at the seam
-      for (var q = 0; q < (m.dialYears + 2) * 4; q++){
-        var qa = ORIGIN + (q + 0.5) * degPerQ;
-        if (qa <= dotFrom || qa >= dotTo) continue;
-        var qp = polar(RM, qa);
+      var degPerQ = degPerYear / 4;
+      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;   // where the market band stops — the last year that has run
+      var dotTo = SEAM_END - 1;                             // the track's rounded end at the seam
+      var dotN = Math.round((dotTo - dotFrom) / degPerQ);
+      for (var q = 0; q < dotN; q++){
+        var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + 0.5) / dotN);
         parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>'); // the band only (Version 202; the seasons ring too in 201)
       }
     }
