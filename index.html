@@ -2191,7 +2191,7 @@
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
-        <div class="subject-label">Fear curve</div>
+        <div class="subject-label">Fear</div>
         <div class="subject-value" id="subj-value-sentiment"></div>
         <p class="subject-say" id="subj-say-sentiment"></p>
         <div id="subj-spark-sentiment"></div>
@@ -12985,7 +12985,7 @@
   renderLongCycleTag();
   function renderFearCurve() {
     var host = document.getElementById("curve-gauge");
-    if (host) host.innerHTML = '<div class="curve-name">Fear curve' + expandBtn(curveDetailHtml()) + "</div>" + arcGauge(curvePct(curveNow), curveTag.state, {
+    if (host) host.innerHTML = '<div class="curve-name">Fear' + expandBtn(curveDetailHtml()) + "</div>" + arcGauge(curvePct(curveNow), curveTag.state, {
       band: [ 0, 50 ],
       labels: {
         left: "Steep",
@@ -12995,16 +12995,12 @@
       aria: curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() + "; flat is 1.00, above it the curve is inverted"
     }) + '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "—" : curveNow.toFixed(2)) + "</span>" + '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + "</span></div>" + '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + "</div>";
     var vixHost = document.getElementById("curve-vix");
-    if (vixHost) {
-      var vixCard = Object.keys(vixInd).reduce(function(o, k) {
-        o[k] = vixInd[k];
-        return o;
-      }, {});
-      vixCard.shortCaption = "";
-      vixHost.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, {
-        bloodCard: true
-      }) + "</div>";
-    }
+    if (vixHost) vixHost.innerHTML = '<div class="panel-stack in-hist">' + panelRow({
+      name: vixInd.bodyTerm,
+      metric: vixInd.metric,
+      flagged: meterFlagged(vixInd.meter),
+      bar: panelFromMeter(vixInd.meter)
+    }) + "</div>";
     var hl = document.getElementById("curve-highlights");
     if (hl) {
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
@@ -13097,7 +13093,7 @@
     document.getElementById("subj-ring-sentiment").innerHTML = vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
     (function() {
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + pulseSvg() + "</span>Fear curve";
+      if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + umbrellaSvg() + "</span>Fear";
     })();
     set("sentiment", (curveNow == null ? "—" : curveNow.toFixed(2)) + '<span class="unit">VIX ÷ 3M</span><span class="tag ' + curveTag.state + '">' + curveTag.text + "</span>", "");
     say("sentiment", "");
@@ -14633,7 +14629,7 @@
       timing: "leading"
     }, {
       key: "sentiment",
-      title: "Fear curve",
+      title: "Fear",
       timing: "leading"
     } ].forEach(function(cfg) {
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]');
@@ -14866,7 +14862,7 @@
         key: "mood",
         title: "Mood",
         mark: moodSvg(),
-        sub: "Valuations · Fear curve · Desire · Horizon",
+        sub: "Valuations · Fear · Desire · Horizon",
         picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
       }, {
         key: "energy",

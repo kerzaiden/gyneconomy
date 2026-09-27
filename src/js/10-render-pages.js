@@ -396,7 +396,7 @@
     // The curve leads the panel on the half-dial, the shape every other preview on this page follows.
     var host = document.getElementById("curve-gauge");
     if (host) host.innerHTML =
-      '<div class="curve-name">Fear curve' + expandBtn(curveDetailHtml()) + '</div>' +
+      '<div class="curve-name">Fear' + expandBtn(curveDetailHtml()) + '</div>' +
       arcGauge(curvePct(curveNow), curveTag.state, {
         band: [0, 50],                                  // the ordinary upward slope: everything below flat
         labels: { left:"Steep", top:"Flat", right:"Inverted" },
@@ -413,12 +413,27 @@
     /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
        shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
        escape): this page has ONE Highlights block and the VIX's note is a card in it. */
+    /* V584, Keren: "look at the test result design in the rest of the app and apply to the fear index below."
+       The VIX was the last reading in the app still drawn as a blood CARD \u2014 its own mark, its own kicker, its
+       own tag, its own date line and a full-width track \u2014 while every other reading of the same kind (Power's
+       four markers, Households, the deficit) is a panelRow: a name, a figure, and the band it sits in, three to
+       a card. One idiom for one kind of reading.
+       Nothing is lost in the compression, which is the only reason it compresses. The DATE is already printed
+       two lines above: curveSub is literally "Cboe, " + vixRow.sub, the same field from the same object, so the
+       card was restating its neighbour's provenance. The NOTE is already a door in Highlights, where "What is
+       priced" opens factsFrom(vixRow.note) \u2014 so the row deliberately carries no (i) of its own, because two
+       doors onto one note is the Version 477 fault, the same rule that keeps an (i) off a row with a chevron.
+       The word ("Usual") is not lost either: panelFromMeter lights the band the reading sits in, which is the
+       Version 486 finding that a three-segment spectrum says where it sits without naming it. */
     var vixHost = document.getElementById("curve-vix");
-    if (vixHost){
-      var vixCard = Object.keys(vixInd).reduce(function(o, k){ o[k] = vixInd[k]; return o; }, {});
-      vixCard.shortCaption = "";
-      vixHost.innerHTML = '<div class="guest-card">' + cardDetailHtml(vixCard, { bloodCard:true }) + '</div>';
-    }
+    if (vixHost)
+      /* `in-hist` is the modifier that makes a stack carry its own box rather than sit inside a card that
+         already has one \u2014 "one reading in a history container still gets the box", as its own note puts it.
+         The name says where it was first needed, not what it does; a synonym class for the identical rule
+         would be the duplication, so this uses the one that exists. */
+      vixHost.innerHTML = '<div class="panel-stack in-hist">' +
+        panelRow({ name:vixInd.bodyTerm, metric:vixInd.metric,
+                   flagged:meterFlagged(vixInd.meter), bar:panelFromMeter(vixInd.meter) }) + '</div>';
 
     var hl = document.getElementById("curve-highlights");
     if (hl){
@@ -615,8 +630,13 @@
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
       // V524, Keren: the heart, freed when Pulse took the trace. The half-dial of V465 named the INSTRUMENT
       // the index is published as; the heart names what the instrument measures, which is the reading itself.
-      if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + pulseSvg() +
-        '</span>Fear curve';
+      /* V584, Keren: "change the name of the category from fear curve to fear. And the icon should be an
+         umbrella, meaning fear of winter, basically." The category is the FEELING; the curve is one instrument
+         that measures it, and naming the category after the instrument was the same fault V524 fixed when it
+         took the half-dial's name off this row. The umbrella is the app's own \u2014 the VIX has worn it since
+         V467 \u2014 and it is the right glyph twice over: what you carry because winter might come. */
+      if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + umbrellaSvg() +
+        '</span>Fear';
     })();
     // no context line (Version 232, Keren: "I already have the data below the cycle") — it only re-listed the table
     // the sentence taken off the row goes where it was always meant to be read — on the page, in full (Keren,
