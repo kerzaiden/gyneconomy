@@ -151,10 +151,13 @@
      built as asked, and it does carry the reading honestly enough: how much there is, turned up or down. Two
      arcs rather than the reference's three — at the 15px this renders at on a sign card the third closes up
      against the second and the three become a smudge, which was checked at size before choosing. */
-  function speakerSvg(){ return markSvg(
-    '<path d="M4.2 9.3H7.5L12.7 5.0V19.0L7.5 14.7H4.2Z" stroke-width="1.7"/>' +
-    '<path d="M16.0 9.2a4.2 4.2 0 0 1 0 5.6" stroke-width="1.7"/>' +
-    '<path d="M18.0 6.6a8 8 0 0 1 0 10.8" stroke-width="1.7"/>'); }
+  /* V587, Keren, with the drawing: Volume's mark is a filled disc inside an open ring. The speaker it
+     replaces was a pun on the word \u2014 volume as loudness \u2014 and this page measures a QUANTITY: the money
+     stock, a body of something, which is what a solid core inside a boundary draws. The proportion is the
+     one she sent: the inner disc is a little over half the ring's radius. */
+  function volumeSvg(){ return markSvg(
+    '<circle cx="12" cy="12" r="9.3" stroke-width="1.9"/>' +
+    '<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>'); }
   // Pressure's mark: the gauge (Version 312, restored in Version 314 \u2014 Keren preferred it to the cuff). The
   // cuff was the truer object but it is three shapes where this is two, and at the 15px this mark now renders at
   // the cylinder and the dial collapse into each other. The foot under the dial is load-bearing: a circle with
@@ -336,7 +339,7 @@
      index it names is a reading of how the market FEELS. */
   var signMarks = { VIX:umbrellaSvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
                     "Industrial output":gearSvg,
-                    Volume:speakerSvg, Pressure:gaugeSvg };
+                    Volume:volumeSvg, Pressure:gaugeSvg };
 
   // Economic power's mark (Version 229, Keren: "the battery icon is a really good metaphor for economic power — low power
   // is a depleted energy, high power is fully charged"). level 0–5 → how much of the body is filled, five equal steps;

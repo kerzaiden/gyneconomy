@@ -9339,7 +9339,7 @@
       title: "Federal deficit or surplus, share of GDP"
     },
     "volume-range": {
-      mark: speakerSvg,
+      mark: volumeSvg,
       title: "M2 money stock, YoY"
     },
     "pulse-range": {
@@ -11194,8 +11194,8 @@
   function dropSvg(sw) {
     return markSvg('<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>');
   }
-  function speakerSvg() {
-    return markSvg('<path d="M4.2 9.3H7.5L12.7 5.0V19.0L7.5 14.7H4.2Z" stroke-width="1.7"/>' + '<path d="M16.0 9.2a4.2 4.2 0 0 1 0 5.6" stroke-width="1.7"/>' + '<path d="M18.0 6.6a8 8 0 0 1 0 10.8" stroke-width="1.7"/>');
+  function volumeSvg() {
+    return markSvg('<circle cx="12" cy="12" r="9.3" stroke-width="1.9"/>' + '<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>');
   }
   function gaugeSvg() {
     return markSvg('<circle cx="12" cy="11.2" r="7.6" stroke-width="1.7"/>' + '<path d="M12 11.2 7.9 7.1" stroke-width="1.9"/>' + '<path d="M10.3 18.6v2.2h3.4v-2.2" stroke-width="1.6"/>');
@@ -11283,7 +11283,7 @@
     Activity: trendUpSvg,
     Temperature: thermoSvg,
     "Industrial output": gearSvg,
-    Volume: speakerSvg,
+    Volume: volumeSvg,
     Pressure: gaugeSvg
   };
   var DSR_FROM_YEAR = 2005;
@@ -14608,6 +14608,15 @@
       var face = document.createElement("div");
       face.className = "subject-summary";
       while (sum.firstChild) face.appendChild(sum.firstChild);
+      (function() {
+        var MARK = {
+          yield: gaugeSvg,
+          horizon: sunriseSvg,
+          sentiment: umbrellaSvg
+        };
+        var lab = face.querySelector(".subject-label");
+        if (lab && MARK[cfg.key] && !lab.querySelector("svg")) lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + "</span>" + lab.innerHTML;
+      })();
       row.appendChild(face);
       var sheet = document.createElement("div");
       sheet.className = "metric-sheet";
@@ -15723,8 +15732,10 @@
         word: rv.w || say,
         state: rv.s,
         icon: function() {
+          var mk = row.querySelector(".subject-label .peek-mark");
+          if (mk) return discOf(mk, rv.s);
           var rg = row.querySelector(".subject-ring");
-          return rg && rg.firstElementChild ? rg.innerHTML : discOf(row.querySelector(".subject-label .peek-mark"), rv.s);
+          return rg && rg.firstElementChild ? rg.innerHTML : "";
         }(),
         target: row.getAttribute("data-open")
       });

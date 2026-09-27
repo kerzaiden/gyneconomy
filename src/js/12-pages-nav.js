@@ -304,6 +304,20 @@
       row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
       var face = document.createElement("div"); face.className = "subject-summary";
       while (sum.firstChild) face.appendChild(sum.firstChild);   // moved, so every id inside it survives
+      /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that we
+         talked about." Twelve of thirteen already were; Fear was blank. Its umbrella is written onto the label
+         by renderFearCurve, the way Horizon's sunrise is \u2014 but that runs against the markup row, and by the
+         time the ROSTER is built this converter has moved those children once already, so whichever list is
+         built second gets a row whose label was never touched. Which one that is depends on build order, which
+         is why Horizon looked fine and Fear did not.
+         The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
+         reach any list without it, and a label that already carries its glyph is left exactly as it is. */
+      (function(){
+        var MARK = { yield:gaugeSvg, horizon:sunriseSvg, sentiment:umbrellaSvg };
+        var lab = face.querySelector(".subject-label");
+        if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
+          lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
+      })();
       row.appendChild(face);
       var sheet = document.createElement("div");
       sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
@@ -1480,12 +1494,17 @@
         metric:rv.v, unit:rv.u,
         word:rv.w || say, state:rv.s,
         icon:(function(){
-          // Sentiment already has a mark — its own Fear & Greed gauge, sitting bare in the ring rather than in a
-          // disc — so the row arrives here wearing what it wears in the list. Only a row with an empty ring
-          // (Pressure, whose card hides it) has one built from the mark on its card.
+          /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that
+             we talked about." Twelve of thirteen rows wore their reading's glyph in a tinted disc; Fear wore
+             its curve gauge instead, because this preferred a .subject-ring with anything in it over the mark
+             on the label \u2014 and Fear is the only row that owns a ring. So the one reading with a picture was
+             the one reading without an icon, in a list whose whole job is to be scannable by icon.
+             The MARK comes first now and the ring is the fallback, which is the order every other list in the
+             app uses. Fear keeps its ring where a ring belongs: on the Mood page, as that row's preview. */
+          var mk = row.querySelector(".subject-label .peek-mark");
+          if (mk) return discOf(mk, rv.s);
           var rg = row.querySelector(".subject-ring");
-          return rg && rg.firstElementChild ? rg.innerHTML
-               : discOf(row.querySelector(".subject-label .peek-mark"), rv.s);
+          return rg && rg.firstElementChild ? rg.innerHTML : "";
         })(),
         target:row.getAttribute("data-open")
       });

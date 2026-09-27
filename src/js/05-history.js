@@ -22,7 +22,7 @@
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
     "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
-    "volume-range":            { mark:speakerSvg, title:"M2 money stock, YoY" },
+    "volume-range":            { mark:volumeSvg,  title:"M2 money stock, YoY" },
     "pulse-range":             { mark:ecgSvg,     title:"Velocity of money (M2)" },
     "hzn-range":               { mark:sunriseSvg,
                                  title:function(){ return "10-year minus " +
