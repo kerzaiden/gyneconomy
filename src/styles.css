@@ -1824,7 +1824,16 @@
      the cycle dropdown) is a row you scan and tap to change the view; an ACTION button (Trend, More details) is a
      thing you press. They were already 34 and 40 by accident; they are 34 and 40 on purpose now, and the trend
      pill \u2014 which V427 shrank to 34 on the selector token \u2014 belongs to the second family. */
-  :root{ --ctl-h:34px; --btn-h:40px; }
+  /* V580, Keren: "the date picker bar is very small to my fingers on an iPhone and I have very small fingers.
+     So we need to make this a bit larger so I can click on it comfortably and maybe we can use the proportions
+     of the trend button." Measured at 390px before changing anything: the bar was 34 but the thing a finger
+     actually hits is the SEGMENT, and that was 26 \u00d7 60 \u2014 two pixels past WCAG 2.5.8's 24px floor and
+     nowhere near Apple's 44. V428 split the two families at 34 and 40 on a real argument, a selector being a row
+     you scan against a button you press; she has now aimed the selector at the button's number, so the split is
+     retired and there is one height again. --ctl-h feeds every segmented control in the app \u2014 the history
+     bars, the indicators tabs, the spread toggle, the series bar \u2014 so all of them grow together, which is the
+     point: a 26px target was not a history problem. */
+  :root{ --ctl-h:40px; --btn-h:40px; }
   /* the series bar carries more segments than the mode or range bars, so its type is a notch smaller and it is
      allowed to scroll rather than wrap \u2014 a control that wraps to two lines stops reading as one control. */
   .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
@@ -2070,6 +2079,20 @@
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
+  /* V580: the bar is 40 now, so a segment's BOX is 32 \u2014 40 less the 1px border and the 3px inset that makes
+     the chosen segment read as a chip inside a track. Those four pixels are recovered as hit surface rather than
+     spent on the page's height: the segment answers taps across the inset and the border, so its target is
+     exactly the bar's 40, which is exactly the trend button's 40. Not one visible pixel moves.
+     Sideways it stays at zero. Growing it would cross the 3px gap into the neighbouring segment and turn a
+     mis-tap into a wrong reading \u2014 and a segmented control is already wide; height was the whole complaint.
+     It reaches 40 on every bar but one. `overflow` clips at the PADDING box, so the series bar \u2014 the only
+     .rangebar that scrolls \u2014 cannot hand a segment the pixel under its border, and lands on 38. That is a
+     ceiling, not a choice: no scrolling bar can do better, and no CSS gives one axis scroll and the other reach.
+     An earlier pass overhung two pixels PAST the bar to buy 44 and was clipped to the same 38 there, so the
+     difference is the scroll box either way. 38 against 40 is two pixels of an invisible surface on a control
+     that is not the date picker; taking the two pixels off the other ten to match it would be the worse trade. */
+  .range-seg{ position:relative; }
+  .range-seg::after{ content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px; }
   .hist-bar .cycsel-btn{ padding-top:0; padding-bottom:0; }
   /* "Current cycle  2022–today  ⌄" wants 218px and the picker has 217, so it wrapped to two lines and then
      overflowed a control that had just been given a fixed height. Both halves are fixed here rather than one:

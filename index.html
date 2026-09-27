@@ -1196,7 +1196,7 @@
   .metric-sheet .subject-context{ margin:14px 0 0; }
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
 
-  :root{ --ctl-h:34px; --btn-h:40px; }
+  :root{ --ctl-h:40px; --btn-h:40px; }
 
   .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
   .seriesbar::-webkit-scrollbar{ display:none; }
@@ -1309,6 +1309,9 @@
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
+
+  .range-seg{ position:relative; }
+  .range-seg::after{ content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px; }
   .hist-bar .cycsel-btn{ padding-top:0; padding-bottom:0; }
 
   .hist-bar .cycsel-btn{ padding-left:12px; padding-right:12px; gap:8px; white-space:nowrap; }
