@@ -503,7 +503,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -595,7 +595,7 @@
   function householdsChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
@@ -670,7 +670,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -788,7 +788,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -853,7 +853,7 @@
   function m2GrowthChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;   // LEG: the legend strip inside the frame, at its head (V556, moved V557)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);

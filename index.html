@@ -989,7 +989,7 @@
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
 
-  .vh-host{ margin:0 0 2px; }
+  .vh-host{ margin:15px 0 2px; }
 
   .folded-sign{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin-top:var(--gap); padding:16px 16px 20px; }
@@ -1002,7 +1002,7 @@
 
   .detail-modal .head-mark{ display:none; }
 
-  .vh-svg{ display:block; width:100%; height:auto; margin:0 0 2px; overflow:visible; }
+  .vh-svg{ display:block; width:100%; height:auto; margin:15px 0 2px; overflow:visible; }
 
   .m2-col{ fill:none; stroke-linecap:round; }
   .m2-col.v0{ stroke:color-mix(in srgb, var(--critical) 30%, var(--surface)); }
@@ -1230,7 +1230,7 @@
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
 
-    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:12px 0 0;
+    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:20px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
 
@@ -1332,13 +1332,13 @@
   .cycsel-nm{ font-weight:600; }
 
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
-  .page-chart .dchart{ margin:0; }
+  .page-chart .dchart{ margin:15px 0 0; }
 
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:0 0 2px; }
+  .dchart{ margin:15px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
 
   .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
@@ -1560,7 +1560,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin: 0 -6px 4px; }
+  .chart-shell{ position:relative; margin:15px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
 
   .curve-dot{ fill:var(--accent); }
@@ -7721,7 +7721,7 @@
   function deficitChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -9078,7 +9078,7 @@
   function velocityHistoryChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
@@ -9168,7 +9168,7 @@
   function desireHistoryChart(Wpx, from) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     var sc = windowScale(ser, [ 0, HY_NORM_LO ]);
@@ -9610,7 +9610,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -9716,7 +9716,7 @@
   function householdsChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
@@ -9803,7 +9803,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -9929,7 +9929,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -10024,7 +10024,7 @@
   function m2GrowthChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 38;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -10687,7 +10687,7 @@
       var lab = xLabelOf(o, d, i, o.vals);
       if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + .5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + lab + "</text>");
+      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + "</text>");
     });
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
     lastHistGeom = {
@@ -10733,7 +10733,8 @@
     R: 6,
     T: 10,
     LEG: 20,
-    RAIL: 5
+    RAIL: 5,
+    FOOT: 8
   };
   function chartAxes(o) {
     var out = [], ticks = o.ticks;
@@ -10800,7 +10801,7 @@
       var lab = xLabelOf(o, d, i, o.vals);
       if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + .5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + lab + "</text>");
+      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + "</text>");
     });
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
     lastHistGeom = {
@@ -12307,7 +12308,7 @@
           }), svg.firstChild);
           var xl = el("text", {
             x: x(i),
-            y: H - 6,
+            y: H - AXIS.FOOT,
             class: "bt-xl",
             "text-anchor": "middle"
           });
@@ -12702,7 +12703,7 @@
         var m = d.q.match(/^(\d{4}) Q1$/);
         if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1) {
           var xp = x(i, data.length);
-          xMarks += vGrid(xp, yTop, yBot) + '<text class="bt-xl" x="' + xp.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + m[1] + "</text>";
+          xMarks += vGrid(xp, yTop, yBot) + '<text class="bt-xl" x="' + xp.toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + m[1] + "</text>";
         }
       });
       appendSvgMarkup(svg, xMarks);

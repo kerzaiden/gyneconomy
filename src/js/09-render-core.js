@@ -472,7 +472,7 @@
         if (m && xLabelYears.indexOf(parseInt(m[1],10)) !== -1){
           svg.insertBefore(el("path", { class:"bt-vgrid",
             d:"M" + x(i).toFixed(1) + "," + padT + "L" + x(i).toFixed(1) + "," + (H - padB) }), svg.firstChild);
-          var xl = el("text", {x:x(i), y:H - 6, class:"bt-xl", "text-anchor":"middle"});
+          var xl = el("text", {x:x(i), y:H - AXIS.FOOT, class:"bt-xl", "text-anchor":"middle"});
           xl.textContent = m[1];
           svg.appendChild(xl);
         }

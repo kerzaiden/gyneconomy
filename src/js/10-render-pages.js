@@ -116,7 +116,7 @@
         if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1){
           var xp = x(i, data.length);
           xMarks += vGrid(xp, yTop, yBot) +
-            '<text class="bt-xl" x="' + xp.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' +
+            '<text class="bt-xl" x="' + xp.toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' +
             m[1] + '</text>';
         }
       });

@@ -642,7 +642,7 @@
     o.vals.forEach(function(d, i){
       var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + 0.5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + lab + '</text>');
+      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + '</text>');
     });
     // Version 408: these two place their readings in SLOTS rather than at X(i), so the geometry they publish
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
@@ -748,8 +748,13 @@
      than passed in twelve times.
      Version 563 gave the rail an edge; Version 564 gives the edge air. L is 37 because the rail itself is 32 —
      enough for "100%" — and the last five are the gap Keren asked for between that line and the first column,
-     so the rule is not something the leftmost bar leans against. */
-  var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5 };
+     so the rule is not something the leftmost bar leans against. 
+     Version 573 adds FOOT: what is left under the x-axis labels before the picture ends. It was three different
+     numbers — 21 on the eight histories that set B from H, 6 on the two here and 6 again on Horizon and
+     Pressure — so the gap between the chart and the trend pill below it came out at 31px on some pages and 16
+     on others. Keren: "I want 25 pixels between the title and the chart, and the same to the trend button, so
+     it's symmetrical." One number here, one margin on the pill, and every page measures the same. */
+  var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -840,7 +845,7 @@
     o.vals.forEach(function(d, i){
       var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + 0.5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle">' + lab + '</text>');
+      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + '</text>');
     });
     // Version 408: these two place their readings in SLOTS rather than at X(i), so the geometry they publish
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
