@@ -627,21 +627,38 @@
   .tab-btn.active{ background:var(--surface); color:var(--accent-ink); border:1px solid var(--border); margin:-1px; }
   .tab-btn.active svg{ opacity:1; }
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
-  /* Phones: the tab bar leaves the header and becomes a floating bottom pill, the way Clue's own app navigates
-     (Keren, Sep 19, 2026, with a screenshot): fixed above the home indicator, translucent and blurred, the active
-     tab's icon sitting in a round accent chip with its label lit. The page gets bottom padding so nothing hides
-     behind it; the modal backdrop (z-index 80) still covers it. */
+  /* Phones: the tab bar leaves the header and sits on the bottom EDGE of the screen, as the top bar sits on the
+     top one (Keren, Sep 27, 2026: "the bottom menu bar is hovering over the content. I want it to look like the
+     top bar, meaning it comes from the bottom of the screen and you don't see what's going on behind it").
+
+     It was a floating pill until Version 550 — inset 14px from each side and lifted 12px off the bottom, which
+     is what put content in the gutters beside it and made it read as hovering. The two bars are the same kind of
+     thing, the app's chrome, so they get one treatment: full width, flush to their edge, the page's own colour at
+     86% behind a 14px blur, and a single hairline on the edge that faces the page. The only difference is which
+     edge that is — the top bar borders its bottom, this one borders its top.
+
+     The safe-area inset moves INSIDE the padding rather than lifting the bar off the edge, so the bar still
+     reaches the bottom of the screen on a phone with a home indicator and its buttons sit above it.
+     The page gets bottom padding so nothing hides behind it; the modal backdrop (z-index 80) still covers it. */
   @media (max-width:640px){
     .tabbar{
-      position:fixed; left:14px; right:14px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:40; margin:0;
-      border-radius:var(--radius); padding:6px 8px; gap:0;
-      background:var(--surface); border:1px solid var(--border-strong); /* solid, no shadow (the DSM, Version 197; blurred and shadowed before) */
+      position:fixed; left:0; right:0; bottom:0; z-index:40; margin:0;
+      border-radius:0; padding:6px 20px calc(6px + env(safe-area-inset-bottom, 0px)); gap:0;
+      background:color-mix(in srgb, var(--page) 86%, transparent);
+      -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+      border:0; border-top:1px solid var(--border);
     }
+    /* The bar's height, MEASURED (72px at 390, 414 and 430 — it is content-driven, not set), so the page's
+       bottom padding below can be written from it rather than from a second magic number that drifts out of
+       step with it. Re-measure if the icons, the labels or the bar's padding change. The safe-area inset is
+       added on top because it lives inside the bar's own padding and so is not part of this figure. */
+    .tabbar{ --tabbar-h:72px; }
     .tab-btn{ padding:2px 0 5px; gap:2px; border-radius:var(--radius); font-size:11px; font-weight:600; color:var(--text-muted); }
     .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; } /* the label in primary text; only the chip is purple (the DSM) */
     .tab-btn.active svg{ background:var(--accent-wash); }
-    .wrap{ padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)); }
+    /* clear the bar, plus one --gap of air, plus whatever the home indicator takes */
+    .wrap{ padding-bottom:calc(72px + var(--gap) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
