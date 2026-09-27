@@ -277,10 +277,21 @@
     plate.classList.remove("compact");
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
     if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
-    // inset from the plot's own ends, so the resting plate sits inside the picture rather than in its corner
-    // (V565: the right inset comes back to 5 — 10 read as a margin rather than as breathing room)
-    var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 5;
-    var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
+    /* Version 575, Keren: "on the left edge bar I want the tooltip to align to the left, and on the right edge
+       bar to align to the right, so it looks symmetrical." The plate is centred on its column until the column
+       runs out of room, and then it stops against the FRAME — inset by the same 6px the legend is inset by, so
+       the three things that live at the edges of this picture all sit on one line. It was the plot's ends
+       before, inset 10 on one side and 5 on the other, which is neither edge and not symmetrical either. */
+    var fx0 = fr ? parseFloat(fr.getAttribute("x")) : g.L;
+    var fx1 = fr ? fx0 + parseFloat(fr.getAttribute("width")) : g.R;
+    var lo = (sb.left - eb.left) + (fx0 + 6) * scale, hi = (sb.left - eb.left) + (fx1 - 6) * scale;
+    /* The two end columns anchor to the frame rather than centring on themselves: the reading for the first
+       column starts where the picture starts, the reading for the last ends where it ends. Everything between
+       is centred on its own column. Keren asked for exactly this, and it is what makes the two ends look like
+       a pair rather than like two different accidents of where a column happened to fall. */
+    var mx = i === 0 ? lo
+           : i === g.n - 1 ? hi - w
+           : Math.max(lo, Math.min(hi - w, colX - w / 2));
     el.style.top = plateTop.toFixed(1) + "px";
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
@@ -418,7 +429,11 @@
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
       var x = (e.clientX - box.left) / scale;
-      if (x < g.L || x > g.R){ hide(); return; }
+      /* V575: a column owns its whole slot, not just the pixel its centre falls on. g.L is the FIRST column's
+         centre and g.R the last's, so bounding the hover by them left the outer half of each end column
+         unhoverable — land a hair to the left of the first bar and the readout went home. */
+      var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
+      if (x < g.L - hPad || x > g.R + hPad){ hide(); return; }
       var i = Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1));
       i = Math.max(0, Math.min(g.n - 1, i));
       var d = g.vals[i]; if (!d) return;

@@ -7545,8 +7545,10 @@
       plate.classList.add("compact");
       w = plate.offsetWidth;
     }
-    var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 5;
-    var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
+    var fx0 = fr ? parseFloat(fr.getAttribute("x")) : g.L;
+    var fx1 = fr ? fx0 + parseFloat(fr.getAttribute("width")) : g.R;
+    var lo = sb.left - eb.left + (fx0 + 6) * scale, hi = sb.left - eb.left + (fx1 - 6) * scale;
+    var mx = i === 0 ? lo : i === g.n - 1 ? hi - w : Math.max(lo, Math.min(hi - w, colX - w / 2));
     el.style.top = plateTop.toFixed(1) + "px";
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = mx.toFixed(1) + "px";
@@ -7678,7 +7680,8 @@
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
       var x = (e.clientX - box.left) / scale;
-      if (x < g.L || x > g.R) {
+      var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
+      if (x < g.L - hPad || x > g.R + hPad) {
         hide();
         return;
       }
