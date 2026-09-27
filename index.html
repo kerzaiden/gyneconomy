@@ -1603,6 +1603,9 @@
   .hovering .hcol.on{ opacity:1; }
   .hist-cross{ stroke:var(--text-primary); stroke-width:1; opacity:0; pointer-events:none; }
   .hovering .hist-cross{ opacity:0.3; }
+
+  .resting .hist-cross{ opacity:0.16; }
+  .hovering.resting .hist-cross{ opacity:0.3; }
   .gdp-tooltip{
     position:absolute; pointer-events:none; background:var(--text-primary); color:var(--surface);
     font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.5; padding:8px 10px; border-radius:var(--radius);
@@ -7516,10 +7519,21 @@
     var fmt = function(v) {
       return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "−");
     };
-    if (!d || d.v == null) {
-      el.classList.remove("on");
-      return;
+    var atRest = !d || d.v == null;
+    if (atRest) {
+      var vv = g.vals || [];
+      for (var k = vv.length - 1; k >= 0; k--) if (vv[k] && vv[k].v != null && isFinite(vv[k].v)) {
+        d = vv[k];
+        i = k;
+        break;
+      }
+      if (!d || d.v == null) {
+        el.classList.remove("on");
+        host.classList.remove("resting");
+        return;
+      }
     }
+    host.classList.toggle("resting", atRest);
     var lab = g.at(d, i), val = fmt(d.v);
     var plate = el.firstElementChild;
     if (!plate) return;
@@ -7537,6 +7551,12 @@
     }
     el.classList.add("on");
     var scale = sb.width / g.W || 1;
+    var cross = svg.querySelector(".hist-cross");
+    if (cross) {
+      var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
+      cross.setAttribute("x1", cx);
+      cross.setAttribute("x2", cx);
+    }
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
@@ -7678,12 +7698,6 @@
       if (col) {
         col.classList.add("on");
         host.__onCol = col;
-      }
-      var cross = svg.querySelector(".hist-cross");
-      if (cross) {
-        var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
-        cross.setAttribute("x1", cx);
-        cross.setAttribute("x2", cx);
       }
       histReadFill(host, d, i);
     });
@@ -10810,7 +10824,10 @@
       for (var v = Math.ceil(o.lo / step) * step; v <= o.hi + 1e-9; v += step) ticks.push(v);
     }
     var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
-    if (o.top != null && o.bot != null) out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' + (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
+    if (o.top != null && o.bot != null) {
+      out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' + (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
+      out.push('<path class="bt-grid" d="M' + o.x0 + "," + (+o.top).toFixed(1) + "L" + o.x0 + "," + (+o.bot).toFixed(1) + '"/>');
+    }
     ticks.forEach(function(v) {
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;

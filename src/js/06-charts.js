@@ -756,9 +756,16 @@
     // the frame runs to the card's own edges on both sides; the PLOT is inset inside it (Version 562)
     var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
     // the frame first, so every gridline and every mark is drawn over it
-    if (o.top != null && o.bot != null)
+    if (o.top != null && o.bot != null){
       out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' +
                (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
+      /* Version 563, Keren: "I want a dividing line between the numbers and the graph — maybe a solid grey
+         line, just like the horizontal one." The rail the numbers sit in had no edge, so the plot simply
+         began wherever the widest number happened to end. It is the same rule as a gridline, turned upright:
+         one token, one weight, and the rail reads as a column of the grid rather than as a margin. */
+      out.push('<path class="bt-grid" d="M' + o.x0 + ',' + (+o.top).toFixed(1) +
+               'L' + o.x0 + ',' + (+o.bot).toFixed(1) + '"/>');
+    }
     ticks.forEach(function(v){
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;

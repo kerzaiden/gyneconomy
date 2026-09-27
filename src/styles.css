@@ -2498,6 +2498,10 @@
   .hovering .hcol.on{ opacity:1; }
   .hist-cross{ stroke:var(--text-primary); stroke-width:1; opacity:0; pointer-events:none; }
   .hovering .hist-cross{ opacity:0.3; }
+  /* V563: the resting reading's thread down to its own bar — a sixth of the hover's weight, so it reads as
+     part of the picture rather than as a mark somebody left behind. A hover overrides it. */
+  .resting .hist-cross{ opacity:0.16; }
+  .hovering.resting .hist-cross{ opacity:0.3; }
   .gdp-tooltip{
     position:absolute; pointer-events:none; background:var(--text-primary); color:var(--surface);
     font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.5; padding:8px 10px; border-radius:var(--radius);

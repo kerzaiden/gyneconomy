@@ -206,10 +206,23 @@
        flow, in the band directly under the legend's strip, still sliding to the column it reads.
        The average is no longer computed here at all: the chart draws the line and the legend names it, which
        is the ONE NUMBER rule getting shorter rather than being restated. */
-    if (!d || d.v == null){
-      el.classList.remove("on");   // the words stay as they were, so the fade has something to fade
-      return;
+    /* Version 563, Keren: "maybe we should see as the default the latest figure of the CPI." At rest the plate
+       now reads the LAST column with a value, pinned over that column exactly as a hovered one is — which is
+       what a reader wants the chart to be saying before they touch it, and it is the page's own headline
+       figure rather than a summary of a window nobody asked about (the summary is what Version 560 removed).
+       A resting plate is not a hover, so the plot does not dim and the crosshair comes in at a sixth of its
+       strength: enough of a thread from the plate down to the bar to say which bar, not enough to read as a
+       reader's own mark. The newest bars are rarely at the top of their own scale, so the band under the
+       legend is usually the emptiest corner of the picture; where it is not, the plate's own surface covers
+       for it, the same as on a hover. */
+    var atRest = !d || d.v == null;
+    if (atRest){
+      var vv = g.vals || [];
+      for (var k = vv.length - 1; k >= 0; k--)
+        if (vv[k] && vv[k].v != null && isFinite(vv[k].v)){ d = vv[k]; i = k; break; }
+      if (!d || d.v == null){ el.classList.remove("on"); host.classList.remove("resting"); return; }
     }
+    host.classList.toggle("resting", atRest);
     var lab = g.at(d, i), val = fmt(d.v);
     /* Version 556, Keren: "average 3.3%, Fed target 2.0% — that never changes, so we don't need it in the
        changing tooltip." Version 486 put the reference values in here because the chart printed them
@@ -240,6 +253,13 @@
     if (!sb.width || !eb.width){ el.classList.remove("on"); return; }
     el.classList.add("on");
     var scale = sb.width / g.W || 1;
+    /* The crosshair is set here rather than in the hover handler, so the resting column and the hovered one
+       are marked by one piece of code and cannot disagree about where a column is (Version 563). */
+    var cross = svg.querySelector(".hist-cross");
+    if (cross){
+      var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
+      cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
+    }
     /* The band: directly under the legend's strip, so the two never meet however far right the reader
        scrubs. Measured off the frame the chart drew, like the legend's own inset. */
     var fr = svg.querySelector(".bt-frame");
@@ -392,11 +412,6 @@
       // anywhere else. `.hcol` is the one class every history adds to whatever it draws its readings with.
       var col = svg.querySelectorAll(".hcol")[i];
       if (col){ col.classList.add("on"); host.__onCol = col; }
-      var cross = svg.querySelector(".hist-cross");
-      if (cross){
-        var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
-        cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
-      }
       /* Version 486, Keren: "when I hover over a bar I also want to see the values of the purple line and the
          dashed purple line — in the default view I don't see their values, but on hover I can." So the chart
          stops printing its reference values permanently (the inline key is gone from both) and hands them to
