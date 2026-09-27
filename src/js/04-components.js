@@ -923,12 +923,6 @@
     var y1 = M2V_FROM_YEAR + Math.floor((m2vHistory.length - 1) / 4);
     // Every label that floats over the plot sits on a --surface plate (the Version 217 rule). This chart needs
     // it: the average's label lands directly on its own dashed line, and the 2020 low's lands beside the axis.
-    function plated(o, x, y, txt, anchorAt, cls){
-      var w = txt.length * 6.0 + 6, x0 = anchorAt === "end" ? x - w + 3 : x - 3;
-      o.push('<rect class="vh-plate" x="' + f(x0) + '" y="' + f(y - 9.5) + '" width="' + f(w) + '" height="13" rx="3"/>');
-      o.push('<text class="vh-note' + cls + '" x="' + f(x) + '" y="' + f(y) + '"' +
-        (anchorAt === "end" ? ' text-anchor="end"' : '') + '>' + txt + '</text>');
-    }
 
     // Pulse's readings never come near zero — velocity runs 1.1 to 2.2 — so the rule beneath is the frame,
     // not a zero anyone should measure from, the same distinction the diverging chart makes.
@@ -973,19 +967,18 @@
         pSw.toFixed(2) + '" d="M' + f(X(i)) + ',' + f(pMidY) + 'L' + f(X(i)) + ',' + f(y1) + '"/>');
     });
 
-    // the 2020 low is a fact about the whole record, so it is marked only when the window actually contains it
-    var iLowAll = m2vHistory.indexOf(Math.min.apply(null, m2vHistory)), iLow = iLowAll - from;
-    if (iLow >= 0 && iLow < n){
-      out.push('<circle class="vh-dot low" cx="' + f(X(iLow)) + '" cy="' + f(Y(ser[iLow])) + '" r="3.2"/>');
-      plated(out, X(iLow) - 6, Y(ser[iLow]) + 12, "2020 low " + ser[iLow].toFixed(2) + "\u00d7", "end", " low");
-    }
-
-    var iNow = n - 1;
-    out.push('<circle class="vh-dot now" cx="' + f(X(iNow)) + '" cy="' + f(Y(ser[iNow])) + '" r="3.6"/>');
+    /* Version 568: the marks that named the extremes and the latest point are gone. Keren, on Desire: "I'm
+       seeing now 2.73% in a white background — we don't need this. Also 4.61%, the highest point, we don't need
+       this. And another point that is marked but with no reason." All three were true, and the cause is that
+       the chart kept annotations written before it had a readout: the resting plate names the latest reading
+       over its own column (V563), the legend names the average (V556), and the range bar under the chart names
+       the window's high and low. What was left inside the plot was the same facts said a second time, plus one
+       dot with no label at all — the second extreme, whose plate had been dropped because it collided. Two
+       histories carried them and nobody else did, which is exactly the discrepancy Keren asked to stop finding
+       page by page. */
     var pvFit = trendOf(ser, "points", "quarter").fit;
     if (pvFit && pvFit.n > 1)
       out.push(fitGroup({ fit:pvFit, fmt:function(v){ return v.toFixed(2) + "\u00d7"; } }, X(0), X(n - 1), Y, R, L, 0));
-    plated(out, X(iNow) - 2, Y(ser[iNow]) - 9, "now " + ser[iNow].toFixed(2) + "\u00d7", "end", " now");
 
     return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
       'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
@@ -1026,12 +1019,6 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];
-    function plated(o, x, y, txt, anchorAt, cls){
-      var w = txt.length * 6.0 + 6, x0 = anchorAt === "end" ? x - w + 3 : x - 3;
-      o.push('<rect class="vh-plate" x="' + f(x0) + '" y="' + f(y - 9.5) + '" width="' + f(w) + '" height="13" rx="3"/>');
-      o.push('<text class="vh-note' + cls + '" x="' + f(x) + '" y="' + f(y) + '"' +
-        (anchorAt === "end" ? ' text-anchor="end"' : '') + '>' + txt + '</text>');
-    }
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG), bot:B,
       fmt:function(g){ return g.toFixed(1) + "%"; } }));
     /* Version 500: the shaded band goes with the line it was drawn for. It existed so a reader could see which
@@ -1054,7 +1041,9 @@
     lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n,
                      at:function(d, i){ return hyLabel(from + i); },
                      fmt:function(v){ return v.toFixed(2) + "%"; },
-                     refs:[{ label:"Average", v:hyAvg }],
+                     // .hy-avg, not the app's .temp-avg: this chart's average is drawn in the range bar's grey
+                     // by the Version 477 decision, and the legend's mark wears the line it names (V561)
+                     refs:[{ label:"Average", v:hyAvg, cls:"hy-avg" }],
                      vals:ser.map(function(v){ return { v:v }; }) };
     /* Version 477: the key went. The bar directly beneath this chart now names the band in the band's own
        colour, four centimetres away, so a key repeating it inside the plot was both duplication and a collision
@@ -1071,14 +1060,6 @@
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
         '" d="M' + f(X(i)) + ',' + f(Y(0)) + 'L' + f(X(i)) + ',' + f(Y(v)) + '"/>');
     });
-    // the two days the window turns on, marked where every other history marks its extremes
-    var iHi = ser.indexOf(Math.max.apply(null, ser)), iLo = ser.indexOf(Math.min.apply(null, ser));
-    out.push('<circle class="vh-dot low" cx="' + f(X(iHi)) + '" cy="' + f(Y(ser[iHi])) + '" r="3.2"/>');
-    plated(out, X(iHi) + 6, Y(ser[iHi]) - 8, ser[iHi].toFixed(2) + "%", "start", " low");
-    out.push('<circle class="vh-dot low" cx="' + f(X(iLo)) + '" cy="' + f(Y(ser[iLo])) + '" r="3.2"/>');
-    var iNow = n - 1;
-    out.push('<circle class="vh-dot now" cx="' + f(X(iNow)) + '" cy="' + f(Y(ser[iNow])) + '" r="3.6"/>');
-    plated(out, X(iNow) - 2, Y(ser[iNow]) + 15, "now " + ser[iNow].toFixed(2) + "%", "end", " now");
     return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
       'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
       ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';

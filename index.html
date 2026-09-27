@@ -1003,7 +1003,6 @@
   .detail-modal .head-mark{ display:none; }
 
   .vh-svg{ display:block; width:100%; height:auto; margin:0 0 2px; overflow:visible; }
-  .vh-plate{ fill:var(--surface); }
 
   .m2-col{ fill:none; stroke-linecap:round; }
   .m2-col.v0{ stroke:color-mix(in srgb, var(--critical) 30%, var(--surface)); }
@@ -1101,10 +1100,6 @@
   .vol-figures-head{ margin-top:var(--gap); }
   .m2-zero{ stroke:var(--text-muted); stroke-width:1; fill:none; }
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
-  .vh-note{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; fill:var(--accent-ink); }
-  .vh-note.low{ fill:var(--text-muted); } .vh-note.now{ fill:var(--text-primary); }
-  .vh-dot{ stroke:var(--surface); stroke-width:1.6; }
-  .vh-dot.low{ fill:var(--text-muted); } .vh-dot.now{ fill:var(--text-primary); }
   .page-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; }
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
@@ -1229,7 +1224,6 @@
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }
   .trend-on .temp-avg-label, .trend-on .avg-label,
   .trend-on .temp-range, .trend-on .temp-target-label{ opacity:0.3; }
-  .trend-on .vh-dot, .trend-on .vh-note, .trend-on .vh-plate{ opacity:0.3; }
   .trend-on .bt-track{ opacity:0.35; }
   .trend-on .bt-ref, .trend-on .dv-mid{ opacity:0.4; }
   .trend-on .bt-reflab, .trend-on .bt-end{ opacity:0.35; }
@@ -1437,7 +1431,7 @@
 
   .sign-detail > *:first-child{ margin-top:0; }
 
-  .metric-sheet > .sign-detail:first-child{ margin-top:0; }
+  .metric-sheet > .sign-detail:first-child{ margin-top:var(--gap-top); }
   .sign-detail .more-row{ margin-top:var(--gap); }
   .hi-cycles-head{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
@@ -9111,11 +9105,6 @@
     var out = [];
     var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
     var y1 = M2V_FROM_YEAR + Math.floor((m2vHistory.length - 1) / 4);
-    function plated(o, x, y, txt, anchorAt, cls) {
-      var w = txt.length * 6 + 6, x0 = anchorAt === "end" ? x - w + 3 : x - 3;
-      o.push('<rect class="vh-plate" x="' + f(x0) + '" y="' + f(y - 9.5) + '" width="' + f(w) + '" height="13" rx="3"/>');
-      o.push('<text class="vh-note' + cls + '" x="' + f(x) + '" y="' + f(y) + '"' + (anchorAt === "end" ? ' text-anchor="end"' : "") + ">" + txt + "</text>");
-    }
     out.push(chartAxes({
       ticks: sc.ticks,
       y: Y,
@@ -9176,13 +9165,6 @@
       if (Math.abs(y1 - pMidY) < .6) y1 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
       out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(pMidY) + "L" + f(X(i)) + "," + f(y1) + '"/>');
     });
-    var iLowAll = m2vHistory.indexOf(Math.min.apply(null, m2vHistory)), iLow = iLowAll - from;
-    if (iLow >= 0 && iLow < n) {
-      out.push('<circle class="vh-dot low" cx="' + f(X(iLow)) + '" cy="' + f(Y(ser[iLow])) + '" r="3.2"/>');
-      plated(out, X(iLow) - 6, Y(ser[iLow]) + 12, "2020 low " + ser[iLow].toFixed(2) + "×", "end", " low");
-    }
-    var iNow = n - 1;
-    out.push('<circle class="vh-dot now" cx="' + f(X(iNow)) + '" cy="' + f(Y(ser[iNow])) + '" r="3.6"/>');
     var pvFit = trendOf(ser, "points", "quarter").fit;
     if (pvFit && pvFit.n > 1) out.push(fitGroup({
       fit: pvFit,
@@ -9190,7 +9172,6 @@
         return v.toFixed(2) + "×";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    plated(out, X(iNow) - 2, Y(ser[iNow]) - 9, "now " + ser[iNow].toFixed(2) + "×", "end", " now");
     return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
   function desireHistoryChart(Wpx, from) {
@@ -9212,11 +9193,6 @@
       return v.toFixed(1);
     };
     var out = [];
-    function plated(o, x, y, txt, anchorAt, cls) {
-      var w = txt.length * 6 + 6, x0 = anchorAt === "end" ? x - w + 3 : x - 3;
-      o.push('<rect class="vh-plate" x="' + f(x0) + '" y="' + f(y - 9.5) + '" width="' + f(w) + '" height="13" rx="3"/>');
-      o.push('<text class="vh-note' + cls + '" x="' + f(x) + '" y="' + f(y) + '"' + (anchorAt === "end" ? ' text-anchor="end"' : "") + ">" + txt + "</text>");
-    }
     out.push(chartAxes({
       ticks: sc.ticks,
       y: Y,
@@ -9259,7 +9235,8 @@
       },
       refs: [ {
         label: "Average",
-        v: hyAvg
+        v: hyAvg,
+        cls: "hy-avg"
       } ],
       vals: ser.map(function(v) {
         return {
@@ -9273,13 +9250,6 @@
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(Y(0)) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
     });
-    var iHi = ser.indexOf(Math.max.apply(null, ser)), iLo = ser.indexOf(Math.min.apply(null, ser));
-    out.push('<circle class="vh-dot low" cx="' + f(X(iHi)) + '" cy="' + f(Y(ser[iHi])) + '" r="3.2"/>');
-    plated(out, X(iHi) + 6, Y(ser[iHi]) - 8, ser[iHi].toFixed(2) + "%", "start", " low");
-    out.push('<circle class="vh-dot low" cx="' + f(X(iLo)) + '" cy="' + f(Y(ser[iLo])) + '" r="3.2"/>');
-    var iNow = n - 1;
-    out.push('<circle class="vh-dot now" cx="' + f(X(iNow)) + '" cy="' + f(Y(ser[iNow])) + '" r="3.6"/>');
-    plated(out, X(iNow) - 2, Y(ser[iNow]) + 15, "now " + ser[iNow].toFixed(2) + "%", "end", " now");
     return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + " to " + hyLabel(hyOas.length - 1) + ", against the normal " + HY_NORM_LO + " to " + HY_NORM_HI + ' percent band">' + out.join("") + "</svg>";
   }
   var PBAR_GAP = 3;

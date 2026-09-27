@@ -1475,7 +1475,6 @@
      now, and Keren: "it has a big spacing between it and the grid … make like a 10 pixels gap." The whole gap
      is AXIS.T now — the plot's own top inset — so there is one number to tune rather than two stacked. */
   .vh-svg{ display:block; width:100%; height:auto; margin:0 0 2px; overflow:visible; }
-  .vh-plate{ fill:var(--surface); }
   /* Version 500: `.vh-line` is gone — no chart in this app draws a line any more. */
   /* the money-stock columns: one hue, and the side of zero is the reading (Version 306) */
   /* Version 311, Keren: "the chart in the Volume preview is not rounded in the corners like the rest of the
@@ -1672,10 +1671,6 @@
   .vol-figures-head{ margin-top:var(--gap); }
   .m2-zero{ stroke:var(--text-muted); stroke-width:1; fill:none; }
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
-  .vh-note{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; fill:var(--accent-ink); }
-  .vh-note.low{ fill:var(--text-muted); } .vh-note.now{ fill:var(--text-primary); }
-  .vh-dot{ stroke:var(--surface); stroke-width:1.6; }
-  .vh-dot.low{ fill:var(--text-muted); } .vh-dot.now{ fill:var(--text-primary); }
   .page-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; }
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
@@ -1872,7 +1867,6 @@
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }
   .trend-on .temp-avg-label, .trend-on .avg-label,
   .trend-on .temp-range, .trend-on .temp-target-label{ opacity:0.3; }
-  .trend-on .vh-dot, .trend-on .vh-note, .trend-on .vh-plate{ opacity:0.3; }
   .trend-on .bt-track{ opacity:0.35; }
   .trend-on .bt-ref, .trend-on .dv-mid{ opacity:0.4; }
   .trend-on .bt-reflab, .trend-on .bt-end{ opacity:0.35; }
@@ -2273,10 +2267,14 @@
   /* AFTER the rule above, not before: they weigh the same (0,2,0), so the general one would otherwise put the
      gap straight back on the first card. The Version 361 lesson, met here in my own two rules. */
   .sign-detail > *:first-child{ margin-top:0; }
-  /* ...and when the sign body is itself the first thing in the sheet, its own margin would stack a second gap
-     on the one the sheet already provides \u2014 32px to Pulse's first card instead of 16. On Temperature the
-     sign body follows a chart, so there it IS the gap and keeps it. */
-  .metric-sheet > .sign-detail:first-child{ margin-top:0; }
+  /* Version 385 zeroed this because the sheet provided the gap itself; it no longer does, and the four sign
+     pages whose body leads - Pulse, Desire, Activity and Volume - were opening with their control row hard
+     against the top bar while every other page had 15px. Keren, Sep 27, 2026: "there is no spacing between the
+     menu bar and the top menu ... if you don't have spacing between the top menu and the first element in the
+     page, fix it because it's a rule." It carries --gap-top now: the SAME token the control row itself uses on
+     every other page, so a page that opens on a sign and a page that opens on a chart open alike. The rule
+     above still zeroes whatever leads the body, so this is the whole gap rather than a second one. */
+  .metric-sheet > .sign-detail:first-child{ margin-top:var(--gap-top); }
   .sign-detail .more-row{ margin-top:var(--gap); }
   .hi-cycles-head{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
