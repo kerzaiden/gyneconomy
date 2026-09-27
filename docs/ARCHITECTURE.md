@@ -265,14 +265,14 @@ citation up a rung. One figure left that no machine can reach honestly, and it i
 
 ## Which copy is canonical
 
-The same material now lives in three places, each reachable by a different reader, and none of them
-can see all the others. Getting this wrong silently destroys work, so it is written down.
+**There is one copy of everything now (V547).** There used to be three, and the rule below was about
+keeping them from destroying each other.
 
-| Thing | Canonical copy | Who else holds one |
+| Thing | Where it lives | Who else holds one |
 |---|---|---|
-| The app | **The git repo's `src/`** — `index.html` is built from it | the published artifact, which should be byte-identical |
-| The docs | **The git repo** — `CLAUDE.md`, `docs/ARCHITECTURE.md` | the Mrs. Market project's `claude/CLAUDE-CODE.md` |
-| Version history | **Append-only, two writers** — see below | repo `docs/ARCHIVE.md` and project `claude/ARCHIVE.md` |
+| The app | **`src/`** — `index.html` is built from it | the published artifact, which should be byte-identical |
+| The docs | **`CLAUDE.md`, `docs/ARCHITECTURE.md`** | nobody |
+| Version history | **git, plus `docs/ARCHIVE.md`** — different jobs, see below | nobody |
 
 **The app: the repo wins now, and that is a change (V540/V541).** It used not to. The task used to
 republish the artifact's HTML nightly and could not write to the repo, so the repo's `index.html`
@@ -286,21 +286,27 @@ publish adds — a skeleton `<head>` before the document and a duplicated `</bod
 **Verified on V541: identical apart from that wrapper and V541's own lines.** If they differ any
 other way, something published from outside this repo, and that is a merge — never a `force`.
 
-**The docs: the repo wins, and mirroring runs ONE direction.** Edit `CLAUDE.md` and this file in the
-repo, then copy this file up to the project as `claude/CLAUDE-CODE.md` with `project_write`. Never
-the reverse. The project copy exists because a scheduled or cloud session can reach the project and
-cannot reach the repo; it is a read-only mirror for those readers, not a second original.
+**The docs: do not mirror them anywhere. That was retired in V547.** The Mrs. Market project used to
+carry copies of this file, `ARCHIVE.md`, `MAP.md` and the test suite, because a cloud or scheduled
+session could not reach a PRIVATE repo. **The repo is public**, so any session can fetch any of it
+from `raw.githubusercontent.com` with no credentials, and the copies were duplicates whose only
+possible future was going stale. They were deleted, and the project now holds one short pointer
+(`claude/README.md`) naming the raw URLs. **Do not recreate them.** If a session cannot reach the
+repo, give it a raw URL rather than a copy.
 
-**Version history is append-only, and that is why it has two copies.** The repo's `docs/ARCHIVE.md` is
-where a session writes; the project's `claude/ARCHIVE.md` is the copy a cloud or scheduled session can
-read, and the only one it could ever write. The weekly task no longer adds entries — it changes no
-source, so it has no version to record — but the append-only rule stands for whatever writes next.
-Entries are only ever added, never rewritten, so the two converge instead of fighting. If they
-disagree, take the union.
+**Version history lives in two places in the repo, and they are not the same thing.** **Git** is the
+record of what changed and why — a commit message here carries the reasoning, not just the diff, so
+`git log` is the version history in the strict sense. **`docs/ARCHIVE.md`** holds what was never a
+commit: retired figures, ideas that were tried and dropped, the superseded doc set, and the research
+the app was built from. The one-line-per-version list at its top does overlap git, and it earns its
+place by being readable in one pass; everything below it exists nowhere else. Entries are only ever
+added, never rewritten.
 
-**A cloud or scheduled session cannot reach the git repo. That is expected and is never a reason to
-stop.** No credentials exist outside Keren's own machine, and none should. A run that cannot see the
-repo carries on with the project copy and says so in one line of its report.
+**A cloud or scheduled session cannot PUSH to the git repo, and that is expected.** No credentials
+exist outside Keren's own machine, and none should. But it can READ every file, because the repo is
+public — `raw.githubusercontent.com/kerzaiden/gyneconomy/main/<path>` needs no credentials at all.
+So a session that needs this file, the archive, the map or the suite fetches it; it does not need a
+copy, and it should not ask for one.
 
 ## The two documents
 
@@ -615,7 +621,8 @@ the pipeline failing and the report must say so — it is not a gap for the task
 change it there too — with `update_trigger`, keeping the task's run history, never delete-and-recreate. A
 scheduled run starts a fresh session **not attached to the Mrs. Market project**, so `project_read` is
 unavailable to it: **never write a hard stop into a scheduled prompt that depends on a resource the run may
-not have.**
+not have.** What it can always reach is the public repo over plain HTTPS, which is how it gets
+`data/live.json` and how it would get any doc it needed.
 
 **A run that writes nothing must say why.** The old daily contract had a positive test it had to pass, because
 an instruction that lets an unattended task decide it has nothing to do will eventually be the reason it does
