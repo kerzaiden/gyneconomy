@@ -503,7 +503,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -518,7 +518,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     if (o.cycle){
       var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
@@ -595,19 +595,16 @@
   function householdsChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [0]);
-    /* Version 566: a fifth more room at the head than windowScale's own padding. This is the one history whose
-       reading cannot get out of its own way — the bars are near-uniform and nearly full height, so there is
-       nowhere above them for the plate to rise to, and its reading is two figures rather than one, which makes
-       the plate wide as well as tall. The rule that the plate clears the columns under it is the same on every
-       page; this chart is the one that has to be given the room to keep it. */
-    var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * 0.22;
+    // V574: the 22% this chart borrowed in V566 goes back — AXIS.READ reserves the plate's band on every
+    // history now, so no chart has to buy its own headroom
+    var LO = sc.lo, HI = sc.hi;
     var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));   // V567: half a slot in at each end, so a
       return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };  // mark can never cross the rail or the frame
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
@@ -615,7 +612,7 @@
     var out = [];
     var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
     var y1 = DSR_FROM_YEAR + Math.floor((hi - 1) / 4);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return g.toFixed(0) + "%"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
@@ -670,7 +667,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -691,7 +688,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0), avgShown = null;   // V427: the average's value, reported to the key under the chart
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     // Version 423: a cycle picks its own years rather than borrowing windowYears(), which chooses ROUND ones and
     // gave the ten-year Big Tech cycle exactly two labels, 2010 and 2015, with neither end of the cycle shown. Here
@@ -788,7 +785,7 @@
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -809,7 +806,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     // Version 431: a cycle names its own first and last year rather than the round ones windowYears picks
     if (o.cycle){
@@ -853,7 +850,7 @@
   function m2GrowthChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -874,7 +871,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [], zero = Y(0);
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;

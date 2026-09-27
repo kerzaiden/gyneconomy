@@ -989,7 +989,7 @@
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
 
-  .vh-host{ margin:15px 0 2px; }
+  .vh-host{ margin:10px 0 2px; }
 
   .folded-sign{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin-top:var(--gap); padding:16px 16px 20px; }
@@ -1002,7 +1002,7 @@
 
   .detail-modal .head-mark{ display:none; }
 
-  .vh-svg{ display:block; width:100%; height:auto; margin:15px 0 2px; overflow:visible; }
+  .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
 
   .m2-col{ fill:none; stroke-linecap:round; }
   .m2-col.v0{ stroke:color-mix(in srgb, var(--critical) 30%, var(--surface)); }
@@ -1230,7 +1230,7 @@
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
 
-    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:20px 0 0;
+    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
 
@@ -1332,13 +1332,13 @@
   .cycsel-nm{ font-weight:600; }
 
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
-  .page-chart .dchart{ margin:15px 0 0; }
+  .page-chart .dchart{ margin:10px 0 0; }
 
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:15px 0 2px; }
+  .dchart{ margin:10px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
 
   .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
@@ -1560,7 +1560,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin:15px -6px 4px; }
+  .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
 
   .curve-dot{ fill:var(--accent); }
@@ -1625,11 +1625,12 @@
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
 
-  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); }
+  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); white-space:nowrap; }
 
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
-             color:var(--text-primary); margin:0; }
-  .hr-plate.compact .hr-value{ font-size:15px; }
+             color:var(--text-primary); margin:0; white-space:nowrap; }
+
+  .hr-plate.compact .hr-value{ font-size:15px; line-height:1.467; }
   @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
@@ -7536,7 +7537,7 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    var railTop = sb.top - cp.top + (frTop + AXIS.LEG) * scale;
+    var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     plate.classList.remove("compact");
     var w = plate.offsetWidth;
@@ -7546,6 +7547,7 @@
     }
     var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 5;
     var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
+    el.style.top = plateTop.toFixed(1) + "px";
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = mx.toFixed(1) + "px";
     if (!plate.__placed) {
@@ -7553,14 +7555,6 @@
       plate.style.transition = "";
       plate.__placed = true;
     }
-    var pL = eb.left + mx, pR = pL + w, ph = plate.offsetHeight, topMost = Infinity;
-    Array.prototype.forEach.call(svg.querySelectorAll(".hcol"), function(c) {
-      var r = c.getBoundingClientRect();
-      if (r.height && r.right >= pL - 3 && r.left <= pR + 3 && r.top < topMost) topMost = r.top;
-    });
-    var comfy = railTop + 8 * scale, tight = railTop + 2 * scale;
-    var clear = topMost === Infinity ? comfy : topMost - cp.top - 5 - ph;
-    el.style.top = (clear >= comfy ? comfy : Math.max(tight, clear)).toFixed(1) + "px";
   }
   function histAxisEnds(svg, fr) {
     if (!fr || !svg.getBBox) return;
@@ -7721,7 +7715,7 @@
   function deficitChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -7761,7 +7755,7 @@
       x1: R,
       base: Y(0),
       noGridAt: 0,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(at) {
         return (at > 0 ? "+" : "") + (step < 1 ? at.toFixed(1) : Math.round(at)) + "%";
@@ -9078,7 +9072,7 @@
   function velocityHistoryChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
@@ -9102,7 +9096,7 @@
       x0: L,
       x1: R,
       base: B,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return g.toFixed(1) + "×";
@@ -9168,7 +9162,7 @@
   function desireHistoryChart(Wpx, from) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     var sc = windowScale(ser, [ 0, HY_NORM_LO ]);
@@ -9190,7 +9184,7 @@
       x0: L,
       x1: R,
       base: B,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return g.toFixed(1) + "%";
@@ -9610,7 +9604,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -9641,7 +9635,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
@@ -9716,14 +9710,14 @@
   function householdsChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * .22;
+    var LO = sc.lo, HI = sc.hi;
     var X = function(i) {
       var h = (R - L) / (2 * Math.max(1, n));
       return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
@@ -9743,7 +9737,7 @@
       x0: L,
       x1: R,
       base: B,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return g.toFixed(0) + "%";
@@ -9803,7 +9797,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -9830,7 +9824,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
@@ -9929,7 +9923,7 @@
     lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -9956,7 +9950,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
@@ -10024,7 +10018,7 @@
   function m2GrowthChart(Wpx, from, to) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -10049,7 +10043,7 @@
       x1: R,
       base: LO <= 0 && HI >= 0 ? Y(0) : B,
       noGridAt: 0,
-      top: T - AXIS.LEG,
+      top: T - AXIS.LEG - AXIS.READ,
       bot: B,
       fmt: function(g) {
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
@@ -10649,7 +10643,7 @@
   function reserveChart(o, W) {
     W = Math.max(280, W || 340);
     var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? .58 : .3))));
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
+    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
     var n = o.vals.length, slot = iw / n;
     var sw = Math.max(2.4, Math.min(9, slot * COL_FILL)), tw = sw + 3.4;
     function y(v) {
@@ -10664,7 +10658,7 @@
       x0: padL,
       x1: W - padR,
       base: y(0),
-      top: padT - AXIS.LEG,
+      top: padT - AXIS.LEG - AXIS.READ,
       bot: padT + ih,
       fmt: function(v) {
         return v + "%";
@@ -10734,7 +10728,8 @@
     T: 10,
     LEG: 20,
     RAIL: 5,
-    FOOT: 8
+    FOOT: 8,
+    READ: 61
   };
   function chartAxes(o) {
     var out = [], ticks = o.ticks;
@@ -10763,7 +10758,7 @@
   function divergeChart(o, W) {
     W = Math.max(280, W || 340);
     var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? .58 : .3))));
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
+    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d) {
       return d.v;
     });
@@ -10780,7 +10775,7 @@
       y: y,
       x0: padL,
       x1: W - padR,
-      top: padT - AXIS.LEG,
+      top: padT - AXIS.LEG - AXIS.READ,
       bot: padT + ih,
       base: padT + ih,
       skipNear: midY,
@@ -12148,7 +12143,7 @@
   }
   function renderPressurePage() {
     var svg = document.getElementById("ylm-svg");
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;
+    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
     var quarters = t3mYieldHistory.map(function(d) {
@@ -12253,7 +12248,7 @@
         y: y,
         x0: padL,
         x1: W - padR,
-        top: padT - AXIS.LEG,
+        top: padT - AXIS.LEG - AXIS.READ,
         bot: H - padB,
         base: y(0),
         noGridAt: 0,
@@ -12569,7 +12564,7 @@
   renderPressurePage();
   function renderSpreadHistory() {
     var svg = document.getElementById("spread-history-svg");
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;
+    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
@@ -12680,7 +12675,7 @@
       appendSvgMarkup(svg, chartAxes({
         x0: padL,
         x1: xR,
-        top: yTop - AXIS.LEG,
+        top: yTop - AXIS.LEG - AXIS.READ,
         bot: yBot,
         y: y,
         noGridAt: 0,

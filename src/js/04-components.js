@@ -265,7 +265,11 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    var railTop = sb.top - cp.top + (frTop + AXIS.LEG) * scale;
+    /* Version 574: ONE height, on every chart and in every window. Keren: "I don't want the height of the
+       tooltip to change." Version 566 had it rise when a column would reach it — correct, and still moving.
+       AXIS.READ now reserves the plate's whole band out of the plot, so nothing can enter it and the plate can
+       sit at a stated offset: 10px under the legend's strip, with 10px under the plate before the data begins. */
+    var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
     /* A reading that is two figures rather than one — Households prints what went out AND what was kept —
        runs the plate across most of the picture at 22px, and a plate that wide hides whatever it passes over
@@ -277,25 +281,12 @@
     // (V565: the right inset comes back to 5 — 10 read as a margin rather than as breathing room)
     var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 5;
     var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
+    el.style.top = plateTop.toFixed(1) + "px";
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
     plate.style.marginLeft = mx.toFixed(1) + "px";
     if (!plate.__placed){ void plate.offsetWidth; plate.style.transition = ""; plate.__placed = true; }
-    /* Version 566, Keren, on Growth: "the tooltip covers the Q1 2026 bar. So make a rule that the tooltip
-       can't hide the bars — it should be above the highest bar." The plate normally rides 8px clear of the
-       legend's strip, which reads best (V564: a card pressed against the strip above it reads as part of that
-       strip). When a column UNDER THE PLATE would reach into it, it gives that comfort back and rises as far
-       as the strip itself, which is as high as it can go. Only the columns the plate actually covers count —
-       the tallest bar on the other side of the chart is nobody's problem — so the plate stays where the
-       reading is and the picture keeps its full height on every page. */
-    var pL = eb.left + mx, pR = pL + w, ph = plate.offsetHeight, topMost = Infinity;
-    Array.prototype.forEach.call(svg.querySelectorAll(".hcol"), function(c){
-      var r = c.getBoundingClientRect();
-      if (r.height && r.right >= pL - 3 && r.left <= pR + 3 && r.top < topMost) topMost = r.top;
-    });
-    var comfy = railTop + 8 * scale, tight = railTop + 2 * scale;
-    var clear = topMost === Infinity ? comfy : (topMost - cp.top) - 5 - ph;   // the lowest top that still clears
-    el.style.top = (clear >= comfy ? comfy : Math.max(tight, clear)).toFixed(1) + "px";
+
   }
   /* Version 556. The reference legend: one line per reference, in the strip AXIS.LEG opened inside the frame
      under the plot, laid out from the right so it ends on the plot's right edge — Keren: "a very gentle legend
@@ -487,7 +478,7 @@
   function deficitChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -521,7 +512,7 @@
     var defTicks = [];
     for (var g = Math.ceil(LO / step) * step; g <= HI + 1e-9; g += step)
       defTicks.push(Math.abs(g) < 1e-9 ? 0 : g);
-    out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(at){ return (at > 0 ? "+" : "") + (step < 1 ? at.toFixed(1) : Math.round(at)) + "%"; } }));
     // the smallest year step whose labels still fit the width
     var steps = [1, 2, 5, 10, 20, 25], yrStep = 25, si, yy, cnt;
@@ -912,7 +903,7 @@
   function velocityHistoryChart(Wpx, from, to){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     // The 1959\u20132007 average is ALWAYS inside the scale, at every stop. That is the whole reading of this chart
@@ -932,7 +923,7 @@
 
     // Pulse's readings never come near zero — velocity runs 1.1 to 2.2 — so the rule beneath is the frame,
     // not a zero anyone should measure from, the same distinction the diverging chart makes.
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return g.toFixed(1) + "\u00d7"; } }));
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - M2V_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
@@ -1005,7 +996,7 @@
   function desireHistoryChart(Wpx, from){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     // the typical band is ALWAYS inside the scale (the Version 358 rule): a window that cropped it away would
@@ -1025,7 +1016,7 @@
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];
-    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG), bot:B,
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return g.toFixed(1) + "%"; } }));
     /* Version 500: the shaded band goes with the line it was drawn for. It existed so a reader could see which
        SIDE of the band the line was on; a column coloured by the band says that and how far, one reading at a

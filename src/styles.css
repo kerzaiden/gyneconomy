@@ -1453,7 +1453,7 @@
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
   /* V561 pulled the host left so the frame would clear the gutter; V562 makes the FRAME itself run to the
      card's edges instead, so the host sits square again and the grid is symmetric without a nudge. */
-  .vh-host{ margin:15px 0 2px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
+  .vh-host{ margin:10px 0 2px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
   /* a sign folded into another sign's page (Version 306): a section, not a box \u2014 the page it joins is flat */
   /* Version 346: a folded sign is a card, not a footnote under a rule \u2014 it is a reading of its own that
      happens to live on another reading's page, and the page reads as two things because it is two things. */
@@ -1474,7 +1474,7 @@
      readout above it was a three-line block with a reference row that came and went; it is a two-line plate
      now, and Keren: "it has a big spacing between it and the grid … make like a 10 pixels gap." The whole gap
      is AXIS.T now — the plot's own top inset — so there is one number to tune rather than two stacked. */
-  .vh-svg{ display:block; width:100%; height:auto; margin:15px 0 2px; overflow:visible; }
+  .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
   /* Version 500: `.vh-line` is gone — no chart in this app draws a line any more. */
   /* the money-stock columns: one hue, and the side of zero is the reading (Version 306) */
   /* Version 311, Keren: "the chart in the Volume preview is not rounded in the corners like the rest of the
@@ -1879,7 +1879,7 @@
        rounded on the corners … a rounded button would be more clear." It is the shape this app already gives
        every control the reader can press — the window switcher above the chart, the cycle picker — so the one
        pressable thing under the chart now looks like the pressable things over it. */
-    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:20px 0 0;
+    border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;   /* V428: an action button, the same height as More details */
     width:100%; text-align:left; font:inherit; }
   /* V572: nothing to report. An outline instead of the wash, and the whole row in muted ink — the shape Apple
@@ -2105,7 +2105,7 @@
      came out at 4.48 light and 4.19 dark — under the 4.5 floor this design system sets for itself.
      Secondary keeps the year quieter than the cycle name beside it, which is the hierarchy. */
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
-  .page-chart .dchart{ margin:15px 0 0; }   /* V497, as .vh-host */
+  .page-chart .dchart{ margin:10px 0 0; }   /* V497, as .vh-host */
   /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
   /* V571: the 14 this container added under the pill was its own bottom padding in disguise, put here because
      the box's padding ended at 4. The box pads 14 on all four sides now and the pill closes at 0 — in ITS own
@@ -2117,7 +2117,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:15px 0 2px; }   /* V558/V559, as .vh-svg */
+  .dchart{ margin:10px 0 2px; }   /* V558/V559, as .vh-svg */
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
   /* the pair (Version 267): the gap is the mark, so it gets the weight; the two ends are the dial's own disc, hollow
      for the reading being measured against and cored for the one being measured */
@@ -2452,7 +2452,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin:15px -6px 4px; }   /* V497, as .vh-host */
+  .chart-shell{ position:relative; margin:10px -6px 4px; }   /* V497, as .vh-host */
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
   /* .curve-dot/.curve-dot.end — the spread-history chart's hover dot */
   .curve-dot{ fill:var(--accent); }
@@ -2583,13 +2583,16 @@
      what made the date look bigger was that it was set in caps with tracking, and caps at a size read taller
      than lowercase at the same size. It is the legend's own line now, to the letter: same face, same size,
      same case, same ink. They are the two small labels on one picture and should not disagree. */
-  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); }
+  .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); white-space:nowrap; }
   /* V559, Keren: "the number is too big." 29px was the size of a card's own headline figure, which is what
      this block was when it described the window and nothing else; as a plate that rides a column it is a
      reading, and a reading answers to the chart rather than competing with it. */
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
-             color:var(--text-primary); margin:0; }
-  .hr-plate.compact .hr-value{ font-size:15px; }   /* V566: a two-figure reading steps down rather than spreading */
+             color:var(--text-primary); margin:0; white-space:nowrap; }   /* V574: one line, so the plate is one height */
+  /* V566: a two-figure reading steps down rather than spreading. V574 keeps its LINE BOX at 22px while the
+     glyphs shrink, so a stepped-down plate is exactly as tall as every other one — Keren: "I don't want the
+     height of the tooltip to change." */
+  .hr-plate.compact .hr-value{ font-size:15px; line-height:1.467; }
   @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
