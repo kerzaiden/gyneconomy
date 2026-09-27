@@ -10,8 +10,10 @@
      of years — today's 1.42x against the 1.857x she averaged from 1959 to 2007 — because without a reference
      "seven beats" says nothing at all.
 
-     NB: pulseSvg() is already taken — it is the sign's heartbeat ICON. A second declaration of that name in
-     this scope would silently win and the icon would vanish, so the trace is pulseTraceSvg(). */
+     NB: the name pulseSvg() is free again — V586 gave Pulse's head the ECG its own reading already wore and
+     the heart had no caller left — but the trace stays pulseTraceSvg(), because the hazard the old note
+     named is real: two declarations of one name in this scope means the later one silently wins, with no
+     error, which is how a second boltSvg nearly shipped in V585. Explicit names are the cheap defence. */
   // PULSE_WINDOW and PULSE_PRE2008 are declared once, with the Pulse chart that first needed them
   // (search `var PULSE_WINDOW`). They were declared a second time here, with the same values, until
   // Version 529: same scope, so the file held one number in two places — the thing ONE FIGURE /
@@ -217,11 +219,6 @@
   // Pulse — velocity of money. A heart (Version 301, Keren), where it was an ECG squiggle before. The squiggle
   // had become a problem of its own making: since Version 297 the page draws a real trace, so the ICON was a
   // miniature of the picture below it rather than a name for the subject. A heart names the subject and leaves
-  // the trace to be the reading — and it is what Apple Health puts beside Heart Rate, which is where this came
-  // from. Drawn as an outline at 1.8, like every other mark here; no interior detail, so it survives 15px.
-  function pulseSvg(){ return markSvg('<path d="M12 20.4C12 20.4 3.4 15.3 3.4 9.5C3.4 6.6 5.7 4.5 8.3 4.5' +
-    'C10.1 4.5 11.4 5.5 12 6.6C12.6 5.5 13.9 4.5 15.7 4.5C18.3 4.5 20.6 6.6 20.6 9.5C20.6 15.3 12 20.4 12 20.4Z"' +
-    ' stroke-width="1.8"/>'); }
   // Temperature — inflation. A thermometer, with the mercury heavier than the glass so it carries at 25px.
   function thermoSvg(){ return markSvg(
     '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +

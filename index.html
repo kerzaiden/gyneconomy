@@ -9319,7 +9319,7 @@
       title: "Real GDP, YoY"
     },
     "sheet-sign-activity": {
-      mark: ecgSvg,
+      mark: trendUpSvg,
       title: "Unemployment rate"
     },
     "sheet-metric-power": {
@@ -9343,7 +9343,7 @@
       title: "M2 money stock, YoY"
     },
     "pulse-range": {
-      mark: pulseSvg,
+      mark: ecgSvg,
       title: "Velocity of money (M2)"
     },
     "hzn-range": {
@@ -11245,9 +11245,6 @@
       teeth += '<path d="M' + (12 + 7 * Math.cos(a)).toFixed(2) + " " + (12 + 7 * Math.sin(a)).toFixed(2) + "L" + (12 + 9.6 * Math.cos(a)).toFixed(2) + " " + (12 + 9.6 * Math.sin(a)).toFixed(2) + '"/>';
     }
     return markSvg('<g stroke-width="2.5">' + teeth + '</g><circle cx="12" cy="12" r="6.4" stroke-width="1.7"/><circle cx="12" cy="12" r="2.4" stroke-width="1.7"/>');
-  }
-  function pulseSvg() {
-    return markSvg('<path d="M12 20.4C12 20.4 3.4 15.3 3.4 9.5C3.4 6.6 5.7 4.5 8.3 4.5' + 'C10.1 4.5 11.4 5.5 12 6.6C12.6 5.5 13.9 4.5 15.7 4.5C18.3 4.5 20.6 6.6 20.6 9.5C20.6 15.3 12 20.4 12 20.4Z"' + ' stroke-width="1.8"/>');
   }
   function thermoSvg() {
     return markSvg('<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' + '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>');

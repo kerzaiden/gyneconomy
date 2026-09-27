@@ -10,14 +10,20 @@
   var HIST_HEAD = {
     "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI, YoY" },
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP, YoY" },
-    "sheet-sign-activity":     { mark:ecgSvg,     title:"Unemployment rate" },
+    /* V586, Keren: "use the same icon as the pulse icon in the circulation page" \u2014 and the reason it was
+       wrong here is that two heads had swapped glyphs. signMarks is where each reading's mark is decided
+       (Pulse:ecgSvg, Activity:trendUpSvg), and this map had Activity wearing the ECG and Pulse wearing the
+       heart. So the trace that means a heartbeat sat on the labour market, and Pulse \u2014 the heartbeat itself
+       \u2014 sat under a heart it shares with nothing else. Each head wears its own reading's mark now, which is
+       the only rule this map should ever have followed. */
+    "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment rate" },
     "sheet-metric-power":      { mark:boltSvg,
                                  title:"Power supply" },   // V579: "one charge per year" is what the x axis says
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
     "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
     "volume-range":            { mark:speakerSvg, title:"M2 money stock, YoY" },
-    "pulse-range":             { mark:pulseSvg,   title:"Velocity of money (M2)" },
+    "pulse-range":             { mark:ecgSvg,     title:"Velocity of money (M2)" },
     "hzn-range":               { mark:sunriseSvg,
                                  title:function(){ return "10-year minus " +
                                    (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread"; },
