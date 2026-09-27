@@ -1229,7 +1229,7 @@
   .trend-on .bt-reflab, .trend-on .bt-end{ opacity:0.35; }
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 2px;
+    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
   .trendpill.can-toggle{ cursor:pointer; transition:background 0.14s; }
@@ -1254,6 +1254,8 @@
 
   .page-chart{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 0; margin:var(--gap) 0 0; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+
+  .page-chart > *:last-child, .spread-history > *:last-child{ margin-bottom:0; }
 
   .metric-sheet{ --page-gap:var(--gap); }
   .metric-sheet .page-chart{ margin-top:var(--page-gap); }
@@ -1327,8 +1329,6 @@
 
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
   .page-chart .dchart{ margin:0; }
-
-  .page-chart .trendpill{ margin:12px 0 14px; }
 
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
     text-align:right; margin:2px 2px 0; }
@@ -1649,7 +1649,7 @@
 
   .page-chart:has(.band-head), .spread-history:has(.band-head){
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px 14px 4px; margin-inline:0;
+    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;
   }
 
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
@@ -7780,7 +7780,7 @@
     vals.forEach(function(v, i) {
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
     });
-    out.push('<path class="m2-zero" d="M' + L + "," + f(zero) + "H" + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     var y83 = Y(DEF_1983);
     out.push('<path class="vh-mean" d="M' + L + "," + f(y83) + "H" + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
@@ -9676,7 +9676,7 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + "," + f(zero) + "H" + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + "," + f(Y(NROU_NOW)) + "H" + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -9867,7 +9867,7 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + "," + f(zero) + "H" + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + "," + f(Y(CPI_TARGET)) + "H" + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -9990,7 +9990,7 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + "," + f(zero) + "H" + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + "," + f(Y(GDP_NORM)) + "H" + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -10071,7 +10071,7 @@
     }).length || 1);
     out.push('<path class="vh-mean" d="M' + L + "," + f(Y(M2_NORM)) + "H" + R + '"/>');
     out.push('<path class="temp-avg" d="M' + L + "," + f(Y(vAvg)) + "H" + R + '"/>');
-    out.push('<path class="m2-zero" d="M' + L + "," + f(zero) + "H" + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     lastHistGeom = {
       L: X(0),
@@ -10748,7 +10748,7 @@
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
       if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9) out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + "," + ty.toFixed(1) + "L" + fx1.toFixed(1) + "," + ty.toFixed(1) + '"/>');
-      var ly = o.top != null && ty - 5 < o.top + 11 ? ty + 13 : ty - 5;
+      var ly = ty - 5;
       out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle">' + o.fmt(v) + "</text>");
     });
     if (o.base != null) out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + "," + o.base + "L" + fx1.toFixed(1) + "," + o.base + '"/>');
@@ -12142,7 +12142,7 @@
   }
   function renderPressurePage() {
     var svg = document.getElementById("ylm-svg");
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 30;
+    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
     var quarters = t3mYieldHistory.map(function(d) {
@@ -12247,7 +12247,7 @@
         y: y,
         x0: padL,
         x1: W - padR,
-        top: padT,
+        top: padT - AXIS.LEG,
         bot: H - padB,
         base: y(0),
         noGridAt: 0,
@@ -12563,7 +12563,7 @@
   renderPressurePage();
   function renderSpreadHistory() {
     var svg = document.getElementById("spread-history-svg");
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 30;
+    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
@@ -12674,7 +12674,7 @@
       appendSvgMarkup(svg, chartAxes({
         x0: padL,
         x1: xR,
-        top: yTop,
+        top: yTop - AXIS.LEG,
         bot: yBot,
         y: y,
         noGridAt: 0,
@@ -12684,8 +12684,8 @@
         }
       }));
       svg.appendChild(el("line", {
-        x1: padL,
-        x2: xR,
+        x1: padL - AXIS.L,
+        x2: xR + AXIS.R,
         y1: y(0),
         y2: y(0),
         class: "spread-history-zero"

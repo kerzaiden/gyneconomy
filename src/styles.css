@@ -1875,7 +1875,7 @@
      line it can take the full radius without the curve crowding a second line of text, and the horizontal padding
      grows with the radius so the words keep clear of it. Version 283. */
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 2px;
+    border:0; background:var(--accent-wash); border-radius:var(--radius); padding:12px 22px; margin:12px 0 0;
     min-height:var(--btn-h); box-sizing:border-box;   /* V428: an action button, the same height as More details */
     width:100%; text-align:left; font:inherit; }
   .trendpill.can-toggle{ cursor:pointer; transition:background 0.14s; }
@@ -1906,6 +1906,13 @@
      the box is where the reading is and the rest is commentary (Version 266). */
   .page-chart{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 0; margin:var(--gap) 0 0; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+  /* Version 571. The trend pill is the last thing in a history container on every page, and the gap under it
+     was whatever margins happened to be left over — 19px on the metric pages, 7px on Horizon and Pressure,
+     where Keren found it: "the trend button is missing padding from the bottom of the container. I want the
+     top padding and the bottom padding to be equal." It is one number now, and it is the container's OWN top
+     padding, set where the container ends rather than accumulated from the parts above it. Whatever ends up
+     last gives up its bottom margin, so the padding is the whole gap and cannot be added to. */
+  .page-chart > *:last-child, .spread-history > *:last-child{ margin-bottom:0; }
   /* ---- One gap between an inner page's containers (Version 381, Keren: "the spacing between containers in each
      inner page needs to be equal"). It was four different numbers \u2014 16 between the two charts, 20 to the markers
      table, 24 to Highlights, 22 to the foot \u2014 because each block had been given its own margin as it was built.
@@ -2091,7 +2098,10 @@
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
   .page-chart .dchart{ margin:0; }   /* V497, as .vh-host */
   /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
-  .page-chart .trendpill{ margin:12px 0 14px; }
+  /* V571: the 14 this container added under the pill was its own bottom padding in disguise, put here because
+     the box's padding ended at 4. The box pads 14 on all four sides now and the pill closes at 0 — in ITS own
+     rule, for every container — so the gap under the pill is the padding and nothing else, which is the same
+     number as the gap above the head. The override this line used to carry has gone with the reason for it. */
   /* what the chart measures, said under it rather than over it (Keren: "the cyclically-adjusted P/E ratio \u2026 needs
      to be somewhere, but not above the chart") */
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
@@ -2641,7 +2651,7 @@
      920px — all three existed only to serve the bleed. */
   .page-chart:has(.band-head), .spread-history:has(.band-head){
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px 14px 4px; margin-inline:0;
+    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;   /* V571: bottom = top, one number */
   }
   /* The control on the ground. It owns the gap to the band below it, the same division of labour .hist-controls
      has had inside the band since V440 — and it keeps the page's own padding, which is what makes it read as

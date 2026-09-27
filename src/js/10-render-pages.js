@@ -4,7 +4,7 @@
     var svg = document.getElementById("spread-history-svg");
     // Version 496: recomputed per draw from the host's width (see draw). A fixed 780-unit viewBox scaled to
     // a phone made this the smallest chart in the app, with labels shrunk by the same factor.
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 30;
+    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
@@ -98,11 +98,12 @@
          because a dashed rule under a solid one reads as two \u2014 the same reason the deficit chart passes it. */
       var yTop = padT, yBot = padT + innerH, xR = W - padR;
       appendSvgMarkup(svg, chartAxes({
-        x0:padL, x1:xR, top:yTop, bot:yBot, y:y, noGridAt:0,
+        x0:padL, x1:xR, top:(yTop - AXIS.LEG), bot:yBot, y:y, noGridAt:0,
         ticks:[-2, -1, 0, 1, 2, 3, 4],
         fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; }
       }));
-      svg.appendChild(el("line", { x1:padL, x2:xR, y1:y(0), y2:y(0), class:"spread-history-zero" }));
+      // V571: across the FRAME, so the 0% in the rail has its rule like every other number there
+      svg.appendChild(el("line", { x1:padL - AXIS.L, x2:xR + AXIS.R, y1:y(0), y2:y(0), class:"spread-history-zero" }));
 
       // X labels: Q1 of every third year or so, the years following the window (Version 472), each with the
       // app's own vertical rule under it (Version 442) \u2014 which is the other half of what made this grid look

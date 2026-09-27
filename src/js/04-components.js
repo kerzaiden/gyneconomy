@@ -539,7 +539,7 @@
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) +
         '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(v)) + '"/>');
     });
-    out.push('<path class="m2-zero" d="M' + L + ',' + f(zero) + 'H' + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     // the 1983 level, on a plate so it reads wherever it lands (the Version 217 rule)
     var y83 = Y(DEF_1983);
     out.push('<path class="vh-mean" d="M' + L + ',' + f(y83) + 'H' + R + '"/>');

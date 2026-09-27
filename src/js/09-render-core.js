@@ -356,7 +356,7 @@
     var svg = document.getElementById("ylm-svg");
     // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
     // drawn at the size it will occupy rather than scaled down from 780. The values here are only a seed.
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T, padB = 30;
+    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
 
@@ -436,7 +436,7 @@
       // runs 0 to whatever the maturity reached, and round stops would leave the top of the chart unlabelled.
       var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
       for (var s = 0; s <= steps; s++) ylmTicks.push(minV + ((maxV - minV) * s) / steps);
-      svg.insertAdjacentHTML("beforeend", chartAxes({ ticks:ylmTicks, y:y, x0:padL, x1:(W - padR), top:padT, bot:(H - padB),
+      svg.insertAdjacentHTML("beforeend", chartAxes({ ticks:ylmTicks, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG), bot:(H - padB),
         base:y(0), noGridAt:0, fmt:function(v){ return v.toFixed(0) + "%"; } }));
       // Version 409, the last history onto the shared hover. This chart had one of its OWN — a crosshair and a
       // tooltip through attachHoverTracking, written when it was a five-line comparison and the tooltip had to

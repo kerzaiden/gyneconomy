@@ -777,9 +777,13 @@
       if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9)
         out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
       /* ABOVE its line, not on it: the gridline runs the frame's full width now, and a number sitting on one
-         would be struck through by it. Above the topmost line there may be no room left inside the frame, and
-         there the number drops under its line instead — still in the rail, still clear of every column. */
-      var ly = o.top != null && ty - 5 < o.top + 11 ? ty + 13 : ty - 5;
+         would be struck through by it.
+         Version 571 drops the exception. V562 flipped the TOPMOST number under its line when there was no room
+         above it inside the frame — which put it a few pixels from the number below and made the rail read as
+         unevenly spaced, exactly as Keren saw on Horizon ("the gap between 2% and 3% is not like 3% and 4%; it
+         has to be accurate"). There was no need for it: the strip at the head of the frame is the LEGEND's,
+         and the legend is right-aligned, so a number in the rail at the far left has the strip to itself. */
+      var ly = ty - 5;
       // centred in the rail rather than pushed against the frame (Keren, V564): the rail is a column of the
       // grid now, and a column's contents sit in the middle of it
       out.push('<text class="bt-yl" x="' + ((fx0 + o.x0 - AXIS.RAIL) / 2).toFixed(1) + '" y="' + ly.toFixed(1) +

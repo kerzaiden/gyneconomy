@@ -546,7 +546,12 @@
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + ',' + f(zero) + 'H' + R + '"/>');
+    /* V571: the zero rule spans the FRAME, not just the plot. Keren: "there's no line below 0% — I understand
+       there's a dashed line at the same level, so maybe just continue the dashed line, but don't leave the
+       zero without a line similar to the other numbers." Every other number in the rail has its gridline
+       running past it; zero's did not, because zero's rule is drawn by the chart rather than by chartAxes and
+       it was drawn to the plot's own width. */
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(NROU_NOW)) + 'H' + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -730,7 +735,7 @@
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + ',' + f(zero) + 'H' + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(CPI_TARGET)) + 'H' + R + '"/>');
     // Version 427: the target's own label moved to the key under the chart with the average's.
     // one transparent plate over the plot rather than 451 hit targets: at Max a column is 1.4px wide, which is
@@ -831,7 +836,7 @@
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + L + ',' + f(zero) + 'H' + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(GDP_NORM)) + 'H' + R + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -889,7 +894,7 @@
                (vals.filter(function(v){ return v != null; }).length || 1);
     out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(M2_NORM)) + 'H' + R + '"/>');
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(vAvg)) + 'H' + R + '"/>');
-    out.push('<path class="m2-zero" d="M' + L + ',' + f(zero) + 'H' + R + '"/>');
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
     out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
