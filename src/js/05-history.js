@@ -40,7 +40,8 @@
        and a window labelled 5Y are now never on screen at once. The rows are BUILT where the maturities are
        declared (see drawYlmHead), because that list and the current pick are the yield page's own state. */
     "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets both the title and the menu
-    "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" }
+    "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" },
+    "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" }
   };
   function histHead(id){
     var H = HIST_HEAD[id];

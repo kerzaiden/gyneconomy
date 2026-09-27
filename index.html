@@ -2184,6 +2184,8 @@
     <section class="longcycle" aria-labelledby="psych-title">
       
       <div class="curve-card" id="curve-gauge"></div>
+      
+      <div id="fear-history"></div>
       <div id="curve-vix"></div>
       <div id="curve-highlights"></div>
 
@@ -12639,6 +12641,10 @@
     "desire-range": {
       mark: flameSvg,
       title: "High-yield spread over Treasuries"
+    },
+    "fear-range": {
+      mark: umbrellaSvg,
+      title: "VIX ÷ 3-month VIX"
     }
   };
   function histHead(id) {
@@ -14028,7 +14034,7 @@
   function chartAxes(o) {
     var out = [], ticks = o.ticks;
     if (!ticks) {
-      var step = o.step || [ .25, .5, 1, 2, 5, 10, 20, 25, 50, 100 ].filter(function(k) {
+      var step = o.step || [ .1, .25, .5, 1, 2, 5, 10, 20, 25, 50, 100 ].filter(function(k) {
         return (o.hi - o.lo) / k <= 4.5;
       })[0] || 200;
       ticks = [];
@@ -14073,6 +14079,7 @@
       bot: padT + ih,
       base: padT + ih,
       skipNear: midY,
+      step: o.step,
       fmt: o.tickFmt || o.fmt
     }) ];
     out.push('<path class="dv-mid" d="M' + padL + "," + midY.toFixed(1) + "L" + (W - padR) + "," + midY.toFixed(1) + '"/>');
@@ -14113,7 +14120,7 @@
         v: dAvg
       } ],
       vals: o.vals,
-      at: function(d) {
+      at: o.at || function(d) {
         return String(d.y);
       },
       fmt: o.fmt
@@ -15210,6 +15217,7 @@
     "deficit-range": "cycles",
     "ylm-range": "cycles",
     "hzn-range": "cycles",
+    "fear-range": "cycles",
     "sheet-metric-households": "cycles",
     "sheet-sign-activity": "cycles"
   };
@@ -15223,6 +15231,7 @@
     "deficit-range": null,
     "ylm-range": null,
     "hzn-range": null,
+    "fear-range": null,
     "sheet-metric-households": null,
     "sheet-sign-activity": null
   };
@@ -15237,6 +15246,7 @@
     "ylm-range": "10y",
     "hzn-range": "10y",
     "desire-range": "max",
+    "fear-range": "10y",
     "sheet-metric-households": "10y",
     "sheet-sign-activity": "10y"
   };
@@ -16234,6 +16244,60 @@
       },
       aria: curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", " + curveTag.text.toLowerCase() + "; flat is 1.00, above it the curve is inverted"
     }) + '<div class="curve-read"><span class="curve-v mono">' + (curveNow == null ? "—" : curveNow.toFixed(2)) + "</span>" + '<span class="curve-w ' + curveTag.state + '-ink">' + curveTag.text + "</span></div>" + '<div class="curve-name" id="curve-asof" style="text-transform:none;letter-spacing:0;font-weight:400">' + curveSub + "</div>";
+    var FEAR_STOPS = [ "5y", "10y", "max" ];
+    var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
+    function drawFearHistory() {
+      var host = document.getElementById("fear-history");
+      if (!host || !fearCurveHistory.length) return;
+      var cyc = pageMode["fear-range"] === "cycles" ? cycleByName(pageCycles["fear-range"]) || openCycle() : null;
+      if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
+      var span = cyc ? cycleSlice(fearCurveHistory, cyc) : null;
+      var vals = span ? fearCurveHistory.slice(span[0], span[1]) : timelineWindow(fearCurveHistory, pageRange["fear-range"]);
+      if (!vals.length) vals = fearCurveHistory.slice(-12);
+      var fit = trendOf(vals.map(function(d) {
+        return d.v;
+      }), "points", "month");
+      var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10), parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
+      function opts() {
+        return {
+          vals: vals,
+          mid: 1,
+          midLabel: "flat, 1.00",
+          fmt: function(v) {
+            return v.toFixed(2);
+          },
+          tickFmt: function(v) {
+            return v.toFixed(2);
+          },
+          at: atMonth,
+          xLabel: function(d) {
+            var y = parseInt(d.m.slice(0, 4), 10);
+            return d.m.slice(5) === "01" && years.indexOf(y) !== -1 ? "’" + String(y).slice(2) : "";
+          },
+          fit: fit.fit,
+          alt: "The VIX curve against flat, monthly. Above 1.00 the near month costs more than the quarter, " + "which is an inverted curve."
+        };
+      }
+      host.innerHTML = '<div class="hist-bar">' + histControls("fear-range", {
+        series: fearCurveHistory,
+        stops: FEAR_STOPS
+      }, FEAR_Y0) + "</div>" + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + '<div id="fear-trend"></div></div>';
+      var ft = document.getElementById("fear-trend");
+      if (ft) ft.innerHTML = trendPill(fit, null, true, {
+        rising: "inverting",
+        falling: "steepening"
+      });
+      var box = host.querySelector(".page-chart");
+      if (box) {
+        box.__geom = lastHistGeom;
+        wireHistHover(box, "fear-hist-tooltip");
+      }
+      refitHistory(box, function(w) {
+        return divergeChart(opts(), w);
+      });
+    }
+    sheetRenderers["fear-range"] = drawFearHistory;
+    drawFearHistory();
     var vixHost = document.getElementById("curve-vix");
     if (vixHost) vixHost.innerHTML = '<div class="panel-stack in-hist">' + panelRow({
       name: vixInd.bodyTerm,

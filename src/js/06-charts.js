@@ -798,7 +798,13 @@
     // target — and a generic round-number step would quietly drop them. The emitter's job is the drawing, not
     // the choosing; where a chart has a reason for its own stops, it keeps it.
     if (!ticks){
-      var step = o.step || [0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
+      /* V590: 0.1 joins the ladder. It was [0.25 \u2026], which is right for every chart that had existed \u2014 all
+         of them percentages or multiples spanning whole points \u2014 and wrong for a RATIO, whose entire story
+         happens between 0.7 and 1.3. At 0.25 such an axis offers one tick that is not its own midline. The
+         ladder picks per window now, so the fear curve reads at 0.1 over a cycle and 0.25 over the record,
+         each the step that window is actually read at, and no existing chart moves: the rule only reaches a
+         span under 0.45 and nothing else here has one. */
+      var step = o.step || [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
         return (o.hi - o.lo) / k <= 4.5; })[0] || 200;
       ticks = [];
       for (var v = Math.ceil(o.lo / step) * step; v <= o.hi + 1e-9; v += step) ticks.push(v);
@@ -863,8 +869,12 @@
     var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
     // Here the rule beneath is a FRAME, not a zero: these bars hang off the fair-value midline in both
     // directions, so the thing to measure from is that line, which carries its own label — hence `skipNear`.
+    /* V590: `step` goes through. A caller whose values live in a narrow band \u2014 a RATIO, where the whole
+       story is between 0.7 and 1.2 \u2014 gets one tick out of the default ladder, and on this chart that one
+       tick is the midline, which is skipped by construction. So the axis could come up with no numbers on
+       it at all, which is what the fear curve did. */
     var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
-                           base:(padT + ih), skipNear:midY, fmt:(o.tickFmt || o.fmt) })];
+                           base:(padT + ih), skipNear:midY, step:o.step, fmt:(o.tickFmt || o.fmt) })];
     // the fair line goes UNDER the bars; over them, its dashes read as part of every short bar
     out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');
     o.vals.forEach(function(d, i){
@@ -894,7 +904,10 @@
     lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
                      refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
                                         : [{ label:"Average", v:dAvg }]),
-                     vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt };
+                     /* V590: `at` names the reading in the readout plate. It defaulted to d.y, which is
+                        right for the annual series this chart was built for and prints "undefined" for a
+                        monthly one \u2014 so a caller with months passes its own. */
+                     vals:o.vals, at:(o.at || function(d){ return String(d.y); }), fmt:o.fmt };
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
   }
 

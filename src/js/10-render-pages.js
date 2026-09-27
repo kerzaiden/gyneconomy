@@ -425,6 +425,68 @@
        doors onto one note is the Version 477 fault, the same rule that keeps an (i) off a row with a chevron.
        The word ("Usual") is not lost either: panelFromMeter lights the band the reading sits in, which is the
        Version 486 finding that a three-segment spectrum says where it sits without naming it. */
+    /* V590, Keren: "make a history component in the fear page that will show the curve \u2014 check how we did
+       the inverted yield curve and apply the same."
+       divergeChart is that treatment: bars hanging off a reference line, coloured by which side they fall. On
+       Valuations the line is CAPE's fair value; here it is 1.00, and the app's own CSS already reads the two
+       sides correctly without a new colour \u2014 .dv-bar.over is the serious ink and .under the good, which is
+       exactly inverted against normal. The threshold needs no defending either: it is the definition of the
+       shape rather than a level anyone chose, the same sentence curveVerdict() carries.
+       The series is fearCurveHistory, monthly from December 2007 \u2014 VXVCLS begins then, so that is the first
+       month the ratio can be computed at all. Its last point is the same number the gauge above shows, because
+       both round to three decimals off the same two legs. */
+    var FEAR_STOPS = ["5y", "10y", "max"];
+    var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
+    function drawFearHistory(){
+      var host = document.getElementById("fear-history"); if (!host || !fearCurveHistory.length) return;
+      /* A cycle that opened before this series did cannot be windowed onto it, so the page falls back to the
+         open cycle rather than drawing an empty chart \u2014 the rule Horizon states for the same 2005 problem. */
+      var cyc = pageMode["fear-range"] === "cycles"
+              ? (cycleByName(pageCycles["fear-range"]) || openCycle()) : null;
+      if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
+      var span = cyc ? cycleSlice(fearCurveHistory, cyc) : null;
+      var vals = span ? fearCurveHistory.slice(span[0], span[1])
+                      : timelineWindow(fearCurveHistory, pageRange["fear-range"]);
+      if (!vals.length) vals = fearCurveHistory.slice(-12);
+      var fit = trendOf(vals.map(function(d){ return d.v; }), "points", "month");
+      var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10),
+                              parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
+      /* One options object, built once and handed to BOTH the first draw and the refit. Writing them twice is
+         how the first pass lost its x labels: the refit rebuilt the chart without `xLabel`, so the years were
+         drawn and then silently replaced by a chart that had none. */
+      function opts(){
+        return { vals:vals, mid:1, midLabel:"flat, 1.00",
+          fmt:function(v){ return v.toFixed(2); },
+          /* Two decimals, because one lies at some steps: the record window steps by 0.25, and a gridline
+             drawn at 0.75 and labelled "0.8" is a number that is not where it says it is. */
+          tickFmt:function(v){ return v.toFixed(2); },
+          at:atMonth,
+          // a monthly series labels the January of each year the window can afford to name
+          xLabel:function(d){
+            var y = parseInt(d.m.slice(0, 4), 10);
+            return (d.m.slice(5) === "01" && years.indexOf(y) !== -1) ? "\u2019" + String(y).slice(2) : "";
+          },
+          fit:fit.fit,
+          alt:"The VIX curve against flat, monthly. Above 1.00 the near month costs more than the quarter, " +
+              "which is an inverted curve."
+        };
+      }
+      host.innerHTML =
+        '<div class="hist-bar">' + histControls("fear-range",
+          { series:fearCurveHistory, stops:FEAR_STOPS }, FEAR_Y0) + '</div>' +
+        '<div class="page-chart">' + histHead("fear-range") +
+        divergeChart(opts(), host.clientWidth || 340) +
+        '<div id="fear-trend"></div></div>';
+      var ft = document.getElementById("fear-trend");
+      // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.
+      if (ft) ft.innerHTML = trendPill(fit, null, true, { rising:"inverting", falling:"steepening" });
+      var box = host.querySelector(".page-chart");
+      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "fear-hist-tooltip"); }
+      refitHistory(box, function(w){ return divergeChart(opts(), w); });
+    }
+    sheetRenderers["fear-range"] = drawFearHistory;
+    drawFearHistory();
+
     var vixHost = document.getElementById("curve-vix");
     if (vixHost)
       /* `in-hist` is the modifier that makes a stack carry its own box rather than sit inside a card that
