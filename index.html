@@ -1631,6 +1631,7 @@
 
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
+  .hr-plate.compact .hr-value{ font-size:15px; }
   @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
@@ -7560,17 +7561,31 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG + 8) * scale).toFixed(1) + "px";
+    var railTop = sb.top - cp.top + (frTop + AXIS.LEG) * scale;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+    plate.classList.remove("compact");
     var w = plate.offsetWidth;
+    if (w > (g.R - g.L) * scale * .6) {
+      plate.classList.add("compact");
+      w = plate.offsetWidth;
+    }
     var lo = sb.left - eb.left + g.L * scale + 10, hi = sb.left - eb.left + g.R * scale - 5;
+    var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
     if (!plate.__placed) plate.style.transition = "none";
-    plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
+    plate.style.marginLeft = mx.toFixed(1) + "px";
     if (!plate.__placed) {
       void plate.offsetWidth;
       plate.style.transition = "";
       plate.__placed = true;
     }
+    var pL = eb.left + mx, pR = pL + w, ph = plate.offsetHeight, topMost = Infinity;
+    Array.prototype.forEach.call(svg.querySelectorAll(".hcol"), function(c) {
+      var r = c.getBoundingClientRect();
+      if (r.height && r.right >= pL - 3 && r.left <= pR + 3 && r.top < topMost) topMost = r.top;
+    });
+    var comfy = railTop + 8 * scale, tight = railTop + 2 * scale;
+    var clear = topMost === Infinity ? comfy : topMost - cp.top - 5 - ph;
+    el.style.top = (clear >= comfy ? comfy : Math.max(tight, clear)).toFixed(1) + "px";
   }
   function histAxisEnds(svg, fr) {
     if (!fr || !svg.getBBox) return;
@@ -9745,7 +9760,7 @@
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
+    var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * .22;
     var X = function(i) {
       return L + (R - L) * i / Math.max(1, n - 1);
     };

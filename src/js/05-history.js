@@ -597,7 +597,12 @@
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [0]);
-    var LO = sc.lo, HI = sc.hi;
+    /* Version 566: a fifth more room at the head than windowScale's own padding. This is the one history whose
+       reading cannot get out of its own way — the bars are near-uniform and nearly full height, so there is
+       nowhere above them for the plate to rise to, and its reading is two figures rather than one, which makes
+       the plate wide as well as tall. The rule that the plate clears the columns under it is the same on every
+       page; this chart is the one that has to be given the room to keep it. */
+    var LO = sc.lo, HI = sc.hi + (sc.hi - sc.lo) * 0.22;
     var X = function(i){ return L + (R - L) * i / Math.max(1, n - 1); };
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };

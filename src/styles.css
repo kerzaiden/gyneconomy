@@ -2572,6 +2572,7 @@
      reading, and a reading answers to the chart rather than competing with it. */
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
              color:var(--text-primary); margin:0; }
+  .hr-plate.compact .hr-value{ font-size:15px; }   /* V566: a two-figure reading steps down rather than spreading */
   @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;

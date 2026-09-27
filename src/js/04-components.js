@@ -265,18 +265,37 @@
     var fr = svg.querySelector(".bt-frame");
     var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
     var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
-    // V564: a little lower than the legend's own floor — the plate is a card sitting on the plot, and a card
-    // pressed against the strip above it reads as part of that strip
-    el.style.top = (sb.top - cp.top + (frTop + AXIS.LEG + 8) * scale).toFixed(1) + "px";
+    var railTop = sb.top - cp.top + (frTop + AXIS.LEG) * scale;
     var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+    /* A reading that is two figures rather than one — Households prints what went out AND what was kept —
+       runs the plate across most of the picture at 22px, and a plate that wide hides whatever it passes over
+       wherever it stands. Past three fifths of the plot it steps down a size (Version 566). */
+    plate.classList.remove("compact");
     var w = plate.offsetWidth;   // measured with .on already set, so the plate's padding is in it
+    if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
     // inset from the plot's own ends, so the resting plate sits inside the picture rather than in its corner
     // (V565: the right inset comes back to 5 — 10 read as a margin rather than as breathing room)
     var lo = (sb.left - eb.left) + g.L * scale + 10, hi = (sb.left - eb.left) + g.R * scale - 5;
+    var mx = Math.max(lo, Math.min(hi - w, colX - w / 2));
     // the first placement after a draw is a jump, not a slide: there is nowhere for it to have come from
     if (!plate.__placed) plate.style.transition = "none";
-    plate.style.marginLeft = Math.max(lo, Math.min(hi - w, colX - w / 2)).toFixed(1) + "px";
+    plate.style.marginLeft = mx.toFixed(1) + "px";
     if (!plate.__placed){ void plate.offsetWidth; plate.style.transition = ""; plate.__placed = true; }
+    /* Version 566, Keren, on Growth: "the tooltip covers the Q1 2026 bar. So make a rule that the tooltip
+       can't hide the bars — it should be above the highest bar." The plate normally rides 8px clear of the
+       legend's strip, which reads best (V564: a card pressed against the strip above it reads as part of that
+       strip). When a column UNDER THE PLATE would reach into it, it gives that comfort back and rises as far
+       as the strip itself, which is as high as it can go. Only the columns the plate actually covers count —
+       the tallest bar on the other side of the chart is nobody's problem — so the plate stays where the
+       reading is and the picture keeps its full height on every page. */
+    var pL = eb.left + mx, pR = pL + w, ph = plate.offsetHeight, topMost = Infinity;
+    Array.prototype.forEach.call(svg.querySelectorAll(".hcol"), function(c){
+      var r = c.getBoundingClientRect();
+      if (r.height && r.right >= pL - 3 && r.left <= pR + 3 && r.top < topMost) topMost = r.top;
+    });
+    var comfy = railTop + 8 * scale, tight = railTop + 2 * scale;
+    var clear = topMost === Infinity ? comfy : (topMost - cp.top) - 5 - ph;   // the lowest top that still clears
+    el.style.top = (clear >= comfy ? comfy : Math.max(tight, clear)).toFixed(1) + "px";
   }
   /* Version 556. The reference legend: one line per reference, in the strip AXIS.LEG opened inside the frame
      under the plot, laid out from the right so it ends on the plot's right edge — Keren: "a very gentle legend
