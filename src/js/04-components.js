@@ -973,7 +973,7 @@
        bars, which hang off a midline that carries its own label \u2014 and here that midline already exists and is
        already named: the pre-2008 mean. So each column says how far its quarter sits from the era that ended,
        which is what this page is about. */
-    var pSlot = (R - L) / Math.max(1, n), pSw = Math.max(1.4, Math.min(9, pSlot * COL_FILL));
+    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
     var pMidY = Y(PULSE_PRE2008);
     ser.forEach(function(v, i){
       var y1 = Y(v);
@@ -1069,7 +1069,7 @@
     // Version 500: columns out of zero, coloured by the band (Keren: all the charts are bars). At Max these are
     // 787 daily closes and each column is about a pixel \u2014 which is what the 944-month Activity chart already
     // does, and it reads as a dense picture rather than as a chart with nothing in it.
-    var hySlot = (R - L) / Math.max(1, n), hySw = Math.max(1, hySlot * COL_FILL);
+    var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
     ser.forEach(function(v, i){
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +

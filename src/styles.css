@@ -1669,7 +1669,7 @@
   /* Version 388: this head no longer opens its box, it introduces the figures below it, so it takes the gap a
      container takes. */
   .vol-figures-head{ margin-top:var(--gap); }
-  .m2-zero{ stroke:var(--text-muted); stroke-width:1; fill:none; }
+  .m2-zero{ stroke:var(--grid); stroke-width:1; fill:none; }   /* V577: the grid's own ink — zero is a gridline, not a heavier statement */
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
   .page-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; }
   .page-foot > .timing-row{ margin:0; flex:none; }
@@ -2189,7 +2189,7 @@
      air, which is why ours read as a set of rules rather than as a chart. The frame is the plot's own box: the
      same weight and colour as a gridline, because it is the outermost one. */
   .bt-frame{ stroke:var(--grid); stroke-width:1; fill:none; }
-  .bt-axis{ stroke:var(--border-strong); stroke-width:1; opacity:0.6; fill:none; }
+  .bt-axis{ stroke:var(--grid); stroke-width:1; fill:none; }   /* V577: as .m2-zero — one shade for every rule in the grid */
   /* The reference label sits ON the plot, so bars run straight through it. It was survivable while the bars
      under it were a pale wash; with the battery steps (Version 396) it became unreadable against a row of
      saturated greens. A surface-coloured halo under the glyphs fixes it in both themes without moving the label
@@ -2704,7 +2704,7 @@
   .spread-toggle-btn.active{ background:var(--surface); color:var(--accent-ink); box-shadow:var(--shadow); }
   .spread-toggle-btn:hover:not(.active){ color:var(--text-primary); }
   .spread-history-band{ fill:var(--border); opacity:0.7; }                 /* recessions: the dial's track grey */
-  .spread-history-zero{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
+  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }   /* V577: the grid's own ink; the dash is what still marks it as zero */
   .spread-history-area-pos{ fill:var(--ovulate); opacity:0.16; }           /* the market band's colours: teal above zero, red below */
   .spread-history-area-neg{ fill:var(--bleed-mid); opacity:0.16; }
   .spread-history-line{ fill:none; stroke:var(--text-primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }

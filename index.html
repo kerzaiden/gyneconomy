@@ -1098,7 +1098,7 @@
   .def-col.surplus{ stroke:var(--good); opacity:0.95; }
 
   .vol-figures-head{ margin-top:var(--gap); }
-  .m2-zero{ stroke:var(--text-muted); stroke-width:1; fill:none; }
+  .m2-zero{ stroke:var(--grid); stroke-width:1; fill:none; }
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
   .page-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; }
   .page-foot > .timing-row{ margin:0; flex:none; }
@@ -1382,7 +1382,7 @@
   .bt-vgrid{ stroke:var(--grid); stroke-width:1; stroke-dasharray:3 4; fill:none; }
 
   .bt-frame{ stroke:var(--grid); stroke-width:1; fill:none; }
-  .bt-axis{ stroke:var(--border-strong); stroke-width:1; opacity:0.6; fill:none; }
+  .bt-axis{ stroke:var(--grid); stroke-width:1; fill:none; }
 
   .bt-reflab{ paint-order:stroke; stroke:var(--surface); stroke-width:3.5px; stroke-linejoin:round; }
   .bt-end{ font-size:15px; font-weight:700; fill:var(--text-primary); }
@@ -1673,7 +1673,7 @@
   .spread-toggle-btn.active{ background:var(--surface); color:var(--accent-ink); box-shadow:var(--shadow); }
   .spread-toggle-btn:hover:not(.active){ color:var(--text-primary); }
   .spread-history-band{ fill:var(--border); opacity:0.7; }
-  .spread-history-zero{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
+  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
   .spread-history-area-pos{ fill:var(--ovulate); opacity:0.16; }
   .spread-history-area-neg{ fill:var(--bleed-mid); opacity:0.16; }
   .spread-history-line{ fill:none; stroke:var(--text-primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
@@ -9146,7 +9146,7 @@
       })
     };
     out.push('<path class="temp-avg" d="M' + f(X(0)) + "," + f(Y(pAvg)) + "H" + f(X(n - 1)) + '"/>');
-    var pSlot = (R - L) / Math.max(1, n), pSw = Math.max(1.4, Math.min(9, pSlot * COL_FILL));
+    var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
     var pMidY = Y(PULSE_PRE2008);
     ser.forEach(function(v, i) {
       var y1 = Y(v);
@@ -9233,7 +9233,7 @@
       })
     };
     out.push('<path class="hy-avg" d="M' + f(X(0)) + "," + f(Y(hyAvg)) + "H" + f(X(n - 1)) + '"/>');
-    var hySlot = (R - L) / Math.max(1, n), hySw = Math.max(1, hySlot * COL_FILL);
+    var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
     ser.forEach(function(v, i) {
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(Y(0)) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
@@ -9658,7 +9658,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       if (d.v == null) return;
       out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
@@ -9759,7 +9759,7 @@
       }).join("") + '"/>';
     }
     var hhSlot = (R - L) / Math.max(1, n);
-    var hhSw = Math.max(1, hhSlot * (COL_FILL / 2)), hhOff = Math.max(.7, hhSw * .62);
+    var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(.7, hhSw * .62);
     bill.forEach(function(v, i) {
       var cx = X(i);
       out.push('<g class="hcol">' + '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx - hhOff) + "," + f(Y(0)) + "L" + f(cx - hhOff) + "," + f(Y(v)) + '"/>' + '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="M' + f(cx + hhOff) + "," + f(Y(0)) + "L" + f(cx + hhOff) + "," + f(Y(kept[i])) + '"/>' + "</g>");
@@ -9847,7 +9847,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
     });
@@ -9973,7 +9973,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(d.v)) + '"/>');
     });
@@ -10058,7 +10058,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(v, i) {
       if (v == null) return;
       out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) + '" d="M' + f(X(i)) + "," + f(zero) + "L" + f(X(i)) + "," + f(Y(v)) + '"/>');
@@ -10648,7 +10648,7 @@
     var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? .58 : .3))));
     var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
     var n = o.vals.length, slot = iw / n;
-    var sw = Math.max(2.4, Math.min(9, slot * COL_FILL)), tw = sw + 3.4;
+    var sw = colWidth(slot), tw = sw + 3.4;
     function y(v) {
       return (padT + ih - v / 100 * ih).toFixed(1);
     }
@@ -10725,6 +10725,11 @@
     return '<path class="bt-vgrid" d="M' + (+x).toFixed(1) + "," + (+top).toFixed(1) + "L" + (+x).toFixed(1) + "," + (+bot).toFixed(1) + '"/>';
   }
   var COL_FILL = .68;
+  function colWidth(slot) {
+    if (!(slot > 0)) return 1;
+    if (slot < 1.5) return slot;
+    return Math.min(20, slot * COL_FILL);
+  }
   var AXIS = {
     L: 37,
     R: 6,
@@ -10771,7 +10776,7 @@
     function y(v) {
       return (midY - (v - o.mid) * unit).toFixed(1);
     }
-    var n = o.vals.length, slot = iw / n, sw = Math.max(2.4, Math.min(9, slot * COL_FILL));
+    var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
     var out = [ chartAxes({
       lo: o.mid - below,
       hi: o.mid + above,
@@ -12318,7 +12323,7 @@
       t10y3mHistory.forEach(function(d) {
         spreadAt[d.q] = d.v;
       });
-      var colW = Math.max(1.4, Math.min(9, innerW / Math.max(1, ylmCount()) * COL_FILL));
+      var colW = colWidth(innerW / Math.max(1, ylmCount()));
       maturities.forEach(function(mat) {
         if (!mat.on) return;
         var y0 = y(0);
@@ -12706,7 +12711,7 @@
       });
       appendSvgMarkup(svg, xMarks);
       var zeroY = y(0);
-      var colW = Math.max(1.4, Math.min(9, innerW / Math.max(1, data.length) * COL_FILL));
+      var colW = colWidth(innerW / Math.max(1, data.length));
       data.forEach(function(d, i) {
         var cx = x(i, data.length);
         svg.appendChild(el("path", {

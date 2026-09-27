@@ -128,7 +128,7 @@
          once. The area fill said it too, but a fill has no per-quarter unit: nothing to hover, nothing to light
          up, and nothing to carry the `.hcol` class every other history's hover depends on. */
       var zeroY = y(0);
-      var colW = Math.max(1.4, Math.min(9, (innerW / Math.max(1, data.length)) * COL_FILL));
+      var colW = colWidth(innerW / Math.max(1, data.length));
       data.forEach(function(d, i){
         var cx = x(i, data.length);
         svg.appendChild(el("path", {

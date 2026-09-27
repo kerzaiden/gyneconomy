@@ -613,7 +613,7 @@
     // for. padL opens from 8 to 30 to make the room; nothing else about the geometry moves.
     var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;   // V494: 26 was room for the corner figure, which has gone; +LEG is the legend strip (V556/V557)
     var n = o.vals.length, slot = iw / n;
-    var sw = Math.max(2.4, Math.min(9, slot * COL_FILL)), tw = sw + 3.4;
+    var sw = colWidth(slot), tw = sw + 3.4;
     function y(v){ return (padT + ih - (v / 100) * ih).toFixed(1); }
     var out = [];
     // The scale is a fixed 0–100 (it is a percentage of her own best), so `step` is stated rather than derived:
@@ -718,6 +718,34 @@
      The battery gauge is deliberately NOT here: twenty lit segments is a meter, not a chart, and its spacing
      answers to the charge it draws rather than to a reading per slot. */
   var COL_FILL = 0.68;   // a column's share of its slot; the rest is the gap that makes them readable as marks
+  /* Version 577. ONE function decides how wide a column is, because the rule was stated in one number and then
+     contradicted in nine places. Keren, on Valuations: "the bars look very thin … and on Temperature at Max it
+     looks very, very tight. Is there a point to widen the bars where there are only a few and tighten them
+     where there are too many?"
+
+     Measured before changing anything, at phone width: the five histories that simply multiplied slot by
+     COL_FILL came out at 0.68 of their slot, as intended. The four that also capped at 9px came out at 0.41
+     (Pulse, Horizon) and 0.10 (Economic power, Valuations) — a four-column chart has an 80px slot, so a 9px
+     cap leaves 89% of it empty and the bars read as needles. That is the thinness she saw, and it is not a
+     judgement about four columns, it is a constant written for a crowded chart being applied to an empty one.
+     At the other end Desire at Max draws 787 columns into a 0.4px slot and the 1px floor made each bar 2.5
+     times its own slot, so the bars overlapped and the picture smeared rather than reading as dense.
+
+     So: proportional in the middle, bounded at both ends, and the bounds are about what a MARK can be rather
+     than about how many there are.
+       · Below 1.5px a gap cannot be drawn at all, so the column takes its whole slot. The columns tile, the
+         field renders at its true density, and nothing overlaps. This is what a dense series honestly looks
+         like — Desire's daily closes, Temperature at Max — and it is a band, not a failed bar chart.
+       · Above 20px a round-capped stroke stops reading as a capsule and starts reading as a dome: the cap's
+         radius is half the width, and past 20 the cap is bigger than anything else the app draws. 20 is where
+         the mark stays the mark. Four columns therefore get 20px rather than 9, which is more than twice the
+         ink and still this app's shape rather than a dashboard's block.
+     Between those, slot × COL_FILL, which is the rule the app always meant. */
+  function colWidth(slot){
+    if (!(slot > 0)) return 1;
+    if (slot < 1.5) return slot;                     // no room for a gap: tile, do not overlap
+    return Math.min(20, slot * COL_FILL);
+  }
   /* Version 523: the plot's own margins, which were thirteen literals. Seven of the histories already agreed on
      34 / 6 / 14 and were simply repeating it; the drift was in the other six — the deficit at 38, Pulse at 32,
      Economic power and Valuations at 30 with an 8px right margin, and the Cycle tab's Temperature at 12. The
@@ -826,7 +854,7 @@
     var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
     var midY = padT + above * unit;
     function y(v){ return (midY - (v - o.mid) * unit).toFixed(1); }
-    var n = o.vals.length, slot = iw / n, sw = Math.max(2.4, Math.min(9, slot * COL_FILL));
+    var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
     // Here the rule beneath is a FRAME, not a zero: these bars hang off the fair-value midline in both
     // directions, so the thing to measure from is that line, which carries its own label — hence `skipNear`.
     var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),

@@ -532,7 +532,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       // October 2025 gets no column. A gap is the honest drawing of a month nobody measured; the alternative is
       // a bar standing for a number that does not exist.
@@ -630,7 +630,7 @@
        so the shared hover still lights exactly one thing per index; the readout already names both figures. */
     var hhSlot = (R - L) / Math.max(1, n);
     // V523: a PAIR per slot, so each bar takes half the app's column fill rather than a literal of its own
-    var hhSw = Math.max(1, hhSlot * (COL_FILL / 2)), hhOff = Math.max(0.7, hhSw * 0.62);
+    var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);   // a PAIR per slot, so each takes half a slot
     bill.forEach(function(v, i){
       var cx = X(i);
       out.push('<g class="hcol">' +
@@ -705,7 +705,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(d.v)) + '"/>');
@@ -821,7 +821,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
         '" d="M' + f(X(i)) + ',' + f(zero) + 'L' + f(X(i)) + ',' + f(Y(d.v)) + '"/>');
@@ -878,7 +878,7 @@
       out.unshift(vGrid(X(i), T, B));
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
-    var sw = Math.max(1, (R - L) / n * COL_FILL);
+    var sw = colWidth((R - L) / n);
     vals.forEach(function(v, i){
       if (v == null) return;
       out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) +

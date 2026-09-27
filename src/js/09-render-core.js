@@ -488,7 +488,7 @@
       // longer has to hold the spread chart in their head to see when the yield above was under a warning.
       var spreadAt = {};
       t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
-      var colW = Math.max(1.4, Math.min(9, (innerW / Math.max(1, ylmCount())) * COL_FILL));
+      var colW = colWidth(innerW / Math.max(1, ylmCount()));
       maturities.forEach(function(mat){
         if (!mat.on) return;
         var y0 = y(0);
