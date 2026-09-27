@@ -1209,11 +1209,10 @@
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
         return;
       }
-      var sid = seg.parentNode.getAttribute("data-series-for");
-      if (sid === "hzn-spread" && window.__pickSpread){
-        window.__pickSpread(seg.getAttribute("data-series")); return; }
-      if (sid === "ylm-series" && window.__pickSeries){
-        window.__pickSeries(sid, seg.getAttribute("data-series")); return; }
+      /* V588: the `data-series-for` branch went with the last series BAR. Horizon's spread moved into the
+         head's \u22ef menu in V522 and Pressure's maturity followed in V588, so both choices arrive through
+         .bh-pick now and nothing in the app emits that attribute. Both __pick* functions are still called \u2014
+         from the menu \u2014 so only the routing that could no longer fire is removed. */
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in pageRange)) return;
       pageRange[id] = seg.getAttribute("data-range");

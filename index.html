@@ -1186,10 +1186,6 @@
 
   :root{ --ctl-h:40px; --btn-h:40px; }
 
-  .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-  .seriesbar::-webkit-scrollbar{ display:none; }
-  .seriesbar .range-seg{ font-size:11.5px; padding-inline:9px; white-space:nowrap; }
-
   .rangebar{ display:flex; gap:3px; background:var(--surface); border:1px solid var(--border);
     border-radius:var(--radius); padding:3px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
@@ -9403,6 +9399,11 @@
     if (pick) {
       headMenuFor = null;
       paintHeadMenus();
+      var mat = pick.getAttribute("data-ylm-mat");
+      if (mat) {
+        if (window.__pickSeries) window.__pickSeries(null, mat);
+        return;
+      }
       if (window.__pickSpread) window.__pickSpread(pick.getAttribute("data-hzn-spread"));
       return;
     }
@@ -10488,12 +10489,6 @@
       var sel = c.name === cur.name, L = cycLabel(c);
       return '<button type="button" class="cycsel-opt' + (sel ? " on" : "") + '" role="option" aria-selected="' + (sel ? "true" : "false") + '" data-cycle="' + c.name + '">' + '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + L.name + '</span><span class="cycsel-yr">' + L.years + "</span></button>";
     }).join("") + "</div></div>";
-  }
-  function seriesBar(id, items, active) {
-    if (!items || items.length < 2) return "";
-    return '<div class="rangebar seriesbar" role="tablist" data-series-for="' + id + '">' + items.map(function(r) {
-      return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" ' + 'aria-selected="' + (r.key === active ? "true" : "false") + '" data-series="' + r.key + '">' + r.label + "</button>";
-    }).join("") + "</div>";
   }
   function rangeBar(id, ranges, active) {
     if (!ranges || ranges.length < 2) return "";
@@ -12397,29 +12392,26 @@
         label: m.name.replace("-Month", "M").replace("-Year", "Y")
       };
     });
+    var YLM_STOPS = [ "5y", "10y", "max" ];
     function renderLegend() {
       var host = document.getElementById("ylm-series");
       if (!host) return;
-      host.innerHTML = seriesBar("ylm-series", SERIES, matPick);
-    }
-    function centreCard() {
-      var host = document.getElementById("ylm-series");
-      if (!host || !host.clientWidth) return;
-      var bar = host.querySelector(".seriesbar"), picked = host.querySelector(".range-seg.on");
-      if (!bar || !picked) return;
-      bar.scrollLeft = Math.max(0, picked.offsetLeft - bar.clientWidth / 2 + picked.offsetWidth / 2);
+      host.innerHTML = histControls("ylm-range", {
+        series: t3mYieldHistory,
+        stops: YLM_STOPS
+      });
     }
     window.__pickSeries = function(bar, code) {
       matPick = code;
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
-      renderLegend();
       drawYlm();
-      centreCard();
     };
     sheetRenderers["sheet-sign-yield"] = function() {
-      centreCard();
+      drawYlm();
+    };
+    sheetRenderers["ylm-range"] = function() {
       drawYlm();
     };
     function drawVelocityRecord() {
@@ -12520,14 +12512,16 @@
       return m ? m.detail : "";
     }
     function drawYlm() {
-      ylmFrom = 0;
-      ylmTo = quarters.length;
+      var ylmCyc = pageMode["ylm-range"] === "cycles" ? cycleByName(pageCycles["ylm-range"]) || openCycle() : null;
+      var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["ylm-range"]);
+      ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
       renderLegend();
       render();
       var yTrend = document.getElementById("ylm-trend");
       if (yTrend) {
         var w = [], mt = matOf(matPick);
-        if (mt) mt.data.forEach(function(d) {
+        if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d) {
           if (d.v != null) w.push(d.v);
         });
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true, {
@@ -12539,6 +12533,12 @@
     }
     function drawYlmHead() {
       HIST_HEAD["ylm-range"].title = matTitle();
+      HIST_HEAD["ylm-range"].menu = function() {
+        return maturities.map(function(m) {
+          var on = matPick === m.code;
+          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" data-ylm-mat="' + m.code + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + m.name + " Treasury</span></button>";
+        }).join("") + '<div class="bh-sep" role="separator"></div>';
+      };
       HIST_NOTE["ylm-range"] = "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail());
       var hd = document.getElementById("ylm-head");
       if (hd) hd.innerHTML = histHead("ylm-range");
@@ -15443,15 +15443,6 @@
         pageMode[mid] = seg.getAttribute("data-mode");
         var mHost = document.getElementById("metric-page"), mDraw = sheetRenderers[mid];
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
-        return;
-      }
-      var sid = seg.parentNode.getAttribute("data-series-for");
-      if (sid === "hzn-spread" && window.__pickSpread) {
-        window.__pickSpread(seg.getAttribute("data-series"));
-        return;
-      }
-      if (sid === "ylm-series" && window.__pickSeries) {
-        window.__pickSeries(sid, seg.getAttribute("data-series"));
         return;
       }
       var id = seg.parentNode.getAttribute("data-range-for");

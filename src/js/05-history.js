@@ -35,7 +35,11 @@
                                      '<span class="cycsel-tick" aria-hidden="true"></span>' +
                                      '<span class="cycsel-nm">' + r.label + '</span></button>';
                                  }).join("") + '<div class="bh-sep" role="separator"></div>'; } },
-    "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets it: the maturity the control picks
+    /* V588: the maturity is a WHICH-SERIES choice, so it lives in this menu exactly as Horizon's spread has
+       since V522 — and on this page it also settles the collision V473 named, because a maturity labelled 5Y
+       and a window labelled 5Y are now never on screen at once. The rows are BUILT where the maturities are
+       declared (see drawYlmHead), because that list and the current pick are the yield page's own state. */
+    "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets both the title and the menu
     "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" }
   };
   function histHead(id){
@@ -97,6 +101,9 @@
     var pick = e.target.closest && e.target.closest(".bh-pick");
     if (pick){
       headMenuFor = null; paintHeadMenus();
+      // V588: two pages put a which-series choice in this menu now, so the row says which one it belongs to
+      var mat = pick.getAttribute("data-ylm-mat");
+      if (mat){ if (window.__pickSeries) window.__pickSeries(null, mat); return; }
       if (window.__pickSpread) window.__pickSpread(pick.getAttribute("data-hzn-spread"));
       return;
     }

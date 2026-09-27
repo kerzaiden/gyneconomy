@@ -571,25 +571,30 @@
        segment instead of standing in a second container with a second chart, a second legend and a second copy of
        the figure. The rates the cards carried are not lost: they are what the chart plots. */
     var SERIES = maturities.map(function(m){ return { key:m.code, label:m.name.replace("-Month", "M").replace("-Year", "Y") }; });
+    /* V588, Keren: "it would be very informative to see interest rates by cycles and years, similar to other
+       history components in the app."
+       Version 473 deleted this page's window ruler for a real reason, and it has to be answered rather than
+       overridden: "a window ruler labelled 5Y a centimetre from a maturity labelled 5Y was the collision."
+       Both numbers are years and they mean different things \u2014 one is how long the loan runs, the other how far
+       back you are looking \u2014 so no amount of labelling makes them safe side by side.
+       The answer is the one V522 already found for Horizon: "10Y minus 3 months, 10Y minus 2 years shouldn't be
+       a new ruler \u2014 you can put it in the three dots." A control that chooses WHICH SERIES the chart draws
+       belongs in the head's menu; the control ROW is for the window. So the maturity moves to the \u22ef menu and
+       this row becomes the same Cycles / Years bar and cycle picker every other history page carries. The two
+       year-numbers are never on screen together, which is the collision gone rather than relabelled.
+       ["5y","10y","max"] for the reason HZN_STOPS gives: the series starts in 2005, so 25Y is unanswerable. */
+    var YLM_STOPS = ["5y", "10y", "max"];
     function renderLegend(){
       var host = document.getElementById("ylm-series"); if (!host) return;
-      host.innerHTML = seriesBar("ylm-series", SERIES, matPick);
-    }
-    // The chosen card is brought into view, so the row never opens showing cards that are not the one drawn below.
-    // It has to run when the PAGE opens, not when the cards are built: at build time the sheet is still hidden, so
-    // the row has no width and a scroll has nothing to move (Version 293).
-    // the chosen segment is brought into view, the way the card scroller used to bring its card
-    function centreCard(){
-      var host = document.getElementById("ylm-series"); if (!host || !host.clientWidth) return;
-      var bar = host.querySelector(".seriesbar"), picked = host.querySelector(".range-seg.on");
-      if (!bar || !picked) return;
-      bar.scrollLeft = Math.max(0, picked.offsetLeft - bar.clientWidth / 2 + picked.offsetWidth / 2);
+      host.innerHTML = histControls("ylm-range", { series:t3mYieldHistory, stops:YLM_STOPS });
     }
     window.__pickSeries = function(bar, code){
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
-      renderLegend(); drawYlm(); centreCard();
+      drawYlm();   // V588: redraws the head (its title is the maturity) and the chart; there is no row to centre
     };
-    sheetRenderers["sheet-sign-yield"] = function(){ centreCard(); drawYlm(); };
+    sheetRenderers["sheet-sign-yield"] = function(){ drawYlm(); };
+    // V588: the shared mode/range/cycle handler redraws through this, exactly as deficit-range does
+    sheetRenderers["ylm-range"] = function(){ drawYlm(); };
     // the record is drawn at the box's own width (Version 303) — a hidden element has no width, so this has to
     // happen on open, the same reason the yield page centres its card there
     // Volume and Pulse on the timeline (Version 367), riding the deficit block's machinery exactly: a key in
@@ -695,13 +700,21 @@
          bar. The levels take the whole record, which is what they took on the Yields tab anyway: a window ruler
          labelled 5Y a centimetre from a maturity labelled 5Y was the collision Version 472 hid behind a third
          tab, and deleting the ruler is the version of that fix that needs no tab at all. */
-      ylmFrom = 0; ylmTo = quarters.length;
+      /* V588: the window. Every maturity shares one index space \u2014 `quarters` is t3mYieldHistory's own
+         quarters \u2014 so the slice is computed once here and every series is drawn through it. */
+      var ylmCyc = pageMode["ylm-range"] === "cycles"
+                 ? (cycleByName(pageCycles["ylm-range"]) || openCycle()) : null;
+      var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["ylm-range"]);
+      ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
       renderLegend();
       render();
       var yTrend = document.getElementById("ylm-trend");
       if (yTrend){
+        /* V588: the fit is over the quarters IN VIEW, so the pill and the picture can never describe
+           different stretches \u2014 the rule Temperature states in the same words. */
         var w = [], mt = matOf(matPick);
-        if (mt) mt.data.forEach(function(d){ if (d.v != null) w.push(d.v); });
+        if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"climbing", falling:"easing" });
       }
@@ -713,6 +726,19 @@
        maturity the reader tries. */
     function drawYlmHead(){
       HIST_HEAD["ylm-range"].title = matTitle();
+      /* V588: the menu is built here rather than in the HIST_HEAD literal, because `maturities` and `matPick`
+         are this page's own state and that literal cannot see them — the first attempt at this threw
+         "maturities is not defined" on every open of the menu. Same shape as HZN_SPREADS', one page over. */
+      HIST_HEAD["ylm-range"].menu = function(){
+        return maturities.map(function(m){
+          var on = matPick === m.code;
+          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
+            '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") +
+            '" data-ylm-mat="' + m.code + '">' +
+            '<span class="cycsel-tick" aria-hidden="true"></span>' +
+            '<span class="cycsel-nm">' + m.name + ' Treasury</span></button>';
+        }).join("") + '<div class="bh-sep" role="separator"></div>';
+      };
       HIST_NOTE["ylm-range"] = '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail());
       var hd = document.getElementById("ylm-head");
       if (hd) hd.innerHTML = histHead("ylm-range");

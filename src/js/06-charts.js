@@ -337,18 +337,6 @@
           '</span><span class="cycsel-yr">' + L.years + '</span></button>';
       }).join("") + '</div></div>';
   }
-  /* Version 470: the third segmented control, on the range bar's own markup and its own delegated handler \u2014 a
-     page does not get a control idiom of its own (the Version 367 rule). Pressure's maturity ladder was a scroller
-     of cards with icons, rates and captions, which is a lot of furniture for what it does: choose which line the
-     chart draws. As a control it is one row, and the spread joins it as a sixth segment, which is what let the
-     page's second chart move into this band instead of standing in a container of its own. */
-  function seriesBar(id, items, active){
-    if (!items || items.length < 2) return "";
-    return '<div class="rangebar seriesbar" role="tablist" data-series-for="' + id + '">' + items.map(function(r){
-      return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" ' +
-        'aria-selected="' + (r.key === active ? "true" : "false") + '" data-series="' + r.key + '">' + r.label + '</button>';
-    }).join("") + '</div>';
-  }
   function rangeBar(id, ranges, active){
     // One stop is not a choice, so it is not a control (Version 366). Temperature reaches this after the Cycles
     // stop moved out to the cycle average component, and a lone segment reading "This cycle" would be furniture.

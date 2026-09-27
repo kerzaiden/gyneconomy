@@ -1825,11 +1825,6 @@
      bars, the indicators tabs, the spread toggle, the series bar \u2014 so all of them grow together, which is the
      point: a 26px target was not a history problem. */
   :root{ --ctl-h:40px; --btn-h:40px; }
-  /* the series bar carries more segments than the mode or range bars, so its type is a notch smaller and it is
-     allowed to scroll rather than wrap \u2014 a control that wraps to two lines stops reading as one control. */
-  .seriesbar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-  .seriesbar::-webkit-scrollbar{ display:none; }
-  .seriesbar .range-seg{ font-size:11.5px; padding-inline:9px; white-space:nowrap; }
   /* V579, Keren: "the background should be white, and choose whatever is appropriate for the selector colour,
      because right now it's white." The control is a CARD on the page now, like every other container here, and
      the chosen segment is the accent's own wash — the colour this app already uses to say "this is the thing
