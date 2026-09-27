@@ -1307,6 +1307,11 @@
 
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
+
+  .hist-bar .rangebar,
+  .hist-bar .spread-toggle,
+  .hist-bar .range-seg,
+  .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
 
@@ -1994,7 +1999,6 @@
         
         <div id="temp-trend"></div>
         
-        <div id="temp-panel"></div>
       </div></div>
       <div id="temp-highlights"></div>
       
@@ -14605,14 +14609,7 @@
         return d;
       }
       if (ind.bodyTerm === "Temperature") {
-        document.getElementById("temp-panel").innerHTML = panelRow({
-          name: ind.econTerm,
-          info: temperatureInfoHtml(ind),
-          head: "sheet-metric-temp",
-          metric: ind.metric,
-          flagged: meterFlagged(ind.meter),
-          bar: panelFromMeter(ind.meter)
-        });
+        HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
         tempCaptionFull = ind.caption;
         tempLeadShown = ind.lead || ind.shortCaption || "";
         (function() {

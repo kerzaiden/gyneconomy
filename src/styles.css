@@ -2077,6 +2077,16 @@
      included, and the contents centre inside it rather than setting it. */
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
+  /* V582, Keren: "I want it to be round like the trend button \u2014 both the current cycle and the cycle's years
+     picker." The control row and the trend pill are the only two chromes on a history page, and they were a
+     rounded square above a capsule. One shape now. Scoped to .hist-bar like every other decision about this row
+     (V519), so the row is one chrome: the mode bar, the years ruler, the cycle picker and Horizon's spread
+     toggle all take it, and the segment inside takes it too \u2014 a chip in a capsule is a capsule. The dropdown
+     MENU keeps --radius: it is a sheet of options, not a control, and a pill-shaped menu reads as a mistake. */
+  .hist-bar .rangebar,
+  .hist-bar .spread-toggle,
+  .hist-bar .range-seg,
+  .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
   /* V580: the bar is 40 now, so a segment's BOX is 32 \u2014 40 less the 1px border and the 3px inset that makes

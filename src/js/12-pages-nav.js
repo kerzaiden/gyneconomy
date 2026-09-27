@@ -251,10 +251,16 @@
       if (ind.bodyTerm === "Temperature"){
         // V490: the panel row, rendered once from the indicator — the figure does not move with the window,
         // so it does not belong in the per-draw code above.
-        document.getElementById("temp-panel").innerHTML =
-          panelRow({ name:ind.econTerm, info:temperatureInfoHtml(ind), head:"sheet-metric-temp",
-                     metric:ind.metric,
-                     flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) });
+        /* V582, Keren: "I don't need the test result component in temperature because I already have the
+           average. I have the Fed target. I don't need to see it again as in another form." The row drew
+           3.4% against a 1\u20133% track \u2014 and the chart two inches above already carries 3.4% in its readout,
+           the cycle's average as a line and the Fed's 2% as a dashed one, with Highlights saying in words
+           where today sits. Four statements of one number.
+           The row went; its NOTE did not. panelRow filed o.info into HIST_NOTE so the \u22ef menu could open it
+           (the V518 rule, one string read from one place), and that note is the only place the app explains
+           why 1\u20133% is a target band rather than a normal range, and that the Fed's 2% is PCE while this
+           reading is CPI. It is filed directly now, the way the yield, horizon and deficit notes already are. */
+        HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
         tempCaptionFull = ind.caption;                      // its long form joins the page's own, in one row (V287)
         tempLeadShown = ind.lead || ind.shortCaption || "";  // \u2026 minus whatever the page is already showing (V288)
         /* V532: REPLACE, never append. A second render would otherwise leave two `.sign-detail`
