@@ -978,6 +978,12 @@
   // It has to be measured rather than computed, because a run's length depends on the strip's width and on how many
   // of its neighbours have already settled; the pass takes the narrowest offender each time round and stops when
   // none is left. A strip with no width has not been shown yet, and settles when its tab opens.
+  //
+  // A one-quarter season goes through the pass too (Version 553). Version 552 gave it its quarter of track so the
+  // two strips could end together, and excluded it here because it already draws a dot — but on a twelve-year cycle
+  // at phone width a quarter is seven pixels, and the dot inside it was clamped to seven wide against twelve tall:
+  // the squeezed shape Keren has now rejected twice ("in the big tech cycle … Q4 2018 is squeezed. I want it to be
+  // round"). Below the floor it settles to the same 12px dot as any other short run.
   var STRIP_MIN_RATIO = 1.5;
   function settleStrips(){
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip){
@@ -985,7 +991,6 @@
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
       // start from the flexible state every time, so a strip that gets wider can give a run its length back
       runs.forEach(function(r){
-        if (r.classList.contains("one")) return;
         r.classList.remove("settled");
         r.style.flex = r.getAttribute("data-flex") || r.style.flex;
         r.style.width = "";
@@ -993,7 +998,7 @@
       for (var pass = 0; pass < runs.length; pass++){
         var worst = null;
         runs.forEach(function(r){
-          if (r.classList.contains("one") || r.classList.contains("settled")) return;
+          if (r.classList.contains("settled")) return;
           var b = r.getBoundingClientRect();
           if (b.width < b.height * STRIP_MIN_RATIO && (!worst || b.width < worst.w)) worst = { el:r, w:b.width };
         });
@@ -1001,7 +1006,7 @@
         if (!worst.el.getAttribute("data-flex")) worst.el.setAttribute("data-flex", worst.el.style.flex);
         worst.el.classList.add("settled");
         worst.el.style.flex = "none";
-        worst.el.style.width = "12px";
+        worst.el.style.width = "15px";   // 12 for the dot, 3 for the separation beside it
       }
     });
   }

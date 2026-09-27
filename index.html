@@ -308,9 +308,9 @@
 
   .strip-run{ height:12px; border-radius:var(--radius); background:var(--season); min-width:12px; }
 
-  .strip-run.one{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
-  .strip-run.one::before{ content:""; width:12px; max-width:100%; height:12px; border-radius:50%; background:var(--season); }
-  .strip-run.settled{ width:12px; flex:none; border-radius:50%; }
+  .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
+  .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
+  .strip-run.settled{ flex:none; }
   .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
   .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-foot{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-secondary); }
@@ -14304,7 +14304,6 @@
       if (!strip.clientWidth) return;
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
       runs.forEach(function(r) {
-        if (r.classList.contains("one")) return;
         r.classList.remove("settled");
         r.style.flex = r.getAttribute("data-flex") || r.style.flex;
         r.style.width = "";
@@ -14312,7 +14311,7 @@
       for (var pass = 0; pass < runs.length; pass++) {
         var worst = null;
         runs.forEach(function(r) {
-          if (r.classList.contains("one") || r.classList.contains("settled")) return;
+          if (r.classList.contains("settled")) return;
           var b = r.getBoundingClientRect();
           if (b.width < b.height * STRIP_MIN_RATIO && (!worst || b.width < worst.w)) worst = {
             el: r,
@@ -14323,7 +14322,7 @@
         if (!worst.el.getAttribute("data-flex")) worst.el.setAttribute("data-flex", worst.el.style.flex);
         worst.el.classList.add("settled");
         worst.el.style.flex = "none";
-        worst.el.style.width = "12px";
+        worst.el.style.width = "15px";
       }
     });
   }
