@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **13,727 lines**, about 1125 KB, roughly **320 thousand tokens**. No session can read it
+The source is **13,727 lines**, about 1148 KB, roughly **326 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `dae1d01` on 2026-09-27.
+Generated from commit `efe9103` on 2026-09-27.
 
 ## The five regions
 
