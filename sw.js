@@ -9,7 +9,7 @@
    Bump VERSION on any release that changes the shell. Old caches are dropped on activate.
    Nothing here may throw on a browser without the APIs: the page must work with no worker at all. */
 
-var VERSION = 'gyn-550';
+var VERSION = 'gyn-551';
 var SHELL = [
   './',
   './index.html',
@@ -53,9 +53,12 @@ self.addEventListener('fetch', function (e) {
                   (req.headers.get('accept') || '').indexOf('text/html') !== -1;
 
   if (wantsHtml) {
-    // network first: the figures are IN the html, so a cached page is a stale reading
+    /* Network first, and `no-store` so it MEANS it (Version 551). Without it the fetch goes through
+       the browser's own HTTP cache, and GitHub Pages serves this file with a max-age — so "network
+       first" could still hand back a page minutes old, which on a page whose figures are baked into
+       it is a stale economic reading. */
     e.respondWith(
-      fetch(req).then(function (res) {
+      fetch(req, { cache: 'no-store' }).then(function (res) {
         var copy = res.clone();
         caches.open(VERSION).then(function (c) { c.put(req, copy); }).catch(function () {});
         return res;

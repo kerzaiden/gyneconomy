@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **13,198 lines**, about 1075 KB, roughly **305 thousand tokens**. No session can read it
+The source is **13,227 lines**, about 1076 KB, roughly **306 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `87ee99d` on 2026-09-27.
+Generated from commit `7a4b727` on 2026-09-27.
 
 ## The five regions
 
@@ -20,7 +20,7 @@ Generated from commit `87ee99d` on 2026-09-27.
 | **Styles** | 5–2,928 | the whole stylesheet, every token and rule |
 | **Markup** | 2,929–3,661 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | **Script** | 3,662–13,174 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 13,175–13,198 | </body></html> |
+| **Close** | 13,175–13,227 | </body></html> |
 
 Counts: **244** top-level functions, **179** top-level vars, **4** top-level IIFEs in the script.
 

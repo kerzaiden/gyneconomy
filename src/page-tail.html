@@ -16,7 +16,36 @@
     if (window.top !== window.self) return;                        // the artifact's iframe
     if (location.protocol !== "https:" && location.hostname !== "localhost") return;
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () { /* nothing to do */ });
+      navigator.serviceWorker.register("sw.js").then(function (reg) {
+        if (!reg) return;
+        /* An INSTALLED app is never "closed", so nothing ever prompted it to look for a new worker
+           and an update could sit unseen until the app was deleted and re-added (Keren, Sep 27,
+           2026: "I don't want to delete the app every time I make an update"). Two halves:
+
+           ASK — check for a new worker whenever the app comes back to the foreground, throttled to
+           once a minute so switching between apps does not hammer the host; */
+        var last = 0;
+        var check = function () {
+          if (document.visibilityState !== "visible") return;
+          var now = Date.now();
+          if (now - last < 60000) return;
+          last = now;
+          reg.update().catch(function () {});
+        };
+        document.addEventListener("visibilitychange", check);
+        window.addEventListener("focus", check);
+
+        /* and TAKE IT — when a new worker takes control, reload once, so the reader sees the new
+           page rather than the old one still on screen. The guard matters: a worker claiming a
+           client on FIRST install would otherwise reload a page that is already current, which
+           looks like a flicker and at worst loops. */
+        var reloading = false;
+        navigator.serviceWorker.addEventListener("controllerchange", function () {
+          if (reloading) return;
+          reloading = true;
+          if (navigator.serviceWorker.controller) location.reload();
+        });
+      }).catch(function () { /* nothing to do */ });
     });
   } catch (e) { /* a browser that objects to any of the above keeps the plain page */ }
 })();
