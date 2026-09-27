@@ -51,7 +51,11 @@ const TOKENS = {
 };
 const SRC_MUST = [
   ['COL_FILL', /var COL_FILL = 0\.68;/],
-  ['AXIS',     /var AXIS = \{ L:34, R:6, T:14 \};/],
+  /* V581: this pinned the three keys AXIS had in V551. The history work grew it to seven, and because
+     nothing updated the pin, `npm test` failed on every commit from V552 on \u2014 and deploy `needs: test`,
+     so the SITE stopped at V551 while twenty-nine versions were committed, tagged and published to the
+     artifact. A pin that must be edited deliberately is the point; not noticing for a month is not. */
+  ['AXIS',     /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/],
   ['no .vh-line', /`\.vh-line` is gone/],
 ];
 
@@ -110,7 +114,9 @@ async function openPage(p, url, sheet) {
     const source = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'))
       .map(n => fs.readFileSync(path.join(SRC_DIR, n), 'utf8')).join('\n');
     for (const [name, re] of SRC_MUST)
-      re.test(source) ? ok('source: ' + name) : bad('source: ' + name, 'not found in src/');
+      re.test(source) ? ok('source: ' + name)
+        : bad('source: ' + name, 'src/ no longer matches ' + re.source + ' \u2014 update the pin or the source; '
+                                 + 'until this passes CI skips deploy and the SITE does not update');
   }
 
   // ---- 2. browser checks

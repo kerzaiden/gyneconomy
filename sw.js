@@ -9,7 +9,7 @@
    Bump VERSION on any release that changes the shell. Old caches are dropped on activate.
    Nothing here may throw on a browser without the APIs: the page must work with no worker at all. */
 
-var VERSION = 'gyn-580';
+var VERSION = 'gyn-581';
 var SHELL = [
   './',
   './index.html',
