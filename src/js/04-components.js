@@ -279,12 +279,15 @@
     if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
     /* Version 575, Keren: "on the left edge bar I want the tooltip to align to the left, and on the right edge
        bar to align to the right, so it looks symmetrical." The plate is centred on its column until the column
-       runs out of room, and then it stops against the FRAME — inset by the same 6px the legend is inset by, so
-       the three things that live at the edges of this picture all sit on one line. It was the plot's ends
-       before, inset 10 on one side and 5 on the other, which is neither edge and not symmetrical either. */
+       runs out of room, and then it stops against the PLOT'S OWN EDGE — where the columns begin on one side
+       and end on the other.
+       Version 576 is that correction. V575 anchored it to the frame inset by 6, which on the right IS the
+       plot's edge (AXIS.R is 6) and so looked right, but on the left put the plate over the number rail —
+       Keren: "the tooltip crosses over to the column of the percentage; I want it to align to the bar itself,
+       like you did on the right side." The rail is 37 wide, not 6, which is the whole of the difference. */
     var fx0 = fr ? parseFloat(fr.getAttribute("x")) : g.L;
     var fx1 = fr ? fx0 + parseFloat(fr.getAttribute("width")) : g.R;
-    var lo = (sb.left - eb.left) + (fx0 + 6) * scale, hi = (sb.left - eb.left) + (fx1 - 6) * scale;
+    var lo = (sb.left - eb.left) + (fx0 + AXIS.L) * scale, hi = (sb.left - eb.left) + (fx1 - AXIS.R) * scale;
     /* The two end columns anchor to the frame rather than centring on themselves: the reading for the first
        column starts where the picture starts, the reading for the last ends where it ends. Everything between
        is centred on its own column. Keren asked for exactly this, and it is what makes the two ends look like
