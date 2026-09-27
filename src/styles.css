@@ -1451,9 +1451,9 @@
   .head-mark-disc{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
-  /* V561: the host pulls left by AXIS.L, the plot's left margin, so the FRAME's left edge — the thing a
-     reader sees as the grid — lands on the same line as the card's title and its controls. */
-  .vh-host{ margin:0 0 2px -14px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
+  /* V561 pulled the host left so the frame would clear the gutter; V562 makes the FRAME itself run to the
+     card's edges instead, so the host sits square again and the grid is symmetric without a nudge. */
+  .vh-host{ margin:0 0 2px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
   /* a sign folded into another sign's page (Version 306): a section, not a box \u2014 the page it joins is flat */
   /* Version 346: a folded sign is a card, not a footnote under a rule \u2014 it is a reading of its own that
      happens to live on another reading's page, and the page reads as two things because it is two things. */
@@ -2095,7 +2095,7 @@
      came out at 4.48 light and 4.19 dark — under the 4.5 floor this design system sets for itself.
      Secondary keeps the year quieter than the cycle name beside it, which is the hierarchy. */
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
-  .page-chart .dchart{ margin:0 0 0 -14px; }   /* V497, as .vh-host; V561 pulls left */
+  .page-chart .dchart{ margin:0; }   /* V497, as .vh-host */
   /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
   .page-chart .trendpill{ margin:12px 0 14px; }
   /* what the chart measures, said under it rather than over it (Keren: "the cyclically-adjusted P/E ratio \u2026 needs
@@ -2104,7 +2104,7 @@
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:0 0 2px -14px; }   /* V558/V559, as .vh-svg; V561 pulls left */
+  .dchart{ margin:0 0 2px; }   /* V558/V559, as .vh-svg */
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
   /* the pair (Version 267): the gap is the mark, so it gets the weight; the two ends are the dial's own disc, hollow
      for the reading being measured against and cored for the one being measured */
@@ -2435,7 +2435,7 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin: 0 -6px 4px -14px; }   /* V497, as .vh-host; V561 pulls left */
+  .chart-shell{ position:relative; margin: 0 -6px 4px; }   /* V497, as .vh-host */
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
   /* .curve-dot/.curve-dot.end — the spread-history chart's hover dot */
   .curve-dot{ fill:var(--accent); }

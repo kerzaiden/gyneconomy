@@ -729,13 +729,18 @@
      between the readout's plate and the grid's ceiling is T and nothing else — one number, and the 10px Keren
      asked for. It was 6 of margin and 14 of inset stacked, which is the kind of gap nobody can tune because
      nobody can see which half of it to change.
-     Version 561 swaps L and R. Keren: "the grid doesn't align to the left — the title and the trend buttons
-     are both aligned to the left, but the grid is a little bit more to the right." It was: the gutter WAS the
-     left margin, so every grid on every page started 34px in from the card's own text. The y labels move to
-     the right of the frame, where Apple's own chart puts them, and the left margin drops to what the first
-     year label on the x axis actually needs — half its width. The plot hosts then pull left by that much, so
-     the frame's left edge lands exactly on the title's. */
-  var AXIS = { L:14, R:34, T:10, LEG:20 };
+     Version 561 moved the y labels to the right, because that is where the Apple Health chart Keren works
+     from puts them. Version 562 moves them back and fixes the actual problem, which she then named exactly:
+     "the numbers should be on the left because it's a left-to-right app … you saw on the Apple Health it's on
+     the right side because it was a program for Hebrew." Correct, and it is the whole reason that reference
+     looked the way it did.
+     So the gutter comes back to the left, and the FRAME stops being the plot's edge: it is drawn AXIS.L out
+     on one side and AXIS.R out on the other, which puts it flush against the card's own text on both — "make
+     the outer frame of the grid align both in the left side and the right side … I want symmetry." The
+     numbers sit inside it, in the rail the gutter opens, above their own line where no column ever reaches.
+     Every caller pads with these two numbers, which is what lets the frame be derived from them here rather
+     than passed in twelve times. */
+  var AXIS = { L:32, R:6, T:10, LEG:20 };
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -748,22 +753,28 @@
       ticks = [];
       for (var v = Math.ceil(o.lo / step) * step; v <= o.hi + 1e-9; v += step) ticks.push(v);
     }
+    // the frame runs to the card's own edges on both sides; the PLOT is inset inside it (Version 562)
+    var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
     // the frame first, so every gridline and every mark is drawn over it
     if (o.top != null && o.bot != null)
-      out.push('<rect class="bt-frame" x="' + o.x0 + '" y="' + (+o.top).toFixed(1) + '" width="' +
-               (o.x1 - o.x0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
+      out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' +
+               (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
     ticks.forEach(function(v){
       var ty = parseFloat(o.y(v));
       if (o.skipNear != null && Math.abs(ty - o.skipNear) < 12) return;
       // `noGridAt` is for a value that earns a label but not a line — the deficit chart's zero, where the solid
       // baseline is about to be drawn and a dashed one under it would read as two rules
       if (o.noGridAt == null || Math.abs(v - o.noGridAt) > 1e-9)
-        out.push('<path class="bt-grid" d="M' + o.x0 + ',' + ty.toFixed(1) + 'L' + o.x1 + ',' + ty.toFixed(1) + '"/>');
-      out.push('<text class="bt-yl" x="' + (o.x1 + 6) + '" y="' + (ty + 3.4).toFixed(1) +
+        out.push('<path class="bt-grid" d="M' + fx0.toFixed(1) + ',' + ty.toFixed(1) + 'L' + fx1.toFixed(1) + ',' + ty.toFixed(1) + '"/>');
+      /* ABOVE its line, not on it: the gridline runs the frame's full width now, and a number sitting on one
+         would be struck through by it. Above the topmost line there may be no room left inside the frame, and
+         there the number drops under its line instead — still in the rail, still clear of every column. */
+      var ly = o.top != null && ty - 5 < o.top + 11 ? ty + 13 : ty - 5;
+      out.push('<text class="bt-yl" x="' + (fx0 + 4).toFixed(1) + '" y="' + ly.toFixed(1) +
                '" text-anchor="start">' + o.fmt(v) + '</text>');
     });
     if (o.base != null)
-      out.push('<path class="bt-axis" d="M' + o.x0 + ',' + o.base + 'L' + o.x1 + ',' + o.base + '"/>');
+      out.push('<path class="bt-axis" d="M' + fx0.toFixed(1) + ',' + o.base + 'L' + fx1.toFixed(1) + ',' + o.base + '"/>');
     return out.join("");
   }
 
