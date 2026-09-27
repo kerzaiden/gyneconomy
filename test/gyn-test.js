@@ -93,11 +93,25 @@ async function openPage(p, url, sheet) {
                  : ok('parses', blocks.length + ' script block' + (blocks.length === 1 ? '' : 's'));
   }
 
-  const leak = (src.match(/kerzaiden@/g) || []).length;
-  leak === 0 ? ok('no email in markup') : bad('no email in markup', leak + ' occurrence(s) — DO NOT PUBLISH');
+  /* ANY address, not one particular one — the whole point of the generic form is that Keren's own
+     address is not written down in a public repo in order to be looked for. */
+  const leak = (src.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || []);
+  leak.length === 0 ? ok('no email in markup')
+                    : bad('no email in markup', leak.length + ' address(es) — DO NOT PUBLISH');
 
-  for (const [name, re] of SRC_MUST)
-    re.test(src) ? ok('source: ' + name) : bad('source: ' + name, 'not found');
+  /* These are claims about the SOURCE, so they read src/ — since V548 the built file has had its
+     comments stripped and its JS reprinted by terser, and one of these looks for a comment. */
+  const SRC_DIR = path.join(__dirname, '..', 'src');
+  const MANIFEST = path.join(SRC_DIR, 'manifest.json');
+  if (!fs.existsSync(MANIFEST)) {
+    // the suite takes any html file; only a repo checkout has src/ beside it
+    SRC_MUST.forEach(([name]) => ok('source: ' + name, 'skipped — no src/ here'));
+  } else {
+    const source = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'))
+      .map(n => fs.readFileSync(path.join(SRC_DIR, n), 'utf8')).join('\n');
+    for (const [name, re] of SRC_MUST)
+      re.test(source) ? ok('source: ' + name) : bad('source: ' + name, 'not found in src/');
+  }
 
   // ---- 2. browser checks
   const b = await chromium.launch({ executablePath: CHROME });
@@ -200,9 +214,9 @@ async function openPage(p, url, sheet) {
   const readLive = () => {
     const fg  = document.getElementById('subj-value-sentiment');
     const yld = document.getElementById('subj-value-yield');
-    const ink = document.querySelector('.fg-w');
+    const ink = document.querySelector('.curve-w');
     return {
-      fgNum: fg ? fg.textContent.trim().split('%')[0] : null,
+      fgNum: fg ? fg.textContent.trim().split('VIX')[0] : null,
       fgInk: ink ? ink.className : null,
       yld:   yld ? yld.textContent.trim().replace(/\s+/g, ' ') : null
     };
@@ -229,12 +243,31 @@ async function openPage(p, url, sheet) {
     ? ok('live cache absent', plain.r.fgNum + '% / ' + plain.r.yld)
     : bad('live cache absent', JSON.stringify(plain.r) + ' ' + plain.errs.join(' | '));
 
-  const objSeed = await loadWith(JSON.stringify({
-    fearGreed: { kind: 'object', value: 82, label: 'Greed', asOf: 'x', weekAgo: 79, monthAgo: 71 }
-  }));
-  (objSeed.r.fgNum === '82' && objSeed.r.fgInk && objSeed.r.fgInk !== plain.r.fgInk && !objSeed.errs.length)
-    ? ok('live cache object doc', '36 ' + plain.r.fgInk + '  ->  82 ' + objSeed.r.fgInk)
-    : bad('live cache object doc', JSON.stringify(objSeed.r) + ' was ' + plain.r.fgInk + ' ' + objSeed.errs.join(' | '));
+  /* V546: the object doc under test is `fedFunds`, since `fearGreed` left with CNN. It also pins the
+     V544 rule the harder way: the seed carries lo and hi ONLY, and the editorial fields around them
+     (the FOMC date, the vote, the next meeting) must survive, because a live document merges over
+     the file rather than replacing it. Before V544 this seed blanked all three. */
+  const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75 } });
+  const objSeed = await loadWith(FF_SEED);
+  const objText = await (async () => {
+    const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
+    const g = await c.newPage();
+    await g.addInitScript(x => { try { localStorage.setItem('gyn.live', x); } catch (e) {} }, FF_SEED);
+    await g.goto('file://' + url); await g.waitForTimeout(1300);
+    // the page's TEXT, not its source: body.textContent includes every <script>, where the word
+    // "undefined" legitimately appears, and innerText skips the drawers these rows live in
+    const t = await g.evaluate(() => {
+      const c2 = document.body.cloneNode(true);
+      c2.querySelectorAll('script, style').forEach(n => n.remove());
+      return c2.textContent;
+    });
+    await c.close();
+    return t;
+  })();
+  (/2\.50/.test(objText) && /Oct 28, 2026/.test(objText) && !/undefined/.test(objText) && !objSeed.errs.length)
+    ? ok('live cache object doc', 'lo/hi applied, editorial fields survive')
+    : bad('live cache object doc', 'rate ' + /2\.50/.test(objText) + ' next ' + /Oct 28, 2026/.test(objText) +
+        ' undefined ' + /undefined/.test(objText) + ' ' + objSeed.errs.join(' | '));
 
   const serSeed = await loadWith(JSON.stringify({ yieldCurve: { kind: 'series', rows: INVERTED } }));
   (serSeed.r.yld && serSeed.r.yld !== plain.r.yld && !serSeed.errs.length)
@@ -244,9 +277,9 @@ async function openPage(p, url, sheet) {
   for (const [label, seed] of [
     ['garbage',      'this is not json'],
     ['empty',        '{}'],
-    ['shapeless',    '{"fearGreed":{"kind":"object"}}'],
-    ['null doc',     '{"fearGreed":null}'],
-    ['wrong kind',   '{"fearGreed":{"kind":"series","rows":[]}}']
+    ['shapeless',    '{"vix3mClose":{"kind":"scalar"}}'],
+    ['null doc',     '{"vix3mClose":null}'],
+    ['wrong kind',   '{"vix3mClose":{"kind":"series","rows":[]}}']
   ]) {
     const g = await loadWith(seed);
     (g.r.fgNum === plain.r.fgNum && g.r.yld === plain.r.yld && !g.errs.length)
@@ -267,7 +300,7 @@ async function openPage(p, url, sheet) {
     const read = () => g.evaluate(() => {
       const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim().replace(/\s+/g, ' ') : null; };
       const k = s => { const e = document.querySelector(s); return e ? e.className : null; };
-      return { sentiment: t('#subj-value-sentiment'), mood: t('.fg-w'), moodClass: k('.fg-w'),
+      return { sentiment: t('#subj-value-sentiment'), mood: t('.curve-w'), moodClass: k('.curve-w'),
                yield: t('#subj-value-yield'), valuation: t('#subj-value-valuation') };
     });
 
@@ -279,24 +312,26 @@ async function openPage(p, url, sheet) {
       const rv = await g.evaluate(() => {
         const G = window.__GYN;
         return {
-          fg: G.applyLive('fearGreed', { value: 82, label: 'Greed', asOf: 'x', weekAgo: 79, monthAgo: 71 }),
+          fg: G.applyLive('vix3mClose', 12),
           yc: G.applyLive('yieldCurve', [{m:'3M',y:5.55},{m:'2Y',y:4.60},{m:'10Y',y:4.05}]),
-          nul: G.applyLive('fearGreed', null),
-          bad: G.applyLive('fearGreed', { nope: 1 }),
+          nul: G.applyLive('vix3mClose', null),
+          bad: G.applyLive('vix3mClose', { nope: 1 }),
           unk: G.applyLive('notADocument', { a: 1 })
         };
       });
       await g.waitForTimeout(250);
       const after = await read();
 
-      (rv.fg && /^82/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
-        ? ok('repaint fearGreed figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
-        : bad('repaint fearGreed figure', JSON.stringify(after.sentiment));
+      /* The curve is DERIVED from two legs, so this moves the far one and the ratio must follow:
+         14.21 / 12 = 1.18. A stored copy of the ratio would not move; a recomputed one does. */
+      (rv.fg && /^1\.18/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
+        ? ok('repaint fear curve figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
+        : bad('repaint fear curve figure', JSON.stringify(after.sentiment));
 
-      // the DERIVED class is the real claim: a number can be printed, a verdict must be recomputed
-      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Greed')
-        ? ok('repaint derived mood', before.moodClass + ' -> ' + after.moodClass)
-        : bad('repaint derived mood', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
+      // the DERIVED verdict is the real claim: a number can be printed, a verdict must be recomputed
+      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Inverted')
+        ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
+        : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 
       (rv.yc && /4\.05\/5\.55/.test(after.yield || ''))
         ? ok('repaint yieldCurve pair', (before.yield || '').slice(0, 12) + ' -> ' + (after.yield || '').slice(0, 12))

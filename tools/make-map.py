@@ -19,10 +19,34 @@ line number wastes more time than one who has no map at all.
 import io, os, re, sys, subprocess, datetime
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(HERE, "index.html")
 OUT = os.path.join(HERE, "docs", "MAP.md")
 
-lines = io.open(SRC, encoding="utf-8").read().split("\n")
+# V548: the map reads the SOURCE, not the built file. index.html has had its comments stripped
+# since V548 and its JS reprinted by terser, so mapping it would be mapping something nobody reads
+# and anchoring on comments that are no longer there. The joined source is exactly what index.html
+# was before the strip, which is what every anchor in this map was written against.
+import json as _json
+_SRCDIR = os.path.join(HERE, "src")
+_manifest = _json.load(io.open(os.path.join(_SRCDIR, "manifest.json"), encoding="utf-8"))
+_parts = [io.open(os.path.join(_SRCDIR, n), encoding="utf-8").read() for n in _manifest]
+# where each part begins in the joined text, so an entry can name the file to open
+PART_AT = []
+_at = 1
+for _n, _t in zip(_manifest, _parts):
+    PART_AT.append((_at, _n))
+    _at += _t.count("\n") + 1
+
+def part_of(line):
+    """The src/ file a joined-source line number falls in."""
+    name = PART_AT[0][1]
+    for start, n in PART_AT:
+        if line >= start: name = n
+        else: break
+    return name
+
+_joined = "\n".join(_parts)
+SRC_BYTES = len(_joined.encode("utf-8"))
+lines = _joined.split("\n")
 N = len(lines)
 
 
@@ -156,16 +180,16 @@ def sha():
 
 o = []
 w = o.append
-w("# Map of `index.html`")
+w("# Map of the source")
 w("")
 w("**Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).")
 w("")
-w("`index.html` is **%s lines**, about %d KB, roughly **%d thousand tokens**. No session can read it"
-  % ("{:,}".format(N), os.path.getsize(SRC) // 1024, os.path.getsize(SRC) / 3600))
+w("The source is **%s lines**, about %d KB, roughly **%d thousand tokens**. No session can read it"
+  % ("{:,}".format(N), SRC_BYTES // 1024, SRC_BYTES / 3600))
 w("whole, so this file exists to get you to the right two hundred lines.")
 w("")
 w("> **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the")
-w("> **anchor** column with grep — `grep -n 'function moodFrom(' index.html` — and treat the line")
+w("> **anchor** column with grep — `grep -rn 'function curveVerdict(' src/` — and treat the line")
 w("> number as rough orientation only. If a number is off by a hundred, the map is doing its job and")
 w("> just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.")
 w("")
@@ -307,5 +331,5 @@ if "--check" in sys.argv:
     sys.exit(1)
 
 io.open(OUT, "w", encoding="utf-8").write(text)
-print("wrote %s — %d lines, from a %s-line index.html" % (
+print("wrote %s — %d lines, from %s lines of src/" % (
     os.path.relpath(OUT, HERE), text.count("\n") + 1, "{:,}".format(N)))

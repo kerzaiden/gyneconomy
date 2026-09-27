@@ -1,16 +1,16 @@
-# Map of `index.html`
+# Map of the source
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-`index.html` is **13,181 lines**, about 1074 KB, roughly **305 thousand tokens**. No session can read it
+The source is **13,181 lines**, about 1074 KB, roughly **305 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
-> **anchor** column with grep — `grep -n 'function moodFrom(' index.html` — and treat the line
+> **anchor** column with grep — `grep -rn 'function curveVerdict(' src/` — and treat the line
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `1aeb308` on 2026-09-26.
+Generated from commit `42459d4` on 2026-09-27.
 
 ## The five regions
 
