@@ -2186,7 +2186,6 @@
       <div class="curve-card" id="curve-gauge"></div>
       
       <div id="fear-history"></div>
-      <div id="curve-vix"></div>
       <div id="curve-highlights"></div>
 
       
@@ -16281,30 +16280,23 @@
       host.innerHTML = '<div class="hist-bar">' + histControls("fear-range", {
         series: fearCurveHistory,
         stops: FEAR_STOPS
-      }, FEAR_Y0) + "</div>" + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + '<div id="fear-trend"></div></div>';
+      }, FEAR_Y0) + "</div>" + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' + '<div id="fear-trend"></div></div>';
       var ft = document.getElementById("fear-trend");
       if (ft) ft.innerHTML = trendPill(fit, null, true, {
         rising: "inverting",
         falling: "steepening"
       });
       var box = host.querySelector(".page-chart");
+      refitHistory(box, function(w) {
+        return divergeChart(opts(), w);
+      });
       if (box) {
         box.__geom = lastHistGeom;
         wireHistHover(box, "fear-hist-tooltip");
       }
-      refitHistory(box, function(w) {
-        return divergeChart(opts(), w);
-      });
     }
     sheetRenderers["fear-range"] = drawFearHistory;
     drawFearHistory();
-    var vixHost = document.getElementById("curve-vix");
-    if (vixHost) vixHost.innerHTML = '<div class="panel-stack in-hist">' + panelRow({
-      name: vixInd.bodyTerm,
-      metric: vixInd.metric,
-      flagged: meterFlagged(vixInd.meter),
-      bar: panelFromMeter(vixInd.meter)
-    }) + "</div>";
     var hl = document.getElementById("curve-highlights");
     if (hl) {
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;

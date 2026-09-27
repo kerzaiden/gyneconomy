@@ -413,27 +413,26 @@
     /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
        shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
        escape): this page has ONE Highlights block and the VIX's note is a card in it. */
-    /* V584, Keren: "look at the test result design in the rest of the app and apply to the fear index below."
-       The VIX was the last reading in the app still drawn as a blood CARD \u2014 its own mark, its own kicker, its
-       own tag, its own date line and a full-width track \u2014 while every other reading of the same kind (Power's
-       four markers, Households, the deficit) is a panelRow: a name, a figure, and the band it sits in, three to
-       a card. One idiom for one kind of reading.
-       Nothing is lost in the compression, which is the only reason it compresses. The DATE is already printed
-       two lines above: curveSub is literally "Cboe, " + vixRow.sub, the same field from the same object, so the
-       card was restating its neighbour's provenance. The NOTE is already a door in Highlights, where "What is
-       priced" opens factsFrom(vixRow.note) \u2014 so the row deliberately carries no (i) of its own, because two
-       doors onto one note is the Version 477 fault, the same rule that keeps an (i) off a row with a chevron.
-       The word ("Usual") is not lost either: panelFromMeter lights the band the reading sits in, which is the
-       Version 486 finding that a three-segment spectrum says where it sits without naming it. */
+    /* V591, Keren: "I think we can get rid of the meter in the fear page, right? Because we inserted a
+       history component." Right, and for the reason that took the meter off Temperature in V582: the page was
+       stating one thing four times. What goes is the VIX row \u2014 a level against its usual band \u2014 and what
+       stays says more: the gauge reads the curve now, the history draws it back to 2007, and Highlights'
+       second card is entirely about the VIX, giving 14.21, the 13\u201320 band, the 9.14 record low and the 82.69
+       high in a sentence that can hold all four where a track can hold one.
+       Worth naming the one thing it costs, because it is not the same redundancy Temperature had: the history
+       draws the RATIO and the meter read the LEVEL, so the VIX level stops being a figure on this page and
+       survives as prose. That is the right trade on a page called Fear, where the curve is the reading and the
+       VIX is the leg it is computed from \u2014 but it is a trade, not a deletion of a duplicate. */
+
     /* V590, Keren: "make a history component in the fear page that will show the curve \u2014 check how we did
        the inverted yield curve and apply the same."
        divergeChart is that treatment: bars hanging off a reference line, coloured by which side they fall. On
        Valuations the line is CAPE's fair value; here it is 1.00, and the app's own CSS already reads the two
        sides correctly without a new colour \u2014 .dv-bar.over is the serious ink and .under the good, which is
-       exactly inverted against normal. The threshold needs no defending either: it is the definition of the
-       shape rather than a level anyone chose, the same sentence curveVerdict() carries.
+       exactly inverted against normal. The threshold needs no defending: it is the definition of the shape
+       rather than a level anyone chose, the sentence curveVerdict() already carries.
        The series is fearCurveHistory, monthly from December 2007 \u2014 VXVCLS begins then, so that is the first
-       month the ratio can be computed at all. Its last point is the same number the gauge above shows, because
+       month the ratio can be computed at all. Its last point is the number the gauge above shows, because
        both round to three decimals off the same two legs. */
     var FEAR_STOPS = ["5y", "10y", "max"];
     var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
@@ -452,8 +451,8 @@
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10),
                               parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
       /* One options object, built once and handed to BOTH the first draw and the refit. Writing them twice is
-         how the first pass lost its x labels: the refit rebuilt the chart without `xLabel`, so the years were
-         drawn and then silently replaced by a chart that had none. */
+         how the first pass lost its x labels: the refit rebuilt without `xLabel`, so the years were drawn and
+         then silently replaced by a chart that had none. */
       function opts(){
         return { vals:vals, mid:1, midLabel:"flat, 1.00",
           fmt:function(v){ return v.toFixed(2); },
@@ -476,26 +475,21 @@
           { series:fearCurveHistory, stops:FEAR_STOPS }, FEAR_Y0) + '</div>' +
         '<div class="page-chart">' + histHead("fear-range") +
         divergeChart(opts(), host.clientWidth || 340) +
+        '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' +
         '<div id="fear-trend"></div></div>';
       var ft = document.getElementById("fear-trend");
       // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.
       if (ft) ft.innerHTML = trendPill(fit, null, true, { rising:"inverting", falling:"steepening" });
+      /* The refit comes FIRST and the wiring second, which is the order every other page uses and the reason
+         this chart first drew with no legend: refitHistory replaces the svg's outerHTML, so a legend injected
+         before it is thrown away with the element it was injected into \u2014 and lastHistGeom is the refit's
+         geometry, not the first draw's, so reading __geom before it pins the hover to a chart that is gone. */
       var box = host.querySelector(".page-chart");
-      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "fear-hist-tooltip"); }
       refitHistory(box, function(w){ return divergeChart(opts(), w); });
+      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "fear-hist-tooltip"); }
     }
     sheetRenderers["fear-range"] = drawFearHistory;
     drawFearHistory();
-
-    var vixHost = document.getElementById("curve-vix");
-    if (vixHost)
-      /* `in-hist` is the modifier that makes a stack carry its own box rather than sit inside a card that
-         already has one \u2014 "one reading in a history container still gets the box", as its own note puts it.
-         The name says where it was first needed, not what it does; a synonym class for the identical rule
-         would be the duplication, so this uses the one that exists. */
-      vixHost.innerHTML = '<div class="panel-stack in-hist">' +
-        panelRow({ name:vixInd.bodyTerm, metric:vixInd.metric,
-                   flagged:meterFlagged(vixInd.meter), bar:panelFromMeter(vixInd.meter) }) + '</div>';
 
     var hl = document.getElementById("curve-highlights");
     if (hl){
