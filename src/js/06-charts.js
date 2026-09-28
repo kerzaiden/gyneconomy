@@ -538,7 +538,13 @@
   var powerPageNote = "", tempCaptionFull = "", tempLeadShown = "";
   function highlightsHtml(cards, cyclesHtml, moreHtml){
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
-    return '<section class="highlights"><div class="hi-head">Highlights</div>' + cards.join("") +
+    /* V604, Keren: "I want the insights to be economy, biology, so I would understand the comparison."
+       The app had TWO names for one section: the category pages and Horizon said Insights, the five metric
+       pages said Highlights, and both were the same component holding the same lede-then-cards. One name, and
+       it is hers — a page's commentary is its insight into what the reading means. (The bare `.highlights`
+       fact lists on Hormones and Pressure are untouched: they carry no head, because a list of four published
+       settings is not a reading of anything.) */
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") +
       (cyclesHtml || "") + (moreHtml || "") + '</section>';
   }
 

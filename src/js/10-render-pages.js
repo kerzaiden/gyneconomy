@@ -317,9 +317,9 @@
     var ins = document.getElementById("horizon-insights");
     if (ins){
       var cards = [];
-      cards.push('<p class="hi-lede">A slope is a forecast, not a measurement. A lender who wants more for ten ' +
-        'years than for three months expects growth ahead; one who takes less expects the opposite, and has said ' +
-        'so by accepting a worse price for waiting. That is why this is a mood and not a reading of the body.</p>');
+      cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' +
+        'growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s ' +
+        'forecast of its own next season — a mood, not a measurement taken off it.</p>');
       cards.push(hiCard(r.word, r.state,
         "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
         " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " +
@@ -327,11 +327,10 @@
         (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
         (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
                   : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") +
-        " Which end moved is the reading: on a chart the two look identical, and in 2008 and 2021 they meant " +
-        "opposite things."));
+        " Which end moved is the reading: on a chart the two look identical."));
       cards.push(hiCard("The short end", "",
         "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
-        ". Both subtract from the same 10-year, so the whole difference sits at the short end — the 2-year " +
+        ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
         "prices where the Fed is going, the bill only where it has been."));
       /* The un-inversion clock and the last inversion's shape. They were their own container until this
          version; they are facts ABOUT the reading above them, so they read under it. The (i) travels with the
@@ -674,17 +673,21 @@
     if (hl){
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+      /* V604: the lede every Insights carries now — what the reading IS in the body, in two sentences. */
+      var fearLede = '<p class="hi-lede">Fear is the flinch, not the injury. The VIX prices the next month ' +
+        'and the 3-month VIX the next quarter, so their ratio says whether the market is bracing for ' +
+        'something now or for something later.</p>';
       var curveTxt = curveNow == null
         ? "No reading today \u2014 one of the two legs is missing, so the shape cannot be computed. The previous reading stands."
         : "The near month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " +
           curveNow.toFixed(2) + ". " + (curveNow >= 1
-            ? "The curve is INVERTED: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like in prices. Read contrarian, inversions are uncomfortable and they cluster near bottoms."
-            : "That is the curve's ordinary shape \u2014 the far month costs more, as it should. The further below 1.00 it sits, the less the market is paying to be wrong about the weeks just ahead.") +
-          " The threshold is the definition of the shape, not a level anyone chose.";
-      var vixTxt = vixInd.shortCaption + " At " + v.toFixed(2) + " it sits " + where + " of " + lo +
-        " to " + hiB + ", against a record low of " + m.min + " and a high of " + m.max +
-        ". It is the slower of the two fear gauges: credit usually cracks before equity volatility does.";
+            ? "INVERTED: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like in prices — and inversions cluster near bottoms."
+            : "That is the curve’s ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
+      var vixTxt = "At " + v.toFixed(2) + " the VIX sits " + where + " of " + lo + " to " + hiB +
+        ", against a record low of " + m.min + " and a high of " + m.max + ". It is the slower of the two " +
+        "gauges: credit usually cracks before equity volatility does.";
       hl.innerHTML = highlightsHtml([
+        fearLede,
         hiCard("What the shape is saying", curveTag.state, curveTxt),
         hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt)]);
     }

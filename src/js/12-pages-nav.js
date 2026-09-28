@@ -740,9 +740,11 @@
                  : !up && vup ? "Circulating faster on a smaller stock"
                               : "Draining and slowing";
         var f1 = function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
-        var txt = "M2 is " + f1(volPct) + " over the year and each dollar is turning over " +
-          f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago. " +
-          "The two multiply \u2014 Volume \u00d7 Pulse is nominal demand, the money there is times how hard it works \u2014 so " +
+        var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
+          'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
+          'resistance that flow meets, and Hormones is the signal that sets all three.</p>';
+        var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
+          f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
           (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
         // the run is only worth saying when it is a run; and the cycle clause only when it is actually true
         if (run >= 8){
@@ -752,7 +754,7 @@
             " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
         }
         return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-               hiCard(name, "", txt) + '</section>';
+               circLede + hiCard(name, "", txt) + '</section>';
       }
       /* ================= Version 468: the barometer =================
          Keren, reading the app's own record: "total growth and total change in prices are equal at the end of each
@@ -808,8 +810,11 @@
             " \u2014 the economy costing more faster than it is growing bigger.";
         else
           txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
+        var wxLede = '<p class="hi-lede">Heat and build-up are two readings of one season, and over a whole ' +
+          'cycle they finish close together: the economy grows about as much as it costs more. When prices run ' +
+          'far ahead, the body is paying more without getting bigger.</p>';
         return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-               hiCard("The barometer", "", txt) + '</section>';
+               wxLede + hiCard("The barometer", "", txt) + '</section>';
       }
       var list = document.createElement("div"); list.className = "browse-list";
       CATS.forEach(function(c){
@@ -1174,14 +1179,17 @@
                             .filter(function(d){ return d.v <= savNow && d.i < savHistory.length - 1; });
       var run = lower.filter(function(d){ var y = SAV_FROM_YEAR + Math.floor(d.i / 4); return y >= 2005 && y <= 2008; });
       var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
+      var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left ' +
+        'after. The bill is the load the body carries; the cushion is what it has stored against a month that ' +
+        'goes wrong.</p>';
       var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " +
-        DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) +
-        "% in " + peakAt + " \u2014 " + offPeak.toFixed(0) + "% below it, and flat for two years. By the bill alone " +
-        "this is the lighter half of the story.";
-      var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income. Only " + lower.length +
+        DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " +
+        peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
+      var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length +
         " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length +
         " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
-      return highlightsHtml([hiCard("The bill", "", billTxt), hiCard("The cushion", householdsNow.state, keptTxt)]);
+      return highlightsHtml([hhLede, hiCard("The bill", "", billTxt),
+                             hiCard("The cushion", householdsNow.state, keptTxt)]);
     }
     sheetRenderers["sheet-metric-valuation"] = function(W){
       var r = pageRange["sheet-metric-valuation"], vlCycles = pageMode["sheet-metric-valuation"] === "cycles";
@@ -1262,9 +1270,9 @@
       var below = vs.filter(function(v){ return v < powerScore; }).length;
       var eraStart = powerHistory.filter(function(d){ return d.y >= currentEra.from; })[0];
       var cards = [];
-      cards.unshift('<p class="hi-lede">Economic power is how much room the country has to act: a composite of what ' +
-        'it owes, what the debt costs to service and what it produces \u2014 a full charge is a state with reserves to ' +
-        'spend, a flat one is a state that has already spent them.</p>');
+      cards.unshift('<p class="hi-lede">Power is what the state has left to spend when something goes wrong ' +
+        '— what it owes, what the debt costs to carry and what it produces, read as one charge. A body with ' +
+        'reserves can afford a shock; one that has already spent them has to borrow the energy.</p>');
       cards.push(hiCard("Power", powerWord.state, powerScore <= lowest
         ? "Today\u2019s " + powerScore + "% is the lowest reading in the whole series \u2014 " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%."
         : "Today\u2019s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
@@ -1287,9 +1295,9 @@
       var bDot = maxIn(buffettHistory, 2000, 2007);                    // the dot-com peak, by name
       var bRicher = bv.filter(function(v){ return v > buffNow; }).length;
       var cards = [];
-      cards.unshift('<p class="hi-lede">Valuations are what the market pays for a dollar of earnings, smoothed over ' +
-        'ten years \u2014 rich when buyers pay well above the long-run price for the same profits, cheap when they pay ' +
-        'below it.</p>');
+      cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
+        'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
+        'producing.</p>');
       cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0
         ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
         : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
@@ -1312,9 +1320,9 @@
     (function(){
       var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
       var peak = cyc.reduce(function(a, b){ return b.v > a.v ? b : a; });
-      var cards = ['<p class="hi-lede">Temperature is the pace of prices: how much the cost of living has changed ' +
-        'over the year before, measured by the Consumer Price Index \u2014 the economy runs hot when prices rise faster ' +
-        'and cold when they rise slowly or fall.</p>'];
+      var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
+        'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
+        'means anything measured against the level the system is meant to hold.</p>'];
       // V494, Keren: the window's total comes here from under the chart. The host is written by the sheet
       // renderer (totalStat), because the figure follows the window while this section is built once.
       cards.push('<div id="temp-total"></div>');
@@ -1335,8 +1343,9 @@
     (function(){
       var cycAvg = mean(gq.map(function(d){ return d.v; }));
       var contractions = gq.filter(function(d){ return d.v < 0; }).length;
-      var cards = ['<p class="hi-lede">Growth is how much the economy produced compared with a year earlier, ' +
-        'measured by real GDP \u2014 it expands when the country makes more than it did and contracts when it makes less.</p>'];
+      var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
+        'last. A body spends the first half of its cycle building something it has not used yet, and an ' +
+        'economy does the same with output.</p>'];
       cards.push('<div id="gdp-total"></div>');   // V494 — see Temperature's
       cards.push(hiCard("Growth", phaseClass(r.regime),
         "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +

@@ -2265,6 +2265,16 @@
      rule above it to separate it from what it follows, and at the top of a card there is nothing to separate it
      from \u2014 so the card would open on a hairline sitting a few pixels under its own edge. */
   .metric-sheet .highlights > .aux-stat:first-child{ border-top:0; margin-top:0; padding-top:2px; }
+  /* ===== V604, Keren: "if you are incorporating data and lines, make sure you have spacing and dividers that
+     show consistency in the UI." A rule, not a patch on one page.
+     ONE HAIRLINE PER SEAM. A Highlights section mixes two row idioms: a `.hi-card` carries its rule BELOW and
+     an `.aux-stat` carries one ABOVE, so where prose meets facts both fire and the seam draws twice, fourteen
+     pixels apart. The card gives its rule up at that boundary, because the row below is bringing one.
+     AND A ROW ENDS WITH AIR. `.aux-stat` has no bottom padding, which is right between rows and wrong at the
+     end of a list: the last fact sat 4px off the card's own edge. It gets the same 10px it wears on top, so
+     the list closes on the rhythm it kept all the way down. */
+  .metric-sheet .highlights .hi-card:has(+ .aux-stat){ border-bottom:0; }
+  .metric-sheet .highlights > .aux-stat:last-child{ padding-bottom:10px; }
   .hi-head{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:23px;
     color:var(--text-primary); margin-bottom:12px; }
   /* One rule between two things, never two (Keren, Sep 20, 2026: "I keep seeing in the pages that there is a double
