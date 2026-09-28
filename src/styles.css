@@ -683,6 +683,15 @@
     .tabnav{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
+  /* V594, Keren, of the Cycle tab on her phone: "there is a lot of space between the bottom menu and the all
+     indicators button \u2014 make the spacing even, like the spacing between the current cycle and weather/mood."
+     It measured 20 against a 10px rhythm, and the extra ten was a ghost. #signs-list still holds four sign
+     pages (Desire, Pulse, Volume, Fear); they are all `hidden`, so it renders at zero height \u2014 but a
+     zero-height flex CHILD is still a child, and the column's gap is spent before it. The V447 cleanup that
+     removes emptied containers cannot take this one, correctly: it is not empty, it is holding the pages.
+     So the rule is the honest statement of it: a container whose every child is hidden is not content, and
+     takes no gap. It reverses itself the moment one of those pages opens. */
+  #signs-list:not(:has(> :not([hidden]))){ display:none; }
   .tab-panel[hidden]{ display:none; }
 
   /* ---------- vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used
