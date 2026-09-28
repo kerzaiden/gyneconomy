@@ -2033,10 +2033,12 @@
   /* V522: a menu that carries a choice above an action needs the two told apart. One hairline, the weight the
      app uses between rows inside a container. */
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
-  /* V599: the ⋯ menu's group headings. Same small-caps label the app uses for a card kicker, so a menu that
-     now holds two kinds of reading says which is which without a second separator doing the work of a word. */
-  .bh-grp{ padding:9px 12px 3px; font-family:"Public Sans",sans-serif; font-size:10.5px; font-weight:700;
-    letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
+  /* V600: the ⋯ menu's group rows. V599's small-caps heading went with the flat list it labelled — the
+     groups are rows you open now, so they wear the same type as every other row and the chevron says so.
+     The value between the name and the chevron is the reading currently on, which is what makes the root
+     worth reading rather than a door you have to walk through to see where you are. */
+  .bh-grp-row .peek-chev, .bh-back .peek-chev{ color:var(--text-muted); opacity:0.75; }
+  .bh-back .peek-chev{ transform:rotate(180deg); }
   /* V519: the head leads the band and the thing under it is the readout, which brings its own top margin. */
   .band-head{ margin-bottom:2px; }
   .hist-controls{ display:flex; align-items:flex-start; gap:8px; }

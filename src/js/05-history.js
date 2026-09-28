@@ -63,7 +63,32 @@
        you can put it in the three dots on the history container, that would be a good place for it." A page
        whose control chooses WHICH SERIES the chart draws (rather than which window) puts that choice here, so
        the control row stays one ruler on every page. `menu` returns the rows; the note is always last. */
-    var extra = H.menu ? H.menu() : "";
+    /* V600, Keren: "it's a sub menu — I click the three points, then I see Spreads; when I hover over it, it
+       opens another menu." So `menu` may now return GROUPS instead of a flat string: an array of
+       { key, label, value, on, rows }. The root lists one row per group with the reading that is currently
+       showing beside it, and opening a group replaces the menu with that group's rows and a way back.
+       A flyout panel is what this is on a desktop, and it is the one thing a 414px phone cannot have — a
+       second panel beside the first runs off the screen. A drill-down is the same idea in the space there is,
+       and it answers a hover exactly as a flyout would (see the mouseover handler below), so the gesture she
+       described is the gesture that works. */
+    var groups = H.menu ? H.menu() : "";
+    var extra;
+    if (typeof groups === "string") extra = groups;
+    else if (headSubFor){
+      var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
+      // the group vanished under an open menu (a redraw changed the page): fall back to the root rather than blank
+      if (!g){ headSubFor = null; return headMenuHtml(id); }
+      // CHEV already carries `.peek-chev`; wrapping it again nests the class and the rotation lands on a
+      // parent the glyph does not fill. One span, which is what every other chevron in the app is.
+      return '<button type="button" class="cycsel-opt bh-back" role="menuitem" data-head-grp="">' +
+        CHEV + '<span class="cycsel-nm">' + g.label + '</span></button>' +
+        '<div class="bh-sep" role="separator"></div>' + g.rows;
+    }
+    else extra = groups.map(function(x){
+      return '<button type="button" class="cycsel-opt bh-grp-row" role="menuitem" aria-haspopup="true" ' +
+        'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
+        '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
+    }).join("") + '<div class="bh-sep" role="separator"></div>';
     var note = HIST_NOTE[id];
     if (!note) return extra;
     if (headNoteIdx[id] == null){ headNoteIdx[id] = detailTexts.length; detailTexts.push(""); }
@@ -78,13 +103,16 @@
      open cycle picker, and closing it redraws the sheet, which rebuilds this head. With the flag in the DOM the
      menu would vanish the instant it appeared on any page whose picker happened to be open. */
   var headMenuFor = null;
+  // V600: which GROUP inside that menu is open, or null for its root. Cleared whenever the menu itself opens.
+  var headSubFor = null;
   function paintHeadMenus(){
     var heads = document.querySelectorAll(".band-head");
     for (var i = 0; i < heads.length; i++){
       var btn = heads[i].querySelector(".bh-more"), menu = heads[i].querySelector(".bh-menu");
       if (!btn || !menu) continue;
       var on = btn.getAttribute("data-head-more") === headMenuFor;
-      if (on && menu.hidden) menu.innerHTML = headMenuHtml(headMenuFor);
+      // V600: rebuilt on every paint, not only on the open — drilling into a group repaints the same menu
+      if (on) menu.innerHTML = headMenuHtml(headMenuFor);
       menu.hidden = !on;
       btn.setAttribute("aria-expanded", on ? "true" : "false");
     }
@@ -92,8 +120,11 @@
   document.addEventListener("click", function(e){
     // V522: a choice inside the menu closes it and redraws the page, which rebuilds the head with the new title
     var pick = e.target.closest && e.target.closest(".bh-pick");
+    /* V600: a group row opens or closes a drawer inside the menu; it is not a choice, so the menu stays up. */
+    var grp = e.target.closest && e.target.closest("[data-head-grp]");
+    if (grp){ headSubFor = grp.getAttribute("data-head-grp") || null; paintHeadMenus(); return; }
     if (pick){
-      headMenuFor = null; paintHeadMenus();
+      headMenuFor = null; headSubFor = null; paintHeadMenus();
       // V588: two pages put a which-series choice in this menu now, so the row says which one it belongs to
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat){ if (window.__pickSeries) window.__pickSeries(null, mat); return; }
@@ -101,11 +132,22 @@
       return;
     }
     var btn = e.target.closest && e.target.closest("[data-head-more]");
-    if (!btn){ if (headMenuFor !== null){ headMenuFor = null; paintHeadMenus(); } return; }
+    if (!btn){ if (headMenuFor !== null){ headMenuFor = null; headSubFor = null; paintHeadMenus(); } return; }
     var id = btn.getAttribute("data-head-more");
     // nothing to open is not a menu (the V366 rule): the dots simply do not respond until the page has its note
     headMenuFor = (headMenuFor === id || !HIST_NOTE[id]) ? null : id;
+    headSubFor = null;   // V600: every open starts at the root
     paintHeadMenus();
+  });
+  /* V600: the hover half of "when I hover over it, it opens another menu". Only opens a group, never closes
+     one — a pointer crossing the rows on its way to the one it wants would otherwise flicker through all of
+     them. Touch fires no mouseover, so a phone gets the same drawer from the tap handler above. */
+  document.addEventListener("mouseover", function(e){
+    if (headMenuFor === null) return;
+    var g = e.target.closest && e.target.closest(".bh-grp-row");
+    if (!g) return;
+    var key = g.getAttribute("data-head-grp");
+    if (key && key !== headSubFor){ headSubFor = key; paintHeadMenus(); }
   });
   function nameWithMark(name, mark){
     if (!mark) return name;

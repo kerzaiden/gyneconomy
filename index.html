@@ -1279,8 +1279,8 @@
 
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
 
-  .bh-grp{ padding:9px 12px 3px; font-family:"Public Sans",sans-serif; font-size:10.5px; font-weight:700;
-    letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
+  .bh-grp-row .peek-chev, .bh-back .peek-chev{ color:var(--text-muted); opacity:0.75; }
+  .bh-back .peek-chev{ transform:rotate(180deg); }
 
   .band-head{ margin-bottom:2px; }
   .hist-controls{ display:flex; align-items:flex-start; gap:8px; }
@@ -13103,7 +13103,20 @@
   var headNoteIdx = {};
   function headMenuHtml(id) {
     var H = HIST_HEAD[id] || {};
-    var extra = H.menu ? H.menu() : "";
+    var groups = H.menu ? H.menu() : "";
+    var extra;
+    if (typeof groups === "string") extra = groups; else if (headSubFor) {
+      var g = groups.filter(function(x) {
+        return x.key === headSubFor;
+      })[0];
+      if (!g) {
+        headSubFor = null;
+        return headMenuHtml(id);
+      }
+      return '<button type="button" class="cycsel-opt bh-back" role="menuitem" data-head-grp="">' + CHEV + '<span class="cycsel-nm">' + g.label + "</span></button>" + '<div class="bh-sep" role="separator"></div>' + g.rows;
+    } else extra = groups.map(function(x) {
+      return '<button type="button" class="cycsel-opt bh-grp-row" role="menuitem" aria-haspopup="true" ' + 'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + "</span>" + '<span class="cycsel-yr">' + (x.on ? x.value : "") + "</span>" + CHEV + "</button>";
+    }).join("") + '<div class="bh-sep" role="separator"></div>';
     var note = HIST_NOTE[id];
     if (!note) return extra;
     if (headNoteIdx[id] == null) {
@@ -13114,21 +13127,29 @@
     return extra + '<button type="button" class="cycsel-opt bh-opt" role="menuitem" data-detail-idx="' + headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
   }
   var headMenuFor = null;
+  var headSubFor = null;
   function paintHeadMenus() {
     var heads = document.querySelectorAll(".band-head");
     for (var i = 0; i < heads.length; i++) {
       var btn = heads[i].querySelector(".bh-more"), menu = heads[i].querySelector(".bh-menu");
       if (!btn || !menu) continue;
       var on = btn.getAttribute("data-head-more") === headMenuFor;
-      if (on && menu.hidden) menu.innerHTML = headMenuHtml(headMenuFor);
+      if (on) menu.innerHTML = headMenuHtml(headMenuFor);
       menu.hidden = !on;
       btn.setAttribute("aria-expanded", on ? "true" : "false");
     }
   }
   document.addEventListener("click", function(e) {
     var pick = e.target.closest && e.target.closest(".bh-pick");
+    var grp = e.target.closest && e.target.closest("[data-head-grp]");
+    if (grp) {
+      headSubFor = grp.getAttribute("data-head-grp") || null;
+      paintHeadMenus();
+      return;
+    }
     if (pick) {
       headMenuFor = null;
+      headSubFor = null;
       paintHeadMenus();
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat) {
@@ -13142,13 +13163,25 @@
     if (!btn) {
       if (headMenuFor !== null) {
         headMenuFor = null;
+        headSubFor = null;
         paintHeadMenus();
       }
       return;
     }
     var id = btn.getAttribute("data-head-more");
     headMenuFor = headMenuFor === id || !HIST_NOTE[id] ? null : id;
+    headSubFor = null;
     paintHeadMenus();
+  });
+  document.addEventListener("mouseover", function(e) {
+    if (headMenuFor === null) return;
+    var g = e.target.closest && e.target.closest(".bh-grp-row");
+    if (!g) return;
+    var key = g.getAttribute("data-head-grp");
+    if (key && key !== headSubFor) {
+      headSubFor = key;
+      paintHeadMenus();
+    }
   });
   function nameWithMark(name, mark) {
     if (!mark) return name;
@@ -16450,14 +16483,23 @@
         function row(on, attr, key, label) {
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
         }
-        function grp(label, rows) {
-          return '<div role="group" aria-label="' + label + '">' + '<div class="bh-grp" aria-hidden="true">' + label + "</div>" + rows + "</div>";
-        }
-        return grp("Spreads", HZN_SPREADS.map(function(r) {
-          return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-        }).join("")) + grp("Treasury yields", maturities.map(function(m) {
-          return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
-        }).join("")) + '<div class="bh-sep" role="separator"></div>';
+        return [ {
+          key: "spreads",
+          label: "Spreads",
+          on: !lvl,
+          value: spreadLabel(spreadPick),
+          rows: HZN_SPREADS.map(function(r) {
+            return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+          }).join("")
+        }, {
+          key: "levels",
+          label: "Treasury yields",
+          on: lvl,
+          value: (matOf(matPick) || {}).name || "",
+          rows: maturities.map(function(m) {
+            return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+          }).join("")
+        } ];
       };
       HIST_NOTE["hzn-range"] = lvl ? "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()) : horizonInfoHtml(spreadPick);
       var hd = document.getElementById("hzn-head");

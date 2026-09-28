@@ -740,23 +740,19 @@
             '<span class="cycsel-tick" aria-hidden="true"></span>' +
             '<span class="cycsel-nm">' + label + '</span></button>';
         }
-        /* V599, Keren: "make it like Spreads, and then I see 10Y minus 3M, 10Y minus 2Y. And Treasury yields,
-           and then I see 3 months, 2 years." Two named groups rather than one list split by a rule, which is
-           what makes the menu legible at a glance — and it lets each maturity row drop the word "Treasury",
-           because the heading above it has already said it five times over.
-           `role="group"` with an aria-label is what a menu is allowed to contain (menuitem, group, separator),
-           so the heading is real structure for a screen reader rather than a div wearing a style. */
-        function grp(label, rows){
-          return '<div role="group" aria-label="' + label + '">' +
-            '<div class="bh-grp" aria-hidden="true">' + label + '</div>' + rows + '</div>';
-        }
-        return grp("Spreads", HZN_SPREADS.map(function(r){
-                 return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-               }).join("")) +
-               grp("Treasury yields", maturities.map(function(m){
-                 return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
-               }).join("")) +
-               '<div class="bh-sep" role="separator"></div>';
+        /* V600: two GROUPS rather than two labelled runs of one list \u2014 the root of the menu names the two
+           kinds of reading and says which one is on, and the rows live one level in. Each maturity row drops
+           the word "Treasury" because the group it sits under has already said it. */
+        return [
+          { key:"spreads", label:"Spreads", on:!lvl, value:spreadLabel(spreadPick),
+            rows:HZN_SPREADS.map(function(r){
+              return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+            }).join("") },
+          { key:"levels", label:"Treasury yields", on:lvl, value:(matOf(matPick) || {}).name || "",
+            rows:maturities.map(function(m){
+              return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+            }).join("") }
+        ];
       };
       HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
                                    : horizonInfoHtml(spreadPick);
