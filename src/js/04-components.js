@@ -445,10 +445,27 @@
       if (host.__onCol){ host.__onCol.classList.remove("on"); host.__onCol = null; }
       histReadFill(host, null);   // V495: back to the window's summary, in the same reserved space
     }
-    host.addEventListener("pointermove", function(e){
-      // Version 408: a host may hold more than one svg — Power's box carries the trend pill's arrow as well as
-      // the chart — so the chart says which one it is rather than the hover taking the first it finds.
-      var g = host.__geom, svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    /* V608, Keren: "I'm hovering over the chart in hormones and I don't see the marker changing, I can't see
+       the values of each bar." She reads this app on a phone, and a phone has no hover. The handler was wired
+       to `pointermove` alone, which on touch only fires while a finger is DRAGGING — and a drag over the chart
+       was going to the browser as a scroll, because the svg left `touch-action` at its default. So on the one
+       device the app is actually used on, no history chart has ever been readable bar by bar.
+       Two halves to the fix and neither works without the other: the stylesheet gives the plot `touch-action:
+       pan-y`, which keeps vertical scrolling and hands horizontal drags to us, and the same handler now runs
+       on `pointerdown` too, so a single TAP reads a bar. A tap is what a phone has instead of a hover. */
+    function at(e){
+      /* Version 408: a host may hold more than one svg — Power's box carries the trend pill's arrow as well
+         as the chart — so the chart says which one it is rather than the hover taking the first it finds.
+         V608: and `.hist-svg` was not enough. Since V596 the HEAD sits inside this same box on Hormones,
+         Pressure and Fear, and a head opens with a 21px mark — so `querySelector("svg")` was picking a 13px
+         icon and scaling the pointer by 13/344. Every move landed outside the plot and the readout went home,
+         which is why Keren could not read a single bar on those pages. It was never the touch layer alone.
+         The chart is found by what it CONTAINS, not by what it is called: `.hcol` is the one class every
+         history puts on its readings (the V407 rule this line now actually uses), so the svg that owns a
+         column is the svg being read. No future chart has to remember to be named correctly. */
+      var col0 = host.querySelector(".hcol");
+      var g = host.__geom;
+      var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
       if (!g || !svg || !tip) return;
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
@@ -485,8 +502,12 @@
       histReadFill(host, d, i);
       // Version 382's pointer-following tooltip retires with Version 495: it was solving the problem of a
       // readout that had to be near the hand, which a fixed block above the chart does not have.
-    });
-    host.addEventListener("pointerleave", hide);
+    }
+    host.addEventListener("pointermove", at);
+    host.addEventListener("pointerdown", at);
+    /* Only a real pointer leaving hides it. A finger lifting off is not "done reading" — it is the moment the
+       reader starts reading, so the value stays until the next tap moves it. */
+    host.addEventListener("pointerleave", function(e){ if (e.pointerType !== "touch") hide(); });
   }
   function mWindowFrom(len, key){
     var sp = timelineSpan(key);

@@ -53,6 +53,8 @@
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d63a2e;               /* down — the one red, the dial's own (was #d03b3b) — paint */
     --m2-deep: #4a0f0a;                /* Volume's heaviest step mixes toward this (Version 389) */
+    --ff-blue: #2f6fb5;                /* V608: Hormones' own hue — the one blue, for the sea change ramp */
+    --ff-deep: #0b2340;                /* its heaviest step mixes toward this, as --m2-deep does for Volume */
     --critical-ink: #b33d29;           /* 5.8:1 */
     --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
     /* Calendar tab colors — --bleed-mid is a down year, --ovulate an up year and each era's peak-year ring.
@@ -109,6 +111,7 @@
       --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #eb4839; --m2-deep: #ffd2c8;
+      --ff-blue: #6fa8e0; --ff-deep: #d7e8fb;   /* V608: dark mode inverts the ramp's deep end, as m2 does */
       --critical-ink: #f28a78;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #eb4839;
@@ -600,6 +603,11 @@
   /* the quarters still to come in a typical cycle, as small dots on the inner ring — Clue's days ahead */
   .cycle-dial .dial-dot{ fill:var(--text-muted); opacity:0.45; }
   /* the today badge rides the track just ahead of the last moon and carries the year of the cycle */
+  /* V608: a history's plot takes horizontal drags and leaves vertical ones to the page, which is what makes
+     a chart readable by finger at all — see wireHistHover. Without this the browser claims the gesture as a
+     scroll and the readout never moves. */
+  .page-chart svg, .spread-history svg, .chart-shell svg,
+  .page-chart svg *, .spread-history svg *, .chart-shell svg *{ touch-action:pan-y; }
   .cycle-dial .dial-today-badge{ cursor:grab; touch-action:none; transition:transform 0.18s ease;
     filter:var(--badge-lift); }
   .cycle-dial .dial-today-badge.scrubbing{ cursor:grabbing; }
@@ -2205,7 +2213,16 @@
   /* V592: the policy rate's columns. ONE ink, deliberately: this chart has no band, because the level that
      divides restrictive from accommodative is contested, unpublished and moves \u2014 colouring by it would be
      inventing a band. The height is the reading; the trend pill says which way it is going. */
-  .ff-col{ stroke:var(--accent); fill:none; stroke-linecap:round; }
+  /* V608: Hormones reads in blue, six steps light to dark — the sequential ramp the sea change needs. Mixed
+     toward the surface exactly as Volume's red ramp is (V389), so both inherit dark mode for free and neither
+     can drift from the page's own background. */
+  .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
+  .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }
+  .ff-col.f1{ stroke:color-mix(in srgb, var(--ff-blue) 42%, var(--surface)); }
+  .ff-col.f2{ stroke:color-mix(in srgb, var(--ff-blue) 58%, var(--surface)); }
+  .ff-col.f3{ stroke:color-mix(in srgb, var(--ff-blue) 74%, var(--surface)); }
+  .ff-col.f4{ stroke:var(--ff-blue); }
+  .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
   .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
   .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
   /* Version 396: on Economic power the same four states mean CHARGE, so they take the battery steps. Scoped to

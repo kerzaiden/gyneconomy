@@ -732,7 +732,7 @@
       /* V599, Keren: "make the title 10 minus 3 — it's too long." It was: "10-year minus 3-month Treasury
          spread" ran past the ⋯ on a phone. The short form is the one the menu already uses, so the title now
          READS ITS OWN MENU ROW rather than spelling the same pair a second way — one label, one source. */
-      H.title = lvl ? matTitle() : (spreadLabel(spreadPick) + " Treasury spread");
+      H.title = lvl ? matTitle() : (spreadLabel(spreadPick) + " Treasury Spread");
       H.menu = function(){
         function row(on, attr, key, label){
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +

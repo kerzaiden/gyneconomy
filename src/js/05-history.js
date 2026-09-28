@@ -7,6 +7,11 @@
   var HIST_NOTE = {};   // filed by panelRow(o.head) \u2014 the page's note, never a second copy of it
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
     '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
+  /* V608, Keren: "capital letters in the beginning of each word, and that is true for all titles." Title case
+     on every head, and "Effective federal funds rate" becomes "Federal Funds Rate" — the effective rate is
+     what the chart plots and what the note explains, and the word was doing the note’s job in the title.
+     Short joining words stay lowercase ("of", "over"), which is what title case is; capitalising those reads
+     as shouting rather than as a title. */
   var HIST_HEAD = {
     /* V606, Keren: "I don't need the year over year, because the graph itself shows me it's by quarters and
        the graph shows me the timeline. That goes to all history components."
@@ -22,24 +27,24 @@
        heart. So the trace that means a heartbeat sat on the labour market, and Pulse \u2014 the heartbeat itself
        \u2014 sat under a heart it shares with nothing else. Each head wears its own reading's mark now, which is
        the only rule this map should ever have followed. */
-    "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment rate" },
+    "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment Rate" },
     "sheet-metric-power":      { mark:boltSvg,
-                                 title:"Power supply" },   // V579: "one charge per year" is what the x axis says
-    "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
-    "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
-    "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
-    "volume-range":            { mark:volumeSvg,  title:"M2 money stock" },
-    "pulse-range":             { mark:ecgSvg,     title:"Velocity of money (M2)" },
+                                 title:"Power Supply" },   // V579: "one charge per year" is what the x axis says
+    "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, Against Fair Value" },
+    "sheet-metric-households": { mark:houseSvg,   title:"Debt Service, Share of Income" },
+    "deficit-range":           { mark:null,       title:"Federal Deficit or Surplus, Share of GDP" },
+    "volume-range":            { mark:volumeSvg,  title:"M2 Money Stock" },
+    "pulse-range":             { mark:ecgSvg,     title:"Velocity of Money (M2)" },
     /* V598: one entry for the whole Treasury page, and its title, mark, menu and note are all filed at RUNTIME
        by `drawTreasuryHead` — because the menu now lists the maturities too, and `maturities` and `matPick`
        are local to the block that declares them. Writing them in this literal is the exact mistake V588 made
        and fixed ("maturities is not defined" on every open of the menu). `ylm-range` is gone with the second
        head it used to fill: two heads for one page's data was the duplication this merge removes. */
     "hzn-range":               { mark:sunriseSvg, title:"" },   // drawTreasuryHead sets all four
-    "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" },
-    "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" },
-    "hormones-range":          { mark:hormoneSvg,  title:"Effective federal funds rate" },
-    "pressure-range":          { mark:pressureSvg, title:"Banks tightening lending standards" }
+    "desire-range":            { mark:flameSvg,   title:"High-Yield Spread over Treasuries" },
+    "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-Month VIX" },
+    "hormones-range":          { mark:hormoneSvg,  title:"Federal Funds Rate" },
+    "pressure-range":          { mark:pressureSvg, title:"Banks Tightening Lending Standards" }
   };
   function histHead(id){
     var H = HIST_HEAD[id];
@@ -775,9 +780,23 @@
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
     });
     var sw = colWidth((R - L) / n);
+    /* V608, Keren, of the sea change: "I want the bars in the hormones chart to be different shades of blue."
+       The right shading for it, because the reading she is looking for is not in any one bar — it is the
+       forty-year drift Howard Marks calls a sea change, and a drift is a thing you see in a ramp and not in a
+       single colour. Six steps, light to dark, which is what a sequential scale is.
+       The step comes from the bar's place between the WINDOW's own low and high, never from levels anyone
+       chose: at Max the 19% of 1981 is the darkest blue the app can print and today is nearly white, which is
+       the sea change drawn; inside one cycle the same six steps re-spread across that cycle's own range. The
+       record sets the scale, the way windowScale already sets the axis. */
+    var seenV = seen.map(function(d){ return d.v; });
+    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
+    var step = function(v){
+      if (!(vHi > vLo)) return 5;
+      return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
+    };
     vals.forEach(function(d, i){
       if (d.v == null) return;   // a gap is the honest drawing of a month nobody measured
-      out.push('<path class="ff-col hcol" stroke-width="' + sw.toFixed(2) +
+      out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;

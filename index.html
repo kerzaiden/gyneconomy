@@ -44,6 +44,8 @@
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d63a2e;
     --m2-deep: #4a0f0a;
+    --ff-blue: #2f6fb5;
+    --ff-deep: #0b2340;
     --critical-ink: #b33d29;
     --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
 
@@ -91,6 +93,7 @@
       --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #eb4839; --m2-deep: #ffd2c8;
+      --ff-blue: #6fa8e0; --ff-deep: #d7e8fb;
       --critical-ink: #f28a78;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #eb4839;
@@ -419,6 +422,8 @@
 
   .cycle-dial .dial-dot{ fill:var(--text-muted); opacity:0.45; }
 
+  .page-chart svg, .spread-history svg, .chart-shell svg,
+  .page-chart svg *, .spread-history svg *, .chart-shell svg *{ touch-action:pan-y; }
   .cycle-dial .dial-today-badge{ cursor:grab; touch-action:none; transition:transform 0.18s ease;
     filter:var(--badge-lift); }
   .cycle-dial .dial-today-badge.scrubbing{ cursor:grabbing; }
@@ -1364,7 +1369,13 @@
   .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
   .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
 
-  .ff-col{ stroke:var(--accent); fill:none; stroke-linecap:round; }
+  .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
+  .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }
+  .ff-col.f1{ stroke:color-mix(in srgb, var(--ff-blue) 42%, var(--surface)); }
+  .ff-col.f2{ stroke:color-mix(in srgb, var(--ff-blue) 58%, var(--surface)); }
+  .ff-col.f3{ stroke:color-mix(in srgb, var(--ff-blue) 74%, var(--surface)); }
+  .ff-col.f4{ stroke:var(--ff-blue); }
+  .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
   .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
   .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
 
@@ -11415,8 +11426,10 @@
       }
       histReadFill(host, null);
     }
-    host.addEventListener("pointermove", function(e) {
-      var g = host.__geom, svg = host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    function at(e) {
+      var col0 = host.querySelector(".hcol");
+      var g = host.__geom;
+      var svg = col0 && col0.ownerSVGElement || host.querySelector("svg.hist-svg") || host.querySelector("svg");
       if (!g || !svg || !tip) return;
       var box = svg.getBoundingClientRect();
       var scale = box.width / g.W || 1;
@@ -11438,8 +11451,12 @@
         host.__onCol = col;
       }
       histReadFill(host, d, i);
+    }
+    host.addEventListener("pointermove", at);
+    host.addEventListener("pointerdown", at);
+    host.addEventListener("pointerleave", function(e) {
+      if (e.pointerType !== "touch") hide();
     });
-    host.addEventListener("pointerleave", hide);
   }
   function mWindowFrom(len, key) {
     var sp = timelineSpan(key);
@@ -13054,31 +13071,31 @@
     },
     "sheet-sign-activity": {
       mark: trendUpSvg,
-      title: "Unemployment rate"
+      title: "Unemployment Rate"
     },
     "sheet-metric-power": {
       mark: boltSvg,
-      title: "Power supply"
+      title: "Power Supply"
     },
     "sheet-metric-valuation": {
       mark: diamondSvg,
-      title: "Shiller CAPE, against fair value"
+      title: "Shiller CAPE, Against Fair Value"
     },
     "sheet-metric-households": {
       mark: houseSvg,
-      title: "Debt service, share of income"
+      title: "Debt Service, Share of Income"
     },
     "deficit-range": {
       mark: null,
-      title: "Federal deficit or surplus, share of GDP"
+      title: "Federal Deficit or Surplus, Share of GDP"
     },
     "volume-range": {
       mark: volumeSvg,
-      title: "M2 money stock"
+      title: "M2 Money Stock"
     },
     "pulse-range": {
       mark: ecgSvg,
-      title: "Velocity of money (M2)"
+      title: "Velocity of Money (M2)"
     },
     "hzn-range": {
       mark: sunriseSvg,
@@ -13086,19 +13103,19 @@
     },
     "desire-range": {
       mark: flameSvg,
-      title: "High-yield spread over Treasuries"
+      title: "High-Yield Spread over Treasuries"
     },
     "fear-range": {
       mark: umbrellaSvg,
-      title: "VIX ÷ 3-month VIX"
+      title: "VIX ÷ 3-Month VIX"
     },
     "hormones-range": {
       mark: hormoneSvg,
-      title: "Effective federal funds rate"
+      title: "Federal Funds Rate"
     },
     "pressure-range": {
       mark: pressureSvg,
-      title: "Banks tightening lending standards"
+      title: "Banks Tightening Lending Standards"
     }
   };
   function histHead(id) {
@@ -13636,9 +13653,17 @@
       out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
     });
     var sw = colWidth((R - L) / n);
+    var seenV = seen.map(function(d) {
+      return d.v;
+    });
+    var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
+    var step = function(v) {
+      if (!(vHi > vLo)) return 5;
+      return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
+    };
     vals.forEach(function(d, i) {
       if (d.v == null) return;
-      out.push('<path class="ff-col hcol" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+      out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
@@ -16476,7 +16501,7 @@
     function drawTreasuryHead() {
       var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
       H.mark = lvl ? gaugeSvg : sunriseSvg;
-      H.title = lvl ? matTitle() : spreadLabel(spreadPick) + " Treasury spread";
+      H.title = lvl ? matTitle() : spreadLabel(spreadPick) + " Treasury Spread";
       H.menu = function() {
         function row(on, attr, key, label) {
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
