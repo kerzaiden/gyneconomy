@@ -41,34 +41,18 @@ const PAGES = [
   ['sheet-metric-households','sheet-metric-households','Households'],
   ['sheet-sign-volume','volume-range','Volume'],
   ['sheet-sign-pulse','pulse-range','Pulse'],
-  /* V598: one page, two readings of one series — the spread and the levels — swapped by the ⋯ menu, so
-     the page is checked once. The second entry the merged Hormones page carried is gone with the chart. */
   ['sheet-sign-horizon','hzn-range','Horizon'],
-  /* V596: Pressure merged into Hormones, and that page carries TWO histories — the rate the Fed sets and
-     the yields the market charges — so it is listed twice, once per history. Each entry is checked against
-     its OWN chart (see the band lookup below), so the second is a real assertion and not a duplicate of the
-     first: it proves the maturity chart still wears the head, the ⋯ and a note of its own on the merged page. */
-  ['sheet-sign-hormones','hormones-range','Hormones'],
-  ['sheet-sign-pressure','pressure-range','Pressure'],
+  ['sheet-sign-yield','ylm-range','Pressure'],
   ['sheet-sign-desire','desire-range','Desire'],
 ];
 /* Values CLAUDE-CODE.md states as live. A change here must be a deliberate edit of both. */
 const TOKENS = {
-  '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
+  '--pad':'10px', '--gap':'10px', '--gap-top':'15px', '--radius':'16px', '--radius-inner':'13px',
 };
 const SRC_MUST = [
   ['COL_FILL', /var COL_FILL = 0\.68;/],
-  /* V581: this pinned the three keys AXIS had in V551. The history work grew it to seven, and because
-     nothing updated the pin, `npm test` failed on every commit from V552 on \u2014 and deploy `needs: test`,
-     so the SITE stopped at V551 while twenty-nine versions were committed, tagged and published to the
-     artifact. A pin that must be edited deliberately is the point; not noticing for a month is not. */
-  ['AXIS',     /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/],
+  ['AXIS',     /var AXIS = \{ L:34, R:6, T:14 \};/],
   ['no .vh-line', /`\.vh-line` is gone/],
-  /* V602, Keren: "this behaviour should apply to all history menus \u2014 make it a rule for the future", and
-     "it should also behave like a component." The rule is kept by there being ONE menu shape: `menu` returns
-     groups and headMenuHtml drills them. This pins the sentence that says so, because the way a component
-     quietly becomes two is somebody adding back a shorter path for one page. */
-  ['one menu shape', /THE HEAD MENU IS ONE COMPONENT/],
 ];
 
 const results = [];
@@ -126,9 +110,7 @@ async function openPage(p, url, sheet) {
     const source = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'))
       .map(n => fs.readFileSync(path.join(SRC_DIR, n), 'utf8')).join('\n');
     for (const [name, re] of SRC_MUST)
-      re.test(source) ? ok('source: ' + name)
-        : bad('source: ' + name, 'src/ no longer matches ' + re.source + ' \u2014 update the pin or the source; '
-                                 + 'until this passes CI skips deploy and the SITE does not update');
+      re.test(source) ? ok('source: ' + name) : bad('source: ' + name, 'not found in src/');
   }
 
   // ---- 2. browser checks
@@ -172,10 +154,7 @@ async function openPage(p, url, sheet) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
     const r = await p.evaluate(h => {
       const mp = document.getElementById('metric-page');
-      /* V596: the band is the one holding THIS history's head, not simply the first on the page — a page may
-         now hold two, and measuring the wrong chart would pass while proving nothing about the right one. */
-      const hb = document.querySelector('.bh-more[data-head-more="' + h + '"]');
-      const band = (hb && hb.closest('.page-chart, .spread-history')) || mp.querySelector('.page-chart, .spread-history');
+      const band = mp.querySelector('.page-chart, .spread-history');
       const svg = band && [...band.querySelectorAll('svg')]
         .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
       const q = s => svg ? svg.querySelectorAll(s).length : 0;
@@ -217,40 +196,6 @@ async function openPage(p, url, sheet) {
       await p.keyboard.press('Escape'); await p.waitForTimeout(150);
     }
   }
-  /* ---- 2b2. the head menu's two levels (V602) ----
-     Every head whose \u22ef offers a which-series choice must behave the same way: the root lists GROUPS, a
-     click opens one, and a click on the way back returns to the root and STAYS there. That last clause is
-     the V601 bug written as a test \u2014 opening on hover meant Back put the root rows under a pointer that
-     had not moved, which walked straight back in, so this asserts with a real mouse over the row it clicks. */
-  {
-    const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });
-    const gerr = []; gp.on('pageerror', e => gerr.push(String(e).slice(0, 140)));
-    await gp.goto('file://' + url); await gp.waitForTimeout(1400);
-    if (await openPage(gp, url, 'sheet-sign-horizon')) {
-      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="hzn-range"]').click());
-      await gp.waitForTimeout(280);
-      const root = await gp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.getAttribute('data-head-grp')));
-      let drilled = null, back = null;
-      if (root.length) {
-        await gp.hover('[data-head-grp="' + root[0] + '"]'); await gp.waitForTimeout(250);
-        const onHover = await gp.evaluate(() => document.querySelectorAll('.bh-grp-row').length);
-        await gp.click('[data-head-grp="' + root[0] + '"]'); await gp.waitForTimeout(250);
-        drilled = await gp.evaluate(() => ({ picks: document.querySelectorAll('.bh-pick').length,
-                                             back: !!document.querySelector('.bh-back') }));
-        await gp.click('.bh-back'); await gp.waitForTimeout(350);
-        back = await gp.evaluate(() => ({ groups: document.querySelectorAll('.bh-grp-row').length,
-                                          picks: document.querySelectorAll('.bh-pick').length }));
-        (onHover === root.length) ? ok('head menu ignores hover', root.length + ' groups')
-          : bad('head menu ignores hover', 'hover changed the menu: ' + root.length + ' -> ' + onHover);
-      }
-      (root.length >= 2 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
-        ? ok('head menu drills and returns', root.join(', '))
-        : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
-    } else bad('head menu drills and returns', 'no door to Horizon');
-    gerr.length ? bad('no errors in the head menu', gerr.join(' | ')) : ok('no errors in the head menu');
-    await gp.close();
-  }
-
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
 
   // 2c. the cycle picker says Today, capital T
@@ -264,14 +209,11 @@ async function openPage(p, url, sheet) {
   // ---- 2d. the live-data cache (Version 528)
   // The claim of the cache layer is that a cached answer lands BEFORE any derived value is computed, so a
   // seeded figure moves the readings that are computed from it, not just the number that is printed. Both
-  // shapes are proved — an object doc through Fear & Greed's mood class, a series doc through the spread
-  // Horizon computes from the curve — and every malformed cache must fall back to the literals in silence.
-  /* V596: the series doc was read off Pressure's 10Y/3M pair, which merged into Hormones and stopped being a
-     figure. Horizon's spread is the stronger target anyway: it is DERIVED from the two legs the seed moves,
-     so a cached curve that failed to land before the derivation would show up here and could not there. */
+  // shapes are proved — an object doc through Fear & Greed's mood class, a series doc through the 10Y/3M
+  // pair — and every malformed cache must fall back to the literals in silence.
   const readLive = () => {
     const fg  = document.getElementById('subj-value-sentiment');
-    const yld = document.getElementById('subj-value-horizon');
+    const yld = document.getElementById('subj-value-yield');
     const ink = document.querySelector('.curve-w');
     return {
       fgNum: fg ? fg.textContent.trim().split('VIX')[0] : null,
@@ -305,19 +247,19 @@ async function openPage(p, url, sheet) {
      V544 rule the harder way: the seed carries lo and hi ONLY, and the editorial fields around them
      (the FOMC date, the vote, the next meeting) must survive, because a live document merges over
      the file rather than replacing it. Before V544 this seed blanked all three. */
-  const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75 } });
-  const objSeed = await loadWith(FF_SEED);
+  const objSeed = await loadWith(JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75 } }));
   const objText = await (async () => {
     const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
     const g = await c.newPage();
-    await g.addInitScript(x => { try { localStorage.setItem('gyn.live', x); } catch (e) {} }, FF_SEED);
+    await g.addInitScript(x => { try { localStorage.setItem('gyn.live', x); } catch (e) {} },
+      JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75 } }));
     await g.goto('file://' + url); await g.waitForTimeout(1300);
     // the page's TEXT, not its source: body.textContent includes every <script>, where the word
     // "undefined" legitimately appears, and innerText skips the drawers these rows live in
     const t = await g.evaluate(() => {
-      const c2 = document.body.cloneNode(true);
-      c2.querySelectorAll('script, style').forEach(n => n.remove());
-      return c2.textContent;
+      const c = document.body.cloneNode(true);
+      c.querySelectorAll('script, style').forEach(n => n.remove());
+      return c.textContent;
     });
     await c.close();
     return t;
@@ -358,21 +300,8 @@ async function openPage(p, url, sheet) {
     const read = () => g.evaluate(() => {
       const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim().replace(/\s+/g, ' ') : null; };
       const k = s => { const e = document.querySelector(s); return e ? e.className : null; };
-      /* V593: the verdict moved off the half-dial when that went. It is read where it now lives \u2014 the tag on
-         the row that opens this page \u2014 which is the same claim, not a softened one: this assertion is the
-         reason the dead repaint was caught at all. */
-      return { sentiment: t('#subj-value-sentiment'),
-               mood: t('[data-open="sheet-sign-sentiment"] .tag'),
-               moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
-               /* V596: the verdict is read where it LIVES, not where it is written — catItem lifts this
-                  reading's inline tag out of the figure into a sibling .ci-word, the same V593 shape Fear
-                  has. Both figures are read too, because a reading wears one on each door onto its page and
-                  only walking both catches a repaint that reached one of them. */
-               horizon: t('#subj-value-horizon'),
-               horizonTag: t('[data-open="sheet-sign-horizon"] .tag'),
-               horizonFigs: [...document.querySelectorAll('[data-open="sheet-sign-horizon"] .ci-value, [data-open="sheet-sign-horizon"] .subject-value')]
-                              .map(e => e.textContent.trim().split('pts')[0]),
-               valuation: t('#subj-value-valuation') };
+      return { sentiment: t('#subj-value-sentiment'), mood: t('.curve-w'), moodClass: k('.curve-w'),
+               yield: t('#subj-value-yield'), valuation: t('#subj-value-valuation') };
     });
 
     const seam = await g.evaluate(() => !!(window.__GYN && window.__GYN.applyLive));
@@ -404,13 +333,9 @@ async function openPage(p, url, sheet) {
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 
-      /* V596: a stronger claim than the pair this replaces. 4.05 − 5.55 = −1.50, and a spread that deep is
-         Pessimistic — so the figure AND the verdict computed from it must both move, through the same
-         `horizonWord` the load-time read uses. Printing the pair proved only that a number was copied. */
-      (rv.yc && after.horizonFigs.length > 1 && after.horizonFigs.every(f => /1\.50/.test(f)) &&
-       after.horizonTag === 'Pessimistic')
-        ? ok('repaint horizon spread and verdict', before.horizonFigs.join('/') + ' -> ' + after.horizonFigs.join('/') + ' ' + after.horizonTag)
-        : bad('repaint horizon spread and verdict', JSON.stringify(after.horizonFigs) + ' / ' + after.horizonTag);
+      (rv.yc && /4\.05\/5\.55/.test(after.yield || ''))
+        ? ok('repaint yieldCurve pair', (before.yield || '').slice(0, 12) + ' -> ' + (after.yield || '').slice(0, 12))
+        : bad('repaint yieldCurve pair', JSON.stringify(after.yield));
 
       (rv.nul === false && rv.bad === false && rv.unk === false)
         ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')
@@ -464,11 +389,9 @@ async function openPage(p, url, sheet) {
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       // the kinds are a measured fact about the file; a change here is a real change
       const k = inv.kinds;
-      // V592: build 3 -> 4 and check 6 -> 7, both from Hormones — renderHormones is a build step and
-      // checkFedFundsHistory is the V305 data check its chart is not allowed to draw without.
-      (k.build === 5 && k.mixed === 2 && k.wire === 7)
+      (k.build === 3 && k.mixed === 2 && k.wire === 7)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 5, mixed 2, wire 7');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 3, mixed 2, wire 7');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

@@ -2526,6 +2526,41 @@
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
+  /* ---------- Rhymes (Version 610): today beside one past top ----------
+     The card's own furniture only. Everything with a figure in it \u2014 the surface, the head, the hairline between
+     rows \u2014 is `.cyc-card`'s, because this card and the cycle history below it are two containers on one tab and
+     Version 323 settled that they introduce themselves in one voice.
+     ONE HAIRLINE PER SEAM (Version 604): every row carries one above it, and the `.rhy-cols + .rhy-row` rule is
+     what stops the group head and its first row drawing two. The last row of the last group takes the card's
+     padding at the bottom, because A ROW LIST ENDS WITH AIR. */
+  .rhy-lede{ margin:0; padding:13px 14px 0; font-size:14px; line-height:1.55; color:var(--text-secondary); }
+  .rhy-ctl{ padding:0 14px 12px; }
+  .rhy-ctl .rangebar{ margin:12px 0 0; }
+  /* The chosen top, said rather than chipped: three facts in one sentence needs no new component, and `.chip`
+     has to be scoped to a parent every time it is used, so a fourth copy of its three rules would have been the
+     cost of three words. */
+  .rhy-say{ margin:0; padding:0 14px 13px; font-size:14px; line-height:1.5; color:var(--text-secondary); }
+  .rhy-say b{ color:var(--text-primary); font-weight:700; }
+  .rhy-cols, .rhy-row{ display:grid; grid-template-columns:1fr 78px 78px; gap:10px; align-items:baseline;
+    border-top:1px solid var(--border); padding:10px 14px; }
+  .rhy-cols{ padding-bottom:7px; }
+  .rhy-cols + .rhy-row{ border-top:0; }
+  .rhy-grp:last-child .rhy-row:last-child{ padding-bottom:14px; }
+  .rhy-gname, .rhy-col{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+  .rhy-col{ text-align:right; }
+  .rhy-name{ font-family:"Public Sans",sans-serif; font-size:14px; line-height:1.35; color:var(--text-secondary); }
+  .rhy-cell{ text-align:right; }
+  .rhy-cell b{ display:block; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600;
+    color:var(--text-primary); }
+  .rhy-cell .unit{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
+  /* The period the figure was taken in, under the figure. It is the provenance, not a caption, so it is mono
+     like the number it belongs to. */
+  .rhy-cell i{ display:block; margin-top:3px; font-family:"IBM Plex Mono",monospace; font-style:normal;
+    font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
+  /* No reading: the record does not reach this top. The dash is muted and unbolded so it cannot be mistaken for
+     a value of zero, and the sub-line says where the record starts instead of when this one was taken. */
+  .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }

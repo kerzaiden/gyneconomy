@@ -1651,6 +1651,85 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
+  /* ---------------- RENDER: Rhymes \u2014 today beside one past top (Version 610) ----------------
+     THE PAIR RULE FOR THIS CARD. Both columns come out of the SAME array. A "then" read off one series and a
+     "now" read off a live feed measured another way would be two numbers for two things sitting under one name,
+     which is what Version 294 forbids; so `now` is the array's LAST row and never the live reading, and each
+     figure carries the period it was taken in directly beneath it. That sub-line is the provenance: it is how
+     the reader can see the CAPE column is not reading March 2000: that series is taken once a year, in
+     January, and this top fell in the March after it. `pre` is what puts the month on the sub-line rather than
+     leaving a bare year there to be misread as the whole of it, and `last` is its exception \u2014 Version 255
+     REPLACES the final CAPE point with today's published reading so every page's line finishes on the figure
+     printed above it, so that one point is not a January and must not claim to be.
+     WHICH IS ALSO WHY THIS RUNS LAST, after renderPagesAndNav: that step is where the carry happens, and a
+     card that read the series before it would print January's 39.65 under a label saying today.
+     A series that does not reach the chosen top leaves an em dash and says from when it IS measured. Nothing is
+     interpolated and nothing reaches for the nearest neighbour: the record either covers the date or it does
+     not, and a comparison built on a guess is worse than a blank. Two of the six do not reach 2000. */
+  function renderRhymes(){
+    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
+    if (!pick || !body) return;
+    // `on` is the period key BOTH the series and marketTops carry, which is the whole of the lookup.
+    var ROWS = [
+      { grp:"far",  name:"Shiller CAPE",                       rows:capeHistory,             on:"y", dp:1,
+        pre:"Jan ", last:"today" },
+      { grp:"far",  name:"Buffett Indicator",                  rows:buffettHistory,          on:"q", dp:0, unit:"%" },
+      { grp:"when", name:"Federal Funds Rate",                 rows:fedFundsHistory,         on:"m", dp:2, unit:"%" },
+      { grp:"when", name:"Banks Tightening Lending Standards", rows:lendingStandardsHistory, on:"q", dp:1, signed:true },
+      { grp:"when", name:"10Y \u2212 3M Treasury Spread",         rows:t10y3mHistory,           on:"q", dp:2, signed:true },
+      { grp:"when", name:"VIX \u00f7 3-Month VIX",                rows:fearCurveHistory,        on:"m", dp:2 }
+    ];
+    var GRPS = [{ key:"far", label:"How Far" }, { key:"when", label:"When" }];
+
+    // A signed reading prints its sign, EXCEPT at exactly zero: "+0.0" would read as a small positive, and
+    // the one series here that can land on nought is the net share of banks tightening, where nought is the
+    // whole point \u2014 no bank moved either way.
+    // `pre` is the part of a period the key does not carry \u2014 CAPE's rows are keyed by year and taken in
+    // January, so a bare "2000" under a figure invites the reader to take it for the whole year, or for March.
+    function stamp(r, k){ return (r.pre || "") + k; }
+    function cell(r, v, when, na){
+      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' +
+        '<b>' + (v == null ? "\u2014" : (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) +
+          (r.unit ? '<span class="unit">' + r.unit + '</span>' : "")) + '</b>' +
+        '<i>' + (v == null ? na : when) + '</i></span>';
+    }
+    function draw(key){
+      var top = marketTops.filter(function(t){ return t.key === key; })[0] || marketTops[0];
+      Array.prototype.forEach.call(pick.querySelectorAll(".range-seg"), function(b){
+        var on = b.getAttribute("data-rhyme") === top.key;
+        b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      body.innerHTML =
+        '<p class="rhy-say">' + top.name + ' peaked <b>' + top.when + '</b>, then fell <b>' +
+          top.fall.toFixed(1) + '%</b> over <b>' + top.days + ' days</b>.</p>' +
+        GRPS.map(function(g){
+          return '<div class="rhy-grp">' +
+            '<div class="rhy-cols"><span class="rhy-gname">' + g.label + '</span>' +
+              '<span class="rhy-col">At the top</span><span class="rhy-col">Latest</span></div>' +
+            ROWS.filter(function(r){ return r.grp === g.key; }).map(function(r){
+              var last = r.rows[r.rows.length - 1];
+              var hit = r.rows.filter(function(d){ return d[r.on] === top[r.on]; })[0];
+              return '<div class="rhy-row"><span class="rhy-name">' + r.name + '</span>' +
+                cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.rows[0][r.on])) +
+                cell(r, last.v, r.last || stamp(r, last[r.on])) + '</div>';
+            }).join("") +
+          '</div>';
+        }).join("");
+    }
+    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past top to stand beside">' +
+      marketTops.map(function(t, i){
+        return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' +
+          (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.name + '</button>';
+      }).join("") + '</div>';
+    pick.addEventListener("click", function(e){
+      var b = e.target.closest && e.target.closest(".range-seg"); if (b) draw(b.getAttribute("data-rhyme"));
+    });
+    draw(marketTops[0].key);
+    addSources(marketTopsSrc);
+  }
+  GYN.step("renderRhymes", renderRhymes, "wire"); renderRhymes();
+
+
   // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page
   // whenever this list changes: build-sources.js in the project scratchpad reads window.__sources below.
   window.__sources = { all: allSources, cards: coincident.concat(lagging).map(function(c){ return {name:c.bodyTerm, src:c.src}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };

@@ -1557,6 +1557,31 @@
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
+
+  .rhy-lede{ margin:0; padding:13px 14px 0; font-size:14px; line-height:1.55; color:var(--text-secondary); }
+  .rhy-ctl{ padding:0 14px 12px; }
+  .rhy-ctl .rangebar{ margin:12px 0 0; }
+
+  .rhy-say{ margin:0; padding:0 14px 13px; font-size:14px; line-height:1.5; color:var(--text-secondary); }
+  .rhy-say b{ color:var(--text-primary); font-weight:700; }
+  .rhy-cols, .rhy-row{ display:grid; grid-template-columns:1fr 78px 78px; gap:10px; align-items:baseline;
+    border-top:1px solid var(--border); padding:10px 14px; }
+  .rhy-cols{ padding-bottom:7px; }
+  .rhy-cols + .rhy-row{ border-top:0; }
+  .rhy-grp:last-child .rhy-row:last-child{ padding-bottom:14px; }
+  .rhy-gname, .rhy-col{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+  .rhy-col{ text-align:right; }
+  .rhy-name{ font-family:"Public Sans",sans-serif; font-size:14px; line-height:1.35; color:var(--text-secondary); }
+  .rhy-cell{ text-align:right; }
+  .rhy-cell b{ display:block; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600;
+    color:var(--text-primary); }
+  .rhy-cell .unit{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
+
+  .rhy-cell i{ display:block; margin-top:3px; font-family:"IBM Plex Mono",monospace; font-style:normal;
+    font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
+
+  .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
@@ -2237,6 +2262,19 @@
     <div id="calendar-list">
       
       <div id="indicators-peek"></div>
+      
+      <div class="cyc-card" id="rhymes-card">
+        <div class="cyc-head">
+          <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
+            d="M3 9.6c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/><path d="M3 15.4c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/></svg></span>Rhymes</div>
+        </div>
+        
+        <p class="rhy-lede">A body can be at risk and still feel perfectly well. Valuation says how far there is to
+          fall and never says when — the CAPE passed 30 in 1998, and the top was two years away.</p>
+        <div class="rhy-ctl" id="rhy-pick"></div>
+        <div id="rhy-body"></div>
+      </div>
       <div class="cyc-card">
         <div class="cyc-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
@@ -15415,6 +15453,38 @@
     name: "AI Cycle",
     blurb: "Out of the 2022 correction, a bull run carried by the build-out of artificial intelligence. Three full years so far and the fourth under way, with no losing year in it yet. Still being written."
   } ];
+  var marketTops = [ {
+    key: "2000",
+    name: "Dot-Com",
+    when: "24 Mar 2000",
+    y: 2e3,
+    q: "2000 Q1",
+    m: "2000-03",
+    fall: 49.1,
+    days: 929
+  }, {
+    key: "2007",
+    name: "Housing",
+    when: "9 Oct 2007",
+    y: 2007,
+    q: "2007 Q4",
+    m: "2007-10",
+    fall: 56.8,
+    days: 517
+  }, {
+    key: "2020",
+    name: "COVID-19",
+    when: "19 Feb 2020",
+    y: 2020,
+    q: "2020 Q1",
+    m: "2020-02",
+    fall: 33.9,
+    days: 32
+  } ];
+  var marketTopsSrc = [ {
+    t: "Yardeni Research — Market Briefing: S&P 500 Bull & Bear Markets & Corrections",
+    u: "https://yardeni.com/charts/us-stock-market/stock-market-historical-trends/bull-bear-markets-corrections"
+  } ];
   var currentEra = marketCycles.filter(function(c) {
     return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY);
   })[0] || marketCycles[marketCycles.length - 1];
@@ -19997,6 +20067,98 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
+  function renderRhymes() {
+    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
+    if (!pick || !body) return;
+    var ROWS = [ {
+      grp: "far",
+      name: "Shiller CAPE",
+      rows: capeHistory,
+      on: "y",
+      dp: 1,
+      pre: "Jan ",
+      last: "today"
+    }, {
+      grp: "far",
+      name: "Buffett Indicator",
+      rows: buffettHistory,
+      on: "q",
+      dp: 0,
+      unit: "%"
+    }, {
+      grp: "when",
+      name: "Federal Funds Rate",
+      rows: fedFundsHistory,
+      on: "m",
+      dp: 2,
+      unit: "%"
+    }, {
+      grp: "when",
+      name: "Banks Tightening Lending Standards",
+      rows: lendingStandardsHistory,
+      on: "q",
+      dp: 1,
+      signed: true
+    }, {
+      grp: "when",
+      name: "10Y − 3M Treasury Spread",
+      rows: t10y3mHistory,
+      on: "q",
+      dp: 2,
+      signed: true
+    }, {
+      grp: "when",
+      name: "VIX ÷ 3-Month VIX",
+      rows: fearCurveHistory,
+      on: "m",
+      dp: 2
+    } ];
+    var GRPS = [ {
+      key: "far",
+      label: "How Far"
+    }, {
+      key: "when",
+      label: "When"
+    } ];
+    function stamp(r, k) {
+      return (r.pre || "") + k;
+    }
+    function cell(r, v, when, na) {
+      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' + "<b>" + (v == null ? "—" : (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) + (r.unit ? '<span class="unit">' + r.unit + "</span>" : "")) + "</b>" + "<i>" + (v == null ? na : when) + "</i></span>";
+    }
+    function draw(key) {
+      var top = marketTops.filter(function(t) {
+        return t.key === key;
+      })[0] || marketTops[0];
+      Array.prototype.forEach.call(pick.querySelectorAll(".range-seg"), function(b) {
+        var on = b.getAttribute("data-rhyme") === top.key;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      body.innerHTML = '<p class="rhy-say">' + top.name + " peaked <b>" + top.when + "</b>, then fell <b>" + top.fall.toFixed(1) + "%</b> over <b>" + top.days + " days</b>.</p>" + GRPS.map(function(g) {
+        return '<div class="rhy-grp">' + '<div class="rhy-cols"><span class="rhy-gname">' + g.label + "</span>" + '<span class="rhy-col">At the top</span><span class="rhy-col">Latest</span></div>' + ROWS.filter(function(r) {
+          return r.grp === g.key;
+        }).map(function(r) {
+          var last = r.rows[r.rows.length - 1];
+          var hit = r.rows.filter(function(d) {
+            return d[r.on] === top[r.on];
+          })[0];
+          return '<div class="rhy-row"><span class="rhy-name">' + r.name + "</span>" + cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.rows[0][r.on])) + cell(r, last.v, r.last || stamp(r, last[r.on])) + "</div>";
+        }).join("") + "</div>";
+      }).join("");
+    }
+    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past top to stand beside">' + marketTops.map(function(t, i) {
+      return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' + (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.name + "</button>";
+    }).join("") + "</div>";
+    pick.addEventListener("click", function(e) {
+      var b = e.target.closest && e.target.closest(".range-seg");
+      if (b) draw(b.getAttribute("data-rhyme"));
+    });
+    draw(marketTops[0].key);
+    addSources(marketTopsSrc);
+  }
+  GYN.step("renderRhymes", renderRhymes, "wire");
+  renderRhymes();
   window.__sources = {
     all: allSources,
     cards: coincident.concat(lagging).map(function(c) {
