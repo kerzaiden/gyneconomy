@@ -209,6 +209,13 @@
   /* V592: Hormones. A molecule \u2014 three atoms and the bonds between them \u2014 because a hormone is a chemical
      MESSENGER, and what the policy rate does is carry a signal into everything downstream. Drawn as an outline
      at 1.7 like every other mark here, with no interior detail, so it survives at 13px. */
+  /* V597: Pressure. Two arrows pressing inward on a channel \u2014 the mark says SQUEEZE, which is what the
+     reading measures: not the price of money but how narrow the banks leave the pipe it travels through.
+     Deliberately not a cuff: a cuff is the INSTRUMENT, and in this model the instrument is the Fed. */
+  function pressureSvg(){ return markSvg(
+    '<path d="M12 3.4v17.2" stroke-width="1.6" opacity="0.55"/>' +
+    '<path d="M2.6 12h5.1" stroke-width="1.9"/><path d="M5.6 9.3 8.3 12l-2.7 2.7" stroke-width="1.9"/>' +
+    '<path d="M21.4 12h-5.1" stroke-width="1.9"/><path d="M18.4 9.3 15.7 12l2.7 2.7" stroke-width="1.9"/>'); }
   function hormoneSvg(){ return markSvg(
     '<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' +
     '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' +

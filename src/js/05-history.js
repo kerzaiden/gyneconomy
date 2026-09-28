@@ -42,7 +42,8 @@
     "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets both the title and the menu
     "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" },
     "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" },
-    "hormones-range":          { mark:hormoneSvg,  title:"Effective federal funds rate" }
+    "hormones-range":          { mark:hormoneSvg,  title:"Effective federal funds rate" },
+    "pressure-range":          { mark:pressureSvg, title:"Banks tightening lending standards" }
   };
   function histHead(id){
     var H = HIST_HEAD[id];
@@ -595,6 +596,89 @@
                    fedFundsHistory[0] && fedFundsHistory[0].m);
   }
   GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check"); checkFedFundsHistory();
+
+  /* ---------------- V597: Pressure. The resistance the circulating money meets ----------------
+     Keren: "think like a doctor and tell me what you think is blood pressure in this scenario."
+     Mean arterial pressure is cardiac output times systemic vascular resistance \u2014 pressure is not a
+     substance, it is flow meeting resistance \u2014 and about 70% of the pressure drop happens in the small
+     arteries and arterioles, where resistance goes as one over the radius to the FOURTH power. A slight
+     narrowing at the far end changes everything upstream.
+     The app already measures the flow and did not know it: stroke volume times heart rate is cardiac output,
+     and this page\u2019s own Insights card prints "Volume \u00d7 Pulse is nominal demand." What was never
+     measured is the resistance. The Senior Loan Officer Survey measures it directly: it asks the banks
+     whether they are narrowing the channel. Arteriolar tone with a questionnaire.
+     ZERO IS NOT A CHOSEN MIDPOINT. It is the definition \u2014 as many banks easing as tightening \u2014 which is
+     why this chart has a zero rule and no band, and why the columns are coloured by side rather than by
+     depth. Red above, because tight credit is the bearish end; green below. */
+  function checkLendingStandards(){   // the data has to be right before anything draws it (the V305 rule)
+    var vs = lendingStandardsHistory.map(function(d){ return d.v; });
+    var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
+    if (!lendingStandardsHistory.length || lendingStandardsHistory[0].q !== "1990 Q2" ||
+        hi < 83 || hi > 84 || lo > -32 || lo < -33)
+      console.warn("lendingStandardsHistory failed its check", lendingStandardsHistory.length, lo, hi,
+                   lendingStandardsHistory[0] && lendingStandardsHistory[0].q);
+  }
+  GYN.step("checkLendingStandards", checkLendingStandards, "check"); checkLendingStandards();
+  /* A sibling of fedFundsHistoryChart, not a flag on it (the V498 rule): that one plots a level standing on
+     zero, this one plots a net percentage HANGING off zero in both directions, and the two differ in their
+     scale, their ink and their x-axis, which is quarterly here. Folding them together behind a flag is how a
+     component stops being readable. */
+  function lendingHistoryChart(Wpx, from, o){
+    o = o || {}; lastChartAvg = null;
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    from = from || 0;
+    var vals = lendingStandardsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+    if (!n) return "";
+    var seen = vals.filter(function(d){ return d.v != null; });
+    if (!seen.length) return "";
+    var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
+    var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);   // zero is always in view: it IS the reading
+    var LO = sc.lo, HI = sc.hi;
+    var halfCol = (R - L) / (2 * Math.max(1, n));
+    var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+    var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
+    var f = function(v){ return v.toFixed(1); };
+    var out = [], zero = Y(0);
+    /* The sign rides on the tick, because a net percentage is signed and "20" on both sides of a zero rule
+       would be two different readings printed identically. */
+    out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
+      top:(T - AXIS.LEG - AXIS.READ), bot:B,
+      fmt:function(g){ return (g > 0 ? "+" : g < 0 ? "\u2212" : "") + Math.abs(Math.round(g)) + "%"; } }));
+    // the x axis is QUARTERLY, so a year is four columns, not twelve
+    if (o.cycle){
+      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
+      for (var cyr = y0; cyr <= y1; cyr += stepY){
+        var cix = (cyr - y0) * 4; if (cix >= n) break;
+        out.unshift(vGrid(X(cix), T, B));
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+      }
+    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
+      var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+    });
+    var sw = colWidth((R - L) / n);
+    vals.forEach(function(d, i){
+      if (d.v == null) return;   // a gap is the honest drawing of a quarter nobody surveyed
+      out.push('<path class="ls-col hcol' + (d.v > 0 ? " tight" : "") + '" stroke-width="' + sw.toFixed(2) +
+        '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+    });
+    var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
+    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
+    lastChartAvg = avgV;
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
+    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
+    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals,
+                     at:function(d){ return qLabel(d.q); },
+                     refs:[{ label:"Average", v:avgV }],
+                     fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v).toFixed(1) + "%"; } };
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+      'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + ' to ' + y1 + '">' +
+      out.join("") + '</svg>';
+  }
   function fedFundsHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
     var W = Math.max(270, Math.round(Wpx || 360));

@@ -47,6 +47,7 @@ const PAGES = [
      its OWN chart (see the band lookup below), so the second is a real assertion and not a duplicate of the
      first: it proves the maturity chart still wears the head, the ⋯ and a note of its own on the merged page. */
   ['sheet-sign-hormones','hormones-range','Hormones'],
+  ['sheet-sign-pressure','pressure-range','Pressure'],
   ['sheet-sign-hormones','ylm-range','Treasury yields'],
   ['sheet-sign-desire','desire-range','Desire'],
 ];
@@ -425,9 +426,9 @@ async function openPage(p, url, sheet) {
       const k = inv.kinds;
       // V592: build 3 -> 4 and check 6 -> 7, both from Hormones — renderHormones is a build step and
       // checkFedFundsHistory is the V305 data check its chart is not allowed to draw without.
-      (k.build === 4 && k.mixed === 2 && k.wire === 7)
+      (k.build === 5 && k.mixed === 2 && k.wire === 7)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 7');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 5, mixed 2, wire 7');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

@@ -1400,7 +1400,7 @@
   /* the miniature's marks keep their real weight under the stretch, the same rule the peek line follows */
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar,
   .peek-chart.heat .m2-col, .peek-chart.heat .yc-col,
-  .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col,
+  .peek-chart.heat .hzn-col, .peek-chart.heat .ls-col, .peek-chart.heat .unemp-col,
   .peek-chart.heat .hy-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
   /* On a preview the history is shape, not colour — it is greyed so the latest reading is the only lit thing, and the
@@ -1642,6 +1642,10 @@
      out of a zero line in one of two directions) drawn the same way. The two colours are the legend's own. */
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
+  /* V597: Pressure reads by SIDE, not by depth \u2014 zero is the definition, so the colour says which side of
+     it a quarter fell on. Red above, because tight credit is the bearish end; green below. */
+  .ls-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
+  .ls-col.tight{ stroke:var(--critical); }
   /* Version 498: Activity's columns. The colour carries the BAND, so the picture and the reading below it say
      the same thing: teal inside 3.5–5%, amber on either side of it, and deepening as slack grows — which is
      what lets 1982 and 2020 read as the events they were rather than as tall bars. */
@@ -1874,7 +1878,7 @@
   .trend-on .bt-bar, .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
-  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
+  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .ls-col, .trend-on .unemp-col,
   .trend-on .hh-col, .trend-on .hy-col2, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
   /* the average is plum too, so it steps back as well: one plum line on screen at a time (Version 279) */
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }

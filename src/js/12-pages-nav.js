@@ -289,6 +289,9 @@
     /* V596: three, not four. Pressure and Hormones were one reading on two rows — the price of money as
        the market charges it and as the Fed sets it — and they are one page now, which Hormones names. */
     [{ key:"hormones", title:"Hormones", timing:"leading" },
+     /* V597: Pressure returns, reading the resistance rather than the Treasury curve V596 retired it from.
+        Leading, because a bank narrowing its channel does so before anything downstream shows it. */
+     { key:"pressure", title:"Pressure", timing:"leading" },
      // Version 473: Horizon converts the same way, which is the whole reason it was written into the markup as a
      // <details> rather than built from an indicator object — its page is a chart with two controls and a
      // verdict, not a row with a table, and this path gives it a page without inventing a second idiom for one.
@@ -319,7 +322,7 @@
          The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
          reach any list without it, and a label that already carries its glyph is left exactly as it is. */
       (function(){
-        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg };
+        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:pressureSvg };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
           lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
@@ -518,14 +521,19 @@
       var CATS = [
         { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
           picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pulse · Volume",
+        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
           /* V596, Keren: "let's fold Treasury into Hormones." Four members became three, and the category is
              finally a sequence rather than a list with a repetition in it: the RATE that is set, the SPEED the
              money moves at, the QUANTITY of it. Pressure was the odd one twice over — it measured the same
              quantity Hormones does, from the other end, and in her own draft pressure is not an instrument at
              all but what builds WHEN circulation goes wrong. */
-          picks:['.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]',
-                 '.peek[data-open="sheet-sign-volume"]'] },
+          /* V597: the order is the physiology, read in the direction the causation runs. The SIGNAL the Fed
+             sends, the RESISTANCE the banks leave it, then the two halves of the flow it produces — how fast
+             the money moves and how much of it there is. Mean arterial pressure is cardiac output times
+             resistance, and Volume times Pulse is the cardiac output this category has been computing since
+             long before it had a name for it. */
+          picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
+                 '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
         /* Version 473, Keren: "calling it Horizon and judging if it\u2019s optimistic or pessimistic, which
            correlates with ovulation and menstruation \u2014 so it belongs to Mood." The fourth member, and the one
            that makes this page an argument rather than a list: Valuations is what the market will pay for a
@@ -592,6 +600,8 @@
         // V592: the DECISION's date, not the series' — the row states the target the FOMC set, and the
         // date that belongs beside it is the day they set it.
         "sheet-sign-hormones":    fedFunds.asOf,
+        // the survey's own quarter, which is the period the net percentage is FOR
+        "sheet-sign-pressure":    qPretty(lendingStandardsHistory[lendingStandardsHistory.length - 1].q),
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
@@ -1507,7 +1517,7 @@
         target:"sheet-metric-" + p[0]
       });
     });
-    ["hormones", "horizon", "sentiment"].forEach(function(key){
+    ["hormones", "pressure", "horizon", "sentiment"].forEach(function(key){
       var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key); if (!row) return;
       var rv = partsOf(row.querySelector(".subject-value"), ".unit");
       var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();

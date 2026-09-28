@@ -951,7 +951,7 @@
 
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar,
   .peek-chart.heat .m2-col, .peek-chart.heat .yc-col,
-  .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col,
+  .peek-chart.heat .hzn-col, .peek-chart.heat .ls-col, .peek-chart.heat .unemp-col,
   .peek-chart.heat .hy-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
 
@@ -1075,6 +1075,9 @@
 
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
+
+  .ls-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
+  .ls-col.tight{ stroke:var(--critical); }
 
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--warning); }
@@ -1202,7 +1205,7 @@
   .trend-on .bt-bar, .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
-  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
+  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .ls-col, .trend-on .unemp-col,
   .trend-on .hh-col, .trend-on .hy-col2, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
 
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }
@@ -2165,6 +2168,22 @@
     </div>
     </details>
 
+
+
+<details class="subject" data-subject="pressure">
+    <summary class="subject-summary">
+      <div class="subject-text">
+        <div class="subject-label">Pressure</div>
+        <div class="subject-value" id="subj-value-pressure"></div>
+        <p class="subject-say" id="subj-say-pressure"></p>
+      </div>
+      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
+    </summary>
+    <div class="subject-body">
+      <div id="pressure-history"></div>
+      <div id="pressure-highlights"></div>
+    </div>
+  </details>
 
   <details class="subject" data-subject="sentiment">
     <summary class="subject-summary">
@@ -13085,6 +13104,10 @@
     "hormones-range": {
       mark: hormoneSvg,
       title: "Effective federal funds rate"
+    },
+    "pressure-range": {
+      mark: pressureSvg,
+      title: "Banks tightening lending standards"
     }
   };
   function histHead(id) {
@@ -13443,6 +13466,105 @@
   }
   GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check");
   checkFedFundsHistory();
+  function checkLendingStandards() {
+    var vs = lendingStandardsHistory.map(function(d) {
+      return d.v;
+    });
+    var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
+    if (!lendingStandardsHistory.length || lendingStandardsHistory[0].q !== "1990 Q2" || hi < 83 || hi > 84 || lo > -32 || lo < -33) console.warn("lendingStandardsHistory failed its check", lendingStandardsHistory.length, lo, hi, lendingStandardsHistory[0] && lendingStandardsHistory[0].q);
+  }
+  GYN.step("checkLendingStandards", checkLendingStandards, "check");
+  checkLendingStandards();
+  function lendingHistoryChart(Wpx, from, o) {
+    o = o || {};
+    lastChartAvg = null;
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    from = from || 0;
+    var vals = lendingStandardsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+    if (!n) return "";
+    var seen = vals.filter(function(d) {
+      return d.v != null;
+    });
+    if (!seen.length) return "";
+    var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
+    var sc = windowScale(seen.map(function(d) {
+      return d.v;
+    }), [ 0 ]);
+    var LO = sc.lo, HI = sc.hi;
+    var halfCol = (R - L) / (2 * Math.max(1, n));
+    var X = function(i) {
+      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
+    };
+    var Y = function(v) {
+      return B - (B - T) * (v - LO) / (HI - LO);
+    };
+    var f = function(v) {
+      return v.toFixed(1);
+    };
+    var out = [], zero = Y(0);
+    out.push(chartAxes({
+      ticks: sc.ticks,
+      y: Y,
+      x0: L,
+      x1: R,
+      base: zero,
+      noGridAt: 0,
+      top: T - AXIS.LEG - AXIS.READ,
+      bot: B,
+      fmt: function(g) {
+        return (g > 0 ? "+" : g < 0 ? "−" : "") + Math.abs(Math.round(g)) + "%";
+      }
+    }));
+    if (o.cycle) {
+      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
+      for (var cyr = y0; cyr <= y1; cyr += stepY) {
+        var cix = (cyr - y0) * 4;
+        if (cix >= n) break;
+        out.unshift(vGrid(X(cix), T, B));
+        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+      }
+    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
+      var i = (yr - y0) * 4;
+      if (i < 0 || i >= n) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+    });
+    var sw = colWidth((R - L) / n);
+    vals.forEach(function(d, i) {
+      if (d.v == null) return;
+      out.push('<path class="ls-col hcol' + (d.v > 0 ? " tight" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+    });
+    var avgV = seen.reduce(function(a, d) {
+      return a + d.v;
+    }, 0) / seen.length;
+    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
+    lastChartAvg = avgV;
+    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
+    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
+    lastHistGeom = {
+      L: X(0),
+      R: X(n - 1),
+      T: T,
+      B: B,
+      W: W,
+      n: n,
+      vals: vals,
+      at: function(d) {
+        return qLabel(d.q);
+      },
+      refs: [ {
+        label: "Average",
+        v: avgV
+      } ],
+      fmt: function(v) {
+        return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
+      }
+    };
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
+  }
   function fedFundsHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
@@ -15048,6 +15170,9 @@
   function markSvg(body, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
   }
+  function pressureSvg() {
+    return markSvg('<path d="M12 3.4v17.2" stroke-width="1.6" opacity="0.55"/>' + '<path d="M2.6 12h5.1" stroke-width="1.9"/><path d="M5.6 9.3 8.3 12l-2.7 2.7" stroke-width="1.9"/>' + '<path d="M21.4 12h-5.1" stroke-width="1.9"/><path d="M18.4 9.3 15.7 12l2.7 2.7" stroke-width="1.9"/>');
+  }
   function hormoneSvg() {
     return markSvg('<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' + '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<circle cx="18.4" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<path d="M10.7 7.7 6.9 14.3M13.3 7.7 17.1 14.3M8.2 16.6h7.6" stroke-width="1.7"/>');
   }
@@ -15754,6 +15879,7 @@
     "hzn-range": "cycles",
     "fear-range": "cycles",
     "hormones-range": "cycles",
+    "pressure-range": "cycles",
     "sheet-metric-households": "cycles",
     "sheet-sign-activity": "cycles"
   };
@@ -15769,6 +15895,7 @@
     "hzn-range": null,
     "fear-range": null,
     "hormones-range": null,
+    "pressure-range": null,
     "sheet-metric-households": null,
     "sheet-sign-activity": null
   };
@@ -15785,6 +15912,7 @@
     "desire-range": "max",
     "fear-range": "10y",
     "hormones-range": "10y",
+    "pressure-range": "10y",
     "sheet-metric-households": "10y",
     "sheet-sign-activity": "10y"
   };
@@ -16840,6 +16968,86 @@
   }
   GYN.step("renderHormones", renderHormones, "build");
   renderHormones();
+  function lendingWord(v) {
+    var a = Math.abs(v), dir = v > 0 ? "tightening" : "easing";
+    if (a <= 5) return {
+      text: "Basically unchanged",
+      state: "good"
+    };
+    if (a <= 10) return {
+      text: "Modest " + dir,
+      state: v > 0 ? "warning" : "good"
+    };
+    if (a <= 20) return {
+      text: "Moderate " + dir,
+      state: v > 0 ? "warning" : "good"
+    };
+    if (a < 50) return {
+      text: "Significant " + dir,
+      state: v > 0 ? "serious" : "good"
+    };
+    return {
+      text: "Major " + dir,
+      state: v > 0 ? "critical" : "good"
+    };
+  }
+  function renderPressure() {
+    var host = document.getElementById("pressure-history");
+    if (!host || !lendingStandardsHistory.length) return;
+    var PRESS_STOPS = [ "5y", "10y", "25y", "max" ];
+    var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
+    function draw() {
+      var bar = document.getElementById("pressure-history");
+      if (!bar) return;
+      var id = "pressure-range";
+      var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
+      var span = cyc ? cycleSlice(lendingStandardsHistory, cyc) : null;
+      var from = span ? span[0] : qWindowFrom(lendingStandardsHistory.length, pageRange[id]);
+      var to = span ? span[1] : undefined;
+      var win = lendingStandardsHistory.slice(from, to);
+      bar.innerHTML = '<div class="hist-bar">' + histControls(id, {
+        series: lendingStandardsHistory,
+        stops: PRESS_STOPS
+      }, LS_Y0) + "</div>" + '<div class="page-chart">' + histHead(id) + lendingHistoryChart(bar.clientWidth || 340, from, {
+        to: to,
+        cycle: !!span
+      }) + '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' + '<div id="pressure-trend"></div></div>';
+      var tr = document.getElementById("pressure-trend");
+      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
+        return d.v;
+      }), "points", "quarter"), null, true, {
+        rising: "narrowing",
+        falling: "widening"
+      });
+      var box = bar.querySelector(".page-chart");
+      refitHistory(box, function(w) {
+        return lendingHistoryChart(w, from, {
+          to: to,
+          cycle: !!span
+        });
+      });
+      if (box) {
+        box.__geom = lastHistGeom;
+        wireHistHover(box, "pressure-hist-tooltip");
+      }
+    }
+    sheetRenderers["pressure-range"] = draw;
+    sheetRenderers["sheet-sign-pressure"] = draw;
+    draw();
+    HIST_NOTE["pressure-range"] = "<h4>Banks tightening lending standards</h4>" + factsFrom("The net percentage of banks that tightened their standards on commercial and industrial loans to " + "large and middle-market firms, minus those that eased them, every quarter since the survey began. " + "It is the RESISTANCE the circulating money meets: the policy rate is what the Fed sets, and this is " + "how wide the banks leave the channel it has to travel through. Zero is not a chosen midpoint but the " + "definition — as many banks easing as tightening — which is why this chart carries a zero rule and " + "no band. The words come from the survey’s own footnote: up to 5 percent is basically unchanged, " + "above 5 modest, above 10 moderate, above 20 significant, and 50 or more major. " + "The record runs " + lendingStandardsHistory.length + " quarters from " + lendingStandardsHistory[0].q + ". Its peak is +83.6% in 2008 Q4 and its floor −32.4% in 2021 Q3; the four highest quarters in the " + "series are 2008 Q4, 2020 Q3, 2009 Q1 and 2001 Q1, which is every recession in the record. That is " + "why this reading sits on the front of the app rather than inside it: a tightening shows nothing in " + "Growth or Activity for three or four quarters, by which time it has already happened. " + "Source: Board of Governors of the Federal Reserve System, Senior Loan Officer Opinion Survey on Bank " + "Lending Practices, series DRTSCILM.");
+    var last = lendingStandardsHistory[lendingStandardsHistory.length - 1];
+    var w = lendingWord(last.v);
+    var rowVal = document.getElementById("subj-value-pressure");
+    if (rowVal) rowVal.innerHTML = (last.v > 0 ? "+" : last.v < 0 ? "−" : "") + Math.abs(last.v).toFixed(1) + '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + "</span>";
+    var rowSay = document.getElementById("subj-say-pressure");
+    if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d) {
+      return d.v;
+    }), function(v) {
+      return "ls-col " + (v > 0 ? "tight" : "");
+    }, 0, true);
+  }
+  GYN.step("renderPressure", renderPressure, "build");
+  renderPressure();
   function renderFearCurve() {
     HIST_NOTE["fear-range"] = curveDetailHtml();
     var FEAR_STOPS = [ "5y", "10y", "max" ];
@@ -18494,6 +18702,10 @@
       title: "Hormones",
       timing: "leading"
     }, {
+      key: "pressure",
+      title: "Pressure",
+      timing: "leading"
+    }, {
       key: "horizon",
       title: "Horizon",
       timing: "leading"
@@ -18520,7 +18732,8 @@
         var MARK = {
           horizon: sunriseSvg,
           sentiment: umbrellaSvg,
-          hormones: hormoneSvg
+          hormones: hormoneSvg,
+          pressure: pressureSvg
         };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg")) lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + "</span>" + lab.innerHTML;
@@ -18735,8 +18948,8 @@
         key: "circulation",
         title: "Circulation",
         mark: circulationSvg(),
-        sub: "Hormones · Pulse · Volume",
-        picks: [ '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
+        sub: "Hormones · Pressure · Pulse · Volume",
+        picks: [ '.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
       }, {
         key: "mood",
         title: "Mood",
@@ -18767,6 +18980,7 @@
         "sheet-metric-power": String(powerHistory[powerHistory.length - 1].y),
         "sheet-sign-sentiment": fmtDay(DATA_COMPILED),
         "sheet-sign-hormones": fedFunds.asOf,
+        "sheet-sign-pressure": qPretty(lendingStandardsHistory[lendingStandardsHistory.length - 1].q),
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
@@ -19617,7 +19831,7 @@
         target: "sheet-metric-" + p[0]
       });
     });
-    [ "hormones", "horizon", "sentiment" ].forEach(function(key) {
+    [ "hormones", "pressure", "horizon", "sentiment" ].forEach(function(key) {
       var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key);
       if (!row) return;
       var rv = partsOf(row.querySelector(".subject-value"), ".unit");

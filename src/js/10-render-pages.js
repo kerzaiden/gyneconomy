@@ -493,6 +493,83 @@
   }
   GYN.step("renderHormones", renderHormones, "build"); renderHormones();
 
+  /* ---------------- RENDER: Pressure (V597) ----------------
+     The reading is a NET PERCENTAGE, so its word comes from the Fed\u2019s own magnitude vocabulary rather than
+     from a band anyone here chose. Footnote 3 of the release, verbatim: "basically unchanged" is 0 to 5
+     percent inclusive; "modest" is above 5 and up to 10; "moderate" is above 10 and up to 20; "significant"
+     is above 20 and below 50; "major" is 50 or more. The sign supplies the direction. THE BAND PROVENANCE
+     RULE, satisfied by the source itself \u2014 which is why this reading gets a five-step word where Hormones,
+     whose level has no published vocabulary, gets only a direction.
+     The state is ONE-SIDED, the V488 lesson: tight credit is a condition and loose credit is not, so a
+     two-sided band here would flag the healthy end as a fault. */
+  function lendingWord(v){
+    var a = Math.abs(v), dir = v > 0 ? "tightening" : "easing";
+    if (a <= 5)  return { text:"Basically unchanged", state:"good" };
+    if (a <= 10) return { text:"Modest " + dir,       state:v > 0 ? "warning" : "good" };
+    if (a <= 20) return { text:"Moderate " + dir,     state:v > 0 ? "warning" : "good" };
+    if (a <  50) return { text:"Significant " + dir,  state:v > 0 ? "serious" : "good" };
+    return             { text:"Major " + dir,         state:v > 0 ? "critical" : "good" };
+  }
+  function renderPressure(){
+    var host = document.getElementById("pressure-history"); if (!host || !lendingStandardsHistory.length) return;
+    var PRESS_STOPS = ["5y", "10y", "25y", "max"];
+    var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
+    function draw(){
+      var bar = document.getElementById("pressure-history"); if (!bar) return;
+      var id = "pressure-range";
+      var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+      var span = cyc ? cycleSlice(lendingStandardsHistory, cyc) : null;
+      var from = span ? span[0] : qWindowFrom(lendingStandardsHistory.length, pageRange[id]);
+      var to = span ? span[1] : undefined;
+      var win = lendingStandardsHistory.slice(from, to);
+      bar.innerHTML =
+        '<div class="hist-bar">' + histControls(id, { series:lendingStandardsHistory, stops:PRESS_STOPS }, LS_Y0) + '</div>' +
+        '<div class="page-chart">' + histHead(id) +
+        lendingHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
+        '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' +
+        '<div id="pressure-trend"></div></div>';
+      var tr = document.getElementById("pressure-trend");
+      // V431\u2019s pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
+      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
+                                       null, true, { rising:"narrowing", falling:"widening" });
+      // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
+      var box = bar.querySelector(".page-chart");
+      refitHistory(box, function(w){ return lendingHistoryChart(w, from, { to:to, cycle:!!span }); });
+      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "pressure-hist-tooltip"); }
+    }
+    sheetRenderers["pressure-range"] = draw;
+    sheetRenderers["sheet-sign-pressure"] = draw;
+    draw();
+
+    HIST_NOTE["pressure-range"] = '<h4>Banks tightening lending standards</h4>' + factsFrom(
+      "The net percentage of banks that tightened their standards on commercial and industrial loans to " +
+      "large and middle-market firms, minus those that eased them, every quarter since the survey began. " +
+      "It is the RESISTANCE the circulating money meets: the policy rate is what the Fed sets, and this is " +
+      "how wide the banks leave the channel it has to travel through. Zero is not a chosen midpoint but the " +
+      "definition \u2014 as many banks easing as tightening \u2014 which is why this chart carries a zero rule and " +
+      "no band. The words come from the survey\u2019s own footnote: up to 5 percent is basically unchanged, " +
+      "above 5 modest, above 10 moderate, above 20 significant, and 50 or more major. " +
+      "The record runs " + lendingStandardsHistory.length + " quarters from " + lendingStandardsHistory[0].q +
+      ". Its peak is +83.6% in 2008 Q4 and its floor \u221232.4% in 2021 Q3; the four highest quarters in the " +
+      "series are 2008 Q4, 2020 Q3, 2009 Q1 and 2001 Q1, which is every recession in the record. That is " +
+      "why this reading sits on the front of the app rather than inside it: a tightening shows nothing in " +
+      "Growth or Activity for three or four quarters, by which time it has already happened. " +
+      "Source: Board of Governors of the Federal Reserve System, Senior Loan Officer Opinion Survey on Bank " +
+      "Lending Practices, series DRTSCILM.");
+
+    var last = lendingStandardsHistory[lendingStandardsHistory.length - 1];
+    var w = lendingWord(last.v);
+    /* Written straight to the element, as renderHormones does: `set` and `say` are local to
+       renderSubjectRows and this page renders from its own step. */
+    var rowVal = document.getElementById("subj-value-pressure");
+    if (rowVal) rowVal.innerHTML = (last.v > 0 ? "+" : last.v < 0 ? "\u2212" : "") + Math.abs(last.v).toFixed(1) +
+      '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + '</span>';
+    var rowSay = document.getElementById("subj-say-pressure");
+    if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d){ return d.v; }),
+                                           function(v){ return "ls-col " + (v > 0 ? "tight" : ""); }, 0, true);
+  }
+  GYN.step("renderPressure", renderPressure, "build"); renderPressure();
+
   // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
   function renderFearCurve(){
     /* V593, Keren: "I'm still seeing the meter component. We need to drop it." The half-dial went. It was the
