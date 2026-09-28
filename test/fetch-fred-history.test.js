@@ -9,7 +9,7 @@
    shape that never traded — and it would look entirely plausible on the chart.
 
    Usage: node test/fetch-fred-history.test.js        Exit 0 = every case passed. */
-const { monthEnd, curveMonthly, monthlyLevels, band } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyLevels, quarterly, band } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -76,6 +76,23 @@ ok('a level outside the band is left out, not clamped',
    [{ m: '1954-07', v: 0.8 }]);
 ok('zero is a real policy rate and survives the band',
    monthlyLevels([d('2015-01-01', 0)], 0, 25), [{ m: '2015-01', v: 0 }]);
+
+/* ---- quarterly: FRED dates a quarter at its first month, and only at its first month ---- */
+ok('each quarter start month names its quarter',
+   quarterly([d('1990-01-01', 1), d('1990-04-01', 2), d('1990-07-01', 3), d('1990-10-01', 4)], -100, 100),
+   [{ q: '1990 Q1', v: 1 }, { q: '1990 Q2', v: 2 }, { q: '1990 Q3', v: 3 }, { q: '1990 Q4', v: 4 }]);
+ok('a series starting mid-year keeps its own first quarter',
+   quarterly([d('1990-04-01', 8.3)], -100, 100), [{ q: '1990 Q2', v: 8.3 }]);
+/* Every bank easing is −100 and this is a real reading, not an error: the band has to be signed or
+   the loosest quarters in the record would be dropped as impossible. */
+ok('a net easing survives the band',
+   quarterly([d('2010-01-01', -22.2)], -100, 100), [{ q: '2010 Q1', v: -22.2 }]);
+ok('zero is the definitional midpoint and is a reading',
+   quarterly([d('2026-07-01', 0)], -100, 100), [{ q: '2026 Q3', v: 0 }]);
+ok('a value outside the band is left out, not clamped',
+   quarterly([d('2008-10-01', 83.6), d('2008-07-01', 580)], -100, 100), [{ q: '2008 Q4', v: 83.6 }]);
+throws('a month that is not a quarter start',
+   () => quarterly([d('1990-05-01', 1)], -100, 100), /not a quarter start/);
 
 /* ---- band ---- */
 ok('band rejects a non-number', band('4.2', 0, 25), false);
