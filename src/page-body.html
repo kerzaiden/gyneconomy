@@ -289,20 +289,11 @@
       <!-- 1. WHAT THE FED SETS. The effective federal funds rate, monthly since 1954 (V589's backfill). It reads
            first because it is the cause the curve below it is the answer to. -->
       <div id="hormones-history"></div>
-      <!-- 2. WHAT THE MARKET CHARGES. V519: the maturity bar is this chart's own top menu, so it steps out onto
-           the ground with every other control in the app. -->
-      <div class="hist-bar" id="ylm-series"></div>
-      <div class="spread-history">
-        <!-- V518: the band head names what the chart measures rather than the page (the V298 rule), because its
-             title follows the maturity chosen on the control above it — filled by drawYlm. -->
-        <div id="ylm-head"></div>
-        <div class="chart-shell" id="ylm-shell">
-          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
-          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
-        </div>
-        <!-- V496 put the key under the chart; V570 moves it into the chart's own legend, top right of the grid -->
-        <div id="ylm-trend"></div>
-      </div>
+      <!-- V598, Keren: "the spread is 10 years minus three months, and it's comprised out of the treasury
+           yields, so maybe you can merge them." The Treasury machinery left this page for Horizon, which is
+           where the SHAPE of the curve is the reading. Its LEVEL was the half that repeated this chart anyway
+           — Treasury yields and the policy rate move together — so Hormones loses a second statement of
+           itself and Horizon gains the data its own reading is computed from. One page, one job. -->
       <!-- 3. WHAT THE FOMC DECIDED. The target, the last move and its vote, the next meeting — the page's one
            list. V592 left these on Pressure because they were that page's only list and moving them would have
            left it a chart and nothing else; the merge is what makes them land where they always belonged, beside
@@ -352,8 +343,16 @@
           <svg id="spread-history-svg" viewBox="0 0 780 220" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
+        <!-- V598: the LEVELS, the other half of the same data. One head and one control row serve both
+             readings; the ⋯ menu picks which is on, and whichever is off is HIDDEN rather than torn down
+             (the Version 314 rule), so the svg, its tooltip and its trend pill all survive a switch. -->
+        <div class="chart-shell" id="ylm-shell" hidden>
+          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
+          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
+        </div>
         <!-- V492 put the key under the chart; V570 moves it into the chart's own legend, top right of the grid -->
         <div id="hzn-trend"></div>
+        <div id="ylm-trend" hidden></div>
         <!-- V492: the reading, below the trend and inside the history container (Keren) -->
         <div id="hzn-panel"></div>
       </div>

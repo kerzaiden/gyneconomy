@@ -24,22 +24,12 @@
     "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
     "volume-range":            { mark:volumeSvg,  title:"M2 money stock, YoY" },
     "pulse-range":             { mark:ecgSvg,     title:"Velocity of money (M2)" },
-    "hzn-range":               { mark:sunriseSvg,
-                                 title:function(){ return "10-year minus " +
-                                   (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread"; },
-                                 menu:function(){ return HZN_SPREADS.map(function(r){
-                                   var on = spreadPick === r.key;
-                                   return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-                                     '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") +
-                                     '" data-hzn-spread="' + r.key + '">' +
-                                     '<span class="cycsel-tick" aria-hidden="true"></span>' +
-                                     '<span class="cycsel-nm">' + r.label + '</span></button>';
-                                 }).join("") + '<div class="bh-sep" role="separator"></div>'; } },
-    /* V588: the maturity is a WHICH-SERIES choice, so it lives in this menu exactly as Horizon's spread has
-       since V522 — and on this page it also settles the collision V473 named, because a maturity labelled 5Y
-       and a window labelled 5Y are now never on screen at once. The rows are BUILT where the maturities are
-       declared (see drawYlmHead), because that list and the current pick are the yield page's own state. */
-    "ylm-range":               { mark:gaugeSvg,   title:"" },   // drawYlm sets both the title and the menu
+    /* V598: one entry for the whole Treasury page, and its title, mark, menu and note are all filed at RUNTIME
+       by `drawTreasuryHead` — because the menu now lists the maturities too, and `maturities` and `matPick`
+       are local to the block that declares them. Writing them in this literal is the exact mistake V588 made
+       and fixed ("maturities is not defined" on every open of the menu). `ylm-range` is gone with the second
+       head it used to fill: two heads for one page's data was the duplication this merge removes. */
+    "hzn-range":               { mark:sunriseSvg, title:"" },   // drawTreasuryHead sets all four
     "desire-range":            { mark:flameSvg,   title:"High-yield spread over Treasuries" },
     "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-month VIX" },
     "hormones-range":          { mark:hormoneSvg,  title:"Effective federal funds rate" },

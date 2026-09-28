@@ -41,6 +41,8 @@ const PAGES = [
   ['sheet-metric-households','sheet-metric-households','Households'],
   ['sheet-sign-volume','volume-range','Volume'],
   ['sheet-sign-pulse','pulse-range','Pulse'],
+  /* V598: one page, two readings of one series — the spread and the levels — swapped by the ⋯ menu, so
+     the page is checked once. The second entry the merged Hormones page carried is gone with the chart. */
   ['sheet-sign-horizon','hzn-range','Horizon'],
   /* V596: Pressure merged into Hormones, and that page carries TWO histories — the rate the Fed sets and
      the yields the market charges — so it is listed twice, once per history. Each entry is checked against
@@ -48,7 +50,6 @@ const PAGES = [
      first: it proves the maturity chart still wears the head, the ⋯ and a note of its own on the merged page. */
   ['sheet-sign-hormones','hormones-range','Hormones'],
   ['sheet-sign-pressure','pressure-range','Pressure'],
-  ['sheet-sign-hormones','ylm-range','Treasury yields'],
   ['sheet-sign-desire','desire-range','Desire'],
 ];
 /* Values CLAUDE-CODE.md states as live. A change here must be a deliberate edit of both. */

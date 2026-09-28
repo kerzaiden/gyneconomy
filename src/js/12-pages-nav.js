@@ -540,14 +540,21 @@
            dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves \u2014 all
            three about NOW \u2014 and Horizon what it expects of the future. Today they disagree, which is the point:
            36 and Fear beside a curve reading optimistic. */
-        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire",
+        /* V598, Keren: "if the horizon says if we're optimistic or pessimistic, then it should be in mood."
+           She is right and V597 was wrong to move it. Look at what this category holds: Valuations is what the
+           market will PAY, Fear is how frightened it is, Desire is how much risk it WANTS — opinions, every
+           one. Energy holds measurements of the body: the reserve, the debt, the jobs. The yield curve is the
+           bond market saying what it expects of the next few years, which is an opinion, not a measurement.
+           (The market words for the feeling are bullish and bearish; long and short are positions taken, which
+           is a different thing and not what this reading is.) */
+        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
           /* Version 466, Keren: "the VIX is called the fear index \u2014 we don't need two fear meters on the Mood
              page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
              of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
              that moved Power's markers off this kind of list twice already. Version 464 promoted it out of that
              page; this puts it back, as a reading under the gauge rather than the ring it used to be. */
           picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
-                 '.sign-row[data-open="sheet-sign-desire"]'] },
+                 '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
         /* Version 457, Keren: "economic power should move from circulation to activity, and activity should be
            renamed to energy." It settles what Version 446 left uneasy, where Power joined Circulation on the
            argument that reserves are how much blood the system is holding \u2014 true of the metaphor, and the wrong
@@ -565,19 +572,13 @@
            the energy is going into (Activity's page, absorbed whole as in Version 458). The federal three stay
            on Power's page, where they are computed into its word; Debt service carries the household side,
            which is a balance sheet nothing in the app had measured. */
-        /* V596, Keren: "move Horizon to the structural category — beside Power and Households, where
-           Financial Resilience and U.S. Federal Debt live in the draft, and framed as the survival-versus-
-           thriving question: how far ahead the system can afford to look."
-           Version 473 put it in Mood on the argument that an optimistic or pessimistic curve is a FEELING, and
-           it was right that the spread is a forecast rather than a measurement. What that version could not see
-           is that Mood already held three readings of the same instant — what the market will pay, how
-           frightened it is, how much risk it craves — so the fourth was not a fourth opinion but a
-           different KIND of claim. Here it is the reading the other three are for: Power is the reserve,
-           Households is what is owed, Activity is what the energy goes into, and Horizon is how far ahead that
-           leaves her able to look. Survival mode is a short horizon; thriving is a long one. */
-        { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity · Horizon",
+        /* V598: Horizon went back to Mood one version later (see there). V596 moved it here on the argument
+           that Mood already held three readings of the same instant, so a fourth was a different KIND of
+           claim — true, and beside the point: everything in Mood is an OPINION and everything here is a
+           MEASUREMENT, and the yield curve is an opinion. Energy is Power, Households and Activity. */
+        { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
           picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
-                 '.sign-row[data-open="sheet-sign-activity"]', '.sign-row[data-open="sheet-sign-horizon"]'] }
+                 '.sign-row[data-open="sheet-sign-activity"]'] }
       ];
       /* Each reading's PERIOD, not a timestamp. Apple Health shows 13:56 because a heart rate is an instant;
          these are periods — CPI is FOR August, M2 velocity for Q2, the curve for Sep 24 — and a clock time in

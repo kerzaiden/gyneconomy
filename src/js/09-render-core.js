@@ -98,19 +98,19 @@
   var pageMode = { "sheet-metric-temp":"cycles", "sheet-metric-gdp":"cycles",
                    "sheet-metric-power":"cycles", "sheet-metric-valuation":"cycles",
                    "volume-range":"cycles", "pulse-range":"cycles",
-                   "deficit-range":"cycles", "ylm-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles", "pressure-range":"cycles",
+                   "deficit-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles", "pressure-range":"cycles",
                    "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };   // V498
   // Which cycles the overlay draws. null means all of them, which is the default because the comparison IS the
   // landing view; a toggled-off cycle simply is not drawn. The handler never lets the last one be turned off.
   var pageCycles = { "sheet-metric-temp":null, "sheet-metric-gdp":null,
                      "sheet-metric-power":null, "sheet-metric-valuation":null,
                      "volume-range":null, "pulse-range":null,
-                     "deficit-range":null, "ylm-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null, "pressure-range":null,
+                     "deficit-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null, "pressure-range":null,
                      "sheet-metric-households":null, "sheet-sign-activity":null };   // null = the open cycle (V420)
   var pageRange = { "sheet-metric-power":"10y", "sheet-metric-valuation":"10y",   // V433: "cycle" left both rulers
                     "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y", // V418/V431: "cycle" left both rulers
                     "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",   // V434\u2013435: "cycle" left all three
-                    "ylm-range":"10y", "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y", "pressure-range":"10y",
+                    "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y", "pressure-range":"10y",
                     "sheet-metric-households":"10y",
                     "sheet-sign-activity":"10y" };   // V498
   function wireDetailModal(){
@@ -583,26 +583,16 @@
        this row becomes the same Cycles / Years bar and cycle picker every other history page carries. The two
        year-numbers are never on screen together, which is the collision gone rather than relabelled.
        ["5y","10y","max"] for the reason HZN_STOPS gives: the series starts in 2005, so 25Y is unanswerable. */
-    var YLM_STOPS = ["5y", "10y", "max"];
-    function renderLegend(){
-      var host = document.getElementById("ylm-series"); if (!host) return;
-      host.innerHTML = histControls("ylm-range", { series:t3mYieldHistory, stops:YLM_STOPS });
-    }
+    /* V598: `renderLegend` and YLM_STOPS went with this page's own control row. The levels and the spread are
+       two readings of ONE series of quarters, so they share one ruler — the Horizon page's — and the choice
+       between them lives in the ⋯ menu, which is where V522 put a which-series choice in the first place. */
     window.__pickSeries = function(bar, code){
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
-      drawYlm();   // V588: redraws the head (its title is the maturity) and the chart; there is no row to centre
+      tsyView = "level";
+      drawTreasury();
     };
-    /* V596: the merged page holds TWO histories, so opening it redraws both — each is drawn at its box's own
-       width and a hidden element has no width, which is the Version 303 reason every history registers here.
-       The pair is composed HERE rather than in renderHormones because `drawYlm` is local to this block; the
-       other half is reached through its own key, which is looked up at call time because renderHormones
-       has not run yet when this line does.
-       (`ylm-range` used to be registered twice, here and further down with the same function — two writes of
-       one key, of which only the later could ever have been read. The dead one is gone.) */
-    sheetRenderers["sheet-sign-hormones"] = function(){
-      var ff = sheetRenderers["hormones-range"]; if (ff) ff();
-      drawYlm();
-    };
+    /* V598: the Hormones page is one chart again, so its opener is registered by renderHormones itself — the
+       pair V596 composed here existed only because that page held the Treasury chart too. */
     // the record is drawn at the box's own width (Version 303) — a hidden element has no width, so this has to
     // happen on open, the same reason the yield page centres its card there
     // Volume and Pulse on the timeline (Version 367), riding the deficit block's machinery exactly: a key in
@@ -710,12 +700,11 @@
          tab, and deleting the ruler is the version of that fix that needs no tab at all. */
       /* V588: the window. Every maturity shares one index space \u2014 `quarters` is t3mYieldHistory's own
          quarters \u2014 so the slice is computed once here and every series is drawn through it. */
-      var ylmCyc = pageMode["ylm-range"] === "cycles"
-                 ? (cycleByName(pageCycles["ylm-range"]) || openCycle()) : null;
+      var ylmCyc = pageMode["hzn-range"] === "cycles"
+                 ? (cycleByName(pageCycles["hzn-range"]) || openCycle()) : null;
       var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["ylm-range"]);
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
       ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
-      renderLegend();
       render();
       var yTrend = document.getElementById("ylm-trend");
       if (yTrend){
@@ -726,35 +715,68 @@
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"climbing", falling:"easing" });
       }
-      drawYlmHead();
+      drawTreasuryHead();
     }
     /* V518: one function for both the first paint and every redraw — the old pair of identical `ylm-title`
        writes was the duplication this version is here to end. `expandBtn` is gone from it: the note goes into
        HIST_NOTE and opens from the ⋯, which also stops drawYlm pushing a fresh copy into detailTexts on every
        maturity the reader tries. */
-    function drawYlmHead(){
-      HIST_HEAD["ylm-range"].title = matTitle();
-      /* V588: the menu is built here rather than in the HIST_HEAD literal, because `maturities` and `matPick`
-         are this page's own state and that literal cannot see them — the first attempt at this threw
-         "maturities is not defined" on every open of the menu. Same shape as HZN_SPREADS', one page over. */
-      HIST_HEAD["ylm-range"].menu = function(){
-        return maturities.map(function(m){
-          var on = matPick === m.code;
+    /* V598: ONE head for the whole Treasury page. It carries both groups of rows — the two spreads and the
+       five maturities, separated — and its title, mark and note follow whichever is on. It is built HERE and
+       not in the HIST_HEAD literal for the V588 reason: `maturities` and `matPick` are this block's own state
+       and that literal cannot see them. The spreads it CAN see, because HZN_SPREADS and `spreadPick` are
+       module-level, which is what makes one menu out of two possible. */
+    function drawTreasuryHead(){
+      var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
+      H.mark  = lvl ? gaugeSvg : sunriseSvg;
+      H.title = lvl ? matTitle()
+                    : "10-year minus " + (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread";
+      H.menu = function(){
+        function row(on, attr, key, label){
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-            '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") +
-            '" data-ylm-mat="' + m.code + '">' +
+            '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
             '<span class="cycsel-tick" aria-hidden="true"></span>' +
-            '<span class="cycsel-nm">' + m.name + ' Treasury</span></button>';
-        }).join("") + '<div class="bh-sep" role="separator"></div>';
+            '<span class="cycsel-nm">' + label + '</span></button>';
+        }
+        return HZN_SPREADS.map(function(r){
+                 return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+               }).join("") +
+               '<div class="bh-sep" role="separator"></div>' +
+               maturities.map(function(m){
+                 return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name + " Treasury");
+               }).join("") +
+               '<div class="bh-sep" role="separator"></div>';
       };
-      HIST_NOTE["ylm-range"] = '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail());
-      var hd = document.getElementById("ylm-head");
-      if (hd) hd.innerHTML = histHead("ylm-range");
+      HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
+                                   : horizonInfoHtml(spreadPick);
+      var hd = document.getElementById("hzn-head");
+      if (hd) hd.innerHTML = histHead("hzn-range");
     }
-    sheetRenderers["ylm-range"] = drawYlm;
+    /* The page's one renderer. Whichever reading is off is HIDDEN, never torn down (the Version 314 rule), so
+       a switch costs nothing and every id inside both shells stays alive. The spread chart lives in
+       10-render-pages, which loads after this block, so it is reached through the registry at call time — the
+       same seam V596 used for the Hormones page. */
+    function drawTreasury(){
+      var lvl = tsyView === "level";
+      [["#spread-history-shell", lvl], ["#hzn-trend", lvl], ["#hzn-panel", lvl],
+       /* V520's `seatBandReading` lifts the spread's reading box OUT of #hzn-panel and seats it in the page,
+          so hiding the panel does not hide it \u2014 it stayed behind as a 2px rule between the chart and
+          Highlights, which is the kind of leftover only opening the page finds. The levels chart states its
+          own reading on its plate and has no box of its own, so this one belongs to the spread alone. */
+       ["#sheet-sign-horizon .reading-box", lvl],
+       ["#ylm-shell", !lvl], ["#ylm-trend", !lvl]].forEach(function(pair){
+        var el = document.querySelector(pair[0]); if (el) el.hidden = pair[1];
+      });
+      if (lvl) drawYlm();
+      else { var f = sheetRenderers["hzn-spread"]; if (f) f(); }
+      drawTreasuryHead();
+    }
+    window.__treasuryView = drawTreasury;
+    /* V598: the page's key is `hzn-range` now — one control row, one menu, one renderer for both readings.
+       `sheet-sign-horizon` opens it, which is what makes the chart draw at its box's real width (V303). */
+    sheetRenderers["hzn-range"] = drawTreasury;
+    sheetRenderers["sheet-sign-horizon"] = drawTreasury;
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
-    renderLegend();
-    drawYlm();   // V518: which paints the head itself, so the second identical write is gone
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();

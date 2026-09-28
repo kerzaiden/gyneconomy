@@ -274,11 +274,11 @@
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
       var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["hzn-range"]);
       var to = idx ? idx[1] : data.length;
+      /* V598: ONE control row for the page, written whichever reading is on — the levels and the spread are
+         two readings of one series of quarters, so a second ruler would be the collision V473 named. The head
+         is written by drawTreasuryHead after this returns, because it names whichever reading is showing. */
       host.innerHTML = histControls("hzn-range",
         { depth:Math.floor(data.length / 4), stops:HZN_STOPS }, hznY0);
-      // V519: the head names the spread on show, so it is rewritten with the control that chooses it
-      var hzHead = document.getElementById("hzn-head");
-      if (hzHead) hzHead.innerHTML = histHead("hzn-range");
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
       var tr = document.getElementById("hzn-trend");
       if (tr){
@@ -294,9 +294,13 @@
       if (hp) hp.innerHTML = horizonPanelHtml(spreadPick);
       // V493: the title and its (i) are gone — the reading below carries both now.
     }
-    window.__pickSpread = function(code){ spreadPick = code; drawHzn(); };
-    sheetRenderers["hzn-range"] = drawHzn;
-    sheetRenderers["sheet-sign-horizon"] = drawHzn;
+    /* V598: both pickers go through the page's one renderer, which lives in 09-render-core beside the levels
+       chart. This half is published under its own key and looked up there at call time — the V596 seam. */
+    window.__pickSpread = function(code){
+      spreadPick = code; tsyView = "spread";
+      if (window.__treasuryView) window.__treasuryView(); else drawHzn();
+    };
+    sheetRenderers["hzn-spread"] = drawHzn;
     drawHzn();
 
     var r = horizonRead;
@@ -439,8 +443,9 @@
       if (box){ box.__geom = lastHistGeom; wireHistHover(box, "hormones-hist-tooltip"); }
     }
     sheetRenderers["hormones-range"] = draw;
-    /* The page's own opener is registered beside drawYlm, which it also calls — see 09-render-core. One owner
-       per key: this block owns the chart, that one owns the page. */
+    /* V598: one chart, so one opener again — the pair V596 composed in 09-render-core existed only while this
+       page also held the Treasury curve, which has gone to Horizon. */
+    sheetRenderers["sheet-sign-hormones"] = draw;
     draw();
 
     /* V596: the head's ⋯ had nothing behind it, which the suite caught the moment this page entered the

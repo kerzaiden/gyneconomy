@@ -2119,17 +2119,6 @@
       
       <div id="hormones-history"></div>
       
-      <div class="hist-bar" id="ylm-series"></div>
-      <div class="spread-history">
-        
-        <div id="ylm-head"></div>
-        <div class="chart-shell" id="ylm-shell">
-          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
-          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
-        </div>
-        
-        <div id="ylm-trend"></div>
-      </div>
       
       <div id="hormones-highlights"></div>
     </section>
@@ -2158,7 +2147,13 @@
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
         
+        <div class="chart-shell" id="ylm-shell" hidden>
+          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
+          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
+        </div>
+        
         <div id="hzn-trend"></div>
+        <div id="ylm-trend" hidden></div>
         
         <div id="hzn-panel"></div>
       </div>
@@ -13079,18 +13074,6 @@
     },
     "hzn-range": {
       mark: sunriseSvg,
-      title: function() {
-        return "10-year minus " + (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread";
-      },
-      menu: function() {
-        return HZN_SPREADS.map(function(r) {
-          var on = spreadPick === r.key;
-          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" data-hzn-spread="' + r.key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + r.label + "</span></button>";
-        }).join("") + '<div class="bh-sep" role="separator"></div>';
-      }
-    },
-    "ylm-range": {
-      mark: gaugeSvg,
       title: ""
     },
     "desire-range": {
@@ -15655,6 +15638,7 @@
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + ">" + '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' + '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' + 'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' + "</svg>";
   }
   var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
+  var tsyView = "spread";
   var HZN_SPREADS = [ {
     key: "3m",
     label: "10Y − 3M"
@@ -15875,7 +15859,6 @@
     "volume-range": "cycles",
     "pulse-range": "cycles",
     "deficit-range": "cycles",
-    "ylm-range": "cycles",
     "hzn-range": "cycles",
     "fear-range": "cycles",
     "hormones-range": "cycles",
@@ -15891,7 +15874,6 @@
     "volume-range": null,
     "pulse-range": null,
     "deficit-range": null,
-    "ylm-range": null,
     "hzn-range": null,
     "fear-range": null,
     "hormones-range": null,
@@ -15907,7 +15889,6 @@
     "deficit-range": "10y",
     "volume-range": "10y",
     "pulse-range": "10y",
-    "ylm-range": "10y",
     "hzn-range": "10y",
     "desire-range": "max",
     "fear-range": "10y",
@@ -16346,26 +16327,13 @@
         label: m.name.replace("-Month", "M").replace("-Year", "Y")
       };
     });
-    var YLM_STOPS = [ "5y", "10y", "max" ];
-    function renderLegend() {
-      var host = document.getElementById("ylm-series");
-      if (!host) return;
-      host.innerHTML = histControls("ylm-range", {
-        series: t3mYieldHistory,
-        stops: YLM_STOPS
-      });
-    }
     window.__pickSeries = function(bar, code) {
       matPick = code;
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
-      drawYlm();
-    };
-    sheetRenderers["sheet-sign-hormones"] = function() {
-      var ff = sheetRenderers["hormones-range"];
-      if (ff) ff();
-      drawYlm();
+      tsyView = "level";
+      drawTreasury();
     };
     function drawVelocityRecord() {
       var host = document.getElementById("pulse-record");
@@ -16465,11 +16433,10 @@
       return m ? m.detail : "";
     }
     function drawYlm() {
-      var ylmCyc = pageMode["ylm-range"] === "cycles" ? cycleByName(pageCycles["ylm-range"]) || openCycle() : null;
+      var ylmCyc = pageMode["hzn-range"] === "cycles" ? cycleByName(pageCycles["hzn-range"]) || openCycle() : null;
       var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["ylm-range"]);
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
       ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
-      renderLegend();
       render();
       var yTrend = document.getElementById("ylm-trend");
       if (yTrend) {
@@ -16482,26 +16449,44 @@
           falling: "easing"
         });
       }
-      drawYlmHead();
+      drawTreasuryHead();
     }
-    function drawYlmHead() {
-      HIST_HEAD["ylm-range"].title = matTitle();
-      HIST_HEAD["ylm-range"].menu = function() {
-        return maturities.map(function(m) {
-          var on = matPick === m.code;
-          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" data-ylm-mat="' + m.code + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + m.name + " Treasury</span></button>";
+    function drawTreasuryHead() {
+      var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
+      H.mark = lvl ? gaugeSvg : sunriseSvg;
+      H.title = lvl ? matTitle() : "10-year minus " + (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread";
+      H.menu = function() {
+        function row(on, attr, key, label) {
+          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
+        }
+        return HZN_SPREADS.map(function(r) {
+          return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+        }).join("") + '<div class="bh-sep" role="separator"></div>' + maturities.map(function(m) {
+          return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name + " Treasury");
         }).join("") + '<div class="bh-sep" role="separator"></div>';
       };
-      HIST_NOTE["ylm-range"] = "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail());
-      var hd = document.getElementById("ylm-head");
-      if (hd) hd.innerHTML = histHead("ylm-range");
+      HIST_NOTE["hzn-range"] = lvl ? "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()) : horizonInfoHtml(spreadPick);
+      var hd = document.getElementById("hzn-head");
+      if (hd) hd.innerHTML = histHead("hzn-range");
     }
-    sheetRenderers["ylm-range"] = drawYlm;
+    function drawTreasury() {
+      var lvl = tsyView === "level";
+      [ [ "#spread-history-shell", lvl ], [ "#hzn-trend", lvl ], [ "#hzn-panel", lvl ], [ "#sheet-sign-horizon .reading-box", lvl ], [ "#ylm-shell", !lvl ], [ "#ylm-trend", !lvl ] ].forEach(function(pair) {
+        var el = document.querySelector(pair[0]);
+        if (el) el.hidden = pair[1];
+      });
+      if (lvl) drawYlm(); else {
+        var f = sheetRenderers["hzn-spread"];
+        if (f) f();
+      }
+      drawTreasuryHead();
+    }
+    window.__treasuryView = drawTreasury;
+    sheetRenderers["hzn-range"] = drawTreasury;
+    sheetRenderers["sheet-sign-horizon"] = drawTreasury;
     maturities.forEach(function(m) {
       m.on = m.code === matPick;
     });
-    renderLegend();
-    drawYlm();
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();
@@ -16802,8 +16787,6 @@
         depth: Math.floor(data.length / 4),
         stops: HZN_STOPS
       }, hznY0);
-      var hzHead = document.getElementById("hzn-head");
-      if (hzHead) hzHead.innerHTML = histHead("hzn-range");
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
       var tr = document.getElementById("hzn-trend");
       if (tr) {
@@ -16821,10 +16804,10 @@
     }
     window.__pickSpread = function(code) {
       spreadPick = code;
-      drawHzn();
+      tsyView = "spread";
+      if (window.__treasuryView) window.__treasuryView(); else drawHzn();
     };
-    sheetRenderers["hzn-range"] = drawHzn;
-    sheetRenderers["sheet-sign-horizon"] = drawHzn;
+    sheetRenderers["hzn-spread"] = drawHzn;
     drawHzn();
     var r = horizonRead;
     var sgn = function(v) {
@@ -16950,6 +16933,7 @@
       }
     }
     sheetRenderers["hormones-range"] = draw;
+    sheetRenderers["sheet-sign-hormones"] = draw;
     draw();
     HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole " + "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " + "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " + "so the two are different figures and the page says which is which: the range is the decision, the " + "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " + "— that month ran partly under the previous target. " + "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " + "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " + "both is the reason this one stands on zero rather than on its own minimum. " + "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
     var ph = document.getElementById("hormones-highlights");
@@ -18954,14 +18938,14 @@
         key: "mood",
         title: "Mood",
         mark: moodSvg(),
-        sub: "Valuations · Fear · Desire",
-        picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]' ]
+        sub: "Valuations · Fear · Desire · Horizon",
+        picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
       }, {
         key: "energy",
         title: "Energy",
         mark: boltSvg(),
-        sub: "Power · Households · Activity · Horizon",
-        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
+        sub: "Power · Households · Activity",
+        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]' ]
       } ];
       function fmtDay(d) {
         return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
