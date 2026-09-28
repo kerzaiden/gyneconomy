@@ -304,46 +304,46 @@
     var sgn = function(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); };
     var moved = function(v){ return (v >= 0 ? "risen " : "fallen ") + Math.abs(v).toFixed(2) + " points"; };
     var fromLong = r.dLong >= -r.dShort;
+    /* V603, Keren: "you have a lot of text in the insight container, and you have a short version of the
+       insights — time from un-inversion, last inverted, deepest point. Merge that into the insight and make
+       the text short and concise."
+       Two containers for one page's commentary was the split: a wall of prose in one and three bare facts in
+       another, with nothing saying why they were apart. They are one section now, prose first and the facts
+       under it, which is the shape every other page already uses. The prose lost about two thirds of its
+       length and none of its figures: every number here is still computed from `horizonRead`, and what went
+       was the restating — the same idea said twice in a longer way, and the paragraph explaining what a
+       headline means when it says "the curve", which the ⋯ menu now answers by letting you switch to the
+       other one and look. */
     var ins = document.getElementById("horizon-insights");
     if (ins){
       var cards = [];
-      cards.push('<p class="hi-lede">A slope is not a measurement, it is a forecast. A lender who wants more for ' +
-        'ten years than for three months expects growth and inflation ahead; one who will take LESS for the longer ' +
-        'loan expects the opposite, and has said so by accepting a worse price for waiting. That is the whole reason ' +
-        'this reading sits in Mood: the two rates themselves are the pressure, measured, and the gap between them is ' +
-        'what the market thinks of what comes next.</p>');
+      cards.push('<p class="hi-lede">A slope is a forecast, not a measurement. A lender who wants more for ten ' +
+        'years than for three months expects growth ahead; one who takes less expects the opposite, and has said ' +
+        'so by accepting a worse price for waiting. That is why this is a mood and not a reading of the body.</p>');
       cards.push(hiCard(r.word, r.state,
-        "Over four quarters the spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") +
-        Math.abs(r.dSpread).toFixed(2) + " points, from " + sgn(r.was) + " to " + sgn(r.q.v) + ". The 10-year has " +
-        moved(r.dLong) + " and the 3-month has " + moved(r.dShort) + ", so more of the move comes from the " +
-        (fromLong ? "LONG end than from the short" : "SHORT end than from the long") + " — " + (fromLong
-          ? "the market pricing growth and inflation ahead, which is optimism about the economy rather than relief " +
-            "about the Fed."
-          : "a central bank cutting into a slowdown, which is hope for rescue rather than confidence in growth.") +
-        " The distinction is the whole reading: on a chart the two look identical, and in 2008 and in 2021 they meant " +
-        "opposite things. So the word comes from which end moved, never from the slope alone."));
-      cards.push(hiCard("The two horizons", "",
-        "The two spreads on this page are pulling apart \u2014 measured on quarterly averages, so a touch behind the reading above. Against 3-month cash the curve averaged " + sgn(r.q.v) +
-        ", " + (r.dSpread >= 0 ? "wider" : "narrower") + " by " + Math.abs(r.dSpread).toFixed(2) +
-        " points over the year; against the 2-year it averaged " + sgn(r.q2.v) + ", " +
-        (r.d2 >= 0 ? "wider" : "narrower") + " by " + Math.abs(r.d2).toFixed(2) +
-        ". Both subtract from the same 10-year, so the whole difference is at the short end: the 2-year prices " +
-        "where the Fed is going, the 3-month bill only where it has already been. A curve can be steepening " +
-        "against cash and flattening against the near future at the same time, which is worth knowing when a " +
-        "headline says “the curve” and names neither."));
+        "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
+        " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " +
+        (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " +
+        (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
+        (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
+                  : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") +
+        " Which end moved is the reading: on a chart the two look identical, and in 2008 and 2021 they meant " +
+        "opposite things."));
+      cards.push(hiCard("The short end", "",
+        "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
+        ". Both subtract from the same 10-year, so the whole difference sits at the short end — the 2-year " +
+        "prices where the Fed is going, the bill only where it has been."));
+      /* The un-inversion clock and the last inversion's shape. They were their own container until this
+         version; they are facts ABOUT the reading above them, so they read under it. The (i) travels with the
+         clock — four cycles, one to ten months, what today's count is measured from. */
+      var facts =
+        '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
+          uninvLagToday.months + ' months</b></div>' +
+        '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
+        '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-        cards.join("") + '</section>';
+        cards.join("") + facts + '</section>';
     }
-    /* The un-inversion clock comes with the spread. Version 471 put it above Fed funds target at Keren's ask,
-       when both were on one page; it is a fact about the SHAPE of the curve, so it travels with the shape, and
-       the (i) it opens — four cycles, one to ten months, what today's count is measured from — travels with it. */
-    var hi = document.getElementById("horizon-highlights");
-    if (hi) hi.innerHTML = '<section class="highlights">' +
-      '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
-        uninvLagToday.months + ' months</b></div>' +
-      '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
-      '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>' +
-      '</section>';
   }
   GYN.step("renderHorizonPage", renderHorizonPage, "render"); renderHorizonPage();
 
