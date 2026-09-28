@@ -289,9 +289,6 @@
         tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"steepening", falling:"flattening" });
       }
-      var hp = document.getElementById("hzn-panel");
-      // V492: the row follows the picker, because on this page the control chooses WHICH spread is being read
-      if (hp) hp.innerHTML = horizonPanelHtml(spreadPick);
       // V493: the title and its (i) are gone — the reading below carries both now.
     }
     /* V598: both pickers go through the page's one renderer, which lives in 09-render-core beside the levels

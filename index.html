@@ -1279,6 +1279,9 @@
 
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
 
+  .bh-grp{ padding:9px 12px 3px; font-family:"Public Sans",sans-serif; font-size:10.5px; font-weight:700;
+    letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
+
   .band-head{ margin-bottom:2px; }
   .hist-controls{ display:flex; align-items:flex-start; gap:8px; }
   .hist-controls > *{ margin:0; }
@@ -2154,8 +2157,6 @@
         
         <div id="hzn-trend"></div>
         <div id="ylm-trend" hidden></div>
-        
-        <div id="hzn-panel"></div>
       </div>
       <div id="horizon-insights"></div>
       <div id="horizon-highlights"></div>
@@ -14977,22 +14978,6 @@
     var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
     return "<h4>10-year minus " + shortLeg + "</h4>" + '<p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a ' + "forecast rather than a measurement: the long rate is the market’s own average of where it expects the " + "short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a " + "market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly " + "record, " + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + " points; the deepest single DAY of the " + "last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p>" + '<p class="caption" style="margin-top:10px;"><b>The line at zero is definitional, not drawn</b> — it is ' + "where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own " + "recession model is built on, using this exact pair of maturities. That model’s FAQ states that an " + "inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. " + "The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p>" + '<p class="caption" style="margin-top:10px;">Read the caution with the signal, because it is the same ' + "source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the " + "crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever " + "inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, " + "which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>" + String(SPREAD_DETAIL || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
   }
-  var _hznPanel = {};
-  function horizonPanelHtml(pick) {
-    if (!_hznPanel[pick]) {
-      var m = HZN_METERS[pick];
-      _hznPanel[pick] = panelRow({
-        name: "10Y − " + (pick === "2y" ? "2Y" : "3M"),
-        info: horizonInfoHtml(pick),
-        head: "hzn-range",
-        metric: (m.value >= 0 ? "+" : "") + m.value.toFixed(2) + " pts",
-        flagged: meterFlagged(m),
-        bar: panelFromMeter(m)
-      });
-    }
-    HIST_NOTE["hzn-range"] = horizonInfoHtml(pick);
-    return _hznPanel[pick];
-  }
   var RISK_REWARD = [ {
     key: "low",
     label: "Low",
@@ -15646,6 +15631,12 @@
     key: "2y",
     label: "10Y − 2Y"
   } ];
+  function spreadLabel(key) {
+    var r = HZN_SPREADS.filter(function(x) {
+      return x.key === key;
+    })[0];
+    return r ? r.label : HZN_SPREADS[0].label;
+  }
   function policyFacts() {
     return [ {
       label: "Fed funds target",
@@ -16454,16 +16445,19 @@
     function drawTreasuryHead() {
       var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
       H.mark = lvl ? gaugeSvg : sunriseSvg;
-      H.title = lvl ? matTitle() : "10-year minus " + (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread";
+      H.title = lvl ? matTitle() : spreadLabel(spreadPick) + " Treasury spread";
       H.menu = function() {
         function row(on, attr, key, label) {
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
         }
-        return HZN_SPREADS.map(function(r) {
+        function grp(label, rows) {
+          return '<div role="group" aria-label="' + label + '">' + '<div class="bh-grp" aria-hidden="true">' + label + "</div>" + rows + "</div>";
+        }
+        return grp("Spreads", HZN_SPREADS.map(function(r) {
           return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-        }).join("") + '<div class="bh-sep" role="separator"></div>' + maturities.map(function(m) {
-          return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name + " Treasury");
-        }).join("") + '<div class="bh-sep" role="separator"></div>';
+        }).join("")) + grp("Treasury yields", maturities.map(function(m) {
+          return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+        }).join("")) + '<div class="bh-sep" role="separator"></div>';
       };
       HIST_NOTE["hzn-range"] = lvl ? "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()) : horizonInfoHtml(spreadPick);
       var hd = document.getElementById("hzn-head");
@@ -16471,7 +16465,7 @@
     }
     function drawTreasury() {
       var lvl = tsyView === "level";
-      [ [ "#spread-history-shell", lvl ], [ "#hzn-trend", lvl ], [ "#hzn-panel", lvl ], [ "#sheet-sign-horizon .reading-box", lvl ], [ "#ylm-shell", !lvl ], [ "#ylm-trend", !lvl ] ].forEach(function(pair) {
+      [ [ "#spread-history-shell", lvl ], [ "#hzn-trend", lvl ], [ "#ylm-shell", !lvl ], [ "#ylm-trend", !lvl ] ].forEach(function(pair) {
         var el = document.querySelector(pair[0]);
         if (el) el.hidden = pair[1];
       });
@@ -16799,8 +16793,6 @@
           falling: "flattening"
         });
       }
-      var hp = document.getElementById("hzn-panel");
-      if (hp) hp.innerHTML = horizonPanelHtml(spreadPick);
     }
     window.__pickSpread = function(code) {
       spreadPick = code;

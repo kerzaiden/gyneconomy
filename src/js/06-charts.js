@@ -1120,21 +1120,13 @@
       // fuller of the two and already carrying the NY Fed FAQ this reading cites.
       String(SPREAD_DETAIL || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
   }
-  var _hznPanel = {};
-  function horizonPanelHtml(pick){
-    if (!_hznPanel[pick]){
-      var m = HZN_METERS[pick];
-      _hznPanel[pick] = panelRow({
-        name:"10Y − " + (pick === "2y" ? "2Y" : "3M"), info:horizonInfoHtml(pick), head:"hzn-range",
-        metric:(m.value >= 0 ? "+" : "") + m.value.toFixed(2) + " pts",
-        flagged:meterFlagged(m), bar:panelFromMeter(m) });
-    }
-    /* V518: the row is cached per spread, so `head:` above files the note only on the pick's FIRST build. The
-       head's title and note both follow the control, so the note is refiled on every draw — outside the cache,
-       which is the whole point. horizonInfoHtml pushes nothing, so this costs a string and no detailTexts slot. */
-    HIST_NOTE["hzn-range"] = horizonInfoHtml(pick);
-    return _hznPanel[pick];
-  }
+  /* V599, Keren, of the lab-result row under this chart: "get rid of the test result component below the
+     chart — it's not informative." She is right, and the merge is what made it so. The row printed the
+     spread and a one-sided meter reading "0 and above", which is the same claim the chart makes in its own
+     ink: the columns change colour at zero, so the meter was the zero line drawn a second time, in words.
+     `horizonPanelHtml` and its cache went with it. HZN_METERS stays, because the note still reads the band
+     to explain where the record's ends come from — which is the place a band belongs once the picture has
+     already said which side of it we are on. */
   /* V596: `LEVEL_MAX` and `levelZone` went with Pressure. They scored the 10-year on a 0–6% band and
      gave that row its High/Normal/Low word; the reading merged into Hormones, whose word is the DIRECTION of the
      last FOMC move — a published fact, not a judgement about the level — so nothing read them any more. */

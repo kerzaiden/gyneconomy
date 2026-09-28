@@ -729,8 +729,10 @@
     function drawTreasuryHead(){
       var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
       H.mark  = lvl ? gaugeSvg : sunriseSvg;
-      H.title = lvl ? matTitle()
-                    : "10-year minus " + (spreadPick === "2y" ? "2-year" : "3-month") + " Treasury spread";
+      /* V599, Keren: "make the title 10 minus 3 — it's too long." It was: "10-year minus 3-month Treasury
+         spread" ran past the ⋯ on a phone. The short form is the one the menu already uses, so the title now
+         READS ITS OWN MENU ROW rather than spelling the same pair a second way — one label, one source. */
+      H.title = lvl ? matTitle() : (spreadLabel(spreadPick) + " Treasury spread");
       H.menu = function(){
         function row(on, attr, key, label){
           return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
@@ -738,13 +740,22 @@
             '<span class="cycsel-tick" aria-hidden="true"></span>' +
             '<span class="cycsel-nm">' + label + '</span></button>';
         }
-        return HZN_SPREADS.map(function(r){
+        /* V599, Keren: "make it like Spreads, and then I see 10Y minus 3M, 10Y minus 2Y. And Treasury yields,
+           and then I see 3 months, 2 years." Two named groups rather than one list split by a rule, which is
+           what makes the menu legible at a glance — and it lets each maturity row drop the word "Treasury",
+           because the heading above it has already said it five times over.
+           `role="group"` with an aria-label is what a menu is allowed to contain (menuitem, group, separator),
+           so the heading is real structure for a screen reader rather than a div wearing a style. */
+        function grp(label, rows){
+          return '<div role="group" aria-label="' + label + '">' +
+            '<div class="bh-grp" aria-hidden="true">' + label + '</div>' + rows + '</div>';
+        }
+        return grp("Spreads", HZN_SPREADS.map(function(r){
                  return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-               }).join("") +
-               '<div class="bh-sep" role="separator"></div>' +
-               maturities.map(function(m){
-                 return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name + " Treasury");
-               }).join("") +
+               }).join("")) +
+               grp("Treasury yields", maturities.map(function(m){
+                 return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+               }).join("")) +
                '<div class="bh-sep" role="separator"></div>';
       };
       HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
@@ -758,12 +769,9 @@
        same seam V596 used for the Hormones page. */
     function drawTreasury(){
       var lvl = tsyView === "level";
-      [["#spread-history-shell", lvl], ["#hzn-trend", lvl], ["#hzn-panel", lvl],
-       /* V520's `seatBandReading` lifts the spread's reading box OUT of #hzn-panel and seats it in the page,
-          so hiding the panel does not hide it \u2014 it stayed behind as a 2px rule between the chart and
-          Highlights, which is the kind of leftover only opening the page finds. The levels chart states its
-          own reading on its plate and has no box of its own, so this one belongs to the spread alone. */
-       ["#sheet-sign-horizon .reading-box", lvl],
+      /* V599: the spread's reading box went with the lab-result row it was seated from, so there are four
+         things to swap here, not six. */
+      [["#spread-history-shell", lvl], ["#hzn-trend", lvl],
        ["#ylm-shell", !lvl], ["#ylm-trend", !lvl]].forEach(function(pair){
         var el = document.querySelector(pair[0]); if (el) el.hidden = pair[1];
       });

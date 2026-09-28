@@ -290,6 +290,11 @@
   var tsyView = "spread";
   // V522: the two spreads, named once. The head's ⋯ menu draws them and the chart reads the pick.
   var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
+  // V599: the head's title reads the same label the menu row wears, so the pair is spelled in exactly one place
+  function spreadLabel(key){
+    var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
+    return r ? r.label : HZN_SPREADS[0].label;
+  }
   // Pressure's policy facts (V375, moved out of the markup in V470 so Highlights can render them as the aux-stats
   // they are \u2014 four label/value facts, which is the shape Activity's jobless-claims row already uses).
   // REFRESH: the target after each FOMC decision, the move and its vote, and the next meeting date.
