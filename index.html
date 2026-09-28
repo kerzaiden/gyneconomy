@@ -1582,6 +1582,34 @@
     font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
 
   .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
+
+  .ech-key{ display:flex; flex-wrap:wrap; gap:5px 16px; padding:0 14px 13px;
+    font-family:"Public Sans",sans-serif; font-size:12px; color:var(--text-muted); }
+  .ech-key span{ display:inline-flex; align-items:center; gap:7px; }
+  .ech-cyc{ border-top:1px solid var(--border); padding:12px 14px 14px; }
+  .ech-head{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
+  .ech-cname{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600; font-size:18px;
+    line-height:1.15; color:var(--text-primary); }
+  .ech-years{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--text-muted); }
+  .ech-years b{ font-weight:700; color:inherit; }
+  .ech-row{ display:grid; grid-template-columns:84px 1fr; gap:8px; align-items:center; padding:2.5px 0; }
+  .ech-lab{ font-family:"Public Sans",sans-serif; font-size:12px; line-height:1.2; color:var(--text-secondary); }
+  .ech-lab i{ display:block; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    color:var(--text-muted); }
+  .ech-dots{ display:grid; grid-template-columns:repeat(var(--n), 1fr); align-items:center; }
+  .ech-t{ justify-self:center; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    color:var(--text-muted); }
+  .ech-axis{ padding-bottom:4px; }
+
+  .ech-d{ justify-self:center; width:9px; height:9px; border-radius:50%; background:var(--accent);
+    box-sizing:border-box; }
+  .ech-d.near{ background:var(--accent-wash); border:1.5px solid var(--accent); }
+
+  .ech-d.now{ box-shadow:0 0 0 1.5px var(--surface), 0 0 0 3px var(--accent); }
+  .ech-d.off{ width:3.5px; height:3.5px; background:var(--text-muted); opacity:0.42; }
+  .ech-d.gap{ width:3.5px; height:3.5px; background:none; }
+  @media (max-width:400px){ .ech-row{ grid-template-columns:76px 1fr; } .ech-lab{ font-size:11.5px; } }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
@@ -2274,6 +2302,19 @@
           fall and never says when — the CAPE passed 30 in 1998, and the top was two years away.</p>
         <div class="rhy-ctl" id="rhy-pick"></div>
         <div id="rhy-body"></div>
+      </div>
+      
+      <div class="cyc-card" id="echoes-card">
+        <div class="cyc-head">
+          <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle
+            cx="5.5" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M10 7.2a7.2 7.2 0 0 1 0 9.6"/><path
+            d="M14.6 4.2a12 12 0 0 1 0 15.6"/></svg></span>Echoes</div>
+        </div>
+        <p class="rhy-lede">A body keeps only so many patterns and runs them again in a different order. A dot marks
+          a year that sat about where today sits in the same reading's own record. A row that lights
+          nowhere but at today has never been here before.</p>
+        <div id="ech-body"></div>
       </div>
       <div class="cyc-card">
         <div class="cyc-head">
@@ -20159,6 +20200,165 @@
   }
   GYN.step("renderRhymes", renderRhymes, "wire");
   renderRhymes();
+  function renderEchoes() {
+    var body = document.getElementById("ech-body");
+    if (!body) return;
+    var ECHO = 5, NEAR = 15;
+    var num = function(d) {
+      return d;
+    };
+    var qFrom = function(y0) {
+      return function(d, i) {
+        return y0 + Math.floor(i / 4);
+      };
+    };
+    var ROWS = [ {
+      name: "Temperature",
+      rows: cpiYoYHistory,
+      y: function(d) {
+        return +d.m.slice(0, 4);
+      }
+    }, {
+      name: "Growth",
+      rows: gdpQuarterlyYoY,
+      y: function(d) {
+        return +d.q.slice(0, 4);
+      }
+    }, {
+      name: "Hormones",
+      rows: fedFundsHistory,
+      y: function(d) {
+        return +d.m.slice(0, 4);
+      }
+    }, {
+      name: "Pressure",
+      rows: lendingStandardsHistory,
+      y: function(d) {
+        return +d.q.slice(0, 4);
+      }
+    }, {
+      name: "Pulse",
+      rows: m2vHistory,
+      v: num,
+      y: qFrom(M2V_FROM_YEAR)
+    }, {
+      name: "Volume",
+      rows: m2Yoy,
+      v: num,
+      y: qFrom(M2_FROM_YEAR)
+    }, {
+      name: "Valuations",
+      rows: capeHistory,
+      y: function(d) {
+        return d.y;
+      }
+    }, {
+      name: "Fear",
+      rows: fearCurveHistory,
+      y: function(d) {
+        return +d.m.slice(0, 4);
+      }
+    }, {
+      name: "Desire",
+      rows: hyOas,
+      v: num,
+      y: function(d, i) {
+        return hyAt(i).y;
+      }
+    }, {
+      name: "Horizon",
+      rows: t10y3mHistory,
+      y: function(d) {
+        return +d.q.slice(0, 4);
+      }
+    }, {
+      name: "Power",
+      rows: powerHistory,
+      y: function(d) {
+        return d.y;
+      }
+    }, {
+      name: "Activity",
+      rows: unempHistory,
+      y: function(d) {
+        return +d.m.slice(0, 4);
+      }
+    }, {
+      name: "Households",
+      rows: dsrHistory,
+      v: num,
+      y: qFrom(DSR_FROM_YEAR)
+    } ];
+    var ROLL = ROWS.map(function(r) {
+      var by = {};
+      r.rows.forEach(function(d, i) {
+        var v = r.v ? r.v(d, i) : d.v;
+        if (v == null) return;
+        (by[r.y(d, i)] = by[r.y(d, i)] || []).push(v);
+      });
+      var keys = Object.keys(by), vals = {};
+      keys.forEach(function(k) {
+        vals[k] = by[k].reduce(function(a, b) {
+          return a + b;
+        }, 0) / by[k].length;
+      });
+      var sorted = keys.map(function(k) {
+        return vals[k];
+      }).sort(function(a, b) {
+        return a - b;
+      });
+      var place = function(v) {
+        var lo = 0;
+        sorted.forEach(function(x) {
+          if (x < v) lo++;
+        });
+        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+      };
+      var years = keys.map(Number).sort(function(a, b) {
+        return a - b;
+      });
+      var last = years[years.length - 1];
+      return {
+        name: r.name,
+        vals: vals,
+        place: place,
+        from: years[0],
+        last: last,
+        now: place(vals[last])
+      };
+    });
+    function dots(p, years) {
+      var on = 0;
+      var html = years.map(function(y) {
+        var v = p.vals[y];
+        if (v == null) return '<i class="ech-d gap"></i>';
+        var gap = Math.abs(p.place(v) - p.now);
+        var cls = y === p.last ? "now" : gap <= ECHO ? "on" : gap <= NEAR ? "near" : "off";
+        if (cls === "on") on++;
+        return '<i class="ech-d ' + cls + '" title="' + y + " · sits above " + p.place(v).toFixed(0) + '% of its record"></i>';
+      }).join("");
+      return {
+        html: html,
+        on: on
+      };
+    }
+    body.innerHTML = '<div class="ech-key"><span><i class="ech-d now"></i>Today</span>' + '<span><i class="ech-d on"></i>Reads like now</span>' + '<span><i class="ech-d near"></i>Close</span>' + '<span><i class="ech-d off"></i>Measured, not close</span></div>' + marketCycles.slice().reverse().map(function(cyc) {
+      var to = cyc.to || calendarTodayY, years = [];
+      for (var y = cyc.from; y <= to; y++) years.push(y);
+      var n = years.length;
+      return '<div class="ech-cyc" style="--n:' + n + '">' + '<div class="ech-head"><span class="ech-cname">' + (cyc.ongoing ? "Current cycle" : cyc.name) + '</span><span class="ech-years">' + cyc.from + "–" + (cyc.ongoing ? "Today" : to) + " <b>(" + n + "Y)</b></span></div>" + '<div class="ech-row ech-axis"><span class="ech-lab"></span><span class="ech-dots">' + years.map(function(yy, i) {
+        return '<i class="ech-t">' + (n <= 7 || i % 2 === 0 ? String(yy).slice(2) : "") + "</i>";
+      }).join("") + "</span></div>" + ROLL.map(function(p) {
+        var seen = years.filter(function(yy) {
+          return p.vals[yy] != null;
+        }).length;
+        var d = dots(p, years);
+        return '<div class="ech-row"><span class="ech-lab">' + p.name + (seen ? "" : "<i>from " + p.from + "</i>") + "</span>" + '<span class="ech-dots" role="img" aria-label="' + p.name + ": " + (seen ? d.on + " of " + seen + " years read like now" : "not measured before " + p.from) + '">' + d.html + "</span></div>";
+      }).join("") + "</div>";
+    }).join("");
+  }
+  GYN.step("renderEchoes", renderEchoes, "wire");
+  renderEchoes();
   window.__sources = {
     all: allSources,
     cards: coincident.concat(lagging).map(function(c) {

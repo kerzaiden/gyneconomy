@@ -1729,6 +1729,120 @@
   }
   GYN.step("renderRhymes", renderRhymes, "wire"); renderRhymes();
 
+  /* ---------------- RENDER: Echoes \u2014 every year that reads like now (Version 611) ----------------
+     Keren, with the Clue cycle-history screen beside her: "make a dot only where it's similar to today's data.
+     meaning if I scan past cycles I can see how similar they are vs the current data/cycle."
+
+     WHAT "SIMILAR" MEANS, AND WHY IT IS A PLACE AND NOT A PERCENTAGE. Each year is turned into its position in
+     its OWN record \u2014 today's CAPE sits above 96% of the years behind it \u2014 and a year echoes when it sat about
+     as high. That is the only measure that means the same thing on all thirteen rows: five per cent of the
+     federal funds rate and five per cent of a spread that lives near nought are not comparable quantities, so a
+     band fixed in a series' own units would be generous on one row and impossible on the next. A place in the
+     record carries no units, so one sentence explains every row.
+     It is also the only one that survives an outlier. Measured as a share of the range, 1981's 19% would set
+     the width of the federal funds band for ever after; a rank does not care how far away the extreme is.
+
+     WHAT THE PICTURE IS ALLOWED TO SAY. A dark row is not missing data \u2014 it is the finding, and the most
+     valuable thing here: Valuations sits at the top of its record, so almost nothing echoes it. Reading DOWN a
+     cycle shows which of its years the present resembles; reading ACROSS shows which parts of the body have
+     been here before. There is no verdict and no total, because thirteen rows echoing does not add up to a
+     prediction and any number claiming it did would be invented.
+     A year is the mean of that year's readings, and the year in progress is the mean of the year so far.
+     Like Rhymes it runs after renderPagesAndNav, because Version 255 carries CAPE's last point to today. */
+  function renderEchoes(){
+    var body = document.getElementById("ech-body"); if (!body) return;
+    var ECHO = 5, NEAR = 15;          // points of the record, out of a hundred
+    var num = function(d){ return d; };                                  // a series that is bare numbers
+    var qFrom = function(y0){ return function(d, i){ return y0 + Math.floor(i / 4); }; };  // quarterly, by index
+    /* The whole roster, in the order the four categories run \u2014 Weather, Circulation, Mood, Energy. The
+       categories are not labelled: thirteen rows in the app's own order carry it, and four headings repeated in
+       five blocks would be twenty lines of furniture. Three shapes of series live in this app and one reader
+       takes all of them, so a row is a line and never a special case. */
+    var ROWS = [
+      { name:"Temperature", rows:cpiYoYHistory,           y:function(d){ return +d.m.slice(0, 4); } },
+      { name:"Growth",      rows:gdpQuarterlyYoY,         y:function(d){ return +d.q.slice(0, 4); } },
+      { name:"Hormones",    rows:fedFundsHistory,         y:function(d){ return +d.m.slice(0, 4); } },
+      { name:"Pressure",    rows:lendingStandardsHistory, y:function(d){ return +d.q.slice(0, 4); } },
+      { name:"Pulse",       rows:m2vHistory, v:num,       y:qFrom(M2V_FROM_YEAR) },
+      { name:"Volume",      rows:m2Yoy,      v:num,       y:qFrom(M2_FROM_YEAR) },
+      { name:"Valuations",  rows:capeHistory,             y:function(d){ return d.y; } },
+      { name:"Fear",        rows:fearCurveHistory,        y:function(d){ return +d.m.slice(0, 4); } },
+      { name:"Desire",      rows:hyOas,      v:num,       y:function(d, i){ return hyAt(i).y; } },
+      { name:"Horizon",     rows:t10y3mHistory,           y:function(d){ return +d.q.slice(0, 4); } },
+      { name:"Power",       rows:powerHistory,            y:function(d){ return d.y; } },
+      { name:"Activity",    rows:unempHistory,            y:function(d){ return +d.m.slice(0, 4); } },
+      { name:"Households",  rows:dsrHistory, v:num,       y:qFrom(DSR_FROM_YEAR) }
+    ];
+    // One pass per row, done once: the yearly means, a reader that turns a value into its place in the record,
+    // and where today sits. Every dot in every cycle is then a subtraction.
+    var ROLL = ROWS.map(function(r){
+      var by = {};
+      r.rows.forEach(function(d, i){
+        var v = r.v ? r.v(d, i) : d.v; if (v == null) return;
+        (by[r.y(d, i)] = by[r.y(d, i)] || []).push(v);
+      });
+      var keys = Object.keys(by), vals = {};
+      keys.forEach(function(k){ vals[k] = by[k].reduce(function(a, b){ return a + b; }, 0) / by[k].length; });
+      var sorted = keys.map(function(k){ return vals[k]; }).sort(function(a, b){ return a - b; });
+      var place = function(v){
+        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
+        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+      };
+      var years = keys.map(Number).sort(function(a, b){ return a - b; });
+      var last = years[years.length - 1];
+      return { name:r.name, vals:vals, place:place, from:years[0], last:last, now:place(vals[last]) };
+    });
+
+    function dots(p, years){
+      var on = 0;
+      var html = years.map(function(y){
+        var v = p.vals[y];
+        if (v == null) return '<i class="ech-d gap"></i>';
+        // The year everything else is measured against wears its own mark. Without it the whole of today's
+        // column is solid on every row \u2014 true, since each reading matches itself, and worth nothing: it would
+        // read as thirteen echoes at once when it is only the ruler.
+        var gap = Math.abs(p.place(v) - p.now);
+        var cls = y === p.last ? "now" : gap <= ECHO ? "on" : gap <= NEAR ? "near" : "off";
+        if (cls === "on") on++;
+        return '<i class="ech-d ' + cls + '" title="' + y + " \u00b7 sits above " +
+               p.place(v).toFixed(0) + '% of its record"></i>';
+      }).join("");
+      return { html:html, on:on };
+    }
+
+    body.innerHTML =
+      '<div class="ech-key"><span><i class="ech-d now"></i>Today</span>' +
+        '<span><i class="ech-d on"></i>Reads like now</span>' +
+        '<span><i class="ech-d near"></i>Close</span>' +
+        '<span><i class="ech-d off"></i>Measured, not close</span></div>' +
+      marketCycles.slice().reverse().map(function(cyc){
+        var to = cyc.to || calendarTodayY, years = [];
+        for (var y = cyc.from; y <= to; y++) years.push(y);
+        var n = years.length;
+        // Every cycle spreads its own years across the same width, the way the tracker spreads a 29-day cycle
+        // and a 31-day one. Year one is at the left of every block, which is the only anchor they share.
+        return '<div class="ech-cyc" style="--n:' + n + '">' +
+          '<div class="ech-head"><span class="ech-cname">' + (cyc.ongoing ? "Current cycle" : cyc.name) +
+            '</span><span class="ech-years">' + cyc.from + '\u2013' + (cyc.ongoing ? "Today" : to) +
+            ' <b>(' + n + 'Y)</b></span></div>' +
+          '<div class="ech-row ech-axis"><span class="ech-lab"></span><span class="ech-dots">' +
+            years.map(function(yy, i){
+              return '<i class="ech-t">' + ((n <= 7 || i % 2 === 0) ? String(yy).slice(2) : "") + '</i>';
+            }).join("") + '</span></div>' +
+          ROLL.map(function(p){
+            var seen = years.filter(function(yy){ return p.vals[yy] != null; }).length;
+            var d = dots(p, years);
+            return '<div class="ech-row"><span class="ech-lab">' + p.name +
+              (seen ? "" : '<i>from ' + p.from + '</i>') + '</span>' +
+              '<span class="ech-dots" role="img" aria-label="' + p.name + ": " +
+                (seen ? d.on + " of " + seen + " years read like now" : "not measured before " + p.from) +
+              '">' + d.html + '</span></div>';
+          }).join("") +
+        '</div>';
+      }).join("");
+  }
+  GYN.step("renderEchoes", renderEchoes, "wire"); renderEchoes();
+
 
   // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page
   // whenever this list changes: build-sources.js in the project scratchpad reads window.__sources below.

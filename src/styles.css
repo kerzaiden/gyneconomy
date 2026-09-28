@@ -2561,6 +2561,41 @@
   /* No reading: the record does not reach this top. The dash is muted and unbolded so it cannot be mistaken for
      a value of zero, and the sub-line says where the record starts instead of when this one was taken. */
   .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
+  /* ---------- Echoes (Version 611): every year that reads like now ----------
+     One grid shape for the whole block. The axis is an `.ech-row` with an empty label cell, so the year ticks
+     and the dots under them are the same grid and cannot drift apart \u2014 the alternative, an axis with its own
+     padding, is a second measurement of the same thing and drifts the moment the label column changes.
+     `--n` is the cycle's length in years, set on the block; every row inside spreads its dots across it, which
+     is how a four-year cycle and a twelve-year one sit under the same width. */
+  .ech-key{ display:flex; flex-wrap:wrap; gap:5px 16px; padding:0 14px 13px;
+    font-family:"Public Sans",sans-serif; font-size:12px; color:var(--text-muted); }
+  .ech-key span{ display:inline-flex; align-items:center; gap:7px; }
+  .ech-cyc{ border-top:1px solid var(--border); padding:12px 14px 14px; }
+  .ech-head{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:7px; }
+  .ech-cname{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600; font-size:18px;
+    line-height:1.15; color:var(--text-primary); }
+  .ech-years{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--text-muted); }
+  .ech-years b{ font-weight:700; color:inherit; }
+  .ech-row{ display:grid; grid-template-columns:84px 1fr; gap:8px; align-items:center; padding:2.5px 0; }
+  .ech-lab{ font-family:"Public Sans",sans-serif; font-size:12px; line-height:1.2; color:var(--text-secondary); }
+  .ech-lab i{ display:block; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    color:var(--text-muted); }
+  .ech-dots{ display:grid; grid-template-columns:repeat(var(--n), 1fr); align-items:center; }
+  .ech-t{ justify-self:center; font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:9.5px;
+    color:var(--text-muted); }
+  .ech-axis{ padding-bottom:4px; }
+  /* Three steps of one hue, and each step changes SIZE as well as fill, so the reading never rests on colour
+     alone. Nothing is drawn for a year the record does not cover: an absent dot is the honest mark for it. */
+  .ech-d{ justify-self:center; width:9px; height:9px; border-radius:50%; background:var(--accent);
+    box-sizing:border-box; }
+  .ech-d.near{ background:var(--accent-wash); border:1.5px solid var(--accent); }
+  /* Today: the ruler, not an echo. A ring set off by the card's own surface \u2014 the 2px surface gap this app
+     puts between any two marks that must not read as one \u2014 because the wash alone was invisible on white. */
+  .ech-d.now{ box-shadow:0 0 0 1.5px var(--surface), 0 0 0 3px var(--accent); }
+  .ech-d.off{ width:3.5px; height:3.5px; background:var(--text-muted); opacity:0.42; }
+  .ech-d.gap{ width:3.5px; height:3.5px; background:none; }
+  @media (max-width:400px){ .ech-row{ grid-template-columns:76px 1fr; } .ech-lab{ font-size:11.5px; } }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
