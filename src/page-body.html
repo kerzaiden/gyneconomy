@@ -259,49 +259,42 @@
     </div>
 
     <!-- ====== LEADING SIGNS — the heading went in Version 269; each sign carries its own timing pill ====== -->
-<details class="subject" data-subject="yield">
+<!-- ====== HORMONES — V596 ======
+     Keren: "let's fold Treasury into Hormones — one page for the hormone: the policy rate the Fed sets, and
+     the Treasury curve as the body actually experiences it, clearly labelled as two readings of one thing."
+     This is the page V592 said was worth revisiting and V473 half-solved. Three versions had the same quantity
+     on two rows of one category: Pressure measured what the market CHARGES and Hormones what the Fed SETS, and
+     a reader on Circulation met the price of money twice before reaching the pulse. Her own draft settles which
+     of the two names the thing — "Interest rates," Mrs. Market once told me, "are like hormones. They're
+     invisible — but you feel them everywhere" — and settles that Pressure was never a measurement in the
+     model at all: in the Circular Flow chapter pressure is what builds WHEN circulation goes wrong, a symptom,
+     not an instrument.
+     So the page is one gland read at two distances: the rate the FOMC sets (the secretion, above), the yields
+     the market charges across every maturity (the bloodstream, below), and the FOMC's own settings as the list
+     that ends it. The machinery is MOVED, not rebuilt — the Version 314 rule, for the sixth time: the same
+     #ylm-* svg, the same drawYlm, the same tooltip and trend pill, under a different name and a different head.
+     What went with Pressure is what belonged to Pressure alone: the cuff ring (it scored the 10-year level on a
+     0–6% band, a reading this app no longer makes), the 10Y/3M row figure, and levelZone's High/Normal/Low. -->
+<details class="subject" data-subject="hormones">
     <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-yield"></div>
       <div class="subject-text">
-        <div class="subject-label">Pressure · Treasury yield curve</div>
-        <div class="subject-value" id="subj-value-yield"></div>
-        <p class="subject-say" id="subj-say-yield"></p>
-        <div id="subj-spark-yield"></div>
+        <div class="subject-label">Hormones</div>
+        <div class="subject-value" id="subj-value-hormones"></div>
+        <p class="subject-say" id="subj-say-hormones"></p>
       </div>
       <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
     </summary>
     <div class="subject-body">
-    <!-- the context line went in Version 294: "10-year 4.94% · 3-month 4.12% · 21 months since the last
-         un-inversion" is three figures the page states again in its own blocks below (Keren) -->
-    <!-- Version 296: the page heading and the curve-shape tag both went (Keren). The top bar already says
-         "Yield curve" and the first card names its own subject, so the h3 was the third statement of it; the tag
-         ("NORMAL — fertile, upward sloping") described the curve's shape, which the maturity cards and the spread
-         chart below already draw. The section keeps its accessible name so removing a visible heading does not
-         remove the name a screen reader reads. -->
-    <section class="hero" aria-label="Pressure — the U.S. Treasury yield curve">
-      <!-- The policy rate (Version 375, Keren). It reads FIRST because it is the cause the rest of this page is
-           the effect of: the Fed sets the short end, and every spread below is the market's answer to it. These
-           four rows came off the Temperature card, where they had been filed since Version 240 — they answer
-           "what is the Fed doing?", which is this page's question, not that one's.
-
-           Version 516 rebuilt it as a tile above the chart, having found `fedFunds` unread. Version 517 takes
-           that straight back out, because Keren looked at the page and said what the audit had missed: "I think
-           it's a duplicate." It was. The policy rate was already on this page, in Highlights, as the
-           `policyFacts` rows — so the tile stated the same range and the same last move a second time, which is
-           the one-figure rule broken by the very change meant to tidy the app.
-           The REAL fault was one level down and is fixed instead: those rows were three HARD-CODED STRINGS
-           ("3.75–4.00%", "+0.25 on Sep 16 · 12–0") sitting beside a `fedFunds` object the refresh contract
-           points at. The object was unread because somebody had re-typed its contents as literals, so an FOMC
-           decision would have updated the data and not the screen. The rows read the object now. One source,
-           one place on the page. -->
-      <!-- V519: the maturity bar is this page's top menu, so it steps out onto the ground with every other
-           page's control. (The paragraph went in Version 293: the cards below say what each maturity prices,
-           and a paragraph explaining a picture is a caption in the wrong place — Keren.) -->
+    <section class="hero" aria-label="Hormones — the policy rate and the U.S. Treasury yield curve">
+      <!-- 1. WHAT THE FED SETS. The effective federal funds rate, monthly since 1954 (V589's backfill). It reads
+           first because it is the cause the curve below it is the answer to. -->
+      <div id="hormones-history"></div>
+      <!-- 2. WHAT THE MARKET CHARGES. V519: the maturity bar is this chart's own top menu, so it steps out onto
+           the ground with every other control in the app. -->
       <div class="hist-bar" id="ylm-series"></div>
       <div class="spread-history">
-        <!-- V518: Pressure's head was the app's only one that named what the chart measures rather than the
-             page (the V298 rule). It is the band head now, filled by drawYlm because its title follows the
-             maturity chosen on the control below it. -->
+        <!-- V518: the band head names what the chart measures rather than the page (the V298 rule), because its
+             title follows the maturity chosen on the control above it — filled by drawYlm. -->
         <div id="ylm-head"></div>
         <div class="chart-shell" id="ylm-shell">
           <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
@@ -309,13 +302,15 @@
         </div>
         <!-- V496 put the key under the chart; V570 moves it into the chart's own legend, top right of the grid -->
         <div id="ylm-trend"></div>
-
       </div>
-      <div id="pressure-insights"></div>
-      <div id="pressure-highlights"></div>
+      <!-- 3. WHAT THE FOMC DECIDED. The target, the last move and its vote, the next meeting — the page's one
+           list. V592 left these on Pressure because they were that page's only list and moving them would have
+           left it a chart and nothing else; the merge is what makes them land where they always belonged, beside
+           the reading that IS the policy rate. #pressure-highlights and its empty #pressure-insights are gone. -->
+      <div id="hormones-highlights"></div>
     </section>
     </div>
-    </details>
+  </details>
 
 <!-- ====== HORIZON — Version 473 ======
      Keren: "calling it Horizon and judging if it's optimistic or pessimistic, which correlates with ovulation
@@ -368,22 +363,6 @@
     </div>
     </details>
 
-<!-- V592: Hormones. Circulation's fourth member \u2014 the policy rate, which is what the Fed SETS, as against
-     Pressure's Treasury yields, which are what the market charges. -->
-<details class="subject" data-subject="hormones">
-    <summary class="subject-summary">
-      <div class="subject-text">
-        <div class="subject-label">Hormones</div>
-        <div class="subject-value" id="subj-value-hormones"></div>
-        <p class="subject-say" id="subj-say-hormones"></p>
-      </div>
-      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
-    </summary>
-    <div class="subject-body">
-      <div id="hormones-history"></div>
-      <div id="hormones-highlights"></div>
-    </div>
-  </details>
 
   <details class="subject" data-subject="sentiment">
     <summary class="subject-summary">

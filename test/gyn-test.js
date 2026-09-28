@@ -42,7 +42,12 @@ const PAGES = [
   ['sheet-sign-volume','volume-range','Volume'],
   ['sheet-sign-pulse','pulse-range','Pulse'],
   ['sheet-sign-horizon','hzn-range','Horizon'],
-  ['sheet-sign-yield','ylm-range','Pressure'],
+  /* V596: Pressure merged into Hormones, and that page carries TWO histories — the rate the Fed sets and
+     the yields the market charges — so it is listed twice, once per history. Each entry is checked against
+     its OWN chart (see the band lookup below), so the second is a real assertion and not a duplicate of the
+     first: it proves the maturity chart still wears the head, the ⋯ and a note of its own on the merged page. */
+  ['sheet-sign-hormones','hormones-range','Hormones'],
+  ['sheet-sign-hormones','ylm-range','Treasury yields'],
   ['sheet-sign-desire','desire-range','Desire'],
 ];
 /* Values CLAUDE-CODE.md states as live. A change here must be a deliberate edit of both. */
@@ -160,7 +165,10 @@ async function openPage(p, url, sheet) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
     const r = await p.evaluate(h => {
       const mp = document.getElementById('metric-page');
-      const band = mp.querySelector('.page-chart, .spread-history');
+      /* V596: the band is the one holding THIS history's head, not simply the first on the page — a page may
+         now hold two, and measuring the wrong chart would pass while proving nothing about the right one. */
+      const hb = document.querySelector('.bh-more[data-head-more="' + h + '"]');
+      const band = (hb && hb.closest('.page-chart, .spread-history')) || mp.querySelector('.page-chart, .spread-history');
       const svg = band && [...band.querySelectorAll('svg')]
         .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
       const q = s => svg ? svg.querySelectorAll(s).length : 0;
@@ -215,11 +223,14 @@ async function openPage(p, url, sheet) {
   // ---- 2d. the live-data cache (Version 528)
   // The claim of the cache layer is that a cached answer lands BEFORE any derived value is computed, so a
   // seeded figure moves the readings that are computed from it, not just the number that is printed. Both
-  // shapes are proved — an object doc through Fear & Greed's mood class, a series doc through the 10Y/3M
-  // pair — and every malformed cache must fall back to the literals in silence.
+  // shapes are proved — an object doc through Fear & Greed's mood class, a series doc through the spread
+  // Horizon computes from the curve — and every malformed cache must fall back to the literals in silence.
+  /* V596: the series doc was read off Pressure's 10Y/3M pair, which merged into Hormones and stopped being a
+     figure. Horizon's spread is the stronger target anyway: it is DERIVED from the two legs the seed moves,
+     so a cached curve that failed to land before the derivation would show up here and could not there. */
   const readLive = () => {
     const fg  = document.getElementById('subj-value-sentiment');
-    const yld = document.getElementById('subj-value-yield');
+    const yld = document.getElementById('subj-value-horizon');
     const ink = document.querySelector('.curve-w');
     return {
       fgNum: fg ? fg.textContent.trim().split('VIX')[0] : null,
@@ -312,7 +323,15 @@ async function openPage(p, url, sheet) {
       return { sentiment: t('#subj-value-sentiment'),
                mood: t('[data-open="sheet-sign-sentiment"] .tag'),
                moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
-               yield: t('#subj-value-yield'), valuation: t('#subj-value-valuation') };
+               /* V596: the verdict is read where it LIVES, not where it is written — catItem lifts this
+                  reading's inline tag out of the figure into a sibling .ci-word, the same V593 shape Fear
+                  has. Both figures are read too, because a reading wears one on each door onto its page and
+                  only walking both catches a repaint that reached one of them. */
+               horizon: t('#subj-value-horizon'),
+               horizonTag: t('[data-open="sheet-sign-horizon"] .tag'),
+               horizonFigs: [...document.querySelectorAll('[data-open="sheet-sign-horizon"] .ci-value, [data-open="sheet-sign-horizon"] .subject-value')]
+                              .map(e => e.textContent.trim().split('pts')[0]),
+               valuation: t('#subj-value-valuation') };
     });
 
     const seam = await g.evaluate(() => !!(window.__GYN && window.__GYN.applyLive));
@@ -344,9 +363,13 @@ async function openPage(p, url, sheet) {
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 
-      (rv.yc && /4\.05\/5\.55/.test(after.yield || ''))
-        ? ok('repaint yieldCurve pair', (before.yield || '').slice(0, 12) + ' -> ' + (after.yield || '').slice(0, 12))
-        : bad('repaint yieldCurve pair', JSON.stringify(after.yield));
+      /* V596: a stronger claim than the pair this replaces. 4.05 − 5.55 = −1.50, and a spread that deep is
+         Pessimistic — so the figure AND the verdict computed from it must both move, through the same
+         `horizonWord` the load-time read uses. Printing the pair proved only that a number was copied. */
+      (rv.yc && after.horizonFigs.length > 1 && after.horizonFigs.every(f => /1\.50/.test(f)) &&
+       after.horizonTag === 'Pessimistic')
+        ? ok('repaint horizon spread and verdict', before.horizonFigs.join('/') + ' -> ' + after.horizonFigs.join('/') + ' ' + after.horizonTag)
+        : bad('repaint horizon spread and verdict', JSON.stringify(after.horizonFigs) + ' / ' + after.horizonTag);
 
       (rv.nul === false && rv.bad === false && rv.unk === false)
         ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')

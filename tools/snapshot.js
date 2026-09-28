@@ -19,7 +19,7 @@ const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-
 const CATS = ['sheet-cat-weather', 'sheet-cat-circulation', 'sheet-cat-mood', 'sheet-cat-energy'];
 const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity','sheet-metric-power',
   'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
-  'sheet-sign-horizon','sheet-sign-yield','sheet-sign-desire'];
+  'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire'];
 const TABS = ['cycle','analysis','portfolio','content'];
 
 const NORMALISERS = [

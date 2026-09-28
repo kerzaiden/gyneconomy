@@ -592,9 +592,17 @@
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
       drawYlm();   // V588: redraws the head (its title is the maturity) and the chart; there is no row to centre
     };
-    sheetRenderers["sheet-sign-yield"] = function(){ drawYlm(); };
-    // V588: the shared mode/range/cycle handler redraws through this, exactly as deficit-range does
-    sheetRenderers["ylm-range"] = function(){ drawYlm(); };
+    /* V596: the merged page holds TWO histories, so opening it redraws both — each is drawn at its box's own
+       width and a hidden element has no width, which is the Version 303 reason every history registers here.
+       The pair is composed HERE rather than in renderHormones because `drawYlm` is local to this block; the
+       other half is reached through its own key, which is looked up at call time because renderHormones
+       has not run yet when this line does.
+       (`ylm-range` used to be registered twice, here and further down with the same function — two writes of
+       one key, of which only the later could ever have been read. The dead one is gone.) */
+    sheetRenderers["sheet-sign-hormones"] = function(){
+      var ff = sheetRenderers["hormones-range"]; if (ff) ff();
+      drawYlm();
+    };
     // the record is drawn at the box's own width (Version 303) — a hidden element has no width, so this has to
     // happen on open, the same reason the yield page centres its card there
     // Volume and Pulse on the timeline (Version 367), riding the deficit block's machinery exactly: a key in

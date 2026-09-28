@@ -532,13 +532,8 @@
 
   .card-row .subject-summary{ padding:0; gap:0; align-items:stretch; flex-direction:column; }
   .card-row .subject-text{ display:block; }
-  .press-row .subject-value{ font-family:"IBM Plex Mono",monospace; font-size:21px; font-weight:700;
-    letter-spacing:-0.02em; line-height:1; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; margin:0; }
   .card-row .subject-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
     line-height:1.2; margin:6px 0 0; max-width:none; color:var(--text-secondary); letter-spacing:0.01em; }
-
-  .press-row .subject-value .unit{ font-size:11px; letter-spacing:0.01em; margin-left:0; }
-  .press-row .peek-chart{ display:block; margin:10px 0 10px; }
   .card-row .subject-ring, .card-row .subject-more{ display:none; }
   .card-row .subject-label{ display:inline-flex; align-items:center; gap:4px; margin:0;
     font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
@@ -2106,22 +2101,20 @@
     </div>
 
     
-<details class="subject" data-subject="yield">
+
+<details class="subject" data-subject="hormones">
     <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-yield"></div>
       <div class="subject-text">
-        <div class="subject-label">Pressure · Treasury yield curve</div>
-        <div class="subject-value" id="subj-value-yield"></div>
-        <p class="subject-say" id="subj-say-yield"></p>
-        <div id="subj-spark-yield"></div>
+        <div class="subject-label">Hormones</div>
+        <div class="subject-value" id="subj-value-hormones"></div>
+        <p class="subject-say" id="subj-say-hormones"></p>
       </div>
       <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
     </summary>
     <div class="subject-body">
-    
-    
-    <section class="hero" aria-label="Pressure — the U.S. Treasury yield curve">
+    <section class="hero" aria-label="Hormones — the policy rate and the U.S. Treasury yield curve">
       
+      <div id="hormones-history"></div>
       
       <div class="hist-bar" id="ylm-series"></div>
       <div class="spread-history">
@@ -2133,13 +2126,12 @@
         </div>
         
         <div id="ylm-trend"></div>
-
       </div>
-      <div id="pressure-insights"></div>
-      <div id="pressure-highlights"></div>
+      
+      <div id="hormones-highlights"></div>
     </section>
     </div>
-    </details>
+  </details>
 
 
 <details class="subject" data-subject="horizon">
@@ -2173,21 +2165,6 @@
     </div>
     </details>
 
-
-<details class="subject" data-subject="hormones">
-    <summary class="subject-summary">
-      <div class="subject-text">
-        <div class="subject-label">Hormones</div>
-        <div class="subject-value" id="subj-value-hormones"></div>
-        <p class="subject-say" id="subj-say-hormones"></p>
-      </div>
-      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
-    </summary>
-    <div class="subject-body">
-      <div id="hormones-history"></div>
-      <div id="hormones-highlights"></div>
-    </div>
-  </details>
 
   <details class="subject" data-subject="sentiment">
     <summary class="subject-summary">
@@ -4441,6 +4418,19 @@
     n.nodeValue = String(text);
     return true;
   }
+  function repaintRow(sheet, fig, tag) {
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"]');
+    Array.prototype.forEach.call(doors, function(d) {
+      var v = d.querySelector(".ci-value, .subject-value");
+      if (v && v.firstChild && v.firstChild.nodeType === 3) v.firstChild.nodeValue = String(fig);
+      var t = d.querySelector(".tag");
+      if (t && tag) {
+        var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
+        t.textContent = tag.text;
+        t.className = "tag " + tag.state + word;
+      }
+    });
+  }
   function repaintTag(id, text, state) {
     var el = document.getElementById(id);
     var tag = el && el.querySelector(".tag");
@@ -4451,18 +4441,11 @@
   }
   function repaintFearCurve() {
     var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "—" : r.toFixed(2);
-    repaintFigureText("subj-value-sentiment", txt);
-    repaintTag("subj-value-sentiment", tag.text, tag.state);
     var ring = document.getElementById("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", where 1.00 is flat");
-    var verdicts = document.querySelectorAll('[data-open="sheet-sign-sentiment"] .tag');
-    Array.prototype.forEach.call(verdicts, function(t) {
-      var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
-      t.textContent = tag.text;
-      t.className = "tag " + tag.state + word;
-    });
+    repaintRow("sheet-sign-sentiment", txt, tag);
   }
-  function repaintYieldRow() {
+  function repaintHorizonRow() {
     var pick = function(m) {
       var h = yieldCurve.filter(function(d) {
         return d.m === m;
@@ -4471,8 +4454,12 @@
     };
     var y10 = pick("10Y"), y3m = pick("3M");
     if (y10 == null || y3m == null) return;
-    var pv = document.querySelector("#subj-value-yield .pv");
-    if (pv && pv.firstChild && pv.firstChild.nodeType === 3) pv.firstChild.nodeValue = y10.toFixed(2) + "/" + y3m.toFixed(2);
+    var sp = y10 - y3m;
+    var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
+    repaintRow("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), {
+      text: w.word,
+      state: w.state
+    });
   }
   function repaintValuationRow() {
     var row = valRow("cape");
@@ -4483,7 +4470,7 @@
   var REPAINT = {
     fedFunds: [ repaintPolicy ],
     vix3mClose: [ repaintFearCurve ],
-    yieldCurve: [ repaintYieldRow ],
+    yieldCurve: [ repaintHorizonRow ],
     valuation: [ repaintValuationRow ],
     capeValue: [ repaintValuationRow ],
     sentiment: [],
@@ -4591,12 +4578,16 @@
     return true;
   }
   function repaintPolicy() {
-    var ph = document.getElementById("pressure-highlights");
+    var ph = document.getElementById("hormones-highlights");
     var box = ph && ph.querySelector(".highlights");
-    if (!box) return;
-    box.innerHTML = policyFacts().map(function(f) {
+    if (box) box.innerHTML = policyFacts().map(function(f) {
       return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
     }).join("");
+    var rowVal = document.getElementById("subj-value-hormones");
+    if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3) rowVal.firstChild.nodeValue = fedFundsRange();
+    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+    var t = rowVal && rowVal.querySelector(".tag");
+    if (t) t.textContent = dir;
   }
   var GYN = {
     steps: [],
@@ -14458,19 +14449,6 @@
     HIST_NOTE["hzn-range"] = horizonInfoHtml(pick);
     return _hznPanel[pick];
   }
-  var LEVEL_MAX = 6;
-  function levelZone(v) {
-    return v < 2 ? {
-      label: "Low",
-      state: "warning"
-    } : v > 4.5 ? {
-      label: "High",
-      state: "warning"
-    } : {
-      label: "Normal",
-      state: "good"
-    };
-  }
   var RISK_REWARD = [ {
     key: "low",
     label: "Low",
@@ -14682,8 +14660,7 @@
     Activity: trendUpSvg,
     Temperature: thermoSvg,
     "Industrial output": gearSvg,
-    Volume: volumeSvg,
-    Pressure: gaugeSvg
+    Volume: volumeSvg
   };
   var DSR_FROM_YEAR = 2005;
   var dsrHistory = [ 14.799802, 14.828576, 15.139959, 15.02855, 14.989443, 15.044255, 15.367228, 15.509711, 15.526607, 15.63251, 15.712123, 15.846367, 15.775857, 15.326612, 15.546547, 15.72136, 15.5975, 15.251967, 15.08588, 14.896385, 14.51494, 14.069775, 13.917807, 13.580863, 13.30846, 13.057706, 12.944597, 12.749684, 12.237059, 12.034065, 12.083107, 11.754033, 12.006598, 11.794391, 11.837713, 11.985283, 11.883758, 11.62114, 11.646947, 11.631993, 11.556634, 11.485147, 11.606488, 11.738976, 11.763247, 11.766109, 11.769855, 11.865818, 11.723758, 11.756991, 11.818444, 11.816704, 11.644589, 11.598389, 11.619573, 11.666416, 11.49992, 11.626991, 11.646611, 11.727653, 11.591164, 9.739844, 10.05851, 10.389381, 9.051457, 9.841025, 10.009597, 10.228796, 10.472393, 10.684739, 10.567838, 10.736945, 10.564109, 10.577002, 10.747842, 11.096141, 11.058908, 11.01936, 11.138762, 11.12249, 11.105386, 11.124247, 11.229457, 11.322763, 11.158929, 11.111439 ];
@@ -15818,10 +15795,9 @@
       });
       drawYlm();
     };
-    sheetRenderers["sheet-sign-yield"] = function() {
-      drawYlm();
-    };
-    sheetRenderers["ylm-range"] = function() {
+    sheetRenderers["sheet-sign-hormones"] = function() {
+      var ff = sheetRenderers["hormones-range"];
+      if (ff) ff();
       drawYlm();
     };
     function drawVelocityRecord() {
@@ -16407,8 +16383,12 @@
       }
     }
     sheetRenderers["hormones-range"] = draw;
-    sheetRenderers["sheet-sign-hormones"] = draw;
     draw();
+    HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole " + "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " + "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " + "so the two are different figures and the page says which is which: the range is the decision, the " + "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " + "— that month ran partly under the previous target. " + "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " + "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " + "both is the reason this one stands on zero rather than on its own minimum. " + "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
+    var ph = document.getElementById("hormones-highlights");
+    if (ph) ph.innerHTML = '<section class="highlights">' + policyFacts().map(function(f) {
+      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
+    }).join("") + "</section>";
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     var rowVal = document.getElementById("subj-value-hormones");
     if (rowVal) rowVal.innerHTML = fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + "</span>";
@@ -16527,32 +16507,6 @@
     set("gdp", fmtSigned(cycGrowth.total, 0) + '<span class="unit">% · cycle total growth</span>', "");
     say("gdp", "Compounded over " + cycYears.length + " closed years of the " + currentEra.name + ", and the latest quarter is still " + (nowModel.reading.regime === "expansion" ? "expanding" : "contracting") + ".");
     spark("gdp", sparkHtml(lastN(gdpQuarterlyYoY, 16, "v"), "yearly rate · 4 years", regimeState(nowModel.reading.regime)));
-    var y10 = yieldCurve.filter(function(d) {
-      return d.m === "10Y";
-    })[0].y;
-    var y3m = yieldCurve.filter(function(d) {
-      return d.m === "3M";
-    })[0].y;
-    var spread = y10 - y3m, spreadState = spread >= 0 ? "good" : "critical";
-    var pressLabel = document.querySelector('[data-subject="yield"] .subject-label');
-    if (pressLabel) pressLabel.innerHTML = '<span class="peek-mark">' + gaugeSvg() + "</span>Pressure" + CHEV;
-    var pressEl = null;
-    if (pressEl) pressEl.innerHTML = '<div class="cv-kicker">Today</div>' + '<div class="cv-stat"><div class="cv-stat-v">' + y10.toFixed(2) + "/" + y3m.toFixed(2) + '<span class="cv-unit">%</span></div>' + '<div class="cv-stat-l"><span>10-year over 3-month · ' + (spread >= 0 ? "normal" : "inverted") + "</span></div></div>";
-    set("yield", '<span class="pv">' + y10.toFixed(2) + "/" + y3m.toFixed(2) + '<span class="cv-unit">%</span></span>' + '<span class="unit">10Y / 3M</span>', "");
-    (function() {
-      var txt = document.querySelector('[data-subject="yield"] .subject-text');
-      var art = document.getElementById("subj-spark-yield"), val = document.getElementById("subj-value-yield");
-      if (txt && art && val) txt.insertBefore(art, val);
-      if (art) {
-        var lz = levelZone(y10);
-        art.innerHTML = vitalRingSvg(y10 / LEVEL_MAX * 100, lz.state, "The 10-year Treasury at " + y10.toFixed(2) + "%, " + lz.label.toLowerCase() + ", on a scale from 0 to " + LEVEL_MAX + "%");
-      }
-    })();
-    say("yield", levelZone(y10).label);
-    var ph = document.getElementById("pressure-highlights");
-    if (ph) ph.innerHTML = '<section class="highlights">' + policyFacts().map(function(f) {
-      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
-    }).join("") + "</section>";
     var hzLabel = document.querySelector('[data-subject="horizon"] .subject-label');
     if (hzLabel) hzLabel.innerHTML = '<span class="peek-mark">' + sunriseSvg() + "</span>Horizon" + CHEV;
     set("horizon", (horizonRead.spread >= 0 ? "+" : "−") + Math.abs(horizonRead.spread).toFixed(2) + '<span class="unit">pts · 10Y − 3M</span>' + '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + "</span>", "");
@@ -18097,8 +18051,8 @@
       signSubject(ind, "lagging");
     });
     [ {
-      key: "yield",
-      title: "Pressure",
+      key: "hormones",
+      title: "Hormones",
       timing: "leading"
     }, {
       key: "horizon",
@@ -18108,17 +18062,13 @@
       key: "sentiment",
       title: "Fear",
       timing: "leading"
-    }, {
-      key: "hormones",
-      title: "Hormones",
-      timing: "leading"
     } ].forEach(function(cfg) {
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]');
       if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
       var row = document.createElement("div");
-      row.className = "subject sign-row" + (cfg.key === "yield" ? " card-row press-row" : "");
+      row.className = "subject sign-row";
       row.setAttribute("data-subject", cfg.key);
       row.setAttribute("role", "button");
       row.tabIndex = 0;
@@ -18129,7 +18079,6 @@
       while (sum.firstChild) face.appendChild(sum.firstChild);
       (function() {
         var MARK = {
-          yield: gaugeSvg,
           horizon: sunriseSvg,
           sentiment: umbrellaSvg,
           hormones: hormoneSvg
@@ -18311,11 +18260,11 @@
       row.id = "peek-row-signs";
       row.innerHTML = pair;
       after.parentNode.insertBefore(row, after.nextSibling);
-      var press = document.querySelector(".sign-row.press-row");
-      var pressSheet = document.getElementById("sheet-sign-yield");
-      if (press && pressSheet && press.parentNode === row.parentNode) {
-        row.parentNode.insertBefore(press, row);
-        press.parentNode.insertBefore(pressSheet, press.nextSibling);
+      var horm = document.querySelector('.sign-row[data-subject="hormones"]');
+      var hormSheet = document.getElementById("sheet-sign-hormones");
+      if (horm && hormSheet && horm.parentNode === row.parentNode) {
+        row.parentNode.insertBefore(horm, row);
+        horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
       }
     })();
     (function() {
@@ -18347,20 +18296,20 @@
         key: "circulation",
         title: "Circulation",
         mark: circulationSvg(),
-        sub: "Pressure · Hormones · Pulse · Volume",
-        picks: [ ".sign-row.press-row", '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
+        sub: "Hormones · Pulse · Volume",
+        picks: [ '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
       }, {
         key: "mood",
         title: "Mood",
         mark: moodSvg(),
-        sub: "Valuations · Fear · Desire · Horizon",
-        picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
+        sub: "Valuations · Fear · Desire",
+        picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]' ]
       }, {
         key: "energy",
         title: "Energy",
         mark: boltSvg(),
-        sub: "Power · Households · Activity",
-        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]' ]
+        sub: "Power · Households · Activity · Horizon",
+        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
       } ];
       function fmtDay(d) {
         return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
@@ -18373,7 +18322,6 @@
       var PERIOD = {
         "sheet-metric-temp": atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
         "sheet-metric-gdp": qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
-        "sheet-sign-yield": fmtDay(DATA_COMPILED),
         "sheet-sign-horizon": fmtDay(DATA_COMPILED),
         "sheet-sign-pulse": qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
         "sheet-sign-volume": indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
@@ -18384,7 +18332,6 @@
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
       var MINI = {
-        "sheet-sign-yield": ".subject-text svg.vital-ring",
         "sheet-sign-sentiment": ".subject-ring > svg"
       };
       function peekArt(src) {
@@ -19231,7 +19178,7 @@
         target: "sheet-metric-" + p[0]
       });
     });
-    [ "yield", "horizon", "sentiment" ].forEach(function(key) {
+    [ "hormones", "horizon", "sentiment" ].forEach(function(key) {
       var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key);
       if (!row) return;
       var rv = partsOf(row.querySelector(".subject-value"), ".unit");

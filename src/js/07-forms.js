@@ -351,7 +351,7 @@
      index it names is a reading of how the market FEELS. */
   var signMarks = { VIX:umbrellaSvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
                     "Industrial output":gearSvg,
-                    Volume:volumeSvg, Pressure:gaugeSvg };
+                    Volume:volumeSvg };   // V596: Pressure went, and no indicator carried that bodyTerm
 
   // Economic power's mark (Version 229, Keren: "the battery icon is a really good metaphor for economic power — low power
   // is a depleted energy, high power is fully charged"). level 0–5 → how much of the body is filled, five equal steps;

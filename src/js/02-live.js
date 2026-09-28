@@ -93,6 +93,24 @@
     n.nodeValue = String(text);
     return true;
   }
+  /* V596: a reading that opens a page wears its figure on every list that offers that door — the category
+     item (.ci-value, with its verdict lifted out into a sibling .ci-word) and the All-indicators row
+     (.subject-value, with the verdict still inline). A repaint that goes by id reaches exactly ONE of them,
+     which is the V593 fault one level up from where V593 found it: that version fixed Fear's VERDICT across
+     both doors and left Fear's FIGURE on the roster row still stale. This walks the doors. */
+  function repaintRow(sheet, fig, tag){
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"]');
+    Array.prototype.forEach.call(doors, function(d){
+      var v = d.querySelector(".ci-value, .subject-value");
+      if (v && v.firstChild && v.firstChild.nodeType === 3) v.firstChild.nodeValue = String(fig);
+      var t = d.querySelector(".tag");
+      if (t && tag){
+        var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
+        t.textContent = tag.text;
+        t.className = "tag " + tag.state + word;
+      }
+    });
+  }
   function repaintTag(id, text, state){
     var el = document.getElementById(id);
     var tag = el && el.querySelector(".tag");
@@ -105,8 +123,6 @@
      and it is RECOMPUTED here rather than read from a stored copy. One figure, one number. */
   function repaintFearCurve(){
     var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "\u2014" : r.toFixed(2);
-    repaintFigureText("subj-value-sentiment", txt);
-    repaintTag("subj-value-sentiment", tag.text, tag.state);
     var ring = document.getElementById("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
       : "Fear curve at " + txt + ", where 1.00 is flat");
@@ -121,20 +137,22 @@
        The Fear page's chart is deliberately NOT repainted from these legs: it plots the monthly record, every
        point labelled with its month, and a live tick is not a new month. Highlights quotes today's two legs a
        line below, which is the V294 shape \u2014 a card says today, a chart says its series, both say which. */
-    var verdicts = document.querySelectorAll('[data-open="sheet-sign-sentiment"] .tag');
-    Array.prototype.forEach.call(verdicts, function(t){
-      var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
-      t.textContent = tag.text;
-      t.className = "tag " + tag.state + word;
-    });
+    repaintRow("sheet-sign-sentiment", txt, tag);
   }
-  function repaintYieldRow(){
+  /* V596: the yieldCurve document's repaint follows the reading it moves. It used to print Pressure's 10Y/3M
+     pair, and that row went with Pressure; what the pair still decides on the home tab is HORIZON's figure, and
+     that had been going stale the whole time — a fresh curve moved the pair and left the spread computed from
+     it untouched, which is exactly the drift ONE FIGURE / ONE NUMBER forbids. So this repaints the harder thing:
+     the spread AND the verdict recomputed from it, through `horizonWord`, the same function the load-time read
+     uses. The Treasury levels themselves need no repaint — they live on the Hormones page, which redraws
+     both its charts on open. */
+  function repaintHorizonRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
     var y10 = pick("10Y"), y3m = pick("3M");
     if (y10 == null || y3m == null) return;
-    var pv = document.querySelector("#subj-value-yield .pv");
-    if (pv && pv.firstChild && pv.firstChild.nodeType === 3)
-      pv.firstChild.nodeValue = y10.toFixed(2) + "/" + y3m.toFixed(2);
+    var sp = y10 - y3m;
+    var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
+    repaintRow("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), { text:w.word, state:w.state });
   }
   function repaintValuationRow(){
     var row = valRow("cape");
@@ -147,7 +165,7 @@
   var REPAINT = {
     fedFunds:   [repaintPolicy],
     vix3mClose: [repaintFearCurve],
-    yieldCurve: [repaintYieldRow],
+    yieldCurve: [repaintHorizonRow],
     valuation:  [repaintValuationRow],
     capeValue:  [repaintValuationRow],
     sentiment:  [],
@@ -243,14 +261,23 @@
     return true;
   }
 
+  /* V596: the FOMC list moved to the Hormones page, and so does its repaint — plus the thing that was
+     missing before the merge exposed it: the ROW's figure is the target range, so an FOMC decision arriving
+     mid-session has to move that too, or the row states last month's target beside this month's list. */
   function repaintPolicy(){
-    var ph = document.getElementById("pressure-highlights");
+    var ph = document.getElementById("hormones-highlights");
     var box = ph && ph.querySelector(".highlights");
-    if (!box) return;
-    box.innerHTML = policyFacts().map(function(f){
+    if (box) box.innerHTML = policyFacts().map(function(f){
       return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
              f.value + '</b></div>';
     }).join("");
+    var rowVal = document.getElementById("subj-value-hormones");
+    if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3)
+      rowVal.firstChild.nodeValue = fedFundsRange();
+    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
+            : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+    var t = rowVal && rowVal.querySelector(".tag");
+    if (t) t.textContent = dir;
   }
   /* THE STEP REGISTRY (Version 531).
 

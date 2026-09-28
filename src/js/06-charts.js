@@ -1135,18 +1135,9 @@
     HIST_NOTE["hzn-range"] = horizonInfoHtml(pick);
     return _hznPanel[pick];
   }
-  /* Version 473: Pressure's own word had been the CURVE's shape (pressureZone's "Normal"), which is the reading
-     that just moved to Horizon. What is left on that row is the thing a cuff measures — how high the price of
-     money is — so the word is now the level's, on the same three-band logic a body uses: too low is a condition
-     as much as too high is. The bands are the 10-year's, not the pair's, because a cuff is named for its
-     systolic peak. 4.5% is not an arbitrary line: in the twenty-one years this app holds, only 2006–07 and
-     today have stood above it. */
-  var LEVEL_MAX = 6;
-  function levelZone(v){
-    return v < 2   ? { label:"Low",    state:"warning" }
-         : v > 4.5 ? { label:"High",   state:"warning" }
-         :           { label:"Normal", state:"good" };
-  }
+  /* V596: `LEVEL_MAX` and `levelZone` went with Pressure. They scored the 10-year on a 0–6% band and
+     gave that row its High/Normal/Low word; the reading merged into Hormones, whose word is the DIRECTION of the
+     last FOMC move — a published fact, not a judgement about the level — so nothing read them any more. */
   // Version 343, Keren: risk on the side, reward along the bottom, and the pairing named in that order. She asked
   // for "risk/reward ratio" and it is titled RISK / REWARD without the last word, for the reason she herself
   // raised about Value at Risk two versions ago: a ratio is one computed number — two to one, three to one — and

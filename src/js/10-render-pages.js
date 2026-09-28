@@ -439,14 +439,41 @@
       if (box){ box.__geom = lastHistGeom; wireHistHover(box, "hormones-hist-tooltip"); }
     }
     sheetRenderers["hormones-range"] = draw;
-    sheetRenderers["sheet-sign-hormones"] = draw;
+    /* The page's own opener is registered beside drawYlm, which it also calls — see 09-render-core. One owner
+       per key: this block owns the chart, that one owns the page. */
     draw();
 
-    /* The FOMC's own facts \u2014 the target, the last move and its vote, the next meeting \u2014 arguably belong to
-       the reading that IS the policy rate rather than to the Treasury curve. They are left on Pressure for
-       now, deliberately and not by oversight: they are that page's ONLY list, and moving them would leave it
-       a chart and nothing else. So this page does not repeat them; it states the target once, on its row.
-       Worth revisiting together, with something to put in their place over there. */
+    /* V596: the head's ⋯ had nothing behind it, which the suite caught the moment this page entered the
+       checked list — V592 gave the reading a head and a title and never wrote its note. Every figure here is
+       the series the chart draws (FEDFUNDS, monthly since July 1954) or the FOMC's own published decision;
+       the band is the record itself, which is why there is no shaded zone on the chart. */
+    HIST_NOTE["hormones-range"] = '<h4>Effective federal funds rate</h4>' + factsFrom(
+      "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
+      "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
+      "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
+      "so the two are different figures and the page says which is which: the range is the decision, the " +
+      "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf +
+      (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " +
+      fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " +
+      atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " +
+      "\u2014 that month ran partly under the previous target. " +
+      "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " +
+      "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " +
+      "both is the reason this one stands on zero rather than on its own minimum. " +
+      "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.")
+
+    /* The FOMC's own facts — the target, the last move and its vote, the next meeting — and the page's
+       only list. V592 left them on Pressure deliberately, because they were that page's one list and taking
+       them would have left it a chart and nothing else; the merge is what makes the question moot, and this is
+       the loose end that version wrote down closing. They belong to the reading that IS the policy rate.
+       Version 471's rule still holds for the list itself: no lede above it, because every clause of one would
+       be a sentence about the two charts it sits under. */
+    var ph = document.getElementById("hormones-highlights");
+    if (ph) ph.innerHTML = '<section class="highlights">' +
+      policyFacts().map(function(f){
+        return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
+               f.value + '</b></div>';
+      }).join("") + '</section>';
 
     /* The row's figure is the TARGET, because that is the decision; the word is the direction of the last
        move, which is a published fact rather than a judgement about the level. */
@@ -641,87 +668,11 @@
     // year-on-year growth, quarter by quarter, for the last four years (Version 252)
     spark("gdp", sparkHtml(lastN(gdpQuarterlyYoY, 16, "v"), "yearly rate \u00b7 4 years", regimeState(nowModel.reading.regime)));
 
-    // Yield curve — today's 10Y−3M spread against its own historical range (−1.89 to +5.18)
-    var y10 = yieldCurve.filter(function(d){ return d.m === "10Y"; })[0].y;
-    var y3m = yieldCurve.filter(function(d){ return d.m === "3M"; })[0].y;
-    var spread = y10 - y3m, spreadState = spread >= 0 ? "good" : "critical";
-    // Version 312: written the way a cuff writes it, peak over floor. The long end is the peak the system
-    // generates on its own — nobody sets it — and the short end is the floor a central bank holds it at,
-    // which is what vascular tone does. The mark replaces the range ring: the two numbers and the sentence
-    // beside them already say what the arc was encoding, and every other sign in this list wears its own face.
-    // Version 314, Keren: the row takes the four headline cards' head \u2014 the mark beside the name in the same
-    // neutral every card mark wears since Version 301, and the chevron right after the title rather than parked
-    // at the far right of the row. The 48px wash chip goes with it: a chip that size is for a list you scan down
-    // a column of, and this row is no longer trying to be one of those.
-    var pressLabel = document.querySelector('[data-subject="yield"] .subject-label');
-    if (pressLabel) pressLabel.innerHTML =
-      '<span class="peek-mark">' + gaugeSvg() + '</span>Pressure' + CHEV;
-    var pressEl = null;   // V470: the figure is on the row that opens this page and in the chart; it said it thrice
-    if (pressEl) pressEl.innerHTML =
-      '<div class="cv-kicker">Today</div>' +
-      '<div class="cv-stat"><div class="cv-stat-v">' + y10.toFixed(2) + "/" + y3m.toFixed(2) +
-        '<span class="cv-unit">%</span></div>' +
-        '<div class="cv-stat-l"><span>10-year over 3-month · ' + (spread >= 0 ? "normal" : "inverted") +
-        '</span></div></div>';
-    // Version 313, Keren: the reading goes in the thin-line box the Growth page uses for "this cycle" \u2014 it is
-    // already a component (.cv-stats.cycle-stats, Version 275), and a cuff reading is exactly what it is for:
-    // one figure that belongs to a different frame from everything around it. The row's own .subject-value type
-    // is stood down, because the box brings its own.
-    // Version 316, Keren: "put the Pressure inside the container." One container, not a box inside a box \u2014 the
-    // card IS the frame, so the reading no longer needs its own. Card order, the same as the other four: name,
-    // picture, figure, word. "10Y / 3M" rather than "10-year over 3-month" is her shorthand and the market's.
-    // the % rides inside the figure's own span, or the row's flex gap pushes it away from the number it belongs to
-    set("yield", '<span class="pv">' + y10.toFixed(2) + "/" + y3m.toFixed(2) + '<span class="cv-unit">%</span></span>' +
-      '<span class="unit">10Y / 3M</span>', "");
-    // the picture goes ABOVE the figure, which means moving it in the DOM \u2014 not with flex order, and not after
-    // the row builder runs: this subtree is MOVED into the new row intact, so an edit here survives (Version 314)
-    (function(){
-      var txt = document.querySelector('[data-subject="yield"] .subject-text');
-      var art = document.getElementById("subj-spark-yield"), val = document.getElementById("subj-value-yield");
-      if (txt && art && val) txt.insertBefore(art, val);
-      /* Version 469, Keren: "in the pressure preview put a ring." The banded cuff track was the one miniature in
-         the app that was not a picture of a quantity \u2014 it rendered 80\u00d714 beside neighbours 52 tall, so the row
-         it sat in read as unfinished. The ring says the same thing the bands said: where the spread sits between
-         deeply inverted and steep, on the SAME \u22122 to +4 scale the zones are defined on, wearing the zone's own
-         state. One lookup, so the ring, the word under it and the page's verdict cannot disagree.
-         `vital-ring` is the app's existing ring \u2014 Sentiment's Fear & Greed ring is the same component, which is
-         why this is a swap and not a new mark. */
-      /* Version 473: the ring measured the SPREAD, which is the reading that has moved to Horizon — so a ring
-         showing it here would be the forecast wearing the measurement's jewellery. It now shows what a cuff
-         shows: how high the pressure is. The 10-year on a 0–6% scale, because a blood pressure is named for its
-         systolic peak, and the same `levelZone` lookup that gives the row its word — one source, so the ring,
-         the word and the page cannot disagree. */
-      if (art){
-        var lz = levelZone(y10);
-        art.innerHTML = vitalRingSvg(y10 / LEVEL_MAX * 100, lz.state,
-          "The 10-year Treasury at " + y10.toFixed(2) + "%, " + lz.label.toLowerCase() +
-          ", on a scale from 0 to " + LEVEL_MAX + "%");
-      }
-    })();
-    // Version 313, Keren: "the text should be in the inner page, not the preview" \u2014 and the sparkline goes with
-    // it. The row now carries the reading and nothing else, which is what a cuff reading is: a number you take in
-    // at a glance. The sentence moves to the page, under the figure, where every other sign puts its line.
-    /* Version 473: the word was the CURVE's shape, and the curve's shape left for Horizon. What a cuff reports
-       is the height of the pressure, so that is what the row says now — and a body's scale is three-banded in both
-       directions, because too low is a condition as much as too high. */
-    say("yield", levelZone(y10).label);
-    // the five-year sparkline went in Version 313; the picture slot carries today's curve instead (Version 316)
-    /* Version 471: the page ends on ONE list of facts. The lede went with the Insights card, and for the same
-       reason \u2014 it said the spread is 0.79 above the floor, which is the chart above it, and that she is 21 months
-       past un-inversion, which is now the first row. A sentence whose every clause is already on screen is the
-       duplication this page has been losing since Version 470.
-       The un-inversion leads the list because it is the one row that is a READING rather than a setting: the four
-       below are what the Fed has done and will do, and this is what the market has been doing since. */
-    var ph = document.getElementById("pressure-highlights");
-    if (ph) ph.innerHTML = '<section class="highlights">' +
-      // V473: the un-inversion row went to Horizon with the shape it counts. What is left is four settings of the
-      // policy rate, which is the cause this page is the effect of — and the only list on it.
-      policyFacts().map(function(f){
-        return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
-               f.value + '</b></div>';
-      }).join("") + '</section>';
-    // the five-year sparkline went in Version 313 with the sentence: the page's own spread chart draws the same
-    // thing across twenty years, with the recessions shaded
+    /* V596: Pressure's row is gone with the reading. What stood here was the 10Y/3M pair, the cuff ring that
+       scored the 10-year on a 0–6% band, levelZone's High/Normal/Low, and — unread since V470 — a
+       `pressEl` block behind `if (null)`. The pair is not restated anywhere: the maturity chart on the Hormones
+       page draws every leg of it, which is the V294 reason the context line came off this row in the first
+       place. The FOMC list moved to renderHormones, where the reading it describes now lives. */
 
     /* ================= Version 473: Horizon's row =================
        The figure is today's spread in points — the same subtraction the two numbers above it invite and that

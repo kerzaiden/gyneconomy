@@ -783,15 +783,8 @@
      longest line, which read as an accident rather than a decision. */
   .card-row .subject-summary{ padding:0; gap:0; align-items:stretch; flex-direction:column; }
   .card-row .subject-text{ display:block; }
-  .press-row .subject-value{ font-family:"IBM Plex Mono",monospace; font-size:21px; font-weight:700;
-    letter-spacing:-0.02em; line-height:1; display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; margin:0; }
   .card-row .subject-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
     line-height:1.2; margin:6px 0 0; max-width:none; color:var(--text-secondary); letter-spacing:0.01em; }
-  /* Version 317, Keren: the sub-unit is the same kind of label as the one under Temperature's or
-     Growth's figure, so it is the same size \u2014 `.peek-unit`'s 11px, not the 14px it inherited from
-     `.subject-value .unit`. The row's own `gap:6px` already stands in for `.peek-unit`'s margin. */
-  .press-row .subject-value .unit{ font-size:11px; letter-spacing:0.01em; margin-left:0; }
-  .press-row .peek-chart{ display:block; margin:10px 0 10px; }
   .card-row .subject-ring, .card-row .subject-more{ display:none; }
   .card-row .subject-label{ display:inline-flex; align-items:center; gap:4px; margin:0;
     font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;

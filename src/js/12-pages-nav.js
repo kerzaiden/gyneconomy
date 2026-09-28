@@ -286,21 +286,25 @@
     // than rebuilt (the Version 255 move): the summary becomes the row, the drawer's body becomes the page, and every
     // id inside either one keeps working. These two are why this was needed — between them they ran longer than
     // everything else on the tab put together, so anything below them was effectively unreachable (Version 269).
-    [{ key:"yield", title:"Pressure", timing:"leading" },
+    /* V596: three, not four. Pressure and Hormones were one reading on two rows — the price of money as
+       the market charges it and as the Fed sets it — and they are one page now, which Hormones names. */
+    [{ key:"hormones", title:"Hormones", timing:"leading" },
      // Version 473: Horizon converts the same way, which is the whole reason it was written into the markup as a
      // <details> rather than built from an indicator object — its page is a chart with two controls and a
      // verdict, not a row with a table, and this path gives it a page without inventing a second idiom for one.
      { key:"horizon", title:"Horizon", timing:"leading" },
      // NB a real "&": cfg.title is written with setAttribute and read back with textContent, so an entity
      // here would render literally in the row (it did, once).
-     { key:"sentiment", title:"Fear", timing:"leading" },
-     // V592: Circulation's fourth. Leading, because the policy rate moves before what it acts on does.
-     { key:"hormones", title:"Hormones", timing:"leading" }].forEach(function(cfg){
+     { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
       var row = document.createElement("div");
-      row.className = "subject sign-row" + (cfg.key === "yield" ? " card-row press-row" : "");
+      /* V596: no `card-row press-row` any more. Those classes were Pressure's, written in Version 314 for a
+         full-width reading on the Cycle page — and since the categories landed, catItem takes every member
+         row and rebuilds it as a `.cat-item`, so neither class has reached the DOM in a long time. Their three
+         orphaned rules went with them; `.card-row` itself stays, because the Indicators card still wears it. */
+      row.className = "subject sign-row";
       row.setAttribute("data-subject", cfg.key);
       row.setAttribute("role", "button"); row.tabIndex = 0;
       row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
@@ -315,7 +319,7 @@
          The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
          reach any list without it, and a label that already carries its glyph is left exactly as it is. */
       (function(){
-        var MARK = { yield:gaugeSvg, horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg };
+        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
           lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
@@ -455,17 +459,19 @@
       row.innerHTML = pair;
       after.parentNode.insertBefore(row, after.nextSibling);
 
-      // Pressure sits with this pair: all three read the circulation, so they are read together. Version 317 put
-      // it under them; Version 348 puts it above (Keren: "put pressure above the pulse and volume row") \u2014 the
-      // full-width cuff reading first, then the two cards saying what the circulation is doing inside it. Moving
-      // the node keeps everything inside it alive \u2014 the curve drawn into #subj-spark-yield, the ids the data
-      // block writes to, the row's own open handler \u2014 and its hidden sheet follows it, so every row on this
-      // page is still immediately followed by its own page.
-      var press = document.querySelector(".sign-row.press-row");
-      var pressSheet = document.getElementById("sheet-sign-yield");
-      if (press && pressSheet && press.parentNode === row.parentNode){
-        row.parentNode.insertBefore(press, row);
-        press.parentNode.insertBefore(pressSheet, press.nextSibling);
+      /* Hormones sits with this pair: all three read the circulation, so they are read together. Version 317
+         put it under them; Version 348 puts it above (Keren: "put pressure above the pulse and volume row")
+         — the full-width reading first, then the two cards saying what the circulation is doing inside it.
+         V596: it is the Hormones row that is full-width now, Pressure having merged into it, and the argument
+         for the position is the same one strengthened: the rate is the CAUSE, and the pulse and the volume are
+         what it acts on. Moving the node keeps everything inside it alive (the Version 314 lesson) — the
+         miniature drawn into the row, the ids the data blocks write to, the row's own open handler — and
+         its hidden sheet follows it, so every row here is still immediately followed by its own page. */
+      var horm = document.querySelector('.sign-row[data-subject="hormones"]');
+      var hormSheet = document.getElementById("sheet-sign-hormones");
+      if (horm && hormSheet && horm.parentNode === row.parentNode){
+        row.parentNode.insertBefore(horm, row);
+        horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
       }
     })();
 
@@ -512,11 +518,13 @@
       var CATS = [
         { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
           picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Pressure \u00b7 Hormones \u00b7 Pulse \u00b7 Volume",
-          /* V592: Hormones sits second, straight after Pressure, because the two are the same quantity read
-             from opposite ends \u2014 what the Fed SETS and what the market CHARGES \u2014 and a reader comparing them
-             should not have to pass the other two to do it. */
-          picks:['.sign-row.press-row', '.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]',
+        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pulse · Volume",
+          /* V596, Keren: "let's fold Treasury into Hormones." Four members became three, and the category is
+             finally a sequence rather than a list with a repetition in it: the RATE that is set, the SPEED the
+             money moves at, the QUANTITY of it. Pressure was the odd one twice over — it measured the same
+             quantity Hormones does, from the other end, and in her own draft pressure is not an instrument at
+             all but what builds WHEN circulation goes wrong. */
+          picks:['.sign-row[data-subject="hormones"]', '.peek[data-open="sheet-sign-pulse"]',
                  '.peek[data-open="sheet-sign-volume"]'] },
         /* Version 473, Keren: "calling it Horizon and judging if it\u2019s optimistic or pessimistic, which
            correlates with ovulation and menstruation \u2014 so it belongs to Mood." The fourth member, and the one
@@ -524,14 +532,14 @@
            dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves \u2014 all
            three about NOW \u2014 and Horizon what it expects of the future. Today they disagree, which is the point:
            36 and Fear beside a curve reading optimistic. */
-        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations \u00b7 Fear \u00b7 Desire \u00b7 Horizon",
+        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire",
           /* Version 466, Keren: "the VIX is called the fear index \u2014 we don't need two fear meters on the Mood
              page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
              of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
              that moved Power's markers off this kind of list twice already. Version 464 promoted it out of that
              page; this puts it back, as a reading under the gauge rather than the ring it used to be. */
           picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
-                 '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
+                 '.sign-row[data-open="sheet-sign-desire"]'] },
         /* Version 457, Keren: "economic power should move from circulation to activity, and activity should be
            renamed to energy." It settles what Version 446 left uneasy, where Power joined Circulation on the
            argument that reserves are how much blood the system is holding \u2014 true of the metaphor, and the wrong
@@ -549,9 +557,19 @@
            the energy is going into (Activity's page, absorbed whole as in Version 458). The federal three stay
            on Power's page, where they are computed into its word; Debt service carries the household side,
            which is a balance sheet nothing in the app had measured. */
-        { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power \u00b7 Households \u00b7 Activity",
+        /* V596, Keren: "move Horizon to the structural category — beside Power and Households, where
+           Financial Resilience and U.S. Federal Debt live in the draft, and framed as the survival-versus-
+           thriving question: how far ahead the system can afford to look."
+           Version 473 put it in Mood on the argument that an optimistic or pessimistic curve is a FEELING, and
+           it was right that the spread is a forecast rather than a measurement. What that version could not see
+           is that Mood already held three readings of the same instant — what the market will pay, how
+           frightened it is, how much risk it craves — so the fourth was not a fourth opinion but a
+           different KIND of claim. Here it is the reading the other three are for: Power is the reserve,
+           Households is what is owed, Activity is what the energy goes into, and Horizon is how far ahead that
+           leaves her able to look. Survival mode is a short horizon; thriving is a long one. */
+        { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity · Horizon",
           picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
-                 '.sign-row[data-open="sheet-sign-activity"]'] }
+                 '.sign-row[data-open="sheet-sign-activity"]', '.sign-row[data-open="sheet-sign-horizon"]'] }
       ];
       /* Each reading's PERIOD, not a timestamp. Apple Health shows 13:56 because a heart rate is an instant;
          these are periods — CPI is FOR August, M2 velocity for Q2, the curve for Sep 24 — and a clock time in
@@ -566,7 +584,6 @@
       var PERIOD = {
         "sheet-metric-temp":      atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
         "sheet-metric-gdp":       qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
-        "sheet-sign-yield":       fmtDay(DATA_COMPILED),
         "sheet-sign-horizon":     fmtDay(DATA_COMPILED),   // a spot spread, like the pair it is taken from
         "sheet-sign-pulse":       qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
         "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
@@ -579,7 +596,6 @@
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
       var MINI = {
-        "sheet-sign-yield":     ".subject-text svg.vital-ring",       // its curve ring (V469)
         "sheet-sign-sentiment": ".subject-ring > svg"                 // its Fear & Greed ring
       };
       /* Version 448: every peek art carries `.peek-chart` now, so this asks for the thing by name rather than
@@ -1491,7 +1507,7 @@
         target:"sheet-metric-" + p[0]
       });
     });
-    ["yield", "horizon", "sentiment"].forEach(function(key){
+    ["hormones", "horizon", "sentiment"].forEach(function(key){
       var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key); if (!row) return;
       var rv = partsOf(row.querySelector(".subject-value"), ".unit");
       var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
