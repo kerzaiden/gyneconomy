@@ -310,6 +310,14 @@
     { label:"First hike since",  value:"2023 \u00b7 one more signalled",  wordy:true },
     { label:"Next decision",     value:fedFunds.next }
   ]; }
+  /* V609: the four rows as MARKUP, in one place. They were built by two callers writing the same map twice
+     — the render and the live repaint — which is how a row gains a class in one place and not the other. */
+  function policyFactRows(){
+    return policyFacts().map(function(f){
+      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
+             f.value + '</b></div>';
+    }).join("");
+  }
   var allSources = [
     {t:"Treasury daily par yield curve rates", u:"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=202609"},
     {t:"FRED — 10Y minus 2Y spread", u:"https://fred.stlouisfed.org/series/T10Y2Y"},

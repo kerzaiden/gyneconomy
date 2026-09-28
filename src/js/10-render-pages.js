@@ -463,18 +463,58 @@
       "both is the reason this one stands on zero rather than on its own minimum. " +
       "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.")
 
-    /* The FOMC's own facts — the target, the last move and its vote, the next meeting — and the page's
-       only list. V592 left them on Pressure deliberately, because they were that page's one list and taking
-       them would have left it a chart and nothing else; the merge is what makes the question moot, and this is
-       the loose end that version wrote down closing. They belong to the reading that IS the policy rate.
-       Version 471's rule still holds for the list itself: no lede above it, because every clause of one would
-       be a sentence about the two charts it sits under. */
-    var ph = document.getElementById("hormones-highlights");
-    if (ph) ph.innerHTML = '<section class="highlights">' +
-      policyFacts().map(function(f){
-        return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
-               f.value + '</b></div>';
-      }).join("") + '</section>';
+    /* ---- V609, Keren: "can you put that into insights? The hormones page doesn't have an insight section.
+       And the current federal funds target, last Fed move, first hike and next decision \u2014 you can put that in
+       insights." So it gets one, the shape every other page has since V604: the biology in two sentences, then
+       the cards, then the FOMC's own facts underneath.
+       Every figure below is COMPUTED, including the peaks. A card that says "every peak since 1981 was lower
+       than the last until 2024" is a claim about the record, and a claim about the record is read off the
+       record or it is not made \u2014 which also means it stays true the year a new peak arrives. */
+    function ffPeaks(){
+      /* A peak is a high that the rate then gave back by at least 1.5 points before rising again. The swing
+         has to be big enough to ignore the month-to-month wobble of the 1970s and small enough to catch 2019's
+         2.42% top; 1.5 points is the width that does both across all 866 months. */
+      var out = [], mode = "up", ext = fedFundsHistory[0];
+      fedFundsHistory.forEach(function(d){
+        if (mode === "up"){
+          if (d.v >= ext.v) ext = d;
+          else if (ext.v - d.v >= 1.5){ out.push(ext); mode = "down"; ext = d; }
+        } else {
+          if (d.v <= ext.v) ext = d;
+          else if (d.v - ext.v >= 1.5){ mode = "up"; ext = d; }
+        }
+      });
+      return out;
+    }
+    var pk = ffPeaks(), yOf = function(d){ return d.m.slice(0, 4); };
+    var ins = document.getElementById("hormones-insights");
+    if (ins && pk.length > 2){
+      var last = pk[pk.length - 1], prev = pk[pk.length - 2];
+      var top = pk.reduce(function(a, d){ return d.v > a.v ? d : a; });
+      // how many peaks in a row came in under the one before, counting back from the record high
+      var run = 0;
+      for (var i = pk.indexOf(top) + 1; i < pk.length; i++){ if (pk[i].v < pk[i - 1].v) run++; else break; }
+      var cards = [];
+      cards.push('<p class="hi-lede">Interest rates are the hormone: one signal, secreted on purpose, that the ' +
+        'whole body then runs at the tempo of. Nothing on this page is measured off the economy \u2014 this is the ' +
+        'instruction it was given.</p>');
+      cards.push(hiCard("Two clocks", "",
+        "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " +
+        pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock \u2014 from the " +
+        top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, " +
+        "until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
+      cards.push(hiCard("Rise, peak, withdraw", "",
+        "That shape is progesterone\u2019s: it rises through the second half of a cycle, peaks, and then falls \u2014 " +
+        "and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal " +
+        "rather than the level, because the cuts come after the top, never before it."));
+      /* The FOMC's own facts, under the prose that explains them. They lived in their own container until this
+         version, which is the same split V603 closed on Horizon. `#policy-facts` is their own host inside the
+         section, so the live repaint can rewrite the four rows after an FOMC decision without touching a word
+         of the cards above them. */
+      ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' +
+        cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + '</div></section>';
+    }
+
 
     /* The row's figure is the TARGET, because that is the decision; the word is the direction of the last
        move, which is a published fact rather than a judgement about the level. */

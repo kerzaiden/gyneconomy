@@ -265,12 +265,10 @@
      missing before the merge exposed it: the ROW's figure is the target range, so an FOMC decision arriving
      mid-session has to move that too, or the row states last month's target beside this month's list. */
   function repaintPolicy(){
-    var ph = document.getElementById("hormones-highlights");
-    var box = ph && ph.querySelector(".highlights");
-    if (box) box.innerHTML = policyFacts().map(function(f){
-      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
-             f.value + '</b></div>';
-    }).join("");
+    /* V609: the rows moved inside the Insights section and gained a host of their own, so a decision arriving
+       mid-session rewrites the four facts and leaves the cards above them alone. */
+    var box = document.getElementById("policy-facts");
+    if (box) box.innerHTML = policyFactRows();
     var rowVal = document.getElementById("subj-value-hormones");
     if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3)
       rowVal.firstChild.nodeValue = fedFundsRange();

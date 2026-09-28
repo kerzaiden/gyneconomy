@@ -1411,8 +1411,10 @@
 
   .metric-sheet .highlights > .aux-stat:first-child{ border-top:0; margin-top:0; padding-top:2px; }
 
-  .metric-sheet .highlights .hi-card:has(+ .aux-stat){ border-bottom:0; }
-  .metric-sheet .highlights > .aux-stat:last-child{ padding-bottom:10px; }
+  .metric-sheet .highlights .hi-card:has(+ .aux-stat),
+  .metric-sheet .highlights .hi-card:has(+ .aux-group){ border-bottom:0; }
+  .metric-sheet .highlights > .aux-stat:last-child,
+  .metric-sheet .highlights .aux-group > .aux-stat:last-child{ padding-bottom:10px; }
   .hi-head{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:23px;
     color:var(--text-primary); margin-bottom:12px; }
 
@@ -2141,7 +2143,7 @@
       <div id="hormones-history"></div>
       
       
-      <div id="hormones-highlights"></div>
+      <div id="hormones-insights"></div>
     </section>
     </div>
   </details>
@@ -4611,11 +4613,8 @@
     return true;
   }
   function repaintPolicy() {
-    var ph = document.getElementById("hormones-highlights");
-    var box = ph && ph.querySelector(".highlights");
-    if (box) box.innerHTML = policyFacts().map(function(f) {
-      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
-    }).join("");
+    var box = document.getElementById("policy-facts");
+    if (box) box.innerHTML = policyFactRows();
     var rowVal = document.getElementById("subj-value-hormones");
     if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3) rowVal.firstChild.nodeValue = fedFundsRange();
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
@@ -15710,6 +15709,11 @@
       value: fedFunds.next
     } ];
   }
+  function policyFactRows() {
+    return policyFacts().map(function(f) {
+      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
+    }).join("");
+  }
   var allSources = [ {
     t: "Treasury daily par yield curve rates",
     u: "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=202609"
@@ -16992,10 +16996,43 @@
     sheetRenderers["sheet-sign-hormones"] = draw;
     draw();
     HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole " + "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " + "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " + "so the two are different figures and the page says which is which: the range is the decision, the " + "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " + "— that month ran partly under the previous target. " + "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " + "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " + "both is the reason this one stands on zero rather than on its own minimum. " + "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
-    var ph = document.getElementById("hormones-highlights");
-    if (ph) ph.innerHTML = '<section class="highlights">' + policyFacts().map(function(f) {
-      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
-    }).join("") + "</section>";
+    function ffPeaks() {
+      var out = [], mode = "up", ext = fedFundsHistory[0];
+      fedFundsHistory.forEach(function(d) {
+        if (mode === "up") {
+          if (d.v >= ext.v) ext = d; else if (ext.v - d.v >= 1.5) {
+            out.push(ext);
+            mode = "down";
+            ext = d;
+          }
+        } else {
+          if (d.v <= ext.v) ext = d; else if (d.v - ext.v >= 1.5) {
+            mode = "up";
+            ext = d;
+          }
+        }
+      });
+      return out;
+    }
+    var pk = ffPeaks(), yOf = function(d) {
+      return d.m.slice(0, 4);
+    };
+    var ins = document.getElementById("hormones-insights");
+    if (ins && pk.length > 2) {
+      var last = pk[pk.length - 1], prev = pk[pk.length - 2];
+      var top = pk.reduce(function(a, d) {
+        return d.v > a.v ? d : a;
+      });
+      var run = 0;
+      for (var i = pk.indexOf(top) + 1; i < pk.length; i++) {
+        if (pk[i].v < pk[i - 1].v) run++; else break;
+      }
+      var cards = [];
+      cards.push('<p class="hi-lede">Interest rates are the hormone: one signal, secreted on purpose, that the ' + "whole body then runs at the tempo of. Nothing on this page is measured off the economy — this is the " + "instruction it was given.</p>");
+      cards.push(hiCard("Two clocks", "", "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " + pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock — from the " + top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, " + "until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
+      cards.push(hiCard("Rise, peak, withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — " + "and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal " + "rather than the level, because the cuts come after the top, never before it."));
+      ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div></section>";
+    }
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     var rowVal = document.getElementById("subj-value-hormones");
     if (rowVal) rowVal.innerHTML = fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + "</span>";

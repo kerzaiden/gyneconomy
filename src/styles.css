@@ -2304,8 +2304,14 @@
      AND A ROW ENDS WITH AIR. `.aux-stat` has no bottom padding, which is right between rows and wrong at the
      end of a list: the last fact sat 4px off the card's own edge. It gets the same 10px it wears on top, so
      the list closes on the rhythm it kept all the way down. */
-  .metric-sheet .highlights .hi-card:has(+ .aux-stat){ border-bottom:0; }
-  .metric-sheet .highlights > .aux-stat:last-child{ padding-bottom:10px; }
+  /* V609: a GROUP of fact rows is a fact row as far as these two rules are concerned. Wrapping the FOMC four
+     in a host so the live repaint can rewrite them without touching the cards above put a div between the
+     prose and the facts, and the double hairline came straight back — a rule that only knows about direct
+     siblings is a rule with a hole in it. `.aux-group` is the name for any such host. */
+  .metric-sheet .highlights .hi-card:has(+ .aux-stat),
+  .metric-sheet .highlights .hi-card:has(+ .aux-group){ border-bottom:0; }
+  .metric-sheet .highlights > .aux-stat:last-child,
+  .metric-sheet .highlights .aux-group > .aux-stat:last-child{ padding-bottom:10px; }
   .hi-head{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:23px;
     color:var(--text-primary); margin-bottom:12px; }
   /* One rule between two things, never two (Keren, Sep 20, 2026: "I keep seeing in the pages that there is a double
