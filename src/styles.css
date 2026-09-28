@@ -502,7 +502,12 @@
        belong together. So the distance between containers comes down to 10 everywhere, and the one figure she
        likes keeps its own name. Still one number per question, which is what Version 385 asked for. */
     --gap:10px;       /* BETWEEN containers */
-    --gap-top:15px;   /* under the sticky top bar — the one she measured and kept */
+    /* V595, Keren: "make the padding on the left and right 20 pixels, meaning every page in the app has 20
+       pixels padding from all sides." The sides were already 20 (.wrap pads 0 20px) and the bottom now
+       follows this token, so the page's frame is square on one number by raising this from 15. It also
+       carries --topbar-gap and the first-element margins on the inner pages, which is the point: one
+       token, every page, all four sides. */
+    --gap-top:20px;   /* the page's own frame: under the top bar, above the tab bar, and both sides */
     /* Version 443: the space under the sticky top bar, as a number rather than as two hand-written margins at
        two breakpoints. It is a token because something now has to CANCEL it — see #metric-page. */
     --topbar-gap:calc(var(--gap-top) - 2px);   /* + .tab-panel's 2px padding = one --gap-top under the bar */
@@ -678,8 +683,12 @@
     .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; } /* the label in primary text; only the chip is purple (the DSM) */
     .tab-btn.active svg{ background:var(--accent-wash); }
-    /* clear the bar, plus one --gap of air, plus whatever the home indicator takes */
-    .wrap{ padding-bottom:calc(72px + var(--gap) + env(safe-area-inset-bottom, 0px)); }
+    /* V595, Keren: "the padding on the bottom should be the same as the padding on the top." It is the same
+       TOKEN now rather than the same number, so the two cannot drift: --gap-top is what the first element on
+       every page clears the top bar by, and the last element clears the tab bar by exactly that. It was --gap
+       (10) against the top's 15.
+       Below it sits whatever the home indicator takes, which is not padding and is not ours to even out. */
+    .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }   /* V450: --topbar-gap follows --gap now, so there is no phone value to set */
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }

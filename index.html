@@ -370,7 +370,8 @@
     --pad:10px;
 
     --gap:10px;
-    --gap-top:15px;
+
+    --gap-top:20px;
 
     --topbar-gap:calc(var(--gap-top) - 2px);
 
@@ -477,7 +478,7 @@
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; }
     .tab-btn.active svg{ background:var(--accent-wash); }
 
-    .wrap{ padding-bottom:calc(72px + var(--gap) + env(safe-area-inset-bottom, 0px)); }
+    .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }

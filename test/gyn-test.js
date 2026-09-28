@@ -47,7 +47,7 @@ const PAGES = [
 ];
 /* Values CLAUDE-CODE.md states as live. A change here must be a deliberate edit of both. */
 const TOKENS = {
-  '--pad':'10px', '--gap':'10px', '--gap-top':'15px', '--radius':'16px', '--radius-inner':'13px',
+  '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
 };
 const SRC_MUST = [
   ['COL_FILL', /var COL_FILL = 0\.68;/],

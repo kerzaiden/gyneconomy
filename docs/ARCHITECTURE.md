@@ -43,7 +43,7 @@ these, change it here too.
 | Thing | Value |
 |---|---|
 | Market cycles | Dot-Com 1991–2002 · Housing 2003–2008 · Big Tech 2009–2018 · COVID-19 2019–2022 · AI 2023– |
-| Spacing tokens | `--pad:10px` (inside a container) · `--gap:10px` (between) · `--gap-top:15px` (under the top bar) |
+| Spacing tokens | `--pad:10px` (inside a container) · `--gap:10px` (between) · `--gap-top:20px` (the page frame: under the top bar, above the tab bar, and both sides) |
 | Radius | `--radius:16px` · `--radius-inner:13px` |
 | Column fill | `COL_FILL = 0.68` — every column chart reads it |
 | Plot margins | `AXIS = { L:34, R:6, T:14 }`; the bottom margin is per chart, on purpose |
@@ -458,7 +458,7 @@ Mechanics. A comma list in `querySelector` is not a preference list — it retur
 
 **ONE NUMBER PER SHARED DECISION.** `COL_FILL = 0.68` = a column's share of its slot, read by every column chart; Households derives `COL_FILL / 2` for its pair; the battery gauge is excluded. `AXIS = { L:34, R:6, T:14 }` = plot margins; `B` deliberately absent, the bottom answering to the furniture. Grid vocabulary only: `chartAxes`, `vGrid`, `.bt-frame`, `.bt-grid`, `.bt-yl`, `.bt-xl` (`.grid-line`, `.axis-label` no longer exist). `cycLabel(c)` = the only place a cycle's name and span are written. `.bh-title, .spread-history-head h4` = one type spec for both head components.
 
-Spacing = three tokens: `--pad:10px` inside a container, `--gap:10px` between containers, `--gap-top:15px` under the sticky top bar. `--radius:16px` / `--radius-inner:13px`. **Marks and type keep their own figures** — a 4px bar cap, a 13px label gap, the readout's type inset: shapes, not spacing.
+Spacing = three tokens: `--pad:10px` inside a container, `--gap:10px` between containers, `--gap-top:20px` the page frame — under the sticky top bar, above the tab bar, and both sides (V595). `--radius:16px` / `--radius-inner:13px`. **Marks and type keep their own figures** — a 4px bar cap, a 13px label gap, the readout's type inset: shapes, not spacing.
 
 ## Components
 
@@ -785,7 +785,7 @@ DSM roles: display 40, page title 30, reading head 26, section head 20, reading 
 
 ## Spacing and tokens
 
-`--pad:10px` inside a container · `--gap:10px` between containers · `--gap-top:15px` above the first container under the sticky bar · `--topbar-gap:calc(var(--gap-top) - 2px)` + the tab panel's 2px pays the top one. Only `.cat-list` and `.ind-sheet > .rangebar:first-child` read `--gap-top` directly; `--page-gap` on `.metric-sheet` derives from `--gap`. New container = `margin-top:var(--gap)`, never its own figure; a block leading its sheet/body/box starts flush, `:first-child` rules after the general one; `:empty{display:none}`; per-tab or per-breakpoint overrides = bug (the Cycle tab's `gap` override and three-number scale are gone); exception: a page opening on the history BAND stays flush. Padding `--pad`; history band `14px 14px 4px`. `.timing-row` `margin:14px 0 0`, hidden in a metric sheet, where `seatPageFoot` clones it into the page foot. `--radius:16px`, `--radius-inner:13px` (segment in a 3px-padded track); every container and control takes one, no third; exempt `border-radius:50%` where the shape IS a circle (dial, radio ticks, round icon buttons) and anything ≤5px (bar cap, swatch, meter track). Audited set: `--radius` (54 uses), `--radius-inner`, `--grid`, `--gap`/`--page-gap`/`--topbar-gap`, `--ink-on-fill`/`-inv`. Hex literals on purpose: theme-preview tiles (show the OTHER theme), `<head>` boot stylesheet (mirrors `--page` before tokens exist).
+`--pad:10px` inside a container · `--gap:10px` between containers · `--gap-top:20px` the page frame — above the first container under the sticky bar, below the last one above the tab bar, and matching `.wrap`'s 20px sides (V595) · `--topbar-gap:calc(var(--gap-top) - 2px)` + the tab panel's 2px pays the top one. Only `.cat-list` and `.ind-sheet > .rangebar:first-child` read `--gap-top` directly; `--page-gap` on `.metric-sheet` derives from `--gap`. New container = `margin-top:var(--gap)`, never its own figure; a block leading its sheet/body/box starts flush, `:first-child` rules after the general one; `:empty{display:none}`; per-tab or per-breakpoint overrides = bug (the Cycle tab's `gap` override and three-number scale are gone); exception: a page opening on the history BAND stays flush. Padding `--pad`; history band `14px 14px 4px`. `.timing-row` `margin:14px 0 0`, hidden in a metric sheet, where `seatPageFoot` clones it into the page foot. `--radius:16px`, `--radius-inner:13px` (segment in a 3px-padded track); every container and control takes one, no third; exempt `border-radius:50%` where the shape IS a circle (dial, radio ticks, round icon buttons) and anything ≤5px (bar cap, swatch, meter track). Audited set: `--radius` (54 uses), `--radius-inner`, `--grid`, `--gap`/`--page-gap`/`--topbar-gap`, `--ink-on-fill`/`-inv`. Hex literals on purpose: theme-preview tiles (show the OTHER theme), `<head>` boot stylesheet (mirrors `--page` before tokens exist).
 
 ## Chart language
 
