@@ -2026,8 +2026,12 @@
      the same size font" — it takes the place ", YoY" held, so it takes its weight in the line too. Mono,
      because it is a number (the V270 rule), and muted, because the title is the subject and this is a note
      on it. */
-  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:14.5px; font-weight:600;
-    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.02em; }
+  /* V607, Keren: "there is too much space between the title and the sigma — CPI has like three spaces until
+     I get to the parentheses." It was the head's own 10px flex gap, which is right between the MARK and the
+     title (two different things) and too much between the title and a note ON it. The negative margin cancels
+     most of that one gap and leaves a single space, which is the spacing the line is read with. */
+  .bh-sigma{ flex:0 0 auto; margin-left:-5px; font-family:"IBM Plex Mono",monospace; font-size:14.5px;
+    font-weight:600; color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.02em; }
   .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
   /* Keren, V520: "you have a light circle around the three dots on the top right." I read that as a fault and
      took the circle OFF. It was a description of the REFERENCE, which she corrected in V521 — "the only thing
