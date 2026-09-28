@@ -1270,8 +1270,8 @@
 
   .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
 
-  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
-    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.01em; }
+  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:14.5px; font-weight:600;
+    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.02em; }
   .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
 
   .bh-more{ width:21px; height:21px; padding:0; cursor:pointer; border-radius:50%;
@@ -13046,11 +13046,11 @@
   var HIST_HEAD = {
     "sheet-metric-temp": {
       mark: thermoSvg,
-      title: "CPI, YoY"
+      title: "CPI"
     },
     "sheet-metric-gdp": {
       mark: sproutSvg,
-      title: "Real GDP, YoY"
+      title: "Real GDP"
     },
     "sheet-sign-activity": {
       mark: trendUpSvg,
@@ -13074,7 +13074,7 @@
     },
     "volume-range": {
       mark: volumeSvg,
-      title: "M2 money stock, YoY"
+      title: "M2 money stock"
     },
     "pulse-range": {
       mark: ecgSvg,
@@ -13189,7 +13189,7 @@
     var door = o.open ? ' class="panel-row lab-door" role="button" tabindex="0" data-open="' + o.open.id + '" data-title="' + o.open.title + '"' : ' class="panel-row"';
     if (o.head && o.info) HIST_NOTE[o.head] = o.info;
     var mark = o.open ? CHEV : o.info && !o.head ? infoIcon(o.info) : "";
-    return "<div" + door.replace('class="', o.head ? 'data-head="' + o.head + '" class="' : 'class="') + ">" + '<div class="pbr-name">' + "<h3>" + nameWithMark(o.name, mark) + "</h3>" + '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + "</div>" + "</div>" + '<div class="pbr-scale">' + panelBar(o.bar) + "</div>" + "</div>";
+    return "<div" + door.replace('class="', o.head ? 'data-head="' + o.head + '" class="' : 'class="') + ">" + '<div class="pbr-name">' + "<h3>" + nameWithMark(o.name, mark) + "</h3>" + (o.head ? "" : '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + "</div>") + "</div>" + '<div class="pbr-scale">' + panelBar(o.bar) + "</div>" + "</div>";
   }
   function panelFromMeter(m, ends) {
     var o = m.optimal || {}, e = ends || m.ends || {};
@@ -14522,7 +14522,7 @@
   function headSigma(id, text) {
     var el = document.getElementById("bh-sigma-" + id);
     if (!el) return;
-    el.textContent = text == null ? "" : "(Σ " + text + ")";
+    el.textContent = text == null ? "" : "(Σ" + text + ")";
     el.hidden = text == null;
   }
   function atQuarter(d) {

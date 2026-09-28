@@ -8,8 +8,14 @@
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
     '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
   var HIST_HEAD = {
-    "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI, YoY" },
-    "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP, YoY" },
+    /* V606, Keren: "I don't need the year over year, because the graph itself shows me it's by quarters and
+       the graph shows me the timeline. That goes to all history components."
+       A head names WHAT is measured; the chart's own axis names WHEN and in what unit. ", YoY" was the head
+       answering a question the picture under it already answers, on every window, without being asked. The
+       three titles that carried it lose it; the ones carrying a UNIT rather than a period keep theirs
+       ("share of income", "against fair value"), because a unit is part of what the reading IS. */
+    "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI" },
+    "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP" },
     /* V586, Keren: "use the same icon as the pulse icon in the circulation page" \u2014 and the reason it was
        wrong here is that two heads had swapped glyphs. signMarks is where each reading's mark is decided
        (Pulse:ecgSvg, Activity:trendUpSvg), and this map had Activity wearing the ECG and Pulse wearing the
@@ -22,7 +28,7 @@
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, against fair value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt service, share of income" },
     "deficit-range":           { mark:null,       title:"Federal deficit or surplus, share of GDP" },
-    "volume-range":            { mark:volumeSvg,  title:"M2 money stock, YoY" },
+    "volume-range":            { mark:volumeSvg,  title:"M2 money stock" },
     "pulse-range":             { mark:ecgSvg,     title:"Velocity of money (M2)" },
     /* V598: one entry for the whole Treasury page, and its title, mark, menu and note are all filed at RUNTIME
        by `drawTreasuryHead` — because the menu now lists the maturities too, and `maturities` and `matPick`
@@ -190,7 +196,14 @@
         // V539: h3. It sits under the card head's h2 (.bh-title), so h4 skipped a level. The style
         // rules are keyed on .pbr-name, and they now name h3 as well, so nothing about it moves.
         '<h3>' + nameWithMark(o.name, mark) + '</h3>' +
-        '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>' +
+        /* V606, Keren: "everywhere you have the test result component and the results are equal to what is
+           written in the graph — the latest data — just remove it from the test result component, because
+           it's a duplicate."
+           A row carrying `head` IS the reading the page's chart draws, and that chart prints its latest value
+           on its own plate a few pixels above. So the row states the BAND and nothing else: where the reading
+           sits between the two ends, which is the one thing the picture never shows. Rows WITHOUT `head` keep
+           their figure — they are the page's other markers, and nothing on screen is drawing them. */
+        (o.head ? "" : '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>') +
       '</div>' +
       '<div class="pbr-scale">' + panelBar(o.bar) + '</div>' +
     '</div>';

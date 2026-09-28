@@ -468,7 +468,9 @@
      the window changes because the window is exactly what it sums. */
   function headSigma(id, text){
     var el = document.getElementById("bh-sigma-" + id); if (!el) return;
-    el.textContent = text == null ? "" : "(Σ " + text + ")";
+    // V606, Keren: "drop the space between the sigma and the number" — the Σ is the figure’s operator, not
+    // a word before it, so it binds tight the way a minus sign does.
+    el.textContent = text == null ? "" : "(Σ" + text + ")";
     el.hidden = text == null;
   }
   // how each kind of reading names its moment

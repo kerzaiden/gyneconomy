@@ -2022,10 +2022,12 @@
      rather than by the title’s width. On a head with no Σ nothing moves: the slot is hidden and the auto
      margin does exactly what flex:1 was doing. */
   .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
-  /* the window's total, in mono because it is a number, and muted because the title is the subject and this
-     is a note on it */
-  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
-    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.01em; }
+  /* The window's total. V606 sets it at the TITLE's size, Keren: "instead of the year over year, make it in
+     the same size font" — it takes the place ", YoY" held, so it takes its weight in the line too. Mono,
+     because it is a number (the V270 rule), and muted, because the title is the subject and this is a note
+     on it. */
+  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:14.5px; font-weight:600;
+    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.02em; }
   .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
   /* Keren, V520: "you have a light circle around the three dots on the top right." I read that as a fault and
      took the circle OFF. It was a description of the REFERENCE, which she corrected in V521 — "the only thing
