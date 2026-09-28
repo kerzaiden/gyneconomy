@@ -69,11 +69,24 @@
        showing beside it, and opening a group replaces the menu with that group's rows and a way back.
        A flyout panel is what this is on a desktop, and it is the one thing a 414px phone cannot have — a
        second panel beside the first runs off the screen. A drill-down is the same idea in the space there is,
-       and it answers a hover exactly as a flyout would (see the mouseover handler below), so the gesture she
-       described is the gesture that works. */
-    var groups = H.menu ? H.menu() : "";
+       and it opens with one tap on the group rather than two panels deep. (V600 opened it on hover as well;
+       see V601 below for why that had to go.) */
+    /* ===== THE HEAD MENU IS ONE COMPONENT (V602) =====
+       Keren: "this behaviour should apply to all history menus. If we were in the future to add more things,
+       it would have to be with the submenu just like in the Horizon. Make it a rule for the future." And:
+       "it should also behave like a component."
+       So it is one, and the rule is enforced by there being no other way to build a menu: `menu` returns
+       GROUPS, always — an array of { key, label, value, on, rows } — and this function turns any head's
+       groups into the same two-level menu, with the same root rows, the same chevrons, the same reading shown
+       beside each group name, the same way back and the same note at the bottom. The flat-string branch V522
+       wrote is gone rather than deprecated: an escape hatch nobody is using is how a component quietly becomes
+       two components, and the next page to want a which-series choice would have reached for the older shape
+       because it was shorter. Now the short way IS this way.
+       One group is a legitimate menu: it still drills, so a reading that grows a second group later does not
+       change how the first one behaves. */
+    var groups = H.menu ? H.menu() : [];
     var extra;
-    if (typeof groups === "string") extra = groups;
+    if (!groups.length) extra = "";
     else if (headSubFor){
       var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
       // the group vanished under an open menu (a redraw changed the page): fall back to the root rather than blank
@@ -139,16 +152,17 @@
     headSubFor = null;   // V600: every open starts at the root
     paintHeadMenus();
   });
-  /* V600: the hover half of "when I hover over it, it opens another menu". Only opens a group, never closes
-     one — a pointer crossing the rows on its way to the one it wants would otherwise flicker through all of
-     them. Touch fires no mouseover, so a phone gets the same drawer from the tap handler above. */
-  document.addEventListener("mouseover", function(e){
-    if (headMenuFor === null) return;
-    var g = e.target.closest && e.target.closest(".bh-grp-row");
-    if (!g) return;
-    var key = g.getAttribute("data-head-grp");
-    if (key && key !== headSubFor){ headSubFor = key; paintHeadMenus(); }
-  });
+  /* V601, Keren: "when I hover over spreads it immediately goes to the spread menu, and then when I click
+     back it doesn't go back — it's stuck."
+     The hover handler V600 added is gone, and the fault was mine. A pointer is ALREADY sitting over a row the
+     moment the menu paints under it, so the group opened before she had chosen it; and leaving through Back
+     put the root rows back under a pointer that had not moved, which fired mouseover again and walked her
+     straight back in. A delay would have made that slower, not different — the pointer is still there when
+     the delay ends. The trap is that opening on hover means the menu answers where the cursor HAPPENS to be,
+     and the cursor is always somewhere.
+     So a group opens on a click and closes on a click, which is also the only gesture an iPhone has: touch
+     fires no mouseover at all, so this drawer was never going to open by hover on the device the app is read
+     on. One gesture, one behaviour, both places. */
   function nameWithMark(name, mark){
     if (!mark) return name;
     var i = String(name).lastIndexOf(" ");

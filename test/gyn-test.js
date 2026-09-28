@@ -64,6 +64,11 @@ const SRC_MUST = [
      artifact. A pin that must be edited deliberately is the point; not noticing for a month is not. */
   ['AXIS',     /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/],
   ['no .vh-line', /`\.vh-line` is gone/],
+  /* V602, Keren: "this behaviour should apply to all history menus \u2014 make it a rule for the future", and
+     "it should also behave like a component." The rule is kept by there being ONE menu shape: `menu` returns
+     groups and headMenuHtml drills them. This pins the sentence that says so, because the way a component
+     quietly becomes two is somebody adding back a shorter path for one page. */
+  ['one menu shape', /THE HEAD MENU IS ONE COMPONENT/],
 ];
 
 const results = [];
@@ -212,6 +217,40 @@ async function openPage(p, url, sheet) {
       await p.keyboard.press('Escape'); await p.waitForTimeout(150);
     }
   }
+  /* ---- 2b2. the head menu's two levels (V602) ----
+     Every head whose \u22ef offers a which-series choice must behave the same way: the root lists GROUPS, a
+     click opens one, and a click on the way back returns to the root and STAYS there. That last clause is
+     the V601 bug written as a test \u2014 opening on hover meant Back put the root rows under a pointer that
+     had not moved, which walked straight back in, so this asserts with a real mouse over the row it clicks. */
+  {
+    const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });
+    const gerr = []; gp.on('pageerror', e => gerr.push(String(e).slice(0, 140)));
+    await gp.goto('file://' + url); await gp.waitForTimeout(1400);
+    if (await openPage(gp, url, 'sheet-sign-horizon')) {
+      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="hzn-range"]').click());
+      await gp.waitForTimeout(280);
+      const root = await gp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.getAttribute('data-head-grp')));
+      let drilled = null, back = null;
+      if (root.length) {
+        await gp.hover('[data-head-grp="' + root[0] + '"]'); await gp.waitForTimeout(250);
+        const onHover = await gp.evaluate(() => document.querySelectorAll('.bh-grp-row').length);
+        await gp.click('[data-head-grp="' + root[0] + '"]'); await gp.waitForTimeout(250);
+        drilled = await gp.evaluate(() => ({ picks: document.querySelectorAll('.bh-pick').length,
+                                             back: !!document.querySelector('.bh-back') }));
+        await gp.click('.bh-back'); await gp.waitForTimeout(350);
+        back = await gp.evaluate(() => ({ groups: document.querySelectorAll('.bh-grp-row').length,
+                                          picks: document.querySelectorAll('.bh-pick').length }));
+        (onHover === root.length) ? ok('head menu ignores hover', root.length + ' groups')
+          : bad('head menu ignores hover', 'hover changed the menu: ' + root.length + ' -> ' + onHover);
+      }
+      (root.length >= 2 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
+        ? ok('head menu drills and returns', root.join(', '))
+        : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
+    } else bad('head menu drills and returns', 'no door to Horizon');
+    gerr.length ? bad('no errors in the head menu', gerr.join(' | ')) : ok('no errors in the head menu');
+    await gp.close();
+  }
+
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
 
   // 2c. the cycle picker says Today, capital T

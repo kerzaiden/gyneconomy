@@ -13103,9 +13103,9 @@
   var headNoteIdx = {};
   function headMenuHtml(id) {
     var H = HIST_HEAD[id] || {};
-    var groups = H.menu ? H.menu() : "";
+    var groups = H.menu ? H.menu() : [];
     var extra;
-    if (typeof groups === "string") extra = groups; else if (headSubFor) {
+    if (!groups.length) extra = ""; else if (headSubFor) {
       var g = groups.filter(function(x) {
         return x.key === headSubFor;
       })[0];
@@ -13172,16 +13172,6 @@
     headMenuFor = headMenuFor === id || !HIST_NOTE[id] ? null : id;
     headSubFor = null;
     paintHeadMenus();
-  });
-  document.addEventListener("mouseover", function(e) {
-    if (headMenuFor === null) return;
-    var g = e.target.closest && e.target.closest(".bh-grp-row");
-    if (!g) return;
-    var key = g.getAttribute("data-head-grp");
-    if (key && key !== headSubFor) {
-      headSubFor = key;
-      paintHeadMenus();
-    }
   });
   function nameWithMark(name, mark) {
     if (!mark) return name;
