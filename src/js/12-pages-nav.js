@@ -1651,197 +1651,138 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
-  /* ---------------- RENDER: Rhymes \u2014 today beside one past top (Version 610) ----------------
-     THE PAIR RULE FOR THIS CARD. Both columns come out of the SAME array. A "then" read off one series and a
-     "now" read off a live feed measured another way would be two numbers for two things sitting under one name,
-     which is what Version 294 forbids; so `now` is the array's LAST row and never the live reading, and each
-     figure carries the period it was taken in directly beneath it. That sub-line is the provenance: it is how
-     the reader can see the CAPE column is not reading March 2000: that series is taken once a year, in
-     January, and this top fell in the March after it. `pre` is what puts the month on the sub-line rather than
-     leaving a bare year there to be misread as the whole of it, and `last` is its exception \u2014 Version 255
-     REPLACES the final CAPE point with today's published reading so every page's line finishes on the figure
-     printed above it, so that one point is not a January and must not claim to be.
-     WHICH IS ALSO WHY THIS RUNS LAST, after renderPagesAndNav: that step is where the carry happens, and a
-     card that read the series before it would print January's 39.65 under a label saying today.
-     A series that does not reach the chosen top leaves an em dash and says from when it IS measured. Nothing is
-     interpolated and nothing reaches for the nearest neighbour: the record either covers the date or it does
-     not, and a comparison built on a guess is worse than a blank. Two of the six do not reach 2000. */
+  /* ---------------- RENDER: Rhymes \u2014 today beside a past top (Version 610, rebuilt in Version 612) ----------
+     Keren, Sep 28, 2026: "history doesn't repeat, but it rhymes. I want the app to help me see how history
+     repeats itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and
+     now we are in with 41.3. I think this is the good comparison."
+
+     VERSION 611 SHIPPED THAT COMPARISON TWICE, once as figures here and once as a grid of dots called Echoes,
+     and she read the dots and could not check them: a mark saying two readings are alike, with neither reading
+     on the screen, asks to be believed. The dots are gone and the idea they carried is now a mark on a row
+     that HAS both numbers on it, so "alike" is always something the reader can verify by eye. One card.
+
+     THE PAIR RULE. Both columns come out of the SAME series, so "at the peak" and "now" are one gauge read
+     twice (Version 294), and each figure carries the period it was taken in beneath it \u2014 which is how the
+     reader can see the CAPE column reads January 2000 and not the March the market turned in.
+     A series that does not reach the top leaves an em dash and says from when it IS measured. Nothing is
+     interpolated: the record either covers the date or it does not.
+
+     WHAT THE MARK MEANS. A reading is turned into its place in its OWN record \u2014 today's CAPE sits above 96% of
+     that record \u2014 and the row is marked when the peak's place and today's are within five points of each
+     other. A place carries no units, so one rule works on all thirteen rows: five per cent of the federal
+     funds rate and five per cent of a spread that lives near nought are not comparable quantities. A rank also
+     survives an outlier, where a share of the range does not \u2014 1981's 19% would otherwise set the width of the
+     federal funds band for ever.
+     There is no count of marks and no score. Thirteen rows agreeing is not a prediction, and a number claiming
+     it was would be invented.
+
+     The rows are the roster in the order the four categories run, and the categories are labelled because
+     thirteen rows without them is a list rather than a body. Like everything that reads capeHistory this runs
+     after renderPagesAndNav, because Version 255 carries that series' last point to today. */
   function renderRhymes(){
     var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
     if (!pick || !body) return;
-    // `on` is the period key BOTH the series and marketTops carry, which is the whole of the lookup.
-    var ROWS = [
-      { grp:"far",  name:"Shiller CAPE",                       rows:capeHistory,             on:"y", dp:1,
-        pre:"Jan ", last:"today" },
-      { grp:"far",  name:"Buffett Indicator",                  rows:buffettHistory,          on:"q", dp:0, unit:"%" },
-      { grp:"when", name:"Federal Funds Rate",                 rows:fedFundsHistory,         on:"m", dp:2, unit:"%" },
-      { grp:"when", name:"Banks Tightening Lending Standards", rows:lendingStandardsHistory, on:"q", dp:1, signed:true },
-      { grp:"when", name:"10Y \u2212 3M Treasury Spread",         rows:t10y3mHistory,           on:"q", dp:2, signed:true },
-      { grp:"when", name:"VIX \u00f7 3-Month VIX",                rows:fearCurveHistory,        on:"m", dp:2 }
-    ];
-    var GRPS = [{ key:"far", label:"How Far" }, { key:"when", label:"When" }];
+    var ALIKE = 5;                       // points of the record, out of a hundred
+    // Every series in this app is one of three shapes. Three makers turn all of them into the same {k,v} list,
+    // keyed by the period it was measured in, so a row is a line and the lookup below never branches.
+    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
+    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
+    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
+    var qFrom = function(a, y0){ return a.map(function(v, i){
+      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
+    var yFrom = function(a, y0){ return a.map(function(v, i){ return { k:String(y0 + i), v:v }; }); };
+    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
+      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
 
-    // A signed reading prints its sign, EXCEPT at exactly zero: "+0.0" would read as a small positive, and
-    // the one series here that can land on nought is the net share of banks tightening, where nought is the
-    // whole point \u2014 no bank moved either way.
-    // `pre` is the part of a period the key does not carry \u2014 CAPE's rows are keyed by year and taken in
-    // January, so a bare "2000" under a figure invites the reader to take it for the whole year, or for March.
+    var GRPS = [
+      { label:"Weather", rows:[
+        { name:"Temperature", on:"m", list:byM(cpiYoYHistory),           dp:1, unit:"%" },
+        { name:"Growth",      on:"q", list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
+      ]},
+      { label:"Circulation", rows:[
+        { name:"Hormones",    on:"m", list:byM(fedFundsHistory),         dp:2, unit:"%" },
+        { name:"Pressure",    on:"q", list:byQ(lendingStandardsHistory), dp:1, signed:true },
+        { name:"Pulse",       on:"q", list:qFrom(m2vHistory, M2V_FROM_YEAR),  dp:2 },
+        { name:"Volume",      on:"q", list:qFrom(m2Yoy, M2_FROM_YEAR),        dp:1, unit:"%" }
+      ]},
+      { label:"Mood", rows:[
+        { name:"Valuations",  on:"y", list:byY(capeHistory),             dp:1, pre:"Jan ", last:"today" },
+        { name:"Fear",        on:"m", list:byM(fearCurveHistory),        dp:2 },
+        { name:"Desire",      on:"m", list:hyList,                       dp:2, unit:"%" },
+        { name:"Horizon",     on:"q", list:byQ(t10y3mHistory),           dp:2, signed:true }
+      ]},
+      { label:"Energy", rows:[
+        { name:"Power",       on:"y", list:byY(powerHistory),            dp:0 },
+        { name:"Activity",    on:"m", list:byM(unempHistory),            dp:1, unit:"%" },
+        { name:"Households",  on:"q", list:qFrom(dsrHistory, DSR_FROM_YEAR), dp:1, unit:"%" }
+      ]}
+    ];
+    // One pass per row, done once. `place` is where a value sits in the whole of its own record; `now` is the
+    // last reading and where IT sits, which is what every peak is measured against.
+    GRPS.forEach(function(g){ g.rows.forEach(function(r){
+      var seen = r.list.filter(function(d){ return d.v != null; });
+      var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
+      r.place = function(v){
+        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
+        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+      };
+      r.first = seen[0]; r.now = seen[seen.length - 1];
+    }); });
+
     function stamp(r, k){ return (r.pre || "") + k; }
+    // A signed reading prints its sign, EXCEPT at exactly zero: "+0.0" would read as a small positive, and the
+    // one series here that can land on nought is the net share of banks tightening, where nought is the whole
+    // point \u2014 no bank moved either way.
+    function fig(r, v){
+      return (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) +
+             (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
+    }
     function cell(r, v, when, na){
       return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' +
-        '<b>' + (v == null ? "\u2014" : (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) +
-          (r.unit ? '<span class="unit">' + r.unit + '</span>' : "")) + '</b>' +
-        '<i>' + (v == null ? na : when) + '</i></span>';
+        '<b>' + (v == null ? "\u2014" : fig(r, v)) + '</b><i>' + (v == null ? na : when) + '</i></span>';
+    }
+    function dstr(iso){
+      return +iso.slice(8) + " " + MONTHS_SHORT[+iso.slice(5, 7) - 1] + " " + iso.slice(0, 4);
     }
     function draw(key){
       var top = marketTops.filter(function(t){ return t.key === key; })[0] || marketTops[0];
+      var days = Math.round((Date.parse(top.trough) - Date.parse(top.peak)) / 86400000);
       Array.prototype.forEach.call(pick.querySelectorAll(".range-seg"), function(b){
         var on = b.getAttribute("data-rhyme") === top.key;
         b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
       });
       body.innerHTML =
-        '<p class="rhy-say">' + top.name + ' peaked <b>' + top.when + '</b>, then fell <b>' +
-          top.fall.toFixed(1) + '%</b> over <b>' + top.days + ' days</b>.</p>' +
+        '<p class="rhy-say">The ' + top.cycle + ' peaked <b>' + dstr(top.peak) + '</b>, then fell <b>' +
+          top.fall.toFixed(1) + '%</b> over <b>' + days + ' days</b>.</p>' +
         GRPS.map(function(g){
           return '<div class="rhy-grp">' +
             '<div class="rhy-cols"><span class="rhy-gname">' + g.label + '</span>' +
-              '<span class="rhy-col">At the top</span><span class="rhy-col">Latest</span></div>' +
-            ROWS.filter(function(r){ return r.grp === g.key; }).map(function(r){
-              var last = r.rows[r.rows.length - 1];
-              var hit = r.rows.filter(function(d){ return d[r.on] === top[r.on]; })[0];
-              return '<div class="rhy-row"><span class="rhy-name">' + r.name + '</span>' +
-                cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.rows[0][r.on])) +
-                cell(r, last.v, r.last || stamp(r, last[r.on])) + '</div>';
+              '<span class="rhy-col">At the peak</span><span class="rhy-col">Now</span></div>' +
+            g.rows.map(function(r){
+              var hit = r.list.filter(function(d){ return d.k === top[r.on] && d.v != null; })[0];
+              var alike = hit && Math.abs(r.place(hit.v) - r.place(r.now.v)) <= ALIKE;
+              return '<div class="rhy-row' + (alike ? " alike" : "") + '">' +
+                '<span class="rhy-name">' + r.name +
+                  (alike ? '<i class="rhy-mark" title="Both readings sit about as high in this record">' +
+                           '\u25cf</i>' : "") + '</span>' +
+                cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.first.k)) +
+                cell(r, r.now.v, r.last || stamp(r, r.now.k)) + '</div>';
             }).join("") +
           '</div>';
         }).join("");
     }
-    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past top to stand beside">' +
-      marketTops.map(function(t, i){
+    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past peak to stand beside">' +
+      marketTops.slice().reverse().map(function(t, i){
         return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' +
-          (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.name + '</button>';
+          (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.key + '</button>';
       }).join("") + '</div>';
     pick.addEventListener("click", function(e){
       var b = e.target.closest && e.target.closest(".range-seg"); if (b) draw(b.getAttribute("data-rhyme"));
     });
-    draw(marketTops[0].key);
+    draw(marketTops[marketTops.length - 1].key);
     addSources(marketTopsSrc);
   }
   GYN.step("renderRhymes", renderRhymes, "wire"); renderRhymes();
-
-  /* ---------------- RENDER: Echoes \u2014 every year that reads like now (Version 611) ----------------
-     Keren, with the Clue cycle-history screen beside her: "make a dot only where it's similar to today's data.
-     meaning if I scan past cycles I can see how similar they are vs the current data/cycle."
-
-     WHAT "SIMILAR" MEANS, AND WHY IT IS A PLACE AND NOT A PERCENTAGE. Each year is turned into its position in
-     its OWN record \u2014 today's CAPE sits above 96% of the years behind it \u2014 and a year echoes when it sat about
-     as high. That is the only measure that means the same thing on all thirteen rows: five per cent of the
-     federal funds rate and five per cent of a spread that lives near nought are not comparable quantities, so a
-     band fixed in a series' own units would be generous on one row and impossible on the next. A place in the
-     record carries no units, so one sentence explains every row.
-     It is also the only one that survives an outlier. Measured as a share of the range, 1981's 19% would set
-     the width of the federal funds band for ever after; a rank does not care how far away the extreme is.
-
-     WHAT THE PICTURE IS ALLOWED TO SAY. A dark row is not missing data \u2014 it is the finding, and the most
-     valuable thing here: Valuations sits at the top of its record, so almost nothing echoes it. Reading DOWN a
-     cycle shows which of its years the present resembles; reading ACROSS shows which parts of the body have
-     been here before. There is no verdict and no total, because thirteen rows echoing does not add up to a
-     prediction and any number claiming it did would be invented.
-     A year is the mean of that year's readings, and the year in progress is the mean of the year so far.
-     Like Rhymes it runs after renderPagesAndNav, because Version 255 carries CAPE's last point to today. */
-  function renderEchoes(){
-    var body = document.getElementById("ech-body"); if (!body) return;
-    var ECHO = 5, NEAR = 15;          // points of the record, out of a hundred
-    var num = function(d){ return d; };                                  // a series that is bare numbers
-    var qFrom = function(y0){ return function(d, i){ return y0 + Math.floor(i / 4); }; };  // quarterly, by index
-    /* The whole roster, in the order the four categories run \u2014 Weather, Circulation, Mood, Energy. The
-       categories are not labelled: thirteen rows in the app's own order carry it, and four headings repeated in
-       five blocks would be twenty lines of furniture. Three shapes of series live in this app and one reader
-       takes all of them, so a row is a line and never a special case. */
-    var ROWS = [
-      { name:"Temperature", rows:cpiYoYHistory,           y:function(d){ return +d.m.slice(0, 4); } },
-      { name:"Growth",      rows:gdpQuarterlyYoY,         y:function(d){ return +d.q.slice(0, 4); } },
-      { name:"Hormones",    rows:fedFundsHistory,         y:function(d){ return +d.m.slice(0, 4); } },
-      { name:"Pressure",    rows:lendingStandardsHistory, y:function(d){ return +d.q.slice(0, 4); } },
-      { name:"Pulse",       rows:m2vHistory, v:num,       y:qFrom(M2V_FROM_YEAR) },
-      { name:"Volume",      rows:m2Yoy,      v:num,       y:qFrom(M2_FROM_YEAR) },
-      { name:"Valuations",  rows:capeHistory,             y:function(d){ return d.y; } },
-      { name:"Fear",        rows:fearCurveHistory,        y:function(d){ return +d.m.slice(0, 4); } },
-      { name:"Desire",      rows:hyOas,      v:num,       y:function(d, i){ return hyAt(i).y; } },
-      { name:"Horizon",     rows:t10y3mHistory,           y:function(d){ return +d.q.slice(0, 4); } },
-      { name:"Power",       rows:powerHistory,            y:function(d){ return d.y; } },
-      { name:"Activity",    rows:unempHistory,            y:function(d){ return +d.m.slice(0, 4); } },
-      { name:"Households",  rows:dsrHistory, v:num,       y:qFrom(DSR_FROM_YEAR) }
-    ];
-    // One pass per row, done once: the yearly means, a reader that turns a value into its place in the record,
-    // and where today sits. Every dot in every cycle is then a subtraction.
-    var ROLL = ROWS.map(function(r){
-      var by = {};
-      r.rows.forEach(function(d, i){
-        var v = r.v ? r.v(d, i) : d.v; if (v == null) return;
-        (by[r.y(d, i)] = by[r.y(d, i)] || []).push(v);
-      });
-      var keys = Object.keys(by), vals = {};
-      keys.forEach(function(k){ vals[k] = by[k].reduce(function(a, b){ return a + b; }, 0) / by[k].length; });
-      var sorted = keys.map(function(k){ return vals[k]; }).sort(function(a, b){ return a - b; });
-      var place = function(v){
-        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
-        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-      };
-      var years = keys.map(Number).sort(function(a, b){ return a - b; });
-      var last = years[years.length - 1];
-      return { name:r.name, vals:vals, place:place, from:years[0], last:last, now:place(vals[last]) };
-    });
-
-    function dots(p, years){
-      var on = 0;
-      var html = years.map(function(y){
-        var v = p.vals[y];
-        if (v == null) return '<i class="ech-d gap"></i>';
-        // The year everything else is measured against wears its own mark. Without it the whole of today's
-        // column is solid on every row \u2014 true, since each reading matches itself, and worth nothing: it would
-        // read as thirteen echoes at once when it is only the ruler.
-        var gap = Math.abs(p.place(v) - p.now);
-        var cls = y === p.last ? "now" : gap <= ECHO ? "on" : gap <= NEAR ? "near" : "off";
-        if (cls === "on") on++;
-        return '<i class="ech-d ' + cls + '" title="' + y + " \u00b7 sits above " +
-               p.place(v).toFixed(0) + '% of its record"></i>';
-      }).join("");
-      return { html:html, on:on };
-    }
-
-    body.innerHTML =
-      '<div class="ech-key"><span><i class="ech-d now"></i>Today</span>' +
-        '<span><i class="ech-d on"></i>Reads like now</span>' +
-        '<span><i class="ech-d near"></i>Close</span>' +
-        '<span><i class="ech-d off"></i>Measured, not close</span></div>' +
-      marketCycles.slice().reverse().map(function(cyc){
-        var to = cyc.to || calendarTodayY, years = [];
-        for (var y = cyc.from; y <= to; y++) years.push(y);
-        var n = years.length;
-        // Every cycle spreads its own years across the same width, the way the tracker spreads a 29-day cycle
-        // and a 31-day one. Year one is at the left of every block, which is the only anchor they share.
-        return '<div class="ech-cyc" style="--n:' + n + '">' +
-          '<div class="ech-head"><span class="ech-cname">' + (cyc.ongoing ? "Current cycle" : cyc.name) +
-            '</span><span class="ech-years">' + cyc.from + '\u2013' + (cyc.ongoing ? "Today" : to) +
-            ' <b>(' + n + 'Y)</b></span></div>' +
-          '<div class="ech-row ech-axis"><span class="ech-lab"></span><span class="ech-dots">' +
-            years.map(function(yy, i){
-              return '<i class="ech-t">' + ((n <= 7 || i % 2 === 0) ? String(yy).slice(2) : "") + '</i>';
-            }).join("") + '</span></div>' +
-          ROLL.map(function(p){
-            var seen = years.filter(function(yy){ return p.vals[yy] != null; }).length;
-            var d = dots(p, years);
-            return '<div class="ech-row"><span class="ech-lab">' + p.name +
-              (seen ? "" : '<i>from ' + p.from + '</i>') + '</span>' +
-              '<span class="ech-dots" role="img" aria-label="' + p.name + ": " +
-                (seen ? d.on + " of " + seen + " years read like now" : "not measured before " + p.from) +
-              '">' + d.html + '</span></div>';
-          }).join("") +
-        '</div>';
-      }).join("");
-  }
-  GYN.step("renderEchoes", renderEchoes, "wire"); renderEchoes();
 
 
   // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page

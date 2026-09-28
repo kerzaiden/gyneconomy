@@ -584,20 +584,31 @@
     }
   ];
 
-  /* ---------------- The tops a reader can stand beside (Version 610) ----------------
-     Keren, Sep 28, 2026: "Like Mark Twain once said, history doesn't repeat, but it rhymes. I want the app to
-     help me see how history repeats itself."
-     Every field here is an EVENT, not model output: the S&P 500's last closing high before a bear market, and
-     that bear's own depth and length as the source states them \u2014 including `days`, which is the source's count
-     and not a month figure worked out from the dates. `y`, `q` and `m` are the SAME period keys the app's
-     histories are keyed by, written out once so a lookup never has to derive a quarter from a date.
-     These are not cycles and do not belong in marketCycles: a cycle is a chapter of the model, a top is a day. */
+  /* ---------------- The tops a reader can stand beside (Version 610, rebuilt in Version 612) ----------------
+     Keren, Sep 28, 2026: "Like Mark Twain once said, history doesn't repeat, but it rhymes."
+     Every field is an EVENT, not model output: the S&P 500's last closing high before a fall, and that fall's
+     depth, from ONE source's table so the four rows are measured the same way. `days` is not stored \u2014 it is
+     counted from `peak` and `trough`, because a length written out beside the two dates it comes from is a
+     number that can disagree with them.
+     WHICH TOPS ARE HERE, and why it is four and not five. These are the tops the source records as bear
+     markets since 1990, each named for the cycle it fell inside. The COVID-19 Cycle owns two of them, which is
+     true of it: the 2020 crash fell and recovered inside one year, and the inflation bear is what closed the
+     cycle. The Big Tech Cycle has none \u2014 its worst fall was a correction, which is the app's own reading of
+     it ("a stumble rather than a bust") and is why it has no block to stand beside.
+     `y`, `q` and `m` are the SAME period keys the histories are keyed by, written out once so a lookup never
+     has to derive a quarter from a date. These are not cycles and do not belong in marketCycles: a cycle is a
+     chapter of the model, a top is a day. */
   var marketTops = [
-    { key:"2000", name:"Dot-Com",  when:"24 Mar 2000", y:2000, q:"2000 Q1", m:"2000-03", fall:49.1, days:929 },
-    { key:"2007", name:"Housing",  when:"9 Oct 2007",  y:2007, q:"2007 Q4", m:"2007-10", fall:56.8, days:517 },
-    { key:"2020", name:"COVID-19", when:"19 Feb 2020", y:2020, q:"2020 Q1", m:"2020-02", fall:33.9, days:32 }
+    { key:"2000", cycle:"Dot-Com Cycle",  peak:"2000-03-24", trough:"2002-10-09", fall:49.1,
+      y:"2000", q:"2000 Q1", m:"2000-03" },
+    { key:"2007", cycle:"Housing Cycle",  peak:"2007-10-09", trough:"2009-03-09", fall:56.8,
+      y:"2007", q:"2007 Q4", m:"2007-10" },
+    { key:"2020", cycle:"COVID-19 Cycle", peak:"2020-02-19", trough:"2020-03-23", fall:33.9,
+      y:"2020", q:"2020 Q1", m:"2020-02" },
+    { key:"2022", cycle:"COVID-19 Cycle", peak:"2022-01-03", trough:"2022-10-12", fall:25.4,
+      y:"2022", q:"2022 Q1", m:"2022-01" }
   ];
-  var marketTopsSrc = [{ t:"Yardeni Research \u2014 Market Briefing: S&P 500 Bull & Bear Markets & Corrections",
+  var marketTopsSrc = [{ t:"Yardeni Research \u2014 Stock Market Historical Tables: Bull & Bear Markets",
                          u:"https://yardeni.com/charts/us-stock-market/stock-market-historical-trends/bull-bear-markets-corrections" }];
 
   // Which era is "now": the one whose range covers calendarTodayY. A lookup, not marketCycles[last], so it

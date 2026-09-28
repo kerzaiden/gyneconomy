@@ -260,30 +260,46 @@ async function openPage(p, url, sheet) {
   const spans = await p.evaluate(() => [...document.querySelectorAll('.era-years')].map(e => e.textContent.trim()));
   spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
 
-  /* ---- 2c2. Rhymes (V610) ----
-     Two claims, and they are the two the feature lives or dies on. The picker must actually REPLACE the
-     comparison — a control that repaints the heading and leaves the figures behind would be worse than no
-     control. And where the record does not reach the chosen top the cell must be EMPTY: the 10Y−3M spread
-     starts 2005 Q1 and the fear curve 2007-12, so standing beside 2000 must leave two dashes and no
-     interpolated number. If either of those ever breaks, the card is claiming something it cannot know. */
+  /* ---- 2c2. Rhymes (V610, rebuilt V612) ----
+     Three claims, and they are the ones the card lives or dies on. The picker must actually REPLACE the
+     comparison \u2014 a control that repaints the heading and leaves the figures behind would be worse than no
+     control. Where the record does not reach the chosen peak the cell must be EMPTY and say from when it IS
+     measured: the fear curve starts 2007-12 and the yield curve 2005 Q1, so standing beside March 2000 must
+     leave dashes and no interpolated number. And the dot must never land on a row with a dash in it \u2014 that is
+     the whole of why Version 612 replaced the Echoes grid: a mark is only worth anything on a row whose two
+     figures are on the screen to check it against. */
   {
     const read = () => p.evaluate(() => ({
       say: document.querySelector('.rhy-say').innerText.replace(/\s+/g, ' ').trim(),
-      vals: [...document.querySelectorAll('.rhy-cell')].map(c => c.querySelector('b').textContent.trim()),
+      first: document.querySelector('.rhy-row .rhy-cell b').textContent.trim(),
       subs: [...document.querySelectorAll('.rhy-cell')].map(c => c.querySelector('i').textContent.trim()),
-      na: document.querySelectorAll('.rhy-cell.na').length
+      na: document.querySelectorAll('.rhy-cell.na').length,
+      rows: document.querySelectorAll('.rhy-row').length,
+      grps: document.querySelectorAll('.rhy-grp').length,
+      marks: document.querySelectorAll('.rhy-mark').length,
+      markOnBlank: [...document.querySelectorAll('.rhy-row.alike')].filter(r => r.querySelector('.rhy-cell.na')).length
     }));
+    await p.click('[data-rhyme="2000"]'); await p.waitForTimeout(250);
     const y2000 = await read();
     await p.click('[data-rhyme="2007"]'); await p.waitForTimeout(250);
     const y2007 = await read();
-    (/Dot-Com/.test(y2000.say) && /49\.1%/.test(y2000.say) && /Housing/.test(y2007.say) &&
-     /56\.8%/.test(y2007.say) && y2000.vals[0] !== y2007.vals[0])
-      ? ok('rhymes picker swaps the comparison', y2000.vals[0] + ' -> ' + y2007.vals[0])
-      : bad('rhymes picker swaps the comparison', JSON.stringify({ y2000: y2000.say, y2007: y2007.say }));
-    (y2000.na === 2 && y2007.na === 1 && y2000.subs.some(t => /^from 2005 Q1$/.test(t)) &&
+    (/Dot-Com Cycle/.test(y2000.say) && /49\.1%/.test(y2000.say) && /929 days/.test(y2000.say) &&
+     /Housing Cycle/.test(y2007.say) && /56\.8%/.test(y2007.say) && /517 days/.test(y2007.say) &&
+     y2000.first !== y2007.first && y2000.rows === 13 && y2000.grps === 4)
+      ? ok('rhymes picker swaps the comparison', y2000.first + ' -> ' + y2007.first)
+      : bad('rhymes picker swaps the comparison', JSON.stringify({ y2000, y2007 }));
+
+    // Four at 2000 \u2014 Fear (2007-12), Desire (2023-09), Horizon and Households (both 2005 Q1); two at 2007,
+    // because the fear curve begins two months AFTER that October peak and Desire is a three-year licence.
+    (y2000.na === 4 && y2007.na === 2 && y2000.subs.some(t => /^from 2005 Q1$/.test(t)) &&
      y2000.subs.some(t => /^Jan 2000$/.test(t)))
       ? ok('rhymes leaves the record blank', y2000.na + ' at 2000, ' + y2007.na + ' at 2007')
       : bad('rhymes leaves the record blank', JSON.stringify({ na2000: y2000.na, na2007: y2007.na, subs: y2000.subs }));
+
+    (y2000.marks > 0 && !y2000.markOnBlank && !y2007.markOnBlank)
+      ? ok('rhymes marks only what it shows', y2000.marks + ' at 2000, ' + y2007.marks + ' at 2007')
+      : bad('rhymes marks only what it shows',
+            JSON.stringify({ marks: y2000.marks, onBlank: [y2000.markOnBlank, y2007.markOnBlank] }));
   }
   await p.close();
 
@@ -492,7 +508,7 @@ async function openPage(p, url, sheet) {
       const k = inv.kinds;
       // V592: build 3 -> 4 and check 6 -> 7, both from Hormones — renderHormones is a build step and
       // checkFedFundsHistory is the V305 data check its chart is not allowed to draw without.
-      // V610: wire 7 -> 8, renderRhymes.
+      // V610: wire 7 -> 8, renderRhymes. V611 added renderEchoes; V612 folded it back in and took it away.
       (k.build === 5 && k.mixed === 2 && k.wire === 8)
         ? ok('step kinds', JSON.stringify(k))
         : bad('step kinds', JSON.stringify(k) + ' — expected build 5, mixed 2, wire 8');

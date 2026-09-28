@@ -910,7 +910,11 @@
     var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
     return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
   }
-  function fmtSigned(v, dp){ return (v >= 0 ? "+" : "") + v.toFixed(dp); }
+  /* Version 612: the minus is the real one, U+2212, not a hyphen. Every other figure in this app already
+     wears it \u2014 gauge labels, cycle totals, the deficit \u2014 so a signed reading was the one place a hyphen showed
+     up, narrower than the plus above it and out of line in a monospaced column. Fixed here rather than at the
+     call sites, because there are six of them and this is the only function all six go through. */
+  function fmtSigned(v, dp){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
   // Growth in the book's words (Version 216): the direction of growth is expansion or contraction, never "rising" or
   // "falling" on screen. Since Version 220 the word itself always comes from the season model's reading — r.regime, the
   // direction of the six-quarter fit — so the chart's colour, the panel's tag and the season on the dial cannot disagree.
