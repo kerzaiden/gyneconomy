@@ -994,7 +994,7 @@
         // ways" from one; "change in the price level" is the textbook phrase and is jargon here.) Version 429
         // cut it to "Total" because the page was named Temperature two lines above; in Highlights it is a row
         // among sentences, so the full name comes back — which is what Keren asked for.
-        totalStat("temp-total", "Total price change", tri ? fmtSigned(tri.total, 0) + "%" : null);
+        headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
     };
     sheetRenderers["sheet-metric-gdp"] = function(W){
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
@@ -1022,7 +1022,7 @@
         var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
         // Version 494, Keren: "total growth 11% — in the Highlights component." The one figure this page's
         // register had been reduced to, said as a fact row where the words around it are.
-        totalStat("gdp-total", "Total growth", gt ? fmtSigned(gt.total, 0) + "%" : null);
+        headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
         document.getElementById("gdp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
                     { rising:"quickening", falling:"slowing" });
@@ -1323,9 +1323,7 @@
       var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
         'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
         'means anything measured against the level the system is meant to hold.</p>'];
-      // V494, Keren: the window's total comes here from under the chart. The host is written by the sheet
-      // renderer (totalStat), because the figure follows the window while this section is built once.
-      cards.push('<div id="temp-total"></div>');
+      /* V605: the total left this section for the head, where the ruler that moves it can be seen moving it. */
       cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning",
         "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
         " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
@@ -1346,7 +1344,6 @@
       var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
         'last. A body spends the first half of its cycle building something it has not used yet, and an ' +
         'economy does the same with output.</p>'];
-      cards.push('<div id="gdp-total"></div>');   // V494 — see Temperature's
       cards.push(hiCard("Growth", phaseClass(r.regime),
         "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +
         "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));

@@ -2017,8 +2017,16 @@
      one CARRIES: a badge and a ⋯ here, a tag there. */
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:14.5px;
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
-  .bh-title{ flex:1 1 auto; min-width:0; margin:0; }
-  .bh-more-wrap{ position:relative; flex:0 0 auto; }
+  /* V605: the title no longer eats the row. It hugs its text so the Σ can sit BESIDE it — "next to the
+     title", which is where Keren put it — and the ⋯ is pushed to the far edge by its own auto margin
+     rather than by the title’s width. On a head with no Σ nothing moves: the slot is hidden and the auto
+     margin does exactly what flex:1 was doing. */
+  .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
+  /* the window's total, in mono because it is a number, and muted because the title is the subject and this
+     is a note on it */
+  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.01em; }
+  .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
   /* Keren, V520: "you have a light circle around the three dots on the top right." I read that as a fault and
      took the circle OFF. It was a description of the REFERENCE, which she corrected in V521 — "the only thing
      is that you don't have a light circle around the three dots." So it comes back, and as what the reference

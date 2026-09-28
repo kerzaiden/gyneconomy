@@ -1267,8 +1267,12 @@
 
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:14.5px;
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
-  .bh-title{ flex:1 1 auto; min-width:0; margin:0; }
-  .bh-more-wrap{ position:relative; flex:0 0 auto; }
+
+  .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
+
+  .bh-sigma{ flex:0 0 auto; font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+    color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.01em; }
+  .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
 
   .bh-more{ width:21px; height:21px; padding:0; cursor:pointer; border-radius:50%;
     border:1px solid var(--border); background:none;
@@ -13101,7 +13105,7 @@
     var H = HIST_HEAD[id];
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
-    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + "</h2>" + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
+    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + "</h2>" + '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
   }
   var headNoteIdx = {};
   function headMenuHtml(id) {
@@ -14515,10 +14519,11 @@
       return x + y;
     }, 0) / a.length;
   }
-  function totalStat(host, label, value) {
-    var el = document.getElementById(host);
+  function headSigma(id, text) {
+    var el = document.getElementById("bh-sigma-" + id);
     if (!el) return;
-    el.outerHTML = value == null ? '<div id="' + host + '"></div>' : '<div class="aux-stat" id="' + host + '"><span>' + label + "</span><b>" + value + "</b></div>";
+    el.textContent = text == null ? "" : "(Σ " + text + ")";
+    el.hidden = text == null;
   }
   function atQuarter(d) {
     return d.q;
@@ -19286,7 +19291,7 @@
         });
       }
       var tri = totalRiseIn(win);
-      totalStat("temp-total", "Total price change", tri ? fmtSigned(tri.total, 0) + "%" : null);
+      headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
     };
     sheetRenderers["sheet-metric-gdp"] = function(W) {
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
@@ -19316,7 +19321,7 @@
         hist.__geom = lastHistGeom;
         wireHistHover(hist, "gdp-hist-tooltip");
         var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
-        totalStat("gdp-total", "Total growth", gt ? fmtSigned(gt.total, 0) + "%" : null);
+        headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
         document.getElementById("gdp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
           return d.v;
         }), "points", "quarter"), null, true, {
@@ -19636,7 +19641,6 @@
         return b.v > a.v ? b : a;
       });
       var cards = [ '<p class="hi-lede">A temperature is the one number that says whether something inside is ' + "running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only " + "means anything measured against the level the system is meant to hold.</p>" ];
-      cards.push('<div id="temp-total"></div>');
       cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning", "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot + " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
       cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning", "The current cycle’s average is " + mean(cyc.map(function(d) {
         return d.v;
@@ -19654,7 +19658,6 @@
         return d.v < 0;
       }).length;
       var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' + "last. A body spends the first half of its cycle building something it has not used yet, and an " + "economy does the same with output.</p>" ];
-      cards.push('<div id="gdp-total"></div>');
       cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
       cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the trend as " + r.regime + "."));
       document.getElementById("gdp-highlights").innerHTML = highlightsHtml(cards, "", moreRow(growthDetail));

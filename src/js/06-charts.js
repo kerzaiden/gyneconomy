@@ -454,14 +454,22 @@
      multiple is a ratio and is already scale-free, so the argument does not reach it, and the long baseline is
      the very thing Shiller built the series to provide.
      Each page supplies its own words, because "hottest" and "richest" and "fastest" are not interchangeable. */
-  /* Version 494: `recordRows` is gone. Version 489 cut it to `leadOnly` — one row, the total across the
-     window — and Keren has now moved that figure into Highlights on both pages that used it, so the last
-     caller went with it. `totalStat` below is what it became: two lines instead of sixty, and one shape
-     shared by the two pages so their labels cannot drift apart. */
-  function totalStat(host, label, value){
-    var el = document.getElementById(host); if (!el) return;
-    el.outerHTML = value == null ? '<div id="' + host + '"></div>'
-      : '<div class="aux-stat" id="' + host + '"><span>' + label + '</span><b>' + value + '</b></div>';
+  /* Version 494: `recordRows` is gone — Version 489 had already cut it to one row, the total across the
+     window, and V494 moved that row into the Insights section. V605 moves it once more, to the head. Three
+     versions to arrive at the obvious place: a figure that answers the ruler goes beside the title. */
+  /* V605, Keren: "total price change 9% is fixed for the current cycle — it should be dynamic on the history
+     component. The place I would put it is next to the title: CPI year over year, and in parentheses, sigma
+     plus 9% — sigma, the Greek letter for summary. And if I turn the bar to 10 years, I will see the sigma
+     for the 10 years."
+     So the total leaves Insights and becomes part of the HEAD. It was a fact row that moved with the window
+     while everything around it stood still, which is why it read as fixed: a figure that answers the ruler
+     belongs beside the title the ruler is changing, not in a paragraph three components down.
+     Σ is the right mark and not decoration: the figure is the sum of every bar in view, so it changes when
+     the window changes because the window is exactly what it sums. */
+  function headSigma(id, text){
+    var el = document.getElementById("bh-sigma-" + id); if (!el) return;
+    el.textContent = text == null ? "" : "(Σ " + text + ")";
+    el.hidden = text == null;
   }
   // how each kind of reading names its moment
   function atQuarter(d){ return d.q; }

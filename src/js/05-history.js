@@ -45,6 +45,9 @@
       // h4 skips two levels and a screen reader's heading list reads as if content is missing.
       // The style is class-based (.bh-title), so the level changes and nothing moves.
       '<h2 class="bh-title">' + t + '</h2>' +
+      // V605: the window's total, filled by headSigma after the page has computed its window. Empty and hidden
+      // on every head that has no sum to state, which is most of them — a level has no total.
+      '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
         'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") +
         '" aria-label="More about this chart">' + DOTS + '</button>' +
