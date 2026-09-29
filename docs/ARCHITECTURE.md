@@ -11,8 +11,8 @@ true is in git history (`git show v632-component-page:docs/ARCHIVE.md` for the r
 A published artifact cannot call an external host; its only route in is its own database, which a Claude
 session writes and the page reads with `claude.use("db")`. The hosted site has a second route, a JSON file
 the Data workflow commits. Both end at one intake, `receive`, and one contract, the `READINGS` registry
-in `js/02-live.js` — one row per reading: kind, band, where it lands, what repaints. The code comments
-there explain the mechanism; the decisions are these:
+in `js/02-live.js` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
+described under "How the live layer works" below; the decisions are these:
 
 - **The literal in the file is the floor, not a duplicate.** It renders first; the database and the
   cache render over it. Most loads (a local file, a test, a viewer without the grant, a first visit)
@@ -30,6 +30,144 @@ there explain the mechanism; the decisions are these:
   failing check. That is the design working.
 
 Six of the nine rows have a writer today; see Open questions.
+
+### How the live layer works
+
+Moved here from the code comments of `js/02-live.js` at V650, when the source lost its comments. Keren's
+decisions are cited as she made them.
+
+#### The cache
+
+```text
+Only a PRINTED value can be repainted when the database answers; every other figure is DERIVED at load, and
+the runtime contract forbids blocking the first paint on a permission prompt. So the database answer from the
+LAST visit is cached in this browser and applied HERE, synchronously, before a single derived value is
+computed: the figures are already live by the time the app builds itself, every derived reading is correct,
+and nothing repaints because nothing needs to.
+The cost: a viewer sees data as of their previous visit, and on a first-ever visit the file's own figures.
+For a page refreshed once a day that is at most one visit behind, and never WRONG — every payload carries
+the `asOf` its own reading was taken on.
+`localStorage` can be empty, disabled or throw; every read is guarded and falls back to the literal, which
+is why the literals stay. This is a cache, not a store: the database is the record.
+```
+
+#### Where live data enters
+
+```text
+A published artifact cannot call FRED or any other host; its one route to live data is its own database,
+which the nightly refresh writes and the page reads. `claude.use("db")` resolves null outside a claude.ai
+viewer — a local file, a test run, a reader without the grant — and the page has to be right in all of
+those, so the literal above is the FALLBACK, not a duplicate: the file's own figures render first, the
+database is asked afterwards, and the page repaints only what the answer changed. A database document uses
+the literal's own field names, so there is one schema and the fallback cannot drift from the live row.
+```
+
+#### The repaint layer
+
+```text
+Do not re-render. The category builder MOVES the subject rows out of the markup that produced them,
+so a renderer cannot be run twice — but the ELEMENTS holding the printed figures survive the move,
+so a repaint edits those in place.
+
+Each repaint touches as little as possible: the figure's own text node and its tag, never the row's
+innerHTML. That is deliberate. `catItem` normalises `.unit` to `.ci-unit` when it moves a row, so
+rebuilding the markup here would quietly undo the normalisation and the row would come back at the
+wrong type size.
+
+Everything else needs no repaint: the inner pages draw on open, from these same module vars,
+through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT opening a page.
+```
+
+#### One reading, one paint
+
+```text
+A reading is printed on every list that offers a door to its page — the category item in Weather or Mood
+(.ci-value, its verdict lifted out into a sibling .ci-word) and the row in All indicators (.subject-value,
+verdict still inline) — and `[data-open="<sheet>"]` is what those have in common. Walking the doors is the
+only honest way to repaint a reading, and this is the only function that does it. Never paint a reading by
+element id: an id reaches exactly one copy and leaves the others stale, and a stale figure looks exactly
+like a fresh one, so nothing would show it.
+A tag with no `state` has only its words replaced, because the policy row's class carries a meaning the
+caller does not own. A reading whose doors print nothing is recorded, and the suite asserts that record
+stays empty.
+```
+
+#### The reading registry
+
+```text
+Keren, V629: "a component based app that will be 100% ready for server side integration with controllers
+and services."
+
+Nine readings arrive from outside this file. One row per reading, and the row is the whole contract —
+no second list names them, because lists kept in step by hand drift:
+  kind    the shape it arrives in — object, series or scalar
+  band    a scalar's floor and ceiling; a number outside it is refused, never clamped
+  ok      an object's own admission test, where it has one beyond being an object
+  set     where the value lands. The ONE thing that genuinely differs between readings.
+  paint   what redraws when it moves
+  onOpen  true instead of `paint`: its only display is an inner page, which redraws in full on open
+
+`LIVE_NAMES` is the registry's own key list, so the fetchers cannot ask for a name it does not know.
+`checkLiveCoverage` asserts every row is complete and that `paint` and `onOpen` are exclusive — a
+tenth reading is one row, and an incomplete row fails the suite.
+
+THE SERVICE SEAM. Above this, `receive` is the only door a reading comes in through, and the two
+sources this app has — the artifact's own database, and the hosted site's JSON file — each do nothing
+but produce a {name: document} object and knock on it. A server-side backend is a third function of
+that shape and nothing else in the app changes: the registry already states what it expects, the band
+already refuses a wrong number, and the painters already know where it shows.
+```
+
+#### The step registry
+
+```text
+The script runs as named steps, in source order and at exactly the points they are called —
+module-level vars are assigned between them, so the order is load-bearing and moving the calls
+would break the page. Each step has a NAME, a measured KIND, and an entry here, so the app can
+be asked what it does at load rather than having it inferred from source order.
+
+The kinds:
+  check   a data assertion, no DOM — safe to re-run
+  derive  computes module state — idempotent
+  wire    binds event listeners — must run ONCE, ever
+  render  writes DOM and may be run again
+  build   CONSUMES or MOVES static markup, or depends on state a later step sets — one-shot
+  mixed   binds listeners AND writes DOM — cannot be re-run until it is split
+  live    a data source: the database refresher, the site feed
+
+THE KINDS ARE MEASURED BY RUNNING THE STEP, not read off its source. Counting DOM writes in a
+body counts the writes inside its event HANDLERS too, which fire later and say nothing about
+the step itself, so pure wirers would read as mixed. Measuring means patching
+`addEventListener`, running the step, and watching: listeners bound means it must run once;
+DOM settled and no listeners means it may run again. `tools/classify.js` does it.
+
+A name here describes what a step BUILT the first time; the kind describes whether it may run
+AGAIN. `renderCycleDial` draws a dial on the first pass and only binds handlers on a second,
+so it is named render and classified wire. The two are answering different questions.
+
+`build` is the honest kind for a step that is one-shot by design. `renderSignsList` runs
+`while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
+rows, consuming its own source, which is the documented "catItem consumes its source"
+behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
+it again throws on a host that no longer exists. `renderFearCurve` reads a note a later
+step fills, so a second call renders MORE than the first. None of these is sloppy, and
+calling them builders says so instead of pretending a fix is pending.
+
+`GYN.render()` runs check, derive and render. The suite asserts that every step it runs is
+idempotent, so a step that stops being repeatable fails the build rather than rotting quietly.
+One allowance: a width-aware chart re-measures its host, so a differing viewBox WIDTH is not
+counted as a difference — `renderHorizonPage` legitimately redraws at 334 then 360.
+```
+
+#### One dispatch
+
+```text
+Keren, V625: "one dispatch." No view hangs a callback on `window` for another view to reach: a handler
+on `window` is invisible — nothing can tell a name nobody answers from a name spelled wrong, so a broken
+control reads as a control that does nothing. An ACTION is named on `GYN` instead: the view that owns the
+answer registers it, the view that needs it fires it, and neither holds a reference to the other. A fire
+with no handler is recorded, which makes the suite able to see it.
+```
 
 ## Who refreshes what
 

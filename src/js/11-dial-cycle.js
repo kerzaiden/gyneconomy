@@ -7,57 +7,26 @@
       var p0 = polar(r, a0), p1 = polar(r, a1), large = (a1 - a0) > 180 ? 1 : 0;
       return "M" + p0[0] + " " + p0[1] + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0] + " " + p1[1];
     }
-    var R = 90; // the seasons ring's radius
-    // The ring closes on itself but for a small seam at 12 o'clock (Keren, V200: "close the cycle — a small gap between
-    // the start and the end"). START is where the first season shape's rounded cap begins; the grey track starts LEAD°
-    // before it (its own cap peeking out ahead of the shape) and runs round to SEAM_END, GAP° short of START — about five
-    // pixels on a phone — so an open cycle's grey closes on its coloured start. The years run from ORIGIN, set so the
-    // first run's rounded cap starts exactly at START.
-    /* Keren, V513: "… Make sure every ring on the outer ring has equal spacing with the grey background and
-       between one another." So the grey leads and trails by the same LEAD° (the cycle's arc gives LEAD° back),
-       and the gap between any two shapes is 2 × MARGIN on every ring, never squeezed.
-
-       Equal gaps are geometry, not a tunable: a quarter of a twelve-year cycle is 7.45° of arc, and a round
-       cap on an 11-unit stroke is 7.0° across on its own, so at that width a one-quarter season leaves no
-       room for a gap. The mark's width is what gives.
-
-       Keren, V514: "I actually like the thinner look, because it matches the inner ring. Apply it to all the
-       cycles." So the ring is 7 wide on every cycle — at 7 against the market band's 6 the two read as one
-       instrument, where at 11 they read as two. The adaptive width survives only as a FLOOR: if a cycle ever
-       runs long enough that 7 will not hold a quarter plus its two gaps, the mark thins further rather than
-       the gaps closing. Today every cycle computes above 7 and takes 7. */
+    var R = 90;
     var START = 2.5, LEAD = 3, GAP = 5, ORIGIN = START - 1.2, SEAM_END = 360 + START - GAP;
-    var MARGIN = 1.2, MIN_CORE = 0.6;   // the visible gap between two shapes is 2 × MARGIN, on every ring
-    var ARC = SEAM_END - ORIGIN + MARGIN - LEAD, degPerYear = ARC / m.dialYears;   // LEAD° of grey at BOTH ends
+    var MARGIN = 1.2, MIN_CORE = 0.6;
+    var ARC = SEAM_END - ORIGIN + MARGIN - LEAD, degPerYear = ARC / m.dialYears;
     var quarterDeg = degPerYear / 4;
-    var MOON_W = 7;   // the ring's width, on every cycle (Keren, V514; see above)
+    var MOON_W = 7;
     var moonW = Math.max(5.5, Math.min(MOON_W, R * (quarterDeg - 2 * MARGIN - MIN_CORE) * Math.PI / 180));
-    // the track stays 5 units wider than the mark it holds — otherwise a thinned ring reads as a wire lying in a
-    // groove rather than as the ring
     var trackW = moonW + 5, capDegT = (trackW / 2) / R * 180 / Math.PI;
     var capDegM = (moonW / 2) / R * 180 / Math.PI;
-    var parts = ['<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>']; // caps reach START−LEAD and SEAM_END
-    var quarters = []; // one entry per moon, in ring order — what the hub reads out and what the badge scrubs across
-    // (nothing sits in the seam — Keren, V199: "a lot going on")
+    var parts = ['<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>'];
+    var quarters = [];
 
-    // One round-ended shape per season (Keren, V177: "divide the outer wheel by season, not by year"; the two Springs
-    // and the two Autumns are each one season, see seasonGroup): consecutive quarters in one season form a run, inset at
-    // both ends by the stroke's cap and MARGIN, so a hair of track shows where the season changed. Inside a run the
-    // quarters are butt-joined (a hair of overlap hides the anti-aliased seam) in the season's colour, and a short
-    // round-capped stub under the first and last quarter rounds the run's ends.
     var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; });
-    var insetDeg = capDegM + MARGIN, runs = [];   // derived from the ring's own width, never squeezed
+    var insetDeg = capDegM + MARGIN, runs = [];
     segs.forEach(function(seg){
       var last = runs[runs.length - 1];
       if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs.push(last = []);
       last.push({ seg:seg, a0:ORIGIN + seg.from * degPerYear, a1:ORIGIN + seg.to * degPerYear });
     });
     runs.forEach(function(run){
-      /* The inset is the SAME on every run, so the gap between any two shapes is 2 × MARGIN and nothing
-         else. A run still cannot be shorter than MIN_CORE — that core is the hover target as well as the
-         mark — so a run with no room left after its two insets keeps the core and takes it from its own
-         middle, symmetrically, rather than from the gap beside it. `moonW` above is chosen so that even a
-         one-quarter run clears this, which is what makes the case exact rather than nearly exact. */
       var r0 = run[0].a0, r1 = run[run.length - 1].a1;
       var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
       if (v1 - v0 < MIN_CORE){ var mid = (r0 + r1) / 2; v0 = mid - MIN_CORE / 2; v1 = mid + MIN_CORE / 2; }
@@ -67,11 +36,9 @@
         quarters.push({ seg:q.seg, a0:q.a0, a1:q.a1, mid:(q.a0 + q.a1) / 2 });
         if (k === 0) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v0, v0 + 0.5) + '"></path>');
         if (last) parts.push('<path class="dial-moon cap ' + step + '" data-cap="' + i + '" d="' + arcPath(R, v1 - 0.5, v1) + '"></path>');
-        parts.push('<path class="dial-moon ' + step + '" data-q="' + i + '" d="' + arcPath(R, s0, last ? s1 : s1 + 0.35) + '"></path>'); // one flat colour per run
+        parts.push('<path class="dial-moon ' + step + '" data-q="' + i + '" d="' + arcPath(R, s0, last ? s1 : s1 + 0.35) + '"></path>');
       });
     });
-    // The market band, just inside the seasons: one segment per calendar year, teal if the S&P 500's total return
-    // closed up, coral if down (the Calendar's colors), the current year year-to-date and lighter.
     var RM = 75, peakMark = "";
     for (var y = era.from; y <= m.endYear; y++){
       var isYtd = m.ongoing && y === calendarTodayY, ret = sp500AnnualReturns[y];
@@ -81,60 +48,36 @@
       var a1 = ORIGIN + (isYtd ? m.elapsedYears : (y - era.from + 1)) * degPerYear - capDeg;
       if (a1 <= a0) continue;
       parts.push('<path class="dial-mkt ' + (ret >= 0 ? "up" : "down") + (isYtd ? " ytd" : "") + '" data-year="' + y + '" d="' + arcPath(RM, a0, a1) + '"></path>');
-      // the cycle's peak: a pale disc with a white dot on the band, Clue's ovulation mark — in the middle of the most
-      // profitable year's segment, since the whole year is the peak
       if (y === m.peakYear){
         var pk = polar(RM, (a0 + a1) / 2);
         peakMark = '<g class="dial-peak ' + (ret >= 0 ? "up" : "down") + '" data-year="' + y + '" transform="translate(' + pk[0] + ' ' + pk[1] + ')"><circle class="disc" r="5.2"></circle><circle class="dot" r="1.9"></circle></g>';
       }
     }
-    if (peakMark) parts.push(peakMark); // after the band, so it sits on top of it
-    // The badge says "Year N" — the cycle's year, and it sits flush after the LAST QUARTER WITH A SEASON, so the
-    // ring reads as one continuous run (Keren, V554: "the year cursor is a bit far from the end, from the
-    // latest quarter Q2 2026 — I want it a bit closer"). The app's edge is the data's, not the calendar's — the
-    // same rule as the two cycle strips (see marketStripHtml).
-    // When the cycle fills the ring there is no room for it before the seam, so it sits on the seam itself, a clasp
-    // where the cycle closed.
+    if (peakMark) parts.push(peakMark);
     var lastMoonEnd = ORIGIN + m.track.filter(function(x){ return !x.isNow; }).reduce(function(mx, x){ return Math.max(mx, x.to); }, 0) * degPerYear;
     var BADGE_R = 13, BADGE_AT = R + 3, badgeHalf = BADGE_R / BADGE_AT * 180 / Math.PI;
     var badgeDeg = lastMoonEnd + (BADGE_R + 3.5) / R * 180 / Math.PI;
     if (badgeDeg + badgeHalf > SEAM_END) badgeDeg = 360;
     var bp = polar(BADGE_AT, badgeDeg);
-    // ---- horizontal centring (Keren, V414: "make sure the padding from the left and the right of the
-    // cycle inside the container are equal — that is the only math we need to look at") ----
-    // Do not offset the wheel to balance the INK (the coloured arc sits on the right through the first half of a
-    // cycle): that buys optical balance with real asymmetry. A circle is centred when its two margins match, so
-    // there is nothing for `drawDial` to set. The centring is the layout's job; see .season-wheel-wrap.
+    // ---- horizontal centring (Keren, V414: "make sure the padding from the left and the right of the ----
     parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + ' ' + bp[1] + ')" style="pointer-events:auto">' +
       '<circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + '</text></g>');
-    // Quarter dots ahead on the inner ring — the rest of a typical cycle, as Clue dots the days ahead (open cycle only).
-    // They run to the track's rounded end at the seam (Keren, Sep 19, 2026), not just to the end of the years' arc, so
-    // the ring reads as one continuous run up to the seam.
-    //
-    // Keren, V554: "the gray dots, they're not evenly spaced at the rest of the cycle. …" So the dots
-    // are spread EVENLY across the arc that is left, not pinned to the quarter grid (which leaves an arbitrary gap
-    // after the band's end). The dots are a COUNT, not dated marks: the caption calls them what is left of a typical
-    // cycle. So the count is the arc divided by a quarter, rounded, and the dots sit at the centres of those equal
-    // slots, which makes the gap before the first and after the last exactly half a gap, the same at both ends.
     if (m.ongoing){
       var degPerQ = degPerYear / 4;
-      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;   // where the market band stops — the last year that has run
-      var dotTo = SEAM_END - 1;                             // the track's rounded end at the seam
+      var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
+      var dotTo = SEAM_END - 1;
       var dotN = Math.round((dotTo - dotFrom) / degPerQ);
       for (var q = 0; q < dotN; q++){
         var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + 0.5) / dotN);
-        parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>'); // on the band only
+        parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
       }
     }
     var dialEl = byId("cycle-dial");
-    // the ring's own width, decided above from how crowded this cycle's ring is, handed to the stylesheet
     dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
     dialEl.style.setProperty("--track-w", trackW.toFixed(2));
     dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
     dialEl.innerHTML = parts.join("");
-    // What the scrubber and the hover need after the ring is drawn: the quarters in ring order, the badge's resting
-    // place, and the polar helper at this ring's radius.
-    dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null }; // parked: the quarter the badge was left on, or null at home
+    dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null };
     hubShowDefault();
   }
   // ---- the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice ----
@@ -156,12 +99,11 @@
     paint();
   }
   GYN.step("wireThemeChoice", wireThemeChoice, "wire"); wireThemeChoice();
-  // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the
-  // badge. Built once — nothing in it changes per cycle — and opened by the legend button in the card's corner.
+  // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
   function renderCycleKicker(){
     var html = '<h4>Legend</h4><span class="marker-sub">The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.</span>' +
       '<div class="legend-head">Seasons</div><div class="legend-rows">' +
-      [["winter","Winter","below the range"],["spring","Spring","below or within the range"],["summer","Summer","above the range"],["autumn","Autumn","within or above the range"]].map(function(r){ // Winter first
+      [["winter","Winter","below the range"],["spring","Spring","below or within the range"],["summer","Summer","above the range"],["autumn","Autumn","within or above the range"]].map(function(r){
         return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
       }).join("") + '</div>' +
       '<p class="caption">The seasons wear the temperature\u2019s colours: periwinkle below the 1–3% range, orange above it — deep where a season sits wholly outside the range (Winter, Summer), light where it straddles it (Spring, Autumn). Tap a quarter to read which season it was in, and why, in the centre.</p>' +
@@ -180,19 +122,12 @@
   }
   GYN.step("renderCycleKicker", renderCycleKicker, "render"); renderCycleKicker();
   // ---- the hub: the reading inside the circle ----
-  // The default is the cycle's own reading (today's for the open cycle, the closing quarter's for a closed one); hovering
-  // or tapping a moon, or scrubbing the badge round the ring, swaps in that quarter until the pointer leaves.
-  var dialState; // set by drawDial; declared without an initializer so this line can't reset it if a render has already run
-  // The hub's popup: one slot in detailTexts, rewritten whenever the hub changes, so the link always opens the quarter
-  // on show (Keren, Sep 19, 2026: "a link below Autumn that will open a pop up with all of this quarter's information").
+  var dialState;
   var hubDetailIdx = detailTexts.length; detailTexts.push("");
-  // The big word is the season, the small rose line under it the theme (Keren, V181: "switch them"). The element ids
-  // say the opposite: season-wheel-hub-theme holds the season's name.
   function hubSet(dateHtml, theme, meta, popupHtml){
     put("season-wheel-hub-date", dateHtml);
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = meta.name; themeEl.classList.remove("bull", "bear");
-    // the theme IS the link: "Inflation ›" rather than the theme and then a "This season ›" line under it
     var who = theme && theme !== meta.name ? theme : "";
     put("season-wheel-hub-detail", !who ? "" :
       (popupHtml
@@ -200,27 +135,19 @@
         : '<div class="who">' + who + '</div>'));
     detailTexts[hubDetailIdx] = popupHtml || "";
   }
-  // The hub's popup for one quarter of a cycle — prose, not figures (see inside).
   function quarterPopup(m, seg, i, isPresent){
     var meta = wheelMeta[seg.season], era = m.era;
     var yearN = Math.floor(seg.from) + 1;
     var when = isPresent ? (m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth)) : qLabel(seg.q);
-    /* Keren, V505: "Summer, Inflation, Inflation — it repeats." The title carries the THEME, so the sub-line
-       takes the season's name and its body term, not `seasonTitle` (name AND theme): two lines, two things. */
     var head = '<h4>' + when + ' · ' + (meta.theme || meta.name) + '</h4>' +
       '<span class="marker-sub">' + meta.name + (meta.altName ? ' · ' + meta.altName : '') +
       ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to) + '</span>';
-    // every quarter reads as prose (Keren, V165: "the data already exists in the app"): the cycle's note for the
-    // present, then the season explained the way the Content tab does — in the economy, in the body, what usually
-    // comes next — with none of the figures, which the cards carry
     var reading = seasonReading[seg.season] || {};
     return head +
       (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:20px;line-height:1.4;color:var(--text-primary)">' + (m.ongoing ? cycleNowNote : era.blurb) + '</p>' : '') +
       (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
       (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
       (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
-      /* the season's watch-list and its passages from the book, from the same `seasonReading` entry: this is
-         where a reader is already asking about this season */
       (reading.watch && reading.watch.length
         ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' +
             reading.watch.map(function(w){ return '<li>' + w + '</li>'; }).join("") + '</ul></div>' : '') +
@@ -234,7 +161,6 @@
   function hubShowDefault(){
     if (dialState.parked != null){ hubShowQuarter(dialState.parked); return; }
     var m = dialState.m, meta = wheelMeta[m.season], qs = dialState.quarters, last = qs[qs.length - 1];
-    // the present is the reading after the last moon: the badge's own quarter
     var presentSeg = { q:last ? last.seg.q : m.reading.gdpLatest.q, from:last ? last.seg.from : 0, season:m.season, reading:m.reading };
     document.querySelector(".season-wheel-hub").classList.remove("away");
     hubSet(m.ongoing ? hubTodayHtml() : "<b>Closed,</b> " + monthLabel(m.endMonth),
@@ -254,22 +180,17 @@
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0); themeEl.classList.toggle("bear", ret < 0);
     put("season-wheel-hub-detail", '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
-      // the compounded return since the cycle's first year; on the most profitable year, the peak is named
       (cum != null ? '<div><b>' + (cum >= 0 ? "+" : "") + cum.toFixed(1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '') + '</div>' : ""));
   }
-  // The dial's interaction is wired once — the SVG element stays, only its contents change per cycle. Everything reads
-  // out in the hub (Keren, Sep 19, 2026): hover or tap a moon for that quarter, hover or tap a band segment for that
-  // year, and press and hold the year badge, then drag round the ring, to scrub quarter by quarter — the badge rides
-  // along and snaps home on release.
   function renderCycleDial(){
     var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
-    var active = null; // the quarter's path and, at a year's end, the stub that rounds it
+    var active = null;
     function mark(i){
       if (active) active.forEach(function(el){ el.classList.remove("active"); });
       active = i == null ? null : Array.prototype.slice.call(dial.querySelectorAll('.dial-moon[data-q="' + i + '"], .dial-moon.cap[data-cap="' + i + '"]'));
       if (active) active.forEach(function(el){ el.classList.add("active"); });
     }
-    var shown = false; // a hovered/tapped moon or year is in the hub (so a reset has something to undo)
+    var shown = false;
     function readTarget(el){
       var t = el.closest && el.closest("[data-q], [data-year]");
       if (!t) return false;
@@ -278,28 +199,22 @@
       shown = true;
       return true;
     }
-    // Back to the parked quarter, or home. Does nothing unless a hover/tap is showing: iOS Safari suppresses a tap's
-    // click when the handlers that run before it (touchstart, the synthesized mousemove) change the page, so a reset
-    // that rewrote the hub on every touch would kill every button on the phone. An ordinary tap touches nothing.
     function reset(){ if (scrubbing || !dialState || !shown) return; shown = false; mark(dialState.parked); hubShowDefault(); }
     dial.addEventListener("mousemove", function(e){ if (scrubbing) return; if (!readTarget(e.target)) reset(); });
     dial.addEventListener("mouseleave", reset);
     dial.addEventListener("touchstart", function(e){ if (scrubbing) return; if (readTarget(e.target)) e.stopPropagation(); }, {passive:true});
-    // a tap or click anywhere else clears a tapped moon — on click, after the tap has completed, never on touchstart
     document.addEventListener("click", function(e){
       if (dial.contains(e.target)) return;
-      if (!scrubbing && dialState && dialState.parked != null){ shown = false; goTo(-1); return; } // a parked badge goes home
+      if (!scrubbing && dialState && dialState.parked != null){ shown = false; goTo(-1); return; }
       reset();
     });
 
-    // Press and hold the badge, drag round the ring: the angle under the pointer picks the quarter.
     var scrubbing = false;
     function angleAt(clientX, clientY){
       var box = dial.getBoundingClientRect(), cx = box.left + box.width / 2, cy = box.top + box.height / 2;
-      var deg = Math.atan2(clientX - cx, -(clientY - cy)) * 180 / Math.PI; // 0 at 12 o'clock, clockwise
+      var deg = Math.atan2(clientX - cx, -(clientY - cy)) * 180 / Math.PI;
       return (deg + 360) % 360;
     }
-    // -1 = home (the badge's own resting place, past the last moon — where it started), -2 = nowhere useful
     function quarterAt(deg){
       var qs = dialState.quarters, best = -1, bestDist = 1e9;
       var homeDist = Math.min(Math.abs(deg - dialState.badgeDeg), 360 - Math.abs(deg - dialState.badgeDeg));
@@ -309,14 +224,12 @@
         if (d < bestDist){ bestDist = d; best = i; }
       }
       if (homeDist <= bestDist && homeDist <= 30) return -1;
-      return bestDist <= 30 ? best : -2; // off the moons (the empty rest of the ring, the seam): keep what is shown
+      return bestDist <= 30 ? best : -2;
     }
     function badgeTo(deg, yearNum){
       var b = dial.querySelector(".dial-today-badge"), p = dialState.polar(dialState.badgeAt, deg);
       if (!b) return;
       b.setAttribute("transform", "translate(" + p[0] + " " + p[1] + ")");
-      // the number in the badge follows the quarter under the pointer — its year of the cycle — and the resting
-      // number comes back on release (Keren, Sep 19, 2026)
       var n = b.querySelector(".num"); if (n) n.textContent = yearNum != null ? yearNum : dialState.m.yearIndex;
     }
     dial.addEventListener("pointerdown", function(e){
@@ -326,7 +239,7 @@
       try { b.setPointerCapture(e.pointerId); } catch(_){}
       e.preventDefault();
     });
-    function goTo(i){ // i: a quarter index, or -1 for home
+    function goTo(i){
       dialState.parked = i >= 0 ? i : null;
       if (i >= 0){ mark(i); hubShowQuarter(i); badgeTo(dialState.quarters[i].mid, Math.floor(dialState.quarters[i].seg.from) + 1); }
       else { mark(null); hubShowDefault(); badgeTo(dialState.badgeDeg); }
@@ -337,8 +250,6 @@
       if (i === -2) return;
       goTo(i);
     });
-    // The badge stays where it is let go (Keren, Sep 19, 2026) — the hub keeps that quarter, and the moon stays ringed;
-    // dragging it back past the last moon, to where it started, brings today (or the close) back.
     function endScrub(e){
       if (!scrubbing) return;
       scrubbing = false;
@@ -353,38 +264,19 @@
   GYN.step("renderCycleDial", renderCycleDial, "wire"); renderCycleDial();
 
   // ---- the temperature chart: the cycle's months, against the 2% target ----
-  // Drawn at one of two widths so the phone gets a chart as tall as the reference's rather than a shrunken copy
-  // of the desktop one; redrawn when the width crosses the breakpoint or the cycle changes.
   var tempState = { model:null, key:null, trend:null };
-  // The two charts no longer share a crosshair (each calls attachHoverTracking itself); chartLink is kept so
-  // drawTemperature's reset of it is harmless.
   var chartLink = { show:[], hide:[] };
-  // Volume's step, the ramp's counterpart to heatStep. Thresholds are the reading's own landmarks: below zero (the
-  // stock shrinking), then up through the 1960–2019 pace of 6.8%, to the 2020–21 flood. The CLASS NUMBER IS FLOW,
-  // NOT SIZE — v5 is the deepest shade and it belongs to the contraction, not to the flood.
-  //
-  // Keren, V390: "when you lose a lot of blood it's dark red. So if you have a lot of blood in the system — the
-  // money volume is really big — then it's a faint pink, because it's abundant. But if you're losing money, then
-  // it's dark red, like heavy flow." Do not map darkness onto the SIZE of the reading, the way a heat ramp maps it
-  // onto temperature: in a body the deep colour is the blood LEAVING, and an abundant supply is the pale state.
-  //
-  // This also keeps the app's severity convention: the money stock contracting is the alarming state — five
-  // quarters in sixty-seven years — and it is the darkest thing on the chart, as on every other page. Magnitude
-  // stays in the columns' height: the 2021 spike is still the tallest bar, it simply reads as flood rather than as
-  // haemorrhage. Height says how much, colour says which way the body is going.
   function m2Step(v){
     return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
   }
-  // The heat ramp's five steps, shared so the peek and the page cannot drift apart. Binned by the reading itself
-  // rather than by rank, so the same CPI is always the same colour whichever cycle is on screen.
   function heatStep(v){
-    if (v < 1) return "s0";                              // below the range: periwinkle, the app's cold
+    if (v < 1) return "s0";
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
   function drawTemperature(m){
     var svg = byId("temp-svg"), el = svgEl;
     var TARGET = 2.0, RANGE_LO = 1.0, RANGE_HI = 3.0;
-    var FUTURE = m.ongoing ? 8 : 3;    // the axis runs a few months past the last column, as the reference does
+    var FUTURE = m.ongoing ? 8 : 3;
     var compact = window.innerWidth <= 640, key = m.era.from + "|" + compact;
     tempState.model = m;
     if (key === tempState.key) return;
@@ -406,8 +298,8 @@
 
     var W = compact ? 400 : 780, H = compact ? 270 : 250, padL = AXIS.L, padR = AXIS.R, padB = 26;
     var tx0 = padL + ((W - padL - padR) / slots) * (lastSlot + 0.5);
-    var valueRight = (W - padR - tx0) >= 84;          // room for the reading to the right of the end line?
-    var padT = valueRight ? 46 : 62;                 // when not, it stacks under the date on the left, so the label needs more headroom
+    var valueRight = (W - padR - tx0) >= 84;
+    var padT = valueRight ? 46 : 62;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var slotW = innerW / slots;
     function xc(i){ return padL + slotW * (i + 0.5); }
@@ -416,35 +308,26 @@
     svg.innerHTML = "";
     chartLink.show = []; chartLink.hide = [];
 
-    // The fitted trend across the cycle's months, drawn but hidden until the row below is pressed. The chart already
-    // carries a bold plum AVERAGE line, and two plum lines meaning different things on one picture is a fault: so when
-    // the trend is asked for, the average steps back with the columns, and only one plum line is ever on screen.
     var tFit = (function(){
       var t = trendOf(vals, "points", "month");
       return t && t.fit && t.fit.n > 1 ? t : null;
     })();
 
-    // the 1–3% band as a rounded track (the dial's own track, laid flat), the gridlines and axis labels, the 2% target dotted
     var bandH = y(RANGE_LO) - y(RANGE_HI);
     svg.appendChild(el("rect", {x:padL, y:y(RANGE_HI), width:innerW, height:bandH, rx:Math.min(10, bandH / 2), class:"temp-range"}));
     for (var g = minV; g <= maxV; g += step){
-      /* one grid vocabulary for the app: these charts use the histories' `.bt-grid`/`.bt-yl`, so "change
-         how a gridline looks" is one edit */
-      if (g !== TARGET) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(g), y2:y(g), class:"bt-grid"})); // the 2% row is the target line
+      if (g !== TARGET) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(g), y2:y(g), class:"bt-grid"}));
       var gl = el("text", {x:padL - 6, y:y(g) + 3, class:"bt-yl", "text-anchor":"end"});
       gl.textContent = g + "%";
       svg.appendChild(gl);
     }
     svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(TARGET), y2:y(TARGET), class:"temp-target"}));
-    if (W - padR - tx0 >= 70){ // the tag needs clear track to the right of the end line; otherwise the 2% tick says it
+    if (W - padR - tx0 >= 70){
       var tl = el("text", {x:W - padR, y:y(TARGET) - 4, class:"temp-target-label", "text-anchor":"end"});
       tl.textContent = "2% target";
       svg.appendChild(tl);
     }
 
-    // One column per month, on the yellow-to-orange ramp: a magnitude gets a sequential encoding, and for a
-    // temperature that ramp is also simply what heat looks like. Five steps, ordered by lightness so the picture
-    // still reads as a ramp with the colour taken out; below the range they go periwinkle, the app's cold.
     var yT = y(TARGET), yBase = Math.min(padT + innerH, y(0));
     var colW = Math.max(2.2, Math.min(9, slotW * COL_FILL));
     data.forEach(function(d){
@@ -454,13 +337,8 @@
         "stroke-width":colW.toFixed(1), class:"temp-col " + heatStep(d.v)
       }));
     });
-    // The average, the one saturated line in the picture, carrying its own value at the end — the move that makes the
-    // reference chart work: every column is then read as above it or below it.
     var avgV = data.reduce(function(a, d){ return a + d.v; }, 0) / data.length;
     svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(avgV), y2:y(avgV), class:"temp-avg"}));
-    // Where to put its value: at the top left it lands on the tall 2022 columns and cannot be read. So the label is
-    // placed in the clearest stretch of the line — the run of months whose columns stay furthest below it — and sits
-    // on a --surface plate, the app's own treatment for a label floating over a plot.
     var avgText = "average " + avgV.toFixed(1) + "%", avgW = avgText.length * 5.6 + 8, avgY = y(avgV);
     var bestX = padL + 4, bestClear = -Infinity;
     for (var cx0 = padL + 2; cx0 + avgW <= W - padR - 2; cx0 += 6){
@@ -468,12 +346,11 @@
       data.forEach(function(d){
         var px = xc(slotOf(d.m));
         if (px < cx0 - 3 || px > cx0 + avgW + 3) return;
-        clear = Math.min(clear, y(d.v) - avgY);          // how far this column's top sits BELOW the line
+        clear = Math.min(clear, y(d.v) - avgY);
       });
-      if (clear === Infinity) clear = 1e6;               // no column under the label at all
+      if (clear === Infinity) clear = 1e6;
       if (clear > bestClear){ bestClear = clear; bestX = cx0; }
     }
-    // above the line when the columns beneath it are clear, below it when they are not
     var avgAbove = bestClear > 13;
     var plateY = avgAbove ? avgY - 15 : avgY + 3;
     svg.appendChild(el("rect", {x:bestX.toFixed(1), y:plateY.toFixed(1), width:avgW.toFixed(1), height:13, rx:3, class:"chart-label-plate"}));
@@ -481,8 +358,6 @@
     avgL.textContent = avgText;
     svg.appendChild(avgL);
 
-    // the fit itself, in a group the CSS shows only while the trend is pressed. Its ends carry the
-    // fit's own values, so it needs no legend — the same contract the battery and diverging charts use.
     if (tFit){
       var fg = el("g", {class:"fit"});
       var fx0 = xc(slotOf(data[0].m)), fx1 = xc(slotOf(last.m));
@@ -498,10 +373,8 @@
       });
       svg.appendChild(fg);
     }
-    tempState.trend = tFit;   // the row below reads the same fit, so the picture and the sentence are one thing
+    tempState.trend = tFit;
 
-    // year labels under the middle of each year's twelve columns — the growth chart below puts its bars and labels on
-    // the same axis, so the two read as one timeline (every other year when the cycle is long enough to crowd them)
     var everyOther = (m.endYear - startYear + 1) > 6;
     for (var ly = startYear; ly <= m.endYear; ly++){
       var ls = (ly - startYear) * 12 + 5.5;
@@ -512,11 +385,8 @@
       svg.appendChild(yl);
     }
 
-    // the end line: today for the open cycle, the last month for a closed one — the date and the cycle year to its
-    // left, the reading to its right (or stacked left when the axis leaves too little room on the right)
     var tx = xc(lastSlot);
     svg.appendChild(el("line", {x1:tx, x2:tx, y1:padT - 8, y2:padT + innerH, class:"temp-today-line"}));
-    // today's badge on the tip of the last column — the dial's peak marker, a dark disc with a white dot
     var lastY = y(last.v) + (last.v >= TARGET ? 0 : 0);
     var badge = el("g", {class:"temp-badge", transform:"translate(" + tx.toFixed(1) + " " + lastY.toFixed(1) + ")"});
     badge.appendChild(el("circle", {r:5, class:"disc"})); badge.appendChild(el("circle", {r:1.75, class:"dot"}));
@@ -535,8 +405,6 @@
     readEl.textContent = readText;
     svg.appendChild(readEl);
 
-    // hover: crosshair + a filled dot on the reading + tooltip on the nearest month (slots past the end read as the end;
-    // a month with no reading says so)
     var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:padT + innerH, class:"crosshair"});
     svg.appendChild(crosshair);
     var hoverDot = el("circle", {r:4, class:"chart-hover-dot"});
@@ -558,19 +426,14 @@
       tooltip.style.opacity = 1;
     }
     function hide(){ crosshair.setAttribute("opacity", 0); hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
-    // the shared helper divides innerW into (count − 1) steps from padL; offsetting by half a slot makes step i land on month i's center
-    attachHoverTracking(hit, svg, W, padL + slotW / 2, innerW - slotW, slots, showAt, hide); // its own crosshair
+    attachHoverTracking(hit, svg, W, padL + slotW / 2, innerW - slotW, slots, showAt, hide);
     drawGrowth(m, { W:W, padL:padL, padR:padR, slots:slots, slotW:slotW, xc:xc, startYear:startYear, compact:compact, everyOther:everyOther });
   }
   // ---- the growth chart, on the temperature chart's x-axis (Keren, Sep 19, 2026: the years must align) ----
-  // A column per quarter of the cycle (real GDP, year over year, each on its middle month), the cycle's average as a
-  // dashed line; the growth trend is read out in words at the end, not drawn.
   function drawGrowth(m, sc){
     var svg = byId("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
-    var startYear = sc.startYear, endM = m.endMonth; // the last month on the Temperature axis bounds the quarters shown
+    var startYear = sc.startYear, endM = m.endMonth;
     var endKey = parseInt(endM.slice(0, 4), 10) * 12 + parseInt(endM.slice(5, 7), 10);
-    // whichever economy is chosen: the United States by default, otherwise one of the peers, read exactly
-    // the same way — its own year-over-year quarters, its own regime, its own average over what is shown
     var shown = gdpPeers.filter(function(c){ return c.on; })[0] || null;
     function inCycle(q){
       var yy = parseInt(q.slice(0, 4), 10), qn = parseInt(q.slice(6), 10);
@@ -582,46 +445,39 @@
     function regimeOf(d){ return shown ? (shown.regime[d.q] || (d.v >= 0 ? "expansion" : "contraction")) : quarterRegime(d); }
     var W = sc.W, H = sc.compact ? 270 : 250, padL = sc.padL, padR = sc.padR, padB = 26;
     var last = qs[qs.length - 1];
-    function slotOfQ(q){ var yy = parseInt(q.slice(0, 4), 10), qn = parseInt(q.slice(6), 10); return (yy - startYear) * 12 + (qn - 1) * 3 + 1; } // the quarter's middle month
+    function slotOfQ(q){ var yy = parseInt(q.slice(0, 4), 10), qn = parseInt(q.slice(6), 10); return (yy - startYear) * 12 + (qn - 1) * 3 + 1; }
     var lastSlot = last ? slotOfQ(last.q) : 0;
-    var tx = sc.xc(lastSlot), valueRight = (W - padR - tx) >= 46, padT = 28; // just the reading above the line
+    var tx = sc.xc(lastSlot), valueRight = (W - padR - tx) >= 46, padT = 28;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var vals = qs.map(function(d){ return d.v; });
     var lo = Math.min(-1, Math.floor(Math.min.apply(null, vals.concat([0])))), hi = Math.max(2, Math.ceil(Math.max.apply(null, vals.concat([1])))) + 1;
     var step = (hi - lo) > 8 ? 2 : 1; lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
     function y(v){ return padT + innerH - ((v - lo) / (hi - lo)) * innerH; }
     var tooltip = byId("growth-tooltip");
-    tooltip.style.opacity = 0; // a redraw (a new cycle, a new economy) leaves no stale reading hanging over the plot
+    tooltip.style.opacity = 0;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML = "";
 
-    // gridlines and axis labels, as on the Temperature chart, the zero line dotted
     for (var t = lo; t <= hi; t += step){
-      if (t !== 0) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(t), y2:y(t), class:"bt-grid"})); // the zero row is the zero line
+      if (t !== 0) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(t), y2:y(t), class:"bt-grid"}));
       var gl = el("text", {x:padL - 6, y:y(t) + 3, class:"bt-yl", "text-anchor":"end"});
       gl.textContent = t + "%";
       svg.appendChild(gl);
     }
     var y0 = y(0);
     svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y0, y2:y0, class:"temp-target"}));
-    // the cycle's average (closed years, dashed) behind the line
     var firstSlot = qs.length ? slotOfQ(qs[0].q) : 0;
-    // the cycle's own average for the United States (its closed years); for another economy, the mean of what is drawn
     var shownAvg = shown ? vals.reduce(function(a, b){ return a + b; }, 0) / (vals.length || 1) : g.avg;
     var avgX2 = sc.xc(lastSlot) + sc.slotW, avgY = y(shownAvg);
-    svg.appendChild(el("line", {x1:sc.xc(firstSlot) - sc.slotW, x2:avgX2, y1:avgY, y2:avgY, class:"gdp-era-avg"})); // behind the line
-    // its label in the graph (Keren, Sep 19, 2026: "next to the dashed line") — after the line's end when there is room,
-    // otherwise above its right end, flush with the axis
+    svg.appendChild(el("line", {x1:sc.xc(firstSlot) - sc.slotW, x2:avgX2, y1:avgY, y2:avgY, class:"gdp-era-avg"}));
     var avgText = "average " + fmtSigned(shownAvg, 1) + "%", avgW = avgText.length * 6.1, avgH = 10;
-    // candidate spots in order of preference — after the line's end on the line, else at either end above or below it —
-    // the first whose box clears every reading (and the badge) wins; the phone's crowded end makes this necessary
     var avgPts = [];
-    qs.forEach(function(d, i){ // the readings, plus points along the straight run to the next one so the line itself counts
+    qs.forEach(function(d, i){
       var px = sc.xc(slotOfQ(d.q)), py = y(d.v); avgPts.push({x:px, y:py});
       if (i < qs.length - 1){ var nx = sc.xc(slotOfQ(qs[i + 1].q)), ny = y(qs[i + 1].v); for (var k = 1; k < 4; k++) avgPts.push({x:px + (nx - px) * k / 4, y:py + (ny - py) * k / 4}); }
     });
-    if (last) avgPts.push({x:tx, y:y(last.v)}); // the badge
-    function hits(x1, y1){ // how many points the box (left/top x1,y1) covers; off the plot counts as many
+    if (last) avgPts.push({x:tx, y:y(last.v)});
+    function hits(x1, y1){
       if (x1 < padL || x1 + avgW > W - padR) return 99;
       return avgPts.filter(function(pt){ return pt.x > x1 - 5 && pt.x < x1 + avgW + 5 && pt.y > y1 - 5 && pt.y < y1 + avgH + 5; }).length;
     }
@@ -630,17 +486,12 @@
       {x:W - padR - avgW, y:avgY - avgH - 3}, {x:W - padR - avgW, y:avgY + 3}, {x:avgX2 - avgW, y:avgY - avgH - 3}, {x:avgX2 - avgW, y:avgY + 3}
     ];
     var spot = null, best = Infinity;
-    cands.forEach(function(c){ var h = hits(c.x, c.y); if (h < best){ best = h; spot = c; } }); // the first clear spot, else the least crowded
-    // on a small surface chip (the DSM's treatment): the label reads even where it crosses a line or a grid row
+    cands.forEach(function(c){ var h = hits(c.x, c.y); if (h < best){ best = h; spot = c; } });
     svg.appendChild(el("rect", {x:(spot.x - 3).toFixed(1), y:(spot.y - 1.5).toFixed(1), width:(avgW + 6).toFixed(1), height:(avgH + 4).toFixed(1), rx:3, class:"chart-label-plate"}));
     var avgLbl = el("text", {x:spot.x.toFixed(1), y:(spot.y + avgH - 1.5).toFixed(1), class:"temp-target-label avg-label", "text-anchor":"start"});
     avgLbl.textContent = avgText;
     svg.appendChild(avgLbl);
 
-    // the columns, on the Temperature chart's monthly axis (Keren, Sep 19, 2026: "align with inflation"): GDP is
-    // published by quarter, so each quarter's figure sits on its middle month — coloured by the season model's regime,
-    // never by the sign of growth: the sign is the level of growth, not its direction, and would contradict the word
-    // on the panel.
     var bySlot = {}, pts = qs.map(function(d){ bySlot[slotOfQ(d.q)] = d; return {x:sc.xc(slotOfQ(d.q)), y:y(d.v)}; });
     var colW = Math.max(2.4, Math.min(10, sc.slotW * 3 * COL_FILL));
     qs.forEach(function(d, qi){
@@ -648,16 +499,10 @@
       svg.appendChild(el("path", {
         d:"M" + cx.toFixed(1) + "," + y0.toFixed(1) + "L" + cx.toFixed(1) + "," + y(d.v).toFixed(1),
         "stroke-width":colW.toFixed(1),
-        // two levels, because they are two different facts: the season model's falling trend, and a quarter that
-        // actually shrank. A quarter can be both, and then the harder one wins.
         class:"gdp-col " + (d.v < 0 ? "below" : regimeOf(d) === "contraction" ? "neg" : "pos")
       }));
     });
 
-    // (no trend line — Keren, Sep 19, 2026: the end read-out's "trend rising/falling" and the chip's tag already say
-    // it; the fit itself is r.growthSlopeQ)
-
-    // year labels under mid-year, exactly where the Temperature chart puts them
     for (var ly = startYear; ly <= m.endYear; ly++){
       var ls = (ly - startYear) * 12 + 5.5;
       if (ls >= sc.slots) break;
@@ -667,8 +512,6 @@
       svg.appendChild(yl);
     }
 
-    // the end: the reading alone on the end line, and the badge on it (Keren, V214: the quarter is on the axis, the
-    // series and the trend are already said above and in the hover — "only leave the +2.1%")
     if (last){
       svg.appendChild(el("line", {x1:tx, x2:tx, y1:padT - 8, y2:padT + innerH, class:"temp-today-line"}));
       var valueEl = el("text", {x:valueRight ? tx + 7 : tx - 7, y:18, class:"temp-today-value", "text-anchor":valueRight ? "start" : "end"});
@@ -679,7 +522,6 @@
       svg.appendChild(badge);
     }
 
-    // hover / tap: the nearest quarter (any month-slot resolves to its quarter's point on the line)
     var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:padT + innerH, class:"crosshair"});
     svg.appendChild(crosshair);
     var hoverDot = el("circle", {r:4, class:"chart-hover-dot"});
@@ -688,18 +530,18 @@
     svg.appendChild(hit);
     function showAt(i){
       if (i > lastSlot + 1) i = lastSlot;
-      var qi = Math.floor(i / 3) * 3 + 1, d = bySlot[qi]; if (!d){ hide(); return; } // this chart only; the Temperature chart keeps its reading
-      var px = sc.xc(Math.min(i, lastSlot + 1)), qx = sc.xc(qi); // the crosshair on the hovered month (one line through both panels), the dot on the quarter's point
+      var qi = Math.floor(i / 3) * 3 + 1, d = bySlot[qi]; if (!d){ hide(); return; }
+      var px = sc.xc(Math.min(i, lastSlot + 1)), qx = sc.xc(qi);
       crosshair.setAttribute("x1", px); crosshair.setAttribute("x2", px); crosshair.setAttribute("opacity", 1);
       hoverDot.setAttribute("cx", qx); hoverDot.setAttribute("cy", y(d.v)); hoverDot.setAttribute("class", "chart-hover-dot " + (regimeOf(d) === "contraction" ? "neg" : "pos")); hoverDot.style.opacity = 1;
       tooltip.innerHTML = "<b>" + qLabel(d.q) + " \u00b7 " + regimeOf(d) + "</b>" +
-        (shown ? shown.name + " " : "real GDP ") + fmtSigned(d.v, 1) + "% YoY"; // the economy's name in the hover
+        (shown ? shown.name + " " : "real GDP ") + fmtSigned(d.v, 1) + "% YoY";
       tooltip.style.left = (px / W * 100) + "%";
       tooltip.style.top = (Math.min(y(d.v), y0) / H * 100) + "%";
       tooltip.style.opacity = 1;
     }
     function hide(){ crosshair.setAttribute("opacity", 0); hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
-    attachHoverTracking(hit, svg, W, padL + sc.slotW / 2, innerW - sc.slotW, sc.slots, showAt, hide); // its own crosshair
+    attachHoverTracking(hit, svg, W, padL + sc.slotW / 2, innerW - sc.slotW, sc.slots, showAt, hide);
   }
   function wireResize(){
     var resizeTimer = null;
@@ -723,20 +565,11 @@
   function renderCycleView(m, dialOnly){
     var era = m.era, meta = wheelMeta[m.season], r = m.reading;
     drawDial(m);
-    /* Keren, V615, of a closed cycle opened from Analysis: "I see temperature and growth charts that are not
-       matching the history component that we built. And we basically don't need them because the cycle is
-       closed." They repeat the Weather rows beneath them, and they print "CURRENT CYCLE", which over a closed
-       cycle is a false statement. So a closed cycle gets the DIAL and nothing else from this function, and the
-       two cards stay in the metric-page drawers, still showing the cycle that is actually current. */
     if (dialOnly){ shownEraModel = m; shownEra = era; return; }
 
-    // temperature
     drawTemperature(m);
-    // no (i) here: the note is the Temperature page's "More details" row, under Highlights
     byId("temp-kicker").textContent = "Temperature";
     byId("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
-    // the cycle's total price change, in the same box the Growth card gives its total expansion ("change", not
-    // "rise", because the figure can be negative — see the note on the row)
     var infl = eraInflation(era), iy = infl.years;
     var tempStats = byId("temp-stats");
     tempStats.className = iy.length ? "cv-stats cycle-stats" : "cv-stats";
@@ -745,23 +578,13 @@
         '%</div><div class="cv-stat-l"><span>total price change, ' +
         (iy.length === 1 ? String(iy[0]) : iy[0] + "–" + iy[iy.length - 1]) + '</span></div></div>'
       : "";
-    // No core CPI (Keren, V378: "drop the core CPI year over year, we don't need it — we are only looking at the
-    // formal inflation rate …"): the page has one temperature, and a second beside it invites a comparison the page
-    // is not making.
     tempStats.innerHTML = tempStatsHtml;
-    // the Temperature page's own copy, under its history chart — same figure, written here, so
-    // the card and the page can never disagree about what this cycle cost
 
-
-
-    // growth, year by year, and the market's year cards
     var g = m.growth;
-    byId("growth-kicker").textContent = "Growth";   // likewise
-    var gdpLabel = byId("subj-label-gdp"); // the drawer's row carries the title and its (i)
-    if (gdpLabel) gdpLabel.textContent = "Growth";   // the note is the page's More details row
-    byId("growth-sub").textContent = ""; // the chart's end read-out already names the series
-    // the total expansion over the closed years as the card's big number (Keren, Sep 19, 2026: "put the number at a
-    // prominent place"), its years beneath it with the trend word — the per-year rate is the "average" line in the graph
+    byId("growth-kicker").textContent = "Growth";
+    var gdpLabel = byId("subj-label-gdp");
+    if (gdpLabel) gdpLabel.textContent = "Growth";
+    byId("growth-sub").textContent = "";
     var yrs = g.years, span = yrs.length ? (yrs.length === 1 ? String(yrs[0]) : yrs[0] + "–" + yrs[yrs.length - 1]) : "";
     var statsHtml = yrs.length
       ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(g.total, 0) + '%</div><div class="cv-stat-l"><span>total growth, ' + span + '</span></div></div>'
@@ -769,28 +592,19 @@
     var statsEl = byId("growth-stats");
     statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
     statsEl.innerHTML = statsHtml;
-    // the Growth page's own copy, under its history chart — written from the same figure, here,
-    // so the two can never disagree about what this cycle is worth
     renderGrowthPhase(m);
     shownEraModel = m;
     shownEra = era;
   }
-  // the tag says the phase of whatever the chart is drawing — the cycle's own reading for the United States, and for
-  // another economy its latest regime by the same rule
   function renderGrowthPhase(m){
     var shown = gdpPeers.filter(function(c){ return c.on; })[0], reg = m.reading.regime;
-    if (shown){ // the head's ⋯ menu already names the economy
+    if (shown){
       var qs = Object.keys(shown.regime).sort().filter(function(q){ return parseInt(q, 10) <= m.endYear; });
       reg = qs.length ? shown.regime[qs[qs.length - 1]] : reg;
     }
     put("growth-phase", '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>');
   }
-  /* ---------------- The economy the Growth chart draws -------
-     Keren, V613: "I see we built a country picker. Put it in the growth page under the three dots in history."
-     A WHICH-SERIES choice belongs in the head's ⋯ menu (Keren, V522: "you can put it in the three dots on the
-     history container"), not in a control of its own. One economy at a time, the United States by default.
-     The group is BUILT FRESH on every paint, so it reads the live choice and the live cycle without being told
-     when either moved; and it returns nothing at all for a cycle no peer's series reaches. */
+  /* ---- The economy the Growth chart draws ---- */
   function peerChosen(){ return gdpPeers.filter(function(c){ return c.on; })[0] || null; }
   function peerReaches(m){
     return !!m && gdpPeers.some(function(c){
@@ -813,8 +627,6 @@
         return row(!!c.on, c.code, c.name);
       }).join("") }];
   };
-  /* The pick itself. One economy at a time, and drawTemperature redraws BOTH charts — clearing
-     the key first, because an unchanged key is how that function skips a redraw. */
   GYN.on("pickPeer", function(code){
     gdpPeers.forEach(function(c){ c.on = c.code === code; });
     if (shownEraModel) renderGrowthPhase(shownEraModel);
@@ -825,7 +637,7 @@
   var shownEraModel = null;
   function showCycle(era, dialOnly){ if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly); }
 
-  // ---------------- A cycle's season strip (carried by the one cycle row) ----------------
+  // ---- A cycle's season strip (carried by the one cycle row) ----
   var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
   function seasonStripHtml(cyc, spanOverride){
     var groupName = stripGroupName;
@@ -837,27 +649,16 @@
         last.n++; last.to = seg.q; last.seasons[seg.season] = true;
       });
       var done = segs.length;
-      /* Keren, V517: "make the grey dots match the average cycle length — and when you have longer cycles,
-         just make them full width. The dots can represent the average that is left, not compared to the
-         longest cycle."
-         So the scale is a typical cycle — the same one the DIAL uses — never the longest cycle on the board.
-         A cycle shorter than typical shows what is missing from one, a cycle at or past it fills the row, and
-         inside any row the seasons keep their true proportions — flex does that on its own once the total is
-         the row's own length. `spanOverride` is for the market strip, which must share whatever number the
-         seasons landed on. */
       var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                           cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
       var ahead = Math.max(0, span - done);
       var pills = runs.map(function(r){
         var names = Object.keys(r.seasons).map(function(k){ return seasonTitle(wheelMeta[k]); }).join(" · ");
-        // the geometry goes inline, not in a class: the flex on this same element is inline, and a class cannot
-        // out-weigh it (a width in .strip-run.one would never take effect)
         return '<span class="strip-run ' + r.g + (r.n === 1 ? ' one' : '') + '" style="' +
           'flex:' + r.n + ' 1 0' + '" title="' + groupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
       }).join("");
       if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + '</span>';
       var lastSeg = segs[segs.length - 1];
-      // one line, not a card's two-column footer — and without the S&P total, which the row's own chip carries
       var foot = cyc.ongoing
         ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
         : '<b>' + Math.round(m.elapsedYears) + ' years</b> · ended in <b>' + wheelMeta[lastSeg.season].name + '</b>';
@@ -866,23 +667,14 @@
                foot:foot };
     })();
   }
-  // The market over the same span, in the same clothes. Measured in QUARTERS like the seasons above
-  // it — a closed year is four, the year in progress is as far as today — so the two strips describe the same axis
-  // and can be read against each other: where the market turned, and which season it turned in.
   function marketStripHtml(cyc, spanQ, doneQ){
     var endY = cyc.ongoing ? calendarTodayY : cyc.to, years = [];
     for (var y = cyc.from; y <= endY; y++) if (sp500AnnualReturns[y] != null) years.push(y);
     if (!years.length) return "";
-    /* Keren, V552, on the AI and COVID rows: "the season bar and the bull bear bar, they don't end in the
-       same line …"
-       NOW is the data's edge, not the calendar's: the seasons stop at the last quarter the app has a GDP and
-       CPI reading for, and a season that has not been computed has not happened as far as this page is
-       concerned. So the open year takes exactly the quarters the seasons have left over (doneQ), and the two
-       strips end on the same line by construction. */
     var closedQ = 0;
     years.forEach(function(yy){ if (!(cyc.ongoing && yy === calendarTodayY)) closedQ += 4; });
     var ytdQ = typeof doneQ === "number" ? doneQ - closedQ : Math.round(cycleYtdFraction * 4);
-    if (!(ytdQ >= 1)) ytdQ = 1;   // a year that has begun is never nothing, however the arithmetic lands
+    if (!(ytdQ >= 1)) ytdQ = 1;
 
     var runs = [];
     years.forEach(function(yy){
@@ -894,12 +686,10 @@
       last.q += q; last.to = yy;
     });
     var done = runs.reduce(function(a, r){ return a + r.q; }, 0);
-    // the seasons' span, not one of its own: two strips over one cycle must agree about how long the cycle is
     var span = Math.max(spanQ || 0, done);
     var ahead = Math.max(0, span - done);
     var pills = runs.map(function(r){
       var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
-      // the geometry goes inline for the same reason the seasons' does (see seasonStripHtml)
       return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' +
         "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " +
         (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
@@ -911,22 +701,11 @@
       '">' + pills + "</div>";
   }
 
-  // A run is a capsule or a dot, and never the shape in between (Keren, Sep 20, 2026, on the COVID-19 cycle: "there is
-  // an ellipse in the blue colour — I want it aligned, or if it's too short, make it a dot"). The rule in one number:
-  // **a run must be at least half as long again as it is tall, or it becomes the dot the ring draws** — and the length
-  // it gives up goes back to the runs that can use it.
-  // It has to be measured rather than computed, because a run's length depends on the strip's width and on how many
-  // of its neighbours have already settled; the pass takes the narrowest offender each time round and stops when
-  // none is left. A strip with no width has not been shown yet, and settles when its tab opens.
-  //
-  // A one-quarter season goes through the pass too (Keren, V553: "in the big tech cycle … Q4 2018 is squeezed. I want
-  // it to be round"): on a long cycle at phone width a quarter is seven pixels, so it too settles to the 12px dot.
   var STRIP_MIN_RATIO = 1.5;
   function settleStrips(){
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip){
       if (!strip.clientWidth) return;
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
-      // start from the flexible state every time, so a strip that gets wider can give a run its length back
       runs.forEach(function(r){
         r.classList.remove("settled");
         r.style.flex = r.getAttribute("data-flex") || r.style.flex;
@@ -943,7 +722,7 @@
         if (!worst.el.getAttribute("data-flex")) worst.el.setAttribute("data-flex", worst.el.style.flex);
         worst.el.classList.add("settled");
         worst.el.style.flex = "none";
-        worst.el.style.width = "15px";   // 12 for the dot, 3 for the separation beside it
+        worst.el.style.width = "15px";
       }
     });
   }

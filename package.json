@@ -1,6 +1,6 @@
 {
   "name": "gyneconomy",
-  "version": "649.0.0",
+  "version": "650.0.0",
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
@@ -25,9 +25,10 @@
     "comp": "node tools/components.js",
     "comp:check": "node tools/components.js --check",
     "comp:bless": "node tools/components.js --bless",
-    "check": "npm run build:check && npm run email && npm run map:check && npm run comp:check && npm run test:tools",
+    "check": "npm run build:check && npm run email && node tools/uncomment.js --check && npm run map:check && npm run comp:check && npm run test:tools",
     "check:slow": "npm test && npm run a11y:check",
-    "check:all": "npm run check && npm run check:slow"
+    "check:all": "npm run check && npm run check:slow",
+    "uncomment": "node tools/uncomment.js"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",

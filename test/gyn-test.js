@@ -63,13 +63,9 @@ const SRC_MUST = [
      so the SITE stopped at V551 while twenty-nine versions were committed, tagged and published to the
      artifact. A pin that must be edited deliberately is the point; not noticing for a month is not. */
   ['AXIS',     /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/],
-  ['no .vh-line', /`\.vh-line` is gone/],
-  /* V602, Keren: "this behaviour should apply to all history menus \u2014 make it a rule for the future", and
-     "it should also behave like a component." The rule is kept by there being ONE menu shape: `menu` returns
-     groups and headMenuHtml drills them. This pins the sentence that says so, because the way a component
-     quietly becomes two is somebody adding back a shorter path for one page. */
-  ['one menu shape', /THE HEAD MENU IS ONE COMPONENT/],
-    ['one chart frame', /THE HISTORY FRAME IS ONE COMPONENT/],
+  /* V650: the source keeps no comments, so nothing here pins a sentence in one. The rules the three
+     comment pins protected (no `.vh-line`; one head menu; one history frame) are stated in CLAUDE.md. */
+  ['no .vh-line', /^(?![\s\S]*\.vh-line\b)/],
 ];
 
 const results = [];

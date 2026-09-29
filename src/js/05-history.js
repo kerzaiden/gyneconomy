@@ -1,44 +1,24 @@
-  /* ---------------- the history card's head ----------------
-     Keyed by the id `histControls` already receives, so a page's head costs it nothing: no call site passes a
-     title, a mark or a note. `title` is a string or a function, because Pressure's names the maturity chosen on
-     the control below it and Horizon's names the spread. `mark` is null on exactly one page — the federal
-     deficit, a marker inside Economic power with no glyph of its own; a blank badge is worse than none, so the
-     head renders without one until Keren picks one. */
-  var HIST_NOTE = {};   // filed by panelRow(o.head) — the page's note, never a second copy of it
+  /* ---- the history card's head ---- */
+  var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
     '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
-  /* Keren, V608: "capital letters in the beginning of each word, and that is true for all titles." Title case
-     on every head; short joining words ("of", "over") stay lowercase, which is what title case is. "Federal
-     Funds Rate", not "Effective federal funds rate": the effective rate is what the chart plots and what the
-     note explains. */
   var HIST_HEAD = {
-    /* Keren, V606: "I don't need the year over year, because the graph itself shows me it's by quarters and
-       the graph shows me the timeline. That goes to all history components." A head names WHAT is measured;
-       the axis names WHEN. A unit stays ("Share of Income", "Against Fair Value"), because a unit is part of
-       what the reading IS. */
     "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI" },
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP" },
-    /* Keren, V586: "use the same icon as the pulse icon in the circulation page". Each head wears its own
-       reading's mark, as signMarks decides it (Pulse:ecgSvg, Activity:trendUpSvg). */
     "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment Rate" },
     "sheet-metric-power":      { mark:boltSvg,
-                                 title:"Power Supply" },   // "one charge per year" is what the x axis says, so the title leaves it out
+                                 title:"Power Supply" },
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, Against Fair Value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt Service, Share of Income" },
     "deficit-range":           { mark:null,       title:"Federal Deficit or Surplus, Share of GDP" },
     "volume-range":            { mark:volumeSvg,  title:"M2 Money Stock" },
     "pulse-range":             { mark:ecgSvg,     title:"Velocity of Money (M2)" },
-    /* Horizon's and Pressure's titles, menus and notes are filed at RUNTIME by `drawHznHead` and
-       `drawPressureHead`, because `maturities` and `matPick` are local to the block that declares them.
-       Writing them in this literal throws "maturities is not defined" on every open of the menu. */
-    "hzn-range":               { mark:sunriseSvg, title:"" },   // drawHznHead sets all four
+    "hzn-range":               { mark:sunriseSvg, title:"" },
     "desire-range":            { mark:flameSvg,   title:"High-Yield Spread over Treasuries" },
     "fear-range":              { mark:umbrellaSvg, title:"VIX \u00f7 3-Month VIX" },
     "hormones-range":          { mark:hormoneSvg,  title:"Federal Funds Rate" },
-    "pressure-range":          { mark:gaugeSvg,   title:"" }    // drawPressureHead sets all four
+    "pressure-range":          { mark:gaugeSvg,   title:"" }
   };
-  /* One radio row for a which-series choice in the head menu, shared by Horizon's spreads and Pressure's
-     maturities. */
   function headPickRow(on, attr, key, label){
     return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
       '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
@@ -51,11 +31,7 @@
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' +
       (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
-      // h2: on an inner page the only heading above this is the top bar's h1, so an h4 would skip two levels.
-      // The style is class-based (.bh-title), so the level can change without anything moving.
       '<h2 class="bh-title">' + t + '</h2>' +
-      // the window's total, filled by headSigma after the page has computed its window. Empty and hidden
-      // on every head that has no sum to state, which is most of them — a level has no total.
       '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
         'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") +
@@ -64,40 +40,15 @@
         (headMenuFor === id ? headMenuHtml(id) : "") + '</div></div>' +
     '</div>';
   }
-  /* One slot in detailTexts per page, allocated on the first open and REWRITTEN on every open — the same
-     pattern the hub's popup uses (see hubDetailIdx). A slot per open would grow the array every time a reader
-     tapped the dots, and a slot cached with its first contents would freeze Pressure's note on whichever
-     maturity happened to be showing then. */
   var headNoteIdx = {};
   function headMenuHtml(id){
     var H = HIST_HEAD[id] || {};
-    /* Keren, V522, of Horizon's spread bar: "10Y minus 3 months, 10Y minus 2 years shouldn't be a new ruler —
-       you can put it in the three dots on the history container…" A control that chooses WHICH SERIES the
-       chart draws (rather than which window) goes here, so the control row stays one ruler on every page.
-       Keren, V600: "it's a sub menu — I click the three points, then I see Spreads…" The root lists one row per
-       group with the reading now showing beside it; opening a group replaces the menu with that group's rows
-       and a way back. A drill-down, not a flyout: a second panel beside the first runs off a 414px phone.
-       Groups open on a click, never on hover (see below the click handler). */
-    /* ===== THE HEAD MENU IS ONE COMPONENT =====
-       Keren, V602: "this behaviour should apply to all history menus. If we were in the future to add more
-       things, it would have to be with the submenu just like in the Horizon. Make it a rule for the future."
-       And: "it should also behave like a component."
-       The rule is enforced by there being no other way to build a menu: `menu` returns GROUPS, always — an
-       array of { key, label, value, on, rows } — and this function turns any head's groups into the same
-       two-level menu: the same root rows, chevrons, reading beside each group name, way back and note at the
-       bottom. There is no flat-string shape: an escape hatch nobody uses is how a component quietly becomes
-       two, because the next page reaches for the shorter shape.
-       One group is a legitimate menu: it still drills, so a reading that grows a second group later does not
-       change how the first one behaves. */
     var groups = H.menu ? H.menu() : [];
     var extra;
     if (!groups.length) extra = "";
     else if (headSubFor){
       var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
-      // the group vanished under an open menu (a redraw changed the page): fall back to the root rather than blank
       if (!g){ headSubFor = null; return headMenuHtml(id); }
-      // CHEV already carries `.peek-chev`; wrapping it again nests the class and the rotation lands on a
-      // parent the glyph does not fill. One span, which is what every other chevron in the app is.
       return '<button type="button" class="cycsel-opt bh-back" role="menuitem" data-head-grp="">' +
         CHEV + '<span class="cycsel-nm">' + g.label + '</span></button>' +
         '<div class="bh-sep" role="separator"></div>' + g.rows;
@@ -115,12 +66,7 @@
       '<button type="button" class="cycsel-opt bh-opt" role="menuitem" data-detail-idx="' +
       headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
   }
-  /* Which page's ⋯ menu is showing, kept in STATE rather than in the DOM, as the cycle picker does ("one
-     listener covers opening, ticking and closing"), so a re-render cannot close it. A click anywhere closes an
-     open cycle picker, which redraws the sheet and rebuilds this head: with the flag in the DOM the menu would
-     vanish the instant it appeared on any page whose picker happened to be open. */
   var headMenuFor = null;
-  // which GROUP inside that menu is open, or null for its root. Cleared whenever the menu itself opens.
   var headSubFor = null;
   function paintHeadMenus(){
     var heads = document.querySelectorAll(".band-head");
@@ -128,25 +74,19 @@
       var btn = heads[i].querySelector(".bh-more"), menu = heads[i].querySelector(".bh-menu");
       if (!btn || !menu) continue;
       var on = btn.getAttribute("data-head-more") === headMenuFor;
-      // rebuilt on every paint, not only on the open — drilling into a group repaints the same menu
       if (on) menu.innerHTML = headMenuHtml(headMenuFor);
       menu.hidden = !on;
       btn.setAttribute("aria-expanded", on ? "true" : "false");
     }
   }
   document.addEventListener("click", function(e){
-    // a choice inside the menu closes it and redraws the page, which rebuilds the head with the new title
     var pick = e.target.closest && e.target.closest(".bh-pick");
-    /* a group row opens or closes a drawer inside the menu; it is not a choice, so the menu stays up. */
     var grp = e.target.closest && e.target.closest("[data-head-grp]");
     if (grp){ headSubFor = grp.getAttribute("data-head-grp") || null; paintHeadMenus(); return; }
     if (pick){
       headMenuFor = null; headSubFor = null; paintHeadMenus();
-      // two pages put a which-series choice in this menu, so the row says which one it belongs to
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat){ GYN.fire("pickSeries", null, mat); return; }
-      // Growth's economy. The empty string is the United States and is a real choice, so this tests for
-      // the ATTRIBUTE rather than its value — a falsy check here would make the default unselectable.
       var peer = pick.getAttribute("data-gdp-peer");
       if (peer != null){ GYN.fire("pickPeer", peer); return; }
       GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
@@ -155,17 +95,10 @@
     var btn = e.target.closest && e.target.closest("[data-head-more]");
     if (!btn){ if (headMenuFor !== null){ headMenuFor = null; headSubFor = null; paintHeadMenus(); } return; }
     var id = btn.getAttribute("data-head-more");
-    // nothing to open is not a menu: the dots do not respond until the page has its note
     headMenuFor = (headMenuFor === id || !HIST_NOTE[id]) ? null : id;
-    headSubFor = null;   // every open starts at the root
+    headSubFor = null;
     paintHeadMenus();
   });
-  /* Keren, V601: "when I hover over spreads it immediately goes to the spread menu, and then when I click
-     back it doesn't go back — it's stuck."
-     So a group opens and closes on a click, never on hover. A pointer is ALREADY over a row when the menu
-     paints under it, so hover opens a group nobody chose; and Back puts the root rows under a pointer that
-     has not moved, which walks straight back in. A delay only makes that slower. Touch fires no mouseover at
-     all, so a click is also the only gesture an iPhone has. One gesture, one behaviour, both places. */
   function nameWithMark(name, mark){
     if (!mark) return name;
     var i = String(name).lastIndexOf(" ");
@@ -173,45 +106,24 @@
            '<span class="pbr-last">' + (i < 0 ? name : name.slice(i + 1)) + mark + '</span>';
   }
   function panelRow(o){
-    /* A row with somewhere to go is a door, as a sign row is, and carries ONE affordance, the chevron, never a
-       chevron AND an (i): its note travels to the page it opens and becomes that page's own lede (which is why
-       the deficit row has no (i) here). */
     var door = o.open ? ' class="panel-row lab-door" role="button" tabindex="0" data-open="' + o.open.id +
       '" data-title="' + o.open.title + '"' : ' class="panel-row"';
-    /* `head` names the history page whose CHART draws this reading. The note then belongs to that page's head —
-       the first row of its ⋯ menu — and the row keeps no (i), because two doors onto one note is a fault. It is
-       filed rather than copied: one string, read from one place. */
     if (o.head && o.info) HIST_NOTE[o.head] = o.info;
     var mark = o.open ? CHEV : (o.info && !o.head ? infoIcon(o.info) : "");
-    /* the id travels onto the row, because `seatBandReading` needs to know which row the head above
-       already named — see the .solo rule there. */
     return '<div' + door.replace('class="', (o.head ? 'data-head="' + o.head + '" class="' : 'class="')) + '>' +
       '<div class="pbr-name">' +
-        // h3: it sits under the card head's h2 (.bh-title). The style rules are keyed on .pbr-name and name h3
-        // as well, so nothing about it moves.
         '<h3>' + nameWithMark(o.name, mark) + '</h3>' +
-        /* Keren, V606: "everywhere you have the test result component and the results are equal to what is
-           written in the graph — the latest data — just remove it from the test result component, because
-           it's a duplicate." A row carrying `head` IS the reading the chart draws, and the chart prints its
-           latest value on its own plate, so the row states the BAND only: where the reading sits between the two
-           ends. Rows WITHOUT `head` keep their figure — nothing on screen is drawing them. */
         (o.head ? "" : '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>') +
       '</div>' +
       '<div class="pbr-scale">' + panelBar(o.bar) + '</div>' +
     '</div>';
   }
-  /* The bar's geometry, read off a meter the app already carries. `optimal` comes in three shapes — a two-sided
-     band, `gte` and `lte` — and the ends of the TRACK are the meter's own min and max, which every reading has
-     sourced because they are its record. Nothing here is invented for the drawing. */
   function panelFromMeter(m, ends){
     var o = m.optimal || {}, e = ends || m.ends || {};
     var from = o.from != null ? o.from : (o.gte != null ? o.gte : m.min);
     var to   = o.to   != null ? o.to   : (o.lte != null ? o.lte : m.max);
     return { value:m.value, from:from, to:to, floor:m.min, ceil:m.max,
              lowLabel:e.low || "Low", highLabel:e.high || "High",
-             /* Keren, V486: "I don't need the words 'her pace' — and maybe not even 'normal', because it is
-                implicit from the structure that green is normal." The lit band says what it is without a name.
-                Each band's KIND (Pre-2008 rather than normal, a target rather than an observation) is in the (i). */
              zoneLabel:o.label || e.zone || "" };
   }
   function meterFlagged(m){
@@ -221,9 +133,6 @@
     if (o.lte != null) return m.value > o.lte;
     return false;
   }
-  /* Keren, V479: "put an (i) next to Risk tolerance, drop the credit in parentheses — we can put it in the
-     (i)…" Everything the head carried except the reading's name lives here; the page shows a title, a figure,
-     a spectrum. */
   function desireInfoHtml(ind){
     return '<h4>Risk tolerance (credit)</h4>' +
       '<p class="caption">The reading is <b>' + ind.tag.text + '</b>. The figure is the ICE BofA US High Yield ' +
@@ -249,8 +158,6 @@
         {t:"CME Group \u2014 how Fed policy moves corporate bond spreads", u:"https://www.cmegroup.com/openmarkets/interest-rates/2025/How-Fed-Policy-Can-Impact-Corporate-Bond-Spreads.html"}
       ]);
   }
-  /* Both state where the BAND came from, which is what an (i) on a reading with a range is for: a band ships
-     with its provenance or it does not ship. */
   function volumeInfoHtml(ind){
     return '<h4>' + ind.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
@@ -278,8 +185,6 @@
         'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
         'is a busy economy and, past a point, an inflationary one.</p>';
   }
-  /* Productivity and Output are rows in Activity's stack, each with its own note. Productivity's band is the
-     BLS's own slowdown-era figure. */
   function productivityInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
@@ -313,7 +218,6 @@
         'above lags a turn by two to three quarters; this one is a survey of what is happening now.</p>' +
       srcBlock(f.src || []);
   }
-  /* Activity's 3.5–5% is not arbitrary: it brackets the CBO's own published estimate, and the (i) says so. */
   function activityInfoHtml(ind){
     return '<h4>' + ind.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
@@ -333,10 +237,6 @@
         {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
       ]);
   }
-  /* The one band in the app that is not an observation of where a series has sat. The (i) has to say that the
-     band is a TARGET, that its width is an editorial choice rather than a published interval, and that the
-     needle and the target are not measured on the same index. NEVER relabel this one "normal": that would
-     turn a policy objective into a historical claim, and the historical claim would be false. */
   function temperatureInfoHtml(ind){
     return '<h4>' + ind.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
@@ -369,54 +269,38 @@
       ]);
   }
   function desireBlock(ind){
-    /* History first, blood test below it: the order Keren set on Pulse (V384/V390). */
     return histBar("", "desire-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("desire-range") +
       '<div id="desire-record" class="vh-host"></div>' +
       histTip("desire-hist-tooltip") +
-      /* Keren, V482: "the trend button above the blood test result, and both inside the history container."
-         One box, read top to bottom: the window, the picture, how it has moved, where it stands now. The
-         reading takes a hairline instead of its own border, the right weight for a divider INSIDE a card. */
       '<div id="desire-trend"></div>' +
       panelRow({ name:"Risk tolerance", info:desireInfoHtml(ind), head:"desire-range", metric:ind.metric,
                  flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) }) +
     '</div>';
   }
 
-  // Volume's page, the same shape Pulse's has: the container names itself and holds the reading's own record.
   function volumeBlock(ind){
     var g = m2Yoy.filter(function(x){ return x != null; });
     var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
-    // Keren, V388: remove the paragraph, "and put the title Money stock (M2) Steady above the metrics, instead of
-    // the deleted text." The chart names itself: its caption states the units and the dashed line, the timeline
-    // the window. What the paragraph said that the picture cannot — that those are the only contractions in
-    // sixty-seven years — is in the long form behind More details.
     return histBar("", "volume-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("volume-range") +
       '<div id="m2-record" class="vh-host"></div>' +
       histTip("m2-hist-tooltip") +
-      // the rows are recordRows, rendered per draw so they follow the window; the long-run pace is a LINE on
-      // the chart, where a reading can be compared with it
       '<div id="volume-trend"></div>' +
-      // the blood test sits inside the container, as Desire's row does
       panelRow({ name:ind.econTerm, info:volumeInfoHtml(ind), head:"volume-range", metric:ind.metric,
                  flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) }) +
       '</div>';
   }
   function velocityRecordBlock(pulseInd){
     var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
-    // Keren, V384: "I don't need the title 'every reading, 40 quarters from 2016', because I can see it already."
-    // The timeline directly below states the window and the record rows state the span.
     return histBar("", "pulse-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("pulse-range") +
       '<div id="pulse-record" class="vh-host"></div>' +
       histTip("pulse-hist-tooltip") +
       '<div id="pulse-trend"></div>' +
-      // the blood test inside the container, as Desire's. Its end words are one syllable here — the meter's
-      // own "Slow · hoarding" and "Fast · spending" are too long for this track — and the full pair is in the (i).
       panelRow({ head:"pulse-range", name:pulseInd ? pulseInd.econTerm : "Velocity of money (M2)",
                  info:pulseInd ? pulseInfoHtml(pulseInd) : "", metric:pulseInd ? pulseInd.metric : "",
                  flagged:pulseInd ? meterFlagged(pulseInd.meter) : false,
@@ -425,7 +309,6 @@
       '</div>';
   }
 
-  // the data has to be right before anything draws it: FRED states both records, so assert them
   function checkVelocityHistory(){
     var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
     if (m2vHistory.length !== 270 || Math.abs(hi - 2.192) > 1e-9 || Math.abs(lo - 1.126) > 1e-9)
@@ -433,17 +316,7 @@
   }
   GYN.step("checkVelocityHistory", checkVelocityHistory, "check"); checkVelocityHistory();
 
-
-  /* ---------------- Volume: how much blood there is ----------------
-     Keren, V306, after the haemorrhage physiology: the pulse cannot be read without the volume. A racing pulse
-     on full volume is exercise; the same pulse on falling volume is shock. Nominal output is the money stock
-     times its velocity, so this is the other half of Pulse's identity, and the two sit side by side so they
-     are never read apart.
-     The card reads the CHANGE, not the level: $23.2 trillion means nothing on its own and grows with the
-     economy anyway. Year over year maps onto the metaphor — transfusion, steady, haemorrhage.
-     271 quarters of FRED M2SL, 1959 Q1 to 2026 Q3, in billions, checked on load against the two records the
-     series itself sets. In 67 years the money stock had NEVER contracted year over year until 2023 — five
-     quarters, 2023 Q1 to 2024 Q1, and nothing before them. */
+  /* ---- Volume: how much blood there is ---- */
   var M2_FROM_YEAR = 1959;
   var m2Level = (
     "286.6 290.1 295.2 296.5 298.2 300.1 304.1 309.5 314.1 319.9 325.6 331.1 337.5 345.5 350.8 357.2 365.2 " +
@@ -466,13 +339,9 @@
     "21274.0 20758.4 20792.2 20737.5 20835.5 20955.5 21098.8 21336.7 21539.3 21770.8 22025.5 22249.8 22413.4 " +
     "22756.7 23218.0"
   ).split(" ").map(Number);
-  // year over year, in per cent; the first four quarters have no year behind them
   var m2Yoy = m2Level.map(function(v, i){ return i < 4 ? null : (v / m2Level[i - 4] - 1) * 100; });
-  var M2_NORM = 6.80;   // mean year-over-year growth 1960–2019, 240 quarters (median 6.70)
+  var M2_NORM = 6.80;
 
-  // Five bands on one axis, measured against that long-run pace — the same shape as valuationVerdict and
-  // velocityVerdict, and vessel words, because the mark is a vessel with a level in it. Both ends are flagged:
-  // a drained body and a flooded one are both emergencies, in opposite directions.
   function volumeVerdict(g){
     return g < 0     ? { text:"Draining", state:"serious" }
          : g < 3.5   ? { text:"Thin",     state:"warning" }
@@ -481,12 +350,6 @@
                      : { text:"Flooding", state:"serious" };
   }
 
-  /* Keren downloaded this series herself (V498): the unemployment rate, monthly, seasonally adjusted, from
-     January 1948 — 944 months, the deepest record any chart in this app draws: 2.5% in May 1953, 14.8% in
-     April 2020, 4.1% in August 2026.
-     ONE GAP, kept as a gap. October 2025 has no reading — not a transcription slip, the month BLS did not
-     publish — so it is encoded "x", drawn as nothing and left out of every average. Joining the picture across
-     it would be the app inventing a figure for a month the government did not measure. */
   var UNEMP_FROM_YEAR = 1948;
   var unempHistory = (
     "3.4 3.8 4.0 3.9 3.5 3.6 3.6 3.9 3.8 3.7 3.8 4.0 4.3 4.7 5.0 5.3 6.1 6.2 6.7 6.8 6.6 7.9 6.4 6.6 6.5 6.4 6.3 5.8 5.5 5.4 5.0 4.5 4.4 4.2 4.2 4.3 3.7 3.4 3.4 3.1 3.0 3.2 3.1 3.1 3.3 3.5 3.5 3.1 3.2 3.1 2.9 2.9 3.0 3.0 3.2 3.4 3.1 3.0 2.8 2.7 2.9 2.6 2.6 2.7 2.5 2.5 2.6 2.7 2.9 3.1 3.5 4.5 4.9 5.2 5.7 5.9 5.9 5.6 5.8 6.0 6.1 5.7 5.3 5.0 4.9 4.7 4.6 4.7 4.3 4.2 4.0 4.2 4.1 4.3 4.2 4.2 4.0 3.9 4.2 4.0 4.3 4.3 4.4 4.1 3.9 3.9 4.3 4.2 4.2 3.9 3.7 3.9 4.1 4.3 4.2 4.1 4.4 4.5 5.1 5.2 5.8 6.4 6.7 7.4 7.4 7.3 7.5 7.4 7.1 6.7 6.2 6.2 6.0 5.9 5.6 5.2 5.1 5.0 5.1 5.2 5.5 5.7 5.8 5.3 5.2 4.8 5.4 5.2 5.1 5.4 5.5 5.6 5.5 6.1 6.1 6.6 6.6 6.9 6.9 7.0 7.1 6.9 7.0 6.6 6.7 6.5 6.1 6.0 5.8 5.5 5.6 5.6 5.5 5.5 5.4 5.7 5.6 5.4 5.7 5.5 5.7 5.9 5.7 5.7 5.9 5.6 5.6 5.4 5.5 5.5 5.7 5.5 5.6 5.4 5.4 5.3 5.1 5.2 4.9 5.0 5.1 5.1 4.8 5.0 4.9 5.1 4.7 4.8 4.6 4.6 4.4 4.4 4.3 4.2 4.1 4.0 4.0 3.8 3.8 3.8 3.9 3.8 3.8 3.8 3.7 3.7 3.6 3.8 3.9 3.8 3.8 3.8 3.8 3.9 3.8 3.8 3.8 4.0 3.9 3.8 3.7 3.8 3.7 3.5 3.5 3.7 3.7 3.5 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.5 3.5 3.5 3.7 3.7 3.5 3.5 3.9 4.2 4.4 4.6 4.8 4.9 5.0 5.1 5.4 5.5 5.9 6.1 5.9 5.9 6.0 5.9 5.9 5.9 6.0 6.1 6.0 5.8 6.0 6.0 5.8 5.7 5.8 5.7 5.7 5.7 5.6 5.6 5.5 5.6 5.3 5.2 4.9 5.0 4.9 5.0 4.9 4.9 4.8 4.8 4.8 4.6 4.8 4.9 5.1 5.2 5.1 5.1 5.1 5.4 5.5 5.5 5.9 6.0 6.6 7.2 8.1 8.1 8.6 8.8 9.0 8.8 8.6 8.4 8.4 8.4 8.3 8.2 7.9 7.7 7.6 7.7 7.4 7.6 7.8 7.8 7.6 7.7 7.8 7.8 7.5 7.6 7.4 7.2 7.0 7.2 6.9 7.0 6.8 6.8 6.8 6.4 6.4 6.3 6.3 6.1 6.0 5.9 6.2 5.9 6.0 5.8 5.9 6.0 5.9 5.9 5.8 5.8 5.6 5.7 5.7 6.0 5.9 6.0 5.9 6.0 6.3 6.3 6.3 6.9 7.5 7.6 7.8 7.7 7.5 7.5 7.5 7.2 7.5 7.4 7.4 7.2 7.5 7.5 7.2 7.4 7.6 7.9 8.3 8.5 8.6 8.9 9.0 9.3 9.4 9.6 9.8 9.8 10.1 10.4 10.8 10.8 10.4 10.4 10.3 10.2 10.1 10.1 9.4 9.5 9.2 8.8 8.5 8.3 8.0 7.8 7.8 7.7 7.4 7.2 7.5 7.5 7.3 7.4 7.2 7.3 7.3 7.2 7.2 7.3 7.2 7.4 7.4 7.1 7.1 7.1 7.0 7.0 6.7 7.2 7.2 7.1 7.2 7.2 7.0 6.9 7.0 7.0 6.9 6.6 6.6 6.6 6.6 6.3 6.3 6.2 6.1 6.0 5.9 6.0 5.8 5.7 5.7 5.7 5.7 5.4 5.6 5.4 5.4 5.6 5.4 5.4 5.3 5.3 5.4 5.2 5.0 5.2 5.2 5.3 5.2 5.2 5.3 5.3 5.4 5.4 5.4 5.3 5.2 5.4 5.4 5.2 5.5 5.7 5.9 5.9 6.2 6.3 6.4 6.6 6.8 6.7 6.9 6.9 6.8 6.9 6.9 7.0 7.0 7.3 7.3 7.4 7.4 7.4 7.6 7.8 7.7 7.6 7.6 7.3 7.4 7.4 7.3 7.1 7.0 7.1 7.1 7.0 6.9 6.8 6.7 6.8 6.6 6.5 6.6 6.6 6.5 6.4 6.1 6.1 6.1 6.0 5.9 5.8 5.6 5.5 5.6 5.4 5.4 5.8 5.6 5.6 5.7 5.7 5.6 5.5 5.6 5.6 5.6 5.5 5.5 5.6 5.6 5.3 5.5 5.1 5.2 5.2 5.4 5.4 5.3 5.2 5.2 5.1 4.9 5.0 4.9 4.8 4.9 4.7 4.6 4.7 4.6 4.6 4.7 4.3 4.4 4.5 4.5 4.5 4.6 4.5 4.4 4.4 4.3 4.4 4.2 4.3 4.2 4.3 4.3 4.2 4.2 4.1 4.1 4.0 4.0 4.1 4.0 3.8 4.0 4.0 4.0 4.1 3.9 3.9 3.9 3.9 4.2 4.2 4.3 4.4 4.3 4.5 4.6 4.9 5.0 5.3 5.5 5.7 5.7 5.7 5.7 5.9 5.8 5.8 5.8 5.7 5.7 5.7 5.9 6.0 5.8 5.9 5.9 6.0 6.1 6.3 6.2 6.1 6.1 6.0 5.8 5.7 5.7 5.6 5.8 5.6 5.6 5.6 5.5 5.4 5.4 5.5 5.4 5.4 5.3 5.4 5.2 5.2 5.1 5.0 5.0 4.9 5.0 5.0 5.0 4.9 4.7 4.8 4.7 4.7 4.6 4.6 4.7 4.7 4.5 4.4 4.5 4.4 4.6 4.5 4.4 4.5 4.4 4.6 4.7 4.6 4.7 4.7 4.7 5.0 5.0 4.9 5.1 5.0 5.4 5.6 5.8 6.1 6.1 6.5 6.8 7.3 7.8 8.3 8.7 9.0 9.4 9.5 9.5 9.6 9.8 10.0 9.9 9.9 9.8 9.8 9.9 9.9 9.6 9.4 9.4 9.5 9.5 9.4 9.8 9.3 9.1 9.0 9.0 9.1 9.0 9.1 9.0 9.0 9.0 8.8 8.6 8.5 8.3 8.3 8.2 8.2 8.2 8.2 8.2 8.1 7.8 7.8 7.7 7.9 8.0 7.7 7.5 7.6 7.5 7.5 7.3 7.2 7.2 7.2 6.9 6.7 6.6 6.7 6.7 6.2 6.3 6.1 6.2 6.1 5.9 5.7 5.8 5.6 5.7 5.5 5.4 5.4 5.6 5.3 5.2 5.1 5.0 5.0 5.1 5.0 4.8 4.9 5.0 5.1 4.8 4.9 4.8 4.9 5.0 4.9 4.7 4.7 4.7 4.6 4.4 4.4 4.4 4.3 4.3 4.4 4.3 4.2 4.2 4.1 4.0 4.1 4.0 4.0 3.8 4.0 3.8 3.8 3.7 3.8 3.8 3.9 4.0 3.8 3.8 3.7 3.6 3.6 3.7 3.6 3.5 3.6 3.6 3.6 3.6 3.5 4.4 14.8 13.2 11.0 10.2 8.4 7.8 6.9 6.7 6.7 6.4 6.2 6.1 6.1 5.8 5.9 5.4 5.1 4.7 4.5 4.1 3.9 4.0 3.9 3.7 3.7 3.6 3.6 3.5 3.6 3.5 3.6 3.6 3.5 3.5 3.6 3.5 3.4 3.6 3.6 3.5 3.7 3.7 3.9 3.7 3.8 3.7 3.9 3.9 3.9 3.9 4.1 4.2 4.2 4.1 4.1 4.2 4.1 4.0 4.2 4.2 4.2 4.3 4.1 4.3 4.3 4.4 x 4.5 4.4 4.3 4.4 4.3 4.3 4.3 4.2 4.1 4.1"
@@ -494,7 +357,7 @@
     var y = UNEMP_FROM_YEAR + ((i / 12) | 0), mo = (i % 12) + 1;
     return { m:y + "-" + ("0" + mo).slice(-2), v:(t === "x" ? null : Number(t)) };
   });
-  function checkUnemploymentHistory(){   // the data has to be right before anything draws it
+  function checkUnemploymentHistory(){
     var vs = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
     var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
     if (unempHistory.length !== 944 || Math.abs(hi - 14.8) > 1e-9 || Math.abs(lo - 2.5) > 1e-9 ||
@@ -503,13 +366,7 @@
                    unempHistory[0].m, unempHistory[unempHistory.length - 1].m);
   }
   GYN.step("checkUnemploymentHistory", checkUnemploymentHistory, "check"); checkUnemploymentHistory();
-  /* Activity's history. Modelled on cpiHistoryChart part for part (window handling, axis emitter, fit group,
-     geometry object) because they draw the same PICTURE: a monthly series in columns out of zero, with the
-     window's average and one reference line. It is its own function rather than a flag on that one because
-     the READING differs: prices are read against a target, people against a band, and the scale, colours and
-     references all differ. Folding two subjects into one function behind flags is how a component stops
-     being readable. */
-  var NROU_NOW = 4.2;   // CBO's noncyclical rate of unemployment — the figure Activity's band is bracketed around
+  var NROU_NOW = 4.2;
   function unempState(v){
     return v < ACT_BAND_LO ? "tight"
          : v <= ACT_BAND_HI ? "good"
@@ -526,7 +383,6 @@
     var seen = vals.filter(function(d){ return d.v != null; });
     if (!seen.length) return "";
     var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-    // zero and CBO's estimate are always in view: the columns stand on zero and the band is drawn around 4.2
     var sc = windowScale(seen.map(function(d){ return d.v; }), [0, NROU_NOW]);
     var LO = sc.lo, HI = sc.hi;
     var halfCol = (R - L) / (2 * Math.max(1, n));
@@ -550,8 +406,6 @@
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
-      // October 2025 gets no column. A gap is the honest drawing of a month nobody measured; the alternative is
-      // a bar standing for a number that does not exist.
       if (d.v == null) return;
       out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
@@ -561,9 +415,6 @@
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    /* The zero rule spans the FRAME, not just the plot. Keren, V571: "there's no line below 0% … don't leave the
-       zero without a line similar to the other numbers." Every other number in the rail has its gridline
-       running past it; zero's rule is drawn by the chart rather than by chartAxes, so it has to do the same. */
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(NROU_NOW)));
     out.push(crossLine(T, B));
@@ -576,15 +427,8 @@
       'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
       ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
   }
-  /* ---------------- Hormones — the policy rate's history ----------------
-     Keren, V592: "let's add a fourth category in circulation called hormones. And hormones will be interest
-     rates." A sibling of unempHistoryChart rather than a flag on it, for the reason given there: a POLICY RATE
-     is read against neither a target nor a band.
-     It deliberately has NO band. "Restrictive" and "accommodative" are real ideas, but the level dividing them
-     is contested, unpublished and moves, so drawing one would be inventing a band. The columns stand on zero,
-     the window's own average is drawn across them, and the reading is the height. Direction is what the trend
-     pill is for. */
-  function checkFedFundsHistory(){   // the data has to be right before anything draws it
+  /* ---- Hormones — the policy rate's history ---- */
+  function checkFedFundsHistory(){
     var vs = fedFundsHistory.map(function(d){ return d.v; });
     var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
     if (!fedFundsHistory.length || fedFundsHistory[0].m !== "1954-07" || lo < 0 || hi < 19 || hi > 20)
@@ -593,7 +437,6 @@
   }
   GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check"); checkFedFundsHistory();
 
-  /* Pressure draws the Treasury yields in 09-render-core. */
   function fedFundsHistoryChart(Wpx, from, o){
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -604,7 +447,7 @@
     var seen = vals.filter(function(d){ return d.v != null; });
     if (!seen.length) return "";
     var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-    var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);   // zero is always in view: the bars stand on it
+    var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);
     var LO = sc.lo, HI = sc.hi;
     var halfCol = (R - L) / (2 * Math.max(1, n));
     var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
@@ -627,12 +470,6 @@
       out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
-    /* Keren, V608, of the sea change: "I want the bars in the hormones chart to be different shades of blue."
-       The reading is the forty-year drift Howard Marks calls a sea change, and a drift shows in a ramp, not in
-       one colour: six steps, light to dark. The step comes from the bar's place between the WINDOW's own low
-       and high, never from levels anyone chose — at Max, 1981's 19% is the darkest blue and today is nearly
-       white; inside one cycle the six steps re-spread across that cycle's range. The record sets the scale,
-       the way windowScale sets the axis. */
     var seenV = seen.map(function(d){ return d.v; });
     var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
     var step = function(v){
@@ -640,7 +477,7 @@
       return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
     };
     vals.forEach(function(d, i){
-      if (d.v == null) return;   // a gap is the honest drawing of a month nobody measured
+      if (d.v == null) return;
       out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
@@ -658,25 +495,11 @@
     return vhOpen(W, H) +
       'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
-  // the band's edges, named once — the meter, the chart's colouring and the (i) all read these
   var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
   var CPI_TARGET = 2;
-  // A quarter's name from its position in a series that starts at `y0` — the three histories holding bare
-  // numbers rather than {q,v} objects need this to label what the pointer is on.
   function qAtIndex(y0, i){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
-  /* Keren, V420: "not multiple select, because I want the same visuals as the years — the bars with the
-     colouring the same." One cycle at a time, drawn exactly as a Years window is, so it keeps the heat ramp;
-     the cycle picker is what the ruler is in Years mode, a way of choosing the window. */
-  /* ---- the reference key, shared ----
-     Each history names its reference lines in `refs` on publishGeom, and histLegend (04-components) draws
-     them in the strip at the head of the grid, once for every history. The caller passes its own values;
-     where the key goes is decided there. */
+  /* ---- the reference key, shared ---- */
 
-  /* Load's history. Two series, ONE axis, because both are shares of disposable personal
-     income — which is what makes this a legitimate two-line chart rather than the dual-axis picture that is
-     never allowed: the reader compares them directly, on the same ruler, with no arithmetic to do.
-     Zero is forced into the scale. What is kept runs close to it, and a window cropped to the data would
-     make 2.8% look like a middling reading instead of a floor. */
   function householdsChart(Wpx, from, to){
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
@@ -686,10 +509,9 @@
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [0]);
-    // no headroom of its own: AXIS.READ reserves the plate's band on every history
     var LO = sc.lo, HI = sc.hi;
-    var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));   // half a slot in at each end, so a
-      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };  // mark can never cross the rail or the frame
+    var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));
+      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
     var out = [];
@@ -707,12 +529,8 @@
       return '<path class="' + cls + '" d="' + ser.map(function(v, i){
         return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v)); }).join("") + '"/>';
     }
-    /* Paired columns, one pair per quarter. They share a scale and a zero because they are two
-       shares of the SAME income — what is paid out and what is kept — which is the condition that makes two
-       series on one bar chart honest rather than a collision. The pair is wrapped in a single `<g class="hcol">`
-       so the shared hover still lights exactly one thing per index; the readout already names both figures. */
     var hhSlot = (R - L) / Math.max(1, n);
-    var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);   // a PAIR per slot, so each bar takes half the column fill
+    var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);
     bill.forEach(function(v, i){
       var cx = X(i);
       out.push('<g class="hcol">' +
@@ -720,16 +538,8 @@
         '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
       '</g>');
     });
-    /* The two series are named by the shared legend at the head of the grid, like every history's references.
-       Keren, V567: "in the household history chart the legend is not in the location that we agreed on."
-       One legend, one place, every page. */
-    // no "now" dots: a column ends at its own tip, and the last pair is the rightmost, as findable as a dot
-    /* The readout names both lines. `at` is evaluated before `fmt` in the tooltip's single expression, so it
-       hands the index across — the same left-to-right guarantee the deferred Highlights rely on. A tooltip
-       that named one of two lines would be answering half the question the chart asks. */
     var hovAt = 0;
     publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
-      // neither carries a value: these name the two SERIES, not a line the reader measures against
       refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
       at:function(d, i){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
       fmt:function(v){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
@@ -739,16 +549,6 @@
       'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
 
-  /* Temperature's own history. Keren, V373: "add a year bar to the temperature history." drawTemperature() is
-     cycle-scoped and shared with the Calendar's cycle view, so it is not rewritten: this is a SECOND chart, on
-     the inner page only, and the cycle card stays exactly as it is. Build alongside, never mutate what is
-     shared.
-     Monthly year-over-year from 1989 — 38 years, so 5Y, 10Y, 25Y and Max all answer and 50Y does not. Columns
-     out of zero with the 2% target as the dashed reference, because on this page the reading is distance from
-     target. Keren, V378: "you dropped the orange-yellow spectrum — it needs to look like a heat map."
-     Consistency of SHAPE does not outrank the identity of the reading, and a sequential ramp is the correct
-     encoding for a magnitude anyway. It uses `heatStep()` and `.temp-col.s0–s5`, the cycle chart's own, so
-     the two views of the same series can never disagree about a colour. */
   function cpiHistoryChart(Wpx, from, o){
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -757,24 +557,15 @@
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
     var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-    // zero and the 2% target are always in view: above or below target is the reading, and a month below zero is
-    // a different animal again.
     var sc = windowScale(vals.map(function(d){ return d.v; }), [0, CPI_TARGET]);
     var LO = sc.lo, HI = sc.hi;
-    /* Keren, V443: "in the growth chart the bars are hiding the numbers of the rows." A scale running L→R puts
-       the end columns' CENTRES on the plot edges, so half of each hangs over the y-axis labels on the left and
-       past the plot on the right. Half a column of inset at each end puts every mark inside the plot, which is
-       also what lets a frame close around it. The other column histories share this inset. LINE charts keep
-       the edge-to-edge scale: a line has no width to hang over anything and should reach both edges. */
     var halfCol = (R - L) / (2 * Math.max(1, n));
     var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
     var f = function(v){ return v.toFixed(1); };
-    var out = [], zero = Y(0), avgShown = null;   // the average's value, reported to the legend
+    var out = [], zero = Y(0), avgShown = null;
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-    // a cycle picks its own years rather than windowYears(), which chooses ROUND ones and can leave both ends
-    // of a cycle unlabelled: the axis starts on the year the cycle started and steps evenly to the year it ended.
     if (o.cycle){
       var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
       for (var cyr = y0; cyr <= y1; cyr += stepY){
@@ -792,25 +583,16 @@
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
-    // Keren, V421: "…take the average CPI by cycle and put it as a line — and make it so I can also view the
-    // number." Keren, V423: "make all the data relevant to the chosen timeline." So the average is the window's,
-    // in every window, where it can never describe a stretch the picture does not show; each column reads as
-    // above or below it. The line is `.temp-avg`, drawTemperature's own class, so the trend toggle dims it for
-    // free: `.trend-on .temp-avg` does not care which chart drew it.
     if (n){
       var avgV = vals.reduce(function(a, d){ return a + d.v; }, 0) / n, avgY = Y(avgV);
       out.push(avgRule(L, R, f(avgY)));
-      avgShown = avgV;   // the value is in the legend, so no plate is drawn here
+      avgShown = avgV;
     }
-    // the fit across the months in view, drawn always and shown only while the trend pill is pressed
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(CPI_TARGET)));
-    // the target is labelled in the legend, with the average
-    // one transparent plate over the plot rather than 451 hit targets: at Max a column is 1.4px wide, which is
-    // not a thing anyone can point at, so the nearest column is computed from the pointer instead
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     publishGeom("cpiHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
@@ -822,11 +604,7 @@
       ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + '</svg>';
   }
 
-  var GDP_NORM = 2.6;   // the mean of every quarter 1988–2026, stated to one place
-  /* Keren, V492: "the growth history doesn't have a blood test component." There is no published normal range
-     for how fast an economy grows, so the band is COMPUTED from this page's own series, as Volume's is: the
-     10th to 90th percentile of the 154 quarters from 1988 Q1, 0.96% and 4.34%, rounded to a tenth. The ends of
-     the track are the record itself, and both ends are one event: −7.4% in 2020 Q2 and +12.4% in 2021 Q2. */
+  var GDP_NORM = 2.6;
   var GDP_BAND_LO = 1.0, GDP_BAND_HI = 4.3;
   var gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
   var gdpMeter = { min:-7.4, max:12.4, value:gdpNowQ.v,
@@ -854,12 +632,6 @@
         {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"}
       ]);
   }
-  /* Growth's own history. Keren, V371: "change the main container to be yearly history like the rest of the
-     app." drawGrowth() is not rewritten, because the Calendar's cycle view shares it: this is a SECOND chart, on
-     the inner page only, and the cycle card stays as it is, still reachable from the timeline's "This cycle"
-     stop. Build alongside, never mutate what is shared.
-     Quarterly year-over-year from 1988 — 39 years, so 10Y, 25Y and Max all answer. Columns out of zero rather
-     than a line, because expanding or contracting is the reading. */
   function gdpHistoryChart(Wpx, from, o){
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -868,11 +640,8 @@
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
     var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
-    // zero and the long-run norm are always in view: which side of zero a quarter falls on is the reading, and the
-    // norm is what "quick" and "slow" are measured against.
     var sc = windowScale(vals.map(function(d){ return d.v; }), [0, GDP_NORM]);
     var LO = sc.lo, HI = sc.hi;
-    // half a column of inset at each end: see cpiHistoryChart
     var halfCol = (R - L) / (2 * Math.max(1, n));
     var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
@@ -880,7 +649,6 @@
     var out = [], zero = Y(0);
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-    // a cycle names its own first and last year rather than the round ones windowYears picks
     if (o.cycle){
       var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
       for (var cyr = y0; cyr <= y1; cyr += stepY){
@@ -898,7 +666,6 @@
       out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
-    // the window's own average, the same line Temperature draws
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
     out.push(avgRule(L, R, f(Y(gAvg))));
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
@@ -918,8 +685,6 @@
       out.join("") + '</svg>';
   }
 
-  // the record, drawn at the width it will occupy. Columns out of zero rather than a line, because the
-  // reading's whole meaning is which side of zero it is on.
   function m2GrowthChart(Wpx, from, to){
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
@@ -927,11 +692,8 @@
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
     var y1 = M2_FROM_YEAR + 1 + Math.floor(((to == null ? all.length : to) - 1) / 4);
-    // zero and the long-run norm are always in view: which side of zero the bar falls on is the whole reading,
-    // and the norm is what "fast" and "slow" are measured against.
     var sc = windowScale(vals, [0, M2_NORM]);
     var LO = sc.lo, HI = sc.hi;
-    // half a column of inset at each end: see cpiHistoryChart
     var halfCol = (R - L) / (2 * Math.max(1, n));
     var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
     var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
@@ -950,8 +712,6 @@
       out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
-    // the long-run pace as a line, so each column is read AGAINST it (windowScale forces M2_NORM into the scale,
-    // so it always fits), with the window's own average beside it and the legend naming both
     var vAvg = vals.filter(function(v){ return v != null; }).reduce(function(a, v){ return a + v; }, 0) /
                (vals.filter(function(v){ return v != null; }).length || 1);
     out.push(meanRule(L, R, Y(M2_NORM)));
@@ -960,12 +720,8 @@
     out.push(crossLine(T, B));
     publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
-                     // the window's average and the long-run pace, in the order they are drawn
                      refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
                      vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
-    // the fit across the quarters in view. Nulls are filtered for the regression — they only occur
-    // at the head of the series, which a window can include — but the line still spans the plot, because the
-    // reader is being shown the slope of what is on screen, not of a subset of it.
     var m2Fit = trendOf(vals.filter(function(v){ return v != null; }), "points", "quarter").fit;
     if (m2Fit && m2Fit.n > 1)
       out.push(fitGroup({ fit:m2Fit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -1004,15 +760,10 @@
       tag:{text:"Solid", state:"good"},
       metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
       meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:"3.5–5%"},
-             // the track runs from the lowest unemployment on record to the highest, so the LEFT end is a hot
-             // labour market and the right end a cold one — the opposite of the usual "low is bad" reading
              ends:{ low:"Tight", zone:"Normal", high:"Slack" }},
       shortCaption:"Ticked up slightly but still low against the full sweep of U.S. history.",
       caption:"Physical activity confirms a phase only after it's underway — unemployment is the textbook lagging indicator, typically trailing a turn by two to three quarters. Ticked up slightly but still low against the full sweep of U.S. history; the modern BLS series (since 1948) set its own record at 14.8% in April 2020 (14.7% as first reported), against a low of 2.5% in mid-1953; the 24.9% at the far end of the bar is the Census Bureau's historical estimate for 1933. August payrolls rose 162,000, beating forecasts.",
       aux:{label:"Initial jobless claims (wk of Sep 12)", value:"196K"},
-      /* The colouring is the CHART's, so the thumbnail and the page behind it read one number the same way.
-         October 2025 is filtered out rather than drawn as a gap: twelve bars is a glance, and the chart is
-         where a missing month is a fact worth showing. */
       get peek(){
         var seen = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
         return colPeek(seen, function(v){ return "unemp-col " + unempState(v); });
@@ -1024,24 +775,11 @@
       tag:{text:"Running hot", state:"warning"},
       metric:"3.4%", metricSub:"CPI, YoY, Aug 2026",
       meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
-             // the two ends of the record, not judgements: −15.8% in 1921 and +23.7% in 1920. The middle label
-             // is the range itself, which keeps a POLICY TARGET from being labelled "normal"; the (i) says which.
              ends:{ low:"Cold", high:"Hot" }},
-      shortCaption:"",   // Keren, V378: empty; the reading speaks for itself and the note explains it
+      shortCaption:"",
       caption:"Basal body temperature rises only after ovulation has already happened — CPI works the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
-      // the note, kept to the two metaphors, which are the only part of it the page cannot draw
-      // Keren, V376: "put this in the more details pop up." There is no `lead`, so the visible line is
-      // `shortCaption`, and the full caption — which opens with the body metaphor — is what More details shows,
-      // because dropWhatIsShown does not find that sentence on the page.
-      // Keren, V376: "I don't understand what is the US range since 1913." So this row states no range: the
-      // meter draws the full sweep (−15.8% in 1921, +23.7% in 1920), the record rows state the series the chart
-      // draws (9.0% Jun 2022 to −2.0% Jul 2009), and the long form tells the deep history.
       facts:[],
-      // Keren, V375 (at her request): no Fed funds rate or policy-calendar facts on this card. They answer "what
-      // is the Fed doing?", not "how hot are prices?", and live on Pressure, whose short end IS the policy rate.
-      // What stays is what a temperature reading answers. The prose keeps the Fed, because the RELATIONSHIP is
-      // this page's point — the lever is pulled after her temperature, not ahead of it.
-      aux:[],   // Keren, V376: core CPI is in the chart container, as a record row
+      aux:[],
       src:[{t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
     }
   ];
