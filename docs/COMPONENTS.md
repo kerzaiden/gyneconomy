@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2bdc516` on 2026-09-29. **73 components**, **61 shared patterns**.
+Generated from commit `085cbca` on 2026-09-29. **73 components**, **61 shared patterns**.
 
 ## components.js
 
@@ -87,7 +87,7 @@ Generated from commit `2bdc516` on 2026-09-29. **73 components**, **61 shared pa
 | **`cardDetailHtml`** | `.blood-card` | `pages-nav.js:renderSignsList` |
 | **`facts`** | `.facts` | `charts.js:(top level)`, `components.js:deficitBlock`, `dial-cycle.js:wireResize`, `render-core.js:factsFrom` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.js:cardDetailHtml` |
-| **`meterHtml`** | `.mid` `.rbar-labels` `.rbar-optimal` `.rbar-stop` `.rbar-track` `.three` `.two` | `pages-nav.js:renderSignsList`, `render-core.js:cardDetailHtml` |
+| **`meterHtml`** | `.mid` `.rbar-labels` `.rbar-optimal` `.rbar-track` `.three` `.two` | `pages-nav.js:renderSignsList`, `render-core.js:cardDetailHtml` |
 | **`renderPressurePage`** | `.row` `.sw` | — |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.js:buildNav` |
 | **`srcBlock`** | `.src` | `dial-cycle.js:renderCycleKicker`, `dial-cycle.js:wireResize`, `forms.js:dsrInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `render-core.js:renderPressurePage`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `tabs-menu.js:renderSeasonRows` |

@@ -180,11 +180,10 @@
       }
     }
     var dotHtml = '<div class="rbar-dot' + (flagged ? ' flagged' : '') + '" style="left:' + pct.toFixed(1) + '%"></div>';
-    var stopsHtml = (m.stops || []).map(function(st, i, all){ // named positions along the track (Version 235)
-      var w = 100 / all.length;
-      return '<div class="rbar-stop" style="left:' + (i * w).toFixed(2) + '%; width:' + w.toFixed(2) + '%" title="' + st + '"></div>';
-    }).join("");
-    return labelsHtml + '<div class="rbar-track">' + zoneHtml + stopsHtml + dotHtml + '</div>';
+    // V634: `m.stops` — named hover positions along the track (Version 235) — went. No meter has passed one since
+    // the record rows left in V494; the branch and its CSS rule were the dead code the working document itself
+    // called "unused", proved by grep and by the snapshot.
+    return labelsHtml + '<div class="rbar-track">' + zoneHtml + dotHtml + '</div>';
   }
   /* Version 616: every one of the nineteen callers wrote the same wrapper around this, so the wrapper is the
      component and srcHtml is its inside. Nothing about the markup changed — the nineteen `<div class="src">`

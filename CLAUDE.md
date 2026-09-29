@@ -14,7 +14,7 @@ overrule one; if it seems wrong, say so and ask.
 ## Read this before changing anything
 
 `docs/ARCHITECTURE.md` is the working document — the app, the design system and the mechanics,
-in one place, roughly 19,000 words. **Read the part that covers what you are touching before
+in one place. **Read the part that covers what you are touching before
 you touch it.** It is not optional reading and it is not a summary of the code; it records why
 things are the way they are, including several decisions that look like bugs and are not.
 
@@ -25,8 +25,7 @@ Version history is `git log`: every version is a commit `V6NN — Short Name` an
 the task's prompt just fetches that URL — so change the task by editing that file and pushing. Read it when you want to know
 whether something was already tried.
 
-**`docs/MAP.md` is how you navigate `index.html` without reading it.** The file is about 13,100 lines
-and 297,000 tokens, so you cannot hold it in context — the map gives you the five regions, every
+**`docs/MAP.md` is how you navigate `index.html` without reading it.** The source is about 15,000 lines, so you cannot hold it in context — the map gives you the five regions, every
 section, every top-level function and var, the IIFEs, and the registries that route behaviour. Each
 entry carries a **grep anchor**; line numbers in it are orientation only and go stale on every
 insertion. Generated, never hand-edited: `npm run map` after a structural change, `npm run map:check`
@@ -105,14 +104,17 @@ That is the one way the two targets can silently drift apart.
 
 ```sh
 npm i && npm run setup   # once — npm i alone does NOT fetch the browser
-npm test                 # the suite: 60 checks, exit 0 or 1
+npm run check            # the fast gate, under a second: build, email, map, ledger, 120 tool checks
+npm run check:all        # plus the browser suite (85 checks) and axe — what CI runs
+npm test                 # the browser suite alone
 npm run test:full        # adds the class-coverage walk (2–4 min)
-npm run test:tools       # the fetcher's pure parts — no network, no browser
+npm run test:tools       # season table, every series, the two fetchers' pure parts — no browser
 npm run email            # must print ok
-npm run map              # regenerate docs/MAP.md after a structural change
+npm run map              # regenerate docs/MAP.md and docs/COMPONENTS.md after a structural change
 npm run map:check        # is the map current?
 npm run snap             # 32-state DOM snapshot, to prove a refactor changed nothing
 npm run classify         # measure what each step does, to check the declared kinds
+npm run comp             # the component ledger; comp:check fails if a pattern got more duplicated or a function grew
 npm run build            # assemble index.html from src/
 npm run build:check      # does index.html match src/?
 npm run sources          # regenerate sources.html from the app's own Sources screen
@@ -124,22 +126,25 @@ fetches the Chromium it drives (~130MB, once per machine). In the Anthropic clou
 `setup` — a Chromium is preinstalled and the suite finds it, and `playwright install` is not to be
 run there. Anywhere else, or to use a browser you already have, set `GYN_CHROME` to its binary.
 
-`npm test` is the gate. It asserts the spacing tokens and `COL_FILL`/`AXIS` in the source, zero
-page errors at two widths in both colour schemes, the head title and `⋯` note on all eleven
-history pages, the cycle picker's capital-T `Today`, and eight live-data-cache checks. It is
+`npm run check` is the gate before every commit; `npm run check:all` is what CI runs. The browser suite
+asserts the spacing tokens and `COL_FILL`/`AXIS`, zero page errors at two widths in both colour schemes, the
+head title and `⋯` note on every history page, the live-data cache and repaint layer, the reading registry's
+bands, and six runtime invariants: geometry ownership, one-reading-one-paint, every reach accounted, every
+action answered, every id once, and no data check fired. It is
 proved to fail on deliberate breakage. **`--bless` rewrites the baseline: a deliberate act,
 never a way to clear a failure.**
 
 A change the suite does not cover needs its own probe as well — and if the claim is worth
 keeping, fold the probe into the suite rather than throwing it away. That is how it grew from
-42 checks to 50.
+42 checks to 85.
 
 ## `index.html` is BUILT — edit `src/`, never the output
 
-`index.html` is assembled by `npm run build` from the 17 parts listed in `src/manifest.json`: the
-page shell, the stylesheet, and the script in 13 files by layer (refresh/season, live data, data
-literals, components, history, charts, forms, model, render core, render pages, dial/cycle,
-pages/nav, tabs/menu). The largest is about 1,600 lines.
+`index.html` is assembled by `npm run build` from the parts listed in `src/manifest.json`: the page
+shell, the stylesheet, and the script in files by layer (refresh/season, live data, data literals, the
+FRED histories, components, history, charts, forms, model, render core, render pages, dial/cycle,
+pages/nav, analysis, tabs/menu). No function is longer than about 500 lines, and `npm run comp:check`
+fails if one grows.
 
 **The build is `parts.join("\n")` and nothing else.** The script is one IIFE sharing a closure, so
 concatenating the pieces back in order reproduces that scope exactly — which is why the split was
@@ -168,13 +173,12 @@ The script used to be 28 anonymous IIFEs running in source order. Each now has a
 kind, and an entry in `GYN`**, and still runs at exactly the same point — module vars are assigned
 between them, so the order is load-bearing and the calls did not move.
 
-Kinds: **check** (6) · **derive** (3) · **wire** (7, listeners only, must run once) · **render** (6,
-repeatable) · **build** (3, one-shot) · **mixed** (2) · **live** (2).
+Kinds: **check** · **derive** · **wire** (listeners only, must run once) · **render** (repeatable) ·
+**build** (one-shot) · **mixed** · **live**. The suite pins the counts of the one-shot kinds.
 
 **The kinds are MEASURED by running each step (`npm run classify`), never read off the source.**
 Counting DOM writes in a body counts the writes inside its event HANDLERS, which fire later and say
-nothing about the step — that mislabelled six pure wirers as mixed and hid that the 1,228-line
-`renderPagesAndNav` binds nothing and converges. Patch `addEventListener`, run the step, watch:
+nothing about the step — that mislabelled six pure wirers as mixed. Patch `addEventListener`, run the step, watch:
 listeners bound means run once; DOM settled with no listeners means it may run again.
 
 **A name says what a step BUILT; a kind says whether it may run AGAIN.** `renderCycleDial` draws a
@@ -197,44 +201,26 @@ render count. This fixed a real leak — the array had been growing as a reader 
 the climbing `data-detail-idx`. `deriveUninversionDetail` still appends to `allSources` and stays
 out of `repeatable()` until that is keyed too.
 
-**Measured, per step (V532):** of the 14 repeatable steps, **10 are already idempotent**. The four
-that are not:
-
-| Step | Re-running it |
-|---|---|
-| `renderSignsList` | grows the DOM ~22KB — essentially the whole delta, several append-not-replace sites |
-| `renderHorizonPage` | grows 38 bytes |
-| `renderPsychologyTag` | same length, different content |
-| `renderSubjectRows` | **throws** — its hosts no longer exist |
-
-That last one is architectural, not sloppy. `renderSignsList` MOVES the DOM `renderSubjectRows`
-built into the category sheets — the documented "catItem consumes its source" behaviour — so its
-original hosts are gone by design. Re-running it would require rebuilding the static skeleton first.
-
 **So full re-rendering is the wrong target.** The elements that hold the printed figures
 (`#subj-value-*`) survive the move, which is why `repaintPolicy()` has always worked. `GYN.render()`
 stays a diagnostic for finding non-idempotency, not a production path.
 
-## The repaint layer (V533)
+## The reading registry (V629)
 
-Live data arriving mid-session is applied by **`applyLive(name, value)`**, one document at a time:
-it assigns the module var, **re-derives whatever was computed from it at load**, then runs that
-document's repaints. The re-derivation is the subtle part — `valuation.tag` and the Volume/Pulse
-tags are computed once at load, so a new object without them would print a fresh number beside a
-stale verdict, which is precisely the drift ONE FIGURE / ONE NUMBER forbids. The derive steps are
-reused by name, never duplicated.
+Live data arriving mid-session goes through **`applyLive(name, value)`**, and what it does for a reading is
+written ONCE, in that reading's row of `READINGS` (`js/02-live.js`): its kind, a scalar's band, where the value
+lands, and what redraws — or `onOpen`, meaning its only display is an inner page that redraws in full when it
+opens. Nine rows. The `set` re-derives whatever was computed from the value at load — `valuation.tag`, the
+Volume and Pulse tags — because a fresh number beside a stale verdict is precisely the drift ONE FIGURE / ONE
+NUMBER forbids. A `set` that cannot place its value throws, and a throw is a refusal. `receive(next, mode)` is
+the one intake both sources call. `checkLiveCoverage` fails the suite on an incomplete row.
 
-`REPAINT` maps each document to its repaints. **An empty list is a statement, not an omission**:
-the VIX row and the Desire/Volume/Pulse rows live on inner pages that redraw on open from these same
-vars, so they need nothing. A figure needs a repaint only if it is visible WITHOUT opening a page.
-
-**Repaints edit in place — a text node and a tag, never the row's `innerHTML`.** `catItem`
+**Repaints go through every door.** `paintReading(sheet, value, tag)` writes into every `[data-open]` element for a reading (V619), editing a text node and a tag, never a row's `innerHTML`. `catItem`
 normalises `.unit` to `.ci-unit` when it moves a row, so rebuilding that markup would silently undo
 the normalisation and the row would return at the wrong type size.
 
-The refresher now applies every document that actually CHANGED, not only the policy rate, comparing
-against the cache the page rendered from. `LIVE_CACHE` is swapped in first so `LIVE()` does the
-shape-decoding — one decoder, not two.
+`receive` applies every document that actually CHANGED, comparing against the cache the page rendered from,
+and swaps `LIVE_CACHE` in first so `LIVE()` does the shape-decoding — one decoder, not two.
 
 Proved in the suite, mid-session and with no reload: the figure moves 36 → 82, and the DERIVED mood
 class moves `serious-ink` → `critical-ink`; the yield pair moves 5.18/4.24 → 4.05/5.55; and null,
@@ -311,20 +297,12 @@ the sheet, **finds the header row by READING it rather than by column index**, a
 that carries a CAPE value. Two traps, both handled: Shiller's dates are `YYYY.MM` with a one-digit
 month, so `.1` is **October, not January**; and the sheet's column order has moved before.
 
-**CNN's Fear & Greed is NOT fetched, and two sources have now said so themselves (V543).** V542 read
-it from the endpoint CNN's own chart calls; the first run from a GitHub runner got **HTTP 418**, their
-edge refusing an automated client. The only way past that is to send a browser's user-agent and
-pretend not to be a script, which is evading a block rather than reading something published, so the
-fetcher was removed. **AAII's sentiment survey was then investigated as a replacement and is also out,
-by its own terms** — the workbook's Terms of Service sheet prohibits "automated downloading (bots,
-scrapers, APIs)" without a commercial licence, and prohibits integration into commercial products
-besides. The parser was written and proved against the real file *before* those terms were read; it
-was not shipped, and that order is the lesson: **read the terms first.**
-
-The figure stays with the weekly task, which reads a news report QUOTING CNN's score and band word —
-journalism citing an index, not an automated fetch. **A replacement is an open question**, and the
-leading candidate is a VIX term-structure ratio (`VIXCLS ÷ VXVCLS`), which needs no new source, no new
-permission and no new failure mode, but does need the 0–100 gauge redrawn.
+**Fear & Greed is gone (V546); Fear is the Fear Curve, `VIXCLS ÷ VXVCLS`.** CNN's edge answered HTTP 418 to an
+automated client and the only way past was a spoofed browser — evading a block, which this project does not do.
+AAII's survey was investigated as a replacement and is out by its own terms: its workbook prohibits automated
+downloading and commercial integration, and the app is commercial. Both legs of the Fear Curve are in the
+table above; the ratio is recomputed whenever either lands. `docs/ARCHITECTURE.md` → "Sources that were
+refused" has the reasoning and the lesson: **read the terms first.**
 
 **A known gap, recorded rather than sat on.** Keren has confirmed the app is commercial — it
 accompanies a book for sale. Treasury, BLS and FRED's own series are straightforwardly fine. The
@@ -332,8 +310,7 @@ EXCHANGE-sourced series are the ones nobody has checked: FRED shows Cboe's VIX u
 permission", which is not a public-domain notice. This is pre-existing and unchanged by anything
 recent; it is written down so the next person does not assume it was settled.
 
-**Never invent a number and never derive a band.** Both fetchers refuse rather than guess: an
-unrecognised CNN rating, a missing field, a value outside its band, an unparsable date — each leaves
+**Never invent a number and never derive a band.** The fetcher refuses rather than guesses: a missing field, a value outside its band, an unparsable date — each leaves
 the document out and the committed value standing. `npm run test:tools` pins those refusals.
 
 **A failure leaves the previous value standing.** A document that cannot be fetched, or whose value
@@ -374,13 +351,13 @@ anything moving.** Verified: pixel-identical screenshots at 414 light, 414 dark 
 
 | Path | What |
 |---|---|
-| `src/` | the app's source — 17 parts, listed in `src/manifest.json` |
+| `src/` | the app's source — the parts listed in `src/manifest.json`, in the order that is the semantics |
 | `index.html` | the app, **built** from `src/` by `npm run build` |
 | `sources.html` | the published citation page — **generated, never hand-edited** |
 | `docs/ARCHITECTURE.md` | the working document: app, design system, mechanics |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
-| `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
-| `tools/` | the build, the sources and map generators, the snapshot harness, the step classifier, the stylesheet check |
+| `docs/MAP.md`, `docs/COMPONENTS.md` | generated: the navigation index, and every component with what it owns and who calls it |
+| `tools/` | build, strip, the component ledger, the map and sources generators, the snapshot harness, axe, the step classifier, the two fetchers |
 | `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
 | `data/live.json` | the fetched figures — generated, committed by the Data workflow, never hand-edited |
 | `tools/fetch-live.js` | the fetcher: primary sources, sanity bands, silence on failure |

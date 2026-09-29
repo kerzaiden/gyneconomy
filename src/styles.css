@@ -2961,7 +2961,6 @@
   .rbar-dot.flagged{ background:var(--warning); }
   /* invisible hover zones over a track whose positions have names (Version 235) — the bar looks exactly like every other
      bar; the meaning is in the title, for the reader who goes looking */
-  .rbar-stop{ position:absolute; top:-7px; bottom:-7px; }
 
   /* ---------- info icon + popover (progressive disclosure for longer notes) ---------- */
   /* Version 350, from the health check: the mark is 16-18px and the design system's floor is 44. The circle does
