@@ -92,7 +92,6 @@
          : r >= 1      ? { text:"Inverted",   state:"serious" }
                        : { text:"Normal",     state:"good" };
   }
-  var CAPE_FAIR = 17;
   function valuationVerdict(v){
     var r = v / CAPE_FAIR;
     return r < 0.75 ? { text:"Highly undervalued", state:"warning" }

@@ -1,6 +1,6 @@
 {
   "name": "gyneconomy",
-  "version": "653.0.0",
+  "version": "654.0.0",
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
@@ -10,7 +10,7 @@
     "setup": "playwright install chromium",
     "test": "node test/gyn-test.js index.html",
     "test:full": "node test/gyn-test.js index.html --full",
-    "test:tools": "node test/season.test.js && node test/series.test.js && node test/fetch-live.test.js && node test/fetch-fred-history.test.js && node test/tag-versions.test.js",
+    "test:tools": "node test/season.test.js && node test/series.test.js && node test/fetch-live.test.js && node test/fetch-fred-history.test.js && node test/tag-versions.test.js && node test/load-order.test.js",
     "bless": "node test/gyn-test.js index.html --bless",
     "email": "test \"$(grep -cE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}' index.html)\" = 0 && echo 'ok: no email address in markup'",
     "map": "python3 tools/make-map.py && node tools/components.js --doc",
@@ -25,10 +25,11 @@
     "comp": "node tools/components.js",
     "comp:check": "node tools/components.js --check",
     "comp:bless": "node tools/components.js --bless",
-    "check": "npm run build:check && npm run email && node tools/uncomment.js --check && npm run map:check && npm run comp:check && npm run test:tools",
+    "check": "npm run build:check && npm run email && node tools/uncomment.js --check && node tools/load-order.js && npm run map:check && npm run comp:check && npm run test:tools",
     "check:slow": "npm test && npm run a11y:check",
     "check:all": "npm run check && npm run check:slow",
-    "uncomment": "node tools/uncomment.js"
+    "uncomment": "node tools/uncomment.js",
+    "order": "node tools/load-order.js"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",

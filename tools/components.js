@@ -195,11 +195,11 @@ if (arg === '--check') {
     console.error('\nBuild it once and call it, or if the duplication is deliberate, run: npm run comp:bless');
     process.exit(1);
   }
-  const NEW_FN_MAX = 150;
+  const FN_MAX = 150;
   const caps = past['#functions'] || {}, now = sizes(), longer = [];
   for (const [fn, n] of Object.entries(now)) {
-    if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
-    else if (caps[fn] == null && n > NEW_FN_MAX) longer.push(fn + ' is new and ' + n + ' lines (a new function starts at most ' + NEW_FN_MAX + ')');
+    if (n > FN_MAX) longer.push(fn + ' is ' + n + ' lines; no function may pass ' + FN_MAX);
+    else if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
   }
   if (longer.length) {
     console.error('SIZE \u2014 a function got longer:\\n');

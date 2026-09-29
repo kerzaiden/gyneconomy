@@ -13,7 +13,7 @@ A published artifact cannot fetch anything from the internet, and only a Claude 
 its database. That is the whole reason: you are the bridge between the data on GitHub and the
 artifact's database. Everything else about the app is automated without you.
 
-## Do these two things
+## Do these three things
 
 **1. Read the pipeline's file.** Fetch
 `https://raw.githubusercontent.com/kerzaiden/gyneconomy/main/data/live.json`
@@ -32,6 +32,14 @@ same shape, same fields, same numbers, nothing added, rounded or relabelled.
 
 **Pin every write.** Read each document first and pass the `version` it returns as `if_version`. An
 unpinned write to an existing document is refused, and one bad entry refuses the whole batch.
+
+**3. Check the artifact is on main's version** (V654). Read the artifact with the `Artifact` tool
+(`action:"read"`, the artifact `url`); it saves the page to a file. Fetch
+`https://raw.githubusercontent.com/kerzaiden/gyneconomy/main/index.html`. Publishing wraps the page in one
+extra first line and one extra closing `</body></html>` line; with those two lines removed, the artifact
+must equal main's `index.html` exactly. If it does not, the artifact is behind main: a version was
+merged, or the monthly backfill changed the histories, and nobody has republished. Do not republish it
+yourself. Report it and notify.
 
 That is the whole job. You fetch no figure yourself.
 
@@ -53,10 +61,11 @@ That is the whole job. You fetch no figure yourself.
 ## Report every run
 
 The six documents and their dates · anything in `_meta.failed` · which documents you wrote · the
-season the page computes. A run that wrote nothing says why.
+season the page computes · whether the artifact matches main. A run that wrote nothing says why.
 
 **Notify (push) if:** a document was missing or `_meta.failed` is not empty · the newest date in the
-file is more than four days old · a write failed · the season changed. Otherwise finish quietly.
+file is more than four days old · a write failed · the season changed · the artifact is behind main
+("a Claude session needs to republish the artifact from main"). Otherwise finish quietly.
 
 ## When it runs (V645)
 

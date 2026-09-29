@@ -319,6 +319,57 @@
     if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
                                            function(){ return "yl-col normal"; }, 0, true);
   }
+  function ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB){
+    var el = svgEl;
+    var firstYear = parseInt(quarters[ylmFrom].slice(0, 4), 10);
+    var lastYear = parseInt(quarters[ylmTo - 1].slice(0, 4), 10);
+    var step = Math.max(1, Math.round((lastYear - firstYear) / 4));
+    var xLabelYears = [];
+    for (var yv = firstYear + (ylmFrom ? step : 0); yv <= lastYear; yv += step) xLabelYears.push(yv);
+    quarters.forEach(function(q, i){
+      if (i < ylmFrom || i >= ylmTo) return;
+      var m = q.match(/^(\d{4}) Q1$/);
+      if (m && xLabelYears.indexOf(parseInt(m[1],10)) !== -1){
+        svg.insertBefore(el("path", { class:"bt-vgrid",
+          d:"M" + x(i).toFixed(1) + "," + padT + "L" + x(i).toFixed(1) + "," + (H - padB) }), svg.firstChild);
+        var xl = el("text", {x:x(i), y:H - AXIS.FOOT, class:"bt-xl", "text-anchor":"middle"});
+        xl.textContent = m[1];
+        svg.appendChild(xl);
+      }
+    });
+  }
+  function ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colW, latestSpread){
+    var el = svgEl;
+    var spreadAt = {};
+    t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
+    var lastCol = maturities[0].data[quarters.length - 1];
+    if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;
+    maturities.forEach(function(mat){
+      if (!mat.on) return;
+      var y0 = y(0);
+      mat.data.forEach(function(d, i){
+        if (i < ylmFrom || i >= ylmTo || d.v == null) return;
+        var sp = spreadAt[quarters[i]];
+        var zone = sp == null ? "normal" : pressureZone(sp).key;
+        svg.appendChild(el("path", {
+          class:"yl-col hcol " + zone, "stroke-width":colW.toFixed(2), "stroke-linecap":"butt",
+          d:"M" + x(i).toFixed(2) + "," + y0.toFixed(2) + "V" + y(d.v).toFixed(2)
+        }));
+      });
+    });
+  }
+  function ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR){
+    var fitVals = [];
+    maturities.forEach(function(m){
+      if (!m.on) return;
+      m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v); });
+    });
+    var ylmFit = trendOf(fitVals, "points", "quarter").fit;
+    if (ylmFit && ylmFit.n > 1)
+      svg.insertAdjacentHTML("beforeend", fitGroup(
+        { fit:ylmFit, fmt:function(v){ return v.toFixed(2) + "%"; } },
+        x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
+  }
   function renderPressurePage(){
     var svg = byId("ylm-svg");
     var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
@@ -364,8 +415,6 @@
     }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
-    var tooltip = byId("ylm-tooltip");
-    var onMaturities;
 
     function render(){
       var shell = svg.parentNode;
@@ -374,7 +423,6 @@
       innerW = W - padL - padR; innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       computeScale();
-      onMaturities = maturities.filter(function(m){ return m.on; });
       svg.innerHTML = "";
 
       var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
@@ -394,83 +442,18 @@
                        vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
                               return d.v == null ? null : { v:d.v }; }) : []) });
 
-      var firstYear = parseInt(quarters[ylmFrom].slice(0, 4), 10);
-      var lastYear = parseInt(quarters[ylmTo - 1].slice(0, 4), 10);
-      var step = Math.max(1, Math.round((lastYear - firstYear) / 4));
-      var xLabelYears = [];
-      for (var yv = firstYear + (ylmFrom ? step : 0); yv <= lastYear; yv += step) xLabelYears.push(yv);
-      quarters.forEach(function(q, i){
-        if (i < ylmFrom || i >= ylmTo) return;
-        var m = q.match(/^(\d{4}) Q1$/);
-        if (m && xLabelYears.indexOf(parseInt(m[1],10)) !== -1){
-          svg.insertBefore(el("path", { class:"bt-vgrid",
-            d:"M" + x(i).toFixed(1) + "," + padT + "L" + x(i).toFixed(1) + "," + (H - padB) }), svg.firstChild);
-          var xl = el("text", {x:x(i), y:H - AXIS.FOOT, class:"bt-xl", "text-anchor":"middle"});
-          xl.textContent = m[1];
-          svg.appendChild(xl);
-        }
-      });
+      ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB);
 
       // ---- The picked maturity is drawn as COLUMNS (Keren, V394 — see ylmFrom), shaded by the 10-year-minus ----
-      var spreadAt = {};
-      t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
-      var lastCol = maturities[0].data[quarters.length - 1];
-      if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;
-      var colW = colWidth(innerW / Math.max(1, ylmCount()));
-      maturities.forEach(function(mat){
-        if (!mat.on) return;
-        var y0 = y(0);
-        mat.data.forEach(function(d, i){
-          if (i < ylmFrom || i >= ylmTo || d.v == null) return;
-          var sp = spreadAt[quarters[i]];
-          var zone = sp == null ? "normal" : pressureZone(sp).key;
-          svg.appendChild(el("path", {
-            class:"yl-col hcol " + zone, "stroke-width":colW.toFixed(2), "stroke-linecap":"butt",
-            d:"M" + x(i).toFixed(2) + "," + y0.toFixed(2) + "V" + y(d.v).toFixed(2)
-          }));
-        });
-      });
+      ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colWidth(innerW / Math.max(1, ylmCount())), latestSpread);
 
-      var fitVals = [];
-      maturities.forEach(function(m){
-        if (!m.on) return;
-        m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v); });
-      });
-      var ylmFit = trendOf(fitVals, "points", "quarter").fit;
-      if (ylmFit && ylmFit.n > 1)
-        svg.insertAdjacentHTML("beforeend", fitGroup(
-          { fit:ylmFit, fmt:function(v){ return v.toFixed(2) + "%"; } },
-          x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
+      ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR);
 
       var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:H - padB, class:"crosshair"});
       svg.appendChild(crosshair);
       var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
       svg.appendChild(hit);
 
-      function showAt(k){
-        var i = k + ylmFrom;
-        if (i >= quarters.length) return;
-        var q = quarters[i];
-        var px = x(i);
-        crosshair.setAttribute("x1", px); crosshair.setAttribute("x2", px); crosshair.setAttribute("opacity", 1);
-        var onMats = onMaturities.filter(function(m){ return m.data[i].v != null; });
-        if (!onMats.length){ tooltip.style.opacity = 0; return; }
-        var rows = onMats.map(function(m){
-          var v = m.data[i].v;
-          return '<div class="row"><span><span class="sw" style="background:var(--ylm-' + m.code + ')"></span>' + m.name + '</span><b>' + v.toFixed(2) + '%</b></div>';
-        }).join("");
-        var sp = spreadAt[q];
-        var zn = sp == null ? null : pressureZone(sp);
-        tooltip.innerHTML = "<b>" + colLabel(i) + "</b>" + rows +
-          (zn ? '<div class="row"><span><span class="sw" style="background:var(--' +
-                (zn.key === "inverted" ? "-critical" : zn.key === "normal" ? "-season-autumn" : "-good").slice(1) +
-                ')"></span>Curve</span><b>' + zn.label + '</b></div>' : "");
-        tooltip.style.left = (px / W * 100) + "%";
-        var avgY = onMats.reduce(function(s, m){ return s + y(m.data[i].v); }, 0) / onMats.length;
-        tooltip.style.top = (avgY / H * 100) + "%";
-        tooltip.style.opacity = 1;
-      }
-      function hide(){ crosshair.setAttribute("opacity", 0); tooltip.style.opacity = 0; }
       var shell = byId("ylm-shell");
       attachHistory(shell, "ylm-tooltip", "ylm");
     }

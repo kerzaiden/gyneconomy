@@ -1,14 +1,7 @@
 
   // ---- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----
-  function renderSpreadHistory(){
-    var svg = byId("spread-history-svg");
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
-    var minV = -2, maxV = 4;
-    var el = svgEl;
-    var tooltip = byId("spread-history-tooltip");
-
-    var series = {
+  function spreadSeries(){
+    return {
       "3m": {
         title: "10-Year minus 3-Month spread since 2005",
         lede: "Every U.S. recession since the late 1960s has followed an inversion of this spread — the Fed's own preferred near-term recession gauge. History says the recession tends to start only after the curve un-inverts, not while it's still inverted.",
@@ -50,6 +43,16 @@
         ]
       }
     };
+  }
+  function renderSpreadHistory(){
+    var svg = byId("spread-history-svg");
+    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var minV = -2, maxV = 4;
+    var el = svgEl;
+    var tooltip = byId("spread-history-tooltip");
+
+    var series = spreadSeries();
     addSources(series["3m"].sources); addSources(series["2y"].sources);
 
     function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }

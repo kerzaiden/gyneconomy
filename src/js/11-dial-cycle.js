@@ -273,6 +273,21 @@
     if (v < 1) return "s0";
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
+  function drawTempFit(svg, tFit, fx0, fx1, y){
+    var el = svgEl;
+    var fg = el("g", {class:"fit"});
+    var fv0 = tFit.fit.intercept, fv1 = tFit.fit.intercept + tFit.fit.slope * (tFit.fit.n - 1);
+    var fy0 = y(fv0), fy1 = y(fv1), fDown = fy1 > fy0;
+    fg.appendChild(el("line", {x1:fx0.toFixed(1), y1:fy0.toFixed(1), x2:fx1.toFixed(1), y2:fy1.toFixed(1), class:"fit-line"}));
+    [[fx0, fy0, fv0, !fDown, "start"], [fx1, fy1, fv1, fDown, "end"]].forEach(function(L){
+      var txt = L[2].toFixed(1) + "%", w = txt.length * 7.4 + 8;
+      var lx = L[4] === "end" ? L[0] - w : L[0], ly = L[3] ? L[1] - 19 : L[1] + 5;
+      fg.appendChild(el("rect", {x:lx.toFixed(1), y:ly.toFixed(1), width:w.toFixed(1), height:15, rx:3, class:"chart-label-plate"}));
+      var t = el("text", {x:(lx + w / 2).toFixed(1), y:(ly + 11.4).toFixed(1), class:"fit-lab mono", "text-anchor":"middle"});
+      t.textContent = txt; fg.appendChild(t);
+    });
+    svg.appendChild(fg);
+  }
   function drawTemperature(m){
     var svg = byId("temp-svg"), el = svgEl;
     var TARGET = 2.0, RANGE_LO = 1.0, RANGE_HI = 3.0;
@@ -358,21 +373,7 @@
     avgL.textContent = avgText;
     svg.appendChild(avgL);
 
-    if (tFit){
-      var fg = el("g", {class:"fit"});
-      var fx0 = xc(slotOf(data[0].m)), fx1 = xc(slotOf(last.m));
-      var fv0 = tFit.fit.intercept, fv1 = tFit.fit.intercept + tFit.fit.slope * (tFit.fit.n - 1);
-      var fy0 = y(fv0), fy1 = y(fv1), fDown = fy1 > fy0;
-      fg.appendChild(el("line", {x1:fx0.toFixed(1), y1:fy0.toFixed(1), x2:fx1.toFixed(1), y2:fy1.toFixed(1), class:"fit-line"}));
-      [[fx0, fy0, fv0, !fDown, "start"], [fx1, fy1, fv1, fDown, "end"]].forEach(function(L){
-        var txt = L[2].toFixed(1) + "%", w = txt.length * 7.4 + 8;
-        var lx = L[4] === "end" ? L[0] - w : L[0], ly = L[3] ? L[1] - 19 : L[1] + 5;
-        fg.appendChild(el("rect", {x:lx.toFixed(1), y:ly.toFixed(1), width:w.toFixed(1), height:15, rx:3, class:"chart-label-plate"}));
-        var t = el("text", {x:(lx + w / 2).toFixed(1), y:(ly + 11.4).toFixed(1), class:"fit-lab mono", "text-anchor":"middle"});
-        t.textContent = txt; fg.appendChild(t);
-      });
-      svg.appendChild(fg);
-    }
+    if (tFit) drawTempFit(svg, tFit, xc(slotOf(data[0].m)), xc(slotOf(last.m)), y);
     tempState.trend = tFit;
 
     var everyOther = (m.endYear - startYear + 1) > 6;

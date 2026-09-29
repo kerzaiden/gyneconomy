@@ -174,7 +174,7 @@ with no handler is recorded, which makes the suite able to see it.
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
 | **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
-| **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
+| **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 | **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/03b-history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
 | **Tag workflow** (`tag.yml`, V647) | a `v6NN-name` tag for each version commit on `main` that has none | every push to `main` | the repo's history |
@@ -227,7 +227,7 @@ The Artifact and the service worker need one self-contained file, and a person c
 fifteen-thousand-line one. So the source is split and the deliverable is assembled by concatenation, and
 nothing cleverer, because the script is one IIFE sharing one closure. The first build reproduced the old
 file byte for byte, which is what made the split provable; since V548 a comment strip follows the join
-(44% of the deliverable was comment), and the proof became `npm run snap`: 32 DOM states identical.
+(44% of the deliverable was comment), and the proof became `npm run snap`: every DOM state identical (38 since V654, each page's notes included).
 
 ---
 
@@ -530,7 +530,7 @@ lists — is never touched by a refresh. **`currentSeason` is computed — never
 invariants: geometry is owned by the chart that made it, a reading prints where it is painted, every reach
 finds something, every action has an answer, every id is one element, and no data check fired —
 `console.warn` is a failing check because ten data checks had no listener for two hundred versions (V623).
-**Every refactor ships with "32 states identical"** (`npm run snap`); it caught three breaks in V630 alone,
+**Every refactor ships with "38 states identical"** (`npm run snap`); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If

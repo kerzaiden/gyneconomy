@@ -1,5 +1,61 @@
 
 
+  function convertLeadingSigns(){
+    [{ key:"hormones", title:"Hormones", timing:"leading" },
+     { key:"pressure", title:"Pressure", timing:"leading" },
+     { key:"horizon", title:"Horizon", timing:"leading" },
+     { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
+      var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
+      var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
+      var id = "sheet-sign-" + cfg.key;
+      var row = document.createElement("div");
+      row.className = "subject sign-row";
+      row.setAttribute("data-subject", cfg.key);
+      row.setAttribute("role", "button"); row.tabIndex = 0;
+      row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
+      var face = document.createElement("div"); face.className = "subject-summary";
+      while (sum.firstChild) face.appendChild(sum.firstChild);
+      (function(){
+        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:gaugeSvg };
+        var lab = face.querySelector(".subject-label");
+        if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
+          lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
+      })();
+      row.appendChild(face);
+      var sheet = document.createElement("div");
+      sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
+      sheet.innerHTML = timingPill(cfg.timing);
+      while (body.firstChild) sheet.appendChild(body.firstChild);
+      det.parentNode.insertBefore(row, det);
+      det.parentNode.insertBefore(sheet, det);
+      det.parentNode.removeChild(det);
+    });
+  }
+  function orderMetricSheets(){
+    [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
+     ["power-timing", "structural"], ["valuation-timing", "structural"],
+     ["households-timing", "structural"]].forEach(function(p){
+      put(p[0], timingPill(p[1]));
+    });
+
+    ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation",
+     "sheet-metric-households"].forEach(function(id){
+      var sheet = byId(id); if (!sheet) return;
+      function rank(el){
+        var k = el.id || "";
+        if (/-timing$/.test(k)) return 0;
+        if (/-head$/.test(k)) return 1;
+        if (/-chart$/.test(k) || /^slot-/.test(k)) return 2;
+        if (/-highlights$/.test(k)) return 4;
+        return 3;
+      }
+      Array.prototype.slice.call(sheet.children)
+        .map(function(el, i){ return { el:el, r:rank(el), i:i }; })
+        .sort(function(a, b){ return a.r - b.r || a.i - b.i; })
+        .forEach(function(x){ sheet.appendChild(x.el); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
+  }
   function renderSignsList(){
     var host = byId("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };
@@ -105,59 +161,8 @@
     coincident.forEach(function(ind){ signSubject(ind, ind.bodyTerm === "Temperature" ? null : (ind.timing || "coincident")); });
     lagging.forEach(function(ind){ signSubject(ind, "lagging"); });
 
-    [{ key:"hormones", title:"Hormones", timing:"leading" },
-     { key:"pressure", title:"Pressure", timing:"leading" },
-     { key:"horizon", title:"Horizon", timing:"leading" },
-     { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
-      var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
-      var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
-      var id = "sheet-sign-" + cfg.key;
-      var row = document.createElement("div");
-      row.className = "subject sign-row";
-      row.setAttribute("data-subject", cfg.key);
-      row.setAttribute("role", "button"); row.tabIndex = 0;
-      row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
-      var face = document.createElement("div"); face.className = "subject-summary";
-      while (sum.firstChild) face.appendChild(sum.firstChild);
-      (function(){
-        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:gaugeSvg };
-        var lab = face.querySelector(".subject-label");
-        if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
-          lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
-      })();
-      row.appendChild(face);
-      var sheet = document.createElement("div");
-      sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
-      sheet.innerHTML = timingPill(cfg.timing);
-      while (body.firstChild) sheet.appendChild(body.firstChild);
-      det.parentNode.insertBefore(row, det);
-      det.parentNode.insertBefore(sheet, det);
-      det.parentNode.removeChild(det);
-    });
-
-    [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
-     ["power-timing", "structural"], ["valuation-timing", "structural"],
-     ["households-timing", "structural"]].forEach(function(p){
-      put(p[0], timingPill(p[1]));
-    });
-
-    ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation",
-     "sheet-metric-households"].forEach(function(id){
-      var sheet = byId(id); if (!sheet) return;
-      function rank(el){
-        var k = el.id || "";
-        if (/-timing$/.test(k)) return 0;
-        if (/-head$/.test(k)) return 1;
-        if (/-chart$/.test(k) || /^slot-/.test(k)) return 2;
-        if (/-highlights$/.test(k)) return 4;
-        return 3;
-      }
-      Array.prototype.slice.call(sheet.children)
-        .map(function(el, i){ return { el:el, r:rank(el), i:i }; })
-        .sort(function(a, b){ return a.r - b.r || a.i - b.i; })
-        .forEach(function(x){ sheet.appendChild(x.el); });
-    });
-    Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
+    convertLeadingSigns();
+    orderMetricSheets();
   }
   GYN.step("renderSignsList", renderSignsList, "build"); renderSignsList();
 

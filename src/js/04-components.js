@@ -511,6 +511,7 @@
     return null;
   }
   valuation.rows.sort(function(a, b){ return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1); });
+  var CAPE_FAIR = 17;
   valuation.tag = valuationVerdict(valRow("cape").meter.value);
 
   var coincident = [
