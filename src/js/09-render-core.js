@@ -190,6 +190,27 @@
      component and srcHtml is its inside. Nothing about the markup changed — the nineteen `<div class="src">`
      that were typed out are now written once, which is the whole of it. */
   function srcBlock(list){ return '<div class="src">' + srcHtml(list) + '</div>'; }
+  /* ---------------- THE SUBJECT ROW (Version 631) ----------------
+     Keren: "make it a 10." The one row the app opens pages from — a sign in the category list, a member of the
+     roster, a category in Browse, the All-indicators door. Four functions built it, each spelling out the same
+     summary/ring/text/chevron anatomy, and the ledger said so (`.subject-label` in 4 places) once V630 stopped
+     hiding three of them inside one giant closure. One of the four was dead; these are the three that remain,
+     built here once. What differs between them — what sits in the ring, what the text says — is what the
+     caller passes. What is the same — the door, its role, its title, its chevron — is nobody's to respell.
+     Attribute order is the order the element sites used to set them in, so the serialized DOM is unchanged. */
+  function subjectRow(o){
+    return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
+      (o.subject ? ' data-subject="' + o.subject + '"' : '') +
+      ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '">' +
+      '<div class="subject-summary">' +
+        '<div class="subject-ring">' + (o.icon || '') + '</div>' +
+        '<div class="subject-text">' + o.text + '</div>' +
+        '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
+      '</div></div>';
+  }
+  /* The disc a row's ring holds when it is drawn from a mark and a state. The roster hands `subjectRow` a disc
+     it already lifted off the page (`discOf`), so this is only for rows built from data. */
+  function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
   function srcHtml(list){ return list.map(function(s){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
   // A READING ON A RING (Version 280, Keren: "I want the VIX and the high-yield spread to have a ring
   // representation … the ring on the left and the text adjacent to it on the right, and you can drop the current

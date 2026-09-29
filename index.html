@@ -533,29 +533,6 @@
   .cv-stats.cycle-stats .cv-kicker{ margin-bottom:6px; }
   .cv-stats.cycle-stats .cv-stat + .cv-stat{ margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
 
-  .sign-row.card-row{ padding:14px 14px 13px; }
-
-  .card-row .subject-summary{ padding:0; gap:0; align-items:stretch; flex-direction:column; }
-  .card-row .subject-text{ display:block; }
-  .card-row .subject-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
-    line-height:1.2; margin:6px 0 0; max-width:none; color:var(--text-secondary); letter-spacing:0.01em; }
-  .card-row .subject-ring, .card-row .subject-more{ display:none; }
-  .card-row .subject-label{ display:inline-flex; align-items:center; gap:4px; margin:0;
-    font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--text-muted); }
-  .card-row .subject-label .peek-mark{ color:var(--text-secondary); }
-  .card-row:hover .subject-label .peek-chev{ color:var(--accent-ink); opacity:1; }
-
-  .ind-classes{ display:flex; margin:12px 0 0; }
-
-  .ind-class{ flex:1 1 0; max-width:132px; display:flex; flex-direction:column; align-items:flex-start;
-    gap:4px; padding-right:8px; }
-  .ind-class svg{ width:20px; height:12px; flex:none; }
-  .ind-class b{ font-family:"IBM Plex Mono",monospace; font-size:19px; font-weight:700; line-height:1;
-    letter-spacing:-0.02em; color:var(--text-primary); }
-  .ind-class i{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:9.5px; font-weight:600;
-    letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); }
-
   .ind-group{ margin-top:var(--gap); }
   .ind-tabs{ margin:2px 0 0; }
   .ind-tabs + .ind-group{ margin-top:var(--gap); }
@@ -2264,7 +2241,6 @@
   <div class="tab-panel" data-tab="analysis" hidden>
     <div id="calendar-list">
       
-      <div id="indicators-peek"></div>
       
       <div class="cyc-card" id="rhymes-card">
         <div class="cyc-head">
@@ -2532,6 +2508,11 @@
     var n = typeof target === "string" ? byId(target) : target;
     if (n) n.innerHTML = html;
     return n;
+  }
+  function elFrom(html) {
+    var t = document.createElement("template");
+    t.innerHTML = html;
+    return t.content.firstElementChild;
   }
   try {
     var savedTheme = localStorage.getItem("gyneconomy-theme");
@@ -16163,6 +16144,12 @@
   function srcBlock(list) {
     return '<div class="src">' + srcHtml(list) + "</div>";
   }
+  function subjectRow(o) {
+    return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '">' + '<div class="subject-summary">' + '<div class="subject-ring">' + (o.icon || "") + "</div>" + '<div class="subject-text">' + o.text + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div></div>";
+  }
+  function subjectIcon(state, svg) {
+    return '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
+  }
   function srcHtml(list) {
     return list.map(function(s) {
       return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + "</a>";
@@ -18696,14 +18683,13 @@
     function signSubject(ind, timing) {
       var key = ind.bodyTerm.toLowerCase(), id = "sheet-sign-" + key;
       var svg = signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "";
-      var row = document.createElement("div");
-      row.className = "subject sign-row";
-      row.setAttribute("data-subject", "sign-" + key);
-      row.setAttribute("role", "button");
-      row.tabIndex = 0;
-      row.setAttribute("data-open", id);
-      row.setAttribute("data-title", ind.bodyTerm);
-      row.innerHTML = '<div class="subject-summary">' + '<div class="subject-ring"><div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + "</span></div></div>" + '<div class="subject-text">' + '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + "</div>" + '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + "</span></div>" + '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + "</span></div>" + (ind.peek || "") + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div>";
+      var row = elFrom(subjectRow({
+        subject: "sign-" + key,
+        open: id,
+        title: ind.bodyTerm,
+        icon: subjectIcon(ind.tag.state, svg),
+        text: '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + "</div>" + '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + "</span></div>" + '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + "</span></div>" + (ind.peek || "")
+      }));
       if (FOLDED[ind.bodyTerm]) {
         var hostName = FOLDED[ind.bodyTerm];
         (foldedInto[hostName] = foldedInto[hostName] || []).push(ind);
@@ -18920,7 +18906,12 @@
   function memberRow(e) {
     var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + "</span>" : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + "</span>" : "";
     var unit = e.unit ? '<span class="member-unit">' + e.unit + "</span>" : "";
-    return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target + '" data-title="' + e.title + '"><div class="subject-summary">' + '<div class="subject-ring">' + (e.icon || "") + "</div>" + '<div class="subject-text">' + '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " · " + e.sub : "")) + "</div>" + '<div class="subject-value">' + e.metric + unit + tag + "</div>" + (e.metricSub ? '<p class="subject-say">' + e.metricSub + "</p>" : "") + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div></div>";
+    return subjectRow({
+      open: e.target,
+      title: e.title,
+      icon: e.icon,
+      text: '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " · " + e.sub : "")) + "</div>" + '<div class="subject-value">' + e.metric + unit + tag + "</div>" + (e.metricSub ? '<p class="subject-say">' + e.metricSub + "</p>" : "")
+    });
   }
   var NAV = {
     open: null,
@@ -19113,13 +19104,6 @@
       setIndTab(tab && tab !== "structural" ? tab : "all");
       NAV.open(indSheet, "All indicators", false, "cycle");
     };
-    var indPeek = byId("indicators-peek");
-    if (indPeek) indPeek.remove();
-    if (false && indPeek) {
-      indPeek.innerHTML = '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' + 'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' + '<div class="subject-text">' + '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + "</div>" + '<div class="ind-classes">' + Object.keys(timingMembers).map(function(kind) {
-        return '<span class="ind-class">' + timingMark(kind) + "<b>" + timingMembers[kind].length + "</b><i>" + TIMING[kind].label + "</i></span>";
-      }).join("") + "</div>" + "</div>" + "</div></div>";
-    }
   }
   function renderPeekAndCategories() {
     var host = byId("peek-row");
@@ -19516,23 +19500,21 @@
           var old = document.querySelector(c.drop);
           if (old && old.parentNode) old.parentNode.removeChild(old);
         }
-        var row = document.createElement("div");
-        row.className = "subject sign-row cat-row";
-        row.setAttribute("role", "button");
-        row.tabIndex = 0;
-        row.setAttribute("data-open", c.open || "sheet-cat-" + c.key);
-        row.setAttribute("data-title", c.title);
-        row.innerHTML = '<div class="subject-summary">' + '<div class="subject-ring"><div class="subject-icon"><span class="norm">' + c.mark + "</span></div></div>" + '<div class="subject-text">' + '<div class="subject-label">' + c.title + "</div>" + '<div class="cat-sub">' + c.sub + "</div>" + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div>";
-        list.appendChild(row);
+        list.appendChild(elFrom(subjectRow({
+          cls: "cat-row",
+          open: c.open || "sheet-cat-" + c.key,
+          title: c.title,
+          icon: subjectIcon("norm", c.mark),
+          text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + "</div>"
+        })));
       });
-      var allRow = document.createElement("div");
-      allRow.className = "subject sign-row all-row";
-      allRow.setAttribute("role", "button");
-      allRow.tabIndex = 0;
-      allRow.setAttribute("data-open", "sheet-indicators");
-      allRow.setAttribute("data-title", "All indicators");
-      allRow.innerHTML = '<div class="subject-summary">' + '<div class="subject-ring"><div class="subject-icon"><span class="norm">' + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' + 'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' + '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>' + "</span></div></div>" + '<div class="subject-text">' + '<div class="subject-label">All indicators</div>' + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div>";
-      list.appendChild(allRow);
+      list.appendChild(elFrom(subjectRow({
+        cls: "all-row",
+        open: "sheet-indicators",
+        title: "All indicators",
+        icon: subjectIcon("norm", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' + 'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' + '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
+        text: '<div class="subject-label">All indicators</div>'
+      })));
       host.insertBefore(list, host.firstChild);
       [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
         var el = byId(id);

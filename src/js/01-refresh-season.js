@@ -32,6 +32,9 @@
     if (n) n.innerHTML = html;
     return n;
   }
+  /* V631: markup to one element, for the three sites that build a row as a string and then need the node to
+     append or move. A component returns a string; this is how a controller takes hold of it. */
+  function elFrom(html){ var t = document.createElement("template"); t.innerHTML = html; return t.content.firstElementChild; }
   // The theme (Version 198): the page follows the phone's setting unless a choice was saved from the menu's Appearance row;
   // the stylesheet keys off data-theme on <html>, so the choice is applied here, before anything paints.
   try{ var savedTheme = localStorage.getItem("gyneconomy-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme); }catch(e){}

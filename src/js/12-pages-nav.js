@@ -78,24 +78,16 @@
     function signSubject(ind, timing){
       var key = ind.bodyTerm.toLowerCase(), id = "sheet-sign-" + key;
       var svg = signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "";
-      var row = document.createElement("div");
-      row.className = "subject sign-row";
-      row.setAttribute("data-subject", "sign-" + key);
-      row.setAttribute("role", "button"); row.tabIndex = 0;
-      row.setAttribute("data-open", id); row.setAttribute("data-title", ind.bodyTerm);
-      row.innerHTML =
-        '<div class="subject-summary">' +
-          '<div class="subject-ring"><div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div></div>' +
-          '<div class="subject-text">' +
-            '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
-            '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
-            '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
-            // Version 475: an optional miniature, so a sign row can carry one the way a peek card does. Desire
-            // was the only member of Mood without one, which the category list showed as a hole on its right.
-            (ind.peek || "") +
-          '</div>' +
-          '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
-        '</div>';
+      var row = elFrom(subjectRow({
+        subject:"sign-" + key, open:id, title:ind.bodyTerm,
+        icon: subjectIcon(ind.tag.state, svg),
+        text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
+              '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
+              '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
+              // Version 475: an optional miniature, so a sign row can carry one the way a peek card does. Desire
+              // was the only member of Mood without one, which the category list showed as a hole on its right.
+              (ind.peek || "")
+      }));
       if (FOLDED[ind.bodyTerm]){                 // it lives inside another page; it gets no row and no sheet
         // NB: not `var host` — `host` is already the list container this function appends into, and a var
         // declared in here hoists over it for the WHOLE function, leaving every other sign with no container.
@@ -220,7 +212,9 @@
       /* V596: no `card-row press-row` any more. Those classes were Pressure's, written in Version 314 for a
          full-width reading on the Cycle page — and since the categories landed, catItem takes every member
          row and rebuilds it as a `.cat-item`, so neither class has reached the DOM in a long time. Their three
-         orphaned rules went with them; `.card-row` itself stays, because the Indicators card still wears it. */
+         orphaned rules went with them. V631: `.card-row` went too — the Indicators card it dressed had been
+         behind `if (false && ...)` since V447, removed on every load, and its CSS, its placeholder and its
+         fifteen lines of markup were the fourth "place" the ledger counted for the roster row. */
       row.className = "subject sign-row";
       row.setAttribute("data-subject", cfg.key);
       row.setAttribute("role", "button"); row.tabIndex = 0;
@@ -370,16 +364,12 @@
     var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + '</span>'
             : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + '</span>' : '';
     var unit = e.unit ? '<span class="member-unit">' + e.unit + '</span>' : '';
-    return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target +
-      '" data-title="' + e.title + '"><div class="subject-summary">' +
-      '<div class="subject-ring">' + (e.icon || "") + '</div>' +
-      '<div class="subject-text">' +
-        '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " \u00b7 " + e.sub : "")) + '</div>' +
-        '<div class="subject-value">' + e.metric + unit + tag + '</div>' +
-        (e.metricSub ? '<p class="subject-say">' + e.metricSub + '</p>' : '') +
-      '</div>' +
-      '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
-    '</div></div>';
+    return subjectRow({
+      open:e.target, title:e.title, icon:e.icon,
+      text: '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " \u00b7 " + e.sub : "")) + '</div>' +
+            '<div class="subject-value">' + e.metric + unit + tag + '</div>' +
+            (e.metricSub ? '<p class="subject-say">' + e.metricSub + '</p>' : '')
+    });
   }
 
   /* ---------------- THE NAVIGATION CONTROLLER (Version 630) ----------------
@@ -568,26 +558,6 @@
       setIndTab(tab && tab !== "structural" ? tab : "all");
       NAV.open(indSheet, "All indicators", false, "cycle");
     };
-
-    // The preview: name, picture, figures, word — the card anatomy, with the four classes as the picture and
-    // their counts as the figure, because the shape of the roster is what this card has to say.
-    var indPeek = byId("indicators-peek");
-    if (indPeek) indPeek.remove();   // V447: its door is the Browse list's last row now
-    if (false && indPeek){
-      indPeek.innerHTML =
-        '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' +
-          'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' +
-          '<div class="subject-text">' +
-            '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + '</div>' +
-            '<div class="ind-classes">' +
-              Object.keys(timingMembers).map(function(kind){
-                return '<span class="ind-class">' + timingMark(kind) +
-                  '<b>' + timingMembers[kind].length + '</b><i>' + TIMING[kind].label + '</i></span>';
-              }).join("") +
-            '</div>' +
-          '</div>' +
-        '</div></div>';
-    }
   }
 
   /* ---------------- THE CYCLE TAB: cards and categories (Version 630) ----------------
@@ -1053,44 +1023,24 @@
           host.appendChild(sheet);
         }
         if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
-        var row = document.createElement("div");
-        row.className = "subject sign-row cat-row";
-        row.setAttribute("role", "button"); row.tabIndex = 0;
-        row.setAttribute("data-open", c.open || ("sheet-cat-" + c.key));
-        row.setAttribute("data-title", c.title);
-        row.innerHTML =
-          '<div class="subject-summary">' +
-            '<div class="subject-ring"><div class="subject-icon"><span class="norm">' + c.mark + '</span></div></div>' +
-            '<div class="subject-text">' +
-              '<div class="subject-label">' + c.title + '</div>' +
-              '<div class="cat-sub">' + c.sub + '</div>' +
-            '</div>' +
-            '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
-          '</div>';
-        list.appendChild(row);
+        list.appendChild(elFrom(subjectRow({
+          cls:"cat-row", open:c.open || ("sheet-cat-" + c.key), title:c.title,
+          icon: subjectIcon("norm", c.mark),
+          text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
+        })));
       });
-      var allRow = document.createElement("div");
-      // V501: not `cat-row` — this is not a category, and the class it wore was the reason it looked like one
-      allRow.className = "subject sign-row all-row";
-      allRow.setAttribute("role", "button"); allRow.tabIndex = 0;
-      allRow.setAttribute("data-open", "sheet-indicators");
-      allRow.setAttribute("data-title", "All indicators");
-      allRow.innerHTML =
-        '<div class="subject-summary">' +
-          '<div class="subject-ring"><div class="subject-icon"><span class="norm">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-            'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' +
-            '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>' +
-          '</span></div></div>' +
-          '<div class="subject-text">' +
-            // V501, Keren: the members line went. It was what made this read as a fifth category — the four
-            // above it list their members because a member is a place you can go; these four words are a
-            // taxonomy, and the page behind this row explains it better than a subtitle can.
-            '<div class="subject-label">All indicators</div>' +
-          '</div>' +
-          '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
-        '</div>';
-      list.appendChild(allRow);
+      // V501: not `cat-row` — this is not a category, and the class it wore was the reason it looked like one.
+      // V501, Keren: the members line went. It was what made this read as a fifth category — the four above it
+      // list their members because a member is a place you can go; these four words are a taxonomy, and the
+      // page behind this row explains it better than a subtitle can.
+      list.appendChild(elFrom(subjectRow({
+        cls:"all-row", open:"sheet-indicators", title:"All indicators",
+        icon: subjectIcon("norm",
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+          'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' +
+          '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
+        text: '<div class="subject-label">All indicators</div>'
+      })));
       host.insertBefore(list, host.firstChild);
       // whatever the moves emptied gives up its place rather than its gap
       ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){

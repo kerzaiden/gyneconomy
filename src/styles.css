@@ -783,36 +783,6 @@
      next to the text in grey, and a chevron on the right of the title — and the border only on the numbers, not
      on the whole block." So the row gives up its own card: two borders around one reading is the fault this app
      has been cutting all session, and the numbers are the thing that wanted fencing off. */
-  /* Version 316: one container. The row wears the peek card's clothes exactly — same ground, same edge, same
-     padding, same order — so a reader cannot tell it apart from the four above it except by being wider. */
-  .sign-row.card-row{ padding:14px 14px 13px; }
-  /* Version 315, Keren: the box is the container now — full width, on the surface, and it is the only thing on
-     this row carrying a frame. `align-items:stretch` is what lets it be full width: the column was hugging its
-     longest line, which read as an accident rather than a decision. */
-  .card-row .subject-summary{ padding:0; gap:0; align-items:stretch; flex-direction:column; }
-  .card-row .subject-text{ display:block; }
-  .card-row .subject-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
-    line-height:1.2; margin:6px 0 0; max-width:none; color:var(--text-secondary); letter-spacing:0.01em; }
-  .card-row .subject-ring, .card-row .subject-more{ display:none; }
-  .card-row .subject-label{ display:inline-flex; align-items:center; gap:4px; margin:0;
-    font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--text-muted); }
-  .card-row .subject-label .peek-mark{ color:var(--text-secondary); }
-  .card-row:hover .subject-label .peek-chev{ color:var(--accent-ink); opacity:1; }
-  /* Version 319: the Indicators card. Its picture is the four timing classes, each with the glyph that says
-     where that class sits against the turn and the count of readings in it — the same picture-then-figure
-     order every card on the board uses, with the counts standing in for one headline number because the
-     shape of the roster IS the reading here. */
-  .ind-classes{ display:flex; margin:12px 0 0; }
-  /* capped so the four stay a group rather than spreading across a desktop card; on a phone the cap is
-     never reached and they divide the row evenly. */
-  .ind-class{ flex:1 1 0; max-width:132px; display:flex; flex-direction:column; align-items:flex-start;
-    gap:4px; padding-right:8px; }
-  .ind-class svg{ width:20px; height:12px; flex:none; }
-  .ind-class b{ font-family:"IBM Plex Mono",monospace; font-size:19px; font-weight:700; line-height:1;
-    letter-spacing:-0.02em; color:var(--text-primary); }
-  .ind-class i{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:9.5px; font-weight:600;
-    letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); }
   /* The page: the same rows the class pages use, under a head per class rather than one page per class. */
   .ind-group{ margin-top:var(--gap); }
   .ind-tabs{ margin:2px 0 0; }
