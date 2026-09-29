@@ -67,10 +67,10 @@
   ];
 
   var vixRow = sentiment.rows[0]; // CBOE VIX — kept separate, feeds the "Market fear" benchmark below
-  /* Version 464, Keren: "sentiment is mood \u2014 I don't need another subcategory named sentiment. I want to see fear
+  /* Version 464, Keren: "sentiment is mood — I don't need another subcategory named sentiment. I want to see fear
      and greed, and I want to see the VIX." Right on both counts. A category called Mood holding a member called
      Sentiment was the tautology Version 446 refused for Season, and once the high-yield spread left this page as a
-     duplicate of Desire, what remained inside it was the published index and the VIX \u2014 a wrapper around two
+     duplicate of Desire, what remained inside it was the published index and the VIX — a wrapper around two
      readings. So both come out onto Mood, and the VIX gets what every other reading has: a page.
      The reading is shaped like an indicator so it can use the page builder every sign uses; the word comes off the
      meter's OWN band ends, so the word and the bar under it can never disagree. */
@@ -79,7 +79,7 @@
     return v < o.from ? (e.low || "Low") : v > o.to ? (e.high || "High") : (e.zone || "Usual");
   };
   var vixInd = {
-    // Version 467, Keren: "the VIX is called the fear index \u2014 I think it's more appropriate than the price of
+    // Version 467, Keren: "the VIX is called the fear index — I think it's more appropriate than the price of
     // protection." It is the market's own name for it, and a reading should wear the name its readers use.
     bodyTerm:"VIX", econTerm:"The fear index",
     // Version 464: the state comes off the same band as the word. The row's hand-set "warning" was there for the
@@ -156,7 +156,7 @@
   var CAPE_FAIR = 17;
   // One axis, five bands, by how far CAPE sits from that fair value. It runs the moment the object exists, because
   // the tag is read by the panel, the peek, the trend row, the Structural page and a Highlights card, and a verdict
-  // computed late would reach some of them and not others \u2014 which is exactly what happened when it was computed in
+  // computed late would reach some of them and not others — which is exactly what happened when it was computed in
   // the peek block and the panel's own tag rendered empty.
   function valuationVerdict(v){
     var r = v / CAPE_FAIR;
@@ -210,7 +210,7 @@
      categorically different from its neighbours. The ruler then keeps working inside Calendar mode, where a window
      still means something, and is simply absent in Cycles mode, where it would have nothing to window. */
   /* Version 472, Keren: "cycles | years | yields". Pressure's band had a window ruler and a maturity ruler on
-     screen together, both reading as durations \u2014 "5Y" and "10Y" meant two different things a centimetre apart.
+     screen together, both reading as durations — "5Y" and "10Y" meant two different things a centimetre apart.
      The mode bar is where that division belongs: two of the tabs choose a WINDOW on the spread, the third
      chooses the yield levels and brings the maturities with it, so only one ruler is ever on screen.
      `extra` is how a page adds a tab without every other page growing one. */
@@ -223,15 +223,15 @@
           'aria-selected="' + (m[0] === active ? "true" : "false") + '" data-mode="' + m[0] + '">' + m[1] + '</button>';
       }).join("") + '</div>';
   }
-  /* Version 418: the Cycles submenu. Keren left the control to me \u2014 "not necessarily a ruler, maybe a dropdown."
+  /* Version 418: the Cycles submenu. Keren left the control to me — "not necessarily a ruler, maybe a dropdown."
      It is the ruler's grammar rather than a dropdown, for three reasons: a dropdown hides its own state behind a
      tap, which is the wrong trade for a control whose whole job is to say which lines are on screen; it would be a
      second control idiom in an app that has exactly one; and on a phone a row of taps beats a popup with checkboxes.
-     Multi-select is the part that matters, and it is the thing Keren asked for a long time ago and never got \u2014
+     Multi-select is the part that matters, and it is the thing Keren asked for a long time ago and never got —
      "the default would be current cycle, and then I can compare it to other cycles by multi-selecting them." */
   var pickerOpen = {};   // which page's picker is showing its menu; kept in state so a re-render cannot close it
   // Version 420: the cycle picker is SINGLE-select (Keren). It chooses a window, exactly as the years ruler does,
-  // and the chart is drawn the same way in both modes \u2014 which is the whole reason multi-select had to go: five
+  // and the chart is drawn the same way in both modes — which is the whole reason multi-select had to go: five
   // cycles at once forced grey lines, and grey lines cannot carry the heat ramp.
   function cycleByName(nm){
     for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
@@ -242,7 +242,7 @@
     return marketCycles[marketCycles.length - 1];
   }
   // the month range of a cycle inside cpiYoYHistory, as [from, to) indices
-  // Version 431: the same window, for any series that knows its own year \u2014 the rollout's one windowing rule
+  // Version 431: the same window, for any series that knows its own year — the rollout's one windowing rule
   function cycleSlice(series, c){
     var to = c.to || calendarTodayY, a = -1, b = -1;
     series.forEach(function(d, i){
@@ -282,7 +282,7 @@
   function histControls(id, tl, minYear, extra){
     var mode = pageMode[id], on = mode === "cycles";
     /* Version 472: a page may add its own tab, and when that tab is showing neither the cycle picker nor the
-       years ruler belongs beside it \u2014 the tab brings its own control. Every other page passes no `extra` and
+       years ruler belongs beside it — the tab brings its own control. Every other page passes no `extra` and
        reads exactly as before. */
     var known = mode === "cycles" || mode === "calendar";
     /* Version 519: and this is where it split. The controls are their own row on the page ground now; the head
@@ -295,14 +295,14 @@
   }
   function cycLabel(c){
     return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),
-             /* V522, Keren: "when I select Current cycle I want the year to be year\u2013Today, with a capital T."
+             /* V522, Keren: "when I select Current cycle I want the year to be year–Today, with a capital T."
                 It is the second half of a RANGE whose first half is a year, so it is standing in for a date and
-                takes a date's capital \u2014 the same reason the picker writes "Current cycle" rather than "current
+                takes a date's capital — the same reason the picker writes "Current cycle" rather than "current
                 cycle" beside it. One place, so the button and every row in the menu change together. */
              years:c.from + "\u2013" + (c.to || "Today") };
   }
   // Version 433: what to call the last reading in view. "Latest" is true of the open cycle and of every calendar
-  // window, and false of a closed one \u2014 Dot-Com's last CAPE is 40.6x in 1999, which is where that cycle ENDED and
+  // window, and false of a closed one — Dot-Com's last CAPE is 40.6x in 1999, which is where that cycle ENDED and
   // is not the latest anything. The same family of error as V431's "deepest contraction" on a quarter that grew:
   // a label that was safe while the rows described the whole series, and stopped being safe when they started
   // following the window.
@@ -315,9 +315,9 @@
     return b > a ? [a, b] : null;
   }
   // Version 435: `minYear` drops the cycles a series cannot answer. Pressure's yields begin in 2005, so it can
-  // show Big Tech, COVID-19 and the current cycle and nothing older \u2014 and the test is the cycle's START year, not
-  // any overlap: three years of the Housing cycle labelled "Housing 2000\u20132007" would be a picker that lies.
-  // This is the Version 263 rule the timeline has always followed \u2014 never offer a stop the data cannot fill.
+  // show Big Tech, COVID-19 and the current cycle and nothing older — and the test is the cycle's START year, not
+  // any overlap: three years of the Housing cycle labelled "Housing 2000–2007" would be a picker that lies.
+  // This is the Version 263 rule the timeline has always followed — never offer a stop the data cannot fill.
   function cyclePicker(id, picked, minYear){
     var rows = marketCycles.slice().reverse()
       .filter(function(c){ return minYear == null || c.from >= minYear; });   // newest first, as the Cycle history reads
@@ -352,8 +352,8 @@
   function trendOf(vals, unit, period){
     period = period || "period";
     // Version 436, Keren: just "not available". The reason clause was written when this state was rare and needed
-    // explaining; since the rows started following the window it is ordinary \u2014 four annual readings is what a cycle
-    // gives Power, Valuations and the Federal budget \u2014 and a pill that explains itself every time is noise.
+    // explaining; since the rows started following the window it is ordinary — four annual readings is what a cycle
+    // gives Power, Valuations and the Federal budget — and a pill that explains itself every time is noise.
     if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };   // V437, Keren's word
     var n = vals.length, sx = 0, sy = 0, sxy = 0, sxx = 0;
     vals.forEach(function(v, i){ sx += i; sy += v; sxy += i * v; sxx += i * i; });
@@ -367,14 +367,14 @@
     var total = Math.abs(slope) * (n - 1);
     var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), spread = (hi - lo) || 1;
     // the fit itself travels with the sentence, so the chart can DRAW the line the pill describes rather than the
-    // two being computed separately and quietly disagreeing (Version 274, Keren: "when you say 24\u00d7 across 57 years,
+    // two being computed separately and quietly disagreeing (Version 274, Keren: "when you say 24× across 57 years,
     // just put a trend line, a purple trend line")
     var fit = { slope:slope, intercept:(sy - slope * sx) / n, n:n };
     // One line, because the row is a BUTTON and a button says one thing (Keren, Sep 20, 2026: "the trend button needs
-    // to look like a button \u2014 make it so it's only one line; I want to read trend falling across fifty-five months").
+    // to look like a button — make it so it's only one line; I want to read trend falling across fifty-five months").
     // The magnitude left with the second line and lost nothing: pressing the button labels BOTH ends of the fit on the
-    // chart, which is where a distance belongs \u2014 shown, not asserted (Version 281).
-    // Version 425, Keren: "48 months divided by 12 is four years \u2014 say across four years, or even 4Y so it's
+    // chart, which is where a distance belongs — shown, not asserted (Version 281).
+    // Version 425, Keren: "48 months divided by 12 is four years — say across four years, or even 4Y so it's
     // shorter." The count was in the SERIES' unit, which is the arithmetic and not the sentence: a reader thinks in
     // years, and "across 120 months" asks them to do a division the pill could have done. nY is the app's existing
     // notation for a span of years (the ruler's 5Y/10Y/25Y, a cycle row's "(10Y)"), so this introduces no new token,
@@ -387,8 +387,8 @@
     if (total < spread * 0.1) return { word:"flat", span:span, flat:true, fit:fit };
     return { word:dir, span:span, flat:false, fit:fit };
   }
-  // The left of the row is "Trend" by default, or the page's own verdict where it has one \u2014 which is where Keren
-  // asked the tag to live, and it reads as a sentence: "Highly overvalued \u2014 rising, 24\u00d7 across 57 years" (V274).
+  // The left of the row is "Trend" by default, or the page's own verdict where it has one — which is where Keren
+  // asked the tag to live, and it reads as a sentence: "Highly overvalued — rising, 24× across 57 years" (V274).
   // A row where there is nothing to show, a BUTTON where there is (Version 276). Apple's trend row is pressable and
   // that is the whole point: the chart does not have to carry the trend all the time, so the line never has to
   // compete with the bars, and neither has to be compromised for the other.
@@ -399,10 +399,10 @@
     falling: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5L7 9l3-3 3.2 4.2"/><path d="M13.2 7v3.2H10"/></svg>'
   };
   // Each page says its trend in its own vocabulary (Keren: "I want the trend button to show expanding or
-  // contracting rather than falling or rising \u2014 I want to keep the vocabulary consistent"). One correction to that,
+  // contracting rather than falling or rising — I want to keep the vocabulary consistent"). One correction to that,
   // and the data forces it: GDP's fit runs 2.89% to 2.25% and **no quarter of this cycle is negative**, so what is
   // falling is the PACE of growth, not output. Calling that "contracting" would say the opposite of what happened.
-  // The word that keeps her vocabulary and stays true is "slowing" \u2014 the same axis as expansion and contraction,
+  // The word that keeps her vocabulary and stays true is "slowing" — the same axis as expansion and contraction,
   // describing the rate rather than the level. Temperature follows the same rule with its own words.
   function trendPill(t, key, toggles, words){
     var word = (words && words[t.word]) || t.word;
@@ -429,25 +429,25 @@
   function yearOf(d){ return d.y != null ? d.y : parseInt((d.q || d.m).slice(0, 4), 10); }
   function mean(a){ return a.reduce(function(x, y){ return x + y; }, 0) / a.length; }
   /* ---------------- The record rows (Version 374) ----------------
-     Keren: "I like how in the volume page you can see fastest on record, slowest on record \u2014 I want this to
+     Keren: "I like how in the volume page you can see fastest on record, slowest on record — I want this to
      apply to all inner pages with the statistics, so it has a coherent, consistent design."
      Volume, Pulse and the Federal budget have carried these rows since their pages were built, each writing its
      own; this makes them one component the four metric pages call too. Four readings, always in this order: the
      extreme high, the extreme low, the long-run average, and the latest.
-     They describe the WHOLE series and never the window \u2014 the chart is the view, the rows are the record
+     They describe the WHOLE series and never the window — the chart is the view, the rows are the record
      (the Version 359 rule), which is why zooming the timeline never changes them.
-     Version 416, Keren: "we're calculating the average between 1989 and 2026 \u2014 that's a long span. The economy is
+     Version 416, Keren: "we're calculating the average between 1989 and 2026 — that's a long span. The economy is
      growing year by year; we can't compare an economy of 200 million people in 1950 to 350 million in 2026." The
      average row now reads the LAST TEN YEARS, and says which ten in its label. The convention is older than it
      looks: Graham and Dodd (Security Analysis, 1934) recommended averaging over five, seven or ten years to
      control for the business cycle, and Shiller took the ten-year version for CAPE in 1988; ten years is also the
      CBO's projection horizon and the Fed's expected-inflation horizon. Note that the convention exists to SPAN a
-     cycle rather than to exclude old regimes \u2014 the opposite of Keren's reason \u2014 but ten years happens to satisfy
+     cycle rather than to exclude old regimes — the opposite of Keren's reason — but ten years happens to satisfy
      both: long enough to contain a cycle, short enough to stay inside one regime.
      The Version 359 rule survives, because ten years is FIXED. It is not the chart's window; zooming the timeline
      still changes nothing here, and the high and low rows still say "on record" and still mean the whole series.
      `meanAll` opts a page out. Valuations uses it, and the reason is not squeamishness but arithmetic: CAPE's
-     ten-year average is 32.9x against 22.0x over the full series, and today's reading is 39.7x \u2014 so a ten-year
+     ten-year average is 32.9x against 22.0x over the full series, and today's reading is 39.7x — so a ten-year
      baseline would report a near-record valuation as only modestly rich, because the last decade was itself
      expensive. A short window on a valuation measure defines the bubble as normal. The principle underneath:
      Keren's argument is that the economy CHANGES SIZE, which is true of inflation, output and money; a valuation
@@ -488,7 +488,7 @@
     return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span><p>' + text + '</p></div>';
   }
   // The cycle strip (Version 363, promoted from hiCycles): the metric's average in each of the app's cycles, the
-  // open one marked. It is the app's ONE answer to "by cycle" \u2014 the same picture on Growth, Temperature, Economic
+  // open one marked. It is the app's ONE answer to "by cycle" — the same picture on Growth, Temperature, Economic
   // power and Valuations, reached on every one of them through the ruler's "Cycles" stop.
   // It returns the strip only. Every caller puts it inside that page's .page-chart, which is where Keren's white
   // container comes from ("I want it to have a white container so it stands in a prominent view") and why the strip
@@ -510,9 +510,9 @@
       }).join("") + '</div>';
   }
   // ---------------- The cycle average component (Version 366) ----------------
-  // Keren, Sep 23 2026: "make this a separate component under highlights \u2014 let's call it cycle average component."
+  // Keren, Sep 23 2026: "make this a separate component under highlights — let's call it cycle average component."
   // In Version 363 the strip was a STOP on the ruler, which made a cross-cycle comparison something the reader had
-  // to go looking for, and put it in the same control as 5Y/10Y/25Y/Max \u2014 which are all windows on one series,
+  // to go looking for, and put it in the same control as 5Y/10Y/25Y/Max — which are all windows on one series,
   // while "by cycle" is a different question entirely. Splitting them leaves each control saying one kind of thing:
   // the ruler is time windows, this block is the comparison across cycles. It is always on screen, under Highlights,
   // on every page whose series reaches back far enough to fill it.
@@ -522,8 +522,8 @@
     return '<div class="page-chart cyclebox cycle-average">' + cycleStrip(series, fmt, o) +
       (o.unit ? '<p class="chart-unit">' + o.unit + '</p>' : "") + '</div>';
   }
-  // A ROW, not an icon (Version 287, Keren: "set the eye icon next to each title \u2026 and make it More details under
-  // Highlights \u2026 compact everything, just leave the most important information, one or two lines outside, and then
+  // A ROW, not an icon (Version 287, Keren: "set the eye icon next to each title … and make it More details under
+  // Highlights … compact everything, just leave the most important information, one or two lines outside, and then
   // the rest is more details"). An (i) beside a title asks to be read before the thing it annotates; the same note
   // at the END of the page is offered to a reader who has finished and wants more. So a page now carries its short
   // form in the open and its long form one tap away, and the icon stops competing with the name.
@@ -531,7 +531,7 @@
   // details, it's not already there"). A page's visible line is usually the opening of its own long form, so the
   // long form starts after it: split into sentences, drop the leading ones the page is already showing, keep the
   // rest. Sentences are compared with their whitespace collapsed, so a line break in the source does not hide a
-  // match. If nothing is shared \u2014 the usual case, where the short line was written separately \u2014 nothing is removed.
+  // match. If nothing is shared — the usual case, where the short line was written separately — nothing is removed.
   function dropWhatIsShown(full, shown){
     if (!full || !shown) return full || "";
     var norm = function(x){ return x.replace(/\s+/g, " ").trim(); }, seen = norm(shown);
@@ -633,7 +633,7 @@
     });
     if (o.ref != null){
       out.push('<path class="bt-ref" d="M' + padL + ',' + y(o.ref) + 'L' + (W - padR) + ',' + y(o.ref) + '"/>');
-      // Version 433: the reference's own inline label goes, because the key below names it \u2014 two labels for one
+      // Version 433: the reference's own inline label goes, because the key below names it — two labels for one
       // line is what Temperature had before Version 428 and it is what made that chart too busy to read.
     }
     // Version 433: the window's own average, and the key that names it and the reference together
@@ -808,16 +808,16 @@
      plate, and 10 below it — her two tens — and every chart's scale now maps into what is left. */
   var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
   /* ================= THE HISTORY FRAME IS ONE COMPONENT (Version 614) =================
-     Keren, Sep 29 2026: "can we stay consistent in terms of components \u2014 name all the components in the app
+     Keren, Sep 29 2026: "can we stay consistent in terms of components — name all the components in the app
      and then we use it and reuse it, because it seems that we are writing all over again every time we make
      a change."
      An audit said where she was feeling it: fifteen history charts, 1,572 lines, each RETYPING the same frame.
-     The three lines below were written out ten times \u2014 the width floor, the narrow breakpoint, the height and
-     the four edges \u2014 and so were the year label, the crosshair, the zero rule, the mean rule and the svg that
+     The three lines below were written out ten times — the width floor, the narrow breakpoint, the height and
+     the four edges — and so were the year label, the crosshair, the zero rule, the mean rule and the svg that
      wraps them. Ten copies of a geometry means the next person to move the plot down four pixels moves it on
      nine charts and misses one, and that chart is wrong for a year before anyone notices.
      These five functions are the frame. They are deliberately thin: this is not a chart engine, it is the
-     parts that were ALREADY identical, lifted (Version 314 \u2014 move, do not rebuild) so the DOM they produce is
+     parts that were ALREADY identical, lifted (Version 314 — move, do not rebuild) so the DOM they produce is
      byte for byte what it was. What a chart draws INSIDE the frame stays its own business, because that is the
      part that genuinely differs.
      Every class here belongs to this frame and to nothing else, which the component ledger now enforces:
@@ -830,7 +830,7 @@
     return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
              T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
   }
-  /* A year under the plot. Both coordinates arrive READY \u2014 x already rounded the way its own chart rounds
+  /* A year under the plot. Both coordinates arrive READY — x already rounded the way its own chart rounds
      it, y as the baseline that chart puts its labels on. The frame charts pass B + 17; the two small ones
      measure up from the bottom instead, and a helper that insisted on one of those would have left the other
      hand-written, which is the duplication this exists to end. */
@@ -848,16 +848,16 @@
   }
   function meanRule(L, R, y){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
   /* ================= A HISTORY WEARS ONLY ITS OWN GEOMETRY (Version 618) =================
-     Every history chart computes the frame it drew on \u2014 where the columns start and end, how many there are,
-     how to turn an index back into a date \u2014 and the crosshair needs it. Until now that travelled on a module
+     Every history chart computes the frame it drew on — where the columns start and end, how many there are,
+     how to turn an index back into a date — and the crosshair needs it. Until now that travelled on a module
      variable: thirteen charts wrote `lastHistGeom` and fifteen callers read it on the next line. The
      correctness of that was the ORDER of two statements, with nothing between them by convention alone, and
-     one path does not redraw at all \u2014 refitHistory returns early when the width already matches \u2014 so that
+     one path does not redraw at all — refitHistory returns early when the width already matches — so that
      caller attached whatever the last page happened to leave behind. A crosshair reading another chart's scale
      is invisible: the numbers are plausible and simply wrong.
      So the geometry now carries the NAME of the chart that made it, and attachHistory is the only thing that
      reads it. When a page asks for a geometry that no one drew for it, that is recorded rather than attached
-     quietly \u2014 the suite asserts the record is empty, so the day this breaks is the day it is seen. */
+     quietly — the suite asserts the record is empty, so the day this breaks is the day it is seen. */
   var pendingGeom = null;
   function publishGeom(name, g){ g.src = name; pendingGeom = g; return g; }
   function attachHistory(host, tipId, expect){
@@ -892,8 +892,8 @@
     // target — and a generic round-number step would quietly drop them. The emitter's job is the drawing, not
     // the choosing; where a chart has a reason for its own stops, it keeps it.
     if (!ticks){
-      /* V590: 0.1 joins the ladder. It was [0.25 \u2026], which is right for every chart that had existed \u2014 all
-         of them percentages or multiples spanning whole points \u2014 and wrong for a RATIO, whose entire story
+      /* V590: 0.1 joins the ladder. It was [0.25 …], which is right for every chart that had existed — all
+         of them percentages or multiples spanning whole points — and wrong for a RATIO, whose entire story
          happens between 0.7 and 1.3. At 0.25 such an axis offers one tick that is not its own midline. The
          ladder picks per window now, so the fear curve reads at 0.1 over a cycle and 0.25 over the record,
          each the step that window is actually read at, and no existing chart moves: the rule only reaches a
@@ -963,8 +963,8 @@
     var n = o.vals.length, slot = iw / n, sw = colWidth(slot);
     // Here the rule beneath is a FRAME, not a zero: these bars hang off the fair-value midline in both
     // directions, so the thing to measure from is that line, which carries its own label — hence `skipNear`.
-    /* V590: `step` goes through. A caller whose values live in a narrow band \u2014 a RATIO, where the whole
-       story is between 0.7 and 1.2 \u2014 gets one tick out of the default ladder, and on this chart that one
+    /* V590: `step` goes through. A caller whose values live in a narrow band — a RATIO, where the whole
+       story is between 0.7 and 1.2 — gets one tick out of the default ladder, and on this chart that one
        tick is the midline, which is skipped by construction. So the axis could come up with no numbers on
        it at all, which is what the fear curve did. */
     var out = [chartAxes({ lo:o.mid - below, hi:o.mid + above, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
@@ -977,7 +977,7 @@
       out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
     });
     // Version 433: the window's average beside the fair-value midline. Note that BOTH are on the chart, which is
-    // what makes a windowed average safe here \u2014 Version 416 kept this page's record row on the whole series
+    // what makes a windowed average safe here — Version 416 kept this page's record row on the whole series
     // because a ten-year CAPE average reports a near-record valuation as merely rich. It still would; the midline
     // is what stops it, by keeping the long reference in the picture next to it.
     var dAvg = o.vals.reduce(function(a, d){ return a + d.v; }, 0) / (n || 1);
@@ -1000,7 +1000,7 @@
                                         : [{ label:"Average", v:dAvg }]),
                      /* V590: `at` names the reading in the readout plate. It defaulted to d.y, which is
                         right for the annual series this chart was built for and prints "undefined" for a
-                        monthly one \u2014 so a caller with months passes its own. */
+                        monthly one — so a caller with months passes its own. */
                      vals:o.vals, at:(o.at || function(d){ return String(d.y); }), fmt:o.fmt });
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
   }
@@ -1071,14 +1071,14 @@
   var PEEK_MARKS = 12;   // see the note above
   // the gauge, drawn on the columns' own frame: same width, same height, same number of slots (Version 266)
   // Version 459: W follows the slot the gauge actually renders in (`--mini-w`), not the peek card it was
-  // drawn for in Version 266 \u2014 that card has been moved into a category row since Version 447 and is the only
+  // drawn for in Version 266 — that card has been moved into a category row since Version 447 and is the only
   // place this gauge appears. The viewBox is stretched with preserveAspectRatio="none", so a box of a
   // different ratio scales x and y unequally and SVG then takes the stroke's scale as the geometric mean of
   // the two: at 152 wide in an 80px slot the slots shrank to 0.53 and the bars only to 0.64, so they closed
   // up into two blobs. Matching the box is the fix; nothing here needs a special case.
   /* Version 461: every peek art is drawn on ONE width, and it is the width of the slot it lands in. All four
      builders stretch their viewBox with preserveAspectRatio="none", and SVG then takes a stroke's scale as the
-     geometric mean of the two axes \u2014 so a 152-unit picture in an 80px slot shrinks its spacing by 0.53 and its
+     geometric mean of the two axes — so a 152-unit picture in an 80px slot shrinks its spacing by 0.53 and its
      marks by only 0.73, and the marks close up. Version 459 fixed the gauge by matching its box and left the
      other three on 152, which is exactly the drift a shared constant prevents. Measured against Apple Health:
      a column now fills 62% of its slot where it filled 76%, and Apple's fill 58%. */
@@ -1088,7 +1088,7 @@
   var PEEK_H = 42;
   // `rule` draws a hairline at the base (Version 312, Keren: "in the Volume preview put a purple line so I can
   // understand what is above the line and what is below"). It is the right answer to a peek whose series crosses
-  // its base \u2014 better than making the bars taller, which would have meant moving the base off zero and losing
+  // its base — better than making the bars taller, which would have meant moving the base off zero and losing
   // what a bar's height means. Only a diverging peek asks for it, so it is opt-in.
   function colPeek(all, classOf, base, rule){
     if (!all || !all.length) return "";
@@ -1113,9 +1113,9 @@
   // THE FOURTH PEEK FORM (Version 291). Temperature, GDP and Valuations are histories, so their peeks are columns;
   // Economic power is a level now, so its peek is a gauge. Effort and Pulse are neither: there is no ISM series to
   // draw (the PMI has not been public since 2016) and no M2 velocity history in this app, and both readings are
-  // really ONE number against a reference band \u2014 a PMI above or below its 50 breakeven, a velocity inside or under
+  // really ONE number against a reference band — a PMI above or below its 50 breakeven, a velocity inside or under
   // its pre-2008 pace. So the honest picture is not a bar chart (Keren: "I don't think it's necessarily a bar
-  // chart \u2014 pick the best infographic"): it is the app's own track, band and disc, laid flat and given the peek's
+  // chart — pick the best infographic"): it is the app's own track, band and disc, laid flat and given the peek's
   // full width. The same mark the reference bars and the Sentiment rings use, at peek scale.
   function meterPeek(m, state){
     var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;

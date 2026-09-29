@@ -6,10 +6,10 @@
   function renderSignsList(){
     var host = byId("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };   // signs whose card in the peek row stands in for their row
-    // Version 306, Keren: "put Effort inside the Activity page \u2014 it belongs next to the labour market, it's not
+    // Version 306, Keren: "put Effort inside the Activity page — it belongs next to the labour market, it's not
     // that important a metric to preview." She is right on both counts: industrial output and employment are the
     // same question asked of two parts of the body, and reading them on one page is the point. A folded sign has
-    // no card, no row and no page of its own \u2014 it renders inside its host's \u2014 but it still registers with its
+    // no card, no row and no page of its own — it renders inside its host's — but it still registers with its
     // own timing class, pointing at the page it now lives in, so the taxonomy does not quietly lose it.
     var FOLDED = { "Industrial output":"Activity" }, foldedInto = {};
     // Version 395: Productivity growth is not a sign in the taxonomy — it has no row, no mark and no page — but
@@ -17,7 +17,7 @@
     // builder. Seeded HERE, before the signs are built, because Activity renders its folded blocks as it is made.
     foldedInto["Activity"] = [productivityReading];
     /* Version 497, Keren: "make the activity page more like the power page, where you have an aggregate of
-       indicators below the main chart \u2014 the main chart should be the labor market." Three readings that had
+       indicators below the main chart — the main chart should be the labor market." Three readings that had
        been in two different components on one page: the labour market as a panel row, Productivity and
        Industrial output as `.folded-sign` blocks still wearing `meterHtml`'s `.rbar` track, which every other
        page gave up between V479 and V492. One stack, in the order she named. */
@@ -69,7 +69,7 @@
     // The row keeps the face it always had; the body it used to unfold is the page it now opens.
     /* Where a sign's page actually lives. Two of them do not have one of their own: Temperature's detail sits
        under the Temperature chart (Version 288). Any
-       row pointing at a sign \u2014 the roster's, and a folded sign's \u2014 asks here, so a link can never open a sheet
+       row pointing at a sign — the roster's, and a folded sign's — asks here, so a link can never open a sheet
        that was moved out from under it. One answer, one place; the stray was found by counting the links. */
     function pageFor(term){
       return term === "Temperature" ? "sheet-metric-temp"
@@ -97,7 +97,7 @@
           '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
         '</div>';
       if (FOLDED[ind.bodyTerm]){                 // it lives inside another page; it gets no row and no sheet
-        // NB: not `var host` \u2014 `host` is already the list container this function appends into, and a var
+        // NB: not `var host` — `host` is already the list container this function appends into, and a var
         // declared in here hoists over it for the WHOLE function, leaving every other sign with no container.
         var hostName = FOLDED[ind.bodyTerm];
         (foldedInto[hostName] = foldedInto[hostName] || []).push(ind);
@@ -167,12 +167,12 @@
         // so it does not belong in the per-draw code above.
         /* V582, Keren: "I don't need the test result component in temperature because I already have the
            average. I have the Fed target. I don't need to see it again as in another form." The row drew
-           3.4% against a 1\u20133% track \u2014 and the chart two inches above already carries 3.4% in its readout,
+           3.4% against a 1–3% track — and the chart two inches above already carries 3.4% in its readout,
            the cycle's average as a line and the Fed's 2% as a dashed one, with Highlights saying in words
            where today sits. Four statements of one number.
-           The row went; its NOTE did not. panelRow filed o.info into HIST_NOTE so the \u22ef menu could open it
+           The row went; its NOTE did not. panelRow filed o.info into HIST_NOTE so the ⋯ menu could open it
            (the V518 rule, one string read from one place), and that note is the only place the app explains
-           why 1\u20133% is a target band rather than a normal range, and that the Fed's 2% is PCE while this
+           why 1–3% is a target band rather than a normal range, and that the Fed's 2% is PCE while this
            reading is CPI. It is filed directly now, the way the yield, horizon and deficit notes already are. */
         HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
         tempCaptionFull = ind.caption;                      // its long form joins the page's own, in one row (V287)
@@ -229,7 +229,7 @@
       while (sum.firstChild) face.appendChild(sum.firstChild);   // moved, so every id inside it survives
       /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that we
          talked about." Twelve of thirteen already were; Fear was blank. Its umbrella is written onto the label
-         by renderFearCurve, the way Horizon's sunrise is \u2014 but that runs against the markup row, and by the
+         by renderFearCurve, the way Horizon's sunrise is — but that runs against the markup row, and by the
          time the ROSTER is built this converter has moved those children once already, so whichever list is
          built second gets a row whose label was never touched. Which one that is depends on build order, which
          is why Horizon looked fine and Fear did not.
@@ -321,12 +321,12 @@
       // 1980, 1982 and 1992 and the composite could not be formed for them; since Version 392 the series has no
       // gaps at all, and the keying stays because a year-keyed series cannot silently close one if a gap returns.
       // Version 353, Keren: "in the power page, change the title to economic power." The card keeps the short
-      // noun Version 304 gave it \u2014 four tiles in a grid, and "Economic power" wraps where "Power" does not \u2014
+      // noun Version 304 gave it — four tiles in a grid, and "Economic power" wraps where "Power" does not —
       // while the page it opens takes the full name back.
       peekCard({ kicker:"Power", title:"Economic power", mark:boltSvg(), value:powerScore + "%",
                  unit:"reserve", word:powerWord.word,
                  state:powerWord.state, target:"sheet-metric-power", ring:powerScore }) +
-      // a miniature of its own diverging page (Version 262): bars out of the 17\u00d7 fair line, both ways
+      // a miniature of its own diverging page (Version 262): bars out of the 17× fair line, both ways
       peekCard({ kicker:"Valuations",
                  mark:diamondSvg(),
                  value:capeNow.toFixed(1) + "\u00d7", unit:"CAPE", word:valuation.tag.text,
@@ -393,11 +393,11 @@
     })();
 
     // Version 353, Keren: "in the cycle page, switch positions between sentiment and activity." The two rows
-    // live in different containers \u2014 Sentiment among today's readings, Activity in the signs list \u2014 so this is
+    // live in different containers — Sentiment among today's readings, Activity in the signs list — so this is
     // a swap of nodes between parents rather than a reorder inside one. Two comment markers hold the outgoing
     // slots, because the second move would otherwise have nothing left to aim at once the first row has left.
     // Each row's hidden sheet travels with it, so every row on the page is still immediately followed by its
-    // own page \u2014 and moving the nodes keeps everything inside them alive (the Version 314 lesson): the mood
+    // own page — and moving the nodes keeps everything inside them alive (the Version 314 lesson): the mood
     // face on Sentiment's label, the ids the data blocks write to, and both rows' open handlers.
     (function(){
       var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
@@ -448,11 +448,11 @@
              long before it had a name for it. */
           picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
                  '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-        /* Version 473, Keren: "calling it Horizon and judging if it\u2019s optimistic or pessimistic, which
-           correlates with ovulation and menstruation \u2014 so it belongs to Mood." The fourth member, and the one
+        /* Version 473, Keren: "calling it Horizon and judging if it’s optimistic or pessimistic, which
+           correlates with ovulation and menstruation — so it belongs to Mood." The fourth member, and the one
            that makes this page an argument rather than a list: Valuations is what the market will pay for a
-           dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves \u2014 all
-           three about NOW \u2014 and Horizon what it expects of the future. Today they disagree, which is the point:
+           dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves — all
+           three about NOW — and Horizon what it expects of the future. Today they disagree, which is the point:
            36 and Fear beside a curve reading optimistic. */
         /* V598, Keren: "if the horizon says if we're optimistic or pessimistic, then it should be in mood."
            She is right and V597 was wrong to move it. Look at what this category holds: Valuations is what the
@@ -462,7 +462,7 @@
            (The market words for the feeling are bullish and bearish; long and short are positions taken, which
            is a different thing and not what this reading is.) */
         { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
-          /* Version 466, Keren: "the VIX is called the fear index \u2014 we don't need two fear meters on the Mood
+          /* Version 466, Keren: "the VIX is called the fear index — we don't need two fear meters on the Mood
              page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
              of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
              that moved Power's markers off this kind of list twice already. Version 464 promoted it out of that
@@ -471,16 +471,16 @@
                  '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
         /* Version 457, Keren: "economic power should move from circulation to activity, and activity should be
            renamed to energy." It settles what Version 446 left uneasy, where Power joined Circulation on the
-           argument that reserves are how much blood the system is holding \u2014 true of the metaphor, and the wrong
+           argument that reserves are how much blood the system is holding — true of the metaphor, and the wrong
            cut of the economics. Energy is the honest pair: Power is the reserve she has, Activity is what she is
            spending it on, and the app has read them as one thing since Version 228, where Power's own word comes
            off an energy scale (Energetic, Steady, Tired, Exhausted). It also gives Activity what it lacked as a
-           category of one \u2014 a second member, so Energy is a list like the other three rather than a shortcut. */
-        /* Version 462, Keren: "we don't need a new category named Load \u2014 stress is connected to energy, so put
+           category of one — a second member, so Energy is a list like the other three rather than a shortcut. */
+        /* Version 462, Keren: "we don't need a new category named Load — stress is connected to energy, so put
            a debt service page inside Energy." Version 460 had split them, and she is right that it was a split of
            one idea: `energyFromReserve()` takes the fiscal STRESS score and inverts it, so Power's word is
            computed FROM the debt markers. A Load category would have shown a verdict in one box and its own
-           inputs in another \u2014 the fault Version 446 named when it refused to call this box "Season", because
+           inputs in another — the fault Version 446 named when it refused to call this box "Season", because
            the dial already is the season.
            So Energy holds the whole reading: how much is left (Power), what is owed (Debt service), and what
            the energy is going into (Activity's page, absorbed whole as in Version 458). The federal three stay
@@ -588,20 +588,20 @@
             var m = DATED_UNIT.exec(unit.textContent.trim());
             if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
           }
-          /* Version 504, Keren: "in Mood there are different sizes of fonts \u2014 make sure everything is aligned
+          /* Version 504, Keren: "in Mood there are different sizes of fonts — make sure everything is aligned
              to the same component." The seam was here. This function MOVES the source's own figure element in,
              so a member built from a peek CARD arrived as `.peek-value` (21px figure, 11px unit) and one built
              from a sign ROW as `.subject-value` (20px, 14px). Weather looked right to her because both its
              members are cards; Mood has two of each. The class is normalised on the way in, so what a row looks
-             like stops depending on which markup it was lifted out of. Anything else inside it \u2014 a tag, a
-             second figure \u2014 keeps its own classes. */
+             like stops depending on which markup it was lifted out of. Anything else inside it — a tag, a
+             second figure — keeps its own classes. */
           val.className = "ci-value";
           if (unit) unit.className = "ci-unit";
           read.appendChild(val);
         }
         /* The verdict, wherever the row keeps it. Most members say it in a word element under the figure;
-           Sentiment says it INSIDE the value, as a tag after the unit, and its own word element is empty \u2014 so
-           without this it took the figure's 28px type on the figure's line, reading "34% \u00b7 Fear & Greed Fear",
+           Sentiment says it INSIDE the value, as a tag after the unit, and its own word element is empty — so
+           without this it took the figure's 28px type on the figure's line, reading "34% · Fear & Greed Fear",
            while every other member had a 12.5px word on a line of its own. One shape for all ten. */
         var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
         if (!word || !word.textContent.trim()){
@@ -672,15 +672,15 @@
       }
       /* ================= Version 468: the barometer =================
          Keren, reading the app's own record: "total growth and total change in prices are equal at the end of each
-         cycle, more or less \u2014 I think it can be a good barometer in the weather page." Checked against the five
+         cycle, more or less — I think it can be a good barometer in the weather page." Checked against the five
          cycles before building anything, which changed the shape of it: they do finish close (Big Tech 17.0%
-         against 17.2%), but the equality is not the reading \u2014 the GAP is, and it has widened in each of the last
+         against 17.2%), but the equality is not the reading — the GAP is, and it has widened in each of the last
          two cycles. So this card measures the distance between them and says which way it leans.
          Her word, kept: a barometer reads pressure to say which way the weather is going, which is exactly what
          two totals pulling apart do. The card is named for the instrument rather than for its verdict, unlike
          Circulation's, because the instrument is the point she asked for.
-         Nothing here is typed. Both totals use the page's OWN methods \u2014 totalGrowthYears compounds the annual
-         real-GDP rates, totalRiseIn compounds the Decembers \u2014 so the figures are the same ones the Growth and
+         Nothing here is typed. Both totals use the page's OWN methods — totalGrowthYears compounds the annual
+         real-GDP rates, totalRiseIn compounds the Decembers — so the figures are the same ones the Growth and
          Temperature pages print, over the same closed years, and the ranking across cycles is computed from them.
          It carries no state colour, for the reason Version 452 gave: whether prices outrunning output is good is a
          judgement about what comes next, and this card's job is to say what the two are doing together. */
@@ -778,7 +778,7 @@
             '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>' +
           '</span></div></div>' +
           '<div class="subject-text">' +
-            // V501, Keren: the members line went. It was what made this read as a fifth category \u2014 the four
+            // V501, Keren: the members line went. It was what made this read as a fifth category — the four
             // above it list their members because a member is a place you can go; these four words are a
             // taxonomy, and the page behind this row explains it better than a subtitle can.
             '<div class="subject-label">All indicators</div>' +
@@ -811,7 +811,7 @@
     // line under the table. The same cut Valuations took in Version 274 and Temperature in Version 298; this
     // page was the last one still carrying a head.
     put("power-head", "");
-    // Valuations has no gauge, so its figure sat alone above a chart whose own end label already states it \u2014 the
+    // Valuations has no gauge, so its figure sat alone above a chart whose own end label already states it — the
     // duplication Keren reported. The page opens on the chart; the verdict moved to the trend row (Version 274).
     put("valuation-head", "");
 
@@ -825,20 +825,20 @@
     // a 10Y or 25Y window means rewriting that shared machinery, which the app's own rule forbids doing casually.
     // The control is the same component on all five pages; only the stops differ, which is the point of a component.
     // "cycles" left every one of these in Version 366: the timeline is now windows on one series and nothing else,
-    // which is why Temperature's timeline disappears entirely \u2014 one stop is not a choice. The cross-cycle comparison
+    // which is why Temperature's timeline disappears entirely — one stop is not a choice. The cross-cycle comparison
     // lives in the cycle average component under each page's Highlights.
     // Version 373: Temperature's history joins, with the same four windows Growth and Economic power carry.
     // 50Y is not answerable on a series that starts in 1989, and the timeline drops it without being told.
-    // Version 418: "This cycle" leaves the ruler. The two submenus now divide cleanly \u2014 Years answers "how much
-    // calendar time", Cycles answers "which cycles" \u2014 and a stop that meant a cycle sitting inside the years ruler
+    // Version 418: "This cycle" leaves the ruler. The two submenus now divide cleanly — Years answers "how much
+    // calendar time", Cycles answers "which cycles" — and a stop that meant a cycle sitting inside the years ruler
     // was the last of the category confusion Version 366 was worried about. 5Y returns on its own, because
     // timelineFor only withholds it from a page that offers "This cycle", and this page no longer does.
     var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
     // Version 372, Keren: "drop the this cycle and year on year, add 5Y". Growth's timeline is now four windows
-    // and nothing else \u2014 the same four Economic power carries, one row at every width, one kind of thing.
+    // and nothing else — the same four Economic power carries, one row at every width, one kind of thing.
     // 5Y returns because the timeline only withholds it where "This cycle" is offered, and that stop is gone.
     // The cycle card it used to show still exists and is still the Calendar's; it is simply no longer on this page,
-    // which also takes the country selector with it \u2014 that selector drives the CYCLE chart, and the peer series
+    // which also takes the country selector with it — that selector drives the CYCLE chart, and the peer series
     // are per-cycle, so it has nothing to drive beside a 39-year history. It keeps working on the Cycle tab.
     // "Year on year" is gone as a stop, but yoyPairs()/pairChart() and the branch below are deliberately left
     // standing: re-adding "yoy" to this array is all it takes to bring it back.
@@ -887,12 +887,12 @@
         put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                     { rising:"heating", falling:"cooling" }));
       }
-      // Version 423, Keren: "make all the data be relevant to the chosen timeline \u2014 the data should be updated
+      // Version 423, Keren: "make all the data be relevant to the chosen timeline — the data should be updated
       // below the chart." This reverses the Version 359 rule on THIS page, and reverses it deliberately: that rule
       // said the chart is the view and the rows are the record, which is right when the rows are the only place a
       // record is stated. Here the reader is choosing a window on a control two lines above, and a row that ignored
       // the choice read as a bug rather than as a principle. So hottest, coldest, latest and the total all describe
-      // the months on screen \u2014 which is also why "on record" left the labels: it would be a small untruth in every
+      // the months on screen — which is also why "on record" left the labels: it would be a small untruth in every
       // window but Max. The average row went entirely, because the average is now ON the chart in every window.
       var tri = totalRiseIn(win);
         // Version 494, Keren: "total price change 16% — in the Highlights component." The NAME is the
@@ -949,7 +949,7 @@
       }
     };
 
-    /* Version 498: Activity's history. The window helpers here are generic rather than borrowed \u2014 `cycleMonths`
+    /* Version 498: Activity's history. The window helpers here are generic rather than borrowed — `cycleMonths`
        is written against cpiYoYHistory, which starts in 1989, and this series starts in 1948, so a cycle's month
        indices have to be computed from THIS series' own first month. */
     var ACT_STOPS = ["5y", "10y", "25y", "max"];
@@ -995,7 +995,7 @@
         // Version 439, Keren: the caption goes — the Power supply explanation below the chart already says this,
         // and a line repeating it above the figures is the page telling the reader twice.
         // (Version 396's colour legend retired in Version 397 — the y axis now says what the bands are.)
-        // V436, Keren: "the exhausted is in a bubble \u2014 it's not consistent, in temperature you just write Trend."
+        // V436, Keren: "the exhausted is in a bubble — it's not consistent, in temperature you just write Trend."
         // The tag was this page saying its verdict twice, since the battery above already carries that word.
         trendPill(powerTrend, null, true) +
         // V491, Keren: the readings come inside, below the trend. Four of them, so hairlines rather than four
@@ -1037,8 +1037,8 @@
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
         { rising:"improving", falling:"widening" }));
     };
-    /* Households (Version 460). The same six pieces every history on this app has \u2014 the controls, the chart,
-       the unit line, the record rows, the trend pill, the tooltip \u2014 so a reader arriving from any other page
+    /* Households (Version 460). The same six pieces every history on this app has — the controls, the chart,
+       the unit line, the record rows, the trend pill, the tooltip — so a reader arriving from any other page
        already knows how to read it. The rows follow the BILL, because that is the reading the row is named
        for; the pill follows what is KEPT, because that is the line that is moving, and it says so in its own
        words rather than borrowing "rising" and "falling" from a chart that has two directions in it. */
@@ -1066,7 +1066,7 @@
       attachHistory(box, "households-hist-tooltip", "householdsChart");
       var hl = put("households-highlights", householdsHighlights());
     };
-    /* Two cards, one for each line, and every figure in them is read off the series it describes \u2014 including
+    /* Two cards, one for each line, and every figure in them is read off the series it describes — including
        the count, which is the whole point of carrying the saving rate back to 1947. */
     function householdsHighlights(){
       var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
@@ -1097,15 +1097,15 @@
         '<div class="page-chart">' + histHead("sheet-metric-valuation") +
         divergeChart({
           vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
-          // the axis ticks are round by construction, so "40\u00d7" rather than the reading's "40.0\u00d7"
+          // the axis ticks are round by construction, so "40×" rather than the reading's "40.0×"
           tickFmt:function(v){ return v + "\u00d7"; },
           fit:capeTrend.fit,
           alt:"Shiller CAPE against its long-run fair value, each January" +
               (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") +
               ", with the fitted trend across the readings in view"
         }, W) +
-        // V433: the rows follow the window. The Version 416 worry \u2014 that a short average makes a near-record
-        // valuation look ordinary \u2014 is answered by the CHART rather than by this row: the fair-value midline is
+        // V433: the rows follow the window. The Version 416 worry — that a short average makes a near-record
+        // valuation look ordinary — is answered by the CHART rather than by this row: the fair-value midline is
         // drawn beside the window's average, so the long reference stays in the picture next to the short one.
         trendPill(capeTrend, null, true) +   // V436: likewise \u2014 the reading's own tag is already on the page
         // V491, Keren: Buffett and CAPE come inside, below the trend (see Power's renderer for the note)
@@ -1148,9 +1148,9 @@
         return;
       }
       /* V588: the `data-series-for` branch went with the last series BAR. Horizon's spread moved into the
-         head's \u22ef menu in V522 and Pressure's maturity followed in V588, so both choices arrive through
-         .bh-pick now and nothing in the app emits that attribute. Both __pick* functions are still called \u2014
-         from the menu \u2014 so only the routing that could no longer fire is removed. */
+         head's ⋯ menu in V522 and Pressure's maturity followed in V588, so both choices arrive through
+         .bh-pick now and nothing in the app emits that attribute. Both __pick* functions are still called —
+         from the menu — so only the routing that could no longer fire is removed. */
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in pageRange)) return;
       pageRange[id] = seg.getAttribute("data-range");
@@ -1203,7 +1203,7 @@
         : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
       // Both of the page's closing cards removed at Keren's instruction (Version 365): "The number you hear quoted"
       // (added the same day in Version 364) and "What it is and is not", which had stood since the page was built.
-      // The page now ends on its own evidence \u2014 CAPE against its own record, the Buffett indicator against its \u2014
+      // The page now ends on its own evidence — CAPE against its own record, the Buffett indicator against its —
       // and says nothing about what those readings do or do not predict. The long form behind "More details" is
       // untouched, so a reader who wants the caveat still finds it one tap away.
       put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
@@ -1254,12 +1254,12 @@
     (function(){
       var blocks = [
         // Version 423, Keren: "drop the average CPI by cycle in the temperature page because we are already seeing
-        // it in the history component." Proved rather than assumed before removing it \u2014 the chart's average line
+        // it in the history component." Proved rather than assumed before removing it — the chart's average line
         // reads 4.3% on the open cycle, 1.7% on Big Tech, 3.0% on Dot-Com and 2.5% on COVID-19, which are exactly
         // the four figures this strip drew. The other three pages keep theirs until they get the cycle mode.
-        // Version 431: gone with Temperature's, for the same reason \u2014 the chart's average line reads the same
+        // Version 431: gone with Temperature's, for the same reason — the chart's average line reads the same
         // number for whichever cycle the picker is on, so the strip was a second answer to a question already answered.
-        // Version 433: both gone with Temperature's and Growth's \u2014 the chart's average line reads the same number
+        // Version 433: both gone with Temperature's and Growth's — the chart's average line reads the same number
         // for whichever cycle the picker is on, so the strip was a second answer to a question already answered.
       ];
       blocks.forEach(function(b){
@@ -1269,8 +1269,8 @@
         host.id = b[1];
         host.innerHTML = html;
         // THE PAGE ORDER (Version 369, Keren): history, then cycle average, then the blood test, then Highlights,
-        // then More details. So the block goes immediately BEFORE the blood-test block \u2014 the markers table with
-        // each reading against its reference range \u2014 which is `.subject` on three pages and `.sign-detail` on
+        // then More details. So the block goes immediately BEFORE the blood-test block — the markers table with
+        // each reading against its reference range — which is `.subject` on three pages and `.sign-detail` on
         // Temperature. It is found by CLASS on the sheet rather than by id, so a page that renames its table keeps
         // the order, and the whole thing still anchors to a live node rather than to markup (the Version 366 rule).
         var sheet = hl.parentElement;
@@ -1428,7 +1428,7 @@
           /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that
              we talked about." Twelve of thirteen rows wore their reading's glyph in a tinted disc; Fear wore
              its curve gauge instead, because this preferred a .subject-ring with anything in it over the mark
-             on the label \u2014 and Fear is the only row that owns a ring. So the one reading with a picture was
+             on the label — and Fear is the only row that owns a ring. So the one reading with a picture was
              the one reading without an icon, in a list whose whole job is to be scannable by icon.
              The MARK comes first now and the ring is the fallback, which is the order every other list in the
              app uses. Fear keeps its ring where a ring belongs: on the Mood page, as that row's preview. */

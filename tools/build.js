@@ -60,6 +60,40 @@ if (leak) {
   process.exit(1);
 }
 
+/* V627: the escape gate. A literal `\u2014` typed into a COMMENT is invisible in the deliverable, because
+   the strip removes comments — so 294 of them accumulated across two hundred versions without one failing
+   run. They are not harmless: they make the source read wrong, and they are why a search-and-replace over a
+   comment fails to match what the eye plainly sees there. Real characters from here on, in comments and in page text alike. Strings
+   are untouched — an escape in code is how a build stays ASCII-safe, and that is the correct spelling. */
+const escapes = [];
+parts.forEach((text, i) => {
+  const name = manifest[i], css = /\.css$/.test(name), html = /\.html$/.test(name);
+  let inblk = false, inscript = false;
+  text.split('\n').forEach((line, n) => {
+    const st = line.trimStart();
+    /* A `.css` part has no use for this spelling at all — CSS writes a character as `\2014`, no `u` — and in
+       a `.html` part outside its <script> it is PAGE TEXT, which is how one reached a reader: the Energy
+       insight read "Industrial output \\u2014 folded into". In a script, a comment only. */
+    const bare = css || (html && !inscript);
+    const watch = bare || inblk || st.startsWith('//') || st.startsWith('/*') || st.startsWith('<!--');
+    if (watch && /\\u[0-9a-fA-F]{4}/.test(line)) escapes.push(name + ':' + (n + 1));
+    if (html) {
+      if (/<script/i.test(line)) inscript = true;
+      if (/<\/script/i.test(line)) inscript = false;
+    }
+    for (let j = 0; j < line.length - 1; j++) {
+      const two = line.slice(j, j + 2);
+      if (!inblk && two === '/*') { inblk = true; j++; }
+      else if (!inblk && !css && two === '//') break;
+      else if (inblk && two === '*/') { inblk = false; j++; }
+    }
+  });
+});
+if (escapes.length) {
+  console.error('REFUSING to write: ' + escapes.length + ' literal \\u escape(s) where a real character belongs — ' + escapes[0]);
+  process.exit(1);
+}
+
 strip(joined).then(built => {
   const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : null;
 

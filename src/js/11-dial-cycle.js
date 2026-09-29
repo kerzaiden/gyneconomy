@@ -246,7 +246,7 @@
       (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
       (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
       /* Version 505: the two blocks the Analysis tab's "Reading for this season" had that this popup did not.
-         The other three were the same text from the same `seasonReading` entry, drawn twice \u2014 so the section
+         The other three were the same text from the same `seasonReading` entry, drawn twice — so the section
          went and these came here, where a reader is already asking about this season. */
       (reading.watch && reading.watch.length
         ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' +
@@ -767,7 +767,7 @@
     /* Version 615, Keren, of a closed cycle opened from Analysis: "I see temperature and growth charts that
        are not matching the history component that we built. And we basically don't need them because the cycle
        is closed." Three things were wrong with them there and she felt all three. They spoke a different
-       visual language from every history in the app \u2014 no head, no mark, no \u22ef, no ruler. They repeated the
+       visual language from every history in the app — no head, no mark, no ⋯, no ruler. They repeated the
        Weather rows immediately beneath them, which say the same reading with its range. And they printed
        "CURRENT CYCLE" over a cycle that ended in 2018, which is not a style problem but a false statement.
        So a closed cycle gets the DIAL and nothing else from this function, and the two cards stay in the
@@ -780,7 +780,7 @@
     byId("temp-kicker").textContent = "Temperature";
     byId("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
     // the cycle's total price change, in the same box the Growth card gives its total expansion (Version 275;
-    // renamed from "price rise" in Version 424, because the figure can be negative \u2014 see the note on the row)
+    // renamed from "price rise" in Version 424, because the figure can be negative — see the note on the row)
     var infl = eraInflation(era), iy = infl.years;
     var tempStats = byId("temp-stats");
     tempStats.className = iy.length ? "cv-stats cycle-stats" : "cv-stats";
@@ -789,12 +789,12 @@
         '%</div><div class="cv-stat-l"><span>total price change, ' +
         (iy.length === 1 ? String(iy[0]) : iy[0] + "–" + iy[iy.length - 1]) + '</span></div></div>'
       : "";
-    // Core CPI went entirely in Version 378 (Keren: "drop the core CPI year over year, we don't need it \u2014 we are
+    // Core CPI went entirely in Version 378 (Keren: "drop the core CPI year over year, we don't need it — we are
     // only looking at the formal inflation rate, which is 3.4"). Version 376 had moved it into the container; the
     // right answer was that the page has one temperature, and a second one beside it invites a comparison the page
     // is not making.
     tempStats.innerHTML = tempStatsHtml;
-    // the Temperature page's own copy, under its history chart (Version 373) \u2014 same figure, written here, so
+    // the Temperature page's own copy, under its history chart (Version 373) — same figure, written here, so
     // the card and the page can never disagree about what this cycle cost
 
 
@@ -814,7 +814,7 @@
     var statsEl = byId("growth-stats");
     statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
     statsEl.innerHTML = statsHtml;
-    // the Growth page's own copy, under its history chart (Version 372) \u2014 written from the same figure, here,
+    // the Growth page's own copy, under its history chart (Version 372) — written from the same figure, here,
     // so the two can never disagree about what this cycle is worth
     renderGrowthPhase(m);
     shownEraModel = m;
@@ -832,12 +832,12 @@
   }
   /* ---------------- The economy the Growth chart draws (Version 210, moved into the head menu in V613) -------
      Keren: "I see we built a country picker. Put it in the growth page under the three dots in history."
-     It was a dropdown of its own in the Growth card's head \u2014 a trigger, a panel, eight rules of stylesheet and
-     two document listeners \u2014 which is a second control doing what the \u22ef menu was built to do. V522 settled
+     It was a dropdown of its own in the Growth card's head — a trigger, a panel, eight rules of stylesheet and
+     two document listeners — which is a second control doing what the ⋯ menu was built to do. V522 settled
      where a WHICH-SERIES choice belongs ("you can put it in the three dots on the history container"), and V602
      made that menu a component, so this is now four lines of groups rather than a component of its own. The
-     picker, its panel, its caret and its CSS are gone; nothing was rebuilt, and the behaviour it had \u2014 one
-     economy at a time, the United States by default \u2014 is unchanged.
+     picker, its panel, its caret and its CSS are gone; nothing was rebuilt, and the behaviour it had — one
+     economy at a time, the United States by default — is unchanged.
      The group is BUILT FRESH on every paint, so it reads the live choice and the live cycle without being told
      when either moved; and it returns nothing at all for a cycle no peer's series reaches, which is the same
      rule the old picker enforced by hiding itself. */
@@ -863,7 +863,7 @@
         return row(!!c.on, c.code, c.name);
       }).join("") }];
   };
-  /* The pick itself. One economy at a time (Version 225), and drawTemperature redraws BOTH charts \u2014 clearing
+  /* The pick itself. One economy at a time (Version 225), and drawTemperature redraws BOTH charts — clearing
      the key first, because an unchanged key is how that function skips a redraw. */
   GYN.on("pickPeer", function(code){
     gdpPeers.forEach(function(c){ c.on = c.code === code; });

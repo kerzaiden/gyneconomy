@@ -42,13 +42,13 @@
   var DATA_COMPILED = new Date(2026, 8, 25);
   var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
-  // The dial's date line, Version 356, Keren \u2014 overruling Version 355's second branch: "just write today,
+  // The dial's date line, Version 356, Keren — overruling Version 355's second branch: "just write today,
   // September 22nd. The data will show the date that it derives from in each metric. And the cycle is the
   // single point of truth. I want it to be updated for today."
   //
   // Version 355 had the hub print "As of <DATA_COMPILED>" whenever a closed US session was missing from the
   // page, so that a stalled refresh would show on the dial. Keren's argument against it is the stronger one
-  // and it is about what this object IS. The dial answers "where are we now", and now is today \u2014 a reader
+  // and it is about what this object IS. The dial answers "where are we now", and now is today — a reader
   // opening the app on the 22nd is not asking what was true on the 18th. Provenance does not live here and
   // never did: EVERY figure on the board already names the day it derives from, on its own card ("high-yield
   // OAS, Sep 17 2026", "CPI, YoY, Aug 2026", the VIX's close date), and the Sources screen states the compile
@@ -56,7 +56,7 @@
   // the one thing that should always read "now" read like a date stamp.
   //
   // What that trades away, recorded so nobody re-derives it by surprise: the dial will no longer betray a
-  // frozen refresh. That surveillance moves entirely to the scheduled task \u2014 its WHEN TO PUBLISH rule (a
+  // frozen refresh. That surveillance moves entirely to the scheduled task — its WHEN TO PUBLISH rule (a
   // trading-day run that publishes nothing is a failed run) and its per-figure date labels. If the page ever
   // looks current while the figures are old, look at the task, not at the dial.
   function hubTodayHtml(){

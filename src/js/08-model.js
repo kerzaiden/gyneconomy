@@ -264,7 +264,7 @@
       'aria-label="' + (o.aria || "") + '">' + out.join("") + '</svg>';
   }
 
-  /* V583: `cls` is the only addition \u2014 the ring is drawn once and worn at two sizes. At mark size the
+  /* V583: `cls` is the only addition — the ring is drawn once and worn at two sizes. At mark size the
      geometry is identical and only the stroke thickens, because a 9-wide stroke on a 120 box is a hairline
      at 15px. See `.vital-ring.mark`. */
   function vitalRingSvg(pct, state, label, cls){
@@ -296,7 +296,7 @@
     return r ? r.label : HZN_SPREADS[0].label;
   }
   // Pressure's policy facts (V375, moved out of the markup in V470 so Highlights can render them as the aux-stats
-  // they are \u2014 four label/value facts, which is the shape Activity's jobless-claims row already uses).
+  // they are — four label/value facts, which is the shape Activity's jobless-claims row already uses).
   // REFRESH: the target after each FOMC decision, the move and its vote, and the next meeting date.
   function policyFacts(){ return [
     // `wordy` is the Version 270 rule: mono is for numbers, and a sentence in mono reads as code. A rate and a

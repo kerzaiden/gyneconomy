@@ -55,12 +55,12 @@
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
   /* ---------------- Version 525: the first series to come from outside the file ----------------
-     A published artifact cannot call FRED or any other host \u2014 external requests are blocked. The one route to
+     A published artifact cannot call FRED or any other host — external requests are blocked. The one route to
      live data is the artifact's own database, which the nightly refresh writes and the page reads. This is the
      proof of that loop on ONE object, the policy rate, chosen because it is small, it is visible on Pressure,
      and the refresh already maintains it after every FOMC decision.
      The literal above stays and is the FALLBACK, not a duplicate: `claude.use("db")` resolves null whenever the
-     page is opened outside a claude.ai viewer \u2014 a local file, a test run, a reader without the grant \u2014 and the
+     page is opened outside a claude.ai viewer — a local file, a test run, a reader without the grant — and the
      page has to be right in all of those. So the file's own figures render first, the database is asked
      afterwards, and the page repaints only if an answer comes back with a newer `asOf`. Nothing blocks the
      first paint on a permission prompt.
@@ -140,11 +140,11 @@
        and into the row's own `.ci-word` (the V504 rule, because Sentiment is the one member that writes its
        verdict inside the value). So that call has been returning false, and the only thing keeping the verdict
        live was `.curve-w` on the dial. Remove the dial and the verdict silently stops updating.
-       It is repainted where it actually lives now \u2014 every row that opens this page \u2014 and it is still
+       It is repainted where it actually lives now — every row that opens this page — and it is still
        RECOMPUTED from the two legs rather than relabelled, which is the claim this function exists to keep.
        The Fear page's chart is deliberately NOT repainted from these legs: it plots the monthly record, every
        point labelled with its month, and a live tick is not a new month. Highlights quotes today's two legs a
-       line below, which is the V294 shape \u2014 a card says today, a chart says its series, both say which. */
+       line below, which is the V294 shape — a card says today, a chart says its series, both say which. */
     paintReading("sheet-sign-sentiment", txt, tag);
   }
   /* V596: the yieldCurve document's repaint follows the reading it moves. It used to print Pressure's 10Y/3M

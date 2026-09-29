@@ -63,8 +63,8 @@
     function x(i, n){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
-    /* Version 472: the spread windows. Everything in here is indexed against `data` and its length \u2014 the
-       recession bands through qIndex, the x labels, both area fills, the line and the un-inversion marker \u2014 so
+    /* Version 472: the spread windows. Everything in here is indexed against `data` and its length — the
+       recession bands through qIndex, the x labels, both area fills, the line and the un-inversion marker — so
        handing it a SLICE is all the windowing it needs, and the two lookups that can now fall outside the view
        return -1 and are skipped rather than drawn at a nonsense x. */
     function draw(key, from, to){
@@ -88,14 +88,14 @@
       });
 
       /* Version 522, Keren: "every other history container has this square boxed-in grid, like in the Apple
-         Health app, and Horizon looks different \u2014 unify the design." It did look different, and for a reason
+         Health app, and Horizon looks different — unify the design." It did look different, and for a reason
          worth naming: this chart draws node by node while the other nine build a string, so when Version 442
          gave the app one frame and one vertical rule (`chartAxes`, `vGrid`) this was the chart that could not
          call them. It calls them now, through `appendSvgMarkup`. What arrives with them is the whole shared
          look: the frame rect, dashed rows at `--grid`, mono y labels ENDING at the plot's left edge rather
          than starting at the svg's, and a dashed vertical rule under every year label.
          The zero line stays its own heavier solid rule, and keeps its dashed row suppressed (`noGridAt`),
-         because a dashed rule under a solid one reads as two \u2014 the same reason the deficit chart passes it. */
+         because a dashed rule under a solid one reads as two — the same reason the deficit chart passes it. */
       var yTop = padT, yBot = padT + innerH, xR = W - padR;
       appendSvgMarkup(svg, chartAxes({
         x0:padL, x1:xR, top:(yTop - AXIS.LEG - AXIS.READ), bot:yBot, y:y, noGridAt:0,
@@ -106,7 +106,7 @@
       svg.appendChild(el("line", { x1:padL - AXIS.L, x2:xR + AXIS.R, y1:y(0), y2:y(0), class:"spread-history-zero" }));
 
       // X labels: Q1 of every third year or so, the years following the window (Version 472), each with the
-      // app's own vertical rule under it (Version 442) \u2014 which is the other half of what made this grid look
+      // app's own vertical rule under it (Version 442) — which is the other half of what made this grid look
       // unlike the rest: horizontal rows, and nothing crossing them.
       var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[data.length - 1].q.slice(0, 4), 10);
       var xLabelYears = windowYears(y0q, y1q, 6);
@@ -243,10 +243,10 @@
         {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
       ]);
     /* Version 471, Keren: "instead of Insights and Highlights, just put time from un-inversion above Fed funds
-       target \u2014 inside the lines, with how long it has been on the right, and the (i) for the table." Version 470
+       target — inside the lines, with how long it has been on the right, and the (i) for the table." Version 470
        gave this a paragraph in an Insights card and a second section above the facts; she is right that it did not
        need either. It is a fact with a figure, which is the row `.aux-stat` already is, and the argument behind it
-       \u2014 four cycles, one to ten months, what today's count is measured from \u2014 was always in the (i). The page ends
+       — four cycles, one to ten months, what today's count is measured from — was always in the (i). The page ends
        on one list of five facts and no prose at all. */
     UNINV_DETAIL = detail;
     addSources([
@@ -393,12 +393,12 @@
   /* ---------------- RENDER: Hormones (V592) ----------------
      Keren: "let's add a fourth category in circulation called hormones. And hormones will be interest rates."
      The anatomy is the argument. A hormone is a chemical MESSENGER: it is secreted deliberately, it reaches
-     everything downstream, and the whole cycle runs at the tempo it sets. That is the policy rate exactly \u2014
+     everything downstream, and the whole cycle runs at the tempo it sets. That is the policy rate exactly —
      and it is the distinction this app was missing, because Pressure measures what the market CHARGES (the
      Treasury curve) and nothing measured what the Fed SETS.
      Two figures live here and they are not the same thing, so the page is careful to say which is which: the
      TARGET RANGE is the decision, and the chart plots the EFFECTIVE rate, which is where money actually
-     traded. They differ right now \u2014 3.75\u20134.00% set on Sep 16 against 3.63% effective through August \u2014 and
+     traded. They differ right now — 3.75–4.00% set on Sep 16 against 3.63% effective through August — and
      that is not a contradiction but a date: August ran under the previous target. This is the V294 rule, the
      one Keren caught on Pressure ("you write 10-year 4.94 and I see inside the container 10-year 4.70"): two
      numbers for one thing is a fault, two numbers for two things has to be LABELLED. */
@@ -431,7 +431,7 @@
       // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
       put("hormones-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
                                       null, true, { rising:"tightening", falling:"easing" }));
-      // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
+      // the refit first, the wiring second — the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
       attachHistory(box, "hormones-hist-tooltip", "fedFundsHistoryChart");
@@ -462,12 +462,12 @@
       "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.")
 
     /* ---- V609, Keren: "can you put that into insights? The hormones page doesn't have an insight section.
-       And the current federal funds target, last Fed move, first hike and next decision \u2014 you can put that in
+       And the current federal funds target, last Fed move, first hike and next decision — you can put that in
        insights." So it gets one, the shape every other page has since V604: the biology in two sentences, then
        the cards, then the FOMC's own facts underneath.
        Every figure below is COMPUTED, including the peaks. A card that says "every peak since 1981 was lower
        than the last until 2024" is a claim about the record, and a claim about the record is read off the
-       record or it is not made \u2014 which also means it stays true the year a new peak arrives. */
+       record or it is not made — which also means it stays true the year a new peak arrives. */
     function ffPeaks(){
       /* A peak is a high that the rate then gave back by at least 1.5 points before rising again. The swing
          has to be big enough to ignore the month-to-month wobble of the 1970s and small enough to catch 2019's
@@ -519,12 +519,12 @@
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
             : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     /* Written straight to the element: `set` and `say` are local to renderSubjectRows, and this page renders
-       from its own step. The row is the same shape either way \u2014 figure, unit, tag. */
+       from its own step. The row is the same shape either way — figure, unit, tag. */
     var rowVal = put("subj-value-hormones", fedFundsRange() +
       '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>');
     /* The miniature every other Circulation row carries: the last two years of the EFFECTIVE rate, standing on
        zero like the chart it opens. Without it this row was the only one on the page with an empty right-hand
-       side \u2014 the same hole V475 fixed for Desire on Mood. */
+       side — the same hole V475 fixed for Desire on Mood. */
     var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
                                            function(){ return "ff-col"; }, 0, true);
@@ -532,11 +532,11 @@
   GYN.step("renderHormones", renderHormones, "build"); renderHormones();
 
   /* ---------------- RENDER: Pressure (V597) ----------------
-     The reading is a NET PERCENTAGE, so its word comes from the Fed\u2019s own magnitude vocabulary rather than
+     The reading is a NET PERCENTAGE, so its word comes from the Fed’s own magnitude vocabulary rather than
      from a band anyone here chose. Footnote 3 of the release, verbatim: "basically unchanged" is 0 to 5
      percent inclusive; "modest" is above 5 and up to 10; "moderate" is above 10 and up to 20; "significant"
      is above 20 and below 50; "major" is 50 or more. The sign supplies the direction. THE BAND PROVENANCE
-     RULE, satisfied by the source itself \u2014 which is why this reading gets a five-step word where Hormones,
+     RULE, satisfied by the source itself — which is why this reading gets a five-step word where Hormones,
      whose level has no published vocabulary, gets only a direction.
      The state is ONE-SIDED, the V488 lesson: tight credit is a condition and loose credit is not, so a
      two-sided band here would flag the healthy end as a fault. */
@@ -569,7 +569,7 @@
       // V431's pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
       put("pressure-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
                                       null, true, { rising:"narrowing", falling:"widening" }));
-      // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
+      // the refit first, the wiring second — the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return lendingHistoryChart(w, from, { to:to, cycle:!!span }); });
       attachHistory(box, "pressure-hist-tooltip", "lendingHistoryChart");
@@ -610,11 +610,11 @@
   function renderFearCurve(){
     /* V593, Keren: "I'm still seeing the meter component. We need to drop it." The half-dial went. It was the
        page's reading of the curve TODAY, and the history under it now carries the same number in its readout
-       plate, on a picture that also says where today sits against nineteen years of it \u2014 which is the V582
+       plate, on a picture that also says where today sits against nineteen years of it — which is the V582
        argument on Temperature, one reading stated once.
-       Its two companions are not lost. The DATE is the history's own, and rides in the readout. The NOTE \u2014
-       "there's info next to the title, put the info in the three dots in the history panel as convention" \u2014 is
-       filed to HIST_NOTE, which is where every other page's note lives and what the \u22ef opens: the V518 rule,
+       Its two companions are not lost. The DATE is the history's own, and rides in the readout. The NOTE —
+       "there's info next to the title, put the info in the three dots in the history panel as convention" — is
+       filed to HIST_NOTE, which is where every other page's note lives and what the ⋯ opens: the V518 rule,
        one string read from one place. That also retires the last (i) sitting beside a title on this page. */
     HIST_NOTE["fear-range"] = curveDetailHtml();
 
@@ -623,23 +623,23 @@
        escape): this page has ONE Highlights block and the VIX's note is a card in it. */
     /* V591, Keren: "I think we can get rid of the meter in the fear page, right? Because we inserted a
        history component." Right, and for the reason that took the meter off Temperature in V582: the page was
-       stating one thing four times. What goes is the VIX row \u2014 a level against its usual band \u2014 and what
+       stating one thing four times. What goes is the VIX row — a level against its usual band — and what
        stays says more: the gauge reads the curve now, the history draws it back to 2007, and Highlights'
-       second card is entirely about the VIX, giving 14.21, the 13\u201320 band, the 9.14 record low and the 82.69
+       second card is entirely about the VIX, giving 14.21, the 13–20 band, the 9.14 record low and the 82.69
        high in a sentence that can hold all four where a track can hold one.
        Worth naming the one thing it costs, because it is not the same redundancy Temperature had: the history
        draws the RATIO and the meter read the LEVEL, so the VIX level stops being a figure on this page and
        survives as prose. That is the right trade on a page called Fear, where the curve is the reading and the
-       VIX is the leg it is computed from \u2014 but it is a trade, not a deletion of a duplicate. */
+       VIX is the leg it is computed from — but it is a trade, not a deletion of a duplicate. */
 
-    /* V590, Keren: "make a history component in the fear page that will show the curve \u2014 check how we did
+    /* V590, Keren: "make a history component in the fear page that will show the curve — check how we did
        the inverted yield curve and apply the same."
        divergeChart is that treatment: bars hanging off a reference line, coloured by which side they fall. On
        Valuations the line is CAPE's fair value; here it is 1.00, and the app's own CSS already reads the two
-       sides correctly without a new colour \u2014 .dv-bar.over is the serious ink and .under the good, which is
+       sides correctly without a new colour — .dv-bar.over is the serious ink and .under the good, which is
        exactly inverted against normal. The threshold needs no defending: it is the definition of the shape
        rather than a level anyone chose, the sentence curveVerdict() already carries.
-       The series is fearCurveHistory, monthly from December 2007 \u2014 VXVCLS begins then, so that is the first
+       The series is fearCurveHistory, monthly from December 2007 — VXVCLS begins then, so that is the first
        month the ratio can be computed at all. Its last point is the number the gauge above shows, because
        both round to three decimals off the same two legs. */
     var FEAR_STOPS = ["5y", "10y", "max"];
@@ -647,7 +647,7 @@
     function drawFearHistory(){
       var host = byId("fear-history"); if (!host || !fearCurveHistory.length) return;
       /* A cycle that opened before this series did cannot be windowed onto it, so the page falls back to the
-         open cycle rather than drawing an empty chart \u2014 the rule Horizon states for the same 2005 problem. */
+         open cycle rather than drawing an empty chart — the rule Horizon states for the same 2005 problem. */
       var cyc = pageMode["fear-range"] === "cycles"
               ? (cycleByName(pageCycles["fear-range"]) || openCycle()) : null;
       if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
@@ -690,7 +690,7 @@
       put("fear-trend", trendPill(fit, null, true, { rising:"inverting", falling:"steepening" }));
       /* The refit comes FIRST and the wiring second, which is the order every other page uses and the reason
          this chart first drew with no legend: refitHistory replaces the svg's outerHTML, so a legend injected
-         before it is thrown away with the element it was injected into \u2014 and lastHistGeom is the refit's
+         before it is thrown away with the element it was injected into — and lastHistGeom is the refit's
          geometry, not the first draw's, so reading __geom before it pins the hover to a chart that is gone. */
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return divergeChart(opts(), w); });
@@ -698,7 +698,7 @@
     }
     sheetRenderers["fear-range"] = drawFearHistory;
     /* V593: and on OPEN. Without this the chart kept its build-time drawing, made while the sheet was hidden
-       and had no width, so its viewBox was 298 inside an element rendering at 320 \u2014 the whole picture scaled
+       and had no width, so its viewBox was 298 inside an element rendering at 320 — the whole picture scaled
        up 1.07, which is why the legend looked oversized and crowded to the right edge. Every other history
        registers its sheet this way; this one only registered its range control. */
     sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
@@ -831,8 +831,8 @@
       /* V584, Keren: "change the name of the category from fear curve to fear. And the icon should be an
          umbrella, meaning fear of winter, basically." The category is the FEELING; the curve is one instrument
          that measures it, and naming the category after the instrument was the same fault V524 fixed when it
-         took the half-dial's name off this row. The umbrella is the app's own \u2014 the VIX has worn it since
-         V467 \u2014 and it is the right glyph twice over: what you carry because winter might come. */
+         took the half-dial's name off this row. The umbrella is the app's own — the VIX has worn it since
+         V467 — and it is the right glyph twice over: what you carry because winter might come. */
       put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() +
         '</span>Fear');
     })();
@@ -868,7 +868,7 @@
   // compounded total says "everything costs a sixth more than when this cycle opened".
   // Version 423: the same compounding as eraInflation, over whatever months are in view rather than over a cycle,
   // so the row can follow a 5Y or 25Y window too. December to December, skipping the year in progress because it
-  // has no December yet \u2014 which is why the open cycle's total reads 2022\u20132025 and not 2022\u20132026.
+  // has no December yet — which is why the open cycle's total reads 2022–2025 and not 2022–2026.
   function totalRiseIn(vals){
     var years = [], rates = [];
     vals.forEach(function(d){
@@ -907,7 +907,7 @@
     return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
   }
   /* Version 612: the minus is the real one, U+2212, not a hyphen. Every other figure in this app already
-     wears it \u2014 gauge labels, cycle totals, the deficit \u2014 so a signed reading was the one place a hyphen showed
+     wears it — gauge labels, cycle totals, the deficit — so a signed reading was the one place a hyphen showed
      up, narrower than the plus above it and out of line in a monospaced column. Fixed here rather than at the
      call sites, because there are six of them and this is the only function all six go through. */
   function fmtSigned(v, dp){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
@@ -916,9 +916,9 @@
   // direction of the six-quarter fit — so the chart's colour, the panel's tag and the season on the dial cannot disagree.
   // These only dress it. (Function declarations, not vars: the subject summaries above call them before this line runs.)
   function regimeArrow(regime){ return regime === "contraction" ? "\u2193 " : "\u2191 "; }
-  // Version 304, Keren: the word on screen is "expanding", not "expansion" \u2014 and "contracting" the other way.
+  // Version 304, Keren: the word on screen is "expanding", not "expansion" — and "contracting" the other way.
   // A participle says the body is DOING something, which is what this whole board is for; an abstract noun names
-  // a state the reader has to attach to her. The MODEL's own value is untouched \u2014 it stays "expansion" and
+  // a state the reader has to attach to her. The MODEL's own value is untouched — it stays "expansion" and
   // "contraction", because the season logic, the ring and the analysis table all compare against those strings,
   // and renaming a value to change a label is how a display tweak turns into a data bug. Only the label moves.
   var GROWTH_SHOWN = { expansion:"expanding", contraction:"contracting", steady:"steady" };

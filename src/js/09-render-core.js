@@ -85,7 +85,7 @@
   // "deficit-range", "volume-range" and "pulse-range" are not sheets — they are a block's own zoom.
   // Every timeline opens on TEN YEARS (Version 368, Keren: "make the default marker 10 years"). The deficit had
   // opened there since Version 361 and the rest opened on Max, so the same control started in two different places
-  // depending on which page you reached it from \u2014 which is the one thing a shared component must never do.
+  // depending on which page you reached it from — which is the one thing a shared component must never do.
   // Ten is also the better first view: it is the window an economist quotes, it is long enough to hold a cycle and
   // a shock, and Max is one tap away for the reader who wants the whole record.
   // Growth and Temperature are not listed with a window because they do not offer one; their default is unchanged.
@@ -236,7 +236,7 @@
   // A container with nothing to show takes no room (Version 383, Keren: "between average growth and highlights
   // I think there's 20 pixels, even more, maybe 30"). It was 32 on Growth. Version 381 collapsed an :empty block,
   // which caught Temperature's emptied sign card but NOT Growth's, whose markers section is a CLOSED <details>
-  // with a display:none summary \u2014 169 characters of text and zero height, so no selector could see it was
+  // with a display:none summary — 169 characters of text and zero height, so no selector could see it was
   // showing nothing. Measuring is the only honest test. It has to run AFTER the sheet is on screen: seatPageFoot
   // is called at the TOP of openMetricPage, while the sheet is still hidden and every child reports zero, which
   // is exactly why the first attempt did nothing.
@@ -261,7 +261,7 @@
     // page foot beside the timing chip, which made sense while Highlights was a bare section; since Version 288
     // gave .metric-sheet .highlights a surface, a border and a radius, a button sitting just below that box reads
     // as belonging to the page rather than to the Highlights it summarises. highlightsHtml has always emitted it
-    // inside the section \u2014 this function was moving it out again \u2014 so the fix is to seat it back where it was
+    // inside the section — this function was moving it out again — so the fix is to seat it back where it was
     // built, and to keep the foot only as the fallback for a page that has no Highlights box to put it in.
     var more = sheet.querySelector(".more-row"), hl = sheet.querySelector(".highlights");
     var home = hl || foot;
@@ -305,7 +305,7 @@
     // the figure itself, which is Pulse since Version 305 (Keren: "put the title inside the first container as a
     // title, remove 1.42× and the heart icon"). The figure was on screen three times: the head, the card's NOW
     // row, and the record's Latest row.
-    // Version 384, Keren, on Pulse: "I want the history container to be first \u2014 and the blood test component
+    // Version 384, Keren, on Pulse: "I want the history container to be first — and the blood test component
     // needs to be below the history container." That is the Version 369 page order (history, then the reading
     // against its reference range), which this builder had backwards for the signs: it emitted the meter first
     // because it was written before that order existed. `chartFirst` lets a page take the right one.
@@ -327,8 +327,8 @@
     return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) +
       // An indicator may now say NOTHING here, by setting shortCaption to "" (Version 378). Before this the chain
     // fell through on any falsy value, so emptying the short line silently promoted the long caption onto the page
-    // \u2014 which on Temperature would have put back the very metaphor Version 376 moved into the note.
-    // Version 384, Keren, of Pulse's line and its COVID-era-low row: "no, no, no \u2014 I think this belongs to
+    // — which on Temperature would have put back the very metaphor Version 376 moved into the note.
+    // Version 384, Keren, of Pulse's line and its COVID-era-low row: "no, no, no — I think this belongs to
     // insights." She is right, and it is true of every sign: a short verdict and the figures that qualify it are
     // commentary, not measurement, so they take the Highlights block and its own ground (Version 379) rather than
     // sitting loose under the chart. It also gives the sign pages the metric pages' shape: history, blood test,
@@ -342,11 +342,11 @@
       var block = '<section class="highlights"><div class="hi-head">Highlights</div>' +
         (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
       // A page whose last container is appended AFTER this card (Desire's risk matrix) holds its Highlights back,
-      // so the page order still ends history \u2192 blood test \u2192 Highlights \u2192 More details (Version 385).
+      // so the page order still ends history → blood test → Highlights → More details (Version 385).
       if (opts.deferHighlights){ heldHighlights = block; return ""; }
       return block;
     })() +
-      // the long form, offered rather than asserted \u2014 and only where there IS a longer form than the line above
+      // the long form, offered rather than asserted — and only where there IS a longer form than the line above
       (function(){
         if (opts.bare) return "";
         var rest = dropWhatIsShown(ind.caption, ind.lead || ind.shortCaption || "");
@@ -557,10 +557,10 @@
     }
 
     // ONE MATURITY AT A TIME, CHOSEN FROM A ROW OF CARDS (Version 293, Keren: "I don't understand anything from the
-    // chart and it's kind of distorted, it's coloured in black \u2026 I'd much rather have cards, scrollable, with an
+    // chart and it's kind of distorted, it's coloured in black … I'd much rather have cards, scrollable, with an
     // icon that says what each maturity means, and if I click on it I see the appropriate graph"). The smear had a
     // cause: five lines plus a dot on every one of 85 quarters is 425 marks in five dark purples, on one small
-    // picture. Drawing one line answers the question the page is actually asking \u2014 what has THIS maturity done \u2014
+    // picture. Drawing one line answers the question the page is actually asking — what has THIS maturity done —
     // and the cards carry what the deleted paragraph was trying to say, one line each, next to an icon for the thing
     // that maturity prices.
     var matPick = "10y";   // the most-referenced benchmark opens the page
@@ -570,7 +570,7 @@
     // page cannot print two numbers for one thing. The history line keeps its quarterly averages, because that is
     // what it plots; the card says today (Version 294).
     /* Version 470, Keren: "the maturity ladder needs to become a control." It was five cards carrying an icon, a
-       name, today's rate and a caption apiece \u2014 four pieces of furniture each to do one job, choose the line below.
+       name, today's rate and a caption apiece — four pieces of furniture each to do one job, choose the line below.
        As segments it is one row, and the room that frees is what let the SPREAD move into this band as a sixth
        segment instead of standing in a second container with a second chart, a second legend and a second copy of
        the figure. The rates the cards carried are not lost: they are what the chart plots. */
@@ -579,11 +579,11 @@
        history components in the app."
        Version 473 deleted this page's window ruler for a real reason, and it has to be answered rather than
        overridden: "a window ruler labelled 5Y a centimetre from a maturity labelled 5Y was the collision."
-       Both numbers are years and they mean different things \u2014 one is how long the loan runs, the other how far
-       back you are looking \u2014 so no amount of labelling makes them safe side by side.
+       Both numbers are years and they mean different things — one is how long the loan runs, the other how far
+       back you are looking — so no amount of labelling makes them safe side by side.
        The answer is the one V522 already found for Horizon: "10Y minus 3 months, 10Y minus 2 years shouldn't be
-       a new ruler \u2014 you can put it in the three dots." A control that chooses WHICH SERIES the chart draws
-       belongs in the head's menu; the control ROW is for the window. So the maturity moves to the \u22ef menu and
+       a new ruler — you can put it in the three dots." A control that chooses WHICH SERIES the chart draws
+       belongs in the head's menu; the control ROW is for the window. So the maturity moves to the ⋯ menu and
        this row becomes the same Cycles / Years bar and cycle picker every other history page carries. The two
        year-numbers are never on screen together, which is the collision gone rather than relabelled.
        ["5y","10y","max"] for the reason HZN_STOPS gives: the series starts in 2005, so 25Y is unanswerable. */
@@ -617,7 +617,7 @@
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
       var vTrend = put("pulse-trend", trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
-        // Version 431, Keren: "in the pulse page you write quickening \u2014 the correct word is accelerating, and the
+        // Version 431, Keren: "in the pulse page you write quickening — the correct word is accelerating, and the
         // opposite is decelerating." Right on both counts, and the second half is the one that matters: Pulse IS a
         // velocity (M2 turned over per year), so acceleration is the literal reading rather than a metaphor.
         null, true, { rising:"accelerating", falling:"decelerating" }));
@@ -691,8 +691,8 @@
          bar. The levels take the whole record, which is what they took on the Yields tab anyway: a window ruler
          labelled 5Y a centimetre from a maturity labelled 5Y was the collision Version 472 hid behind a third
          tab, and deleting the ruler is the version of that fix that needs no tab at all. */
-      /* V588: the window. Every maturity shares one index space \u2014 `quarters` is t3mYieldHistory's own
-         quarters \u2014 so the slice is computed once here and every series is drawn through it. */
+      /* V588: the window. Every maturity shares one index space — `quarters` is t3mYieldHistory's own
+         quarters — so the slice is computed once here and every series is drawn through it. */
       var ylmCyc = pageMode["hzn-range"] === "cycles"
                  ? (cycleByName(pageCycles["hzn-range"]) || openCycle()) : null;
       var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
@@ -702,7 +702,7 @@
       var yTrend = byId("ylm-trend");
       if (yTrend){
         /* V588: the fit is over the quarters IN VIEW, so the pill and the picture can never describe
-           different stretches \u2014 the rule Temperature states in the same words. */
+           different stretches — the rule Temperature states in the same words. */
         var w = [], mt = matOf(matPick);
         if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
@@ -733,7 +733,7 @@
             '<span class="cycsel-tick" aria-hidden="true"></span>' +
             '<span class="cycsel-nm">' + label + '</span></button>';
         }
-        /* V600: two GROUPS rather than two labelled runs of one list \u2014 the root of the menu names the two
+        /* V600: two GROUPS rather than two labelled runs of one list — the root of the menu names the two
            kinds of reading and says which one is on, and the rows live one level in. Each maturity row drops
            the word "Treasury" because the group it sits under has already said it. */
         return [

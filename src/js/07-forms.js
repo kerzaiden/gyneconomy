@@ -90,7 +90,7 @@
   var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
   // One card, one order, whatever the picture is: the NAME, then the picture, then the reading (Version 264).
   function peekCard(o){
-    /* V585: `ring` is the reserve drawn as a ring \u2014 a full ring is 100%, so 26% is a little over a quarter
+    /* V585: `ring` is the reserve drawn as a ring — a full ring is 100%, so 26% is a little over a quarter
        round. It replaces `gauge`, which drew twenty lit segments: a battery laid on its side, which is the
        "battery kind of look" the ring was asked for instead. Same slot, same place under the date. */
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring")
@@ -135,10 +135,10 @@
   // app is a body read as an economy, so the tube was the one mark speaking the wrong language.
   //
   // Hollow, not solid (Version 311, Keren). Version 310 filled it to keep it apart from Desire's flame, which is
-  // also a drop-shaped outline \u2014 but the flame carries a filled tongue INSIDE it, and that core is what tells the
+  // also a drop-shaped outline — but the flame carries a filled tongue INSIDE it, and that core is what tells the
   // two apart, not the silhouette. So the drop is drawn slimmer than the flame is wide and left empty: a ring
   // beside a ring-with-a-core reads as two different marks, and an outline is what every other mark here is.
-  // The two are never adjacent in any case \u2014 Desire is a 48px chip in the list, Volume a 15px mark on a card.
+  // The two are never adjacent in any case — Desire is a 48px chip in the list, Volume a 15px mark on a card.
   // Version 507: one drop, two weights. Keren moved it from Volume to Circulation ("I want circulation to be
   // an icon of a drop"), where it is the plainest possible reading of the word — and Circulation's mark renders
   // at 42px on a home tile beside three marks drawn at 1.9, so the caller says which weight it needs rather
@@ -152,13 +152,13 @@
      arcs rather than the reference's three — at the 15px this renders at on a sign card the third closes up
      against the second and the three become a smudge, which was checked at size before choosing. */
   /* V587, Keren, with the drawing: Volume's mark is a filled disc inside an open ring. The speaker it
-     replaces was a pun on the word \u2014 volume as loudness \u2014 and this page measures a QUANTITY: the money
+     replaces was a pun on the word — volume as loudness — and this page measures a QUANTITY: the money
      stock, a body of something, which is what a solid core inside a boundary draws. The proportion is the
      one she sent: the inner disc is a little over half the ring's radius. */
   function volumeSvg(){ return markSvg(
     '<circle cx="12" cy="12" r="9.3" stroke-width="1.9"/>' +
     '<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>'); }
-  // Pressure's mark: the gauge (Version 312, restored in Version 314 \u2014 Keren preferred it to the cuff). The
+  // Pressure's mark: the gauge (Version 312, restored in Version 314 — Keren preferred it to the cuff). The
   // cuff was the truer object but it is three shapes where this is two, and at the 15px this mark now renders at
   // the cylinder and the dial collapse into each other. The foot under the dial is load-bearing: a circle with
   // one needle and nothing else is a clock, and a circle with one needle standing on a connector is a gauge.
@@ -206,10 +206,10 @@
   function markSvg(body, extra){
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
   }
-  /* V592: Hormones. A molecule \u2014 three atoms and the bonds between them \u2014 because a hormone is a chemical
+  /* V592: Hormones. A molecule — three atoms and the bonds between them — because a hormone is a chemical
      MESSENGER, and what the policy rate does is carry a signal into everything downstream. Drawn as an outline
      at 1.7 like every other mark here, with no interior detail, so it survives at 13px. */
-  /* V597: Pressure. Two arrows pressing inward on a channel \u2014 the mark says SQUEEZE, which is what the
+  /* V597: Pressure. Two arrows pressing inward on a channel — the mark says SQUEEZE, which is what the
      reading measures: not the price of money but how narrow the banks leave the pipe it travels through.
      Deliberately not a cuff: a cuff is the INSTRUMENT, and in this model the instrument is the Fed. */
   function pressureSvg(){ return markSvg(
@@ -300,27 +300,27 @@
     '<path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>' +
     '<path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>'); }
   // Sentiment's mark, Version 457 (Keren, with the glyph): three waves, where a face in five expressions stood
-  // from Version 244. The face was the one mark in the set that carried the VERDICT rather than the subject \u2014 it
+  // from Version 244. The face was the one mark in the set that carried the VERDICT rather than the subject — it
   // frowned or smiled with the reading, which is the Version 301 rule the piggy bank failed and the diamond fixed.
   // Waves name the subject: sentiment is a swell that arrives and passes, and the word beside it does the grading.
-  // Two half-waves, three lines 5.4 apart, amplitude 1.4 \u2014 measured, not chosen: a taller wave closes the gap
+  // Two half-waves, three lines 5.4 apart, amplitude 1.4 — measured, not chosen: a taller wave closes the gap
   // between the lines and the three run together at 15px, which is the size a row mark is actually read at.
   /* V465's half-dial was Fear & Greed's mark until V524 gave that row the heart. Nothing draws it now, so it
      is out rather than kept "in case" (Keren's standing rule: lean, dry, efficient code). Its three paths are
      archived under V524 in gyneconomy-version-archive.md, so bringing it back is a lookup, not a redrawing. */
-  // Energy's mark, Version 457 (Keren: "activity should be renamed to energy \u2014 the icon needs to embody energy").
+  // Energy's mark, Version 457 (Keren: "activity should be renamed to energy — the icon needs to embody energy").
   // A bolt: the one glyph in the set with no curve in it, which is how it stays apart from the flame and the drop
   // at 15px. It is drawn as an outline like every other mark, not the solid bolt of a charging indicator, because
   // Power's battery sits directly below it in the same list and a filled bolt would read as that battery's state.
   /* V585, Keren: "bring back the lightning in the power icon." V583 read "I want the power preview to be a
-     ring" as the MARK and put the ring here, which was the wrong slot twice over \u2014 it took the glyph's job and
+     ring" as the MARK and put the ring here, which was the wrong slot twice over — it took the glyph's job and
      left the battery-shaped preview, the actual picture of the reserve, untouched. A mark says WHICH reading;
      the preview says HOW MUCH. This bolt already existed as the ENERGY category's own mark, so Power now wears
      its category's glyph rather than a second drawing of the same idea. (A V585 draft added a second boltSvg
      a hundred lines up; two function declarations in one scope means the later one silently wins, which is a
      coin-flip waiting on file order. There is one bolt.) */
   function boltSvg(){ return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>'); }
-  // Households' mark: a house. The plainest thing in the set, and deliberately so \u2014 this is the one reading
+  // Households' mark: a house. The plainest thing in the set, and deliberately so — this is the one reading
   // about the people rather than about the system, and a reader should not have to decode it.
   function houseSvg(){ return markSvg(
     '<path d="M3.4 10.9 12 4.1l8.6 6.8" stroke-width="1.9"/>' +
@@ -335,7 +335,7 @@
     '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' +
     '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>'); }
   /* The VIX's mark, Version 467 (Keren, with the idea): an umbrella in the rain. It replaces the shield of
-     Version 464, which said protection but not weather \u2014 and this app reads the economy as weather, so the one
+     Version 464, which said protection but not weather — and this app reads the economy as weather, so the one
      reading about buying cover against a bad day should look like a bad day. Four candidates were drawn: slanted
      drops read as motion rather than rain, and a scalloped canopy with no drops is just an umbrella. Three short
      verticals under a wide canopy is what reads as raining at the size this actually renders.
@@ -343,7 +343,7 @@
   /* V593, Keren: "make the umbrella icon without rain because it looks unclear." The three short verticals
      V467 chose as rain were the whole ambiguity at 13px: at that size they read as scratches beside the
      canopy rather than as weather, and the eye spends its attention deciding what they are. The canopy, the
-     shaft and the crook are unmistakably an umbrella on their own \u2014 which is the reading anyway. The canopy
+     shaft and the crook are unmistakably an umbrella on their own — which is the reading anyway. The canopy
      is deepened a little to carry the meaning the drops were doing. */
   function umbrellaSvg(){ return markSvg(
     '<path d="M12 2.4v2.3" stroke-width="1.8"/>' +
@@ -375,22 +375,22 @@
 
   /* ---------------- Load: what households owe, and what they keep (Version 460, Keren) ----------------
      Keren, after reading Wild Power: the book's chapter on ARMOURING says the skin thickens on the way up
-     \u2014 resilient to life's slings and arrows, and less connected to what is actually happening \u2014 and is shed
+     — resilient to life's slings and arrows, and less connected to what is actually happening — and is shed
      on the way down, when everything gets through; then the inner critic arrives in the autumn and calls you
      to account for what you did with your life force. In an economy that is leverage. The app measured the
      PRICE of credit (Pressure's term structure, Desire's spread) and the QUANTITY of money (Volume) and
      never the STOCK of what is owed, except the government's, which sat inside Power.
-     Both readings here are shares of the SAME denominator \u2014 disposable personal income \u2014 so they belong on
+     Both readings here are shares of the SAME denominator — disposable personal income — so they belong on
      one axis and one clock. That is the whole reason the page draws them together rather than as two charts
      on two scales, which would invite a comparison the reader would have to do in their head.
      DEBT SERVICE is the Federal Reserve's DSR on its credit-bureau basis (FRED TDSP). That series begins in
      2005 Q1 and not 1980: the Board rebuilt it in September 2024 on tradeline data, which is when payment
      data on every tradeline type became available, and the new measure reads consistently higher than the
-     old one because it includes escrow \u2014 property tax, insurance, mortgage insurance. So 15.85% in 2007 Q4
+     old one because it includes escrow — property tax, insurance, mortgage insurance. So 15.85% in 2007 Q4
      is THIS series' own peak and is not the 13.2% the retired series used to print; the two are not
      comparable and the app never puts them in one sentence.
      SAVING is BEA's personal saving rate (FRED A072RC1Q156SBEA), quarterly, kept in full from 1947, because
-     the reading this page makes is about the record \u2014 twelve quarters in eighty years have been this low \u2014
+     the reading this page makes is about the record — twelve quarters in eighty years have been this low —
      and a claim about the record has to be checkable against the record.
      REFRESH: TDSP quarterly, about ten weeks after the quarter; the saving rate monthly with BEA's Personal
      Income and Outlays, so its quarter closes a month after the quarter does. */
@@ -417,7 +417,7 @@
   var savNow = savHistory[savHistory.length - 1];
   var DSR_MEAN = dsrHistory.reduce(function(a, b){ return a + b; }, 0) / dsrHistory.length;
   /* The word is about the PAIR, because either number alone misleads. The bill is the lighter half of the
-     story today \u2014 11.1% against this series' own 12.4% average, a third off its 2007 peak \u2014 and a row reading
+     story today — 11.1% against this series' own 12.4% average, a third off its 2007 peak — and a row reading
      "manageable" off that alone would be saying the opposite of what the page shows. The buffer is what is
      thin. So the saving rate sets the band and the bill can only make it worse, never better. */
   function householdsWord(bill, kept){
@@ -428,11 +428,11 @@
     return                 { word:heavy ? "Covered" : "Well covered",     state:"good" };
   }
   var householdsNow = householdsWord(dsrNow, savNow);
-  /* Version 492, Keren: "households don't have test components." Two readings, so two rows \u2014 and two bands
-     built the two ways this app already uses. The bill is ONE-SIDED at the series\u2019 own mean, which is not a
+  /* Version 492, Keren: "households don't have test components." Two readings, so two rows — and two bands
+     built the two ways this app already uses. The bill is ONE-SIDED at the series’ own mean, which is not a
      new number: `householdsWord` above has used DSR_MEAN as its "heavy" line since this page was built, so the
      bar now draws the line the word was already using and the two cannot disagree. The cushion takes the
-     percentile construction, on a series that runs back to 1947 \u2014 318 quarters with no policy floor anywhere
+     percentile construction, on a series that runs back to 1947 — 318 quarters with no policy floor anywhere
      in them, which is exactly what the 10-year lacks. */
   var SAV_BAND_LO = 4.5, SAV_BAND_HI = 12.2;   // 10th and 90th percentiles of savHistory, 1947 Q1 on
   var dsrMeter = { min:9.0, max:15.9, value:dsrNow,
@@ -587,13 +587,13 @@
   /* ---------------- The tops a reader can stand beside (Version 610, rebuilt in Version 612) ----------------
      Keren, Sep 28, 2026: "Like Mark Twain once said, history doesn't repeat, but it rhymes."
      Every field is an EVENT, not model output: the S&P 500's last closing high before a fall, and that fall's
-     depth, from ONE source's table so the four rows are measured the same way. `days` is not stored \u2014 it is
+     depth, from ONE source's table so the four rows are measured the same way. `days` is not stored — it is
      counted from `peak` and `trough`, because a length written out beside the two dates it comes from is a
      number that can disagree with them.
      WHICH TOPS ARE HERE, and why it is four and not five. These are the tops the source records as bear
      markets since 1990, each named for the cycle it fell inside. The COVID-19 Cycle owns two of them, which is
      true of it: the 2020 crash fell and recovered inside one year, and the inflation bear is what closed the
-     cycle. The Big Tech Cycle has none \u2014 its worst fall was a correction, which is the app's own reading of
+     cycle. The Big Tech Cycle has none — its worst fall was a correction, which is the app's own reading of
      it ("a stumble rather than a bust") and is why it has no block to stand beside.
      `y`, `q` and `m` are the SAME period keys the histories are keyed by, written out once so a lookup never
      has to derive a quarter from a date. These are not cycles and do not belong in marketCycles: a cycle is a

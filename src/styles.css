@@ -475,8 +475,8 @@
     /* the four seasons (the DSM, Version 197): Winter periwinkle, Spring a muted periwinkle, Summer orange, Autumn gold — the dial's
        colours and nowhere else; the Temperature chart's cold shares Winter's hue. Fixed values, light here and dark below. */
     --season-winter:#5b7fd6; --season-spring:#9aa7d4; --season-summer:#d86f32; --season-autumn:#d8a23c;
-    /* ---- THE GAP (Version 385, Keren: "make a rule that the spacing in the app is 16 pixels \u2026 so if one day
-       I'll tell you I want the spacing to be 30, you would just change one number \u2014 do not repeat yourself").
+    /* ---- THE GAP (Version 385, Keren: "make a rule that the spacing in the app is 16 pixels … so if one day
+       I'll tell you I want the spacing to be 30, you would just change one number — do not repeat yourself").
        This is that number. Every rule that sets the distance between one container and the next reads it, and a
        new container takes `margin-top:var(--gap)` rather than a figure of its own. Change it here, once.
        THE BOUNDARY (Version 386) IS RETIRED (Version 501, Keren: "I measured the spacing and it looks like 18
@@ -701,9 +701,9 @@
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
   /* V594, Keren, of the Cycle tab on her phone: "there is a lot of space between the bottom menu and the all
-     indicators button \u2014 make the spacing even, like the spacing between the current cycle and weather/mood."
+     indicators button — make the spacing even, like the spacing between the current cycle and weather/mood."
      It measured 20 against a 10px rhythm, and the extra ten was a ghost. #signs-list still holds four sign
-     pages (Desire, Pulse, Volume, Fear); they are all `hidden`, so it renders at zero height \u2014 but a
+     pages (Desire, Pulse, Volume, Fear); they are all `hidden`, so it renders at zero height — but a
      zero-height flex CHILD is still a child, and the column's gap is spent before it. The V447 cleanup that
      removes emptied containers cannot take this one, correctly: it is not empty, it is holding the pages.
      So the rule is the honest statement of it: a container whose every child is hidden is not content, and
@@ -726,13 +726,13 @@
   }
   .vital-ring-fill.accent{ stroke:var(--accent); }
   /* V583, Keren: "in the energy page, I want the power preview to be a ring. So a full ring is 100% and 26%
-     would be less than third full." The battery drew powerWord.bars \u2014 five bins \u2014 so 26% and 39% lit the
+     would be less than third full." The battery drew powerWord.bars — five bins — so 26% and 39% lit the
      same two bars and the glyph could not move while the number did. A ring is the reading itself: 26% is
      26/100 of the way round, and it is the app's OWN ring, the one the vitals and the rates level already
      wear, so nothing new was drawn to say this.
      Only the stroke changes at mark size. The same 120 box at 15px scales a 9-wide stroke to 1.1px, which is
      a hairline beside the 1.9px the other glyphs are stroked at; 15 lands on 1.9. The fill takes currentColor
-     rather than a state hue, so the mark keeps whatever ink its slot already gave the battery \u2014 a head mark
+     rather than a state hue, so the mark keeps whatever ink its slot already gave the battery — a head mark
      stays quiet grey, and the reading is never carried by colour alone. */
   .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
   .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
@@ -778,15 +778,15 @@
   .cv-stats.cycle-stats .cv-kicker{ margin-bottom:6px; }
   .cv-stats.cycle-stats .cv-stat + .cv-stat{ margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
   /* the Pressure row hands its value slot to that box, so the row's own mono type steps out of the way
-     (Version 313) \u2014 and the box needs no top margin when it IS the first thing under the name */
-  /* Version 314, Keren: "the same design as the Power, Valuations, Temperature and Growth previews \u2014 the icon
-     next to the text in grey, and a chevron on the right of the title \u2014 and the border only on the numbers, not
+     (Version 313) — and the box needs no top margin when it IS the first thing under the name */
+  /* Version 314, Keren: "the same design as the Power, Valuations, Temperature and Growth previews — the icon
+     next to the text in grey, and a chevron on the right of the title — and the border only on the numbers, not
      on the whole block." So the row gives up its own card: two borders around one reading is the fault this app
      has been cutting all session, and the numbers are the thing that wanted fencing off. */
-  /* Version 316: one container. The row wears the peek card's clothes exactly \u2014 same ground, same edge, same
-     padding, same order \u2014 so a reader cannot tell it apart from the four above it except by being wider. */
+  /* Version 316: one container. The row wears the peek card's clothes exactly — same ground, same edge, same
+     padding, same order — so a reader cannot tell it apart from the four above it except by being wider. */
   .sign-row.card-row{ padding:14px 14px 13px; }
-  /* Version 315, Keren: the box is the container now \u2014 full width, on the surface, and it is the only thing on
+  /* Version 315, Keren: the box is the container now — full width, on the surface, and it is the only thing on
      this row carrying a frame. `align-items:stretch` is what lets it be full width: the column was hugging its
      longest line, which read as an accident rather than a decision. */
   .card-row .subject-summary{ padding:0; gap:0; align-items:stretch; flex-direction:column; }
@@ -872,8 +872,8 @@
   /* Growth's HISTORY diverges about zero in the season palette (Version 380, Keren: "it needs to be either
      orange-yellow for contraction or blue-green for expansion"). Note this is a GROWTH semantic, not the wheel's:
      in the season model colour encodes temperature, so contraction spans blue Winter and yellow Autumn. Here the
-     question is only which side of zero a quarter fell, so the two families split on that \u2014 cool for expansion,
-     warm for contraction \u2014 and the caption says so. The cycle chart's own .gdp-col below is untouched. */
+     question is only which side of zero a quarter fell, so the two families split on that — cool for expansion,
+     warm for contraction — and the caption says so. The cycle chart's own .gdp-col below is untouched. */
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
   .growth-col.down{ stroke:var(--season-summer); }
   .gdp-col{ fill:none; stroke-linecap:round; stroke:var(--season-autumn); opacity:0.95; }
@@ -945,8 +945,8 @@
   /* Version 430, Keren: ten pixels out of the space between the chart and this line. Measured first, because the
      gap is two things and only one of them is a margin: 19px of it is empty SVG below the x labels (the chart
      reserves 38px at the foot for them and they do not fill it) and 12px was this margin. The margin is the honest
-     place to take it from \u2014 the other 19px is chart geometry, and trimming THAT would move the labels rather than
-     the gap. 12 \u2192 2 leaves 21px from the last label to the rule. */
+     place to take it from — the other 19px is chart geometry, and trimming THAT would move the labels rather than
+     the gap. 12 → 2 leaves 21px from the last label to the rule. */
   /* Version 439, Keren: the rule above the first figure, on every history rather than on Temperature alone.
      `.page-chart .legend-rows` is the whole set and nothing else — Pressure's Fed-funds box is the only other
      legend-rows in the app and it sits outside a .page-chart, so it keeps its own treatment. */
@@ -1057,11 +1057,11 @@
   .timing .tm-now{ stroke:currentColor; opacity:0.55; }
   .timing .tm-dot{ fill:currentColor; }
   .timing .tm-span{ stroke:currentColor; }
-  /* Version 377, Keren: "the leading tag at the bottom of the page \u2014 I want it in the info pop-up for each
+  /* Version 377, Keren: "the leading tag at the bottom of the page — I want it in the info pop-up for each
      indicator instead of just generally in the page, because it's a minor detail that if people want to expand on
      their understanding, they can go to the info page." Exactly right, and Version 329 had already done the hard
      half: the note's opener CLONES this chip into the modal. So the chip only has to stop showing on the page,
-     and one rule does it \u2014 the clone lives in #detail-modal-body, which is not inside a .metric-sheet.
+     and one rule does it — the clone lives in #detail-modal-body, which is not inside a .metric-sheet.
      Hiding rather than removing is the point: the element has to stay for openFrom() to find and copy, and the
      copy keeps working as a door, because the handler that opens the Indicators page is delegated on document. */
   .metric-sheet .timing-row{ display:none; }
@@ -1142,7 +1142,7 @@
   .subject-icon .critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .subject-icon .norm{ background:var(--mark-wash); color:var(--text-secondary); }
   /* A sign with no mark draws no disc either (Version 357). Industrial output had lost the cog and its slot
-     was left rendering an empty washed circle \u2014 which reads as a missing icon, not as a deliberate absence.
+     was left rendering an empty washed circle — which reads as a missing icon, not as a deliberate absence.
      The 54px slot stays, so every label in the roster still starts at the same x. Version 510 gave Industrial
      output the cog back, so nothing in the app renders empty today; the rule stays because the NEXT sign to
      lose its mark should not have to rediscover it. */
@@ -1277,7 +1277,7 @@
   /* the miniature takes whatever is left and never pushes the reading off the row */
   /* Version 459, Keren, measuring Apple Health beside us: "the infographic is small and below the date, so
      it's not like there's a lot of white space in the container." Measured off her screenshot, on a 350px card:
-     Apple's miniature is 76\u201485px wide and about 50 tall, flush to the card's leading padding \u2014 22\u201424% of the
+     Apple's miniature is 76—85px wide and about 50 tall, flush to the card's leading padding — 22—24% of the
      card's width, never more, and a ring is 48. Ours took whatever was left, which on Valuations was 196px:
      the same thirteen columns spread over two and a half times the room, so the picture read as mostly paper.
      A miniature is a THUMBNAIL of the page behind it, not a chart in its own right; at this width it is dense,
@@ -1291,10 +1291,10 @@
      and stretch to an ellipse. It is square, so it sizes off the slot's HEIGHT like every other ring here. */
   .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
   .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
-  /* Version 504, Keren: "use light purple for the previews \u2014 we don't really understand from the preview
+  /* Version 504, Keren: "use light purple for the previews — we don't really understand from the preview
      what's going on inside, and it looks better for consistency." Twelve miniatures in five forms were each
      carrying their subject's own state colour: a lot of colour spent on a picture too small to read it by.
-     One accent here, and ONLY here \u2014 the same drawings keep their own colours on the pages where they are big
+     One accent here, and ONLY here — the same drawings keep their own colours on the pages where they are big
      enough to be read. The Version 262 rule is untouched: history dims, the newest mark holds full strength;
      all that changes is that the hue is now one hue. Every mark in these five forms is a STROKE with
      `fill:none`, so stroke and opacity are the whole override. */
@@ -1414,7 +1414,7 @@
   /* On a preview the history is shape, not colour — it is greyed so the latest reading is the only lit thing, and the
      full palette waits on the page (Version 262). The selector has to out-weigh .temp-col.s5 and .gdp-col.neg, which
      is why it is scoped to the peek rather than written as a bare .past. */
-  /* zero, on a peek whose series crosses it \u2014 the brand colour, because it is the only thing on the card that
+  /* zero, on a peek whose series crosses it — the brand colour, because it is the only thing on the card that
      has to be read rather than glanced at, and because it is a reference and not a reading (Version 312) */
   .peek-base{ stroke:var(--accent); stroke-width:1.1; fill:none; opacity:0.8; vector-effect:non-scaling-stroke; }
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
@@ -1464,12 +1464,12 @@
   /* V561 pulled the host left so the frame would clear the gutter; V562 makes the FRAME itself run to the
      card's edges instead, so the host sits square again and the grid is symmetric without a nudge. */
   .vh-host{ margin:10px 0 2px; }   /* V497: the readout above it has its own edge now; V559: and its own gap */
-  /* a sign folded into another sign's page (Version 306): a section, not a box \u2014 the page it joins is flat */
-  /* Version 346: a folded sign is a card, not a footnote under a rule \u2014 it is a reading of its own that
+  /* a sign folded into another sign's page (Version 306): a section, not a box — the page it joins is flat */
+  /* Version 346: a folded sign is a card, not a footnote under a rule — it is a reading of its own that
      happens to live on another reading's page, and the page reads as two things because it is two things. */
   .folded-sign{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin-top:var(--gap); padding:16px 16px 20px; }
-  /* the (i) beside the title and the tag held at the right end \u2014 and no wrapping, or the tag drops to a
+  /* the (i) beside the title and the tag held at the right end — and no wrapping, or the tag drops to a
      line of its own the moment the card is narrower than the page it used to sit on */
   .folded-sign .spread-history-head{ margin-bottom:12px; justify-content:flex-start; gap:8px;
     flex-wrap:nowrap; }
@@ -1488,15 +1488,15 @@
   /* Version 500: `.vh-line` is gone — no chart in this app draws a line any more. */
   /* the money-stock columns: one hue, and the side of zero is the reading (Version 306) */
   /* Version 311, Keren: "the chart in the Volume preview is not rounded in the corners like the rest of the
-     charts are." It was not \u2014 .m2-col was written without the two things .temp-col and .gdp-col have carried
+     charts are." It was not — .m2-col was written without the two things .temp-col and .gdp-col have carried
      all along: round caps, and a stroke that does not stretch when the peek's viewBox is squeezed sideways.
      A new mark should be copied from the spec of the one it stands beside, not written from scratch. */
-  /* Version 357, Keren: "you're right about the colour of volume \u2014 choose the one from the palette you feel
+  /* Version 357, Keren: "you're right about the colour of volume — choose the one from the palette you feel
      is most suitable." Near-black was correct under the Version 353 rule (a peek wears its own chart's colour)
      but it read as ink rather than as a reading, and it made the Pulse/Volume pair look like two unrelated
      things. The brand plum is the right answer for one reason above taste: Volume and Pulse are literally two
-     halves of one reading \u2014 nominal output is the money stock times its velocity, which the Volume note says
-     in those words \u2014 and Pulse has worn plum on its trace since Version 297, for exactly the argument that
+     halves of one reading — nominal output is the money stock times its velocity, which the Volume note says
+     in those words — and Pulse has worn plum on its trace since Version 297, for exactly the argument that
      applies here: a QUANTITY is not a verdict, so it must not borrow a severity colour. Teal and red are
      spoken for (up and down); the season hues belong to the dial and nowhere else. That leaves the brand
      colour, which is what this palette gives a reading that carries no verdict. Changing it here changes the
@@ -1650,7 +1650,7 @@
      out of a zero line in one of two directions) drawn the same way. The two colours are the legend's own. */
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
-  /* V597: Pressure reads by SIDE, not by depth \u2014 zero is the definition, so the colour says which side of
+  /* V597: Pressure reads by SIDE, not by depth — zero is the definition, so the colour says which side of
      it a quarter fell on. Red above, because tight credit is the bearish end; green below. */
   .ls-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .ls-col.tight{ stroke:var(--critical); }
@@ -1674,9 +1674,9 @@
      which is how Pulse and Volume lost their 10px — see histControls(). What the second one was really
      saying is "this bar leads its box", and that is now the default; the one box whose bar does NOT lead is
      the federal budget's, and it says so itself, on its own host. */
-  /* \u2026 except where the bar LEADS its box. That 16px was added in Version 361 to separate the bar from the head
+  /* … except where the bar LEADS its box. That 16px was added in Version 361 to separate the bar from the head
      above it; Version 384 removed that head on Pulse, and the margin became 16px of nothing on top of the box's
-     own padding \u2014 33px above the year bar (Keren: "the spacing above the year bar looks too much"). The
+     own padding — 33px above the year bar (Keren: "the spacing above the year bar looks too much"). The
      deficit block still has a title before its bar, so it keeps the gap. */
   /* V519: the deficit's control is on the ground with everyone else's; the lead it carried was for the page
      title that V518 turned into the band's head. */
@@ -1693,8 +1693,8 @@
      More details row, so on those two the chip stays on the page rather than vanishing with the timing it
      states. */
   /* Version 426: the condition moved up a level with the button. It used to read "this foot holds a More details
-     row", which stopped being true when the row went back inside Highlights; the fact it was standing in for \u2014
-     this page HAS a More details row, so the chip beside it is redundant \u2014 is a fact about the sheet, not the foot. */
+     row", which stopped being true when the row went back inside Highlights; the fact it was standing in for —
+     this page HAS a More details row, so the chip beside it is redundant — is a fact about the sheet, not the foot. */
   .metric-sheet:has(.more-row) .timing-row, .sign-detail:has(.more-row) .timing-row{ display:none; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
   .page-chart.pulsebox{ padding:16px 16px 14px; }   /* no trend footer to supply the bottom padding */
@@ -1711,7 +1711,7 @@
   .pt-v{ font-size:13px; color:var(--text-secondary); }
   .pt-head.past .pt-v{ color:var(--text-muted); }
   .pt-note{ font-size:12.5px; color:var(--text-muted); line-height:1.55; margin:12px 0 0; }
-  /* Version 338: the appetite \u00d7 fragility grid. Divs rather than SVG, for the Version 336 reason \u2014 no viewBox
+  /* Version 338: the appetite × fragility grid. Divs rather than SVG, for the Version 336 reason — no viewBox
      to stretch, so the cells and the marker stay square at any width. */
   /* a compact diagram, not a chart: it is capped and centred rather than stretched, because nine empty
      cells at a desktop's full width are mostly empty cells */
@@ -1833,19 +1833,19 @@
      before it was one: the bars came out 34px and the cycle dropdown 32px, because each had reached its height
      through its own padding rather than through a shared number. --ctl-h IS the rule; with border-box, a control
      lands on it whatever padding it happens to carry, so the next control added cannot drift either. */
-  /* Version 428: ONE height was the wrong rule and Keren caught it \u2014 "what about the height of the trend button,
+  /* Version 428: ONE height was the wrong rule and Keren caught it — "what about the height of the trend button,
      I think it's also too small." There are two families here, not one. A SELECTOR (the mode bar, the years ruler,
      the cycle dropdown) is a row you scan and tap to change the view; an ACTION button (Trend, More details) is a
      thing you press. They were already 34 and 40 by accident; they are 34 and 40 on purpose now, and the trend
-     pill \u2014 which V427 shrank to 34 on the selector token \u2014 belongs to the second family. */
+     pill — which V427 shrank to 34 on the selector token — belongs to the second family. */
   /* V580, Keren: "the date picker bar is very small to my fingers on an iPhone and I have very small fingers.
      So we need to make this a bit larger so I can click on it comfortably and maybe we can use the proportions
      of the trend button." Measured at 390px before changing anything: the bar was 34 but the thing a finger
-     actually hits is the SEGMENT, and that was 26 \u00d7 60 \u2014 two pixels past WCAG 2.5.8's 24px floor and
+     actually hits is the SEGMENT, and that was 26 × 60 — two pixels past WCAG 2.5.8's 24px floor and
      nowhere near Apple's 44. V428 split the two families at 34 and 40 on a real argument, a selector being a row
      you scan against a button you press; she has now aimed the selector at the button's number, so the split is
-     retired and there is one height again. --ctl-h feeds every segmented control in the app \u2014 the history
-     bars, the indicators tabs, the spread toggle, the series bar \u2014 so all of them grow together, which is the
+     retired and there is one height again. --ctl-h feeds every segmented control in the app — the history
+     bars, the indicators tabs, the spread toggle, the series bar — so all of them grow together, which is the
      point: a 26px target was not a history problem. */
   :root{ --ctl-h:40px; --btn-h:40px; }
   /* V579, Keren: "the background should be white, and choose whatever is appropriate for the selector colour,
@@ -1865,7 +1865,7 @@
      one when the series is too short to fit. */
   /* The trend is one idea in two places: a line drawn across the chart, and a row naming it underneath. They wear
      the same purple so the eye joins them without a label on the line (Keren, Sep 20, 2026, with the Apple Health
-     reference: "just put a trend line, a purple trend line \u2026 light purple would be a good fit for us in terms of
+     reference: "just put a trend line, a purple trend line … light purple would be a good fit for us in terms of
      background colour"). Purple is already the brand's hue for the computed and the actionable, so this adds no
      colour to the system. Version 274. */
   .fit-line{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
@@ -1948,8 +1948,8 @@
      last gives up its bottom margin, so the padding is the whole gap and cannot be added to. */
   .page-chart > *:last-child, .spread-history > *:last-child{ margin-bottom:0; }
   /* ---- One gap between an inner page's containers (Version 381, Keren: "the spacing between containers in each
-     inner page needs to be equal"). It was four different numbers \u2014 16 between the two charts, 20 to the markers
-     table, 24 to Highlights, 22 to the foot \u2014 because each block had been given its own margin as it was built.
+     inner page needs to be equal"). It was four different numbers — 16 between the two charts, 20 to the markers
+     table, 24 to Highlights, 22 to the foot — because each block had been given its own margin as it was built.
      One token now sets all four, so the next container added inherits the rhythm instead of inventing a fifth. */
   .metric-sheet{ --page-gap:var(--gap); }   /* 20px in V381, 16 in V382, derived from the one number in V385 */
   .metric-sheet .page-chart{ margin-top:var(--page-gap); }
@@ -1958,10 +1958,10 @@
      how that page ended up with 40px where every other had 20. A block with nothing in it takes no room. */
   .metric-sheet > .sign-detail:empty, .metric-sheet > .subject:empty{ display:none; }
   .metric-sheet .page-foot{ margin-top:var(--page-gap); }
-  /* ...and the first container sits UP under the top bar (Keren: "make the first container a little bit higher \u2014
+  /* ...and the first container sits UP under the top bar (Keren: "make the first container a little bit higher —
      the space between the top menu and the first component 15, 20 pixels"). Targeted by the four static wrapper
      ids rather than a positional selector, because the leading children are zero-height timing and head divs and
-     because the cards themselves are re-rendered on every timeline stop \u2014 a class set in JS would not survive. */
+     because the cards themselves are re-rendered on every timeline stop — a class set in JS would not survive. */
   /* Version 443: the four-id list is gone. It named the four pages whose history led the page, which was
      always a stand-in for "the container holding the history" — something CSS can now say directly, and which
      picks up the Federal budget too (it was the one page still carrying a 16px lead nobody had noticed). */
@@ -1972,8 +1972,8 @@
      (0,1,0) and flattened the gap between the mode bar and the years ruler on every page whose history sits
      in a .page-chart. Pressure's does not, which is why Pressure was the only one that looked right. The
      wrapper zeroes its own children now, so there is nothing left for this to do. */
-  /* Version 418, Keren: "add like five pixel spacing between the top bar and bottom bar." They were flush \u2014 the
-     rule above zeroes every margin inside a .page-chart \u2014 so the mode bar and its submenu read as one control with
+  /* Version 418, Keren: "add like five pixel spacing between the top bar and bottom bar." They were flush — the
+     rule above zeroes every margin inside a .page-chart — so the mode bar and its submenu read as one control with
      a seam rather than as a thing and the thing it governs. (0,3,0) to out-weigh that rule, which is (0,2,0). */
   /* Version 440: the history chrome's own root, emitted by histControls(). Its children are the mode bar and
      whichever submenu the mode calls for — a years ruler or the cycle dropdown — and the gap between them is
@@ -1988,13 +1988,13 @@
      The mode bar is sized to its two words and the picker takes what is left, because the picker is the one
      whose content varies — "Current cycle 2022–today" against "Cycles | Years", which never changes. */
   /* Version 518, Keren, on a dashboard she sent: "in the main chart you have an icon and a background in
-     grey, which I like \u2014 you have the title, then the figures, and on the right side three horizontal dots that
+     grey, which I like — you have the title, then the figures, and on the right side three horizontal dots that
      can give you information and other things in the future we can have in that little pop-up." The card's head,
      ONE component for all twelve histories: a grey rounded badge carrying the page's own mark, a title naming
-     WHAT THE CHART MEASURES \u2014 never the page's name again, which is the Version 298 rule Pressure has followed
-     alone since then \u2014 and a single \u22ef on the right.
-     She chose the \u22ef over a second (i): "put the (i) inside the \u22ef menu." So the page's note is the first row in
-     that menu and the reading row below gives its (i) up \u2014 ONE affordance per subject, which is the Version 477
+     WHAT THE CHART MEASURES — never the page's name again, which is the Version 298 rule Pressure has followed
+     alone since then — and a single ⋯ on the right.
+     She chose the ⋯ over a second (i): "put the (i) inside the ⋯ menu." So the page's note is the first row in
+     that menu and the reading row below gives its (i) up — ONE affordance per subject, which is the Version 477
      rule the old container heads broke, and the reason `panelRow` now takes `head:` rather than the note being
      written twice. The menu itself wears .cycsel-menu and .cycsel-opt unchanged: the app already has a menu and
      a head does not get a second one (the Version 367 rule). */
@@ -2106,11 +2106,11 @@
      included, and the contents centre inside it rather than setting it. */
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
-  /* V582, Keren: "I want it to be round like the trend button \u2014 both the current cycle and the cycle's years
+  /* V582, Keren: "I want it to be round like the trend button — both the current cycle and the cycle's years
      picker." The control row and the trend pill are the only two chromes on a history page, and they were a
      rounded square above a capsule. One shape now. Scoped to .hist-bar like every other decision about this row
      (V519), so the row is one chrome: the mode bar, the years ruler, the cycle picker and Horizon's spread
-     toggle all take it, and the segment inside takes it too \u2014 a chip in a capsule is a capsule. The dropdown
+     toggle all take it, and the segment inside takes it too — a chip in a capsule is a capsule. The dropdown
      MENU keeps --radius: it is a sheet of options, not a control, and a pill-shaped menu reads as a mistake. */
   .hist-bar .rangebar,
   .hist-bar .spread-toggle,
@@ -2118,14 +2118,14 @@
   .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
-  /* V580: the bar is 40 now, so a segment's BOX is 32 \u2014 40 less the 1px border and the 3px inset that makes
+  /* V580: the bar is 40 now, so a segment's BOX is 32 — 40 less the 1px border and the 3px inset that makes
      the chosen segment read as a chip inside a track. Those four pixels are recovered as hit surface rather than
      spent on the page's height: the segment answers taps across the inset and the border, so its target is
      exactly the bar's 40, which is exactly the trend button's 40. Not one visible pixel moves.
      Sideways it stays at zero. Growing it would cross the 3px gap into the neighbouring segment and turn a
-     mis-tap into a wrong reading \u2014 and a segmented control is already wide; height was the whole complaint.
-     It reaches 40 on every bar but one. `overflow` clips at the PADDING box, so the series bar \u2014 the only
-     .rangebar that scrolls \u2014 cannot hand a segment the pixel under its border, and lands on 38. That is a
+     mis-tap into a wrong reading — and a segmented control is already wide; height was the whole complaint.
+     It reaches 40 on every bar but one. `overflow` clips at the PADDING box, so the series bar — the only
+     .rangebar that scrolls — cannot hand a segment the pixel under its border, and lands on 38. That is a
      ceiling, not a choice: no scrolling bar can do better, and no CSS gives one axis scroll and the other reach.
      An earlier pass overhung two pixels PAST the bar to buy 44 and was clipped to the same 38 there, so the
      difference is the scroll box either way. 38 against 40 is two pixels of an invisible surface on a control
@@ -2144,11 +2144,11 @@
      in the control. V520 puts the control back on a grey track, so the highlight is what tells the segments
      apart again — `.range-seg.on`'s own rule, which is why there is nothing to write here. */
   /* Version 419: the cycle picker is a dropdown after all (Keren: "I think I prefer a drop down"). Version 418
-     argued for chips on the grounds that a dropdown hides its own state \u2014 and the chips proved the counter-argument
+     argued for chips on the grounds that a dropdown hides its own state — and the chips proved the counter-argument
      by needing two wrapped rows on a phone to say five words. What the dropdown buys is room for the YEARS beside
-     each name, which is the thing that makes the list legible: "COVID-19  2018\u20132021" is a cycle a reader can place,
+     each name, which is the thing that makes the list legible: "COVID-19  2018–2021" is a cycle a reader can place,
      where "COVID-19" alone is a name they have to remember the dates for. The closed button carries the state the
-     chips showed \u2014 "All cycles", a single cycle's name, or "3 of 5 cycles" \u2014 so the trade is smaller than it looked.
+     chips showed — "All cycles", a single cycle's name, or "3 of 5 cycles" — so the trade is smaller than it looked.
      It stays OPEN while you pick, because it is a multi-select and closing after each tick would make choosing
      three cycles three round trips. */
   .cycsel{ position:relative; }   /* V440: its gap belongs to .hist-controls, which is the thing that knows */
@@ -2180,7 +2180,7 @@
      the box's padding ended at 4. The box pads 14 on all four sides now and the pill closes at 0 — in ITS own
      rule, for every container — so the gap under the pill is the padding and nothing else, which is the same
      number as the gap above the head. The override this line used to carry has gone with the reason for it. */
-  /* what the chart measures, said under it rather than over it (Keren: "the cyclically-adjusted P/E ratio \u2026 needs
+  /* what the chart measures, said under it rather than over it (Keren: "the cyclically-adjusted P/E ratio … needs
      to be somewhere, but not above the chart") */
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
     text-align:right; margin:2px 2px 0; }
@@ -2211,7 +2211,7 @@
   .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
   .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
   /* V592: the policy rate's columns. ONE ink, deliberately: this chart has no band, because the level that
-     divides restrictive from accommodative is contested, unpublished and moves \u2014 colouring by it would be
+     divides restrictive from accommodative is contested, unpublished and moves — colouring by it would be
      inventing a band. The height is the reading; the trend pill says which way it is going. */
   /* V608: Hormones reads in blue, six steps light to dark — the sequential ramp the sea change needs. Mixed
      toward the surface exactly as Volume's red ramp is (V389), so both inherit dark mode for free and neither
@@ -2239,7 +2239,7 @@
   #power-chart .bt-bar.warning{ stroke:var(--batt-3); }
   #power-chart .bt-bar.good{ stroke:var(--batt-4); }
   .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
-  /* Households' miniature is the saving rate alone \u2014 the half of the page's picture that is moving \u2014 and it
+  /* Households' miniature is the saving rate alone — the half of the page's picture that is moving — and it
      wears plain ink rather than a state colour, for the reason the chart's second line does. */
   .hh-col{ stroke:var(--text-muted); stroke-linecap:round; fill:none; }
   .hh-col.now{ stroke:var(--accent); }
@@ -2283,7 +2283,7 @@
   .highlights{ margin-top:22px; padding-top:var(--pad); border-top:1px solid var(--border); }
   /* On an inner page, whatever sits above Highlights is a bordered card, so its rule was the second of two lines
      22px apart. The heading is in the display face and separates perfectly well on its own (Version 282). */
-  /* Version 379, Keren: "I really like the beige background you made in policy rate \u2014 use it for the insights
+  /* Version 379, Keren: "I really like the beige background you made in policy rate — use it for the insights
      across the inner pages." It is `.spread-tile`'s ground, --surface-2, and the reason it works there is the
      reason it works here: a block that is COMMENTARY rather than measurement should sit on its own ground, so a
      reader can see at a glance where the figures stop and the sentences begin. Scoped to .metric-sheet, so the
@@ -2294,7 +2294,7 @@
   .metric-sheet .highlights .hi-card:last-of-type{ border-bottom:0; }
   /* Version 471: a Highlights card whose first child is a fact row rather than a heading. `.aux-stat` carries a
      rule above it to separate it from what it follows, and at the top of a card there is nothing to separate it
-     from \u2014 so the card would open on a hairline sitting a few pixels under its own edge. */
+     from — so the card would open on a hairline sitting a few pixels under its own edge. */
   .metric-sheet .highlights > .aux-stat:first-child{ border-top:0; margin-top:0; padding-top:2px; }
   /* ===== V604, Keren: "if you are incorporating data and lines, make sure you have spacing and dividers that
      show consistency in the UI." A rule, not a patch on one page.
@@ -2319,7 +2319,7 @@
      last sibling of the same TAG, not of the same class: with .hi-cycles a <div> too, no .hi-card was ever the last
      of its type, so the final card kept its bottom border and .hi-cycles drew a second one 16px below it. Version
      282 — and the lesson generalises: `:last-of-type` is almost never what a class-based rule means. */
-  /* Version 429, Keren: "in highlights, explain the temperature is prices rising according to the CPI \u2014 one
+  /* Version 429, Keren: "in highlights, explain the temperature is prices rising according to the CPI — one
      sentence about prices rising or falling." Every other line under Highlights is arithmetic on the series above
      it (the Version 255 rule, which is what stops one going stale). This one is a definition, so it is deliberately
      NOT a .hi-card with a state tag: it carries no figure, it cannot be wrong, and a tag would promise a reading
@@ -2338,7 +2338,7 @@
   .hi-cycles{ margin-top:var(--gap); padding-top:14px; border-top:1px solid var(--border); }
   /* The cycle strip is now a page-level component (Version 363), so inside a .page-chart it is the chart, not a
      footnote under one: it drops the separator rule the Highlights version needed and takes the chart's own top gap.
-     .page-chart .hi-cycles is (0,2,0) and beats the bare .hi-cycles above it \u2014 the Version 361 lesson, applied on
+     .page-chart .hi-cycles is (0,2,0) and beats the bare .hi-cycles above it — the Version 361 lesson, applied on
      purpose this time rather than discovered two versions later. */
   .page-chart .hi-cycles{ margin-top:12px; padding-top:0; border-top:0; }
   .page-chart.cyclebox{ padding-bottom:4px; }
@@ -2352,7 +2352,7 @@
      floating on the page. Version 290. */
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     /* Version 387, Keren: "add a dark purple stroke to the more details button in each inner page." It takes
-       --accent-ink, which IS that deep plum (#5e2a6b) in light and the accent's own ink in dark (#e3c6ea) \u2014 so
+       --accent-ink, which IS that deep plum (#5e2a6b) in light and the accent's own ink in dark (#e3c6ea) — so
        the stroke is designed in both themes rather than inverted, and a literal dark purple, which would vanish
        on the dark surface, is exactly what it must not be. 1px, the app's border weight everywhere else.
        The 18px above it joins --gap at the same time: it is a gap between containers like any other. */
@@ -2368,7 +2368,7 @@
      no longer :last-child and draws its own bottom border 16px from this one's top. Whoever follows a bordered
      thing drops its own rule (Version 288). */
   .hi-card + .more-row, .hi-cycles + .more-row, .aux-stat + .more-row{ margin-top:12px; }   /* V428: 18 read as too much */
-  /* Version 427, Keren: "a lot of spacing above and not below \u2014 it needs to be even spacing." Measured: 18px above
+  /* Version 427, Keren: "a lot of spacing above and not below — it needs to be even spacing." Measured: 18px above
      the button and 5px below it, because the gap above is the button's own margin and the gap below was whatever
      the container's bottom padding happened to be. 13 plus the box own 5px below it = the 18 above it. */
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }   /* + the box's own 5px = the 12 above it */
@@ -2377,7 +2377,7 @@
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
   /* Sign pages take the same rhythm (Version 385). Pulse was stacking THREE 16s between the top bar and its
-     first card \u2014 the sheet's own offset, .sign-detail's margin, and the card's \u2014 for 48px. Whatever leads a
+     first card — the sheet's own offset, .sign-detail's margin, and the card's — for 48px. Whatever leads a
      sign's body now starts flush, so the gap is the one the sheet already provides. */
   .sign-detail > .page-chart, .sign-detail > .rbar-labels,
   .sign-detail > .highlights, .sign-detail > .aux-stat{ margin-top:var(--gap); }
@@ -2432,7 +2432,7 @@
      say: what the reading actually measures, and the verdict. In a modal the head is still the only title there
      is, so this is scoped to the page. */
   .metric-sheet .card-head .body-term{ display:none; }
-  /* \u2014 unless the card is a GUEST on someone else's page (Version 467). That rule hides the body term because the
+  /* — unless the card is a GUEST on someone else's page (Version 467). That rule hides the body term because the
      top bar already names the page, which is true of a page carrying its own subject and false of the VIX sitting
      inside Fear & Greed: there the hidden word was the only one that said which reading this is, and the card
      read "THE FEAR INDEX" directly under a gauge called Fear & Greed. */
@@ -2514,7 +2514,7 @@
   .cyc-title{ display:inline-flex; align-items:center; gap:4px; font-family:"Public Sans",sans-serif;
     font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .cyc-title .peek-mark{ color:var(--text-secondary); }
-  /* Version 354: the container's last row. Not the .more-row pill \u2014 that is a thing you press at the END of a
+  /* Version 354: the container's last row. Not the .more-row pill — that is a thing you press at the END of a
      page, on the page's own ground; this is a row of a bordered card and has to read as one, so it takes the
      card's own padding and the hairline every other row has above it. The chevron turns a quarter to point down
      when the rest is open, because this expands in place and a right-pointing chevron would promise a page. */
@@ -2527,8 +2527,8 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
   /* ---------- Rhymes (Version 610): today beside one past top ----------
-     The card's own furniture only. Everything with a figure in it \u2014 the surface, the head, the hairline between
-     rows \u2014 is `.cyc-card`'s, because this card and the cycle history below it are two containers on one tab and
+     The card's own furniture only. Everything with a figure in it — the surface, the head, the hairline between
+     rows — is `.cyc-card`'s, because this card and the cycle history below it are two containers on one tab and
      Version 323 settled that they introduce themselves in one voice.
      ONE HAIRLINE PER SEAM (Version 604): every row carries one above it, and the `.rhy-cols + .rhy-row` rule is
      what stops the group head and its first row drawing two. The last row of the last group takes the card's
@@ -2563,14 +2563,14 @@
   .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
   /* Version 612: the whole of Echoes, reduced to one mark on a row that carries both figures. It sits beside
      the name rather than in a column of its own, because a fourth column at phone width costs more than the
-     mark is worth, and it wears the accent \u2014 the app's colour for the computed \u2014 at the size of a full stop. */
+     mark is worth, and it wears the accent — the app's colour for the computed — at the size of a full stop. */
   .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
     vertical-align:1.5px; }
   .rhy-row.alike .rhy-name{ color:var(--text-primary); }
   /* ---------- A closed cycle's categories (Version 613) ----------
      Almost nothing, and that is the point: the rows ARE `.cat-item`, wearing the same head, the same figure and
      the same word as the Cycle tab's, so the two views cannot drift apart in type or spacing. `.flat` only
-     takes away what a door has \u2014 the pointer, the hover border, the chevron \u2014 because a cycle that ended has
+     takes away what a door has — the pointer, the hover border, the chevron — because a cycle that ended has
      nothing to open. */
   #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
   .cc-grp .cat-list{ margin-top:var(--gap); }
@@ -2584,7 +2584,7 @@
   .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
     font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
   /* The cycle's shape, in the slot a member's small picture has always used. Two rules only: the spark fills
-     the slot rather than keeping its own 108px, and it wears the accent \u2014 which is what `.ci-mini` already
+     the slot rather than keeping its own 108px, and it wears the accent — which is what `.ci-mini` already
      does to every other mini it holds, because a row inside a category is a reading, not a verdict. */
   .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
   .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
@@ -2633,8 +2633,8 @@
   /* each economy sets its paint and, for words, its ink — Autumn's gold is too light to read as a label (the DSM's rule:
      never write in a paint token), so the European Union's code is written in the amber ink (Version 217) */
   /* (the per-country colours are gone with the comparison chart — the line is red and green now, Version 226) */
-  /* V613: the country picker went into the Growth history's \u22ef menu, so its trigger, panel, caret and
-     rows went with it \u2014 fourteen rules replaced by a group the shared menu component already knows how to
+  /* V613: the country picker went into the Growth history's ⋯ menu, so its trigger, panel, caret and
+     rows went with it — fourteen rules replaced by a group the shared menu component already knows how to
      draw. Nothing styles a choice-of-series control on this page any more, which is the point of a component. */
   .gdp-tooltip .row .sw.peer{ background:var(--peer); }
   /* Version 378: this one follows the pointer over the whole page, so it is fixed and translated onto its own
@@ -2644,7 +2644,7 @@
      accident as the mark selector. */
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
   /* The hovered column keeps its colour and the rest step back, which is the one emphasis that works in both
-     themes and on every hue \u2014 a brightness filter would lighten in one theme and darken in the other, and a
+     themes and on every hue — a brightness filter would lighten in one theme and darken in the other, and a
      fixed highlight colour would fight the heat ramp. The hairline is for precision at Max, where a column is
      1.4px wide. Version 383. */
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
@@ -2784,7 +2784,7 @@
      page remembers to set: :has(.hist-controls) means "the box holding the history chrome", so Pressure's
      .spread-history joins without being told, and a page cannot opt out by forgetting. */
   /* Version 470 widens the test from "holds the history chrome" to "holds a window control of any kind". Pressure's
-     band drops the mode bar on its Spread segment, because that chart draws its whole record by design \u2014 and with
+     band drops the mode bar on its Spread segment, because that chart draws its whole record by design — and with
      only `:has(.hist-controls)` the band changed its own chrome when you moved the control, card on one segment and
      full-bleed on the next. A band is a band because it carries a control, not because of which one. */
   /* Version 519, Keren, on the same dashboard: "the top menu bar is greyish and it's OUTSIDE the container of
@@ -2947,7 +2947,7 @@
   .tag.norm{ background:var(--track); color:var(--text-secondary); } /* a neutral verdict, e.g. a flat growth trend */
   /* A category row strips the pill off whatever it was built from, so a member made from a sign row and one made
      from a peek card are the same object (the Version 449 rule). It lives HERE, after the state rules, because
-     `.cat-item .tag` and `.tag.good` are the same specificity \u2014 so the later one wins, and while it sat up with the
+     `.cat-item .tag` and `.tag.good` are the same specificity — so the later one wins, and while it sat up with the
      rest of the row it lost that tie in silence: three of the ten members kept a tinted pill and seven did not.
      The same failure as Version 441's overhang, found the same way, by looking rather than by reading the rule. */
   .cat-item .tag{ background:none; border:0; padding:0; border-radius:0; color:inherit;

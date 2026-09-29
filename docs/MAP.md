@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **14,867 lines**, about 1233 KB, roughly **350 thousand tokens**. No session can read it
+The source is **14,867 lines**, about 1231 KB, roughly **350 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `be76db7` on 2026-09-29.
+Generated from commit `7b98c31` on 2026-09-29.
 
 ## The five regions
 
@@ -305,7 +305,7 @@ _line 6,837_ · 11 declarations
 | 6,939 | `unempState` | `function unempState(` |
 | 6,945 | `unempHistoryChart` | `function unempHistoryChart(` |
 
-### V592: Hormones \u2014 the policy rate's history
+### V592: Hormones — the policy rate's history
 
 _line 7,007_ · 1 declaration
 
@@ -916,7 +916,7 @@ _line 14,455_ · 4 declarations
 | 14,519 | `readFig` | `function readFig(` |
 | 14,527 | `prettyK` | `function prettyK(` |
 
-### RENDER: Rhymes \u2014 today beside a past top (Version 610, rebuilt in Version 612)
+### RENDER: Rhymes — today beside a past top (Version 610, rebuilt in Version 612)
 
 _line 14,534_ · 1 declaration
 
@@ -1043,7 +1043,7 @@ each history page's badge, title and ⋯ menu — the card head component reads 
 | 325 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
 | 423 | yearly calendar — one card per year, grouped into five eras |
 | 430 | season strip |
-| 483 | THE GAP (Version 385, Keren: "make a rule that the spacing in the app is 16 pixels \u2026 so if one day |
+| 483 | THE GAP (Version 385, Keren: "make a rule that the spacing in the app is 16 pixels … so if one day |
 | 652 | tab bar (app-style segmented navigation) |
 | 719 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
 | 758 | temperature chart (Cycle tab). Natural Cycles' temperature view is the reference: one column per |

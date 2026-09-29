@@ -50,12 +50,12 @@
             '</div>' +
       '</div>';
     }).join('');
-    // Version 354: two cycles show, the rest wait. PREVIEW_CYCLES is the only number here \u2014 the rows are
+    // Version 354: two cycles show, the rest wait. PREVIEW_CYCLES is the only number here — the rows are
     // already built, so this hides the tail rather than rendering a different list, which means an expanded
     // container and the old five-row one are the same DOM and nothing can drift between them.
     /* Version 505: every cycle shows. Two was right while the season reading sat under this list and the tab
        had to hold both; with that gone the tab IS the cycle history, and a history that hides three of its five
-       entries behind a button is a preview of itself \u2014 the fault Version 354's own comment named. */
+       entries behind a button is a preview of itself — the fault Version 354's own comment named. */
     var PREVIEW_CYCLES = 99;
     (function(){
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -116,13 +116,13 @@
   renderCycleView(nowModel);
 
   /* ---------------- RENDER: a closed cycle's four categories (Version 613) ----------------
-     Keren: "I want the view to be exactly like the current cycle page \u2014 four categories of Weather, Mood,
+     Keren: "I want the view to be exactly like the current cycle page — four categories of Weather, Mood,
      Circulation, Energy. But instead of going to another inner page, just show the data very briefly."
      Same four categories, same row anatomy, one difference that is the whole point: on the Cycle tab a
      category is a DOOR, because behind it is a live page that keeps moving. A cycle that ended has no live
      page. So the row shows what the reading FINISHED at and how far it travelled getting there, and there is
      nothing to open.
-     WHERE IT ENDED AND ITS RANGE \u2014 her choice over the peak reading and over first-against-last. It answers
+     WHERE IT ENDED AND ITS RANGE — her choice over the peak reading and over first-against-last. It answers
      both questions a closed cycle raises: how did this end, and how far did this reading move. The extreme is
      usually the story and first-against-last would hide it; the peak reading would leave the Big Tech Cycle
      empty, since it never had a bear market to have a peak at.
@@ -147,13 +147,13 @@
         var vs = span.map(function(d){ return d.v; });
         var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
         /* Version 615: the SHAPE, in the row. Taking the two charts off this view (see renderCycleView) left
-           it able to say where a reading finished and how far it ran, and not how it got there \u2014 which is the
+           it able to say where a reading finished and how far it ran, and not how it got there — which is the
            part Keren is still turning over ("I'm still thinking how can we see the past data"). A sparkline
            answers it inside the row she already has, with no page to open and no component to invent:
            `sparkHtml` has drawn exactly this on peek cards since Version 253, and `.ci-mini` is the slot a
            member's small picture has always gone in.
            It is drawn in the accent rather than in a state colour, because `.ci-mini` already neutralises
-           every other mini it holds \u2014 a closed cycle is not being graded, it is being read. */
+           every other mini it holds — a closed cycle is not being graded, it is being read. */
         var art = span.length >= 3
           ? '<div class="ci-mini">' + sparkHtml(vs, "") + '</div>' : "";
         // A cycle in which a reading never moved has no range to state, and "5.2 to 5.2" is furniture.
@@ -171,12 +171,12 @@
   }
 
   /* ---------------- THE ROSTER AS SERIES (Version 613) ----------------
-     The thirteen readings, in the app\u2019s own four categories, each as one {k,v} list keyed by the period it
+     The thirteen readings, in the app’s own four categories, each as one {k,v} list keyed by the period it
      was measured in. Version 612 built this inside Rhymes; Version 613 needs the same thirteen rows for a past
-     cycle\u2019s categories, and two copies of a list like this is how two components quietly start disagreeing
-     about what the roster is. So it is lifted whole \u2014 Version 314, move rather than rebuild \u2014 and memoised,
+     cycle’s categories, and two copies of a list like this is how two components quietly start disagreeing
+     about what the roster is. So it is lifted whole — Version 314, move rather than rebuild — and memoised,
      because turning eight hundred months of federal funds into places in a record is work worth doing once.
-     Built LAZILY on first call rather than at load, because capeHistory\u2019s last point is carried to today by
+     Built LAZILY on first call rather than at load, because capeHistory’s last point is carried to today by
      renderPagesAndNav and a roster built before that would hold January where every page shows September. */
   var __roster = null;
   function readingRoster(){
@@ -229,8 +229,8 @@
   }
   /* A reading printed the way its own page prints it. Lives beside the roster because both components print
      from it, and a figure formatted two ways is a figure that can disagree with itself.
-     The sign is decided AFTER rounding, which is the whole of this function\u2019s care. December 2008 CPI is a
-     hair under nought, and `(-0.02).toFixed(1)` is "-0.0" \u2014 a minus sign in front of a zero, which says the
+     The sign is decided AFTER rounding, which is the whole of this function’s care. December 2008 CPI is a
+     hair under nought, and `(-0.02).toFixed(1)` is "-0.0" — a minus sign in front of a zero, which says the
      reading was negative while the digits say it was not. A value that rounds to nought prints without a sign,
      on a signed row and an unsigned one alike, and a negative one wears the real minus every other figure in
      this app wears. */
@@ -239,8 +239,8 @@
     var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
     return sign + a + (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
   }
-  /* A period key said the way the rest of the app says one. The keys are exact by design \u2014 "2008-12",
-     "2008 Q4" \u2014 and Rhymes prints them raw, in mono, because there they are provenance under a figure. Here
+  /* A period key said the way the rest of the app says one. The keys are exact by design — "2008-12",
+     "2008 Q4" — and Rhymes prints them raw, in mono, because there they are provenance under a figure. Here
      the slot is `.ci-when`, which on the Cycle tab has always read "Aug 2026", so the key is spelled out. */
   function prettyK(r, k){
     if (r.pre) return r.pre + k;
@@ -249,7 +249,7 @@
     return k;
   }
 
-  /* ---------------- RENDER: Rhymes \u2014 today beside a past top (Version 610, rebuilt in Version 612) ----------
+  /* ---------------- RENDER: Rhymes — today beside a past top (Version 610, rebuilt in Version 612) ----------
      Keren, Sep 28, 2026: "history doesn't repeat, but it rhymes. I want the app to help me see how history
      repeats itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and
      now we are in with 41.3. I think this is the good comparison."
@@ -260,16 +260,16 @@
      that HAS both numbers on it, so "alike" is always something the reader can verify by eye. One card.
 
      THE PAIR RULE. Both columns come out of the SAME series, so "at the peak" and "now" are one gauge read
-     twice (Version 294), and each figure carries the period it was taken in beneath it \u2014 which is how the
+     twice (Version 294), and each figure carries the period it was taken in beneath it — which is how the
      reader can see the CAPE column reads January 2000 and not the March the market turned in.
      A series that does not reach the top leaves an em dash and says from when it IS measured. Nothing is
      interpolated: the record either covers the date or it does not.
 
-     WHAT THE MARK MEANS. A reading is turned into its place in its OWN record \u2014 today's CAPE sits above 96% of
-     that record \u2014 and the row is marked when the peak's place and today's are within five points of each
+     WHAT THE MARK MEANS. A reading is turned into its place in its OWN record — today's CAPE sits above 96% of
+     that record — and the row is marked when the peak's place and today's are within five points of each
      other. A place carries no units, so one rule works on all thirteen rows: five per cent of the federal
      funds rate and five per cent of a spread that lives near nought are not comparable quantities. A rank also
-     survives an outlier, where a share of the range does not \u2014 1981's 19% would otherwise set the width of the
+     survives an outlier, where a share of the range does not — 1981's 19% would otherwise set the width of the
      federal funds band for ever.
      There is no count of marks and no score. Thirteen rows agreeing is not a prediction, and a number claiming
      it was would be invented.

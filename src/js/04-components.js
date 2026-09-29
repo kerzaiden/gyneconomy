@@ -1,13 +1,13 @@
   /* ---------------- The timeline component (Version 363, named by Keren in 366) ----------------
      Keren, Sep 23 2026: "I want us to establish a component system so that when I change one component, it changes
-     across the board \u2026 we should have a bar similar to what we had of five year 10 year 25 50 max."
+     across the board … we should have a bar similar to what we had of five year 10 year 25 50 max."
 
      Before this version five pages each declared their own list of range segments, in four different vocabularies.
      Now there is ONE ordered list of stops, and a page declares only which of them it offers; the order on screen is
      always the order below, so a reader who learns the control on one page has learned it on all of them.
 
      The Version 263 rule still governs what is emitted: a page shows only the stops its data can answer. That is now
-     computed rather than hand-maintained \u2014 a window is offered only if the series is at least that deep, so
+     computed rather than hand-maintained — a window is offered only if the series is at least that deep, so
      a page gains and loses stops as its own data changes — Economic power picked 50Y up by itself in Version 393,
      when its series was opened back to 1948, and nothing had to be edited for it to appear.
 
@@ -84,7 +84,7 @@
   /* ---- What a windowed record chart needs, once (Version 367) ----
      Version 358 settled the rule on the deficit chart: the scale is computed from the WINDOW and always contains
      the references the picture means, so a zoom changes how much you can read and never what it means. Volume and
-     Pulse could not take a timeline until that rule was available to them \u2014 both had a y-scale, gridlines and
+     Pulse could not take a timeline until that rule was available to them — both had a y-scale, gridlines and
      axis years hard-coded to the whole 67-year series, so any window would have collapsed the line into a band at
      the bottom of an axis built for a different question. These two helpers are that rule, extracted. */
   function windowScale(vals, must){
@@ -111,10 +111,10 @@
     for (; y <= toYear; y += step) out.push(y);
     return out.length ? out : [toYear];
   }
-  // A monthly series' window start index \u2014 the same helper, in months (Version 373).
+  // A monthly series' window start index — the same helper, in months (Version 373).
   // The reading under the pointer, for any history chart (Version 378 for Temperature; Version 380 generalised it
   // and fixed the bug that made it invisible). THE BUG: .gdp-tooltip is opacity:0 by default and reveals on a set
-  // opacity, so `hidden = false` alone produced an element with size and no paint \u2014 which is exactly what the
+  // opacity, so `hidden = false` alone produced an element with size and no paint — which is exactly what the
   // first probe measured, and why it passed while Keren could see nothing. Assert on what a reader can SEE.
   // pointermove rather than mousemove, so a trackpad, a mouse and a touch screen all answer.
   // Bound once per host and guarded: the markup is replaced on every stop, and a listener added per draw stacks.
@@ -479,7 +479,7 @@
       i = Math.max(0, Math.min(g.n - 1, i));
       var d = g.vals[i]; if (!d) return;
       // Keren, Version 383: "when I hover over a certain bar I want the colour to be slightly changed, so I can
-      // understand which tooltip connects to which bar \u2014 it's not clear enough where I'm sitting." A readout
+      // understand which tooltip connects to which bar — it's not clear enough where I'm sitting." A readout
       // that names a month without marking it asks the reader to find the month themselves. The plot now dims
       // and the bar under the pointer keeps its full colour, with a hairline dropped through it.
       host.classList.add("hovering");
@@ -513,12 +513,12 @@
     var sp = timelineSpan(key);
     return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 12);
   }
-  // A quarterly series' window start index \u2014 defFrom's sibling, in quarters.
+  // A quarterly series' window start index — defFrom's sibling, in quarters.
   function qWindowFrom(len, key){
     var sp = timelineSpan(key);
     return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 4);
   }
-  // Volume and Pulse both run quarterly from 1959 \u2014 67 years, so both answer the whole set (Version 367).
+  // Volume and Pulse both run quarterly from 1959 — 67 years, so both answer the whole set (Version 367).
   var VOL_STOPS = ["5y", "10y", "25y", "max"];     // V434: "Current cycle" moves to the Cycles tab
   var PULSE_STOPS = ["5y", "10y", "25y", "max"];   // V434: likewise
 
@@ -678,7 +678,7 @@
       // twice, in the place a reader goes for it.
       // Version 435: these four rows were built once from the whole series. They are recordRows now, rendered
       // per draw, so they follow the window like every other history. The Version 404 disclosure about the 1946
-      // crop stays where it went then \u2014 in the note behind the (i).
+      // crop stays where it went then — in the note behind the (i).
       '<div id="deficit-records"></div>' +
       '<div id="deficit-trend"></div></div>';
   }
@@ -801,7 +801,7 @@
     kicker:"What she is priced at",
     hint:"Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months \u2014 CAPE passed 30 in 2017 and the market rose for four more years.",
     // The verdict is COMPUTED from the reading against fair value, and said in one family of words (Keren, Sep 20,
-    // 2026: "the tag shouldn't be 'richly priced', it's weird \u2014 use overvalued or undervalued, and for the range in
+    // 2026: "the tag shouldn't be 'richly priced', it's weird — use overvalued or undervalued, and for the range in
     // between choose words from the same family, maybe fairly valued"). "Richly priced" was hand-set and belonged to
     // no scale: nothing told a reader what its opposite would be, or what sat between. Five bands on one axis do
     // both, and because the word now follows CAPE against its own fair value, it moves on its own when the market
@@ -856,12 +856,12 @@
       src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]
     },
     {
-      // Version 357, Keren: "we removed the cogwheel from Effort and also removed Effort \u2014 we just call it
+      // Version 357, Keren: "we removed the cogwheel from Effort and also removed Effort — we just call it
       // industrial output now." Version 352 had done that on the Activity page only; the name and the cog were
       // still on screen in the Indicators roster. Renaming `bodyTerm` finishes it, and the roster's row builder
       // collapses the duplicate on its own: it prints `sub` alone when `sub` starts with `title`, so the row
       // reads "Industrial output" once rather than twice. The two keys that index this sign by its body term
-      // \u2014 FOLDED and signMarks \u2014 move with it below.
+      // — FOLDED and signMarks — move with it below.
       bodyTerm:"Industrial output", econTerm:"Industrial output",
       tag:{text:"Expanding", state:"good"},
       metric:"54.6", metricSub:"ISM Manufacturing PMI, Aug 2026",
@@ -964,8 +964,8 @@
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
-    // The 1959\u20132007 average is ALWAYS inside the scale, at every stop. That is the whole reading of this chart
-    // \u2014 the line never comes back up to it \u2014 and a window that cropped the average away would leave a tidy
+    // The 1959–2007 average is ALWAYS inside the scale, at every stop. That is the whole reading of this chart
+    // — the line never comes back up to it — and a window that cropped the average away would leave a tidy
     // picture saying nothing (the Version 358 rule).
     var sc = windowScale(ser, [PULSE_PRE2008]);
     var LO = sc.lo, HI = sc.hi;
@@ -989,7 +989,7 @@
       out.push(xLabel(f(X(i)), yr, B + 17));
     });
 
-    // the average is drawn across the years it is the average OF \u2014 which is also the clearest way to show where
+    // the average is drawn across the years it is the average OF — which is also the clearest way to show where
     // the regime broke: the line simply never comes back up to it. Past 2008 there is no such stretch in view, so
     // it spans the plot as a plain reference instead, which is what it has become for a reader of a short window.
     var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
@@ -1010,7 +1010,7 @@
     /* Version 500, Keren: "make sure all the charts are bars." Velocity lives between 1.1 and 2.2, so columns
        out of zero would spend two thirds of the plot on a region the series never visits and flatten the one
        thing worth seeing. The app's own answer for a level that does not start at zero is Valuations' diverging
-       bars, which hang off a midline that carries its own label \u2014 and here that midline already exists and is
+       bars, which hang off a midline that carries its own label — and here that midline already exists and is
        already named: the pre-2008 mean. So each column says how far its quarter sits from the era that ended,
        which is what this page is about. */
     var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
@@ -1064,7 +1064,7 @@
     // what the reading needs (the V358 rule: where the line sits against the band IS the reading); the ceiling
     // can run off the top, clipped at the plot edge, saying the same thing the bar's edge marker says.
     /* Version 500: zero joins the forced values, because a column stands on a baseline and the baseline has
-       to BE zero \u2014 a spread drawn from anywhere else would lie about how big it is. The floor of the band is
+       to BE zero — a spread drawn from anywhere else would lie about how big it is. The floor of the band is
        kept in view for the reason V476 gives; the ceiling still runs off the top when the window is tight. */
     var sc = windowScale(ser, [0, HY_NORM_LO]);
     var LO = sc.lo, HI = sc.hi;
@@ -1106,7 +1106,7 @@
        average dot rather than the app's accent purple: one colour, one meaning, across the two components. */
     out.push('<path class="hy-avg" d="M' + f(X(0)) + ',' + f(Y(hyAvg)) + 'H' + f(X(n - 1)) + '"/>');
     // Version 500: columns out of zero, coloured by the band (Keren: all the charts are bars). At Max these are
-    // 787 daily closes and each column is about a pixel \u2014 which is what the 944-month Activity chart already
+    // 787 daily closes and each column is about a pixel — which is what the 944-month Activity chart already
     // does, and it reads as a dense picture rather than as a chart with nothing in it.
     var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
     ser.forEach(function(v, i){

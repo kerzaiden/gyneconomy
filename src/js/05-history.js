@@ -1,7 +1,7 @@
   /* ---------------- Version 518: the history card's head ----------------
      Keyed by the id `histControls` already receives, so a page's head costs it nothing: no call site passes a
      title, a mark or a note. `title` is a string or a function, because Pressure's names the maturity chosen on
-     the control below it and Horizon's names the spread. `mark` is null on exactly one page \u2014 the federal
+     the control below it and Horizon's names the spread. `mark` is null on exactly one page — the federal
      deficit, which is a marker inside Economic power and has never had a glyph of its own; a blank badge is
      worse than none (the Version 510 lesson), so the head simply renders without one until Keren picks one. */
   var HIST_NOTE = {};   // filed by panelRow(o.head) \u2014 the page's note, never a second copy of it
@@ -21,11 +21,11 @@
        ("share of income", "against fair value"), because a unit is part of what the reading IS. */
     "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI" },
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP" },
-    /* V586, Keren: "use the same icon as the pulse icon in the circulation page" \u2014 and the reason it was
+    /* V586, Keren: "use the same icon as the pulse icon in the circulation page" — and the reason it was
        wrong here is that two heads had swapped glyphs. signMarks is where each reading's mark is decided
        (Pulse:ecgSvg, Activity:trendUpSvg), and this map had Activity wearing the ECG and Pulse wearing the
-       heart. So the trace that means a heartbeat sat on the labour market, and Pulse \u2014 the heartbeat itself
-       \u2014 sat under a heart it shares with nothing else. Each head wears its own reading's mark now, which is
+       heart. So the trace that means a heartbeat sat on the labour market, and Pulse — the heartbeat itself
+       — sat under a heart it shares with nothing else. Each head wears its own reading's mark now, which is
        the only rule this map should ever have followed. */
     "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment Rate" },
     "sheet-metric-power":      { mark:boltSvg,
@@ -66,7 +66,7 @@
         (headMenuFor === id ? headMenuHtml(id) : "") + '</div></div>' +
     '</div>';
   }
-  /* One slot in detailTexts per page, allocated on the first open and REWRITTEN on every open \u2014 the same
+  /* One slot in detailTexts per page, allocated on the first open and REWRITTEN on every open — the same
      pattern the hub's popup uses (see hubDetailIdx). A slot per open would grow the array every time a reader
      tapped the dots, and a slot cached with its first contents would freeze Pressure's note on whichever
      maturity happened to be showing then. */
@@ -156,7 +156,7 @@
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat){ GYN.fire("pickSeries", null, mat); return; }
       // V613: Growth's economy. The empty string is the United States and is a real choice, so this tests for
-      // the ATTRIBUTE rather than its value \u2014 a falsy check here would make the default unselectable.
+      // the ATTRIBUTE rather than its value — a falsy check here would make the default unselectable.
       var peer = pick.getAttribute("data-gdp-peer");
       if (peer != null){ GYN.fire("pickPeer", peer); return; }
       GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
@@ -194,7 +194,7 @@
     var door = o.open ? ' class="panel-row lab-door" role="button" tabindex="0" data-open="' + o.open.id +
       '" data-title="' + o.open.title + '"' : ' class="panel-row"';
     /* Version 518: `head` names the history page whose CHART draws this reading. The note then belongs to that
-       page's head \u2014 the first row of its \u22ef menu \u2014 and the row keeps no (i), because two doors onto one note is
+       page's head — the first row of its ⋯ menu — and the row keeps no (i), because two doors onto one note is
        the Version 477 fault. It is filed rather than copied: one string, read from one place. */
     if (o.head && o.info) HIST_NOTE[o.head] = o.info;
     var mark = o.open ? CHEV : (o.info && !o.head ? infoIcon(o.info) : "");
@@ -426,11 +426,11 @@
     var g = m2Yoy.filter(function(x){ return x != null; });
     var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
     // Version 388, Keren: remove the paragraph, "and put the title Money stock (M2) Steady above the metrics,
-    // instead of the deleted text." So the head leaves the top of the box and lands where the prose was \u2014
+    // instead of the deleted text." So the head leaves the top of the box and lands where the prose was —
     // heading the figures rather than the picture. The chart already names itself: its caption states the units
     // and the dashed line, the timeline states the window, and the red columns are visible without being counted
-    // out in a sentence. What the paragraph said that the picture cannot \u2014 that those are the only
-    // contractions in sixty-seven years \u2014 is in the long form behind More details.
+    // out in a sentence. What the paragraph said that the picture cannot — that those are the only
+    // contractions in sixty-seven years — is in the long form behind More details.
     return histBar("", "volume-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("volume-range") +
@@ -532,24 +532,24 @@
   // line, because the reading's whole meaning is which side of zero it is on.
   /* Growth's own history (Version 371, Keren: "change the main container to be yearly history like the rest of
      the app"). The app's rule has been that drawGrowth() must not be rewritten because the Calendar's cycle view
-     shares it \u2014 so this does not rewrite it. It is a SECOND chart, on the inner page only; the cycle card stays
+     shares it — so this does not rewrite it. It is a SECOND chart, on the inner page only; the cycle card stays
      exactly as it is, still reachable from the timeline's "This cycle" stop and still borrowed by the Calendar.
      Build alongside, never mutate what is shared.
-     Quarterly year-over-year from 1988 \u2014 39 years, so 10Y, 25Y and Max all answer. Columns out of zero rather
+     Quarterly year-over-year from 1988 — 39 years, so 10Y, 25Y and Max all answer. Columns out of zero rather
      than a line, because expanding or contracting is the reading; `.m2-col`/`.drain` because Volume's columns
      already mean exactly this (a quantity in the brand plum, a contraction in the one red) and a second class
      saying the same thing is how two charts start disagreeing. */
   /* Temperature's own history (Version 373, Keren: "add a year bar to the temperature history"). Built the way
      Growth's was in Version 371 and for the same reason: drawTemperature() is cycle-scoped and shared with the
-     Calendar's cycle view, so it is not rewritten \u2014 this is a SECOND chart, on the inner page only, and the
+     Calendar's cycle view, so it is not rewritten — this is a SECOND chart, on the inner page only, and the
      cycle card stays exactly as it is. Build alongside, never mutate what is shared.
-     Monthly year-over-year from 1989 \u2014 38 years, so 5Y, 10Y, 25Y and Max all answer and 50Y does not.
+     Monthly year-over-year from 1989 — 38 years, so 5Y, 10Y, 25Y and Max all answer and 50Y does not.
      Columns out of zero with the 2% target as the dashed reference, because on this page the reading is distance
      from target. Version 373 drew them in the plum Volume and Growth use, on the argument that one shape should
-     wear one colour; Version 378 reverses that at Keren's word ("you dropped the orange-yellow spectrum \u2014 it
+     wear one colour; Version 378 reverses that at Keren's word ("you dropped the orange-yellow spectrum — it
      needs to look like a heat map"), and she is right. Consistency of SHAPE does not outrank the identity of the
      reading: this page is Temperature, its ramp is what makes it legible at a glance, and a sequential ramp is the
-     correct encoding for a magnitude anyway. It uses `heatStep()` and `.temp-col.s0\u2013s5` \u2014 the same function and
+     correct encoding for a magnitude anyway. It uses `heatStep()` and `.temp-col.s0–s5` — the same function and
      the same classes as the cycle chart, so the two views of the same series can never disagree about a colour. */
   /* Version 498, Keren (downloading the series herself): the unemployment rate, monthly, seasonally adjusted,
      from January 1948 — 944 months, the deepest record any chart in this app draws. It confirms rather than
@@ -648,13 +648,13 @@
       'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
       ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
   }
-  /* ---------------- V592: Hormones \u2014 the policy rate's history ----------------
+  /* ---------------- V592: Hormones — the policy rate's history ----------------
      Keren: "let's add a fourth category in circulation called hormones. And hormones will be interest rates."
      A sibling of unempHistoryChart rather than a flag on it, for the reason V498 gives: prices are read against
      a target, people against a band, and a POLICY RATE against neither. Folding a third subject in behind a
      flag is how a component stops being readable.
      What this chart deliberately does NOT have is a band. "Restrictive" and "accommodative" are real ideas and
-     the level that divides them is contested, unpublished and moves \u2014 so drawing one here would be inventing
+     the level that divides them is contested, unpublished and moves — so drawing one here would be inventing
      a band, which is the one thing this app never does. The columns stand on zero, the window's own average is
      drawn across them, and the reading is the height. Direction is what the trend pill is for. */
   function checkFedFundsHistory(){   // the data has to be right before anything draws it (the V305 rule)
@@ -668,15 +668,15 @@
 
   /* ---------------- V597: Pressure. The resistance the circulating money meets ----------------
      Keren: "think like a doctor and tell me what you think is blood pressure in this scenario."
-     Mean arterial pressure is cardiac output times systemic vascular resistance \u2014 pressure is not a
-     substance, it is flow meeting resistance \u2014 and about 70% of the pressure drop happens in the small
+     Mean arterial pressure is cardiac output times systemic vascular resistance — pressure is not a
+     substance, it is flow meeting resistance — and about 70% of the pressure drop happens in the small
      arteries and arterioles, where resistance goes as one over the radius to the FOURTH power. A slight
      narrowing at the far end changes everything upstream.
      The app already measures the flow and did not know it: stroke volume times heart rate is cardiac output,
-     and this page\u2019s own Insights card prints "Volume \u00d7 Pulse is nominal demand." What was never
+     and this page’s own Insights card prints "Volume × Pulse is nominal demand." What was never
      measured is the resistance. The Senior Loan Officer Survey measures it directly: it asks the banks
      whether they are narrowing the channel. Arteriolar tone with a questionnaire.
-     ZERO IS NOT A CHOSEN MIDPOINT. It is the definition \u2014 as many banks easing as tightening \u2014 which is
+     ZERO IS NOT A CHOSEN MIDPOINT. It is the definition — as many banks easing as tightening — which is
      why this chart has a zero rule and no band, and why the columns are coloured by side rather than by
      depth. Red above, because tight credit is the bearish end; green below. */
   function checkLendingStandards(){   // the data has to be right before anything draws it (the V305 rule)
@@ -819,15 +819,15 @@
   // numbers rather than {q,v} objects need this to label what the pointer is on (Version 407).
   function qAtIndex(y0, i){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
   /* Version 417's five-cycle overlay lived here and was removed in Version 420 (Keren: "not multiple select,
-     because I want the same visuals as the years \u2014 the bars with the colouring the same"). She is right that two
+     because I want the same visuals as the years — the bars with the colouring the same"). She is right that two
      drawings of one metric on one page is a worse problem than the comparison was a gain: the overlay had to be
      grey lines precisely BECAUSE it drew five cycles at once, so it could not carry the heat ramp that is how this
      page says hot and cold everywhere else. One cycle at a time keeps the ramp, and the cycle picker becomes what
-     the ruler is in Years mode \u2014 a way of choosing the window, drawn identically either way. The overlay is in
+     the ruler is in Years mode — a way of choosing the window, drawn identically either way. The overlay is in
      Version 417's source if it is ever wanted back. ---- */
   /* ---- Version 431: the reference key, shared (the rollout, stage one) ----
-     Temperature grew an average line and a two-line key set in whitespace over Versions 421\u2013428. Seven other
-     histories need the same thing, so it is ONE function before it is seven copies \u2014 the Version 399 rule, which
+     Temperature grew an average line and a two-line key set in whitespace over Versions 421–428. Seven other
+     histories need the same thing, so it is ONE function before it is seven copies — the Version 399 rule, which
      this app has paid for twice. The caller passes its own scales and its own reference line; everything about
      WHERE the key goes is decided here.
      Whitespace is found rather than chosen: for every candidate x the scan takes the tallest column in that
@@ -836,7 +836,7 @@
      stretch is still legible rather than lost in the bars. ---- */
 
   /* Load's history (Version 460). Two series, ONE axis, because both are shares of disposable personal
-     income \u2014 which is what makes this a legitimate two-line chart rather than the dual-axis picture that is
+     income — which is what makes this a legitimate two-line chart rather than the dual-axis picture that is
      never allowed: the reader compares them directly, on the same ruler, with no arithmetic to do.
      Zero is forced into the scale. What is kept runs close to it, and a window cropped to the data would
      make 2.8% look like a middling reading instead of a floor. */
@@ -872,7 +872,7 @@
         return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v)); }).join("") + '"/>';
     }
     /* Version 500: paired columns, one pair per quarter. They share a scale and a zero because they are two
-       shares of the SAME income \u2014 what is paid out and what is kept \u2014 which is the condition that makes two
+       shares of the SAME income — what is paid out and what is kept — which is the condition that makes two
        series on one bar chart honest rather than a collision. The pair is wrapped in a single `<g class="hcol">`
        so the shared hover still lights exactly one thing per index; the readout already names both figures. */
     var hhSlot = (R - L) / Math.max(1, n);
@@ -890,10 +890,10 @@
        that hunted for a clear band inside the plot — which is exactly what the legend replaced in Version 556,
        and Keren caught it: "in the household history chart the legend is not in the location that we agreed
        on." One legend, one place, every page. The key's own function went with it. */
-    // V500: the two "now" dots went with the lines \u2014 they marked where a line ended, and a column ends at
+    // V500: the two "now" dots went with the lines — they marked where a line ended, and a column ends at
     // its own tip. The last pair is the rightmost pair, which is as findable as a dot was.
     /* The readout names both lines. `at` is evaluated before `fmt` in the tooltip's single expression, so it
-       hands the index across \u2014 the same left-to-right guarantee the deferred Highlights rely on. A tooltip
+       hands the index across — the same left-to-right guarantee the deferred Highlights rely on. A tooltip
        that named one of two lines would be answering half the question the chart asks. */
     var hovAt = 0;
     publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
@@ -954,15 +954,15 @@
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     // Version 421, Keren: "now that we have a cycle-based viewpoint we can take the average CPI by cycle and put it
-    // as a line \u2014 and make it so I can also view the number." The convention is the app's OWN and is reused down to
-    // the class names rather than reinvented: drawTemperature has drawn exactly this since Version 260 \u2014 one
+    // as a line — and make it so I can also view the number." The convention is the app's OWN and is reused down to
+    // the class names rather than reinvented: drawTemperature has drawn exactly this since Version 260 — one
     // saturated accent line, its value on a --surface plate set in the clearest stretch of the run, so that every
     // column is read as above it or below it. Reusing .temp-avg / .temp-avg-label also means the trend toggle dims
     // it for free, because `.trend-on .temp-avg` was written for the other chart and does not care which drew it.
     // Cycle mode only: in Years mode "the average" would be the window's, which is a different claim and would sit
     // on the page arguing with the ten-year average in the record rows.
     // Version 423, Keren: "make all the data relevant to the chosen timeline." The average is the window's, in
-    // every window \u2014 which is also what let the ten-year average row go: the number lives on the chart now, where
+    // every window — which is also what let the ten-year average row go: the number lives on the chart now, where
     // it can never describe a stretch the picture does not show.
     if (n){
       var avgV = vals.reduce(function(a, d){ return a + d.v; }, 0) / n, avgY = Y(avgV);
@@ -992,10 +992,10 @@
 
   var GDP_NORM = 2.6;   // the mean of every quarter 1988\u20132026, stated to one place
   /* Version 492, Keren: "the growth history doesn't have a blood test component." It had none because there is
-     no published normal range for how fast an economy grows \u2014 so the band is COMPUTED from this page's own
+     no published normal range for how fast an economy grows — so the band is COMPUTED from this page's own
      series, which is Volume's construction (V485) and the only honest one available: the 10th to 90th
      percentile of the 154 quarters from 1988 Q1, 0.96% and 4.34%, rounded to a tenth. The ends of the track
-     are the record itself, and both ends are one event: \u22127.4% in 2020 Q2 and +12.4% in 2021 Q2. */
+     are the record itself, and both ends are one event: −7.4% in 2020 Q2 and +12.4% in 2021 Q2. */
   var GDP_BAND_LO = 1.0, GDP_BAND_HI = 4.3;
   var gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
   var gdpMeter = { min:-7.4, max:12.4, value:gdpNowQ.v,
@@ -1124,7 +1124,7 @@
         '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
     // Version 434: Volume's long-run pace existed only as a record row, so the chart had nothing to read a
-    // column AGAINST. windowScale already forces M2_NORM into the scale, so the line has always fitted \u2014 it was
+    // column AGAINST. windowScale already forces M2_NORM into the scale, so the line has always fitted — it was
     // simply never drawn. Now it is, with the window's own average beside it and the key naming both.
     var vAvg = vals.filter(function(v){ return v != null; }).reduce(function(a, v){ return a + v; }, 0) /
                (vals.filter(function(v){ return v != null; }).length || 1);
@@ -1210,15 +1210,15 @@
       // The body metaphor was this page's visible lead until Version 376 (Keren: "put this in the more
       // details pop up"). It is an explanation of HOW to read the reading, which is what the long form is
       // for; the page now opens on what the reading SAYS. Deleting `lead` is the whole change: the visible
-      // line falls through to `shortCaption`, and the full caption \u2014 which still opens with the metaphor \u2014
+      // line falls through to `shortCaption`, and the full caption — which still opens with the metaphor —
       // is what More details shows, because dropWhatIsShown no longer finds that sentence on the page.
       // "U.S. range since 1913" went in Version 376 (Keren: "I don't understand what is the US range since 1913").
       // Neither did the page. It read as the range of the whole official CPI record, but quoted the MODERN peak
-      // (14.8%, 1980) while the meter behind it is scaled to the true extremes (\u221215.8% in 1921, +23.7% in 1920)
-      // \u2014 so the row and its own meter disagreed. And since Version 374 the record rows state the range again,
-      // for the series the chart actually draws (9.0% Jun 2022 to \u22122.0% Jul 2009). Three ranges, one page.
+      // (14.8%, 1980) while the meter behind it is scaled to the true extremes (−15.8% in 1921, +23.7% in 1920)
+      // — so the row and its own meter disagreed. And since Version 374 the record rows state the range again,
+      // for the series the chart actually draws (9.0% Jun 2022 to −2.0% Jul 2009). Three ranges, one page.
       // The meter draws the full sweep, the record rows state the drawn series, and the deep history is in the
-      // long form, which already tells it properly \u2014 including the 1920 spike this row left out.
+      // long form, which already tells it properly — including the 1920 spike this row left out.
       facts:[],
       // Version 240 put the Fed funds rate on this card (Keren: "put Rates in the appropriate container"), and
       // Version 375 takes it off again at her request — a considered decision reopened, not an oversight.
