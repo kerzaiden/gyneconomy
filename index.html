@@ -4533,6 +4533,10 @@
     if (!h || h.y == null) return;
     paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
   }
+  function repaintPressureChart() {
+    var s = byIdMaybe("sheet-sign-pressure");
+    if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
+  }
   function repaintValuationRow() {
     var row = valRow("cape");
     if (!row) return;
@@ -4554,7 +4558,7 @@
       set: function(v) {
         yieldCurve = v;
       },
-      paint: [ repaintHorizonRow, repaintPressureRow ]
+      paint: [ repaintHorizonRow, repaintPressureRow, repaintPressureChart ]
     },
     sentiment: {
       kind: "object",
@@ -4840,6 +4844,11 @@
     y: 5.47
   } ];
   yieldCurve = LIVE("yieldCurve", yieldCurve);
+  var YIELD_CURVE_ASOF = "2026-09-24";
+  function curveAsOf() {
+    var d = LIVE_CACHE && LIVE_CACHE.yieldCurve;
+    return d && Array.isArray(d.rows) && d.rows.length && d.asOf || YIELD_CURVE_ASOF;
+  }
   var t10y3mHistory = [ {
     q: "2005 Q1",
     v: 1.76
@@ -17556,6 +17565,39 @@
       return rest ? moreRow("<h4>" + ind.bodyTerm + '</h4><div class="marker-sub">' + ind.econTerm + "</div>" + factsFrom(rest)) : "";
     }();
   }
+  var CURVE_KEY = {
+    "3m": "3M",
+    "2y": "2Y",
+    "5y": "5Y",
+    "10y": "10Y",
+    "30y": "30Y"
+  };
+  function latestYieldPoint() {
+    var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
+    var at = function(k) {
+      var h = yieldCurve.filter(function(d) {
+        return d.m === k;
+      })[0];
+      return h && h.y != null ? h.y : null;
+    };
+    var v = {}, all = !!mm;
+    Object.keys(CURVE_KEY).forEach(function(c) {
+      v[c] = at(CURVE_KEY[c]);
+      if (v[c] == null) all = false;
+    });
+    if (!all) return null;
+    return {
+      q: mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3),
+      label: fmtAsOf(iso),
+      v: v,
+      spread: at("10Y") - at("3M")
+    };
+  }
+  function withLatestPoint(base, pt) {
+    var data = base.slice(), last = data[data.length - 1];
+    if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
+    return data;
+  }
   function renderPressurePage() {
     var svg = byId("ylm-svg");
     var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
@@ -17563,7 +17605,7 @@
     var el = svgEl;
     var quarters = t3mYieldHistory.map(function(d) {
       return d.q;
-    }), openQ = DATA_COMPILED.getFullYear() + " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1);
+    });
     var maturities = [ {
       code: "3m",
       name: "3-Month",
@@ -17610,6 +17652,29 @@
         u: "https://fred.stlouisfed.org/series/GS30"
       } ])
     } ];
+    var latestLabel = "", latestSpread = null;
+    maturities.forEach(function(m) {
+      m.base = m.data;
+    });
+    function withLatest() {
+      var L = latestYieldPoint();
+      latestLabel = L ? L.label : "";
+      latestSpread = L ? L.spread : null;
+      maturities.forEach(function(m) {
+        m.data = withLatestPoint(m.base, L && {
+          q: L.q,
+          v: L.v[m.code],
+          latest: true
+        });
+      });
+      quarters = maturities[0].data.map(function(d) {
+        return d.q;
+      });
+    }
+    function colLabel(i) {
+      var d = maturities[0].data[i];
+      return d && d.latest ? latestLabel : quarters[i];
+    }
     addSources([ {
       t: "FRED — 5-Year Treasury Rate (GS5)",
       u: "https://fred.stlouisfed.org/series/GS5"
@@ -17682,8 +17747,7 @@
         W: W,
         n: ylmCount(),
         at: function(d, i) {
-          var q = quarters[ylmFrom + i];
-          return q === openQ ? q + " · so far" : q;
+          return colLabel(ylmFrom + i);
         },
         fmt: function(v) {
           return v.toFixed(2) + "%";
@@ -17731,6 +17795,8 @@
       t10y3mHistory.forEach(function(d) {
         spreadAt[d.q] = d.v;
       });
+      var lastCol = maturities[0].data[quarters.length - 1];
+      if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;
       var colW = colWidth(innerW / Math.max(1, ylmCount()));
       maturities.forEach(function(mat) {
         if (!mat.on) return;
@@ -17798,7 +17864,7 @@
         }).join("");
         var sp = spreadAt[q];
         var zn = sp == null ? null : pressureZone(sp);
-        tooltip.innerHTML = "<b>" + q + "</b>" + rows + (zn ? '<div class="row"><span><span class="sw" style="background:var(--' + (zn.key === "inverted" ? "-critical" : zn.key === "normal" ? "-season-autumn" : "-good").slice(1) + ')"></span>Curve</span><b>' + zn.label + "</b></div>" : "");
+        tooltip.innerHTML = "<b>" + colLabel(i) + "</b>" + rows + (zn ? '<div class="row"><span><span class="sw" style="background:var(--' + (zn.key === "inverted" ? "-critical" : zn.key === "normal" ? "-season-autumn" : "-good").slice(1) + ')"></span>Curve</span><b>' + zn.label + "</b></div>" : "");
         tooltip.style.left = px / W * 100 + "%";
         var avgY = onMats.reduce(function(s, m) {
           return s + y(m.data[i].v);
@@ -17915,10 +17981,11 @@
       return m ? m.detail : "";
     }
     function drawYlm() {
+      withLatest();
       var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
       var ylmCyc = pageMode["pressure-range"] === "cycles" ? cycleByName(pageCycles["pressure-range"]) || openCycle() : null;
       if (ylmCyc && ylmCyc.from < ylmY0) ylmCyc = openCycle();
-      var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
+      var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
       ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
       ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
       put("pressure-timeline", histControls("pressure-range", {
