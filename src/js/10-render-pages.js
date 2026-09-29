@@ -1,14 +1,14 @@
 
   // ---------------- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----------------
   function renderSpreadHistory(){
-    var svg = document.getElementById("spread-history-svg");
+    var svg = byId("spread-history-svg");
     // Version 496: recomputed per draw from the host's width (see draw). A fixed 780-unit viewBox scaled to
     // a phone made this the smallest chart in the app, with labels shrunk by the same factor.
     var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
-    var tooltip = document.getElementById("spread-history-tooltip");
+    var tooltip = byId("spread-history-tooltip");
 
     var series = {
       "3m": {
@@ -157,7 +157,7 @@
          `wireHistHover` — it tracks its own pointer because its x-scale is its own — so it carries its own
          geometry object in the shape that readout expects, and the floating tooltip goes the way the others
          went. */
-      var shell = document.getElementById("spread-history-shell");
+      var shell = byId("spread-history-shell");
       if (shell){
         /* V569: the geometry the shared readout and legend need. This chart tracks its own pointer, so it
            handed over only `vals` — which left the plate with no column to sit over (it fell to the left edge,
@@ -262,7 +262,7 @@
      which spread — and the reason for the verdict, which is the part a relocated chart could not bring with it.
      This runs AFTER the lag panel, because the first thing its Highlights ask for is `UNINV_DETAIL`. */
   function renderHorizonPage(){
-    var host = document.getElementById("hzn-timeline"); if (!host) return;
+    var host = byId("hzn-timeline"); if (!host) return;
     var HZN_STOPS = ["5y", "10y", "max"];   // the V263 rule: 25Y is unanswerable on a series that starts in 2005
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
@@ -279,7 +279,7 @@
       host.innerHTML = histControls("hzn-range",
         { depth:Math.floor(data.length / 4), stops:HZN_STOPS }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
-      var tr = document.getElementById("hzn-trend");
+      var tr = byId("hzn-trend");
       if (tr){
         var w = [];
         data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
@@ -313,7 +313,7 @@
        was the restating — the same idea said twice in a longer way, and the paragraph explaining what a
        headline means when it says "the curve", which the ⋯ menu now answers by letting you switch to the
        other one and look. */
-    var ins = document.getElementById("horizon-insights");
+    var ins = byId("horizon-insights");
     if (ins){
       var cards = [];
       cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' +
@@ -347,7 +347,7 @@
 
   // ---------------- RENDER: Valuation (slow) — split off Sentiment in Version 231 ----------------
   function renderValuationTag(){
-    var tagEl = document.getElementById("valuation-tag");
+    var tagEl = byId("valuation-tag");
     tagEl.className = "tag " + valuation.tag.state + " longcycle-tag";
     tagEl.textContent = valuation.tag.text;
     // V491: built ONCE here rather than per draw — the renderer places the finished string, because
@@ -385,7 +385,7 @@
     }).join("");
     powerPanelHtml = stressRowHtml + rowsHtml;   // V491: placed by the renderer, inside the history container
     var flaggedCount = labPanel.filter(function(r){ return !!r.flagState; }).length;
-    document.getElementById("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
+    byId("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
     addSources(longCycleSrc);
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
@@ -403,7 +403,7 @@
      one Keren caught on Pressure ("you write 10-year 4.94 and I see inside the container 10-year 4.70"): two
      numbers for one thing is a fault, two numbers for two things has to be LABELLED. */
   function renderHormones(){
-    var host = document.getElementById("hormones-history"); if (!host || !fedFundsHistory.length) return;
+    var host = byId("hormones-history"); if (!host || !fedFundsHistory.length) return;
     var HORM_STOPS = ["5y", "10y", "25y", "max"];
     var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
     function ffCycleMonths(c){
@@ -415,7 +415,7 @@
       return a === -1 ? null : [a, b];
     }
     function draw(){
-      var bar = document.getElementById("hormones-history"); if (!bar) return;
+      var bar = byId("hormones-history"); if (!bar) return;
       var id = "hormones-range";
       var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
       var span = cyc ? ffCycleMonths(cyc) : null;
@@ -428,7 +428,7 @@
         fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' +
         '<div id="hormones-trend"></div></div>';
-      var tr = document.getElementById("hormones-trend");
+      var tr = byId("hormones-trend");
       // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
                                        null, true, { rising:"tightening", falling:"easing" });
@@ -486,7 +486,7 @@
       return out;
     }
     var pk = ffPeaks(), yOf = function(d){ return d.m.slice(0, 4); };
-    var ins = document.getElementById("hormones-insights");
+    var ins = byId("hormones-insights");
     if (ins && pk.length > 2){
       var last = pk[pk.length - 1], prev = pk[pk.length - 2];
       var top = pk.reduce(function(a, d){ return d.v > a.v ? d : a; });
@@ -521,13 +521,13 @@
             : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     /* Written straight to the element: `set` and `say` are local to renderSubjectRows, and this page renders
        from its own step. The row is the same shape either way \u2014 figure, unit, tag. */
-    var rowVal = document.getElementById("subj-value-hormones");
+    var rowVal = byId("subj-value-hormones");
     if (rowVal) rowVal.innerHTML = fedFundsRange() +
       '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>';
     /* The miniature every other Circulation row carries: the last two years of the EFFECTIVE rate, standing on
        zero like the chart it opens. Without it this row was the only one on the page with an empty right-hand
        side \u2014 the same hole V475 fixed for Desire on Mood. */
-    var rowSay = document.getElementById("subj-say-hormones");
+    var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
                                            function(){ return "ff-col"; }, 0, true);
   }
@@ -551,11 +551,11 @@
     return             { text:"Major " + dir,         state:v > 0 ? "critical" : "good" };
   }
   function renderPressure(){
-    var host = document.getElementById("pressure-history"); if (!host || !lendingStandardsHistory.length) return;
+    var host = byId("pressure-history"); if (!host || !lendingStandardsHistory.length) return;
     var PRESS_STOPS = ["5y", "10y", "25y", "max"];
     var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
     function draw(){
-      var bar = document.getElementById("pressure-history"); if (!bar) return;
+      var bar = byId("pressure-history"); if (!bar) return;
       var id = "pressure-range";
       var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
       var span = cyc ? cycleSlice(lendingStandardsHistory, cyc) : null;
@@ -568,7 +568,7 @@
         lendingHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' +
         '<div id="pressure-trend"></div></div>';
-      var tr = document.getElementById("pressure-trend");
+      var tr = byId("pressure-trend");
       // V431\u2019s pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
                                        null, true, { rising:"narrowing", falling:"widening" });
@@ -601,10 +601,10 @@
     var w = lendingWord(last.v);
     /* Written straight to the element, as renderHormones does: `set` and `say` are local to
        renderSubjectRows and this page renders from its own step. */
-    var rowVal = document.getElementById("subj-value-pressure");
+    var rowVal = byId("subj-value-pressure");
     if (rowVal) rowVal.innerHTML = (last.v > 0 ? "+" : last.v < 0 ? "\u2212" : "") + Math.abs(last.v).toFixed(1) +
       '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + '</span>';
-    var rowSay = document.getElementById("subj-say-pressure");
+    var rowSay = byId("subj-say-pressure");
     if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d){ return d.v; }),
                                            function(v){ return "ls-col " + (v > 0 ? "tight" : ""); }, 0, true);
   }
@@ -649,7 +649,7 @@
     var FEAR_STOPS = ["5y", "10y", "max"];
     var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
     function drawFearHistory(){
-      var host = document.getElementById("fear-history"); if (!host || !fearCurveHistory.length) return;
+      var host = byId("fear-history"); if (!host || !fearCurveHistory.length) return;
       /* A cycle that opened before this series did cannot be windowed onto it, so the page falls back to the
          open cycle rather than drawing an empty chart \u2014 the rule Horizon states for the same 2005 problem. */
       var cyc = pageMode["fear-range"] === "cycles"
@@ -689,7 +689,7 @@
         divergeChart(opts(), host.clientWidth || 340) +
         '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' +
         '<div id="fear-trend"></div></div>';
-      var ft = document.getElementById("fear-trend");
+      var ft = byId("fear-trend");
       // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.
       if (ft) ft.innerHTML = trendPill(fit, null, true, { rising:"inverting", falling:"steepening" });
       /* The refit comes FIRST and the wiring second, which is the order every other page uses and the reason
@@ -708,7 +708,7 @@
     sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
     drawFearHistory();
 
-    var hl = document.getElementById("curve-highlights");
+    var hl = byId("curve-highlights");
     if (hl){
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
@@ -740,20 +740,23 @@
   // the same objects the section itself renders from, so a summary can't drift from its section.
   function renderSubjectRows(){
     function ring(key, pct, state){
-      document.getElementById("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
+      byId("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
     }
     function dot(key, state){
-      document.getElementById("subj-ring-" + key).innerHTML = '<div class="subject-dot"><span class="dot ' + state + '"></span></div>';
+      byId("subj-ring-" + key).innerHTML = '<div class="subject-dot"><span class="dot ' + state + '"></span></div>';
     }
     function iconMark(key, state, svg){ // an icon on its wash instead of a dot (Version 213)
-      document.getElementById("subj-ring-" + key).innerHTML = '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>';
+      byId("subj-ring-" + key).innerHTML = '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>';
     }
-    function spark(key, html){ var el = document.getElementById("subj-spark-" + key); if (el) el.innerHTML = html || ""; }
-    function say(key, text){ var el = document.getElementById("subj-say-" + key); if (el) el.textContent = text || ""; }
+    function spark(key, html){ var el = byId("subj-spark-" + key); if (el) el.innerHTML = html || ""; }
+    function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
     function set(key, valueHtml, contextHtml){
-      document.getElementById("subj-value-" + key).innerHTML = valueHtml;
-      // a page may have no context paragraph at all — Sentiment's went in Version 282
-      var c = document.getElementById("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
+      byId("subj-value-" + key).innerHTML = valueHtml;
+      /* A page may have no context paragraph at all — Sentiment's went in Version 282 and Horizon has never
+         had one — so this reach is DECLARED optional rather than guarded and hoped for. V620 walked every page
+         and these two were the only reaches in the app that found nothing; both were already known, which is
+         the answer the walk was there to get. Everything else uses `byId`, whose misses are recorded. */
+      var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
     }
     function worst(states){
       var order = ["good","warning","serious","critical"];
@@ -811,7 +814,7 @@
     (function(){
       // the last twelve quarters either side of zero, on the purple rule Version 312 asked for: a diverging peek
       // is the one case where the reader needs to be told where the line is
-      var slot = document.getElementById("subj-spark-horizon");
+      var slot = byId("subj-spark-horizon");
       if (slot) slot.innerHTML = colPeek(
         t10y3mHistory.map(function(d){ return d.v; }).filter(function(v){ return v != null; }),
         function(v){ return "hzn-col " + (v < 0 ? "neg" : "pos"); }, 0, true);
@@ -821,7 +824,7 @@
     // The row shows a miniature of the gauge its page opens, which is the rule every other preview follows since
     // Version 260 — and it replaces a face that was drawing an emotion rather than a reading (Keren, Sep 20, 2026:
     // "you can drop the faces and line chart in the preview"). Version 277.
-    document.getElementById("subj-ring-sentiment").innerHTML =
+    byId("subj-ring-sentiment").innerHTML =
       vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
         : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
     // the mood goes where a sign's mark goes — beside its name (Version 342)
@@ -945,16 +948,16 @@
   // the Action / Feeling / Energy word tiles · the yearly GDP growth chart · the S&P 500 year cards. Every block
   // reads the model only, so a change here applies to every cycle.
   // ================================================================================================
-  var cycleViewEl = document.getElementById("cycle-view");
+  var cycleViewEl = byId("cycle-view");
   /* The Temperature and Growth charts (Version 206) live in today's drawers — Temperature in Lagging, Growth
      in GDP growth — each standing alone. Version 615 took away the other half of this: a cycle opened from
      Analysis used to pull both cards into its view, and they were wrong there (see renderCycleView). With
      nothing left to move them to, the `where` argument had one value and the else branch was unreachable, so
      both are gone rather than kept for a caller that no longer exists. */
-  var tempCard = document.getElementById("temp-card"), growthCard = document.getElementById("growth-card");
+  var tempCard = byId("temp-card"), growthCard = byId("growth-card");
   function placeCharts(){
-    document.getElementById("slot-temp").appendChild(tempCard);
-    document.getElementById("slot-growth").appendChild(growthCard);
+    byId("slot-temp").appendChild(tempCard);
+    byId("slot-growth").appendChild(growthCard);
   }
   placeCharts();
   var shownEra = null; // which cycle the view currently shows
@@ -965,8 +968,8 @@
   // has one listener and a slot for whatever is currently open. Two listeners would both fire on every press.
   var topbarBack = null;
   function setTopbar(title, onBack){
-    document.getElementById("topbar-title").textContent = title;
+    byId("topbar-title").textContent = title;
     topbarBack = onBack || null;
-    document.getElementById("topbar-back").hidden = !onBack;
+    byId("topbar-back").hidden = !onBack;
   }
-  document.getElementById("topbar-back").addEventListener("click", function(){ if (topbarBack) topbarBack(); });
+  byId("topbar-back").addEventListener("click", function(){ if (topbarBack) topbarBack(); });

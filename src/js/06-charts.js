@@ -467,7 +467,7 @@
      Σ is the right mark and not decoration: the figure is the sum of every bar in view, so it changes when
      the window changes because the window is exactly what it sums. */
   function headSigma(id, text){
-    var el = document.getElementById("bh-sigma-" + id); if (!el) return;
+    var el = byId("bh-sigma-" + id); if (!el) return;
     // V606, Keren: "drop the space between the sigma and the number" — the Σ is the figure’s operator, not
     // a word before it, so it binds tight the way a minus sign does.
     el.textContent = text == null ? "" : "(Σ" + text + ")";

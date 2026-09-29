@@ -1,4 +1,26 @@
 (function(){
+  /* ================= EVERY REACH IS ACCOUNTED FOR (Version 620) =================
+     Keren asked where the UI architecture stands, and this was the third of the three things holding it down:
+     renderers reach into the global document by NAME, 158 times, and almost every reach is guarded with
+     `if (!el) return`. The guard is right — a page renders only some of these — and it is also a blanket over
+     three different failures that look identical from outside:
+       • the name does not exist at all. V617's wiring check fails the build on that one now.
+       • the name exists, but not on the page being rendered, so the renderer silently does nothing.
+       • the name is on the page and the renderer skipped it, so yesterday's content stays.
+     `byId` is the one way to reach an element, and it RECORDS every reach that came up empty. `byIdMaybe` is how a
+     reach says it expects nothing sometimes — a control that only some pages carry, an element built later —
+     so the difference between "optional" and "broken" is written down in the code instead of being guessed
+     from a guard. The suite walks every page and asserts the record is empty: a `byId` that found nothing is a
+     renderer reaching for something that is not there, which is a bug with no symptom. */
+  function byId(id){
+    var n = document.getElementById(id);
+    if (!n){
+      var m = (window.__elMiss = window.__elMiss || {});
+      m[id] = (m[id] || 0) + 1;
+    }
+    return n;
+  }
+  function byIdMaybe(id){ return document.getElementById(id); }
   // The theme (Version 198): the page follows the phone's setting unless a choice was saved from the menu's Appearance row;
   // the stylesheet keys off data-theme on <html>, so the choice is applied here, before anything paints.
   try{ var savedTheme = localStorage.getItem("gyneconomy-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme); }catch(e){}

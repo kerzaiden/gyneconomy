@@ -1,6 +1,6 @@
   // ---------------- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----------------
   function renderCycleList(){
-    var list = document.getElementById("cycle-list");
+    var list = byId("cycle-list");
     // Version 517: the two-pass scale is gone with it. It existed to find the longest cycle on the board and
     // draw every other row against that; the scale is a typical cycle now, which every row can work out for
     // itself, so one pass does what two did.
@@ -43,7 +43,7 @@
     var PREVIEW_CYCLES = 99;
     (function(){
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = document.getElementById("cycle-more"), label = document.getElementById("cycle-more-label");
+      var btn = byId("cycle-more"), label = byId("cycle-more-label");
       if (!btn || rows.length <= PREVIEW_CYCLES){ if (btn) btn.hidden = true; return; }
       var extra = rows.slice(PREVIEW_CYCLES), open = false;
       function apply(){
@@ -55,7 +55,7 @@
       btn.addEventListener("click", function(){ open = !open; apply(); });
     })();
 
-    var listWrap = document.getElementById("calendar-list"), detail = document.getElementById("calendar-cycle"), slot = document.getElementById("calendar-cycle-slot");
+    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle"), slot = byId("calendar-cycle-slot");
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
@@ -91,7 +91,7 @@
     list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
     // Leaving for another tab and coming back always lands on the list; the Cycle tab always takes the view back
     // for the current cycle (see the tab wiring below).
-    calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; document.getElementById("topbar-back").hidden = true; };
+    calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; byId("topbar-back").hidden = true; };
     addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
   }
   GYN.step("renderCycleList", renderCycleList, "wire"); renderCycleList();
@@ -104,7 +104,7 @@
   // one sentence — and its body is the card's full detail, so nothing is lost and nothing is nested. The Temperature
   // Temperature chart is not in here — since Version 249 it sits open on the page, under the dial.
   function renderSignsList(){
-    var host = document.getElementById("signs-list");
+    var host = byId("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };   // signs whose card in the peek row stands in for their row
     // Version 306, Keren: "put Effort inside the Activity page \u2014 it belongs next to the labour market, it's not
     // that important a metric to preview." She is right on both counts: industrial output and employment are the
@@ -281,7 +281,7 @@
            blocks in the sheet, and the page-foot seater reads `:scope > .sign-detail`, so it would
            then find the stale one. Idempotent by construction rather than by being called once. */
         (function(){
-          var sheet = document.getElementById("sheet-metric-temp");
+          var sheet = byId("sheet-metric-temp");
           var fresh = d.querySelector(".sign-detail");
           var prev = sheet.querySelector(":scope > .sign-detail");
           if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
@@ -355,7 +355,7 @@
     [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
      ["power-timing", "structural"], ["valuation-timing", "structural"],
      ["households-timing", "structural"]].forEach(function(p){
-      var el = document.getElementById(p[0]); if (el) el.innerHTML = timingPill(p[1]);
+      var el = byId(p[0]); if (el) el.innerHTML = timingPill(p[1]);
     });
 
 
@@ -366,7 +366,7 @@
     // reading order the eye gets.
     ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation",
      "sheet-metric-households"].forEach(function(id){
-      var sheet = document.getElementById(id); if (!sheet) return;
+      var sheet = byId(id); if (!sheet) return;
       function rank(el){
         var k = el.id || "";
         if (/-timing$/.test(k)) return 0;            // where this sign sits in the cycle, said once, at the top
@@ -389,7 +389,7 @@
   // them, so the peek and its drawer can never disagree: Temperature from its own indicator, Growth from the season
   // model's latest quarter, which is also what the Growth chart reads at its end line.
   function renderPagesAndNav(){
-    var host = document.getElementById("peek-row"); if (!host) return;
+    var host = byId("peek-row"); if (!host) return;
     var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
     var r = nowModel.reading, era = nowModel.era;
     var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
@@ -469,7 +469,7 @@
         return peekCard(card);
       }).join("");
       if (!pair) return;
-      var after = document.getElementById("sheet-sign-sentiment");
+      var after = byId("sheet-sign-sentiment");
       if (!after || !after.parentNode) return;
       var row = document.createElement("div");
       row.className = "peek-row"; row.id = "peek-row-signs";
@@ -485,7 +485,7 @@
          miniature drawn into the row, the ids the data blocks write to, the row's own open handler — and
          its hidden sheet follows it, so every row here is still immediately followed by its own page. */
       var horm = document.querySelector('.sign-row[data-subject="hormones"]');
-      var hormSheet = document.getElementById("sheet-sign-hormones");
+      var hormSheet = byId("sheet-sign-hormones");
       if (horm && hormSheet && horm.parentNode === row.parentNode){
         row.parentNode.insertBefore(horm, row);
         horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
@@ -502,8 +502,8 @@
     (function(){
       var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
       var act  = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
-      var sentSheet = document.getElementById("sheet-sign-sentiment");
-      var actSheet  = document.getElementById("sheet-sign-activity");
+      var sentSheet = byId("sheet-sign-sentiment");
+      var actSheet  = byId("sheet-sign-activity");
       if (!sent || !act || !sentSheet || !actSheet) return;
       var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
       sent.parentNode.insertBefore(mSent, sent);
@@ -531,7 +531,7 @@
        a page by id and does not care who its parent is; what makes this work at all is that the app has opened a
        page FROM a page since Version 271, so the back stack already handles two levels. */
     (function(){
-      var host = document.getElementById("today-analysis"); if (!host) return;
+      var host = byId("today-analysis"); if (!host) return;
       var CATS = [
         { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
           picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
@@ -889,7 +889,7 @@
       host.insertBefore(list, host.firstChild);
       // whatever the moves emptied gives up its place rather than its gap
       ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
-        var el = document.getElementById(id);
+        var el = byId(id);
         if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
       });
     })();
@@ -910,10 +910,10 @@
     // chart and in the table, the word is on the trend row and in the table, and "4 flagged" is in the context
     // line under the table. The same cut Valuations took in Version 274 and Temperature in Version 298; this
     // page was the last one still carrying a head.
-    document.getElementById("power-head").innerHTML = "";
+    byId("power-head").innerHTML = "";
     // Valuations has no gauge, so its figure sat alone above a chart whose own end label already states it \u2014 the
     // duplication Keren reported. The page opens on the chart; the verdict moved to the trend row (Version 274).
-    document.getElementById("valuation-head").innerHTML = "";
+    byId("valuation-head").innerHTML = "";
 
     // the bands energyFromReserve() already uses, so a bar's colour and the word beside the figure cannot disagree
     function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
@@ -965,11 +965,11 @@
       // the ruler is absent in Cycles mode rather than disabled: there is no window to choose when the x-axis is
       // the cycle's own age, and a dead control is worse than no control (the Version 366 rule, applied here)
       // the mode bar on top, its own submenu under it: Cycles picks cycles, Years picks a window
-      document.getElementById("temp-rangebar").innerHTML =
+      byId("temp-rangebar").innerHTML =
         histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS });
-      document.getElementById("temp-head").innerHTML = histHead("sheet-metric-temp");   // V519
-      document.getElementById("slot-temp").hidden = true;   // the cycle card lives on the Cycle tab now (V373)
-      var hist = document.getElementById("temp-history"); hist.hidden = false;
+      byId("temp-head").innerHTML = histHead("sheet-metric-temp");   // V519
+      byId("slot-temp").hidden = true;   // the cycle card lives on the Cycle tab now (V373)
+      var hist = byId("temp-history"); hist.hidden = false;
       var win, cyc = null;
       if (cyclesOn){
         cyc = cycleByName(pageCycles["sheet-metric-temp"]) || openCycle();
@@ -978,7 +978,7 @@
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                          { to:span ? span[1] : undefined, cycle:true });
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");   // same chart, so the same crosshair
-        document.getElementById("temp-trend").innerHTML =
+        byId("temp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                     { rising:"heating", falling:"cooling" });
       } else {
@@ -986,7 +986,7 @@
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
         // the fit is over the months IN VIEW, so the pill and the picture can never describe different stretches
-        document.getElementById("temp-trend").innerHTML =
+        byId("temp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                     { rising:"heating", falling:"cooling" });
       }
@@ -1011,16 +1011,16 @@
     sheetRenderers["sheet-metric-gdp"] = function(W){
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
-      document.getElementById("gdp-rangebar").innerHTML =
+      byId("gdp-rangebar").innerHTML =
         histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS });
-      document.getElementById("gdp-head").innerHTML = histHead("sheet-metric-gdp");   // V519
-      document.getElementById("slot-growth").hidden = true;   // the cycle card lives on the Cycle tab now (V372)
+      byId("gdp-head").innerHTML = histHead("sheet-metric-gdp");   // V519
+      byId("slot-growth").hidden = true;   // the cycle card lives on the Cycle tab now (V372)
       // V492: the reading is the latest quarter, not the window's, so it is set once and every branch below
       // leaves it alone — including the one that returns early.
-      var gp = document.getElementById("gdp-panel");
+      var gp = byId("gdp-panel");
       if (gp && !gp.firstChild) gp.innerHTML = growthPanelHtml();
-      var hist = document.getElementById("gdp-history"); hist.hidden = yoy;
-      var box = document.getElementById("gdp-yoy"); box.hidden = !yoy;
+      var hist = byId("gdp-history"); hist.hidden = yoy;
+      var box = byId("gdp-yoy"); box.hidden = !yoy;
       if (!yoy){
         var gCyc = cyclesOn ? (cycleByName(pageCycles["sheet-metric-gdp"]) || openCycle()) : null;
         var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
@@ -1034,7 +1034,7 @@
         // Version 494, Keren: "total growth 11% — in the Highlights component." The one figure this page's
         // register had been reduced to, said as a fact row where the words around it are.
         headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-        document.getElementById("gdp-trend").innerHTML =
+        byId("gdp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
                     { rising:"quickening", falling:"slowing" });
         return;
@@ -1045,12 +1045,12 @@
           pairs:pairs, unit:"real GDP, chained 2017 dollars",
           alt:"The four latest quarters of real GDP, each joined to the same quarter a year earlier; the gap between the two is that quarter\u2019s year-over-year growth"
         }, W);
-        document.getElementById("gdp-trend").innerHTML =
+        byId("gdp-trend").innerHTML =
           trendPill({ word:fmtSigned(last.pct, 1) + "% this quarter",
                       detail:last.label.replace("\u2019", "20") + " measured against " + last.wasLabel.replace("\u2019", "20") }, "Year on year");
       } else {
         var eraQ = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= currentEra.from; });
-        document.getElementById("gdp-trend").innerHTML =
+        byId("gdp-trend").innerHTML =
           trendPill(trendOf(eraQ.map(function(d){ return d.v; }), "points", "quarter"), null, false,
                     { rising:"quickening", falling:"slowing" });
       }
@@ -1069,10 +1069,10 @@
       return a === -1 ? null : [a, b];
     }
     sheetRenderers["sheet-sign-activity"] = function(W){
-      var id = "sheet-sign-activity", bar = document.getElementById("act-rangebar");
+      var id = "sheet-sign-activity", bar = byId("act-rangebar");
       if (!bar) return;
       bar.innerHTML = histControls(id, { series:unempHistory, stops:ACT_STOPS });
-      var hist = document.getElementById("act-history"); if (!hist) return;
+      var hist = byId("act-history"); if (!hist) return;
       var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
       var span = cyc ? actCycleMonths(cyc) : null;
       var from = span ? span[0] : mWindowFrom(unempHistory.length, pageRange[id]);
@@ -1080,7 +1080,7 @@
       hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
       attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
       var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
-      var tr = document.getElementById("act-trend");
+      var tr = byId("act-trend");
       // the pair of words is the labour market's own, not a chart's: unemployment RISES as the market loosens
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                                        { rising:"loosening", falling:"tightening" });
@@ -1091,7 +1091,7 @@
       var pwSpan = pwCyc ? cycleSlice(powerHistory, pwCyc) : null;
       var vals = pwSpan ? powerHistory.slice(pwSpan[0], pwSpan[1]) : timelineWindow(powerHistory, r);
       var powerTrend = trendOf(vals.map(function(d){ return d.v; }), "points", "year");
-      document.getElementById("power-chart").innerHTML =
+      byId("power-chart").innerHTML =
         '<div class="hist-bar">' + histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS }) + '</div>' +
         '<div class="page-chart">' + histHead("sheet-metric-power") +
         reserveChart({
@@ -1123,28 +1123,28 @@
     // 27% of that page’s height for one of three markers, and it sat between the composite’s chart and the three
     // markers that make it — interrupting the one argument the page exists to carry.
     sheetRenderers["sheet-marker-deficit"] = function(W){
-      var sheet = document.getElementById("sheet-marker-deficit"); if (!sheet) return;
+      var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
       if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
       sheetRenderers["deficit-range"](W);
     };
     // The deficit block's zoom. It measures its OWN host rather than trusting the width the shared range
     // handler passes (that one is the page's width, and this chart sits inside a padded card).
     sheetRenderers["deficit-range"] = function(W){
-      var host = document.getElementById("deficit-record"); if (!host) return;
+      var host = byId("deficit-record"); if (!host) return;
       var key = pageRange["deficit-range"], defCycles = pageMode["deficit-range"] === "cycles";
       var defCyc = defCycles ? (cycleByName(pageCycles["deficit-range"]) || openCycle()) : null;
       // FY figures are one per year from DEF_FROM_YEAR, so a cycle is a plain index range
       var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
                              Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
       var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
-      var bar = document.getElementById("deficit-rangebar");
+      var bar = byId("deficit-rangebar");
       if (bar) bar.innerHTML = histControls("deficit-range",
         { depth:deficitHistory.length, stops:DEF_STOPS });
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      var defRows = document.getElementById("deficit-records");
+      var defRows = byId("deficit-records");
       if (defRows) defRows.innerHTML = "";   // V489: the register went; the readout carries the average
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-      var dTrend = document.getElementById("deficit-trend");
+      var dTrend = byId("deficit-trend");
       if (dTrend) dTrend.innerHTML = trendPill(
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
         { rising:"improving", falling:"widening" });
@@ -1162,7 +1162,7 @@
       var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
       var to = idx ? idx[1] : dsrHistory.length;
-      var host = document.getElementById("households-chart"); if (!host) return;
+      var host = byId("households-chart"); if (!host) return;
       host.innerHTML =
         '<div class="hist-bar">' + histControls(id, { depth:Math.floor(dsrHistory.length / 4), stops:HH_STOPS }, DSR_FROM_YEAR) + '</div>' +
         '<div class="page-chart">' + histHead(id) +
@@ -1176,7 +1176,7 @@
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return householdsChart(w, from, to); });
       attachHistory(box, "households-hist-tooltip", "householdsChart");
-      var hl = document.getElementById("households-highlights");
+      var hl = byId("households-highlights");
       if (hl) hl.innerHTML = householdsHighlights();
     };
     /* Two cards, one for each line, and every figure in them is read off the series it describes \u2014 including
@@ -1206,7 +1206,7 @@
       var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
       var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
       var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
-      document.getElementById("valuation-chart").innerHTML =
+      byId("valuation-chart").innerHTML =
         '<div class="hist-bar">' + histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS }) + '</div>' +
         '<div class="page-chart">' + histHead("sheet-metric-valuation") +
         divergeChart({
@@ -1234,7 +1234,7 @@
       attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
     };
     function redrawSheet(id){
-      var h = document.getElementById("metric-page"), d = sheetRenderers[id];
+      var h = byId("metric-page"), d = sheetRenderers[id];
       if (d) d(h && h.clientWidth ? h.clientWidth : 340);
     }
     // Version 419: the cycle picker. One listener covers opening, ticking and closing, and the order of the three
@@ -1257,7 +1257,7 @@
       var mid = seg.parentNode.getAttribute("data-mode-for");   // Version 417: the same segmented control, other axis
       if (mid && (mid in pageMode)){
         pageMode[mid] = seg.getAttribute("data-mode");
-        var mHost = document.getElementById("metric-page"), mDraw = sheetRenderers[mid];
+        var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
         return;
       }
@@ -1268,7 +1268,7 @@
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in pageRange)) return;
       pageRange[id] = seg.getAttribute("data-range");
-      var host = document.getElementById("metric-page");
+      var host = byId("metric-page");
       var draw = sheetRenderers[id]; if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
     });
 
@@ -1291,7 +1291,7 @@
       if (eraStart) cards.push(hiCard("Since this cycle opened", "serious",
         "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " +
         (eraStart.v - powerScore) + " points since."));
-      document.getElementById("power-highlights").innerHTML =
+      byId("power-highlights").innerHTML =
         highlightsHtml(cards, "", moreRow(powerPageNote));
     })();
 
@@ -1321,7 +1321,7 @@
       // The page now ends on its own evidence \u2014 CAPE against its own record, the Buffett indicator against its \u2014
       // and says nothing about what those readings do or do not predict. The long form behind "More details" is
       // untouched, so a reader who wants the caveat still finds it one tap away.
-      document.getElementById("valuation-highlights").innerHTML =
+      byId("valuation-highlights").innerHTML =
         highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression)));
     })();
 
@@ -1339,7 +1339,7 @@
       cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning",
         "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
         r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
-      document.getElementById("temp-highlights").innerHTML =
+      byId("temp-highlights").innerHTML =
         highlightsHtml(cards, "", moreRow(tempInfo + (function(){
           var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
           return rest ? factsFrom(rest) : "";
@@ -1360,7 +1360,7 @@
         qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
         (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
         r.regime + "."));
-      document.getElementById("gdp-highlights").innerHTML =
+      byId("gdp-highlights").innerHTML =
         highlightsHtml(cards, "", moreRow(growthDetail));   // the strip moved to the ruler's Cycles stop (Version 363)
     })();
     // The cycle average component, on every page whose series can fill it (Version 366; placed to the page order
@@ -1381,7 +1381,7 @@
         // for whichever cycle the picker is on, so the strip was a second answer to a question already answered.
       ];
       blocks.forEach(function(b){
-        var hl = document.getElementById(b[0]); if (!hl) return;
+        var hl = byId(b[0]); if (!hl) return;
         var html = cycleAverageBlock(b[2], b[3], b[4]); if (!html) return;
         var host = document.createElement("div");
         host.id = b[1];
@@ -1413,9 +1413,9 @@
     // the top bar. The context is read fresh each time because these children are moved around at runtime.
     var PAGE_HOME = {
       cycle:    { panel:cyclePanel,    title:"Current Cycle",
-                  hide:function(){ return [cycleViewEl, document.getElementById("today-analysis")]; } },
+                  hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
       analysis: { panel:analysisPanel, title:"Analysis",
-                  hide:function(){ return [document.getElementById("calendar-list")]; } }
+                  hide:function(){ return [byId("calendar-list")]; } }
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
@@ -1439,7 +1439,7 @@
     function backFromPage(){
       var prev = pageStack.pop();
       if (!prev){ closeMetricPage(); return; }
-      var el = document.getElementById(prev.id);
+      var el = byId(prev.id);
       homeFromPage(true);
       openMetricPage(el, prev.title, true);
       window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
@@ -1450,7 +1450,7 @@
       if (!el) return;
       seatPageFoot(el);        // Version 298: late-built pages seat their chip on the way in
       if (!returning && openSheet && openSheet !== el)
-        pageStack.push({ id:openSheet.id, title:document.getElementById("topbar-title").textContent, scroll:window.scrollY || 0 });
+        pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
       var wasOpen = !!openSheet;
       homeFromPage(true);
       if (!wasOpen) returnScroll = window.scrollY || 0;
@@ -1473,17 +1473,17 @@
     // the row of peeks, and matches the attribute rather than the class (Version 269).
     cyclePanel.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(document.getElementById(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
     });
     analysisPanel.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(document.getElementById(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
     });
     analysisPanel.addEventListener("keydown", function(e){
       if (e.key !== "Enter" && e.key !== " ") return;
       var row = e.target.closest && e.target.closest("[data-open]"); if (!row) return;
       e.preventDefault();
-      openMetricPage(document.getElementById(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
     });
     // pressing the trend row shows the fit on the chart above it and steps the readings back (Version 276)
     cyclePanel.addEventListener("click", function(e){
@@ -1499,7 +1499,7 @@
       // Enter, so matching them here would open the same page twice (Version 360).
       var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
       e.preventDefault();
-      openMetricPage(document.getElementById(row.getAttribute("data-open")), row.getAttribute("data-title"));
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
     });
     // A figure and its unit are two things. Cloning is what lets them be separated without disturbing the card
     // the reading is lifted from, and it takes the tag out of the figure at the same time, where one sits inside it.
@@ -1607,7 +1607,7 @@
     // Version 447: the roster is reached from the Cycle tab's Browse list now, so it lives among that tab's
     // content — PAGE_HOME.cycle hides #today-analysis, and a page that is not inside what its home hides
     // stays on screen underneath whatever opens over it.
-    (document.getElementById("today-analysis") || analysisPanel).appendChild(indSheet);
+    (byId("today-analysis") || analysisPanel).appendChild(indSheet);
 
     // Structural has no tab of its own — it is not a moment in the cycle, so it belongs under All and nowhere else.
     function setIndTab(kind){
@@ -1635,7 +1635,7 @@
 
     // The preview: name, picture, figures, word — the card anatomy, with the four classes as the picture and
     // their counts as the figure, because the shape of the roster is what this card has to say.
-    var indPeek = document.getElementById("indicators-peek");
+    var indPeek = byId("indicators-peek");
     if (indPeek) indPeek.remove();   // V447: its door is the Browse list's last row now
     if (false && indPeek){
       indPeek.innerHTML =
@@ -1655,7 +1655,7 @@
 
     // Escape comes back, the way it closes every other layer in this app
     document.addEventListener("keydown", function(e){
-      if (e.key === "Escape" && openSheet && !document.getElementById("detail-backdrop").classList.contains("show")) backFromPage();
+      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
     });
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
@@ -1673,7 +1673,7 @@
      empty, since it never had a bear market to have a peak at.
      A reading with nothing inside the cycle says so. Nothing is carried in from outside the years. */
   function renderCycleCats(era){
-    var host = document.getElementById("cycle-cats"); if (!host) return;
+    var host = byId("cycle-cats"); if (!host) return;
     var from = era.from, to = era.to || calendarTodayY;
     host.innerHTML = readingRoster().map(function(g){
       var rows = g.rows.map(function(r){
@@ -1823,7 +1823,7 @@
      thirteen rows without them is a list rather than a body. Like everything that reads capeHistory this runs
      after renderPagesAndNav, because Version 255 carries that series' last point to today. */
   function renderRhymes(){
-    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
+    var pick = byId("rhy-pick"), body = byId("rhy-body");
     if (!pick || !body) return;
     var ALIKE = 5;                       // points of the record, out of a hundred
     var GRPS = readingRoster();

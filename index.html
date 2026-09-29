@@ -2517,6 +2517,17 @@
 </div>
 
 <script>(function() {
+  function byId(id) {
+    var n = document.getElementById(id);
+    if (!n) {
+      var m = window.__elMiss = window.__elMiss || {};
+      m[id] = (m[id] || 0) + 1;
+    }
+    return n;
+  }
+  function byIdMaybe(id) {
+    return document.getElementById(id);
+  }
   try {
     var savedTheme = localStorage.getItem("gyneconomy-theme");
     if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme);
@@ -4508,7 +4519,7 @@
   }
   function repaintFearCurve() {
     var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "—" : r.toFixed(2);
-    var ring = document.getElementById("subj-ring-sentiment");
+    var ring = byId("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", where 1.00 is flat");
     paintReading("sheet-sign-sentiment", txt, tag);
   }
@@ -4644,7 +4655,7 @@
     return true;
   }
   function repaintPolicy() {
-    var box = document.getElementById("policy-facts");
+    var box = byId("policy-facts");
     if (box) box.innerHTML = policyFactRows();
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     paintReading("sheet-sign-hormones", fedFundsRange(), {
@@ -11442,7 +11453,7 @@
     histLegend(host);
     if (host.__hovWired) return;
     host.__hovWired = true;
-    var tip = document.getElementById(tipId);
+    var tip = byId(tipId);
     function hide() {
       if (tip) {
         tip.style.opacity = "0";
@@ -14547,7 +14558,7 @@
     }, 0) / a.length;
   }
   function headSigma(id, text) {
-    var el = document.getElementById("bh-sigma-" + id);
+    var el = byId("bh-sigma-" + id);
     if (!el) return;
     el.textContent = text == null ? "" : "(Σ" + text + ")";
     el.hidden = text == null;
@@ -16036,8 +16047,8 @@
     "sheet-sign-activity": "10y"
   };
   function wireDetailModal() {
-    var backdrop = document.getElementById("detail-backdrop");
-    var body = document.getElementById("detail-modal-body");
+    var backdrop = byId("detail-backdrop");
+    var body = byId("detail-modal-body");
     function openFrom(idx, btn) {
       body.innerHTML = detailTexts[idx];
       var sheet = btn && btn.closest && btn.closest(".metric-sheet");
@@ -16059,7 +16070,7 @@
       }
       if (e.target === backdrop) close();
     });
-    document.getElementById("detail-modal-close").addEventListener("click", close);
+    byId("detail-modal-close").addEventListener("click", close);
     document.addEventListener("click", function(e) {
       var chip = e.target.closest && e.target.closest(".timing[data-ind-tab]");
       if (!chip) return;
@@ -16074,7 +16085,7 @@
   }
   GYN.step("wireDetailModal", wireDetailModal, "wire");
   wireDetailModal();
-  document.getElementById("asof-text").textContent = "Data compiled " + dataCompiledLabel;
+  byId("asof-text").textContent = "Data compiled " + dataCompiledLabel;
   function meterHtml(m) {
     var pct = clampPct(m.value, m.min, m.max);
     var o = m.optimal, ends = m.ends || {}, flagged = false, zoneHtml = "", labelsHtml = "";
@@ -16203,7 +16214,7 @@
     }();
   }
   function renderPressurePage() {
-    var svg = document.getElementById("ylm-svg");
+    var svg = byId("ylm-svg");
     var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
@@ -16288,7 +16299,7 @@
     function y(v) {
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
     }
-    var tooltip = document.getElementById("ylm-tooltip");
+    var tooltip = byId("ylm-tooltip");
     var onMaturities;
     function render() {
       var shell = svg.parentNode;
@@ -16455,7 +16466,7 @@
         crosshair.setAttribute("opacity", 0);
         tooltip.style.opacity = 0;
       }
-      var shell = document.getElementById("ylm-shell");
+      var shell = byId("ylm-shell");
       attachHistory(shell, "ylm-tooltip", "ylm");
     }
     var matPick = "10y";
@@ -16474,13 +16485,13 @@
       drawTreasury();
     };
     function drawVelocityRecord() {
-      var host = document.getElementById("pulse-record");
+      var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
       var key = pageRange["pulse-range"];
       var pulCycles = pageMode["pulse-range"] === "cycles";
       var pulCyc = pulCycles ? cycleByName(pageCycles["pulse-range"]) || openCycle() : null;
       var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
-      var bar = document.getElementById("pulse-timeline");
+      var bar = byId("pulse-timeline");
       if (bar) bar.innerHTML = histControls("pulse-range", {
         depth: Math.floor(m2vHistory.length / 4),
         stops: PULSE_STOPS
@@ -16488,7 +16499,7 @@
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
-      var vTrend = document.getElementById("pulse-trend");
+      var vTrend = byId("pulse-trend");
       if (vTrend) vTrend.innerHTML = trendPill(trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"), null, true, {
         rising: "accelerating",
         falling: "decelerating"
@@ -16497,13 +16508,13 @@
     sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
     sheetRenderers["pulse-range"] = drawVelocityRecord;
     function drawM2Record() {
-      var host = document.getElementById("m2-record");
+      var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
       var len = m2Yoy.length - 4, key = pageRange["volume-range"];
       var volCycles = pageMode["volume-range"] === "cycles";
       var volCyc = volCycles ? cycleByName(pageCycles["volume-range"]) || openCycle() : null;
       var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
-      var bar = document.getElementById("volume-timeline");
+      var bar = byId("volume-timeline");
       if (bar) bar.innerHTML = histControls("volume-range", {
         depth: Math.floor(len / 4),
         stops: VOL_STOPS
@@ -16511,7 +16522,7 @@
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
-      var mTrend = document.getElementById("volume-trend");
+      var mTrend = byId("volume-trend");
       if (mTrend) mTrend.innerHTML = trendPill(trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v) {
         return v != null;
       }), "points", "quarter"), null, true, {
@@ -16522,18 +16533,18 @@
     sheetRenderers["sheet-sign-volume"] = drawM2Record;
     sheetRenderers["volume-range"] = drawM2Record;
     function drawDesireRecord() {
-      var host = document.getElementById("desire-record");
+      var host = byId("desire-record");
       if (!host || !host.clientWidth) return;
       var from = hyWindowFrom(pageRange["desire-range"]);
       var win = hyOas.slice(from);
-      var bar = document.getElementById("desire-timeline");
+      var bar = byId("desire-timeline");
       if (bar) bar.innerHTML = '<div class="hist-controls">' + rangeBar("desire-range", timelineFor({
         depth: 3,
         stops: DESIRE_STOPS
       }), pageRange["desire-range"]) + "</div>";
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
       attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
-      var tr = document.getElementById("desire-trend");
+      var tr = byId("desire-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win, "points", "day"), null, true, {
         rising: "widening",
         falling: "tightening"
@@ -16571,7 +16582,7 @@
       ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
       ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
       render();
-      var yTrend = document.getElementById("ylm-trend");
+      var yTrend = byId("ylm-trend");
       if (yTrend) {
         var w = [], mt = matOf(matPick);
         if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d) {
@@ -16611,7 +16622,7 @@
         } ];
       };
       HIST_NOTE["hzn-range"] = lvl ? "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()) : horizonInfoHtml(spreadPick);
-      var hd = document.getElementById("hzn-head");
+      var hd = byId("hzn-head");
       if (hd) hd.innerHTML = histHead("hzn-range");
     }
     function drawTreasury() {
@@ -16636,12 +16647,12 @@
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();
   function renderSpreadHistory() {
-    var svg = document.getElementById("spread-history-svg");
+    var svg = byId("spread-history-svg");
     var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
-    var tooltip = document.getElementById("spread-history-tooltip");
+    var tooltip = byId("spread-history-tooltip");
     var series = {
       "3m": {
         title: "10-Year minus 3-Month spread since 2005",
@@ -16807,7 +16818,7 @@
         class: "hero-hit"
       });
       svg.appendChild(hit);
-      var shell = document.getElementById("spread-history-shell");
+      var shell = byId("spread-history-shell");
       if (shell) {
         shell.__geom = {
           vals: data,
@@ -16914,7 +16925,7 @@
   GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive");
   deriveUninversionDetail();
   function renderHorizonPage() {
-    var host = document.getElementById("hzn-timeline");
+    var host = byId("hzn-timeline");
     if (!host) return;
     var HZN_STOPS = [ "5y", "10y", "max" ];
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
@@ -16933,7 +16944,7 @@
         stops: HZN_STOPS
       }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
-      var tr = document.getElementById("hzn-trend");
+      var tr = byId("hzn-trend");
       if (tr) {
         var w = [];
         data.slice(from, to).forEach(function(d) {
@@ -16960,7 +16971,7 @@
       return (v >= 0 ? "risen " : "fallen ") + Math.abs(v).toFixed(2) + " points";
     };
     var fromLong = r.dLong >= -r.dShort;
-    var ins = document.getElementById("horizon-insights");
+    var ins = byId("horizon-insights");
     if (ins) {
       var cards = [];
       cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' + "growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s " + "forecast of its own next season — a mood, not a measurement taken off it.</p>");
@@ -16973,7 +16984,7 @@
   GYN.step("renderHorizonPage", renderHorizonPage, "render");
   renderHorizonPage();
   function renderValuationTag() {
-    var tagEl = document.getElementById("valuation-tag");
+    var tagEl = byId("valuation-tag");
     tagEl.className = "tag " + valuation.tag.state + " longcycle-tag";
     tagEl.textContent = valuation.tag.text;
     valuationPanelHtml = valuation.rows.map(function(row) {
@@ -17018,13 +17029,13 @@
     var flaggedCount = labPanel.filter(function(r) {
       return !!r.flagState;
     }).length;
-    document.getElementById("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
+    byId("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
     addSources(longCycleSrc);
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render");
   renderLongCycleTag();
   function renderHormones() {
-    var host = document.getElementById("hormones-history");
+    var host = byId("hormones-history");
     if (!host || !fedFundsHistory.length) return;
     var HORM_STOPS = [ "5y", "10y", "25y", "max" ];
     var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
@@ -17040,7 +17051,7 @@
       return a === -1 ? null : [ a, b ];
     }
     function draw() {
-      var bar = document.getElementById("hormones-history");
+      var bar = byId("hormones-history");
       if (!bar) return;
       var id = "hormones-range";
       var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
@@ -17055,7 +17066,7 @@
         to: to,
         cycle: !!span
       }) + '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' + '<div id="hormones-trend"></div></div>';
-      var tr = document.getElementById("hormones-trend");
+      var tr = byId("hormones-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
         return d.v;
       }), "points", "month"), null, true, {
@@ -17096,7 +17107,7 @@
     var pk = ffPeaks(), yOf = function(d) {
       return d.m.slice(0, 4);
     };
-    var ins = document.getElementById("hormones-insights");
+    var ins = byId("hormones-insights");
     if (ins && pk.length > 2) {
       var last = pk[pk.length - 1], prev = pk[pk.length - 2];
       var top = pk.reduce(function(a, d) {
@@ -17113,9 +17124,9 @@
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div></section>";
     }
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
-    var rowVal = document.getElementById("subj-value-hormones");
+    var rowVal = byId("subj-value-hormones");
     if (rowVal) rowVal.innerHTML = fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + "</span>";
-    var rowSay = document.getElementById("subj-say-hormones");
+    var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d) {
       return d.v;
     }), function() {
@@ -17148,12 +17159,12 @@
     };
   }
   function renderPressure() {
-    var host = document.getElementById("pressure-history");
+    var host = byId("pressure-history");
     if (!host || !lendingStandardsHistory.length) return;
     var PRESS_STOPS = [ "5y", "10y", "25y", "max" ];
     var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
     function draw() {
-      var bar = document.getElementById("pressure-history");
+      var bar = byId("pressure-history");
       if (!bar) return;
       var id = "pressure-range";
       var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
@@ -17168,7 +17179,7 @@
         to: to,
         cycle: !!span
       }) + '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' + '<div id="pressure-trend"></div></div>';
-      var tr = document.getElementById("pressure-trend");
+      var tr = byId("pressure-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
         return d.v;
       }), "points", "quarter"), null, true, {
@@ -17190,9 +17201,9 @@
     HIST_NOTE["pressure-range"] = "<h4>Banks tightening lending standards</h4>" + factsFrom("The net percentage of banks that tightened their standards on commercial and industrial loans to " + "large and middle-market firms, minus those that eased them, every quarter since the survey began. " + "It is the RESISTANCE the circulating money meets: the policy rate is what the Fed sets, and this is " + "how wide the banks leave the channel it has to travel through. Zero is not a chosen midpoint but the " + "definition — as many banks easing as tightening — which is why this chart carries a zero rule and " + "no band. The words come from the survey’s own footnote: up to 5 percent is basically unchanged, " + "above 5 modest, above 10 moderate, above 20 significant, and 50 or more major. " + "The record runs " + lendingStandardsHistory.length + " quarters from " + lendingStandardsHistory[0].q + ". Its peak is +83.6% in 2008 Q4 and its floor −32.4% in 2021 Q3; the four highest quarters in the " + "series are 2008 Q4, 2020 Q3, 2009 Q1 and 2001 Q1, which is every recession in the record. That is " + "why this reading sits on the front of the app rather than inside it: a tightening shows nothing in " + "Growth or Activity for three or four quarters, by which time it has already happened. " + "Source: Board of Governors of the Federal Reserve System, Senior Loan Officer Opinion Survey on Bank " + "Lending Practices, series DRTSCILM.");
     var last = lendingStandardsHistory[lendingStandardsHistory.length - 1];
     var w = lendingWord(last.v);
-    var rowVal = document.getElementById("subj-value-pressure");
+    var rowVal = byId("subj-value-pressure");
     if (rowVal) rowVal.innerHTML = (last.v > 0 ? "+" : last.v < 0 ? "−" : "") + Math.abs(last.v).toFixed(1) + '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + "</span>";
-    var rowSay = document.getElementById("subj-say-pressure");
+    var rowSay = byId("subj-say-pressure");
     if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d) {
       return d.v;
     }), function(v) {
@@ -17206,7 +17217,7 @@
     var FEAR_STOPS = [ "5y", "10y", "max" ];
     var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
     function drawFearHistory() {
-      var host = document.getElementById("fear-history");
+      var host = byId("fear-history");
       if (!host || !fearCurveHistory.length) return;
       var cyc = pageMode["fear-range"] === "cycles" ? cycleByName(pageCycles["fear-range"]) || openCycle() : null;
       if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
@@ -17241,7 +17252,7 @@
         series: fearCurveHistory,
         stops: FEAR_STOPS
       }, FEAR_Y0) + "</div>" + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' + '<div id="fear-trend"></div></div>';
-      var ft = document.getElementById("fear-trend");
+      var ft = byId("fear-trend");
       if (ft) ft.innerHTML = trendPill(fit, null, true, {
         rising: "inverting",
         falling: "steepening"
@@ -17255,7 +17266,7 @@
     sheetRenderers["fear-range"] = drawFearHistory;
     sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
     drawFearHistory();
-    var hl = document.getElementById("curve-highlights");
+    var hl = byId("curve-highlights");
     if (hl) {
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
@@ -17270,25 +17281,25 @@
   renderFearCurve();
   function renderSubjectRows() {
     function ring(key, pct, state) {
-      document.getElementById("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
+      byId("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
     }
     function dot(key, state) {
-      document.getElementById("subj-ring-" + key).innerHTML = '<div class="subject-dot"><span class="dot ' + state + '"></span></div>';
+      byId("subj-ring-" + key).innerHTML = '<div class="subject-dot"><span class="dot ' + state + '"></span></div>';
     }
     function iconMark(key, state, svg) {
-      document.getElementById("subj-ring-" + key).innerHTML = '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
+      byId("subj-ring-" + key).innerHTML = '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
     }
     function spark(key, html) {
-      var el = document.getElementById("subj-spark-" + key);
+      var el = byId("subj-spark-" + key);
       if (el) el.innerHTML = html || "";
     }
     function say(key, text) {
-      var el = document.getElementById("subj-say-" + key);
+      var el = byId("subj-say-" + key);
       if (el) el.textContent = text || "";
     }
     function set(key, valueHtml, contextHtml) {
-      document.getElementById("subj-value-" + key).innerHTML = valueHtml;
-      var c = document.getElementById("subj-ctx-" + key);
+      byId("subj-value-" + key).innerHTML = valueHtml;
+      var c = byIdMaybe("subj-ctx-" + key);
       if (c) c.innerHTML = contextHtml || "";
     }
     function worst(states) {
@@ -17310,7 +17321,7 @@
     set("horizon", (horizonRead.spread >= 0 ? "+" : "−") + Math.abs(horizonRead.spread).toFixed(2) + '<span class="unit">pts · 10Y − 3M</span>' + '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + "</span>", "");
     say("horizon", "");
     (function() {
-      var slot = document.getElementById("subj-spark-horizon");
+      var slot = byId("subj-spark-horizon");
       if (slot) slot.innerHTML = colPeek(t10y3mHistory.map(function(d) {
         return d.v;
       }).filter(function(v) {
@@ -17319,7 +17330,7 @@
         return "hzn-col " + (v < 0 ? "neg" : "pos");
       }, 0, true);
     })();
-    document.getElementById("subj-ring-sentiment").innerHTML = vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
+    byId("subj-ring-sentiment").innerHTML = vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
     (function() {
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
       if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + umbrellaSvg() + "</span>Fear";
@@ -17441,11 +17452,11 @@
     }
     return any ? (level - 1) * 100 : null;
   }
-  var cycleViewEl = document.getElementById("cycle-view");
-  var tempCard = document.getElementById("temp-card"), growthCard = document.getElementById("growth-card");
+  var cycleViewEl = byId("cycle-view");
+  var tempCard = byId("temp-card"), growthCard = byId("growth-card");
   function placeCharts() {
-    document.getElementById("slot-temp").appendChild(tempCard);
-    document.getElementById("slot-growth").appendChild(growthCard);
+    byId("slot-temp").appendChild(tempCard);
+    byId("slot-growth").appendChild(growthCard);
   }
   placeCharts();
   var shownEra = null;
@@ -17454,11 +17465,11 @@
   var openIndicatorsPage = null;
   var topbarBack = null;
   function setTopbar(title, onBack) {
-    document.getElementById("topbar-title").textContent = title;
+    byId("topbar-title").textContent = title;
     topbarBack = onBack || null;
-    document.getElementById("topbar-back").hidden = !onBack;
+    byId("topbar-back").hidden = !onBack;
   }
-  document.getElementById("topbar-back").addEventListener("click", function() {
+  byId("topbar-back").addEventListener("click", function() {
     if (topbarBack) topbarBack();
   });
   function drawDial(m) {
@@ -17553,7 +17564,7 @@
         parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
       }
     }
-    var dialEl = document.getElementById("cycle-dial");
+    var dialEl = byId("cycle-dial");
     dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
     dialEl.style.setProperty("--track-w", trackW.toFixed(2));
     dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
@@ -17569,7 +17580,7 @@
     hubShowDefault();
   }
   function wireThemeChoice() {
-    var group = document.getElementById("theme-toggle"), current = document.getElementById("appearance-current");
+    var group = byId("theme-toggle"), current = byId("appearance-current");
     if (!group) return;
     var names = {
       system: "Use system setting",
@@ -17602,7 +17613,7 @@
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
     }).join("") + "</div>" + '<p class="caption">The seasons wear the temperature’s colours: periwinkle below the 1–3% range, orange above it — deep where a season sits wholly outside the range (Winter, Summer), light where it straddles it (Spring, Autumn). Tap a quarter to read which season it was in, and why, in the centre.</p>' + '<div class="legend-head">S&amp;P 500</div><div class="legend-rows">' + '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>positive return</small></div>' + '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>negative return</small></div>' + '<div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div>' + '<div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div>' + "</div>" + '<div class="legend-head">The ring’s span</div>' + '<p class="caption">An open cycle’s ring is scaled to <b>' + typicalCycleYears + " years</b>, and the pale dots are what is left of one: a typical full cycle — one bull market and the bear market that ends it — has run about five to six and a half years across the long record. A cycle that outlasts it extends the ring instead of overflowing it, which is why the Dot-Com ring spans twelve. It is a typical length, not a forecast.</p>" + srcBlock(typicalCycleSrc) + '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
-    document.getElementById("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
+    byId("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
   }
   GYN.step("renderCycleKicker", renderCycleKicker, "render");
   renderCycleKicker();
@@ -17610,12 +17621,12 @@
   var hubDetailIdx = detailTexts.length;
   detailTexts.push("");
   function hubSet(dateHtml, theme, meta, popupHtml) {
-    document.getElementById("season-wheel-hub-date").innerHTML = dateHtml;
-    var themeEl = document.getElementById("season-wheel-hub-theme");
+    byId("season-wheel-hub-date").innerHTML = dateHtml;
+    var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = meta.name;
     themeEl.classList.remove("bull", "bear");
     var who = theme && theme !== meta.name ? theme : "";
-    document.getElementById("season-wheel-hub-detail").innerHTML = !who ? "" : popupHtml ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + '<span class="who-chev" aria-hidden="true">›</span></button>' : '<div class="who">' + who + "</div>";
+    byId("season-wheel-hub-detail").innerHTML = !who ? "" : popupHtml ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + '<span class="who-chev" aria-hidden="true">›</span></button>' : '<div class="who">' + who + "</div>";
     detailTexts[hubDetailIdx] = popupHtml || "";
   }
   function quarterPopup(m, seg, i, isPresent) {
@@ -17655,15 +17666,15 @@
   function hubShowYear(y) {
     var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
     var cum = m.cumByYear[y];
-    document.getElementById("season-wheel-hub-date").innerHTML = "<b>" + y + "</b>" + (isYtd ? " · Today" : "");
-    var themeEl = document.getElementById("season-wheel-hub-theme");
+    byId("season-wheel-hub-date").innerHTML = "<b>" + y + "</b>" + (isYtd ? " · Today" : "");
+    var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0);
     themeEl.classList.toggle("bear", ret < 0);
-    document.getElementById("season-wheel-hub-detail").innerHTML = "<div>S&amp;P 500 total return <b>" + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%</b></div>" + (cum != null ? "<div><b>" + (cum >= 0 ? "+" : "") + cum.toFixed(1) + "%</b> since " + m.era.from + (y === m.peakYear ? " · <b>Peak year</b>" : "") + "</div>" : "");
+    byId("season-wheel-hub-detail").innerHTML = "<div>S&amp;P 500 total return <b>" + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%</b></div>" + (cum != null ? "<div><b>" + (cum >= 0 ? "+" : "") + cum.toFixed(1) + "%</b> since " + m.era.from + (y === m.peakYear ? " · <b>Peak year</b>" : "") + "</div>" : "");
   }
   function renderCycleDial() {
-    var dial = document.getElementById("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
+    var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
     var active = null;
     function mark(i) {
       if (active) active.forEach(function(el) {
@@ -17801,7 +17812,7 @@
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
   function drawTemperature(m) {
-    var svg = document.getElementById("temp-svg"), el = svgEl;
+    var svg = byId("temp-svg"), el = svgEl;
     var TARGET = 2, RANGE_LO = 1, RANGE_HI = 3;
     var FUTURE = m.ongoing ? 8 : 3;
     var compact = window.innerWidth <= 640, key = m.era.from + "|" + compact;
@@ -17831,7 +17842,7 @@
     function pct(v) {
       return v.toFixed(1) + "%";
     }
-    var tooltip = document.getElementById("temp-tooltip");
+    var tooltip = byId("temp-tooltip");
     var W = compact ? 400 : 780, H = compact ? 270 : 250, padL = AXIS.L, padR = AXIS.R, padB = 26;
     var tx0 = padL + (W - padL - padR) / slots * (lastSlot + .5);
     var valueRight = W - padR - tx0 >= 84;
@@ -18111,7 +18122,7 @@
     });
   }
   function drawGrowth(m, sc) {
-    var svg = document.getElementById("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
+    var svg = byId("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
     var startYear = sc.startYear, endM = m.endMonth;
     var endKey = parseInt(endM.slice(0, 4), 10) * 12 + parseInt(endM.slice(5, 7), 10);
     var shown = gdpPeers.filter(function(c) {
@@ -18151,7 +18162,7 @@
     function y(v) {
       return padT + innerH - (v - lo) / (hi - lo) * innerH;
     }
-    var tooltip = document.getElementById("growth-tooltip");
+    var tooltip = byId("growth-tooltip");
     tooltip.style.opacity = 0;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML = "";
@@ -18395,21 +18406,21 @@
       return;
     }
     drawTemperature(m);
-    document.getElementById("temp-kicker").textContent = "Temperature";
-    document.getElementById("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
+    byId("temp-kicker").textContent = "Temperature";
+    byId("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
     var infl = eraInflation(era), iy = infl.years;
-    var tempStats = document.getElementById("temp-stats");
+    var tempStats = byId("temp-stats");
     tempStats.className = iy.length ? "cv-stats cycle-stats" : "cv-stats";
     var tempStatsHtml = iy.length ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(infl.total, 0) + '%</div><div class="cv-stat-l"><span>total price change, ' + (iy.length === 1 ? String(iy[0]) : iy[0] + "–" + iy[iy.length - 1]) + "</span></div></div>" : "";
     tempStats.innerHTML = tempStatsHtml;
     var g = m.growth;
-    document.getElementById("growth-kicker").textContent = "Growth";
-    var gdpLabel = document.getElementById("subj-label-gdp");
+    byId("growth-kicker").textContent = "Growth";
+    var gdpLabel = byId("subj-label-gdp");
     if (gdpLabel) gdpLabel.textContent = "Growth";
-    document.getElementById("growth-sub").textContent = "";
+    byId("growth-sub").textContent = "";
     var yrs = g.years, span = yrs.length ? yrs.length === 1 ? String(yrs[0]) : yrs[0] + "–" + yrs[yrs.length - 1] : "";
     var statsHtml = yrs.length ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(g.total, 0) + '%</div><div class="cv-stat-l"><span>total growth, ' + span + "</span></div></div>" : "";
-    var statsEl = document.getElementById("growth-stats");
+    var statsEl = byId("growth-stats");
     statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
     statsEl.innerHTML = statsHtml;
     renderGrowthPhase(m);
@@ -18426,7 +18437,7 @@
       });
       reg = qs.length ? shown.regime[qs[qs.length - 1]] : reg;
     }
-    document.getElementById("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + "</span>";
+    byId("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + "</span>";
   }
   function peerChosen() {
     return gdpPeers.filter(function(c) {
@@ -18466,7 +18477,7 @@
       tempState.key = null;
       drawTemperature(tempState.model);
     }
-    var hd = document.getElementById("gdp-head");
+    var hd = byId("gdp-head");
     if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
   };
   var shownEraModel = null;
@@ -18597,7 +18608,7 @@
     };
   }());
   function renderCycleList() {
-    var list = document.getElementById("cycle-list");
+    var list = byId("cycle-list");
     var strips = {};
     marketCycles.forEach(function(c) {
       strips[c.from] = seasonStripHtml(c);
@@ -18609,7 +18620,7 @@
     var PREVIEW_CYCLES = 99;
     (function() {
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = document.getElementById("cycle-more"), label = document.getElementById("cycle-more-label");
+      var btn = byId("cycle-more"), label = byId("cycle-more-label");
       if (!btn || rows.length <= PREVIEW_CYCLES) {
         if (btn) btn.hidden = true;
         return;
@@ -18628,7 +18639,7 @@
         apply();
       });
     })();
-    var listWrap = document.getElementById("calendar-list"), detail = document.getElementById("calendar-cycle"), slot = document.getElementById("calendar-cycle-slot");
+    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle"), slot = byId("calendar-cycle-slot");
     function open(from) {
       var era = marketCycles.filter(function(c) {
         return c.from === from;
@@ -18679,7 +18690,7 @@
       detail.hidden = true;
       listWrap.hidden = false;
       topbarBack = null;
-      document.getElementById("topbar-back").hidden = true;
+      byId("topbar-back").hidden = true;
     };
     addSources(sp500AnnualReturnSource);
     addSources(typicalCycleSrc);
@@ -18688,7 +18699,7 @@
   renderCycleList();
   renderCycleView(nowModel);
   function renderSignsList() {
-    var host = document.getElementById("signs-list");
+    var host = byId("signs-list");
     var PEEKED = {
       Temperature: 1,
       Pulse: 1,
@@ -18802,7 +18813,7 @@
         tempCaptionFull = ind.caption;
         tempLeadShown = ind.lead || ind.shortCaption || "";
         (function() {
-          var sheet = document.getElementById("sheet-metric-temp");
+          var sheet = byId("sheet-metric-temp");
           var fresh = d.querySelector(".sign-detail");
           var prev = sheet.querySelector(":scope > .sign-detail");
           if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
@@ -18872,11 +18883,11 @@
       det.parentNode.removeChild(det);
     });
     [ [ "temp-timing", "lagging" ], [ "gdp-timing", "coincident" ], [ "power-timing", "structural" ], [ "valuation-timing", "structural" ], [ "households-timing", "structural" ] ].forEach(function(p) {
-      var el = document.getElementById(p[0]);
+      var el = byId(p[0]);
       if (el) el.innerHTML = timingPill(p[1]);
     });
     [ "sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation", "sheet-metric-households" ].forEach(function(id) {
-      var sheet = document.getElementById(id);
+      var sheet = byId(id);
       if (!sheet) return;
       function rank(el) {
         var k = el.id || "";
@@ -18903,7 +18914,7 @@
   GYN.step("renderSignsList", renderSignsList, "build");
   renderSignsList();
   function renderPagesAndNav() {
-    var host = document.getElementById("peek-row");
+    var host = byId("peek-row");
     if (!host) return;
     var tempInd = lagging.concat(coincident).filter(function(c) {
       return c.bodyTerm === "Temperature";
@@ -19027,7 +19038,7 @@
         return peekCard(card);
       }).join("");
       if (!pair) return;
-      var after = document.getElementById("sheet-sign-sentiment");
+      var after = byId("sheet-sign-sentiment");
       if (!after || !after.parentNode) return;
       var row = document.createElement("div");
       row.className = "peek-row";
@@ -19035,7 +19046,7 @@
       row.innerHTML = pair;
       after.parentNode.insertBefore(row, after.nextSibling);
       var horm = document.querySelector('.sign-row[data-subject="hormones"]');
-      var hormSheet = document.getElementById("sheet-sign-hormones");
+      var hormSheet = byId("sheet-sign-hormones");
       if (horm && hormSheet && horm.parentNode === row.parentNode) {
         row.parentNode.insertBefore(horm, row);
         horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
@@ -19044,8 +19055,8 @@
     (function() {
       var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
       var act = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
-      var sentSheet = document.getElementById("sheet-sign-sentiment");
-      var actSheet = document.getElementById("sheet-sign-activity");
+      var sentSheet = byId("sheet-sign-sentiment");
+      var actSheet = byId("sheet-sign-activity");
       if (!sent || !act || !sentSheet || !actSheet) return;
       var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
       sent.parentNode.insertBefore(mSent, sent);
@@ -19058,7 +19069,7 @@
       mAct.parentNode.removeChild(mAct);
     })();
     (function() {
-      var host = document.getElementById("today-analysis");
+      var host = byId("today-analysis");
       if (!host) return;
       var CATS = [ {
         key: "weather",
@@ -19316,7 +19327,7 @@
       list.appendChild(allRow);
       host.insertBefore(list, host.firstChild);
       [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
-        var el = document.getElementById(id);
+        var el = byId(id);
         if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
       });
     })();
@@ -19328,8 +19339,8 @@
     var capeFmt1 = function(v) {
       return v.toFixed(1) + "×";
     };
-    document.getElementById("power-head").innerHTML = "";
-    document.getElementById("valuation-head").innerHTML = "";
+    byId("power-head").innerHTML = "";
+    byId("valuation-head").innerHTML = "";
     function reserveState(v) {
       return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical";
     }
@@ -19358,13 +19369,13 @@
     }
     sheetRenderers["sheet-metric-temp"] = function(W) {
       var r = pageRange["sheet-metric-temp"], cyclesOn = pageMode["sheet-metric-temp"] === "cycles";
-      document.getElementById("temp-rangebar").innerHTML = histControls("sheet-metric-temp", {
+      byId("temp-rangebar").innerHTML = histControls("sheet-metric-temp", {
         series: cpiYoYHistory,
         stops: TEMP_STOPS
       });
-      document.getElementById("temp-head").innerHTML = histHead("sheet-metric-temp");
-      document.getElementById("slot-temp").hidden = true;
-      var hist = document.getElementById("temp-history");
+      byId("temp-head").innerHTML = histHead("sheet-metric-temp");
+      byId("slot-temp").hidden = true;
+      var hist = byId("temp-history");
       hist.hidden = false;
       var win, cyc = null;
       if (cyclesOn) {
@@ -19376,7 +19387,7 @@
           cycle: true
         });
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-        document.getElementById("temp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
+        byId("temp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
           return d.v;
         }), "points", "month"), null, true, {
           rising: "heating",
@@ -19387,7 +19398,7 @@
         win = cpiYoYHistory.slice(from);
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-        document.getElementById("temp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
+        byId("temp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
           return d.v;
         }), "points", "month"), null, true, {
           rising: "heating",
@@ -19400,17 +19411,17 @@
     sheetRenderers["sheet-metric-gdp"] = function(W) {
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
-      document.getElementById("gdp-rangebar").innerHTML = histControls("sheet-metric-gdp", {
+      byId("gdp-rangebar").innerHTML = histControls("sheet-metric-gdp", {
         series: gdpQuarterlyYoY,
         stops: GDP_STOPS
       });
-      document.getElementById("gdp-head").innerHTML = histHead("sheet-metric-gdp");
-      document.getElementById("slot-growth").hidden = true;
-      var gp = document.getElementById("gdp-panel");
+      byId("gdp-head").innerHTML = histHead("sheet-metric-gdp");
+      byId("slot-growth").hidden = true;
+      var gp = byId("gdp-panel");
       if (gp && !gp.firstChild) gp.innerHTML = growthPanelHtml();
-      var hist = document.getElementById("gdp-history");
+      var hist = byId("gdp-history");
       hist.hidden = yoy;
-      var box = document.getElementById("gdp-yoy");
+      var box = byId("gdp-yoy");
       box.hidden = !yoy;
       if (!yoy) {
         var gCyc = cyclesOn ? cycleByName(pageCycles["sheet-metric-gdp"]) || openCycle() : null;
@@ -19425,7 +19436,7 @@
         attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
         var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
         headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-        document.getElementById("gdp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
+        byId("gdp-trend").innerHTML = trendPill(trendOf(win.map(function(d) {
           return d.v;
         }), "points", "quarter"), null, true, {
           rising: "quickening",
@@ -19440,7 +19451,7 @@
           unit: "real GDP, chained 2017 dollars",
           alt: "The four latest quarters of real GDP, each joined to the same quarter a year earlier; the gap between the two is that quarter’s year-over-year growth"
         }, W);
-        document.getElementById("gdp-trend").innerHTML = trendPill({
+        byId("gdp-trend").innerHTML = trendPill({
           word: fmtSigned(last.pct, 1) + "% this quarter",
           detail: last.label.replace("’", "20") + " measured against " + last.wasLabel.replace("’", "20")
         }, "Year on year");
@@ -19448,7 +19459,7 @@
         var eraQ = gdpQuarterlyYoY.filter(function(d) {
           return parseInt(d.q.slice(0, 4), 10) >= currentEra.from;
         });
-        document.getElementById("gdp-trend").innerHTML = trendPill(trendOf(eraQ.map(function(d) {
+        byId("gdp-trend").innerHTML = trendPill(trendOf(eraQ.map(function(d) {
           return d.v;
         }), "points", "quarter"), null, false, {
           rising: "quickening",
@@ -19469,13 +19480,13 @@
       return a === -1 ? null : [ a, b ];
     }
     sheetRenderers["sheet-sign-activity"] = function(W) {
-      var id = "sheet-sign-activity", bar = document.getElementById("act-rangebar");
+      var id = "sheet-sign-activity", bar = byId("act-rangebar");
       if (!bar) return;
       bar.innerHTML = histControls(id, {
         series: unempHistory,
         stops: ACT_STOPS
       });
-      var hist = document.getElementById("act-history");
+      var hist = byId("act-history");
       if (!hist) return;
       var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
       var span = cyc ? actCycleMonths(cyc) : null;
@@ -19489,7 +19500,7 @@
       var win = unempHistory.slice(from, to).filter(function(d) {
         return d.v != null;
       });
-      var tr = document.getElementById("act-trend");
+      var tr = byId("act-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
         return d.v;
       }), "points", "month"), null, true, {
@@ -19505,7 +19516,7 @@
       var powerTrend = trendOf(vals.map(function(d) {
         return d.v;
       }), "points", "year");
-      document.getElementById("power-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-power", {
+      byId("power-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-power", {
         series: powerHistory,
         stops: POWER_STOPS
       }) + "</div>" + '<div class="page-chart">' + histHead("sheet-metric-power") + reserveChart({
@@ -19532,28 +19543,28 @@
       attachHistory(pBox, "power-hist-tooltip", "reserveChart");
     };
     sheetRenderers["sheet-marker-deficit"] = function(W) {
-      var sheet = document.getElementById("sheet-marker-deficit");
+      var sheet = byId("sheet-marker-deficit");
       if (!sheet) return;
       if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
       sheetRenderers["deficit-range"](W);
     };
     sheetRenderers["deficit-range"] = function(W) {
-      var host = document.getElementById("deficit-record");
+      var host = byId("deficit-record");
       if (!host) return;
       var key = pageRange["deficit-range"], defCycles = pageMode["deficit-range"] === "cycles";
       var defCyc = defCycles ? cycleByName(pageCycles["deficit-range"]) || openCycle() : null;
       var defIdx = defCyc ? [ Math.max(0, defCyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
       var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
-      var bar = document.getElementById("deficit-rangebar");
+      var bar = byId("deficit-rangebar");
       if (bar) bar.innerHTML = histControls("deficit-range", {
         depth: deficitHistory.length,
         stops: DEF_STOPS
       });
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      var defRows = document.getElementById("deficit-records");
+      var defRows = byId("deficit-records");
       if (defRows) defRows.innerHTML = "";
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-      var dTrend = document.getElementById("deficit-trend");
+      var dTrend = byId("deficit-trend");
       if (dTrend) dTrend.innerHTML = trendPill(trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true, {
         rising: "improving",
         falling: "widening"
@@ -19567,7 +19578,7 @@
       var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
       var to = idx ? idx[1] : dsrHistory.length;
-      var host = document.getElementById("households-chart");
+      var host = byId("households-chart");
       if (!host) return;
       host.innerHTML = '<div class="hist-bar">' + histControls(id, {
         depth: Math.floor(dsrHistory.length / 4),
@@ -19581,7 +19592,7 @@
         return householdsChart(w, from, to);
       });
       attachHistory(box, "households-hist-tooltip", "householdsChart");
-      var hl = document.getElementById("households-highlights");
+      var hl = byId("households-highlights");
       if (hl) hl.innerHTML = householdsHighlights();
     };
     function householdsHighlights() {
@@ -19613,7 +19624,7 @@
       var capeTrend = trendOf(vals.map(function(d) {
         return d.v;
       }), "×", "year");
-      document.getElementById("valuation-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-valuation", {
+      byId("valuation-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-valuation", {
         series: capeHistory,
         stops: VAL_STOPS
       }) + "</div>" + '<div class="page-chart">' + histHead("sheet-metric-valuation") + divergeChart({
@@ -19644,7 +19655,7 @@
       attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
     };
     function redrawSheet(id) {
-      var h = document.getElementById("metric-page"), d = sheetRenderers[id];
+      var h = byId("metric-page"), d = sheetRenderers[id];
       if (d) d(h && h.clientWidth ? h.clientWidth : 340);
     }
     document.addEventListener("click", function(e) {
@@ -19673,14 +19684,14 @@
       var mid = seg.parentNode.getAttribute("data-mode-for");
       if (mid && mid in pageMode) {
         pageMode[mid] = seg.getAttribute("data-mode");
-        var mHost = document.getElementById("metric-page"), mDraw = sheetRenderers[mid];
+        var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
         return;
       }
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in pageRange)) return;
       pageRange[id] = seg.getAttribute("data-range");
-      var host = document.getElementById("metric-page");
+      var host = byId("metric-page");
       var draw = sheetRenderers[id];
       if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
     });
@@ -19700,7 +19711,7 @@
       cards.push(hiCard("Power", powerWord.state, powerScore <= lowest ? "Today’s " + powerScore + "% is the lowest reading in the whole series — " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%." : "Today’s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
       cards.push(hiCard("Against the last two shocks", "warning", "The same three markers, scored the same way, leave " + powerOf(stressHistory[0].score) + "% at the " + stressHistory[0].label.replace("'07 ", "2007 ") + " and " + powerOf(stressHistory[1].score) + "% at the " + stressHistory[1].label.replace("'20 ", "2020 ") + " reading. Both were higher than now."));
       if (eraStart) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " + (eraStart.v - powerScore) + " points since."));
-      document.getElementById("power-highlights").innerHTML = highlightsHtml(cards, "", moreRow(powerPageNote));
+      byId("power-highlights").innerHTML = highlightsHtml(cards, "", moreRow(powerPageNote));
     })();
     (function() {
       var vs = capeHistory.map(function(d) {
@@ -19723,7 +19734,7 @@
         return d.y + " (" + capeFmt1(d.v) + ")";
       }).join(" and ") + " ran higher."));
       cards.push(hiCard("Buffett indicator", valRow("buffett").flagState || "serious", bRicher === 0 ? "At " + Math.round(buffNow) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
-      document.getElementById("valuation-highlights").innerHTML = highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(valuation.impression)));
+      byId("valuation-highlights").innerHTML = highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(valuation.impression)));
     })();
     (function() {
       var cyc = nowModel.cpi, hot = cyc.filter(function(d) {
@@ -19737,7 +19748,7 @@
       cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning", "The current cycle’s average is " + mean(cyc.map(function(d) {
         return d.v;
       })).toFixed(1) + "%, against a 2% target. Today’s " + r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1–3% range."));
-      document.getElementById("temp-highlights").innerHTML = highlightsHtml(cards, "", moreRow(tempInfo + function() {
+      byId("temp-highlights").innerHTML = highlightsHtml(cards, "", moreRow(tempInfo + function() {
         var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
         return rest ? factsFrom(rest) : "";
       }()));
@@ -19752,12 +19763,12 @@
       var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' + "last. A body spends the first half of its cycle building something it has not used yet, and an " + "economy does the same with output.</p>" ];
       cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
       cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the trend as " + r.regime + "."));
-      document.getElementById("gdp-highlights").innerHTML = highlightsHtml(cards, "", moreRow(growthDetail));
+      byId("gdp-highlights").innerHTML = highlightsHtml(cards, "", moreRow(growthDetail));
     })();
     (function() {
       var blocks = [];
       blocks.forEach(function(b) {
-        var hl = document.getElementById(b[0]);
+        var hl = byId(b[0]);
         if (!hl) return;
         var html = cycleAverageBlock(b[2], b[3], b[4]);
         if (!html) return;
@@ -19780,14 +19791,14 @@
         panel: cyclePanel,
         title: "Current Cycle",
         hide: function() {
-          return [ cycleViewEl, document.getElementById("today-analysis") ];
+          return [ cycleViewEl, byId("today-analysis") ];
         }
       },
       analysis: {
         panel: analysisPanel,
         title: "Analysis",
         hide: function() {
-          return [ document.getElementById("calendar-list") ];
+          return [ byId("calendar-list") ];
         }
       }
     };
@@ -19824,7 +19835,7 @@
         closeMetricPage();
         return;
       }
-      var el = document.getElementById(prev.id);
+      var el = byId(prev.id);
       homeFromPage(true);
       openMetricPage(el, prev.title, true);
       window.requestAnimationFrame(function() {
@@ -19840,7 +19851,7 @@
       seatPageFoot(el);
       if (!returning && openSheet && openSheet !== el) pageStack.push({
         id: openSheet.id,
-        title: document.getElementById("topbar-title").textContent,
+        title: byId("topbar-title").textContent,
         scroll: window.scrollY || 0
       });
       var wasOpen = !!openSheet;
@@ -19870,19 +19881,19 @@
     cyclePanel.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest("[data-open]");
       if (!btn) return;
-      openMetricPage(document.getElementById(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
     });
     analysisPanel.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest("[data-open]");
       if (!btn) return;
-      openMetricPage(document.getElementById(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
     });
     analysisPanel.addEventListener("keydown", function(e) {
       if (e.key !== "Enter" && e.key !== " ") return;
       var row = e.target.closest && e.target.closest("[data-open]");
       if (!row) return;
       e.preventDefault();
-      openMetricPage(document.getElementById(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
     });
     cyclePanel.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle");
@@ -19898,7 +19909,7 @@
       var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]");
       if (!row) return;
       e.preventDefault();
-      openMetricPage(document.getElementById(row.getAttribute("data-open")), row.getAttribute("data-title"));
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
     });
     function partsOf(el, unitSel) {
       if (!el) return {
@@ -19991,7 +20002,7 @@
       if (!list.length) return "";
       return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) + "<b>" + t.label + "</b><span>" + t.hint + "</span></div>" + list.map(memberRow).join("") + "</div>";
     }).join("");
-    (document.getElementById("today-analysis") || analysisPanel).appendChild(indSheet);
+    (byId("today-analysis") || analysisPanel).appendChild(indSheet);
     function setIndTab(kind) {
       kind = kind || "all";
       Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b) {
@@ -20014,7 +20025,7 @@
       setIndTab(tab && tab !== "structural" ? tab : "all");
       openMetricPage(indSheet, "All indicators", false, "cycle");
     };
-    var indPeek = document.getElementById("indicators-peek");
+    var indPeek = byId("indicators-peek");
     if (indPeek) indPeek.remove();
     if (false && indPeek) {
       indPeek.innerHTML = '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' + 'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' + '<div class="subject-text">' + '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + "</div>" + '<div class="ind-classes">' + Object.keys(timingMembers).map(function(kind) {
@@ -20022,13 +20033,13 @@
       }).join("") + "</div>" + "</div>" + "</div></div>";
     }
     document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && openSheet && !document.getElementById("detail-backdrop").classList.contains("show")) backFromPage();
+      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
     });
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
   function renderCycleCats(era) {
-    var host = document.getElementById("cycle-cats");
+    var host = byId("cycle-cats");
     if (!host) return;
     var from = era.from, to = era.to || calendarTodayY;
     host.innerHTML = readingRoster().map(function(g) {
@@ -20241,7 +20252,7 @@
     return k;
   }
   function renderRhymes() {
-    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
+    var pick = byId("rhy-pick"), body = byId("rhy-body");
     if (!pick || !body) return;
     var ALIKE = 5;
     var GRPS = readingRoster();
@@ -20365,15 +20376,15 @@
         return '<b class="' + z + (w ? " on" : "") + '"></b>';
       }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
     }
-    document.getElementById("seasons-rows").innerHTML = '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' + seasonRules.map(function(r) {
+    byId("seasons-rows").innerHTML = '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' + seasonRules.map(function(r) {
       var m = wheelMeta[r.key], now = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + "</span>" + '<span class="range-cell" title="' + r.range + (now ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + "</span></div>";
     }).join("");
-    document.getElementById("seasons-kicker").innerHTML = "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>');
-    document.getElementById("framework-rows").innerHTML = '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
+    byId("seasons-kicker").innerHTML = "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>');
+    byId("framework-rows").innerHTML = '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
       return '<div class="lag-row"><span>' + r.indicator + "</span><span>" + r.body + "</span><span>" + r.economy + "</span><span>" + r.category + "</span></div>";
     }).join("");
-    document.getElementById("framework-kicker").innerHTML = "The framework" + expandBtn("<h4>The Seasonal Behaviour framework</h4>" + '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as risk appetite shows in current positioning. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' + srcBlock([ {
+    byId("framework-kicker").innerHTML = "The framework" + expandBtn("<h4>The Seasonal Behaviour framework</h4>" + '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as risk appetite shows in current positioning. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' + srcBlock([ {
       t: "Conference Board — Leading Economic Index components",
       u: "https://www.conference-board.org/topics/us-leading-indicators"
     }, {
@@ -20395,7 +20406,7 @@
       portfolio: "Portfolio",
       content: "Content"
     };
-    var topTitle = document.getElementById("topbar-title");
+    var topTitle = byId("topbar-title");
     btns.forEach(function(btn) {
       btn.addEventListener("click", function() {
         if (btn.classList.contains("active")) {
@@ -20420,9 +20431,9 @@
         if (metricPageReset) metricPageReset();
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
         topbarBack = null;
-        document.getElementById("topbar-back").hidden = true;
+        byId("topbar-back").hidden = true;
         if (tab === "cycle") {
-          target.insertBefore(cycleViewEl, document.getElementById("today-analysis"));
+          target.insertBefore(cycleViewEl, byId("today-analysis"));
           placeCharts();
           showCycle(currentEra);
         }
@@ -20438,7 +20449,7 @@
   GYN.step("renderTopbar", renderTopbar, "wire");
   renderTopbar();
   function wireContactForm() {
-    var menu = document.getElementById("more-menu"), open = document.getElementById("menu-btn"), back = document.getElementById("menu-back");
+    var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
     var prevOverflow = "";
     function slideIn(el) {
       el.hidden = false;
@@ -20515,7 +20526,7 @@
         groups.push([ "Other", null ]);
         buckets.push(rest);
       }
-      document.getElementById("sources-groups").innerHTML = groups.map(function(g, i) {
+      byId("sources-groups").innerHTML = groups.map(function(g, i) {
         if (!buckets[i].length) return "";
         return '<h3 class="menu-section">' + g[0] + '</h3><div class="menu-card">' + buckets[i].map(function(x) {
           return '<a class="menu-row" href="' + x.u + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</span>" + '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a>';
@@ -20525,7 +20536,7 @@
     }
     var openSheet = null, openRow = null;
     function showSheet(name, row) {
-      var el = document.getElementById("sheet-" + name);
+      var el = byId("sheet-" + name);
       if (!el) return;
       if (name === "sources" && !built) buildSources();
       el.scrollTop = 0;
@@ -20555,15 +20566,15 @@
       if (openSheet) hideSheet(); else hide();
     });
     (function() {
-      var form = document.getElementById("contact-form"), hint = document.getElementById("contact-hint");
+      var form = byId("contact-form"), hint = byId("contact-hint");
       var parts = [ "kerzaiden", "gmail", "com" ];
       form.addEventListener("submit", function(e) {
         e.preventDefault();
-        var title = document.getElementById("contact-title").value.trim(), msg = document.getElementById("contact-message").value.trim();
+        var title = byId("contact-title").value.trim(), msg = byId("contact-message").value.trim();
         if (!msg) {
           hint.textContent = "Write a message first.";
           hint.classList.add("err");
-          document.getElementById("contact-message").focus();
+          byId("contact-message").focus();
           return;
         }
         hint.classList.remove("err");

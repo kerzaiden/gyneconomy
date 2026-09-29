@@ -132,7 +132,7 @@
      and it is RECOMPUTED here rather than read from a stored copy. One figure, one number. */
   function repaintFearCurve(){
     var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "\u2014" : r.toFixed(2);
-    var ring = document.getElementById("subj-ring-sentiment");
+    var ring = byId("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
       : "Fear curve at " + txt + ", where 1.00 is flat");
     /* V593: the half-dial, its figure, its verdict word and its date line all left with the meter, and taking
@@ -275,7 +275,7 @@
   function repaintPolicy(){
     /* V609: the rows moved inside the Insights section and gained a host of their own, so a decision arriving
        mid-session rewrites the four facts and leaves the cards above them alone. */
-    var box = document.getElementById("policy-facts");
+    var box = byId("policy-facts");
     if (box) box.innerHTML = policyFactRows();
     /* V619: through the doors, not the id. The id reached the category item and left the roster row a rate
        cycle behind — still saying Tightening after a cut, because its tag was never touched either. The word

@@ -149,7 +149,7 @@
         parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>'); // the band only (Version 202; the seasons ring too in 201)
       }
     }
-    var dialEl = document.getElementById("cycle-dial");
+    var dialEl = byId("cycle-dial");
     // V513: the ring's own width, decided above from how crowded this cycle's ring is, handed to the stylesheet
     dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
     dialEl.style.setProperty("--track-w", trackW.toFixed(2));
@@ -162,7 +162,7 @@
   }
   // ---- the Appearance row (Version 198): System · Light · Dark, kept in localStorage; System clears the choice ----
   function wireThemeChoice(){
-    var group = document.getElementById("theme-toggle"), current = document.getElementById("appearance-current"); if (!group) return;
+    var group = byId("theme-toggle"), current = byId("appearance-current"); if (!group) return;
     var names = { system:"Use system setting", light:"Light mode", dark:"Dark mode" };
     function paint(){
       var cur = document.documentElement.getAttribute("data-theme") || "system";
@@ -200,7 +200,7 @@
       srcBlock(typicalCycleSrc) +
       '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
-    document.getElementById("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
+    byId("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
   }
   GYN.step("renderCycleKicker", renderCycleKicker, "render"); renderCycleKicker();
   // ---- the hub: the reading inside the circle ----
@@ -213,12 +213,12 @@
   // The big word is the season, the small rose line under it the theme (Version 181, Keren: "switch them"; the other way round
   // before). The element ids kept their names.
   function hubSet(dateHtml, theme, meta, popupHtml){
-    document.getElementById("season-wheel-hub-date").innerHTML = dateHtml;
-    var themeEl = document.getElementById("season-wheel-hub-theme");
+    byId("season-wheel-hub-date").innerHTML = dateHtml;
+    var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = meta.name; themeEl.classList.remove("bull", "bear");
     // the theme IS the link (Version 248): "Inflation ›" rather than the theme and then a "This season ›" line under it
     var who = theme && theme !== meta.name ? theme : "";
-    document.getElementById("season-wheel-hub-detail").innerHTML = !who ? "" :
+    byId("season-wheel-hub-detail").innerHTML = !who ? "" :
       (popupHtml
         ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + '<span class="who-chev" aria-hidden="true">\u203a</span></button>'
         : '<div class="who">' + who + '</div>');
@@ -276,11 +276,11 @@
   function hubShowYear(y){
     var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
     var cum = m.cumByYear[y];
-    document.getElementById("season-wheel-hub-date").innerHTML = "<b>" + y + "</b>" + (isYtd ? " · Today" : "");
-    var themeEl = document.getElementById("season-wheel-hub-theme");
+    byId("season-wheel-hub-date").innerHTML = "<b>" + y + "</b>" + (isYtd ? " · Today" : "");
+    var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0); themeEl.classList.toggle("bear", ret < 0);
-    document.getElementById("season-wheel-hub-detail").innerHTML = '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
+    byId("season-wheel-hub-detail").innerHTML = '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
       // the compounded return since the cycle's first year; on the most profitable year, the peak is named (Version 158)
       (cum != null ? '<div><b>' + (cum >= 0 ? "+" : "") + cum.toFixed(1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '') + '</div>' : "");
   }
@@ -289,7 +289,7 @@
   // year, and press and hold the year badge, then drag round the ring, to scrub quarter by quarter — the badge rides
   // along and snaps home on release.
   function renderCycleDial(){
-    var dial = document.getElementById("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
+    var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
     var active = null; // the quarter's path and, at a year's end, the stub that rounds it
     function mark(i){
       if (active) active.forEach(function(el){ el.classList.remove("active"); });
@@ -414,7 +414,7 @@
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
   function drawTemperature(m){
-    var svg = document.getElementById("temp-svg"), el = svgEl;
+    var svg = byId("temp-svg"), el = svgEl;
     var TARGET = 2.0, RANGE_LO = 1.0, RANGE_HI = 3.0;
     var FUTURE = m.ongoing ? 8 : 3;    // the axis runs a few months past the last column, as the reference does
     var compact = window.innerWidth <= 640, key = m.era.from + "|" + compact;
@@ -436,7 +436,7 @@
     // the ramp's five steps, by the reading itself rather than by rank, so the same CPI is always the same colour
     // whichever cycle is on screen
     function pct(v){ return v.toFixed(1) + "%"; }
-    var tooltip = document.getElementById("temp-tooltip");
+    var tooltip = byId("temp-tooltip");
 
     var W = compact ? 400 : 780, H = compact ? 270 : 250, padL = AXIS.L, padR = AXIS.R, padB = 26;
     var tx0 = padL + ((W - padL - padR) / slots) * (lastSlot + 0.5);
@@ -604,7 +604,7 @@
   // A line through the cycle's quarters (real GDP, year over year, each on its middle month), the cycle's average as a
   // dashed line; the growth trend is read out in words at the end (its pink line left in Version 161).
   function drawGrowth(m, sc){
-    var svg = document.getElementById("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
+    var svg = byId("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
     var startYear = sc.startYear, endM = m.endMonth; // the last month on the Temperature axis bounds the quarters shown
     var endKey = parseInt(endM.slice(0, 4), 10) * 12 + parseInt(endM.slice(5, 7), 10);
     // whichever economy is chosen (Version 225): the United States by default, otherwise one of the peers, read exactly
@@ -628,7 +628,7 @@
     var lo = Math.min(-1, Math.floor(Math.min.apply(null, vals.concat([0])))), hi = Math.max(2, Math.ceil(Math.max.apply(null, vals.concat([1])))) + 1;
     var step = (hi - lo) > 8 ? 2 : 1; lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
     function y(v){ return padT + innerH - ((v - lo) / (hi - lo)) * innerH; }
-    var tooltip = document.getElementById("growth-tooltip");
+    var tooltip = byId("growth-tooltip");
     tooltip.style.opacity = 0; // a redraw (a new cycle, a new economy) leaves no stale reading hanging over the plot
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML = "";
@@ -777,12 +777,12 @@
     // temperature
     drawTemperature(m);
     // the (i) went in Version 287: this note is now the Temperature page's "More details" row, under Highlights
-    document.getElementById("temp-kicker").textContent = "Temperature";
-    document.getElementById("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
+    byId("temp-kicker").textContent = "Temperature";
+    byId("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
     // the cycle's total price change, in the same box the Growth card gives its total expansion (Version 275;
     // renamed from "price rise" in Version 424, because the figure can be negative \u2014 see the note on the row)
     var infl = eraInflation(era), iy = infl.years;
-    var tempStats = document.getElementById("temp-stats");
+    var tempStats = byId("temp-stats");
     tempStats.className = iy.length ? "cv-stats cycle-stats" : "cv-stats";
     var tempStatsHtml = iy.length
       ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(infl.total, 0) +
@@ -801,17 +801,17 @@
 
     // growth, year by year, and the market's year cards
     var g = m.growth;
-    document.getElementById("growth-kicker").textContent = "Growth";   // likewise (Version 287)
-    var gdpLabel = document.getElementById("subj-label-gdp"); // the drawer's row carries the title and its (i) (Version 213)
+    byId("growth-kicker").textContent = "Growth";   // likewise (Version 287)
+    var gdpLabel = byId("subj-label-gdp"); // the drawer's row carries the title and its (i) (Version 213)
     if (gdpLabel) gdpLabel.textContent = "Growth";   // the note is the page's More details row (Version 287)
-    document.getElementById("growth-sub").textContent = ""; // the chart's end read-out already names the series
+    byId("growth-sub").textContent = ""; // the chart's end read-out already names the series
     // the total expansion over the closed years as the card's big number (Keren, Sep 19, 2026: "put the number at a
     // prominent place"), its years beneath it with the trend word — the per-year rate is the "average" line in the graph
     var yrs = g.years, span = yrs.length ? (yrs.length === 1 ? String(yrs[0]) : yrs[0] + "–" + yrs[yrs.length - 1]) : "";
     var statsHtml = yrs.length
       ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(g.total, 0) + '%</div><div class="cv-stat-l"><span>total growth, ' + span + '</span></div></div>'
       : "";
-    var statsEl = document.getElementById("growth-stats");
+    var statsEl = byId("growth-stats");
     statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
     statsEl.innerHTML = statsHtml;
     // the Growth page's own copy, under its history chart (Version 372) \u2014 written from the same figure, here,
@@ -828,7 +828,7 @@
       var qs = Object.keys(shown.regime).sort().filter(function(q){ return parseInt(q, 10) <= m.endYear; });
       reg = qs.length ? shown.regime[qs[qs.length - 1]] : reg;
     }
-    document.getElementById("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>';
+    byId("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>';
   }
   /* ---------------- The economy the Growth chart draws (Version 210, moved into the head menu in V613) -------
      Keren: "I see we built a country picker. Put it in the growth page under the three dots in history."
@@ -869,7 +869,7 @@
     gdpPeers.forEach(function(c){ c.on = c.code === code; });
     if (shownEraModel) renderGrowthPhase(shownEraModel);
     if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); }
-    var hd = document.getElementById("gdp-head");
+    var hd = byId("gdp-head");
     if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
   };
 

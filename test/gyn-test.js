@@ -302,6 +302,42 @@ async function openPage(p, url, sheet) {
                   : ok('every history wears its own geometry');
   }
 
+  /* ---- 2b5. one reading, one paint (V619) ----
+     A reading is printed on every list offering a door to its page, and before V619 two of them were painted
+     by ELEMENT ID, which reaches one door of two. Both were wrong in the shipped app: a fresh CAPE moved an
+     element no reader sees and left both visible copies stale, and an FOMC cut moved the Hormones figure on
+     its category item while the roster row kept the old rate AND the word Tightening. A stale figure looks
+     exactly like a fresh one, so nothing short of this could have caught it.
+     The two readings are asserted on EVERY door, figure and word together, and the third \u2014 the record of a
+     reading whose doors printed nothing \u2014 is what will catch the next door shape nobody thought of. */
+  {
+    const doors = sheet => p.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].map(d => {
+      const v = d.querySelector('.ci-value, .subject-value');
+      const w = d.querySelector('.tag, .member-word');
+      return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
+    }), sheet);
+    const capeBefore = await doors('sheet-metric-valuation');
+    await p.evaluate(() => window.__GYN.applyLive('capeValue', 50.5));
+    await p.waitForTimeout(200);
+    const capeAfter = await doors('sheet-metric-valuation');
+    (capeBefore.length >= 2 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)))
+      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors')
+      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter }));
+
+    const ffBefore = await doors('sheet-sign-hormones');
+    await p.evaluate(() => window.__GYN.applyLive('fedFunds', { lo: 1.25, hi: 1.50, lastMove: '-0.25' }));
+    await p.waitForTimeout(200);
+    const ffAfter = await doors('sheet-sign-hormones');
+    (ffBefore.length >= 2 && ffAfter.every(t => /^1\.25/.test(t)) &&
+     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)))
+      ? ok('a rate cut reaches every door, word and all', ffAfter.join(' \u00b7 '))
+      : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter }));
+
+    const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
+    pm.length ? bad('every reading prints where it is painted', pm.join(' | '))
+              : ok('every reading prints where it is painted');
+  }
+
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
 
   // 2c. the cycle picker says Today, capital T

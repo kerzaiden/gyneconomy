@@ -33,7 +33,7 @@
         (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : '') +
       '</span>';
     }
-    document.getElementById("seasons-rows").innerHTML =
+    byId("seasons-rows").innerHTML =
       '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
       seasonRules.map(function(r){
         var m = wheelMeta[r.key], now = r.key === currentSeason;
@@ -43,14 +43,14 @@
         return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
           '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
       }).join("");
-    document.getElementById("seasons-kicker").innerHTML = "The Season Model" + expandBtn(
+    byId("seasons-kicker").innerHTML = "The Season Model" + expandBtn(
       '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>');
 
     // The framework table
-    document.getElementById("framework-rows").innerHTML =
+    byId("framework-rows").innerHTML =
       '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
       frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join("");
-    document.getElementById("framework-kicker").innerHTML = "The framework" + expandBtn(
+    byId("framework-kicker").innerHTML = "The framework" + expandBtn(
       '<h4>The Seasonal Behaviour framework</h4>' +
       '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as risk appetite shows in current positioning. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' +
       srcBlock([
@@ -66,7 +66,7 @@
     var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
     var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
     var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", portfolio:"Portfolio", content:"Content" }; // the top bar's title per tab (Keren's names)
-    var topTitle = document.getElementById("topbar-title");
+    var topTitle = byId("topbar-title");
     btns.forEach(function(btn){
       btn.addEventListener("click", function(){
         if (btn.classList.contains("active")){ // a second tap on the open tab steps back out of whatever it has open
@@ -84,9 +84,9 @@
                                                 // the new tab names itself, or its own "Current Cycle" lands on top
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
         topbarBack = null;
-        document.getElementById("topbar-back").hidden = true;
+        byId("topbar-back").hidden = true;
         // The cycle view is one element: the Cycle tab takes it back for the current cycle; the Calendar lands on its list.
-        if (tab === "cycle"){ target.insertBefore(cycleViewEl, document.getElementById("today-analysis")); placeCharts(); showCycle(currentEra); } // the dial first, then today's readings
+        if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); placeCharts(); showCycle(currentEra); } // the dial first, then today's readings
         if (tab === "analysis" && calendarReset) calendarReset();
         if (tab === "analysis") settleStrips();   // the strips have a width only now that the tab is on screen
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -97,7 +97,7 @@
 
   // ---------------- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----------------
   function wireContactForm(){
-    var menu = document.getElementById("more-menu"), open = document.getElementById("menu-btn"), back = document.getElementById("menu-back");
+    var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
     var prevOverflow = "";
     // Sliding a thing that is display:none takes two steps: un-hide it, let the browser lay it out at its start
     // position, and only then add the class that moves it. Reading offsetWidth is what forces that layout — without
@@ -152,7 +152,7 @@
       var buckets = groups.map(function(){ return []; }), rest = [];
       items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (groups[i][1].test(x.u)){ buckets[i].push(x); return; } } rest.push(x); });
       if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
-      document.getElementById("sources-groups").innerHTML = groups.map(function(g, i){
+      byId("sources-groups").innerHTML = groups.map(function(g, i){
         if (!buckets[i].length) return "";
         return '<h3 class="menu-section">' + g[0] + '</h3><div class="menu-card">' + buckets[i].map(function(x){
           return '<a class="menu-row" href="' + x.u + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</span>' +
@@ -165,7 +165,7 @@
     // or Escape, returns to the menu exactly as it was. The Sources sheet builds its list the first time it opens.
     var openSheet = null, openRow = null;
     function showSheet(name, row){
-      var el = document.getElementById("sheet-" + name); if (!el) return;
+      var el = byId("sheet-" + name); if (!el) return;
       if (name === "sources" && !built) buildSources();
       el.scrollTop = 0; slideIn(el); openSheet = el; openRow = row;
       var b = el.querySelector("[data-sheet-back]"); if (b) b.focus();
@@ -183,12 +183,12 @@
     // ---- Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
     // parts, so it never sits in the markup as a whole string. ----
     (function(){
-      var form = document.getElementById("contact-form"), hint = document.getElementById("contact-hint");
+      var form = byId("contact-form"), hint = byId("contact-hint");
       var parts = ["kerzaiden", "gmail", "com"];
       form.addEventListener("submit", function(e){
         e.preventDefault();
-        var title = document.getElementById("contact-title").value.trim(), msg = document.getElementById("contact-message").value.trim();
-        if (!msg){ hint.textContent = "Write a message first."; hint.classList.add("err"); document.getElementById("contact-message").focus(); return; }
+        var title = byId("contact-title").value.trim(), msg = byId("contact-message").value.trim();
+        if (!msg){ hint.textContent = "Write a message first."; hint.classList.add("err"); byId("contact-message").focus(); return; }
         hint.classList.remove("err"); hint.textContent = "Opening your mail app\u2026";
         var to = parts[0] + "@" + parts[1] + "." + parts[2];
         var subject = "Gyneconomy" + (title ? " \u2014 " + title : "");

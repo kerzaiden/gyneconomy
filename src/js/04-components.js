@@ -438,7 +438,7 @@
     histLegend(host);   // like the readout, rebuilt on EVERY draw: the window changes and so do its references
     if (host.__hovWired) return;
     host.__hovWired = true;
-    var tip = document.getElementById(tipId);
+    var tip = byId(tipId);
     function hide(){
       if (tip){ tip.style.opacity = "0"; tip.hidden = true; }
       host.classList.remove("hovering");

@@ -114,8 +114,8 @@
                     "sheet-metric-households":"10y",
                     "sheet-sign-activity":"10y" };   // V498
   function wireDetailModal(){
-    var backdrop = document.getElementById('detail-backdrop');
-    var body = document.getElementById('detail-modal-body');
+    var backdrop = byId('detail-backdrop');
+    var body = byId('detail-modal-body');
     function openFrom(idx, btn){
       body.innerHTML = detailTexts[idx];
       // Version 329: the reading's timing chip comes with the note — a copy, so the page keeps the original and
@@ -135,7 +135,7 @@
         openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
       if (e.target === backdrop) close();
     });
-    document.getElementById('detail-modal-close').addEventListener('click', close);
+    byId('detail-modal-close').addEventListener('click', close);
     document.addEventListener('click', function(e){
       var chip = e.target.closest && e.target.closest('.timing[data-ind-tab]'); if (!chip) return;
       e.preventDefault(); e.stopPropagation();
@@ -148,7 +148,7 @@
 
 
   // ---------------- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----------------
-  document.getElementById("asof-text").textContent = "Data compiled " + dataCompiledLabel; // the disclaimer beside it says it is a snapshot, not a feed
+  byId("asof-text").textContent = "Data compiled " + dataCompiledLabel; // the disclaimer beside it says it is a snapshot, not a feed
 
 
   // Individual indicator meters: a clean "lab result" bar — plain track, a solid green "optimal" zone,
@@ -357,7 +357,7 @@
 
   // ---------------- RENDER: yield-by-maturity comparison chart (multiselect by maturity) ----------------
   function renderPressurePage(){
-    var svg = document.getElementById("ylm-svg");
+    var svg = byId("ylm-svg");
     // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
     // drawn at the size it will occupy rather than scaled down from 780. The values here are only a seed.
     var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
@@ -418,7 +418,7 @@
     }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
-    var tooltip = document.getElementById("ylm-tooltip");
+    var tooltip = byId("ylm-tooltip");
     var onMaturities; // the toggle-invariant part of showAt()'s filter, recomputed once per render() not per hover frame
 
     function render(){
@@ -552,7 +552,7 @@
       function hide(){ crosshair.setAttribute("opacity", 0); tooltip.style.opacity = 0; }
       // attachHoverTracking retired here in Version 409 — see above. It stays in the app for the spread chart,
       // which is a line with two series and genuinely needs a different readout.
-      var shell = document.getElementById("ylm-shell");
+      var shell = byId("ylm-shell");
       attachHistory(shell, "ylm-tooltip", "ylm");
     }
 
@@ -604,19 +604,19 @@
     // gets a second control idiom and neither gets its own listener. Each measures its OWN host, because these
     // charts sit inside a padded card and the width the handler passes is the page's.
     function drawVelocityRecord(){
-      var host = document.getElementById("pulse-record");
+      var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
       var key = pageRange["pulse-range"];
       var pulCycles = pageMode["pulse-range"] === "cycles";
       var pulCyc = pulCycles ? (cycleByName(pageCycles["pulse-range"]) || openCycle()) : null;
       var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
-      var bar = document.getElementById("pulse-timeline");
+      var bar = byId("pulse-timeline");
       if (bar) bar.innerHTML = histControls("pulse-range",
         { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS });
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
-      var vTrend = document.getElementById("pulse-trend");
+      var vTrend = byId("pulse-trend");
       if (vTrend) vTrend.innerHTML = trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
         // Version 431, Keren: "in the pulse page you write quickening \u2014 the correct word is accelerating, and the
@@ -627,20 +627,20 @@
     sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
     sheetRenderers["pulse-range"] = drawVelocityRecord;
     function drawM2Record(){
-      var host = document.getElementById("m2-record");
+      var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
       var len = m2Yoy.length - 4, key = pageRange["volume-range"];
       var volCycles = pageMode["volume-range"] === "cycles";
       var volCyc = volCycles ? (cycleByName(pageCycles["volume-range"]) || openCycle()) : null;
       var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
-      var bar = document.getElementById("volume-timeline");
+      var bar = byId("volume-timeline");
       if (bar) bar.innerHTML = histControls("volume-range",
         { depth:Math.floor(len / 4), stops:VOL_STOPS });
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       // the fit is over the quarters IN VIEW, so the pill and the picture can never describe different stretches
-      var mTrend = document.getElementById("volume-trend");
+      var mTrend = byId("volume-trend");
       if (mTrend) mTrend.innerHTML = trendPill(
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
         // Version 431: Volume already used "accelerating" and paired it with "slowing", which is half of one pair
@@ -654,11 +654,11 @@
        rule), and inventing a 3M/1Y/3Y vocabulary for one page is the drift Version 411 closed. Three years is
        short enough to read whole. */
     function drawDesireRecord(){
-      var host = document.getElementById("desire-record");
+      var host = byId("desire-record");
       if (!host || !host.clientWidth) return;
       var from = hyWindowFrom(pageRange["desire-range"]);
       var win = hyOas.slice(from);
-      var bar = document.getElementById("desire-timeline");
+      var bar = byId("desire-timeline");
       // no mode bar: at three years "Current cycle" and "Max" are the same window, and two stops that mean the
       // same thing are worse than one (the V366 rule). A bare range bar wears the same chrome.
       // V519: the head is inside the band; this is the page's own bare range bar, on the ground
@@ -667,7 +667,7 @@
                  pageRange["desire-range"]) + '</div>';
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
       attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
-      var tr = document.getElementById("desire-trend");
+      var tr = byId("desire-trend");
       // widening and tightening are the credit market's own pair, and the only pair for a spread
       if (tr) tr.innerHTML = trendPill(trendOf(win, "points", "day"), null, true,
         { rising:"widening", falling:"tightening" });
@@ -704,7 +704,7 @@
       ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
       ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
       render();
-      var yTrend = document.getElementById("ylm-trend");
+      var yTrend = byId("ylm-trend");
       if (yTrend){
         /* V588: the fit is over the quarters IN VIEW, so the pill and the picture can never describe
            different stretches \u2014 the rule Temperature states in the same words. */
@@ -754,7 +754,7 @@
       };
       HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
                                    : horizonInfoHtml(spreadPick);
-      var hd = document.getElementById("hzn-head");
+      var hd = byId("hzn-head");
       if (hd) hd.innerHTML = histHead("hzn-range");
     }
     /* The page's one renderer. Whichever reading is off is HIDDEN, never torn down (the Version 314 rule), so
