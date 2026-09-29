@@ -135,7 +135,8 @@
       // the Sources screen that should never appear. Grouping them is NOT an endorsement: they are
       // the only citations in the app that are neither a primary source nor a labelled compilation,
       // and whether they belong at all is Keren's to settle — see the open question in ARCHITECTURE.md.
-      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments/],
+      // V640: yardeni joins — the bull/bear market record the rhymes table cites, which is cycle history.
+      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/],
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
       ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/],

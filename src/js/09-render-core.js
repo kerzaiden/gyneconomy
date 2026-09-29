@@ -388,7 +388,7 @@
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
 
-    var quarters = t3mYieldHistory.map(function(d){ return d.q; });
+    var quarters = t3mYieldHistory.map(function(d){ return d.q; }), openQ = DATA_COMPILED.getFullYear() + " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1);   // V640: the quarter still running
 
     var maturities = [
       {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
@@ -476,7 +476,10 @@
         crossLine(padT, (H - padB)));
       var picked = matOf(matPick);
       publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
-                       n:ylmCount(), at:function(d, i){ return quarters[ylmFrom + i]; },
+                       /* V640, Keren: "the 10-year is 5.25 and the app says 4.70." The row says today; this plate says
+                          the QUARTER, which is an average, and for the quarter still running an average of part of it
+                          — so it says so, or it reads as a second, lower "today" (her Version 294 catch, again). */
+                       n:ylmCount(), at:function(d, i){ var q = quarters[ylmFrom + i]; return q === openQ ? q + " · so far" : q; },
                        fmt:function(v){ return v.toFixed(2) + "%"; },
                        /* V570: the zone key moves up into the legend at the head of the grid, out of the row
                           it had under the chart. Same three entries, same colours, the place every other
@@ -764,7 +767,7 @@
     }
     /* The page's one renderer: the window, the picked maturity, the trend pill and the head, in that order.
        `sheet-sign-pressure` opens it, which is what makes the chart draw at its box's real width (V303). */
-    function drawPressure(){ drawYlm(); }
+    function drawPressure(){ drawYlm(); renderPressureInsights(); }   // V640: the insights follow the live figure
     sheetRenderers["pressure-range"] = drawPressure;
     sheetRenderers["sheet-sign-pressure"] = drawPressure;
 
@@ -784,3 +787,49 @@
                                            function(){ return "yl-col normal"; }, 0, true);
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();
+
+  /* ---------------- V640: Pressure's Insights ----------------
+     Keren: "add an insights component to the pressure page saying what is the 10-year US Treasury yield, why
+     it's important, and in accordance to the rules we based about biology, economy, and gyneconomy."
+     The lede is the body, the first card the economy, the second the reading in this app's terms, the third
+     the division of labour with Horizon. Every figure is computed: today's 10-year from the live curve the row
+     prints, the policy range from `fedFunds`, and the record, the cycle average and the extremes from the
+     quarterly series the chart draws. Nothing is typed in that a refresh could leave stale. A separate step
+     rather than lines inside renderPressurePage, so that function does not grow (the V624 ratchet), and it is
+     re-run on every open of the page so the figures follow the live curve. */
+  function renderPressureInsights(){
+    var ins = byId("pressure-insights"); if (!ins || !t10yYieldHistory.length) return;
+    var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+    var seen = t10yYieldHistory.filter(function(d){ return d.v != null; });
+    var hi = seen.reduce(function(a, d){ return d.v > a.v ? d : a; });
+    var lo = seen.reduce(function(a, d){ return d.v < a.v ? d : a; });
+    var cyc = openCycle(), span = cycleSlice(t10yYieldHistory, cyc);
+    var inCycle = span ? t10yYieldHistory.slice(span[0], span[1]).filter(function(d){ return d.v != null; }) : [];
+    var cycAvg = inCycle.length ? mean(inCycle.map(function(d){ return d.v; })) : null;
+    var pct = function(v){ return v.toFixed(2) + "%"; };
+    var cards = [];
+    cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' +
+      'downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one ' +
+      'risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
+    cards.push(hiCard("The risk-free loan", "",
+      "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " +
+      "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " +
+      "a stock’s future earnings are measured against. Hormones is the overnight rate the Fed sets" +
+      (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
+      "; this is that rate as the market re-prices it ten years out" +
+      (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the borrower", "",
+      "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " +
+      "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the marker " +
+      "on Power. " +
+      (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") +
+      "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
+      " to " + pct(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("Level, not slope", "",
+      "This page reads the LEVEL. The gap between this yield and the three-month bill is Horizon, in Mood, " +
+      "because that gap is the market’s forecast of the next few years rather than a pressure it is under " +
+      "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " +
+      "relief; a low level with a steep curve is one at rest that expects to work."));
+    ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '</section>';
+  }
+  GYN.step("renderPressureInsights", renderPressureInsights, "render"); renderPressureInsights();

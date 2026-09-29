@@ -234,7 +234,10 @@ Growth's chart is coloured by regime, **never by the sign of growth**.
 Keren: "the 10-year is the risk-free loan across the economy, so whenever it goes up we can see the pressure
 the US government has to repay its debts") is the Treasury yields, one maturity at a time, opening on the
 10-year with the others in the ⋯ menu; its row prints today's 10-year from the live curve with **no verdict
-word**, because a rate has no sourced band. This reversed V597 (the loan survey as "resistance") and V598
+word**, because a rate has no sourced band. Its Insights (V640) are the body, the economy and the reading, every
+figure computed. **The chart's resting plate names a quarter, and the quarter still running says "· so far"**:
+the row is today and the plate is an average, and without the words the two read as two different todays
+(Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
 The gap is a forecast, not a pressure, so it is Mood's fourth member, Horizon, judged optimistic or
 pessimistic. **Horizon's word is slope AND
