@@ -1,14 +1,4 @@
 #!/usr/bin/env node
-/* Move the app to its next version number.
-
-     npm run bump          # one past the higher of package.json and the newest tag
-                           #   (V647: tags are made by the Tag workflow after a merge, so a checkout
-                           #   can be a version ahead of its newest tag; counting from the tag alone
-                           #   named V644 twice)
-     npm run bump 640      # a number you name
-
-   Writes package.json and stamps sw.js from it (see tools/version.js). Run it before committing a
-   V6NN version, so the commit, the tag, the package and the worker's cache name all say the same thing. */
 const V = require('./version');
 
 const arg = process.argv[2];

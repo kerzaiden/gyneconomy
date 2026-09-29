@@ -1,32 +1,24 @@
 #!/usr/bin/env node
-/* Removes every comment from the app's source, keeping only one-line section titles.
-
-   Keren, V650: "I think you can just remove all the comments … nobody can follow up on so many comments."
-   The why behind the code lives in docs/ARCHITECTURE.md, her decisions in docs/DECISIONS.md and the rules
-   in CLAUDE.md; the history is in git. A section title (a comment that is only `---- Title ----`)
-   is kept, because tools/make-map.py builds the navigation map from them.
-
-   Comments are found with acorn, the parser terser depends on, because a comment cannot be found by
-   pattern in JavaScript (see tools/strip.js). The generated part js/03b-history-fred.js is left alone:
-   the backfill writes it, header and all.
-
-   Usage: node tools/uncomment.js            rewrite src/ in place
-          node tools/uncomment.js --check    exit 1 if any comment other than a section title remains
-   Then: node tools/comment-proof.js proves the page it builds is unchanged. */
 const fs = require('fs'), path = require('path');
 const acorn = require('acorn');
+const { minify } = require('terser');
 
 const ROOT = path.join(__dirname, '..'), SRC = path.join(ROOT, 'src');
 const CHECK = process.argv.includes('--check');
-const SKIP = new Set(['js/03b-history-fred.js']);
 const manifest = JSON.parse(fs.readFileSync(path.join(SRC, 'manifest.json'), 'utf8'));
-const text = manifest.map(p => fs.readFileSync(path.join(SRC, p), 'utf8'));
-const starts = []; let off = 0;
-text.forEach(t => { starts.push(off); off += t.length + 1; });
-const joined = text.join('\n');
-const partAt = pos => { let i = starts.length - 1; while (starts[i] > pos) i--; return i; };
+const scripts = () => ['tools', 'test'].flatMap(d => fs.readdirSync(path.join(ROOT, d))
+  .filter(f => f.endsWith('.js')).map(f => d + '/' + f)).concat(['sw.js']);
 
-/* CSS: a scanner that skips strings and url(), as tools/strip.js does. */
+const TITLE = /^\s*-{3,}\s*(.*?)\s*-*\s*$/;
+function title(c) {
+  if (c.kind === 'html') return null;
+  const m = c.value.split('\n')[0].match(TITLE);
+  if (!m) return null;
+  const t = m[1].replace(/\s+/g, ' ').trim();
+  return t.length >= 3 ? t : null;
+}
+const tidyTitle = c => title(c) && !c.value.includes('\n') && c.value.trim() === '---- ' + title(c) + ' ----';
+
 function cssComments(body, from, out) {
   let i = 0;
   while (i < body.length) {
@@ -40,76 +32,77 @@ function cssComments(body, from, out) {
     i++;
   }
 }
-function comments() {
-  const found = [];
+function jsComments(code, from, out) {
+  acorn.parse(code, { ecmaVersion: 'latest', allowHashBang: true, allowReturnOutsideFunction: true,
+    onComment: (block, value, s, e) => { if (!code.startsWith('#!', s)) out.push({ start: from + s, end: from + e, kind: block ? 'block' : 'line', value }); } });
+}
+
+function remove(s, list, keepTitles) {
+  let removed = 0, kept = 0;
+  list.slice().sort((a, b) => b.start - a.start).forEach(c => {
+    const a = c.start, b = c.end;
+    const ls = s.lastIndexOf('\n', a - 1) + 1, le = s.indexOf('\n', b), lineEnd = le < 0 ? s.length : le;
+    const before = s.slice(ls, a), after = s.slice(b, lineEnd);
+    if (keepTitles && title(c)) {
+      s = s.slice(0, a) + (c.kind === 'line' ? '// ---- ' : '/* ---- ') + title(c) + (c.kind === 'line' ? ' ----' : ' ---- */') + s.slice(b);
+      kept++; return;
+    }
+    removed++;
+    if (!before.trim() && !after.trim()) s = s.slice(0, ls) + s.slice(le < 0 ? s.length : le + 1);
+    else if (!after.trim()) s = s.slice(0, ls) + before.replace(/\s+$/, '') + s.slice(lineEnd);
+    else s = s.slice(0, a) + (/\S$/.test(before) && /^\S/.test(after) ? ' ' : '') + s.slice(b);
+  });
+  return { s: s.replace(/\n[ \t]*\n([ \t]*\n)+/g, '\n\n').replace(/^(#!.*\n)?\n+/, '$1'), removed, kept };
+}
+
+function srcComments(text) {
+  const starts = []; let off = 0;
+  text.forEach(t => { starts.push(off); off += t.length + 1; });
+  const joined = text.join('\n'), found = [];
   const re = /(<(script|style)\b[^>]*>)([\s\S]*?)(<\/\2>)/gi;
   let m, at = 0;
   const markup = (s, from) => { let c; const r = /<!--([\s\S]*?)-->/g; while ((c = r.exec(s))) found.push({ start: from + c.index, end: from + r.lastIndex, kind: 'html', value: c[1] }); };
   while ((m = re.exec(joined))) {
     markup(joined.slice(at, m.index), at);
-    const body = m[3], from = m.index + m[1].length;
-    if (m[2].toLowerCase() === 'script')
-      acorn.parse(body, { ecmaVersion: 'latest', allowReturnOutsideFunction: true,
-        onComment: (block, value, s, e) => found.push({ start: from + s, end: from + e, kind: block ? 'block' : 'line', value }) });
-    else cssComments(body, from, found);
+    const from = m.index + m[1].length;
+    if (m[2].toLowerCase() === 'script') jsComments(m[3], from, found); else cssComments(m[3], from, found);
     at = re.lastIndex;
   }
   markup(joined.slice(at), at);
-  return found.filter(c => !SKIP.has(manifest[partAt(c.start)]));
+  const partAt = pos => { let i = starts.length - 1; while (starts[i] > pos) i--; return i; };
+  return found.map(c => { const i = partAt(c.start); return Object.assign(c, { part: i, start: c.start - starts[i], end: c.end - starts[i] }); });
 }
 
-/* A section title: the comment's first line is dashes, a title, and optionally dashes. */
-const TITLE = /^\s*-{3,}\s*(.*?)\s*-*\s*$/;
-function title(c) {
-  if (c.kind === 'html') return null;
-  const m = c.value.split('\n')[0].match(TITLE);
-  if (!m) return null;
-  const t = m[1].replace(/\s+/g, ' ').trim();
-  return t.length >= 3 ? t : null;
-}
-function titled(c) {
-  const t = title(c);
-  return c.kind === 'line' ? '// ---- ' + t + ' ----' : '/* ---- ' + t + ' ---- */';
-}
+const plain = code => minify(code, { compress: false, mangle: false, format: { comments: false, beautify: true } }).then(r => r.code);
 
-const all = comments();
-const stray = all.filter(c => !title(c) || c.value.includes('\n') || c.value.trim() !== ('---- ' + title(c) + ' ----'));
+(async () => {
+  const text = manifest.map(p => fs.readFileSync(path.join(SRC, p), 'utf8'));
+  const inSrc = srcComments(text);
+  const files = scripts().map(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), list = []; jsComments(s, 0, list); return { f, s, list }; });
 
-if (CHECK) {
-  const bad = all.filter(c => !title(c) || c.value.trim() !== '---- ' + title(c) + ' ----');
-  if (bad.length) {
-    const c = bad[0], i = partAt(c.start), line = text[i].slice(0, c.start - starts[i]).split('\n').length;
-    console.error(bad.length + ' comment(s) in src/ — the app keeps none but one-line section titles. First: src/' + manifest[i] + ':' + line
-      + '\n  run: node tools/uncomment.js   (the why belongs in docs/ARCHITECTURE.md, a decision of Keren\'s in docs/DECISIONS.md)');
-    process.exit(1);
-  }
-  console.log('ok: no comments in src/ but ' + all.length + ' section titles');
-  process.exit(0);
-}
-
-/* Rewrite each part from its last comment to its first, so earlier offsets stay valid. */
-const byPart = new Map();
-for (const c of stray) { const i = partAt(c.start); if (!byPart.has(i)) byPart.set(i, []); byPart.get(i).push(c); }
-let removed = 0, kept = 0;
-for (const [i, list] of byPart) {
-  let s = text[i];
-  list.sort((a, b) => b.start - a.start);
-  for (const c of list) {
-    const a = c.start - starts[i], b = c.end - starts[i];
-    const ls = s.lastIndexOf('\n', a - 1) + 1, le = s.indexOf('\n', b), lineEnd = le < 0 ? s.length : le;
-    const before = s.slice(ls, a), after = s.slice(b, lineEnd);
-    if (title(c)) { s = s.slice(0, a) + titled(c) + s.slice(b); kept++; continue; }
-    removed++;
-    if (!before.trim() && !after.trim()) {
-      s = s.slice(0, ls) + s.slice(le < 0 ? s.length : le + 1);          // a comment on its own line(s): the lines go
-    } else if (!after.trim()) {
-      s = s.slice(0, ls) + before.replace(/\s+$/, '') + s.slice(lineEnd); // a trailing comment: it and the space before it go
-    } else {
-      const gap = /\S$/.test(before) && /^\S/.test(after) ? ' ' : '';
-      s = s.slice(0, a) + gap + s.slice(b);                             // inside a line: keep the tokens apart
+  if (CHECK) {
+    const bad = inSrc.filter(c => !tidyTitle(c)).map(c => 'src/' + manifest[c.part] + ':' + text[c.part].slice(0, c.start).split('\n').length)
+      .concat(files.filter(x => x.list.length).map(x => x.f + ':' + x.s.slice(0, x.list[0].start).split('\n').length));
+    if (bad.length) {
+      console.error('comments in the code — it keeps none but one-line section titles in src/. First: ' + bad[0] + '\n  run: npm run uncomment');
+      process.exit(1);
     }
+    console.log('ok: no comments in the code');
+    return;
   }
-  s = s.replace(/\n[ \t]*\n([ \t]*\n)+/g, '\n\n');                        // never two blank lines in a row
-  fs.writeFileSync(path.join(SRC, manifest[i]), s);
-}
-console.log('removed ' + removed + ' comments, kept ' + kept + ' section titles as one line, in ' + byPart.size + ' parts');
+
+  let removed = 0, kept = 0, touched = 0;
+  manifest.forEach((p, i) => {
+    const list = inSrc.filter(c => c.part === i && !tidyTitle(c));
+    if (!list.length) return;
+    const r = remove(text[i], list, true);
+    fs.writeFileSync(path.join(SRC, p), r.s); removed += r.removed; kept += r.kept; touched++;
+  });
+  for (const x of files) {
+    if (!x.list.length) continue;
+    const r = remove(x.s, x.list, false);
+    if (await plain(x.s) !== await plain(r.s)) { console.error('REFUSING ' + x.f + ': removing its comments would change its code'); process.exit(1); }
+    fs.writeFileSync(path.join(ROOT, x.f), r.s); removed += r.removed; touched++;
+  }
+  console.log('removed ' + removed + ' comments' + (kept ? ', kept ' + kept + ' section titles' : '') + ' in ' + touched + ' files');
+})().catch(e => { console.error('FAILED: ' + e.message); process.exit(1); });

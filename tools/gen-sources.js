@@ -1,21 +1,4 @@
 #!/usr/bin/env node
-/* Regenerate sources.html from the app's own Sources screen.
-
-     node tools/gen-sources.js            # rewrite sources.html
-     node tools/gen-sources.js --check    # exit 1 if it is out of date
-
-   sources.html is the citation list published beside the app, for readers who want the sources
-   without opening it. It must say exactly what the in-app Sources screen says.
-
-   THE RULE THAT SHAPES THIS SCRIPT: the grouping is NOT duplicated here. The patterns that sort a
-   URL into "Sentiment" or "Valuations" live in index.html and nowhere else, so this script opens
-   the app, lets it build its own Sources screen, and reads the result. A second copy of those
-   patterns would drift, and the drift would be invisible — two lists that disagree about where a
-   source belongs, neither obviously wrong.
-
-   If the app puts anything in an "Other" group, this REFUSES to write. "Other" means a cited
-   source matched none of the patterns, and the fix is a pattern in index.html, not a bucket here. */
-
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -30,9 +13,6 @@ const CHROME = process.env.GYN_CHROME
 
 const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
 
-/* Escape ONCE. The in-app builder escapes when it writes the DOM, so reading textContent back gives
-   the raw title — escaping that is correct. Escaping the already-escaped HTML is what produced
-   "Fear &amp;amp; Greed" on the published page. */
 const esc = s => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
@@ -41,7 +21,6 @@ const esc = s => String(s)
   const b = await chromium.launch({ executablePath: CHROME });
   const ctx = await b.newContext({ viewport: { width: 900, height: 1000 } });
   const p = await ctx.newPage();
-  // the app is self-contained; blocking everything else keeps this runnable offline and fast
   await p.route('**/*', r => { const u = r.request().url();
     (u.startsWith('file://') || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort(); });
   const errs = [];
@@ -49,7 +28,6 @@ const esc = s => String(s)
   await p.goto('file://' + APP);
   await p.waitForTimeout(1500);
 
-  // open the menu, then the Sources sheet — the app builds the list on first open
   await p.evaluate(() => { const m = document.querySelector('.menu-btn'); if (m) m.click(); });
   await p.waitForTimeout(400);
   await p.evaluate(() => {
@@ -100,9 +78,6 @@ const esc = s => String(s)
     ).join('\n') + '\n  </div>'
   ).join('\n\n');
 
-  /* The shell — head, style, top bar, lede, footer — is kept from the existing file and only the
-     group list between the lede and the footer is replaced. The styling is hand-tuned and is not
-     this script's to regenerate. */
   const shell = fs.readFileSync(OUT, 'utf8');
   const startAt = shell.indexOf('</p>\n\n', shell.indexOf('class="lede"'));
   const endAt = shell.indexOf('  <footer>');

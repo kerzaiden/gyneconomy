@@ -260,6 +260,22 @@ Rules that shape the pages:
 
 ## Data model
 
+**The generated histories** (`js/03b-history-fred.js`, written by the backfill from FRED; never hand-edited):
+
+| Variable | Series | What it is |
+|---|---|---|
+| `fedFundsHistory` | FEDFUNDS | effective federal funds rate, monthly: the policy rate, where the Treasury yields are what the market charges |
+| `fearCurveHistory` | VIXCLS ÷ VXVCLS | the fear curve, sampled on each month's last day both legs printed; 1.00 is flat, above it inverted. VXVCLS starts Dec 2007, so the ratio does too |
+| `fiscalHistory.gross` | GFDGDPA188S | gross federal debt, % of GDP, by fiscal year (OMB) |
+| `fiscalHistory.held` | FYPUGDA188S | debt held by the public, % of GDP (OMB) |
+| `fiscalHistory.interest` | FYOIGDA188S | federal interest outlays, % of GDP (OMB) |
+| `fiscalHistory.budget` | FYFSGDA188S | surplus (+) or deficit (−), % of GDP (OMB) |
+| `grossDebtQuarterly` | GFDEGDQ188S | total public debt, % of GDP, quarterly (Treasury and BEA) |
+| `treasuryQuarterly` | TB3MS, GS2, GS5, GS10, GS30 | calendar-quarter means of the monthly yields; `s3m` is GS10 − TB3MS and `s2y` GS10 − GS2, from unrounded means; `partial` marks the running quarter; `y30` is null for 2005, when no 30-year bond was issued (Feb 2002 – Feb 2006) |
+
+Monthly series are oldest first and leave a missing month out rather than interpolate it. The fetch date is
+in the backfill's commit.
+
 **Cycles.** First bull year to last bear year; the bleed closes a cycle. `sp500AnnualReturns` (real annual
 total returns, Slickcharts' compilation of S&P DJI) partitions the timeline into Dot-Com 1991–2002 ·
 Housing 2003–2008 · Big Tech 2009–2018 · COVID-19 2019–2022 · AI 2023–today. Eras are named for what
@@ -495,6 +511,8 @@ Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook
 - Backfilling Power's markers at each closed cycle's close; stacking panels to compare Temperature and
   Growth; older fixed-viewBox charts should move to render-width drawing when touched.
 
+- **The `xlsx` advisory** (moved from `package.json` at V652). SheetJS, and it carries a known high-severity advisory with 'No fix available'. Read this before acting on the audit. Shiller publishes his dataset ONLY as a spreadsheet — no CSV, no plain text, and no FRED series — so reading a .xls is the price of taking CAPE from the originator instead of from a site quoting him. The registry copy is stranded at 0.18.5, which SheetJS calls a registry bug: the fixes for both advisories shipped in 0.19.3 and 0.20.2 and reach only their own CDN. We are NOT on the CDN, because neither machine that builds this repo is allowed out to cdn.sheetjs.com, and a dependency that cannot be resolved into the lockfile is worse than one with a documented advisory. The exposure is what makes that acceptable: this code parses exactly one file, Shiller's own, inside a job whose only secret is a read-only FRED key, and whose worst failure is a data run that commits nothing. It is OPTIONAL so a resolution failure cannot fail `npm ci` and take the site deploy with it — the suite and the unit tests never load it. Revisit if the registry copy moves, or if this ever parses a file we did not choose.
+
 ## Procedures
 
 **Refresh.** Six readings refresh themselves. The rest is upkeep: `DATA_COMPILED` (top of the script) is
@@ -621,7 +639,7 @@ where a heading is lost.
   `importNode` copies, so drain a parsed fragment by taking the child list once.
 - **An average must be assigned before the geometry citing it**, or the reference captures `undefined`.
 - **`\uXXXX` in a comment is invisible in the deliverable** (comments are stripped) and makes a search
-  miss what the eye sees; the build refuses one. Real characters in comments and page text; escapes in
+  miss what the eye sees; the build refuses one. Real characters in page text; escapes in
   strings.
 - **Playwright headless hides scrollbars**; `100vw` doesn't.
 - **The service-worker registration is a second `<script>` block, guarded three ways** (not framed,

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* Tests for tools/tag-versions.js — the plan, which has no git in it. */
 const { plan, slug } = require('../tools/tag-versions.js');
 let pass = 0, fail = 0;
 function ok(label, got, want) {

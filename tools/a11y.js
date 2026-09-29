@@ -1,17 +1,4 @@
 #!/usr/bin/env node
-/* Accessibility audit with axe-core.
-
-     node tools/a11y.js [index.html]            report every violation
-     node tools/a11y.js --check                 exit 1 on any serious or critical violation
-
-   The app's accessibility has been designed with care and documented in detail — contrast floors,
-   44px targets, nothing carried by colour alone. None of it had ever been MEASURED. This measures.
-
-   It walks the states a reader actually reaches: the home screen at phone and desktop width, in
-   light and dark, the four tabs, a representative inner page, an open detail modal and the open
-   menu. A rule that only fires in a state nobody visits is noise; a rule that fires behind a modal
-   is not, because that is where the long-form reading lives. */
-
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
@@ -53,7 +40,6 @@ const run = async (p, label, out) => {
       await run(p, w + '/' + scheme + ' tab:' + t, out);
     }
 
-    // an inner page, and the modal that carries the long-form reading
     await p.goto('file://' + FILE); await p.waitForTimeout(1200);
     const opened = await p.evaluate(() => {
       const cat = document.querySelector('[data-open="sheet-cat-weather"]');
@@ -79,7 +65,6 @@ const run = async (p, label, out) => {
   }
   await b.close();
 
-  // one row per distinct rule, with where it was seen and how often
   const byRule = new Map();
   for (const v of out) {
     const k = v.id;

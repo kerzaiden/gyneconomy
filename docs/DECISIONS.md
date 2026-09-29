@@ -6753,3 +6753,11 @@ required a pull request on main ("I'm not sure we need that kind of security for
 keeping only Restrict deletions and Block force pushes.
 The Data workflow now starts the site deploy after it commits the figures.
 ~~~
+
+### V652
+
+~~~text
+Keren: "if you feel that we can delete all the comments, do so."
+The tools, tests, service worker, map script and workflows lost their comments too. What still mattered
+moved to docs/ARCHITECTURE.md: the generated histories' series and sources, and the xlsx advisory.
+~~~

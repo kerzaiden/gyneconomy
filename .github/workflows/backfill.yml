@@ -1,12 +1,3 @@
-# The backfill. Fetches the HISTORIES the app could not compute from what it held, writes the
-# generated source part, rebuilds index.html and COMMITS both — so the record arrives as a diff you
-# can read, blame or revert, exactly as data.yml does for the daily figures.
-#
-# On demand, and monthly since V648. data.yml keeps TODAY current; this is the record, tens of years of
-# it, and it changes when FRED revises — and, for the quarterly Treasury histories, when a month prints
-# into the running quarter. FRED publishes each month's GS/TB3MS mean on the first business day after,
-# so the 3rd catches it. Committing to main triggers ci.yml, so a backfill that breaks the suite never
-# reaches the site.
 name: Backfill
 
 on:
@@ -35,8 +26,6 @@ jobs:
       - name: Install
         run: npm ci
 
-      # The pure parts first: if the windowing or the same-day join is wrong, nothing downstream
-      # is worth fetching. No network in this step.
       - name: Unit tests
         run: npm run test:tools
 
@@ -45,8 +34,6 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: node tools/fetch-fred-history.js
 
-      # index.html is BUILT from src/, and the fetch just wrote a part of src/. Rebuilding here is
-      # what keeps `npm run build:check` true on the commit this job makes.
       - name: Rebuild
         run: npm run build && npm run build:check && npm run map
 
@@ -56,7 +43,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/js/03b-history-fred.js index.html docs/MAP.md
-          git commit -m "Backfill: Fed funds, the fear curve, the OMB fiscal series and the Treasury quarters, from FRED"
+          git commit -m "Backfill: Fed funds, the fear curve, the OMB fiscal series and the Treasury quarters, from FRED (fetched $(date -u +%F))"
           git push
           {
             echo "### Backfill committed"

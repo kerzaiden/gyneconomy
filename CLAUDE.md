@@ -17,8 +17,9 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
   before grepping; the source is ~15,000 lines.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
 - `git log` — every version is a commit `V6NN — Short Name` and an annotated tag. The history lives here,
-  not in the code. The source has no comments since V650; `git show v649-why-not-when:src/<part>` is the
-  last commented source, and `v648-treasury-quarters` the last one with its full history.
+  not in the code. The code has no comments since V650 (the app) and V652 (tools, tests, workflows);
+  `git show v651-daily-deploy:<file>` is the last commented copy, `v648-treasury-quarters` the last with its
+  full history.
 
 ## Never
 
@@ -47,10 +48,12 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
   The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part
   can read it (V647).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
-- **No comments in `src/`** (Keren, V650: "just remove all the comments"). Only one-line section titles
-  (`// ---- Title ----`), which build the map. The why goes in `docs/ARCHITECTURE.md`, a decision in
-  `docs/DECISIONS.md`, the history in the commit message. `npm run check` fails on any other comment;
-  `node tools/uncomment.js` removes them and `node tools/comment-proof.js` proves the page is unchanged.
+- **No comments in the code** (Keren, V650 and V652): not in `src/`, `tools/`, `test/`, `sw.js` or the
+  workflows. The one exception is a one-line section title in `src/` (`// ---- Title ----`), which builds
+  the map. The why goes in `docs/ARCHITECTURE.md`, a decision in `docs/DECISIONS.md`, the history in the
+  commit message. `npm run check` fails on a comment in any JavaScript file; `npm run uncomment` removes
+  them, refusing any file whose code would change, and `node tools/comment-proof.js` proves the page is
+  unchanged.
 - **Functions may shrink, never grow** (V624), and a new one starts at 150 lines or fewer (V647). `npm run
   check` enforces both; `npm run comp:bless` records a deliberate exception, and the commit says why.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
@@ -79,6 +82,7 @@ npm test                 # the browser suite alone; --bless rewrites the baselin
 npm run snap             # 32-state DOM snapshot; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
+npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`
 npm run map              # regenerate docs/MAP.md and docs/COMPONENTS.md
 npm run sources          # regenerate sources.html from the app's own Sources screen
 npm run classify         # measure each step's kind (check/derive/wire/render/build/mixed/live)

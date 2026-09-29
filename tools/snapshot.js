@@ -1,16 +1,3 @@
-/* DOM snapshot harness.
-
-   Walks the app the way a reader does and serialises what is on screen, so a refactor can be
-   proved to change nothing. Two modes:
-
-     node snapshot.js <file.html> out.json          capture
-     node snapshot.js <a.json> <b.json> --diff      compare
-
-   Normalisation matters more than coverage here: anything that legitimately varies between two
-   loads (today's date, a generated id, a measured width) must be neutralised, or the harness
-   cries wolf and stops being trusted. Everything it neutralises is listed in NORMALISERS below,
-   so the list itself is auditable — a refactor that changed one of those would slip through, and
-   that is the deliberate trade. */
 const { chromium } = require('playwright');
 const fs = require('fs');
 
@@ -23,10 +10,10 @@ const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity','sh
 const TABS = ['cycle','analysis','portfolio','content'];
 
 const NORMALISERS = [
-  [/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+/g, ''],                  // weekday names
+  [/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+/g, ''],
   [/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s+\d{4}\b/g, '<DATE>'],
   [/\bToday,\s*[^<·]{0,24}/g, 'Today,<DATE>'],
-  [/id="[^"]*-\d{4,}"/g, 'id="<GEN>"'],                            // generated ids
+  [/id="[^"]*-\d{4,}"/g, 'id="<GEN>"'],
   [/url\(#[^)]*\d{4,}\)/g, 'url(#<GEN>)'],
   [/\s+/g, ' ']
 ];
@@ -54,10 +41,6 @@ async function capture(file, out) {
   for (const w of [414, 1280]) {
     const ctx = await b.newContext({ viewport: { width: w, height: 1000 } });
     const p = await ctx.newPage();
-    /* Block every external request. Google Fonts is unreachable in this sandbox, so each load
-       would otherwise sit waiting on it — and a font that sometimes arrives is a nondeterminism
-       the harness would report as a difference. The app is self-contained; nothing it needs is
-       off-origin. */
     await p.route('**/*', r => {
       const u = r.request().url();
       (u.startsWith('file://') || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort();

@@ -1,4 +1,3 @@
-# Test, then deploy. Deploy NEEDS test, so a commit that fails the suite never reaches the site.
 name: CI
 
 on:
@@ -21,9 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # v5 of the actions runs on Node 24; v4 targeted Node 20, which GitHub deprecated on its
-      # runners. `node-version` is a separate thing — the Node that runs THIS project's scripts —
-      # and 22 is the current LTS. Playwright, axe-core and the fetcher all run on it.
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -35,43 +31,27 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # The rule that outranks every other rule in this project.
       - name: No email address in the markup
         run: |
           n=$(grep -cE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' index.html || true)
           if [ "$n" != "0" ]; then echo "::error::$n email address(es) in index.html"; exit 1; fi
           echo "ok: no address in markup"
 
-      # index.html is BUILT from src/. If they disagree, someone edited the output.
       - name: index.html matches src/
         run: npm run build:check
 
       - name: Test suite
         run: npm test
 
-      # The fetcher's pure parts, with no network in them. The date arithmetic here is off by nine
-      # months if read wrong (Shiller writes 2026.1 for October), so it is pinned rather than trusted.
       - name: Fetcher unit tests
         run: npm run test:tools
 
-      # A map that has drifted is worse than none, because it invites trust in a stale number.
       - name: Navigation map is current
         run: npm run map:check
 
-      # V614: the component ledger ratchets. A class may lose authors and never gain one, so a pattern
-      # cannot get more duplicated than the day it was recorded, and the next feature cannot quietly add
-      # to the debt. Deliberate duplication is allowed \u2014 it just has to be recorded on purpose.
       - name: Components are not more duplicated
-        run: npm run comp:check   # V617: this also fails on an id reached in code that nothing creates
-                                  # V624: and on any top-level function getting longer than it is today
+        run: npm run comp:check
 
-      # V622: the model's own rule. readSeason decides which season the economy is in, and until now nothing
-      # anywhere tested it — it could have returned Autumn for a Spring quarter and every browser check would
-      # have passed. It is a pure function of two number series, so it is tested in milliseconds here rather
-      # than in the 135-second browser suite. (test:tools runs it; named for the reader.)
-
-      # Accessibility was designed with care and documented in detail, and until V539 none of it had
-      # been measured. This fails on serious or critical only; moderate findings are reported.
       - name: Accessibility
         run: npm run a11y:check
 
@@ -89,14 +69,11 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Assemble the site
-        # Only what the site serves. The docs, the suite and the tooling stay in the repo
-        # and off the web: they are for whoever works on the app, not for a reader.
         run: |
           mkdir -p _site/assets _site/data
           cp index.html sources.html manifest.webmanifest sw.js _site/
           cp assets/icon-192.png assets/icon-512.png assets/appicon-180.png \
              assets/appicon-square.svg _site/assets/
-          # the data the page fetches same-origin, written by the Data workflow
           cp data/live.json _site/data/
           touch _site/.nojekyll
           echo "--- site ---"; find _site -type f | sort

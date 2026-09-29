@@ -1,35 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""Generate docs/MAP.md — a navigation index for index.html.
-
-Why this exists: index.html is ~12,700 lines and ~297,000 tokens, so no session can
-read it whole. Without a map you grep blind. With one you find the right 200 lines.
-
-Run it after any STRUCTURAL edit (a new function, a moved section, a new registry
-entry). A data-only refresh does not need it, though regenerating is harmless.
-
-    python3 tools/make-map.py            # writes docs/MAP.md
-    python3 tools/make-map.py --check    # exit 1 if the map is out of date
-
-LINE NUMBERS GO STALE. Every insertion shifts them. So every entry also carries a
-grep ANCHOR, which is what you actually search for; the line number is orientation
-only. The map says this about itself, loudly, because a reader who trusts a stale
-line number wastes more time than one who has no map at all.
-"""
 import io, os, re, sys, subprocess, datetime
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "docs", "MAP.md")
 
-# V548: the map reads the SOURCE, not the built file. index.html has had its comments stripped
-# since V548 and its JS reprinted by terser, so mapping it would be mapping something nobody reads
-# and anchoring on comments that are no longer there. The joined source is exactly what index.html
-# was before the strip, which is what every anchor in this map was written against.
 import json as _json
 _SRCDIR = os.path.join(HERE, "src")
 _manifest = _json.load(io.open(os.path.join(_SRCDIR, "manifest.json"), encoding="utf-8"))
 _parts = [io.open(os.path.join(_SRCDIR, n), encoding="utf-8").read() for n in _manifest]
-# where each part begins in the joined text, so an entry can name the file to open
 PART_AT = []
 _at = 1
 for _n, _t in zip(_manifest, _parts):
@@ -37,7 +15,6 @@ for _n, _t in zip(_manifest, _parts):
     _at += _t.count("\n") + 1
 
 def part_of(line):
-    """The src/ file a joined-source line number falls in."""
     name = PART_AT[0][1]
     for start, n in PART_AT:
         if line >= start: name = n
@@ -49,17 +26,13 @@ SRC_BYTES = len(_joined.encode("utf-8"))
 lines = _joined.split("\n")
 N = len(lines)
 
-
 def find(pat, lo=0, hi=None):
-    """First 1-based line index matching pat, or None."""
     rx = re.compile(pat)
     for i in range(lo, hi if hi is not None else N):
         if rx.search(lines[i]):
             return i + 1
     return None
 
-
-# ---- the five regions ----------------------------------------------------
 style_open = find(r"^<style>")
 style_close = find(r"^</style>")
 script_open = find(r"^<script>")
@@ -77,9 +50,7 @@ REGIONS = [
 
 BANNER = re.compile(r"^\s*(?://|/\*)\s*-{3,}\s*(.*?)\s*(?:-{3,}\s*(?:\*/)?)?\s*$")
 
-
 def banners(lo, hi):
-    """(line, title) for each banner comment in [lo, hi]."""
     out = []
     for i in range(lo - 1, min(hi, N)):
         m = BANNER.match(lines[i])
@@ -92,9 +63,7 @@ def banners(lo, hi):
         out.append((i + 1, t[:150]))
     return out
 
-
 def section_of(ln, secs):
-    """The banner section a line falls in."""
     cur = None
     for sl, title in secs:
         if sl <= ln:
@@ -103,8 +72,6 @@ def section_of(ln, secs):
             break
     return cur
 
-
-# ---- script declarations -------------------------------------------------
 FN = re.compile(r"^  function ([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
 VAR = re.compile(r"^  var ([A-Za-z_$][A-Za-z0-9_$]*)\s*=")
 IIFE = re.compile(r"^  \(function\s*\(")
@@ -135,16 +102,13 @@ script_secs = banners(script_open, script_close)
 style_secs = banners(style_open, style_close)
 markup_secs = banners(style_close + 1, script_open - 1)
 
-
 def registry(pat, lo=None, hi=None):
-    """Sorted unique quoted keys matched by pat."""
     rx = re.compile(pat)
     keys = {}
     for i in range(lo or 0, hi or N):
         for k in rx.findall(lines[i]):
             keys.setdefault(k, i + 1)
     return sorted(keys.items())
-
 
 renderers = registry(r'sheetRenderers\["([^"]+)"\]')
 page_ranges = registry(r'pageRange\["([^"]+)"\]')
@@ -167,8 +131,6 @@ for i in range(style_close, script_open - 1):
             seen.add(k)
             ids.append((k, i + 1))
 
-
-# ---- write ---------------------------------------------------------------
 def sha():
     try:
         return subprocess.check_output(
@@ -176,7 +138,6 @@ def sha():
             stderr=subprocess.DEVNULL).decode().strip()
     except Exception:
         return "unknown"
-
 
 o = []
 w = o.append
@@ -219,7 +180,6 @@ for ln, name in [(l, n) for l, n in fns] + [(l, n) for l, n in vars_]:
         by_sec[s] = []
         order.append(s)
     by_sec[s].append((ln, name))
-# order sections by their own line, not by first declaration
 sec_line = {t: l for l, t in script_secs}
 sec_line.setdefault("(before the first banner)", script_open)
 for s in sorted(order, key=lambda t: sec_line.get(t, 0)):
@@ -322,7 +282,6 @@ text = "\n".join(o) + "\n"
 
 if "--check" in sys.argv:
     cur = io.open(OUT, encoding="utf-8").read() if os.path.exists(OUT) else ""
-    # ignore the generated-from line, which moves with every commit
     strip = lambda s: re.sub(r"Generated from commit .*", "", s)
     if strip(cur) == strip(text):
         print("MAP.md is current")

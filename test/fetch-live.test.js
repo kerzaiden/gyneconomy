@@ -1,13 +1,4 @@
 #!/usr/bin/env node
-/* Tests for the pure parts of tools/fetch-live.js — the sheet-reading step, which has no network
-   in it and so can be pinned here. The fetching itself is proved by the Data workflow's own run
-   against the live sources; what is testable without a network is tested without one.
-
-   Every case here is a mistake that was actually available to make. The date cases are the
-   important ones: Shiller writes a month as YYYY.MM with a ONE-DIGIT month, so 2026.1 is October,
-   and reading it as a fraction (or as January) is wrong by nine months.
-
-   Usage: node test/fetch-live.test.js        Exit 0 = every case passed. */
 const { capeFromRows } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
@@ -24,8 +15,6 @@ function throws(label, rows, re) {
   }
 }
 
-/* Shiller's layout, as the workbook actually presents it: several title and note rows, a header
-   row well down the sheet, a wide row of columns, then the monthly series, then footnotes. */
 const sheet = (rows) => [
   ['Robert J. Shiller, Irrational Exuberance', '', '', ''],
   ['Stock market data used in my book', '', '', ''],
@@ -62,10 +51,6 @@ ok('reads the column by NAME, not position',
    capeFromRows([['CAPE', 'Dividend', 'Date'], [41.3, 75, '2026.03']]),
    { value: 41.3, date: '2026-03-01', headerRow: 1 });
 
-/* The real workbook's STACKED heading, rows 4–7 of ie_data.xls as served in September 2026, cut at
-   column 17. Two rows name both Date and CAPE: row 6 ("Date" over "Fraction", "CAPE" over "Excess
-   … Yield") and row 7, the real one. Taking the first read the yield (0.0101) and failed the band
-   on every run from V541 to this fix. */
 const stacked = [
   ['Stock Market Data Used in "Irrational Exuberance"'],
   ['Robert J. Shiller '],

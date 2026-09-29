@@ -1,6 +1,6 @@
 {
   "name": "gyneconomy",
-  "version": "651.0.0",
+  "version": "652.0.0",
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
@@ -35,7 +35,6 @@
     "playwright": "^1.49.0",
     "terser": "^5.51.2"
   },
-  "//xlsx": "SheetJS, and it carries a known high-severity advisory with 'No fix available'. Read this before acting on the audit. Shiller publishes his dataset ONLY as a spreadsheet — no CSV, no plain text, and no FRED series — so reading a .xls is the price of taking CAPE from the originator instead of from a site quoting him. The registry copy is stranded at 0.18.5, which SheetJS calls a registry bug: the fixes for both advisories shipped in 0.19.3 and 0.20.2 and reach only their own CDN. We are NOT on the CDN, because neither machine that builds this repo is allowed out to cdn.sheetjs.com, and a dependency that cannot be resolved into the lockfile is worse than one with a documented advisory. The exposure is what makes that acceptable: this code parses exactly one file, Shiller's own, inside a job whose only secret is a read-only FRED key, and whose worst failure is a data run that commits nothing. It is OPTIONAL so a resolution failure cannot fail `npm ci` and take the site deploy with it — the suite and the unit tests never load it. Revisit if the registry copy moves, or if this ever parses a file we did not choose.",
   "optionalDependencies": {
     "xlsx": "^0.18.5"
   }
