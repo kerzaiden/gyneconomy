@@ -149,8 +149,6 @@
         'while the reading stays good: abnormally tight spreads are bullish risk appetite AND a historically ' +
         'unusual place for compensation to sit. Both are true of the one number. The ends of the scale are the ' +
         'index\u2019s own record: 2.41% in June 2007 and 21.82% in December 2008.</p>' +
-      '<p class="caption" style="margin-top:10px;">Version 480 replaced an unsourced 4\u20135% band, which had ' +
-        'entered the app as a rough long-run average and been printed as a normal range.</p>' +
       srcBlock([
         {t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index OAS (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},
         {t:"Trading Economics \u2014 the index\u2019s record high and low since 1996", u:"https://tradingeconomics.com/united-states/bofa-merrill-lynch-us-high-yield-option-adjusted-spread-fed-data.html"},

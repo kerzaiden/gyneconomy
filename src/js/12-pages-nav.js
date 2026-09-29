@@ -364,6 +364,266 @@
   }
 
   /* ---- THE CYCLE TAB: cards and categories ---- */
+  function fmtDay(d){ return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
+  function qPretty(q){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
+  var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
+  function peekArt(src){ return src.querySelector(".peek-chart"); }
+  function indPeriod(term){
+    var all = coincident.concat(lagging);
+    for (var i = 0; i < all.length; i++){
+      if (all[i].bodyTerm !== term) continue;
+      var m = DATED_UNIT.exec(String(all[i].metricSub || "").trim());
+      return m ? m[2] : "";
+    }
+    return "";
+  }
+  function catItem(src, PERIOD){
+    var open = src.getAttribute("data-open");
+    (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
+    var item = document.createElement("button");
+    item.type = "button"; item.className = "cat-item";
+    item.setAttribute("data-open", open);
+    item.setAttribute("data-title", src.getAttribute("data-title") || "");
+    var head = document.createElement("div"); head.className = "ci-head";
+    var markSrc = src.querySelector(".peek-mark, .subject-icon");
+    if (markSrc){
+      var glyph = markSrc.querySelector("svg");
+      var holder = document.createElement("span");
+      holder.className = "peek-mark";
+      if (glyph) holder.appendChild(glyph);
+      head.appendChild(holder);
+    }
+    var nm = document.createElement("span"); nm.className = "ci-name";
+    var kick = src.querySelector(".peek-kicker");
+    nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
+                          : (src.getAttribute("data-title") || "");
+    head.appendChild(nm);
+    var body = document.createElement("div"); body.className = "ci-body";
+    var read = document.createElement("div"); read.className = "ci-read";
+    var val = src.querySelector(".peek-value, .subject-value");
+    var when = PERIOD[open] || "";
+    if (val){
+      var unit = val.querySelector(".peek-unit, .unit");
+      if (unit){
+        var m = DATED_UNIT.exec(unit.textContent.trim());
+        if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
+      }
+      val.className = "ci-value";
+      if (unit) unit.className = "ci-unit";
+      read.appendChild(val);
+    }
+    var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+    if (!word || !word.textContent.trim()){
+      var inline = val ? val.querySelector(".tag") : null;
+      if (inline) word = inline;
+    }
+    if (word && word.textContent.trim()){ word.classList.add("ci-word"); read.appendChild(word); }
+    body.appendChild(read);
+    var mini = CAT_MINI[open] ? src.querySelector(CAT_MINI[open]) : peekArt(src);
+    if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
+               slot.appendChild(mini); body.appendChild(slot); }
+    var wh = document.createElement("span"); wh.className = "ci-when"; wh.textContent = when;
+    head.appendChild(wh);
+    var chev = document.createElement("span");
+    chev.innerHTML = CHEV;
+    head.appendChild(chev.firstChild);
+    item.appendChild(head); item.appendChild(body);
+    if (src.parentNode) src.parentNode.removeChild(src);
+    return item;
+  }
+  function insightCirculation(){
+    var vel = m2vHistory, n = vel.length;
+    if (!vel || n < 5) return "";
+    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
+    var run = 0;
+    for (var i = n - 1; i >= 4; i--){ if (vel[i] / vel[i - 4] > 1) run++; else break; }
+    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
+    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
+    var offLow = (vel[n - 1] / lo - 1) * 100;
+    var volInd = coincident.concat(lagging).filter(function(x){ return x.bodyTerm === "Volume"; })[0];
+    if (!volInd || !volInd.meter) return "";
+    var volPct = volInd.meter.value;
+    var up = volPct > 0, vup = velChg > 0;
+    var name = up && vup  ? "Growing and moving faster"
+             : up && !vup ? "Added faster than it is used"
+             : !up && vup ? "Circulating faster on a smaller stock"
+                          : "Draining and slowing";
+    var f1 = function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
+      'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
+      'resistance that flow meets, and Hormones is the signal that sets all three.</p>';
+    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
+      f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
+      (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
+    if (run >= 8){
+      var oc = openCycle();
+      txt += " Velocity has risen for " + run + " straight quarters" +
+        (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") +
+        " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
+    }
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
+           circLede + hiCard(name, "", txt) + '</section>';
+  }
+  function insightWeather(){
+    var rows = marketCycles.map(function(c){
+      var to = c.to || calendarTodayY;
+      var g = totalGrowthYears(c.from, to);
+      var sp = cycleSlice(cpiYoYHistory, c);
+      var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
+      if (!g || !p) return null;
+      return { name:c.name, from:c.from, closed:!c.ongoing, g:g.total, p:p.total, gap:p.total - g.total };
+    }).filter(Boolean);
+    if (rows.length < 3) return "";
+    var now = rows[rows.length - 1];
+    var past = rows.slice(0, -1);
+    if (!past.length) return "";
+    var f1 = function(v){ return v.toFixed(1) + "%"; };
+    var absGap = function(r){ return Math.abs(r.gap); };
+    var tightest = past.reduce(function(a, b){ return absGap(b) < absGap(a) ? b : a; });
+    var widest = rows.reduce(function(a, b){ return absGap(b) > absGap(a) ? b : a; });
+    var GAP_BAND = 1.5;
+    var run = 0;
+    for (var i = rows.length - 1; i >= 0; i--){ if (rows[i].gap > GAP_BAND) run++; else break; }
+    var ORD = ["", "", "second", "third", "fourth", "fifth", "sixth"];
+    var NUM = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    var spell = function(n){ return NUM[n] || String(n); };
+    var lead = now.gap > GAP_BAND ? "Prices are running ahead of output"
+             : now.gap < -GAP_BAND ? "The economy is growing into its prices"
+                                   : "Prices and output are keeping pace";
+    var txt = lead + ". Since " + now.from + " prices are up " + f1(now.p) + " and the economy is up " +
+      f1(now.g) + " \u2014 " + absGap(now).toFixed(1) + " points apart. Over a whole cycle these two normally " +
+      "finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " +
+      past.map(function(r){ return absGap(r).toFixed(1); }).join(", ") + " points apart, the " + tightest.name +
+      " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
+    if (widest === now)
+      txt += " This is the widest gap in the record, and " +
+        (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") +
+        " \u2014 the economy costing more faster than it is growing bigger.";
+    else
+      txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
+    var wxLede = '<p class="hi-lede">Heat and build-up are two readings of one season, and over a whole ' +
+      'cycle they finish close together: the economy grows about as much as it costs more. When prices run ' +
+      'far ahead, the body is paying more without getting bigger.</p>';
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
+           wxLede + hiCard("The barometer", "", txt) + '</section>';
+  }
+  var CAT_MINI = {
+    "sheet-sign-sentiment": ".subject-ring > svg"
+  };
+  function placeSignPair(){
+    var pair = [["Pulse", "M2 velocity"], ["Volume", "M2, YoY"]].map(function(p){
+      var ind = coincident.filter(function(x){ return x.bodyTerm === p[0]; })[0];
+      if (!ind) return "";
+      var art = p[0] === "Pulse"
+        ? { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }
+        : p[0] === "Volume"
+        ? { cols:m2Yoy.filter(function(x){ return x != null; }), colBase:0, colRule:true,
+            colClass:function(v){ return "m2-col " + m2Step(v); } }
+        : { meter:ind.meter };
+      var card = { kicker:ind.bodyTerm, value:ind.metric, unit:p[1],
+                   mark: signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "",
+                   word:ind.tag.text, state:ind.tag.state,
+                   target:"sheet-sign-" + p[0].toLowerCase() };
+      for (var k in art) card[k] = art[k];
+      return peekCard(card);
+    }).join("");
+    if (!pair) return;
+    var after = byId("sheet-sign-sentiment");
+    if (!after || !after.parentNode) return;
+    var row = document.createElement("div");
+    row.className = "peek-row"; row.id = "peek-row-signs";
+    row.innerHTML = pair;
+    after.parentNode.insertBefore(row, after.nextSibling);
+
+    var horm = document.querySelector('.sign-row[data-subject="hormones"]');
+    var hormSheet = byId("sheet-sign-hormones");
+    if (horm && hormSheet && horm.parentNode === row.parentNode){
+      row.parentNode.insertBefore(horm, row);
+      horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
+    }
+  }
+  function swapSentimentActivity(){
+    var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
+    var act  = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
+    var sentSheet = byId("sheet-sign-sentiment");
+    var actSheet  = byId("sheet-sign-activity");
+    if (!sent || !act || !sentSheet || !actSheet) return;
+    var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
+    sent.parentNode.insertBefore(mSent, sent);
+    act.parentNode.insertBefore(mAct, act);
+    mSent.parentNode.insertBefore(act, mSent);
+    act.parentNode.insertBefore(actSheet, act.nextSibling);
+    mAct.parentNode.insertBefore(sent, mAct);
+    sent.parentNode.insertBefore(sentSheet, sent.nextSibling);
+    mSent.parentNode.removeChild(mSent);
+    mAct.parentNode.removeChild(mAct);
+  }
+  function buildCategories(){
+    var host = byId("today-analysis"); if (!host) return;
+    var CATS = [
+      { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
+        picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
+      { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
+        picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
+               '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
+      { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
+        picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
+               '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
+      { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
+        picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
+               '.sign-row[data-open="sheet-sign-activity"]'] }
+    ];
+    var PERIOD = {
+      "sheet-metric-temp":      atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
+      "sheet-metric-gdp":       qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
+      "sheet-sign-horizon":     fmtDay(DATA_COMPILED),
+      "sheet-sign-pulse":       qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
+      "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
+      "sheet-metric-power":     String(powerHistory[powerHistory.length - 1].y),
+      "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
+      "sheet-sign-hormones":    fedFunds.asOf,
+      "sheet-sign-pressure":    fmtDay(DATA_COMPILED),
+      "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
+      "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
+    };
+    var list = document.createElement("div"); list.className = "browse-list";
+    CATS.forEach(function(c){
+      if (c.picks){
+        var sheet = document.createElement("div");
+        sheet.className = "metric-sheet"; sheet.id = "sheet-cat-" + c.key; sheet.hidden = true;
+        var items = document.createElement("div"); items.className = "cat-list";
+        c.picks.forEach(function(sel){
+          var el = document.querySelector(sel); if (!el) return;
+          items.appendChild(catItem(el, PERIOD));
+        });
+        sheet.appendChild(items);
+        if (c.key === "circulation" || c.key === "weather"){
+          var tog = c.key === "weather" ? insightWeather() : insightCirculation();
+          if (tog) sheet.insertAdjacentHTML("beforeend", tog);
+        }
+        host.appendChild(sheet);
+      }
+      if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
+      list.appendChild(elFrom(subjectRow({
+        cls:"cat-row", open:c.open || ("sheet-cat-" + c.key), title:c.title,
+        icon: subjectIcon("norm", c.mark),
+        text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
+      })));
+    });
+    list.appendChild(elFrom(subjectRow({
+      cls:"all-row", open:"sheet-indicators", title:"All indicators",
+      icon: subjectIcon("norm",
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+        'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' +
+        '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
+      text: '<div class="subject-label">All indicators</div>'
+    })));
+    host.insertBefore(list, host.firstChild);
+    ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
+      var el = byId(id);
+      if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
+    });
+  }
   function renderPeekAndCategories(){
     var host = byId("peek-row"); if (!host) return null;
     var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
@@ -403,302 +663,65 @@
                  colClass:function(){ return "hh-col"; } }) +
       "";
 
-    (function(){
-      var pair = [["Pulse", "M2 velocity"], ["Volume", "M2, YoY"]].map(function(p){
-        var ind = coincident.filter(function(x){ return x.bodyTerm === p[0]; })[0];
-        if (!ind) return "";
-        var art = p[0] === "Pulse"
-          ? { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }
-          : p[0] === "Volume"
-          ? { cols:m2Yoy.filter(function(x){ return x != null; }), colBase:0, colRule:true,
-              colClass:function(v){ return "m2-col " + m2Step(v); } }
-          : { meter:ind.meter };
-        var card = { kicker:ind.bodyTerm, value:ind.metric, unit:p[1],
-                     mark: signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "",
-                     word:ind.tag.text, state:ind.tag.state,
-                     target:"sheet-sign-" + p[0].toLowerCase() };
-        for (var k in art) card[k] = art[k];
-        return peekCard(card);
-      }).join("");
-      if (!pair) return;
-      var after = byId("sheet-sign-sentiment");
-      if (!after || !after.parentNode) return;
-      var row = document.createElement("div");
-      row.className = "peek-row"; row.id = "peek-row-signs";
-      row.innerHTML = pair;
-      after.parentNode.insertBefore(row, after.nextSibling);
-
-      var horm = document.querySelector('.sign-row[data-subject="hormones"]');
-      var hormSheet = byId("sheet-sign-hormones");
-      if (horm && hormSheet && horm.parentNode === row.parentNode){
-        row.parentNode.insertBefore(horm, row);
-        horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
-      }
-    })();
-
-    (function(){
-      var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
-      var act  = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
-      var sentSheet = byId("sheet-sign-sentiment");
-      var actSheet  = byId("sheet-sign-activity");
-      if (!sent || !act || !sentSheet || !actSheet) return;
-      var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
-      sent.parentNode.insertBefore(mSent, sent);
-      act.parentNode.insertBefore(mAct, act);
-      mSent.parentNode.insertBefore(act, mSent);
-      act.parentNode.insertBefore(actSheet, act.nextSibling);
-      mAct.parentNode.insertBefore(sent, mAct);
-      sent.parentNode.insertBefore(sentSheet, sent.nextSibling);
-      mSent.parentNode.removeChild(mSent);
-      mAct.parentNode.removeChild(mAct);
-    })();
-
-    (function(){
-      var host = byId("today-analysis"); if (!host) return;
-      var CATS = [
-        { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
-          picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-        { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
-          picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
-                 '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-        { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
-          picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
-                 '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
-        { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
-          picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
-                 '.sign-row[data-open="sheet-sign-activity"]'] }
-      ];
-      function fmtDay(d){ return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
-      function qPretty(q){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
-      var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
-      var PERIOD = {
-        "sheet-metric-temp":      atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
-        "sheet-metric-gdp":       qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
-        "sheet-sign-horizon":     fmtDay(DATA_COMPILED),
-        "sheet-sign-pulse":       qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
-        "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
-        "sheet-metric-power":     String(powerHistory[powerHistory.length - 1].y),
-        "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
-        "sheet-sign-hormones":    fedFunds.asOf,
-        "sheet-sign-pressure":    fmtDay(DATA_COMPILED),
-        "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
-        "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
-      };
-      var MINI = {
-        "sheet-sign-sentiment": ".subject-ring > svg"
-      };
-      function peekArt(src){ return src.querySelector(".peek-chart"); }
-      function indPeriod(term){
-        var all = coincident.concat(lagging);
-        for (var i = 0; i < all.length; i++){
-          if (all[i].bodyTerm !== term) continue;
-          var m = DATED_UNIT.exec(String(all[i].metricSub || "").trim());
-          return m ? m[2] : "";
-        }
-        return "";
-      }
-      function catItem(src){
-        var open = src.getAttribute("data-open");
-        (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
-        var item = document.createElement("button");
-        item.type = "button"; item.className = "cat-item";
-        item.setAttribute("data-open", open);
-        item.setAttribute("data-title", src.getAttribute("data-title") || "");
-        var head = document.createElement("div"); head.className = "ci-head";
-        var markSrc = src.querySelector(".peek-mark, .subject-icon");
-        if (markSrc){
-          var glyph = markSrc.querySelector("svg");
-          var holder = document.createElement("span");
-          holder.className = "peek-mark";
-          if (glyph) holder.appendChild(glyph);
-          head.appendChild(holder);
-        }
-        var nm = document.createElement("span"); nm.className = "ci-name";
-        var kick = src.querySelector(".peek-kicker");
-        nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
-                              : (src.getAttribute("data-title") || "");
-        head.appendChild(nm);
-        var body = document.createElement("div"); body.className = "ci-body";
-        var read = document.createElement("div"); read.className = "ci-read";
-        var val = src.querySelector(".peek-value, .subject-value");
-        var when = PERIOD[open] || "";
-        if (val){
-          var unit = val.querySelector(".peek-unit, .unit");
-          if (unit){
-            var m = DATED_UNIT.exec(unit.textContent.trim());
-            if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
-          }
-          val.className = "ci-value";
-          if (unit) unit.className = "ci-unit";
-          read.appendChild(val);
-        }
-        var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-        if (!word || !word.textContent.trim()){
-          var inline = val ? val.querySelector(".tag") : null;
-          if (inline) word = inline;
-        }
-        if (word && word.textContent.trim()){ word.classList.add("ci-word"); read.appendChild(word); }
-        body.appendChild(read);
-        var mini = MINI[open] ? src.querySelector(MINI[open]) : peekArt(src);
-        if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
-                   slot.appendChild(mini); body.appendChild(slot); }
-        var wh = document.createElement("span"); wh.className = "ci-when"; wh.textContent = when;
-        head.appendChild(wh);
-        var chev = document.createElement("span");
-        chev.innerHTML = CHEV;
-        head.appendChild(chev.firstChild);
-        item.appendChild(head); item.appendChild(body);
-        if (src.parentNode) src.parentNode.removeChild(src);
-        return item;
-      }
-      function insightCirculation(){
-        var vel = m2vHistory, n = vel.length;
-        if (!vel || n < 5) return "";
-        var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
-        var run = 0;
-        for (var i = n - 1; i >= 4; i--){ if (vel[i] / vel[i - 4] > 1) run++; else break; }
-        var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
-        var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
-        var offLow = (vel[n - 1] / lo - 1) * 100;
-        var volInd = coincident.concat(lagging).filter(function(x){ return x.bodyTerm === "Volume"; })[0];
-        if (!volInd || !volInd.meter) return "";
-        var volPct = volInd.meter.value;
-        var up = volPct > 0, vup = velChg > 0;
-        var name = up && vup  ? "Growing and moving faster"
-                 : up && !vup ? "Added faster than it is used"
-                 : !up && vup ? "Circulating faster on a smaller stock"
-                              : "Draining and slowing";
-        var f1 = function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
-        var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
-          'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-          'resistance that flow meets, and Hormones is the signal that sets all three.</p>';
-        var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
-          f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
-          (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
-        if (run >= 8){
-          var oc = openCycle();
-          txt += " Velocity has risen for " + run + " straight quarters" +
-            (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") +
-            " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
-        }
-        return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-               circLede + hiCard(name, "", txt) + '</section>';
-      }
-      function insightWeather(){
-        var rows = marketCycles.map(function(c){
-          var to = c.to || calendarTodayY;
-          var g = totalGrowthYears(c.from, to);
-          var sp = cycleSlice(cpiYoYHistory, c);
-          var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
-          if (!g || !p) return null;
-          return { name:c.name, from:c.from, closed:!c.ongoing, g:g.total, p:p.total, gap:p.total - g.total };
-        }).filter(Boolean);
-        if (rows.length < 3) return "";
-        var now = rows[rows.length - 1];
-        var past = rows.slice(0, -1);
-        if (!past.length) return "";
-        var f1 = function(v){ return v.toFixed(1) + "%"; };
-        var absGap = function(r){ return Math.abs(r.gap); };
-        var tightest = past.reduce(function(a, b){ return absGap(b) < absGap(a) ? b : a; });
-        var widest = rows.reduce(function(a, b){ return absGap(b) > absGap(a) ? b : a; });
-        var GAP_BAND = 1.5;
-        var run = 0;
-        for (var i = rows.length - 1; i >= 0; i--){ if (rows[i].gap > GAP_BAND) run++; else break; }
-        var ORD = ["", "", "second", "third", "fourth", "fifth", "sixth"];
-        var NUM = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-        var spell = function(n){ return NUM[n] || String(n); };
-        var lead = now.gap > GAP_BAND ? "Prices are running ahead of output"
-                 : now.gap < -GAP_BAND ? "The economy is growing into its prices"
-                                       : "Prices and output are keeping pace";
-        var txt = lead + ". Since " + now.from + " prices are up " + f1(now.p) + " and the economy is up " +
-          f1(now.g) + " \u2014 " + absGap(now).toFixed(1) + " points apart. Over a whole cycle these two normally " +
-          "finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " +
-          past.map(function(r){ return absGap(r).toFixed(1); }).join(", ") + " points apart, the " + tightest.name +
-          " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
-        if (widest === now)
-          txt += " This is the widest gap in the record, and " +
-            (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") +
-            " \u2014 the economy costing more faster than it is growing bigger.";
-        else
-          txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-        var wxLede = '<p class="hi-lede">Heat and build-up are two readings of one season, and over a whole ' +
-          'cycle they finish close together: the economy grows about as much as it costs more. When prices run ' +
-          'far ahead, the body is paying more without getting bigger.</p>';
-        return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-               wxLede + hiCard("The barometer", "", txt) + '</section>';
-      }
-      var list = document.createElement("div"); list.className = "browse-list";
-      CATS.forEach(function(c){
-        if (c.picks){
-          var sheet = document.createElement("div");
-          sheet.className = "metric-sheet"; sheet.id = "sheet-cat-" + c.key; sheet.hidden = true;
-          var items = document.createElement("div"); items.className = "cat-list";
-          c.picks.forEach(function(sel){
-            var el = document.querySelector(sel); if (!el) return;
-            items.appendChild(catItem(el));
-          });
-          sheet.appendChild(items);
-          if (c.key === "circulation" || c.key === "weather"){
-            var tog = c.key === "weather" ? insightWeather() : insightCirculation();
-            if (tog) sheet.insertAdjacentHTML("beforeend", tog);
-          }
-          host.appendChild(sheet);
-        }
-        if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
-        list.appendChild(elFrom(subjectRow({
-          cls:"cat-row", open:c.open || ("sheet-cat-" + c.key), title:c.title,
-          icon: subjectIcon("norm", c.mark),
-          text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
-        })));
-      });
-      list.appendChild(elFrom(subjectRow({
-        cls:"all-row", open:"sheet-indicators", title:"All indicators",
-        icon: subjectIcon("norm",
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-          'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' +
-          '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
-        text: '<div class="subject-label">All indicators</div>'
-      })));
-      host.insertBefore(list, host.firstChild);
-      ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
-        var el = byId(id);
-        if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
-      });
-    })();
+    placeSignPair();
+    swapSentimentActivity();
+    buildCategories();
 
     return { host:host, tempInd:tempInd, r:r, gq:gq, capeNow:capeNow, buffNow:buffNow };
   }
 
   /* ---- THE INNER PAGES ---- */
-  function renderMetricPages(ctx){
-    var host = ctx.host, tempInd = ctx.tempInd, r = ctx.r, gq = ctx.gq;
-    var capeNow = ctx.capeNow, buffNow = ctx.buffNow;
-    // ---- The inner pages: a chart where there is one to draw, then Highlights ----
-    var pct0 = function(v){ return Math.round(v) + "%"; }, pct1 = function(v){ return v.toFixed(1) + "%"; };
-    var capeFmt1 = function(v){ return v.toFixed(1) + "\u00d7"; };
-
-    put("power-head", "");
-    put("valuation-head", "");
-
-    function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
-    var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
-    var GDP_STOPS   = ["5y", "10y", "25y", "max"];
-    var POWER_STOPS = ["5y", "10y", "25y", "max"];
-    var VAL_STOPS   = ["5y", "10y", "25y", "max"];
-    var DEF_STOPS   = ["5y", "10y", "25y", "max"];
-
-    function qShort(q){ return q.slice(5) + " \u2019" + q.slice(2, 4); }
-    function yoyPairs(levels, count){
-      var out = [];
-      for (var i = levels.length - count; i < levels.length; i++){
-        if (i < 4) continue;
-        var now = levels[i], was = levels[i - 4];
-        out.push({ label:qShort(now.q), wasLabel:qShort(was.q), was:was.v, now:now.v,
-                   pct:(now.v / was.v - 1) * 100 });
-      }
-      return out;
+  function pct0(v){ return Math.round(v) + "%"; }
+  function capeFmt1(v){ return v.toFixed(1) + "\u00d7"; }
+  function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
+  var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
+  var GDP_STOPS   = ["5y", "10y", "25y", "max"];
+  var POWER_STOPS = ["5y", "10y", "25y", "max"];
+  var VAL_STOPS   = ["5y", "10y", "25y", "max"];
+  var DEF_STOPS   = ["5y", "10y", "25y", "max"];
+  function qShort(q){ return q.slice(5) + " \u2019" + q.slice(2, 4); }
+  function yoyPairs(levels, count){
+    var out = [];
+    for (var i = levels.length - count; i < levels.length; i++){
+      if (i < 4) continue;
+      var now = levels[i], was = levels[i - 4];
+      out.push({ label:qShort(now.q), wasLabel:qShort(was.q), was:was.v, now:now.v,
+                 pct:(now.v / was.v - 1) * 100 });
     }
-
+    return out;
+  }
+  function actCycleMonths(c){
+    var to = c.to || calendarTodayY, a = -1, b = -1;
+    unempHistory.forEach(function(d, i){
+      var y = parseInt(d.m.slice(0, 4), 10);
+      if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
+    });
+    return a === -1 ? null : [a, b];
+  }
+  function householdsHighlights(){
+    var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
+    var offPeak = (1 - dsrNow / peak) * 100;
+    var lower = savHistory.map(function(v, i){ return { v:v, i:i }; })
+                          .filter(function(d){ return d.v <= savNow && d.i < savHistory.length - 1; });
+    var run = lower.filter(function(d){ var y = SAV_FROM_YEAR + Math.floor(d.i / 4); return y >= 2005 && y <= 2008; });
+    var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
+    var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left ' +
+      'after. The bill is the load the body carries; the cushion is what it has stored against a month that ' +
+      'goes wrong.</p>';
+    var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " +
+      DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " +
+      peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
+    var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length +
+      " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length +
+      " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
+    return highlightsHtml([hhLede, hiCard("The bill", "", billTxt),
+                           hiCard("The cushion", householdsNow.state, keptTxt)]);
+  }
+  function redrawSheet(id){
+    var h = byId("metric-page"), d = sheetRenderers[id];
+    if (d) d(h && h.clientWidth ? h.clientWidth : 340);
+  }
+  function registerTempGdpPages(){
     sheetRenderers["sheet-metric-temp"] = function(W){
       var r = pageRange["sheet-metric-temp"], cyclesOn = pageMode["sheet-metric-temp"] === "cycles";
       put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS }));
@@ -764,15 +787,9 @@
       }
     };
 
+  }
+  function registerActivityPowerDeficitPages(){
     var ACT_STOPS = ["5y", "10y", "25y", "max"];
-    function actCycleMonths(c){
-      var to = c.to || calendarTodayY, a = -1, b = -1;
-      unempHistory.forEach(function(d, i){
-        var y = parseInt(d.m.slice(0, 4), 10);
-        if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-      });
-      return a === -1 ? null : [a, b];
-    }
     sheetRenderers["sheet-sign-activity"] = function(W){
       var id = "sheet-sign-activity", bar = byId("act-rangebar");
       if (!bar) return;
@@ -834,6 +851,8 @@
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
         { rising:"improving", falling:"widening" }));
     };
+  }
+  function registerHouseholdsValuationPages(){
     var HH_STOPS = ["5y", "10y", "max"];
     sheetRenderers["sheet-metric-households"] = function(W){
       var id = "sheet-metric-households";
@@ -856,25 +875,6 @@
       attachHistory(box, "households-hist-tooltip", "householdsChart");
       var hl = put("households-highlights", householdsHighlights());
     };
-    function householdsHighlights(){
-      var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
-      var offPeak = (1 - dsrNow / peak) * 100;
-      var lower = savHistory.map(function(v, i){ return { v:v, i:i }; })
-                            .filter(function(d){ return d.v <= savNow && d.i < savHistory.length - 1; });
-      var run = lower.filter(function(d){ var y = SAV_FROM_YEAR + Math.floor(d.i / 4); return y >= 2005 && y <= 2008; });
-      var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
-      var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left ' +
-        'after. The bill is the load the body carries; the cushion is what it has stored against a month that ' +
-        'goes wrong.</p>';
-      var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " +
-        DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " +
-        peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
-      var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length +
-        " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length +
-        " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
-      return highlightsHtml([hhLede, hiCard("The bill", "", billTxt),
-                             hiCard("The cushion", householdsNow.state, keptTxt)]);
-    }
     sheetRenderers["sheet-metric-valuation"] = function(W){
       var r = pageRange["sheet-metric-valuation"], vlCycles = pageMode["sheet-metric-valuation"] === "cycles";
       var vlCyc = vlCycles ? (cycleByName(pageCycles["sheet-metric-valuation"]) || openCycle()) : null;
@@ -902,10 +902,8 @@
       });
       attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
     };
-    function redrawSheet(id){
-      var h = byId("metric-page"), d = sheetRenderers[id];
-      if (d) d(h && h.clientWidth ? h.clientWidth : 340);
-    }
+  }
+  function wireMetricPageControls(){
     document.addEventListener("click", function(e){
       if (!e.target.closest) return;
       var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
@@ -934,102 +932,92 @@
       var draw = sheetRenderers[id]; if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
     });
 
-    // ---- Economic power ----
-    (function(){
-      var vs = powerHistory.map(function(d){ return d.v; });
-      var lowest = Math.min.apply(null, vs), first = powerHistory[0], last = powerHistory[powerHistory.length - 1];
-      var below = vs.filter(function(v){ return v < powerScore; }).length;
-      var eraStart = powerHistory.filter(function(d){ return d.y >= currentEra.from; })[0];
-      var cards = [];
-      cards.unshift('<p class="hi-lede">Power is what the state has left to spend when something goes wrong ' +
-        '— what it owes, what the debt costs to carry and what it produces, read as one charge. A body with ' +
-        'reserves can afford a shock; one that has already spent them has to borrow the energy.</p>');
-      cards.push(hiCard("Power", powerWord.state, powerScore <= lowest
-        ? "Today\u2019s " + powerScore + "% is the lowest reading in the whole series \u2014 " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%."
-        : "Today\u2019s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
-      cards.push(hiCard("Against the last two shocks", "warning",
-        "The same three markers, scored the same way, leave " + powerOf(stressHistory[0].score) + "% at the " + stressHistory[0].label.replace("'07 ", "2007 ") +
-        " and " + powerOf(stressHistory[1].score) + "% at the " + stressHistory[1].label.replace("'20 ", "2020 ") + " reading. Both were higher than now."));
-      if (eraStart) cards.push(hiCard("Since this cycle opened", "serious",
-        "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " +
-        (eraStart.v - powerScore) + " points since."));
-      put("power-highlights", highlightsHtml(cards, "", moreRow(powerPageNote)));
-    })();
-
-    // ---- Valuation ----
-    (function(){
-      var vs = capeHistory.map(function(d){ return d.v; });
-      var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
-      var bv = buffettHistory.map(function(d){ return d.v; });
-      var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1);
-      var bDot = maxIn(buffettHistory, 2000, 2007);
-      var bRicher = bv.filter(function(v){ return v > buffNow; }).length;
-      var cards = [];
-      cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
-        'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
-        'producing.</p>');
-      cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0
-        ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
-        : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
-          " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
-      cards.push(hiCard("Buffett indicator", valRow("buffett").flagState || "serious", bRicher === 0
-        ? "At " + Math.round(buffNow) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) +
-          " \u2014 above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
-          Math.round(bDot.v) + "% (" + bDot.q + ")."
-        : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
-      put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
-    })();
-
-    // ---- Temperature ----
-    (function(){
-      var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
-      var peak = cyc.reduce(function(a, b){ return b.v > a.v ? b : a; });
-      var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
-        'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
-        'means anything measured against the level the system is meant to hold.</p>'];
-      cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning",
-        "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
-        " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
-      cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning",
-        "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
-        r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
-      put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
-          var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
-          return rest ? factsFrom(rest) : "";
-        })())));
-    })();
-
-    // ---- GDP growth ----
-    (function(){
-      var cycAvg = mean(gq.map(function(d){ return d.v; }));
-      var contractions = gq.filter(function(d){ return d.v < 0; }).length;
-      var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
-        'last. A body spends the first half of its cycle building something it has not used yet, and an ' +
-        'economy does the same with output.</p>'];
-      cards.push(hiCard("Growth", phaseClass(r.regime),
-        "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +
-        "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-      cards.push(hiCard("The latest quarter", phaseClass(r.regime),
-        qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
-        (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
-        r.regime + "."));
-      put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
-    })();
-    (function(){
-      var blocks = [
-      ];
-      blocks.forEach(function(b){
-        var hl = byId(b[0]); if (!hl) return;
-        var html = cycleAverageBlock(b[2], b[3], b[4]); if (!html) return;
-        var host = document.createElement("div");
-        host.id = b[1];
-        host.innerHTML = html;
-        var sheet = hl.parentElement;
-        var blood = sheet && sheet.querySelector(":scope > .subject, :scope > .sign-detail");
-        if (blood) blood.insertAdjacentElement("beforebegin", host);
-        else hl.insertAdjacentElement("beforebegin", host);
-      });
-    })();
+  }
+  function powerHighlights(){
+    var vs = powerHistory.map(function(d){ return d.v; });
+    var lowest = Math.min.apply(null, vs), first = powerHistory[0], last = powerHistory[powerHistory.length - 1];
+    var below = vs.filter(function(v){ return v < powerScore; }).length;
+    var eraStart = powerHistory.filter(function(d){ return d.y >= currentEra.from; })[0];
+    var cards = [];
+    cards.unshift('<p class="hi-lede">Power is what the state has left to spend when something goes wrong ' +
+      '— what it owes, what the debt costs to carry and what it produces, read as one charge. A body with ' +
+      'reserves can afford a shock; one that has already spent them has to borrow the energy.</p>');
+    cards.push(hiCard("Power", powerWord.state, powerScore <= lowest
+      ? "Today\u2019s " + powerScore + "% is the lowest reading in the whole series \u2014 " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%."
+      : "Today\u2019s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
+    cards.push(hiCard("Against the last two shocks", "warning",
+      "The same three markers, scored the same way, leave " + powerOf(stressHistory[0].score) + "% at the " + stressHistory[0].label.replace("'07 ", "2007 ") +
+      " and " + powerOf(stressHistory[1].score) + "% at the " + stressHistory[1].label.replace("'20 ", "2020 ") + " reading. Both were higher than now."));
+    if (eraStart) cards.push(hiCard("Since this cycle opened", "serious",
+      "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " +
+      (eraStart.v - powerScore) + " points since."));
+    put("power-highlights", highlightsHtml(cards, "", moreRow(powerPageNote)));
+  }
+  function valuationHighlights(capeNow, buffNow){
+    var vs = capeHistory.map(function(d){ return d.v; });
+    var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
+    var bv = buffettHistory.map(function(d){ return d.v; });
+    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1);
+    var bDot = maxIn(buffettHistory, 2000, 2007);
+    var bRicher = bv.filter(function(v){ return v > buffNow; }).length;
+    var cards = [];
+    cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
+      'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
+      'producing.</p>');
+    cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0
+      ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
+      : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
+        " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
+    cards.push(hiCard("Buffett indicator", valRow("buffett").flagState || "serious", bRicher === 0
+      ? "At " + Math.round(buffNow) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) +
+        " \u2014 above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
+        Math.round(bDot.v) + "% (" + bDot.q + ")."
+      : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
+    put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
+  }
+  function tempHighlights(tempInd, r){
+    var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
+    var peak = cyc.reduce(function(a, b){ return b.v > a.v ? b : a; });
+    var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
+      'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
+      'means anything measured against the level the system is meant to hold.</p>'];
+    cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning",
+      "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
+      " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
+    cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning",
+      "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
+      r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
+    put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
+        var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
+        return rest ? factsFrom(rest) : "";
+      })())));
+  }
+  function gdpHighlights(r, gq){
+    var cycAvg = mean(gq.map(function(d){ return d.v; }));
+    var contractions = gq.filter(function(d){ return d.v < 0; }).length;
+    var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
+      'last. A body spends the first half of its cycle building something it has not used yet, and an ' +
+      'economy does the same with output.</p>'];
+    cards.push(hiCard("Growth", phaseClass(r.regime),
+      "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +
+      "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
+    cards.push(hiCard("The latest quarter", phaseClass(r.regime),
+      qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
+      (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
+      r.regime + "."));
+    put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
+  }
+  function renderMetricPages(ctx){
+    put("power-head", "");
+    put("valuation-head", "");
+    registerTempGdpPages();
+    registerActivityPowerDeficitPages();
+    registerHouseholdsValuationPages();
+    wireMetricPageControls();
+    powerHighlights();
+    valuationHighlights(ctx.capeNow, ctx.buffNow);
+    tempHighlights(ctx.tempInd, ctx.r);
+    gdpHighlights(ctx.r, ctx.gq);
   }
 
   function renderPagesAndNav(){

@@ -378,11 +378,8 @@
           'screen even when 1983 is off the left edge. Today\u2019s is five years past the last recession and has not closed.',
         'There have been <b>' + surCount + ' surplus years</b> since ' + DEF_FROM_YEAR + ', none since FY' +
           (DEF_FROM_YEAR + iSur) + '. The average across the whole series is ' + DEF_MEAN.toFixed(1) + '%.',
-        'The wartime record is left off the chart on purpose: at -26.9% (FY1943) it would flatten eighty years into ' +
-          'a band, so it is stated in the rows below instead.',
         'The chart ends at FY' + lastY + ', the last actual \u2014 the Deficit rate row this page opens from carries ' +
           'CBO\u2019s projection for the year in progress, which is why the two figures differ.',
-        'The rows below read the whole series, not the window on screen.',
         'The chart starts at <b>FY' + DEF_FROM_YEAR + '</b> because peacetime is the only frame in which 1983 and ' +
           'today are comparable at all. The wartime record sits outside it and is stated rather than drawn: ' +
           '<b>\u221226.9% of GDP in FY1943</b>, which inside the plot would flatten eighty years into a band.'
@@ -524,7 +521,7 @@
       meter:{min:2.41,max:21.82,value:2.80,optimal:{from:3.5,to:6, label:"3.5–6%"},
              ends:{ low:"Tight", zone:"Normal", high:"Wide" }},
       shortCaption:"A touch off its tightest levels, but still near the tightest spread on record — she's in the mood to take risk.",
-      caption:"Libido peaks at the fertile window itself — a real-time reading, not a forecast. The extra yield investors demand for junk bonds sits close to the tightest it's ever been (the record low is 2.41%, June 2007; the record high 21.82%, December 2008 — the ICE BofA index's own history, which FRED has carried since 1996 but now trims to a rolling three-year window): she's in the mood to take risk, for better or worse. That's also why the dot below flags as outside the typical 4–5% band even though the tag above stays \"good\" — abnormally tight spreads are read as bullish risk appetite by the market, but they're a historically unusual place for compensation to sit, not a healthy resting state. The Sentiment panel reads this same figure from that second end, which is why one tag is green and the other flags: both are true of one number.",
+      caption:"Libido peaks at the fertile window itself — a real-time reading, not a forecast. The extra yield investors demand for junk bonds sits close to the tightest it's ever been (the record low is 2.41%, June 2007; the record high 21.82%, December 2008 — the ICE BofA index's own history, which FRED has carried since 1996 but now trims to a rolling three-year window): she's in the mood to take risk, for better or worse. That's also why the dot below flags as outside its normal " + HY_NORM_LO + "–" + HY_NORM_HI + "% band even though the tag above stays \"good\" — abnormally tight spreads are read as bullish risk appetite by the market, but they're a historically unusual place for compensation to sit, not a healthy resting state.",
       aux:{label:"Long-run median, since 1996", value:"~4.5%"},
       get peek(){ return colPeek(hyQuarterEnds(), function(){ return "hy-col"; }); },
       src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]

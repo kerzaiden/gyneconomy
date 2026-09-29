@@ -176,7 +176,7 @@ with no handler is recorded, which makes the suite able to see it.
 | **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
-| **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/03b-history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site; the artifact only at its next publish |
+| **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/03b-history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
 | **Tag workflow** (`tag.yml`, V647) | a `v6NN-name` tag for each version commit on `main` that has none | every push to `main` | the repo's history |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
@@ -271,7 +271,7 @@ Rules that shape the pages:
 | `fiscalHistory.interest` | FYOIGDA188S | federal interest outlays, % of GDP (OMB) |
 | `fiscalHistory.budget` | FYFSGDA188S | surplus (+) or deficit (−), % of GDP (OMB) |
 | `grossDebtQuarterly` | GFDEGDQ188S | total public debt, % of GDP, quarterly (Treasury and BEA) |
-| `treasuryQuarterly` | TB3MS, GS2, GS5, GS10, GS30 | calendar-quarter means of the monthly yields; `s3m` is GS10 − TB3MS and `s2y` GS10 − GS2, from unrounded means; `partial` marks the running quarter; `y30` is null for 2005, when no 30-year bond was issued (Feb 2002 – Feb 2006) |
+| `treasuryQuarterly` | TB3MS, GS2, GS5, GS10, GS30 | calendar-quarter means of the monthly yields; `s3m` is GS10 − TB3MS and `s2y` GS10 − GS2, from unrounded means; `partial` marks the running quarter; `y30` is null for 2005: the Treasury suspended the 30-year bond in October 2001 and published no 30-year constant-maturity yield from February 2002 until the bond returned in February 2006 |
 
 Monthly series are oldest first and leave a missing month out rather than interpolate it. The fetch date is
 in the backfill's commit.
