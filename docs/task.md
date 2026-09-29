@@ -36,8 +36,8 @@ unpinned write to an existing document is refused, and one bad entry refuses the
 **3. Check the artifact is on main's version** (V654). Read the artifact with the `Artifact` tool
 (`action:"read"`, the artifact `url`); it saves the page to a file. Fetch
 `https://raw.githubusercontent.com/kerzaiden/gyneconomy/main/index.html`. Publishing wraps the page in one
-extra first line and one extra closing `</body></html>` line; with those two lines removed, the artifact
-must equal main's `index.html` exactly. If it does not, the artifact is behind main: a version was
+extra first line and one extra closing `</body></html>` line; with those two lines removed and trailing
+whitespace at the end ignored, the artifact must equal main's `index.html` exactly. If it does not, the artifact is behind main: a version was
 merged, or the monthly backfill changed the histories, and nobody has republished. Do not republish it
 yourself. Report it and notify.
 
