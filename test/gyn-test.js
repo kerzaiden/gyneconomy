@@ -151,17 +151,12 @@ async function openPage(p, url, sheet) {
     const tag = w + 'px/' + scheme;
     errs.length ? bad('no page errors ' + tag, errs.join(' | ')) : ok('no page errors ' + tag);
     if (w === 390 && scheme === 'light') {
-      fresh.cssLast = css.last;
-      /* V622: the RULE COUNT went and `stylesheet intact` stayed, which is the pair worth keeping apart.
-         Keren: "are we over tested?" The count was the one honest yes. It fired on any stylesheet change at
-         all, so test/baseline.json was re-blessed in 32 of this app's 118 commits — more than a quarter of
-         the history is somebody confirming a change they had just made on purpose — and not once did it
-         report something unintended. It was a ritual, not a test.
-         This line is the one that earns the visit. The build concatenates the stylesheet, so an unclosed
-         brace swallows everything after it and the page still renders, just wrong from that point down.
-         Checking the LAST selector is still the last selector catches exactly that, and nothing else. */
+      fresh.cssRules = css.total; fresh.cssLast = css.last;
       css.last === 'a:hover' ? ok('stylesheet intact', css.total + ' rules')
         : bad('stylesheet intact', 'last selector is ' + css.last + ' — an unclosed brace killed the rest');
+      if (base && base.cssRules !== css.total)
+        bad('CSS rule count', 'baseline ' + base.cssRules + ', now ' + css.total + ' — bless if intended');
+      else if (base) ok('CSS rule count', css.total);
       // design tokens
       const tok = await p.evaluate(ts => { const cs = getComputedStyle(document.documentElement);
         const o = {}; for (const t of ts) o[t] = cs.getPropertyValue(t).trim(); return o; }, Object.keys(TOKENS));
@@ -341,6 +336,19 @@ async function openPage(p, url, sheet) {
     const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
     pm.length ? bad('every reading prints where it is painted', pm.join(' | '))
               : ok('every reading prints where it is painted');
+  }
+
+  /* ---- 2b6. every reach finds something (V620) ----
+     Renderers reach into the document by NAME, and a guard hides three different failures behind one shape:
+     a name that does not exist (V617 fails the build on those), a name that is not on the page being rendered
+     so the renderer silently does nothing, and a name that is there but was skipped, leaving yesterday's
+     content. `byId` records every reach that came up empty and `byIdMaybe` is how a reach DECLARES it expects
+     nothing sometimes, so optional and broken stop looking alike. Walking every page today: two reaches found
+     nothing, both already known and both now declared. This asserts the record stays empty. */
+  {
+    const miss = await p.evaluate(() => Object.keys(window.__elMiss || {}));
+    miss.length ? bad('every reach finds something', miss.map(i => '#' + i).join(', '))
+                : ok('every reach finds something');
   }
 
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
