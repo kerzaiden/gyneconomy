@@ -251,6 +251,41 @@ async function openPage(p, url, sheet) {
     await gp.close();
   }
 
+  /* ---- 2b3. Growth's economy lives in the head menu (V613) ----
+     Keren: "put the country picker in the growth page under the three dots in history." So the choice has to
+     be IN that menu, obeying the component's contract \u2014 a group at the root that names what is on, rows one
+     level in, and a pick that changes the root's reading \u2014 and the old dropdown has to be gone rather than
+     hidden, or the app would carry two controls for one choice. */
+  {
+    const pp = await b.newPage({ viewport: { width: 414, height: 1000 } });
+    const pperr = []; pp.on('pageerror', e => pperr.push(String(e).slice(0, 140)));
+    await pp.goto('file://' + url); await pp.waitForTimeout(1400);
+    const gone = await pp.evaluate(() => !document.getElementById('growth-peers') &&
+                                         !document.querySelector('.peer-picker'));
+    let root = [], picks = [], after = [];
+    if (await openPage(pp, url, 'sheet-metric-gdp')) {
+      await pp.evaluate(() => document.querySelector('.bh-more[data-head-more="sheet-metric-gdp"]').click());
+      await pp.waitForTimeout(280);
+      root = await pp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.textContent.trim()));
+      if (root.length) {
+        await pp.click('[data-head-grp="economy"]'); await pp.waitForTimeout(250);
+        picks = await pp.evaluate(() => [...document.querySelectorAll('.bh-pick')].map(n => n.textContent.trim()));
+        await pp.evaluate(() => document.querySelectorAll('.bh-pick')[1].click());
+        await pp.waitForTimeout(400);
+        after = await pp.evaluate(() => {
+          document.querySelector('.bh-more[data-head-more="sheet-metric-gdp"]').click();
+          return [...document.querySelectorAll('.bh-grp-row')].map(n => n.textContent.trim());
+        });
+      }
+    }
+    (gone && root.length === 1 && /^Economy/.test(root[0]) && picks.length > 2 &&
+     picks[0] === 'United States' && after.length === 1 && after[0] !== root[0])
+      ? ok('growth economy sits in the head menu', root[0] + ' -> ' + after[0])
+      : bad('growth economy sits in the head menu', JSON.stringify({ gone, root, picks, after }));
+    pperr.length ? bad('no errors in the economy menu', pperr.join(' | ')) : ok('no errors in the economy menu');
+    await pp.close();
+  }
+
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
 
   // 2c. the cycle picker says Today, capital T
@@ -300,6 +335,40 @@ async function openPage(p, url, sheet) {
       ? ok('rhymes marks only what it shows', y2000.marks + ' at 2000, ' + y2007.marks + ' at 2007')
       : bad('rhymes marks only what it shows',
             JSON.stringify({ marks: y2000.marks, onBlank: [y2000.markOnBlank, y2007.markOnBlank] }));
+  }
+
+  /* ---- 2c3. a closed cycle's four categories (V613) ----
+     Opening a cycle from Analysis must give the Cycle tab's four categories with the readings SHOWN, not
+     doored. Three claims: all four categories and all thirteen readings are there; every row that has data
+     inside those years states the range it travelled; and a reading whose record does not reach the cycle says
+     so instead of borrowing a figure from outside the years \u2014 the rule Rhymes keeps, kept here too. */
+  {
+    const cc = await p.evaluate(() => {
+      const row = [...document.querySelectorAll('.era-row')].find(x => /Housing/.test(x.textContent));
+      if (!row) return null; row.click(); return true;
+    });
+    await p.waitForTimeout(800);
+    const got = cc && await p.evaluate(() => ({
+      grps: [...document.querySelectorAll('.cc-grp .cyc-title')].map(n => n.textContent.trim()),
+      items: [...document.querySelectorAll('#cycle-cats .cat-item')].map(n => ({
+        name: n.querySelector('.ci-name').textContent.trim(),
+        val: n.querySelector('.ci-value').textContent.trim(),
+        word: n.querySelector('.ci-word').textContent.trim(),
+        none: !!n.querySelector('.cc-none')
+      })),
+      doors: document.querySelectorAll('#cycle-cats [data-open]').length
+    }));
+    const live = got && got.items.filter(i => !i.none);
+    (got && got.grps.join('/') === 'Weather/Circulation/Mood/Energy' && got.items.length === 13 &&
+     !got.doors && live.length >= 11 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     live.every(i => i.val && i.val !== '\u2014'))
+      ? ok('cycle categories show the data', got.grps.join(', ') + ' \u00b7 ' + got.items.length + ' readings')
+      : bad('cycle categories show the data', JSON.stringify(got));
+
+    const blank = got ? got.items.filter(i => i.none) : [];
+    (blank.length === 1 && blank[0].name === 'Desire' && /^Not measured before /.test(blank[0].word))
+      ? ok('cycle categories leave a short record blank', blank[0].name + ': ' + blank[0].word)
+      : bad('cycle categories leave a short record blank', JSON.stringify(blank));
   }
   await p.close();
 

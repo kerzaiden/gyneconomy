@@ -646,12 +646,12 @@
     o.vals.forEach(function(d, i){
       var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + 0.5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + '</text>');
+      out.push(xLabel((padL + slot * (i + 0.5)).toFixed(1), lab, (H - AXIS.FOOT)));
     });
     // Version 408: these two place their readings in SLOTS rather than at X(i), so the geometry they publish
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
+    out.push(crossLine(padT, (padT + ih)));
     lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
                      refs:(o.ref != null ? [{ label:"Average", v:rAvg }, { label:refName(o.refLabel), v:o.ref, dash:true, cls:"bt-ref" }]
                                         : [{ label:"Average", v:rAvg }]),
@@ -807,6 +807,47 @@
      clear but moved it; the honest fix is to give it room no column can take. 61 = 10 above the plate, the
      plate, and 10 below it — her two tens — and every chart's scale now maps into what is left. */
   var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };
+  /* ================= THE HISTORY FRAME IS ONE COMPONENT (Version 614) =================
+     Keren, Sep 29 2026: "can we stay consistent in terms of components \u2014 name all the components in the app
+     and then we use it and reuse it, because it seems that we are writing all over again every time we make
+     a change."
+     An audit said where she was feeling it: fifteen history charts, 1,572 lines, each RETYPING the same frame.
+     The three lines below were written out ten times \u2014 the width floor, the narrow breakpoint, the height and
+     the four edges \u2014 and so were the year label, the crosshair, the zero rule, the mean rule and the svg that
+     wraps them. Ten copies of a geometry means the next person to move the plot down four pixels moves it on
+     nine charts and misses one, and that chart is wrong for a year before anyone notices.
+     These five functions are the frame. They are deliberately thin: this is not a chart engine, it is the
+     parts that were ALREADY identical, lifted (Version 314 \u2014 move, do not rebuild) so the DOM they produce is
+     byte for byte what it was. What a chart draws INSIDE the frame stays its own business, because that is the
+     part that genuinely differs.
+     Every class here belongs to this frame and to nothing else, which the component ledger now enforces:
+     .bt-xl, .hist-cross, .m2-zero, .vh-mean and .vh-svg had 14, 13, 7, 6 and 9 authors between them. */
+  function histFrame(Wpx){
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var H = narrow ? 268 : 300;
+    return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
+             T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
+  }
+  /* A year under the plot. Both coordinates arrive READY \u2014 x already rounded the way its own chart rounds
+     it, y as the baseline that chart puts its labels on. The frame charts pass B + 17; the two small ones
+     measure up from the bottom instead, and a helper that insisted on one of those would have left the other
+     hand-written, which is the duplication this exists to end. */
+  function xLabel(x, text, y){
+    return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + '</text>';
+  }
+  // The crosshair, parked off-plot until a pointer moves it (wireHistHover drives every one of them).
+  function crossLine(top, bot){
+    return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
+  }
+  // Nought, drawn the full width of the frame including the label gutter, so it reads as the floor of the box
+  // rather than of the plot; and the reference the reading is measured against, drawn inside the plot only.
+  function zeroRule(L, R, y){
+    return '<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + y.toFixed(1) + 'H' + (R + AXIS.R) + '"/>';
+  }
+  function meanRule(L, R, y){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
+  function vhOpen(W, H){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
   function chartAxes(o){
     var out = [], ticks = o.ticks;
     // Version 400: a caller may hand in its own ticks instead of a span. Five of the histories compute theirs
@@ -911,12 +952,12 @@
     o.vals.forEach(function(d, i){
       var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + 0.5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + 0.5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + '</text>');
+      out.push(xLabel((padL + slot * (i + 0.5)).toFixed(1), lab, (H - AXIS.FOOT)));
     });
     // Version 408: these two place their readings in SLOTS rather than at X(i), so the geometry they publish
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
+    out.push(crossLine(padT, (padT + ih)));
     lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
                      refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
                                         : [{ label:"Average", v:dAvg }]),
@@ -955,7 +996,7 @@
       out.push('<circle class="pc-now ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="4.4"/>');
       out.push('<circle class="pc-core ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="1.8"/>');
       out.push('<text class="pc-pct mono ' + cls + '" x="' + cx + '" y="' + (Math.min(yw, yn) - 13).toFixed(1) + '" text-anchor="middle">' + fmtSigned(p.pct, 1) + '%</text>');
-      out.push('<text class="bt-xl" x="' + cx + '" y="' + (H - 21) + '" text-anchor="middle">' + p.label + '</text>');
+      out.push(xLabel(cx, p.label, (H - 21)));
       out.push('<text class="pc-was-lab" x="' + cx + '" y="' + (H - 7) + '" text-anchor="middle">from ' + p.wasLabel + '</text>');
     });
     return '<div class="dchart pairchart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>' +

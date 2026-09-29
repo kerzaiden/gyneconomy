@@ -21,7 +21,10 @@
     "sources": "node tools/gen-sources.js",
     "sources:check": "node tools/gen-sources.js --check",
     "a11y": "node tools/a11y.js index.html",
-    "a11y:check": "node tools/a11y.js index.html --check"
+    "a11y:check": "node tools/a11y.js index.html --check",
+    "comp": "node tools/components.js",
+    "comp:check": "node tools/components.js --check",
+    "comp:bless": "node tools/components.js --bless"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",

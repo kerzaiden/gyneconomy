@@ -588,9 +588,8 @@
   }
   function unempHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -612,12 +611,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 12; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
@@ -638,15 +637,15 @@
        zero without a line similar to the other numbers." Every other number in the rail has its gridline
        running past it; zero's did not, because zero's rule is drawn by the chart rather than by chartAxes and
        it was drawn to the plot's own width. */
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(NROU_NOW)) + 'H' + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(NROU_NOW)));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                      refs:[{ label:"Average", v:avgV },
                            { label:"CBO estimate", v:NROU_NOW, dash:true }],
                      fmt:function(v){ return v.toFixed(1) + "%"; } };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
       ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
   }
@@ -696,9 +695,8 @@
      component stops being readable. */
   function lendingHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = lendingStandardsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -723,12 +721,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 4; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
@@ -739,22 +737,21 @@
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
     lastChartAvg = avgV;
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals,
                      at:function(d){ return qLabel(d.q); },
                      refs:[{ label:"Average", v:avgV }],
                      fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v).toFixed(1) + "%"; } };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + ' to ' + y1 + '">' +
       out.join("") + '</svg>';
   }
   function fedFundsHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -776,12 +773,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 12; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     /* V608, Keren, of the sea change: "I want the bars in the hormones chart to be different shades of blue."
@@ -809,13 +806,13 @@
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(2) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                      refs:[{ label:"Average", v:avgV }],
                      fmt:function(v){ return v.toFixed(2) + "%"; } };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
   // V498: the band's edges, named once — the meter, the chart's colouring and the (i) all read these
@@ -848,9 +845,8 @@
      Zero is forced into the scale. What is kept runs close to it, and a window cropped to the data would
      make 2.8% look like a middling reading instead of a floor. */
   function householdsChart(Wpx, from, to){
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
@@ -872,9 +868,9 @@
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     function line(ser, cls){
       return '<path class="' + cls + '" d="' + ser.map(function(v, i){
         return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v)); }).join("") + '"/>';
@@ -918,9 +914,8 @@
   var lastChartAvg = null;   // Version 427: what the key under the chart prints, set by the drawing that owns it
   function cpiHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -951,12 +946,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 12; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
@@ -985,18 +980,18 @@
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(CPI_TARGET)) + 'H' + R + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(CPI_TARGET)));
     // Version 427: the target's own label moved to the key under the chart with the average's.
     // one transparent plate over the plot rather than 451 hit targets: at Max a column is 1.4px wide, which is
     // not a thing anyone can point at, so the nearest column is computed from the pointer instead
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                      refs:[{ label:"Average", v:lastChartAvg },
                            { label:"Fed target", v:CPI_TARGET, dash:true }],
                      fmt:function(v){ return v.toFixed(1) + "%"; } };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="Consumer prices year over year, every month from ' + y0 + ' to ' + y1 +
       ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + '</svg>';
   }
@@ -1036,9 +1031,8 @@
   }
   function gdpHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -1067,12 +1061,12 @@
       for (var cyr = y0; cyr <= y1; cyr += stepY){
         var cix = (cyr - y0) * 4; if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + '</text>');
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
@@ -1086,24 +1080,23 @@
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(GDP_NORM)) + 'H' + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(GDP_NORM)));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atQuarter,
                      refs:[{ label:"Average", v:gAvg },
                            { label:"Long-run", v:GDP_NORM, dash:true }],
                      fmt:function(v){ return v.toFixed(1) + "%"; } };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
       ', against the long-run average of ' + GDP_NORM + ' per cent; expansion in teal, contraction in orange">' +
       out.join("") + '</svg>';
   }
 
   function m2GrowthChart(Wpx, from, to){
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -1129,7 +1122,7 @@
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(v, i){
@@ -1142,10 +1135,10 @@
     // simply never drawn. Now it is, with the window's own average beside it and the key naming both.
     var vAvg = vals.filter(function(v){ return v != null; }).reduce(function(a, v){ return a + v; }, 0) /
                (vals.filter(function(v){ return v != null; }).length || 1);
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(M2_NORM)) + 'H' + R + '"/>');
+    out.push(meanRule(L, R, Y(M2_NORM)));
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(vAvg)) + 'H' + R + '"/>');
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
                      // the window's average and the long-run pace, in the order they are drawn
@@ -1157,8 +1150,8 @@
     var m2Fit = trendOf(vals.filter(function(v){ return v != null; }), "points", "quarter").fit;
     if (m2Fit && m2Fit.n > 1)
       out.push(fitGroup({ fit:m2Fit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(Y(M2_NORM)) + 'H' + R + '"/>');
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    out.push(meanRule(L, R, Y(M2_NORM)));
+    return vhOpen(W, H) +
       'aria-label="Money stock growth year over year, every quarter from ' + y0 + ' to ' + y1 +
       ', against the long-run norm of ' + M2_NORM + ' per cent">' +
       out.join("") + '</svg>';

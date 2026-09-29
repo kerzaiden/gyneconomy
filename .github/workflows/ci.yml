@@ -58,6 +58,12 @@ jobs:
       - name: Navigation map is current
         run: npm run map:check
 
+      # V614: the component ledger ratchets. A class may lose authors and never gain one, so a pattern
+      # cannot get more duplicated than the day it was recorded, and the next feature cannot quietly add
+      # to the debt. Deliberate duplication is allowed \u2014 it just has to be recorded on purpose.
+      - name: Components are not more duplicated
+        run: npm run comp:check
+
       # Accessibility was designed with care and documented in detail, and until V539 none of it had
       # been measured. This fails on serious or critical only; moderate findings are reported.
       - name: Accessibility

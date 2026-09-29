@@ -536,9 +536,8 @@
      deficit below" with it. Bars are slot-centred rather than edge-to-edge, because at ten bars across a
      desktop the first and last would otherwise hang half outside the plot. */
   function deficitChart(Wpx, from, to){
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -584,17 +583,17 @@
     for (yy = y0; yy <= y1; yy++){
       if (yy % yrStep) continue;
       out.unshift(vGrid(X(yy - y0), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(yy - y0)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yy + '</text>');
+      out.push(xLabel(f(X(yy - y0)), yy, B + 17));
     }
     vals.forEach(function(v, i){
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + f(zero) + 'H' + (R + AXIS.R) + '"/>');
+    out.push(zeroRule(L, R, zero));
     // the 1983 level, on a plate so it reads wherever it lands (the Version 217 rule)
     var y83 = Y(DEF_1983);
-    out.push('<path class="vh-mean" d="M' + L + ',' + f(y83) + 'H' + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(meanRule(L, R, y83));
+    out.push(crossLine(T, B));
     /* Version 489, Keren: "when I hover over any chart I want to see the average and the dashed line — in ALL
        the charts. One component, one source of truth: if I change it in one part of the app it changes in the
        others without my asking." She is right, and the page-by-page rollout was exactly the drift she is
@@ -614,7 +613,7 @@
     if (defFit && defFit.n > 1)
       out.push(fitGroup({ fit:defFit, fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; } },
                         X(0), X(n - 1), Y, R, L, 0));
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + ' to ' + y1 +
       ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + '</svg>';
   }
@@ -961,9 +960,8 @@
   // 810px desktop one — the same label would be 8px on one and 20px on the other — which is why this one is
   // rendered by sheetRenderers on open, the way every other page chart in this app already is.
   function velocityHistoryChart(Wpx, from, to){
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     // The 1959\u20132007 average is ALWAYS inside the scale, at every stop. That is the whole reading of this chart
@@ -988,7 +986,7 @@
     windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
       var i = (yr - M2V_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
 
     // the average is drawn across the years it is the average OF \u2014 which is also the clearest way to show where
@@ -997,7 +995,7 @@
     var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
     var meanTo = iEnd > 0 ? X(Math.min(iEnd, n - 1)) : R;
     out.push('<path class="vh-mean" d="M' + f(X(0)) + ',' + f(Y(PULSE_PRE2008)) + 'H' + f(meanTo) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     // Pulse draws a line, so there is no column to light under the pointer. The crosshair and the readout carry
     // it, and the mark lookup simply finds nothing — which the hover already guards for rather than assuming.
     var pAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
@@ -1037,7 +1035,7 @@
     if (pvFit && pvFit.n > 1)
       out.push(fitGroup({ fit:pvFit, fmt:function(v){ return v.toFixed(2) + "\u00d7"; } }, X(0), X(n - 1), Y, R, L, 0));
 
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
       ', against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
       out.join("") + '</svg>';
@@ -1054,9 +1052,8 @@
      that band typical and the line visits it on 49 of 787 days; drawing it is the difference between the page
      asserting "she is in the mood to take risk" and the page showing it. */
   function desireHistoryChart(Wpx, from){
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;   // LEG: the legend strip at the frame's head (V556/V557); 17 is the x label's drop, FOOT what follows it (V573)
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+        L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     // the typical band is ALWAYS inside the scale (the Version 358 rule): a window that cropped it away would
@@ -1091,9 +1088,9 @@
       if (seen[yr] || yr === y0){ seen[yr] = 1; continue; }
       seen[yr] = 1;
       out.unshift(vGrid(X(gi), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(gi)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + '</text>');
+      out.push(xLabel(f(X(gi)), yr, B + 17));
     }
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     var hyAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
     lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n,
                      at:function(d, i){ return hyLabel(from + i); },
@@ -1117,7 +1114,7 @@
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
         '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    return vhOpen(W, H) +
       'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
       ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';
   }

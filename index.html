@@ -11512,9 +11512,7 @@
     return sp == null || sp === Infinity ? 0 : Math.max(0, deficitHistory.length - sp);
   }
   function deficitChart(Wpx, from, to) {
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = deficitHistory.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = DEF_FROM_YEAR + from, y1 = DEF_FROM_YEAR + (to == null ? deficitHistory.length : to) - 1;
@@ -11572,15 +11570,15 @@
     for (yy = y0; yy <= y1; yy++) {
       if (yy % yrStep) continue;
       out.unshift(vGrid(X(yy - y0), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(yy - y0)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yy + "</text>");
+      out.push(xLabel(f(X(yy - y0)), yy, B + 17));
     }
     vals.forEach(function(v, i) {
       out.push('<path class="def-col hcol' + (v > 0 ? " surplus" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
     });
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
+    out.push(zeroRule(L, R, zero));
     var y83 = Y(DEF_1983);
-    out.push('<path class="vh-mean" d="M' + L + "," + f(y83) + "H" + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(meanRule(L, R, y83));
+    out.push(crossLine(T, B));
     var dfAvg = vals.reduce(function(a, v) {
       return a + v;
     }, 0) / (n || 1);
@@ -11618,7 +11616,7 @@
         return (v > 0 ? "+" : "") + v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + " to " + y1 + ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + " to " + y1 + ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + "</svg>";
   }
   function deficitBlock() {
     var lo = Math.min.apply(null, deficitHistory), iLo = deficitHistory.indexOf(lo), iSur = -1, i;
@@ -12869,9 +12867,7 @@
     return +n / 1e3;
   });
   function velocityHistoryChart(Wpx, from, to) {
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
@@ -12905,12 +12901,12 @@
       var i = (yr - M2V_FROM_YEAR) * 4 - from;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var iEnd = (2008 - M2V_FROM_YEAR) * 4 - 1 - from;
     var meanTo = iEnd > 0 ? X(Math.min(iEnd, n - 1)) : R;
     out.push('<path class="vh-mean" d="M' + f(X(0)) + "," + f(Y(PULSE_PRE2008)) + "H" + f(meanTo) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     var pAvg = ser.reduce(function(a, v) {
       return a + v;
     }, 0) / (n || 1);
@@ -12956,12 +12952,10 @@
         return v.toFixed(2) + "×";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
   function desireHistoryChart(Wpx, from) {
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = hyOas.slice(from), n = ser.length;
     var sc = windowScale(ser, [ 0, HY_NORM_LO ]);
@@ -12998,9 +12992,9 @@
       }
       seen[yr] = 1;
       out.unshift(vGrid(X(gi), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(gi)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(gi)), yr, B + 17));
     }
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     var hyAvg = ser.reduce(function(a, v) {
       return a + v;
     }, 0) / (n || 1);
@@ -13034,7 +13028,7 @@
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + " to " + hyLabel(hyOas.length - 1) + ", against the normal " + HY_NORM_LO + " to " + HY_NORM_HI + ' percent band">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + " to " + hyLabel(hyOas.length - 1) + ", against the normal " + HY_NORM_LO + " to " + HY_NORM_HI + ' percent band">' + out.join("") + "</svg>";
   }
   var PBAR_GAP = 3;
   function panelBar(o) {
@@ -13432,9 +13426,7 @@
   function unempHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -13477,13 +13469,13 @@
         var cix = (cyr - y0) * 12;
         if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
       var i = (yr - y0) * 12;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
@@ -13504,9 +13496,9 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + "," + f(Y(NROU_NOW)) + "H" + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(NROU_NOW)));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = {
       L: X(0),
@@ -13529,7 +13521,7 @@
         return v.toFixed(1) + "%";
       }
     };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The unemployment rate, every month from ' + y0 + " to " + y1 + ', against the 3.5 to 5 per cent band and CBO’s estimate of the noncyclical rate">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="The unemployment rate, every month from ' + y0 + " to " + y1 + ', against the 3.5 to 5 per cent band and CBO’s estimate of the noncyclical rate">' + out.join("") + "</svg>";
   }
   function checkFedFundsHistory() {
     var vs = fedFundsHistory.map(function(d) {
@@ -13552,9 +13544,7 @@
   function lendingHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = lendingStandardsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -13597,13 +13587,13 @@
         var cix = (cyr - y0) * 4;
         if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
       var i = (yr - y0) * 4;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
@@ -13615,8 +13605,8 @@
     }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
     lastChartAvg = avgV;
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = {
       L: X(0),
@@ -13637,14 +13627,12 @@
         return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
       }
     };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
   }
   function fedFundsHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -13687,13 +13675,13 @@
         var cix = (cyr - y0) * 12;
         if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
       var i = (yr - y0) * 12;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     var seenV = seen.map(function(d) {
@@ -13722,8 +13710,8 @@
         return v.toFixed(2) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = {
       L: X(0),
@@ -13742,7 +13730,7 @@
         return v.toFixed(2) + "%";
       }
     };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="The effective federal funds rate, every month from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="The effective federal funds rate, every month from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
   }
   var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
   var CPI_TARGET = 2;
@@ -13751,9 +13739,7 @@
   }
   var lastHistGeom = null;
   function householdsChart(Wpx, from, to) {
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var hi = to == null ? dsrHistory.length : to;
     var bill = dsrHistory.slice(from, hi);
@@ -13790,9 +13776,9 @@
       var i = (yr - DSR_FROM_YEAR) * 4 - from;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(crossLine(T, B));
     function line(ser, cls) {
       return '<path class="' + cls + '" d="' + ser.map(function(v, i) {
         return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v));
@@ -13838,9 +13824,7 @@
   function cpiHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -13879,13 +13863,13 @@
         var cix = (cyr - y0) * 12;
         if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
       var i = (yr - y0) * 12;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
@@ -13908,9 +13892,9 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + "," + f(Y(CPI_TARGET)) + "H" + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(CPI_TARGET)));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = {
       L: X(0),
@@ -13933,7 +13917,7 @@
         return v.toFixed(1) + "%";
       }
     };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Consumer prices year over year, every month from ' + y0 + " to " + y1 + ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Consumer prices year over year, every month from ' + y0 + " to " + y1 + ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + "</svg>";
   }
   var GDP_NORM = 2.6;
   var GDP_BAND_LO = 1, GDP_BAND_HI = 4.3;
@@ -13964,9 +13948,7 @@
   function gdpHistoryChart(Wpx, from, o) {
     o = o || {};
     lastChartAvg = null;
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
     if (!n) return "";
@@ -14005,13 +13987,13 @@
         var cix = (cyr - y0) * 4;
         if (cix >= n) break;
         out.unshift(vGrid(X(cix), T, B));
-        out.push('<text class="bt-xl" x="' + f(X(cix)) + '" y="' + (B + 17) + '" text-anchor="middle">' + cyr + "</text>");
+        out.push(xLabel(f(X(cix)), cyr, B + 17));
       }
     } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
       var i = (yr - y0) * 4;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
@@ -14031,9 +14013,9 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<path class="vh-mean" d="M' + L + "," + f(Y(GDP_NORM)) + "H" + R + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(meanRule(L, R, Y(GDP_NORM)));
+    out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
     lastHistGeom = {
       L: X(0),
@@ -14056,12 +14038,10 @@
         return v.toFixed(1) + "%";
       }
     };
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; expansion in teal, contraction in orange">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; expansion in teal, contraction in orange">' + out.join("") + "</svg>";
   }
   function m2GrowthChart(Wpx, from, to) {
-    var W = Math.max(270, Math.round(Wpx || 360));
-    var narrow = W < 430;
-    var H = narrow ? 268 : 300, L = AXIS.L, R = W - AXIS.R, T = AXIS.T + AXIS.LEG + AXIS.READ, B = H - 17 - AXIS.FOOT;
+    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
@@ -14096,7 +14076,7 @@
       var i = (yr - y0) * 4;
       if (i < 0 || i >= n) return;
       out.unshift(vGrid(X(i), T, B));
-      out.push('<text class="bt-xl" x="' + f(X(i)) + '" y="' + (B + 17) + '" text-anchor="middle">' + yr + "</text>");
+      out.push(xLabel(f(X(i)), yr, B + 17));
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(v, i) {
@@ -14110,10 +14090,10 @@
     }, 0) / (vals.filter(function(v) {
       return v != null;
     }).length || 1);
-    out.push('<path class="vh-mean" d="M' + L + "," + f(Y(M2_NORM)) + "H" + R + '"/>');
+    out.push(meanRule(L, R, Y(M2_NORM)));
     out.push('<path class="temp-avg" d="M' + L + "," + f(Y(vAvg)) + "H" + R + '"/>');
-    out.push('<path class="m2-zero" d="M' + (L - AXIS.L) + "," + f(zero) + "H" + (R + AXIS.R) + '"/>');
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + T + '" y2="' + B + '"/>');
+    out.push(zeroRule(L, R, zero));
+    out.push(crossLine(T, B));
     lastHistGeom = {
       L: X(0),
       R: X(n - 1),
@@ -14150,8 +14130,8 @@
         return v.toFixed(1) + "%";
       }
     }, X(0), X(n - 1), Y, R, L, 0));
-    out.push('<path class="vh-mean" d="M' + L + "," + f(Y(M2_NORM)) + "H" + R + '"/>');
-    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ' + 'aria-label="Money stock growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run norm of " + M2_NORM + ' per cent">' + out.join("") + "</svg>";
+    out.push(meanRule(L, R, Y(M2_NORM)));
+    return vhOpen(W, H) + 'aria-label="Money stock growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run norm of " + M2_NORM + ' per cent">' + out.join("") + "</svg>";
   }
   function checkMoneyStock() {
     var g = m2Yoy.filter(function(x) {
@@ -14719,9 +14699,9 @@
       var lab = xLabelOf(o, d, i, o.vals);
       if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + .5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + "</text>");
+      out.push(xLabel((padL + slot * (i + .5)).toFixed(1), lab, H - AXIS.FOOT));
     });
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
+    out.push(crossLine(padT, padT + ih));
     lastHistGeom = {
       L: padL + slot * .5,
       R: padL + slot * (n - .5),
@@ -14782,6 +14762,35 @@
     FOOT: 8,
     READ: 61
   };
+  function histFrame(Wpx) {
+    var W = Math.max(270, Math.round(Wpx || 360));
+    var narrow = W < 430;
+    var H = narrow ? 268 : 300;
+    return {
+      W: W,
+      narrow: narrow,
+      H: H,
+      L: AXIS.L,
+      R: W - AXIS.R,
+      T: AXIS.T + AXIS.LEG + AXIS.READ,
+      B: H - 17 - AXIS.FOOT
+    };
+  }
+  function xLabel(x, text, y) {
+    return '<text class="bt-xl" x="' + x + '" y="' + y + '" text-anchor="middle">' + text + "</text>";
+  }
+  function crossLine(top, bot) {
+    return '<line class="hist-cross" x1="0" x2="0" y1="' + top + '" y2="' + bot + '"/>';
+  }
+  function zeroRule(L, R, y) {
+    return '<path class="m2-zero" d="M' + (L - AXIS.L) + "," + y.toFixed(1) + "H" + (R + AXIS.R) + '"/>';
+  }
+  function meanRule(L, R, y) {
+    return '<path class="vh-mean" d="M' + L + "," + y.toFixed(1) + "H" + R + '"/>';
+  }
+  function vhOpen(W, H) {
+    return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ';
+  }
   function chartAxes(o) {
     var out = [], ticks = o.ticks;
     if (!ticks) {
@@ -14848,9 +14857,9 @@
       var lab = xLabelOf(o, d, i, o.vals);
       if (!lab) return;
       out.unshift(vGrid(padL + slot * (i + .5), padT, padT + ih));
-      out.push('<text class="bt-xl" x="' + (padL + slot * (i + .5)).toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + lab + "</text>");
+      out.push(xLabel((padL + slot * (i + .5)).toFixed(1), lab, H - AXIS.FOOT));
     });
-    out.push('<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ih) + '"/>');
+    out.push(crossLine(padT, padT + ih));
     lastHistGeom = {
       L: padL + slot * .5,
       R: padL + slot * (n - .5),
@@ -14903,7 +14912,7 @@
       out.push('<circle class="pc-now ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="4.4"/>');
       out.push('<circle class="pc-core ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="1.8"/>');
       out.push('<text class="pc-pct mono ' + cls + '" x="' + cx + '" y="' + (Math.min(yw, yn) - 13).toFixed(1) + '" text-anchor="middle">' + fmtSigned(p.pct, 1) + "%</text>");
-      out.push('<text class="bt-xl" x="' + cx + '" y="' + (H - 21) + '" text-anchor="middle">' + p.label + "</text>");
+      out.push(xLabel(cx, p.label, H - 21));
       out.push('<text class="pc-was-lab" x="' + cx + '" y="' + (H - 7) + '" text-anchor="middle">from ' + p.wasLabel + "</text>");
     });
     return '<div class="dchart pairchart"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + "</svg></div>" + '<div class="pc-legend"><span><i class="pc-key-was"></i>a year earlier</span>' + '<span><i class="pc-key-now ' + (o.pairs.some(function(p) {
@@ -16313,7 +16322,7 @@
         }
       }));
       svg.classList.add("hist-svg");
-      svg.insertAdjacentHTML("beforeend", '<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (H - padB) + '"/>');
+      svg.insertAdjacentHTML("beforeend", crossLine(padT, H - padB));
       var picked = matOf(matPick);
       lastHistGeom = {
         L: x(ylmFrom),
@@ -16774,7 +16783,7 @@
         var m = d.q.match(/^(\d{4}) Q1$/);
         if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1) {
           var xp = x(i, data.length);
-          xMarks += vGrid(xp, yTop, yBot) + '<text class="bt-xl" x="' + xp.toFixed(1) + '" y="' + (H - AXIS.FOOT) + '" text-anchor="middle">' + m[1] + "</text>";
+          xMarks += vGrid(xp, yTop, yBot) + xLabel(xp.toFixed(1), m[1], H - AXIS.FOOT);
         }
       });
       appendSvgMarkup(svg, xMarks);

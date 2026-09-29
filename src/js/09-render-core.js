@@ -445,7 +445,7 @@
       // window, so the geometry it publishes is the first and last VISIBLE column.
       svg.classList.add("hist-svg");
       svg.insertAdjacentHTML("beforeend",
-        '<line class="hist-cross" x1="0" x2="0" y1="' + padT + '" y2="' + (H - padB) + '"/>');
+        crossLine(padT, (H - padB)));
       var picked = matOf(matPick);
       lastHistGeom = { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
                        n:ylmCount(), at:function(d, i){ return quarters[ylmFrom + i]; },
