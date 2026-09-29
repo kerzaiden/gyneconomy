@@ -370,6 +370,21 @@ async function openPage(p, url, sheet) {
     (blank.length === 1 && blank[0].name === 'Desire' && /^Not measured before /.test(blank[0].word))
       ? ok('cycle categories leave a short record blank', blank[0].name + ': ' + blank[0].word)
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
+
+    /* V615: the two cards that used to be dragged in here are gone, and each row carries the cycle's shape
+       instead. Both halves are asserted, because the first without the second is a view that lost a picture
+       and the second without the first is the duplication that made her ask. The cards must still EXIST \u2014 in
+       their drawers, showing the cycle that is actually current \u2014 so this checks where they are, not whether
+       they are. */
+    const shape = await p.evaluate(() => ({
+      dragged: !!document.querySelector('#calendar-cycle #temp-card, #calendar-cycle #growth-card'),
+      home: !!document.querySelector('#slot-temp #temp-card') && !!document.querySelector('#slot-growth #growth-card'),
+      sparks: document.querySelectorAll('#cycle-cats .ci-mini .spark').length,
+      stale: /Current cycle/i.test((document.getElementById('calendar-cycle') || {}).innerText || '')
+    }));
+    (!shape.dragged && shape.home && shape.sparks >= 10 && !shape.stale)
+      ? ok('closed cycle drops the live cards', shape.sparks + ' rows carry their own shape')
+      : bad('closed cycle drops the live cards', JSON.stringify(shape));
   }
   await p.close();
 

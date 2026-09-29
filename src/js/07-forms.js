@@ -454,9 +454,9 @@
         'about a third off the 2007 peak, and has been flat for two years.</p>' +
       '<p class="caption" style="margin-top:10px;">Read it with the cushion below, never alone. The bill is the ' +
         'lighter half of this page\u2019s story; the thin part is what is left over.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP"}
-      ]) + '</div>';
+      ]);
   }
   function savInfoHtml(){
     return '<h4>Saving rate</h4>' +
@@ -471,9 +471,9 @@
       '<p class="caption" style="margin-top:10px;">This is the reading that sets the page\u2019s word, and the bill ' +
         'above can only make it worse, never better: a household with a cushion can carry a heavy bill, and one ' +
         'without cannot carry a light one.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"BEA via FRED \u2014 Personal Saving Rate (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT"}
-      ]) + '</div>';
+      ]);
   }
 
   var sp500AnnualReturns = {

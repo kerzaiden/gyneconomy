@@ -197,7 +197,7 @@
       '</div>' +
       '<div class="legend-head">The ring\u2019s span</div>' +
       '<p class="caption">An open cycle\u2019s ring is scaled to <b>' + typicalCycleYears + ' years</b>, and the pale dots are what is left of one: a typical full cycle \u2014 one bull market and the bear market that ends it \u2014 has run about five to six and a half years across the long record. A cycle that outlasts it extends the ring instead of overflowing it, which is why the Dot-Com ring spans twelve. It is a typical length, not a forecast.</p>' +
-      '<div class="src">' + srcHtml(typicalCycleSrc) + '</div>' +
+      srcBlock(typicalCycleSrc) +
       '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
     document.getElementById("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
@@ -758,7 +758,7 @@
       'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.',
       'The dropdown at the top right switches the economy \u2014 the United States, Israel, Japan or the European Union, one at a time.'
     ]) +
-    '<div class="src">' + srcHtml(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc)) + '</div>';
+    srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc));
 
   // ---- the whole view, for one cycle ----
   function renderCycleView(m, dialOnly){

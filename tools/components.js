@@ -32,11 +32,34 @@ const FN = /^  function ([A-Za-z0-9_$]+)\(/;
    a component as duplicating itself. */
 function scan() {
   const css = fs.readFileSync(path.join(ROOT, 'src/styles.css'), 'utf8');
-  const defined = new Set([...css.matchAll(/\.([a-z][a-z0-9-]{2,})/g)].map(m => m[1]));
+  /* Two characters, not three. The first cut of this used {2,} after the leading letter, which quietly meant
+     three characters minimum and made every short class invisible to the ledger — .on, .up, and the whole of
+     the .s0–.s5 and .f0–.f5 step families the heat and rate charts use. A ratchet with a blind spot is worse
+     than none, because the blind spot is exactly where a modifier gets copied. */
+  const defined = new Set([...css.matchAll(/\.([a-z][a-z0-9-]+)/g)].map(m => m[1]));
   const where = new Map();
   for (const file of fs.readdirSync(SRC).sort()) {
     let fn = '(top level)';
-    for (const line of fs.readFileSync(path.join(SRC, file), 'utf8').split('\n')) {
+    /* Comments are skipped, and the reason is not tidiness. This app explains itself in prose that quotes the
+       markup it is about — srcBlock's own note names the `class="src"` it replaced — so a scanner that read
+       comments would report a component as its own second author and the ratchet would be measuring the
+       writing rather than the code. Block state is tracked across lines because these comments run long; a
+       line comment is only honoured when the line STARTS with one, so a `//` inside a URL is left alone. */
+    let inBlock = false;
+    for (const raw of fs.readFileSync(path.join(SRC, file), 'utf8').split('\n')) {
+      let line = raw;
+      if (inBlock) {
+        const end = line.indexOf('*/');
+        if (end < 0) continue;
+        line = line.slice(end + 2); inBlock = false;
+      }
+      const open = line.indexOf('/*');
+      if (open >= 0) {
+        const close = line.indexOf('*/', open + 2);
+        if (close < 0) { inBlock = true; line = line.slice(0, open); }
+        else line = line.slice(0, open) + line.slice(close + 2);
+      }
+      if (line.trim().startsWith('//')) line = '';
       const m = FN.exec(line);
       if (m) fn = m[1];
       const blobs = [...line.matchAll(/class(?:Name)?\s*=\s*"([^"]+)"/g)].map(x => x[1]);

@@ -59,13 +59,27 @@
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
+      /* Version 616, Keren: "when I click on AI Cycle, which is the current cycle, I just want to go to the
+         current cycle page, because the cycle is not ended yet."
+         Right, and it settles what Version 615 left half-said. That version gave a CLOSED cycle a view of its
+         own — the dial, and every reading as what it finished at and how far it ran — because a cycle that
+         ended has no live page. The open cycle has one: the Cycle tab IS this view, still moving, with its
+         charts and its doors. Building a second, frozen copy of it would be the app telling a reader that the
+         AI Cycle is over, in the one place whose whole subject is whether it is. So the row is still a door;
+         it opens the tab rather than a page.
+         It leaves through the tab button rather than by assembling the tab here, so the Cycle tab does its own
+         setup — placeCharts, the live cycle, the top bar — in the one place that knows how. */
+      if (era.ongoing){
+        var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
+        if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      }
       showCycle(era, true);   // V615: the dial only — the two cards stay in their drawers
       slot.appendChild(cycleViewEl);
       renderCycleCats(era);
       listWrap.hidden = true; detail.hidden = false;
       // the top bar becomes the cycle's: its name as the title, the back arrow on the left (Keren, Sep 19, 2026: in the
       // top menu, not a link under it)
-      setTopbar(era.ongoing ? "Current Cycle" : era.name, back);
+      setTopbar(era.name, back);   // V616: only closed cycles reach here, and each has a name
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function back(){

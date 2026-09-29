@@ -186,6 +186,10 @@
     }).join("");
     return labelsHtml + '<div class="rbar-track">' + zoneHtml + stopsHtml + dotHtml + '</div>';
   }
+  /* Version 616: every one of the nineteen callers wrote the same wrapper around this, so the wrapper is the
+     component and srcHtml is its inside. Nothing about the markup changed — the nineteen `<div class="src">`
+     that were typed out are now written once, which is the whole of it. */
+  function srcBlock(list){ return '<div class="src">' + srcHtml(list) + '</div>'; }
   function srcHtml(list){ return list.map(function(s){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
   // A READING ON A RING (Version 280, Keren: "I want the VIX and the high-yield spread to have a ring
   // representation … the ring on the left and the text adjacent to it on the right, and you can drop the current
@@ -366,23 +370,23 @@
       {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
         detail: '<h4>3-Month Treasury</h4>' +
           '<p class="caption">This tracks the Federal Reserve\'s own overnight policy rate almost directly — when the Fed raises or cuts, this yield moves within days. It\'s the reference rate behind savings accounts, CDs, money-market funds, and most variable-rate consumer debt like credit cards and many lines of credit. Quarterly average of the discount-basis TB3MS series, which reads a touch below the investment-basis short yield shown on the curve above — a real definitional gap, not an inconsistency.</p>' +
-          '<div class="src">' + srcHtml([{t:"FRED — 3-Month Treasury Bill Rate (TB3MS)", u:"https://fred.stlouisfed.org/series/TB3MS"}]) + '</div>'},
+          srcBlock([{t:"FRED — 3-Month Treasury Bill Rate (TB3MS)", u:"https://fred.stlouisfed.org/series/TB3MS"}])},
       {code:"2y", name:"2-Year", data: t2yYieldHistory, on:true,
         detail: '<h4>2-Year Treasury</h4>' +
           '<p class="caption">Reflects the market\'s own forecast of where the Fed\'s policy rate will average over the next couple of years — it often moves before the Fed actually acts, on rate-cut or rate-hike expectations. It\'s the closest single number to "what markets think the Fed will do next." Auto loans and shorter-duration corporate borrowing tend to price off this end of the curve.</p>' +
-          '<div class="src">' + srcHtml([{t:"FRED — 2-Year Treasury Rate (GS2)", u:"https://fred.stlouisfed.org/series/GS2"}]) + '</div>'},
+          srcBlock([{t:"FRED — 2-Year Treasury Rate (GS2)", u:"https://fred.stlouisfed.org/series/GS2"}])},
       {code:"5y", name:"5-Year", data: t5yYieldHistory, on:true,
         detail: '<h4>5-Year Treasury</h4>' +
           '<p class="caption">Sits in the middle of the curve, blending near-term Fed-policy expectations with a longer view on growth and inflation. It\'s the benchmark for medium-duration borrowing — 5-year adjustable-rate mortgages, mid-length corporate bonds, and many business loans.</p>' +
-          '<div class="src">' + srcHtml([{t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"}]) + '</div>'},
+          srcBlock([{t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"}])},
       {code:"10y", name:"10-Year", data: t10yYieldHistory, on:true,
         detail: '<h4>10-Year Treasury</h4>' +
           '<p class="caption">The single most-referenced benchmark in the credit market. A 30-year fixed mortgage sounds like a 30-year commitment, but between moves and refinances its real average lifespan runs closer to 7–10 years — which is why mortgage rates track this maturity rather than the 30-year bond. Most investment-grade corporate bonds are also quoted as this yield plus a spread, and it\'s the standard discount-rate proxy used in stock valuation.</p>' +
-          '<div class="src">' + srcHtml([{t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"}]) + '</div>'},
+          srcBlock([{t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"}])},
       {code:"30y", name:"30-Year", data: t30yYieldHistory, on:true,
         detail: '<h4>30-Year Treasury</h4>' +
           '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury stopped issuing 30-year bonds between October 2001 and February 2006, so there is no actual traded yield for that stretch — shown here as a break rather than a guessed figure.</p>' +
-          '<div class="src">' + srcHtml([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}]) + '</div>'}
+          srcBlock([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}])}
     ];
     addSources([
       {t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"},

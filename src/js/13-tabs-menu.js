@@ -53,11 +53,11 @@
     document.getElementById("framework-kicker").innerHTML = "The framework" + expandBtn(
       '<h4>The Seasonal Behaviour framework</h4>' +
       '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as risk appetite shows in current positioning. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"Conference Board — Leading Economic Index components", u:"https://www.conference-board.org/topics/us-leading-indicators"},
         {t:"Schularick & Taylor — Credit Booms Gone Bust (NBER w15512)", u:"https://www.nber.org/papers/w15512"},
         {t:"StatPearls — Fertility Awareness-Based Methods (NCBI)", u:"https://www.ncbi.nlm.nih.gov/books/NBK546666/"}
-      ]) + '</div>');
+      ]));
   }
   GYN.step("renderSeasonRows", renderSeasonRows, "render"); renderSeasonRows();
 

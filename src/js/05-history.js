@@ -263,12 +263,12 @@
         'index\u2019s own record: 2.41% in June 2007 and 21.82% in December 2008.</p>' +
       '<p class="caption" style="margin-top:10px;">Version 480 replaced an unsourced 4\u20135% band, which had ' +
         'entered the app as a rough long-run average and been printed as a normal range.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index OAS (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},
         {t:"Trading Economics \u2014 the index\u2019s record high and low since 1996", u:"https://tradingeconomics.com/united-states/bofa-merrill-lynch-us-high-yield-option-adjusted-spread-fed-data.html"},
         {t:"Convex \u2014 high-yield spread regimes and the long-run median", u:"https://convextrade.com/glossary/hy-spreads"},
         {t:"CME Group \u2014 how Fed policy moves corporate bond spreads", u:"https://www.cmegroup.com/openmarkets/interest-rates/2025/How-Fed-Policy-Can-Impact-Corporate-Bond-Spreads.html"}
-      ]) + '</div>';
+      ]);
   }
   /* Version 485. Both of these state where the BAND came from, which is the thing an (i) on a reading with a
      range is for — the lesson of Version 480, where a number nobody could source had been printed as a normal
@@ -319,11 +319,11 @@
       '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' +
         'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
         'each one, and only the second kind compounds.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
         {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
         {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
-      ]) + '</div>';
+      ]);
   }
   function outputInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +
@@ -337,7 +337,7 @@
         '1950; ISM\u2019s full history is members-only, so those two come from a compilation of it.</p>' +
       '<p class="caption" style="margin-top:10px;">Read it as the fast reading on this page. The labour market ' +
         'above lags a turn by two to three quarters; this one is a survey of what is happening now.</p>' +
-      '<div class="src">' + srcHtml(f.src || []) + '</div>';
+      srcBlock(f.src || []);
   }
   function activityInfoHtml(ind){
     return '<h4>' + ind.econTerm + '</h4>' +
@@ -353,10 +353,10 @@
         'is a hot labour market with few people looking, <b>slack</b> is a cold one. And this reading confirms a ' +
         'phase rather than calling it \u2014 unemployment is the textbook lagging indicator, usually trailing a turn ' +
         'by two to three quarters.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"CBO via FRED \u2014 Noncyclical Rate of Unemployment (NROU)", u:"https://fred.stlouisfed.org/series/NROU"},
         {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
-      ]) + '</div>';
+      ]);
   }
   /* Version 490. The last band in the app to get its provenance, and the only one that is not an observation
      of where a series has sat. Every other (i) here can point at a computed percentile or a published
@@ -388,12 +388,12 @@
         'money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every ' +
         'debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero ' +
         'rather than at it.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"},
         {t:"Cleveland Fed — The CPI versus the PCE price index", u:"https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"},
         {t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
         {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
-      ]) + '</div>';
+      ]);
   }
   function desireBlock(ind){
     /* Version 479, Keren: "the entire test result component in a grey stroke container like we used to have."
@@ -1024,10 +1024,10 @@
         'economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 at 2.1% a year through ' +
         '2030, easing to 1.8% after that as the population ages. Today\u2019s reading sits inside the band, below the ' +
         'long-run average, and almost exactly at potential: the economy is growing about as fast as it can.</p>' +
-      '<div class="src">' + srcHtml([
+      srcBlock([
         {t:"BEA \u2014 Gross Domestic Product", u:"https://www.bea.gov/data/gdp/gross-domestic-product"},
         {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"}
-      ]) + '</div>';
+      ]);
   }
   function gdpHistoryChart(Wpx, from, o){
     o = o || {}; lastChartAvg = null;
