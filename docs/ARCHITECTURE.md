@@ -36,7 +36,7 @@ Six of the nine rows have a writer today; see Open questions.
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
 | **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json` | weekdays 22:40 UTC, after the NY close | the site |
-| **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database | weekly | the artifact |
+| **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
