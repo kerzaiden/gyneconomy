@@ -2,9 +2,8 @@
   // ---------------- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----------------
   function renderSpreadHistory(){
     var svg = byId("spread-history-svg");
-    // Version 496: recomputed per draw from the host's width (see draw). A fixed 780-unit viewBox scaled to
-    // a phone made this the smallest chart in the app, with labels shrunk by the same factor.
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
+    // W and H are placeholders: draw() sets them from the host's width
+    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
@@ -44,8 +43,7 @@
             {t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"},
             {t:"FRED — 2-Year Treasury Rate (GS2)", u:"https://fred.stlouisfed.org/series/GS2"},
             {t:"NBER — US Business Cycle Expansions and Contractions", u:"https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions"},
-            // V493: the reading's note cites this model on both spreads now that the two (i)s are merged, so
-            // the source has to be reachable from both — it was on the 3M list only.
+            // the reading's note cites this model on both spreads, so the source has to be reachable from both
             {t:"NY Fed — Yield Curve as a Leading Indicator, FAQ (PDF)", u:"https://www.newyorkfed.org/medialibrary/media/research/capital_markets/ycfaq.pdf"}
           ]),
         sources: [
@@ -58,21 +56,20 @@
     addSources(series["3m"].sources); addSources(series["2y"].sources);
 
     function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
-    // V569: half a slot in at each end, the Version 567 rule — the last column was landing 1.5px from the
-    // frame's right edge where every other history clears it by four to fourteen
+    // half a slot in at each end, so the first and last columns clear the frame as on every other history
     function x(i, n){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
-    /* Version 472: the spread windows. Everything in here is indexed against `data` and its length — the
-       recession bands through qIndex, the x labels, both area fills, the line and the un-inversion marker — so
-       handing it a SLICE is all the windowing it needs, and the two lookups that can now fall outside the view
-       return -1 and are skipped rather than drawn at a nonsense x. */
+    /* The spread windows. Everything in here is indexed against `data` and its length — the recession bands
+       through qIndex, the x labels, the columns and the hover — so handing it a SLICE is all the windowing it
+       needs, and a recession lookup that falls outside the view returns -1 and is skipped rather than drawn
+       at a nonsense x. */
     function draw(key, from, to){
       var s = series[key];
       var data = s.data;
       if (from != null) data = data.slice(from, to == null ? undefined : to);
       if (data.length < 2) data = s.data;
-      // Version 496: measure first, like every other history (the V303 rule this chart never followed)
+      // measure first, like every other history: a fixed viewBox scaled to a phone shrinks every label with it
       var shell = svg.parentNode;
       W = Math.max(270, Math.round((shell && shell.clientWidth) || 360));
       H = W < 430 ? 268 : 300;
@@ -87,13 +84,11 @@
         svg.appendChild(el("rect", { x:x(i0,data.length), y:padT, width: Math.max(2, x(i1,data.length) - x(i0,data.length)), height: innerH, class:"spread-history-band" }));
       });
 
-      /* Version 522, Keren: "every other history container has this square boxed-in grid, like in the Apple
-         Health app, and Horizon looks different — unify the design." It did look different, and for a reason
-         worth naming: this chart draws node by node while the other nine build a string, so when Version 442
-         gave the app one frame and one vertical rule (`chartAxes`, `vGrid`) this was the chart that could not
-         call them. It calls them now, through `appendSvgMarkup`. What arrives with them is the whole shared
-         look: the frame rect, dashed rows at `--grid`, mono y labels ENDING at the plot's left edge rather
-         than starting at the svg's, and a dashed vertical rule under every year label.
+      /* Keren, V522: "every other history container has this square boxed-in grid, like in the Apple Health
+         app, and Horizon looks different — unify the design." This chart draws node by node while the others
+         build a string, so it takes the shared frame and vertical rule (`chartAxes`, `vGrid`) through
+         `appendSvgMarkup`: the frame rect, dashed rows at `--grid`, mono y labels ENDING at the plot's left
+         edge, and a dashed vertical rule under every year label.
          The zero line stays its own heavier solid rule, and keeps its dashed row suppressed (`noGridAt`),
          because a dashed rule under a solid one reads as two — the same reason the deficit chart passes it. */
       var yTop = padT, yBot = padT + innerH, xR = W - padR;
@@ -102,12 +97,11 @@
         ticks:[-2, -1, 0, 1, 2, 3, 4],
         fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; }
       }));
-      // V571: across the FRAME, so the 0% in the rail has its rule like every other number there
+      // across the FRAME, so the 0% in the rail has its rule like every other number there
       svg.appendChild(el("line", { x1:padL - AXIS.L, x2:xR + AXIS.R, y1:y(0), y2:y(0), class:"spread-history-zero" }));
 
-      // X labels: Q1 of every third year or so, the years following the window (Version 472), each with the
-      // app's own vertical rule under it (Version 442) — which is the other half of what made this grid look
-      // unlike the rest: horizontal rows, and nothing crossing them.
+      // X labels: Q1 of every third year or so, the years following the window, each with the app's own
+      // vertical rule under it
       var y0q = parseInt(data[0].q.slice(0, 4), 10), y1q = parseInt(data[data.length - 1].q.slice(0, 4), 10);
       var xLabelYears = windowYears(y0q, y1q, 6);
       var xMarks = "";
@@ -121,11 +115,10 @@
       });
       appendSvgMarkup(svg, xMarks);
 
-      /* Version 496, Keren: "I prefer bars, because you can colour the bars and have more meaning in the
-         colour." Here that is not only consistency — the whole reading of this series is which side of zero a
-         quarter falls on, and a column standing out of the zero line says that in its length and its colour at
-         once. The area fill said it too, but a fill has no per-quarter unit: nothing to hover, nothing to light
-         up, and nothing to carry the `.hcol` class every other history's hover depends on. */
+      /* Keren, V496: "I prefer bars, because you can colour the bars and have more meaning in the colour."
+         The whole reading of this series is which side of zero a quarter falls on, and a column standing out
+         of the zero line says that in its length and its colour at once. A column is also a per-quarter unit:
+         something to hover, to light up, and to carry the `.hcol` class every other history's hover depends on. */
       var zeroY = y(0);
       var colW = colWidth(innerW / Math.max(1, data.length));
       data.forEach(function(d, i){
@@ -137,39 +130,32 @@
         }));
       });
 
-      /* Version 570: the un-inversion marker is gone entirely. Version 569 kept the line and moved its label
-         to the legend; Keren: "the colour already shows that the graph goes from inverted to normal, so I
-         don't need it again." She is right — the quarter the columns change colour IS the un-inversion, drawn
-         by the data rather than annotated on top of it, and a rule through the plot saying the same thing was
-         the last of the duplicate furniture this component has been shedding since Version 556. */
+      /* No un-inversion marker. Keren, V570: "the colour already shows that the graph goes from inverted to
+         normal, so I don't need it again." The quarter the columns change colour IS the un-inversion. */
 
       // Hover crosshair + tooltip (same idiom as the yield-curve chart above) — rebuilt fresh each draw, so no
       // stale listeners survive a toggle switch (svg.innerHTML = "" above already detached the old hit rect).
-      // V569: .hist-cross, not this chart's own .crosshair — one class, so the resting reading's thread and
-      // the hovered one look the same here as on every other history, and the stylesheet owns both weights
+      // .hist-cross, not a class of this chart's own, so the resting reading's thread and the hovered one look
+      // the same here as on every other history, and the stylesheet owns both weights
       var crosshair = el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" });
       svg.appendChild(crosshair);
       var hoverDot = el("circle", { r:4.5, class:"curve-dot end", opacity:0 });
       svg.appendChild(hoverDot);
       var hit = el("rect", { x:padL, y:0, width:innerW, height:H, class:"hero-hit" });
       svg.appendChild(hit);
-      /* Version 495: this chart writes the shared readout above it like every other history. It never used
+      /* This chart writes the shared readout above it like every other history, but it does not use
          `wireHistHover` — it tracks its own pointer because its x-scale is its own — so it carries its own
-         geometry object in the shape that readout expects, and the floating tooltip goes the way the others
-         went. */
+         geometry object in the shape that readout expects. */
       var shell = byId("spread-history-shell");
       if (shell){
-        /* V569: the geometry the shared readout and legend need. This chart tracks its own pointer, so it
-           handed over only `vals` — which left the plate with no column to sit over (it fell to the left edge,
-           outside the frame, where Keren found it) and left the legend with nothing to measure. The numbers
+        /* The geometry the shared readout and legend need: without L/R the plate has no column to sit over
+           (it falls to the left edge, outside the frame) and the legend has nothing to measure. The numbers
            are the ones the chart just drew with, so the plate rides the same columns the hover lights. */
         shell.__geom = { vals:data, n:data.length, W:W, T:yTop, B:yBot,
                          L:x(0, data.length), R:x(data.length - 1, data.length),
                          at:function(d){ return qLabel(d.q); },
                          fmt:function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; },
-                         /* V570: the colour key moves up here from its own row under the chart. It is the
-                            same three entries, in the same colours, in the place every other history keeps
-                            its key — which is both consistent and a row of the page's height given back. */
+                         /* the colour key, in the place every other history keeps its key */
                          refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
                                { label:"Normal",         swatch:"var(--good)" },
                                { label:"Inverted",       swatch:"var(--critical)" }] };
@@ -177,9 +163,8 @@
         histLegend(shell);
         histReadFill(shell, null);
       }
-      /* Version 496: with columns, the hover is the one every other history uses — the plot dims and the
-         column under the pointer keeps its full colour (the V383 rule), which a dot riding a line could not do
-         because there is no longer a line to ride. */
+      /* The hover every other history uses: the plot dims and the column under the pointer keeps its full
+         colour. */
       var onCol = null;
       function showAt(i){
         var d = data[i];
@@ -200,7 +185,7 @@
       }
       attachHoverTracking(hit, svg, W, padL, innerW, data.length, showAt, hide);
 
-      SPREAD_DETAIL = s.detail;   // V470: the band's title offers it; this chart no longer has a head of its own
+      SPREAD_DETAIL = s.detail;   // the band's title offers it; this chart has no head of its own
     }
 
     // the lede opens the note it introduces — spliced in, so the sentence exists once in the source
@@ -217,7 +202,7 @@
       });
     });
 
-    drawSpreadWindow = draw;   // V472: the band drives it, so the window and the series both live outside
+    drawSpreadWindow = draw;   // the band drives it, so the window and the series both live outside
     draw("3m");
   }
   GYN.step("renderSpreadHistory", renderSpreadHistory, "mixed"); renderSpreadHistory();
@@ -242,12 +227,8 @@
         {t:"FRED — 10Y minus 3M spread, monthly average (T10Y3MM)", u:"https://fred.stlouisfed.org/series/T10Y3MM"},
         {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
       ]);
-    /* Version 471, Keren: "instead of Insights and Highlights, just put time from un-inversion above Fed funds
-       target — inside the lines, with how long it has been on the right, and the (i) for the table." Version 470
-       gave this a paragraph in an Insights card and a second section above the facts; she is right that it did not
-       need either. It is a fact with a figure, which is the row `.aux-stat` already is, and the argument behind it
-       — four cycles, one to ten months, what today's count is measured from — was always in the (i). The page ends
-       on one list of five facts and no prose at all. */
+    /* A fact with a figure: Horizon's Insights show it as an `.aux-stat` row (see renderHorizonPage), and the
+       argument behind it — four cycles, one to ten months, what today's count is measured from — is this (i). */
     UNINV_DETAIL = detail;
     addSources([
       {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
@@ -255,15 +236,12 @@
   }
   GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive"); deriveUninversionDetail();
 
-  /* ---------------- RENDER: Horizon — the spread's own page (Version 473) ----------------
-     Everything drawn here was on the Pressure page until this version and is MOVED, not rebuilt (the Version 314
-     rule, for the fifth time): the same svg, the same tooltip, the same `drawSpreadWindow` closure the chart
-     installed, the same un-inversion (i). What is new is the order of the two controls — the window first, then
-     which spread — and the reason for the verdict, which is the part a relocated chart could not bring with it.
-     This runs AFTER the lag panel, because the first thing its Highlights ask for is `UNINV_DETAIL`. */
-  /* V639: Horizon's own head again, one group — the two spreads. The Treasury levels went back to Pressure
-     (Keren: "the spreads are the Horizon because it's what the market sees long-term versus short-term"),
-     so the menu no longer has a second kind of reading to name. V599's title rule stands: the title READS
+  /* ---------------- RENDER: Horizon — the spread's own page ----------------
+     Reuses, rather than rebuilds, what renderSpreadHistory installed: the same svg, the same tooltip, the same
+     `drawSpreadWindow` closure, the same un-inversion (i). The two controls read the window first, then which
+     spread. This runs AFTER the lag panel, because the first thing its Insights ask for is `UNINV_DETAIL`. */
+  /* Horizon's head: one menu group, the two spreads. Keren, V639: "the spreads are the Horizon because it's
+     what the market sees long-term versus short-term" — the Treasury levels are Pressure's. The title READS
      ITS OWN MENU ROW rather than spelling the pair a second way — one label, one source. */
   function drawHznHead(){
     var H = HIST_HEAD["hzn-range"];
@@ -282,7 +260,7 @@
   }
   function renderHorizonPage(){
     var host = byId("hzn-timeline"); if (!host) return;
-    var HZN_STOPS = ["5y", "10y", "max"];   // the V263 rule: 25Y is unanswerable on a series that starts in 2005
+    var HZN_STOPS = ["5y", "10y", "max"];   // no 25Y: it needs 25 years of data, and this series starts in 2005
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
     function drawHzn(){
@@ -299,12 +277,12 @@
       if (tr){
         var w = [];
         data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
-        // Version 431's pairing rule: the two words of a trend have to be two ends of ONE pair. A curve steepens
-        // and flattens; it does not steepen and slow.
+        // the two words of a trend have to be two ends of ONE pair. A curve steepens and flattens; it does not
+        // steepen and slow.
         tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"steepening", falling:"flattening" });
       }
-      // V493: the title and its (i) are gone — the reading below carries both now.
+      // the head's title names the picked spread, so it is redrawn with the chart
       drawHznHead();
     }
     GYN.on("pickSpread", function(code){ spreadPick = code; drawHzn(); });
@@ -316,16 +294,11 @@
     var sgn = function(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); };
     var moved = function(v){ return (v >= 0 ? "risen " : "fallen ") + Math.abs(v).toFixed(2) + " points"; };
     var fromLong = r.dLong >= -r.dShort;
-    /* V603, Keren: "you have a lot of text in the insight container, and you have a short version of the
+    /* Keren, V603: "you have a lot of text in the insight container, and you have a short version of the
        insights — time from un-inversion, last inverted, deepest point. Merge that into the insight and make
-       the text short and concise."
-       Two containers for one page's commentary was the split: a wall of prose in one and three bare facts in
-       another, with nothing saying why they were apart. They are one section now, prose first and the facts
-       under it, which is the shape every other page already uses. The prose lost about two thirds of its
-       length and none of its figures: every number here is still computed from `horizonRead`, and what went
-       was the restating — the same idea said twice in a longer way, and the paragraph explaining what a
-       headline means when it says "the curve", which the ⋯ menu now answers by letting you switch to the
-       other one and look. */
+       the text short and concise." One section: prose first and the facts under it, the shape every other
+       page uses. Every number is computed from `horizonRead`. Which spread "the curve" means is answered by
+       the ⋯ menu, which switches to the other one. */
     var ins = byId("horizon-insights");
     if (ins){
       var cards = [];
@@ -344,9 +317,9 @@
         "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
         ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
         "prices where the Fed is going, the bill only where it has been."));
-      /* The un-inversion clock and the last inversion's shape. They were their own container until this
-         version; they are facts ABOUT the reading above them, so they read under it. The (i) travels with the
-         clock — four cycles, one to ten months, what today's count is measured from. */
+      /* The un-inversion clock and the last inversion's shape: facts ABOUT the reading above them, so they
+         read under it. The (i) travels with the clock — four cycles, one to ten months, what today's count is
+         measured from. */
       var facts =
         '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
           uninvLagToday.months + ' months</b></div>' +
@@ -358,16 +331,16 @@
   }
   GYN.step("renderHorizonPage", renderHorizonPage, "render"); renderHorizonPage();
 
-  // ---------------- RENDER: Valuation (slow) — split off Sentiment in Version 231 ----------------
+  // ---------------- RENDER: Valuation (slow) ----------------
   function renderValuationTag(){
     var tagEl = byId("valuation-tag");
     tagEl.className = "tag " + valuation.tag.state + " longcycle-tag";
     tagEl.textContent = valuation.tag.text;
-    // V491: built ONCE here rather than per draw — the renderer places the finished string, because
+    // built ONCE here rather than per draw — the renderer places the finished string, because
     // `panelRow` pushes into `detailTexts` and a per-draw build would grow that array on every window change.
     valuationPanelHtml = valuation.rows.map(function(row){
       var detail = '<h4>' + row.marker + '</h4><div class="marker-sub">' + row.sub + '</div>' + factsFrom(row.note);
-      // V518: the chart on this page draws CAPE, so CAPE's note is the page's and travels to the head's ⋯;
+      // the chart on this page draws CAPE, so CAPE's note is the page's and travels to the head's ⋯;
       // the Buffett Indicator is a second reading in the stack and keeps its own (i).
       return panelRow({ name:row.marker, info:detail, head:row.key === "cape" ? "sheet-metric-valuation" : null,
                         metric:row.flagValue,
@@ -383,38 +356,36 @@
   function renderLongCycleTag(){
     var powerSub = "what the 3 markers below leave in reserve";
     var stressDetail = '<h4>Power supply</h4><div class="marker-sub">' + powerSub + '</div>' + factsFrom(stressNoteFull);
-    powerPageNote = stressDetail;   // the Economic power page's own long form, read by its Highlights (Version 287)
+    powerPageNote = stressDetail;   // the Economic power page's own long form, read by its Highlights
     var stressRowHtml = panelRow({
       name:"Power supply", head:"sheet-metric-power",
       info:'<h4>Power supply</h4><div class="marker-sub">' + powerSub + '</div>' + stressDetail,
       metric:powerScore + "%", flagged:meterFlagged(powerMeter), bar:panelFromMeter(powerMeter) });
     var rowsHtml = labPanel.map(function(row){
-      // the sub line and the short note go into the (i) with the rest — on a row this tight they were the
+      // the sub line and the short note go into the (i) with the rest — on a row this tight they would be the
       // third and fourth things competing for a column that holds a name and a figure
       var detail = '<h4>' + row.marker + '</h4><div class="marker-sub">' + row.sub + '</div>' + factsFrom(row.note);
       return panelRow({ name:row.marker, info:row.opens ? null : detail, open:row.opens || null,
                         metric:row.flagValue, flagged:meterFlagged(row.meter),
                         bar:panelFromMeter(row.meter) });
     }).join("");
-    powerPanelHtml = stressRowHtml + rowsHtml;   // V491: placed by the renderer, inside the history container
+    powerPanelHtml = stressRowHtml + rowsHtml;   // placed by the renderer, inside the history container
     var flaggedCount = labPanel.filter(function(r){ return !!r.flagState; }).length;
     byId("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
     addSources(longCycleSrc);
   }
   GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
-  /* ---------------- RENDER: Hormones (V592) ----------------
-     Keren: "let's add a fourth category in circulation called hormones. And hormones will be interest rates."
-     The anatomy is the argument. A hormone is a chemical MESSENGER: it is secreted deliberately, it reaches
-     everything downstream, and the whole cycle runs at the tempo it sets. That is the policy rate exactly —
-     and it is the distinction this app was missing, because Pressure measures what the market CHARGES (the
-     Treasury curve) and nothing measured what the Fed SETS.
-     Two figures live here and they are not the same thing, so the page is careful to say which is which: the
-     TARGET RANGE is the decision, and the chart plots the EFFECTIVE rate, which is where money actually
-     traded. They differ right now — 3.75–4.00% set on Sep 16 against 3.63% effective through August — and
-     that is not a contradiction but a date: August ran under the previous target. This is the V294 rule, the
-     one Keren caught on Pressure ("you write 10-year 4.94 and I see inside the container 10-year 4.70"): two
-     numbers for one thing is a fault, two numbers for two things has to be LABELLED. */
+  /* ---------------- RENDER: Hormones ----------------
+     Keren, V592: "let's add a fourth category in circulation called hormones. And hormones will be interest
+     rates." A hormone is a chemical MESSENGER: secreted deliberately, it reaches everything downstream, and
+     the whole cycle runs at the tempo it sets. That is the policy rate: Pressure measures what the market
+     CHARGES (the Treasury curve), this measures what the Fed SETS.
+     Two figures live here and they are not the same thing, so the page says which is which: the TARGET RANGE
+     is the decision, and the chart plots the EFFECTIVE rate, which is where money actually traded. When they
+     differ that is not a contradiction but a date: the latest month can have run under the previous target.
+     Keren, V294: "you write 10-year 4.94 and I see inside the container 10-year 4.70" — two numbers for one
+     thing is a fault, two numbers for two things has to be LABELLED. */
   function renderHormones(){
     var host = byId("hormones-history"); if (!host || !fedFundsHistory.length) return;
     var HORM_STOPS = ["5y", "10y", "25y", "max"];
@@ -441,24 +412,22 @@
         fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         histTip("hormones-hist-tooltip") +
         '<div id="hormones-trend"></div></div>';
-      // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
+      // two words of a trend are two ends of ONE pair (see drawHzn). A rate tightens and eases.
       put("hormones-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
                                       null, true, { rising:"tightening", falling:"easing" }));
-      // the refit first, the wiring second — the V591 lesson: refitHistory replaces the svg, legend and all
+      // the refit first, the wiring second: refitHistory replaces the svg, legend and all (see drawFearHistory)
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
       attachHistory(box, "hormones-hist-tooltip", "fedFundsHistoryChart");
     }
     sheetRenderers["hormones-range"] = draw;
-    /* V598: one chart, so one opener again — the pair V596 composed in 09-render-core existed only while this
-       page also held the Treasury curve, which has gone to Horizon. */
+    /* one chart, so one opener */
     sheetRenderers["sheet-sign-hormones"] = draw;
     draw();
 
-    /* V596: the head's ⋯ had nothing behind it, which the suite caught the moment this page entered the
-       checked list — V592 gave the reading a head and a title and never wrote its note. Every figure here is
-       the series the chart draws (FEDFUNDS, monthly since July 1954) or the FOMC's own published decision;
-       the band is the record itself, which is why there is no shaded zone on the chart. */
+    /* The head's ⋯ note. Every figure here is the series the chart draws (FEDFUNDS, monthly since July 1954)
+       or the FOMC's own published decision; the band is the record itself, which is why there is no shaded
+       zone on the chart. */
     HIST_NOTE["hormones-range"] = '<h4>Effective federal funds rate</h4>' + factsFrom(
       "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
       "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
@@ -474,13 +443,12 @@
       "both is the reason this one stands on zero rather than on its own minimum. " +
       "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.")
 
-    /* ---- V609, Keren: "can you put that into insights? The hormones page doesn't have an insight section.
+    /* ---- Keren, V609: "can you put that into insights? The hormones page doesn't have an insight section.
        And the current federal funds target, last Fed move, first hike and next decision — you can put that in
-       insights." So it gets one, the shape every other page has since V604: the biology in two sentences, then
-       the cards, then the FOMC's own facts underneath.
-       Every figure below is COMPUTED, including the peaks. A card that says "every peak since 1981 was lower
-       than the last until 2024" is a claim about the record, and a claim about the record is read off the
-       record or it is not made — which also means it stays true the year a new peak arrives. */
+       insights." The shape every other page has: the biology in two sentences, then the cards, then the
+       FOMC's own facts underneath.
+       Every figure below is COMPUTED, including the peaks. A claim about the record is read off the record
+       or it is not made — which also means it stays true the year a new peak arrives. */
     function ffPeaks(){
       /* A peak is a high that the rate then gave back by at least 1.5 points before rising again. The swing
          has to be big enough to ignore the month-to-month wobble of the 1970s and small enough to catch 2019's
@@ -518,10 +486,9 @@
         "That shape is progesterone\u2019s: it rises through the second half of a cycle, peaks, and then falls \u2014 " +
         "and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal " +
         "rather than the level, because the cuts come after the top, never before it."));
-      /* The FOMC's own facts, under the prose that explains them. They lived in their own container until this
-         version, which is the same split V603 closed on Horizon. `#policy-facts` is their own host inside the
-         section, so the live repaint can rewrite the four rows after an FOMC decision without touching a word
-         of the cards above them. */
+      /* The FOMC's own facts, under the prose that explains them (the shape Horizon's Insights have).
+         `#policy-facts` is their own host inside the section, so the live repaint can rewrite the four rows
+         after an FOMC decision without touching a word of the cards above them. */
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' +
         cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + '</div></section>';
     }
@@ -536,46 +503,35 @@
     var rowVal = put("subj-value-hormones", fedFundsRange() +
       '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>');
     /* The miniature every other Circulation row carries: the last two years of the EFFECTIVE rate, standing on
-       zero like the chart it opens. Without it this row was the only one on the page with an empty right-hand
-       side — the same hole V475 fixed for Desire on Mood. */
+       zero like the chart it opens. Without it this row would be the only one on the page with an empty
+       right-hand side. */
     var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
                                            function(){ return "ff-col"; }, 0, true);
   }
   GYN.step("renderHormones", renderHormones, "build"); renderHormones();
 
-  /* V639: `renderPressure` and `lendingWord` (V597, the Senior Loan Officer Survey) are gone with the survey —
-     Pressure is the Treasury yields again, drawn by `renderPressurePage` in 09-render-core. The survey's
-     renderer, its five-step word from the Fed's own footnote, and the reasoning for choosing it are at tag
-     v638-fewer-words, should it ever come back as a reading of its own. */
+  /* Pressure is the Treasury yields, drawn by `renderPressurePage` in 09-render-core. The Senior Loan Officer
+     Survey reading that once stood here is at tag v638-fewer-words. */
 
   // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
   function renderFearCurve(){
-    /* V593, Keren: "I'm still seeing the meter component. We need to drop it." The half-dial went. It was the
-       page's reading of the curve TODAY, and the history under it now carries the same number in its readout
-       plate, on a picture that also says where today sits against nineteen years of it — which is the V582
-       argument on Temperature, one reading stated once.
-       Its two companions are not lost. The DATE is the history's own, and rides in the readout. The NOTE —
-       "there's info next to the title, put the info in the three dots in the history panel as convention" — is
-       filed to HIST_NOTE, which is where every other page's note lives and what the ⋯ opens: the V518 rule,
-       one string read from one place. That also retires the last (i) sitting beside a title on this page. */
+    /* Keren, V593: "I'm still seeing the meter component. We need to drop it." No meter: the history's
+       readout carries today's number and its date, on a picture that also says where today sits against the
+       whole record — one reading stated once.
+       The NOTE (Keren, V593: "there's info next to the title, put the info in the three dots in the history
+       panel as convention") is filed to HIST_NOTE, where every other page's note lives and what the ⋯
+       opens: one string read from one place, and no (i) beside a title on this page. */
     HIST_NOTE["fear-range"] = curveDetailHtml();
 
-    /* The VIX under the gauge — the curve's own near leg, so the two belong together. It renders with
-       shortCaption emptied so the shared builder emits no Highlights of its own (the Version 378
-       escape): this page has ONE Highlights block and the VIX's note is a card in it. */
-    /* V591, Keren: "I think we can get rid of the meter in the fear page, right? Because we inserted a
-       history component." Right, and for the reason that took the meter off Temperature in V582: the page was
-       stating one thing four times. What goes is the VIX row — a level against its usual band — and what
-       stays says more: the gauge reads the curve now, the history draws it back to 2007, and Highlights'
-       second card is entirely about the VIX, giving 14.21, the 13–20 band, the 9.14 record low and the 82.69
-       high in a sentence that can hold all four where a track can hold one.
-       Worth naming the one thing it costs, because it is not the same redundancy Temperature had: the history
-       draws the RATIO and the meter read the LEVEL, so the VIX level stops being a figure on this page and
-       survives as prose. That is the right trade on a page called Fear, where the curve is the reading and the
-       VIX is the leg it is computed from — but it is a trade, not a deletion of a duplicate. */
+    /* Keren, V591: "I think we can get rid of the meter in the fear page, right? Because we inserted a
+       history component." No VIX row: this page has ONE Highlights block, and its second card is the VIX —
+       the level, its usual band, the record low and high, in a sentence that can hold all four where a track
+       can hold one. What it costs: the history draws the RATIO and the meter read the LEVEL, so the VIX level
+       is prose here, not a figure. That is the right trade on a page called Fear, where the curve is the
+       reading and the VIX is the leg it is computed from. */
 
-    /* V590, Keren: "make a history component in the fear page that will show the curve — check how we did
+    /* Keren, V590: "make a history component in the fear page that will show the curve — check how we did
        the inverted yield curve and apply the same."
        divergeChart is that treatment: bars hanging off a reference line, coloured by which side they fall. On
        Valuations the line is CAPE's fair value; here it is 1.00, and the app's own CSS already reads the two
@@ -583,14 +539,14 @@
        exactly inverted against normal. The threshold needs no defending: it is the definition of the shape
        rather than a level anyone chose, the sentence curveVerdict() already carries.
        The series is fearCurveHistory, monthly from December 2007 — VXVCLS begins then, so that is the first
-       month the ratio can be computed at all. Its last point is the number the gauge above shows, because
-       both round to three decimals off the same two legs. */
+       month the ratio can be computed at all. Its last point is today's reading, because both round to three
+       decimals off the same two legs. */
     var FEAR_STOPS = ["5y", "10y", "max"];
     var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
     function drawFearHistory(){
       var host = byId("fear-history"); if (!host || !fearCurveHistory.length) return;
       /* A cycle that opened before this series did cannot be windowed onto it, so the page falls back to the
-         open cycle rather than drawing an empty chart — the rule Horizon states for the same 2005 problem. */
+         open cycle rather than drawing an empty chart — as Horizon does for its 2005 start. */
       var cyc = pageMode["fear-range"] === "cycles"
               ? (cycleByName(pageCycles["fear-range"]) || openCycle()) : null;
       if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
@@ -601,9 +557,8 @@
       var fit = trendOf(vals.map(function(d){ return d.v; }), "points", "month");
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10),
                               parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
-      /* One options object, built once and handed to BOTH the first draw and the refit. Writing them twice is
-         how the first pass lost its x labels: the refit rebuilt without `xLabel`, so the years were drawn and
-         then silently replaced by a chart that had none. */
+      /* One options object, handed to BOTH the first draw and the refit. Written twice they drift: a refit
+         built without `xLabel` silently replaces a labelled chart with one that has no years. */
       function opts(){
         return { vals:vals, mid:1, midLabel:"flat, 1.00",
           fmt:function(v){ return v.toFixed(2); },
@@ -629,21 +584,20 @@
         histTip("fear-hist-tooltip") +
         '<div id="fear-trend"></div></div>';
       var ft = byId("fear-trend");
-      // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.
+      // two words of a trend are two ends of ONE pair (see drawHzn). A curve inverts and steepens.
       put("fear-trend", trendPill(fit, null, true, { rising:"inverting", falling:"steepening" }));
-      /* The refit comes FIRST and the wiring second, which is the order every other page uses and the reason
-         this chart first drew with no legend: refitHistory replaces the svg's outerHTML, so a legend injected
-         before it is thrown away with the element it was injected into — and lastHistGeom is the refit's
-         geometry, not the first draw's, so reading __geom before it pins the hover to a chart that is gone. */
+      /* The refit comes FIRST and the wiring second, the order every other page uses: refitHistory replaces
+         the svg's outerHTML, so a legend injected before it is thrown away with the element it was injected
+         into — and lastHistGeom is the refit's geometry, not the first draw's, so reading __geom before it
+         pins the hover to a chart that is gone. */
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return divergeChart(opts(), w); });
       attachHistory(box, "fear-hist-tooltip", "divergeChart");
     }
     sheetRenderers["fear-range"] = drawFearHistory;
-    /* V593: and on OPEN. Without this the chart kept its build-time drawing, made while the sheet was hidden
-       and had no width, so its viewBox was 298 inside an element rendering at 320 — the whole picture scaled
-       up 1.07, which is why the legend looked oversized and crowded to the right edge. Every other history
-       registers its sheet this way; this one only registered its range control. */
+    /* and on OPEN, as every other history registers its sheet: the build-time drawing is made while the
+       sheet is hidden and has no width, so its viewBox would not match the width it renders at and the whole
+       picture, legend and all, would scale. */
     sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
     drawFearHistory();
 
@@ -651,7 +605,7 @@
     if (hl){
       var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
       var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
-      /* V604: the lede every Insights carries now — what the reading IS in the body, in two sentences. */
+      /* the lede every Insights carries — what the reading IS in the body, in two sentences. */
       var fearLede = '<p class="hi-lede">Fear is the flinch, not the injury. The VIX prices the next month ' +
         'and the 3-month VIX the next quarter, so their ratio says whether the market is bracing for ' +
         'something now or for something later.</p>';
@@ -684,17 +638,16 @@
     function dot(key, state){
       put("subj-ring-" + key, '<div class="subject-dot"><span class="dot ' + state + '"></span></div>');
     }
-    function iconMark(key, state, svg){ // an icon on its wash instead of a dot (Version 213)
+    function iconMark(key, state, svg){ // an icon on its wash instead of a dot
       put("subj-ring-" + key, '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>');
     }
     function spark(key, html){ put("subj-spark-" + key, html || ""); }
     function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
     function set(key, valueHtml, contextHtml){
       put("subj-value-" + key, valueHtml);
-      /* A page may have no context paragraph at all — Sentiment's went in Version 282 and Horizon has never
-         had one — so this reach is DECLARED optional rather than guarded and hoped for. V620 walked every page
-         and these two were the only reaches in the app that found nothing; both were already known, which is
-         the answer the walk was there to get. Everything else uses `byId`, whose misses are recorded. */
+      /* A page may have no context paragraph at all — Sentiment and Horizon have none — so this reach is
+         DECLARED optional rather than guarded and hoped for. Everything else uses `byId`, whose misses are
+         recorded. */
       var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
     }
     function worst(states){
@@ -702,48 +655,35 @@
       return states.reduce(function(w, st){ return order.indexOf(st) > order.indexOf(w) ? st : w; }, "good");
     }
 
-    // Economic power — the composite, read as what is left in the battery (Version 229): the mark is the battery at that
-    // charge, the number is the reserve, the word is energyFromReserve()'s. The word tile that said the same thing in the
-    // vitals strip is gone, so this row is the one place the reading lives.
+    // Economic power — the composite, read as what is left in the battery: the mark is a bolt on the word's wash, the
+    // number is the reserve, the word is energyFromReserve()'s. This row is the one place the reading lives.
     iconMark("resilience", powerWord.state, boltSvg());
-    // Version 361, Keren: the context line went. It said what the table underneath it says in full — the
-    // table IS the three structural markers, each with its own flag — so it was a caption introducing a thing
-    // that introduces itself. `.subject-body > .subject-context:empty` hides the paragraph, so passing "" is
-    // the whole removal; the element stays for any page that still wants one.
+    // Keren, V361: no context line. The table underneath IS the three structural markers, each with its own
+    // flag, so a caption would introduce a thing that introduces itself. `.subject-body > .subject-context:empty`
+    // hides the paragraph, so passing "" is the whole removal; the element stays for any page that wants one.
     set("resilience", powerScore + '<span class="unit">%</span><span class="tag ' + powerWord.state + '">' + powerWord.word + '</span>', "");
     say("resilience", longCycleImpressionShort);
 
-    // GDP growth — the US headline plus whichever other countries are on by default in the chart below (so
-    // this preview never name-drops a country the chart itself isn't showing).
-    // the cycle's own figure (Version 215, Keren: "we are looking at things from a cycle point of view"): the row carries
-    // the total growth over the cycle's closed years and its direction — the latest quarter reads at the chart's end line
+    // GDP growth — the cycle's own figure (Keren, V215: "we are looking at things from a cycle point of view"): the row
+    // carries US total growth over the cycle's closed years and its direction — the latest quarter reads at the chart's end line
     var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
-    // green in expansion, red in contraction (Keren, Version 216): the mark and the tag beside it now say the same thing,
-    // so the colour is explained rather than alarming — which is what made it read wrong in 215, when the tag was missing
+    // green in expansion, red in contraction (Keren, V216): the mark and the row's own words ("still expanding" /
+    // "contracting") say the same thing, so the colour is explained rather than alarming
     iconMark("gdp", regimeState(nowModel.reading.regime), sproutSvg());
-    // no context line (Version 211): the countries are the reader's to choose in the chart's dropdown, so naming one here
-    // read as a second headline
-    // the direction as the row's tag, the way every other subject row carries its verdict (Version 216)
-    // the row says the figure; the direction is a tag inside the panel, and the mark already carries its colour here
+    // no context line: the countries are the reader's to choose in the chart's dropdown, so naming one here reads as a
+    // second headline. The row says the figure; the direction is a tag inside the panel, and the mark carries its colour
     set("gdp", fmtSigned(cycGrowth.total, 0) + '<span class="unit">% · cycle total growth</span>', "");
     say("gdp", "Compounded over " + cycYears.length + " closed years of the " + currentEra.name + ", and the latest quarter is still " +
       (nowModel.reading.regime === "expansion" ? "expanding" : "contracting") + ".");
-    // year-on-year growth, quarter by quarter, for the last four years (Version 252)
+    // year-on-year growth, quarter by quarter, for the last four years
     spark("gdp", sparkHtml(lastN(gdpQuarterlyYoY, 16, "v"), "yearly rate \u00b7 4 years", regimeState(nowModel.reading.regime)));
 
-    /* V596: Pressure's row is gone with the reading. What stood here was the 10Y/3M pair, the cuff ring that
-       scored the 10-year on a 0–6% band, levelZone's High/Normal/Low, and — unread since V470 — a
-       `pressEl` block behind `if (null)`. The pair is not restated anywhere: the maturity chart on the Hormones
-       page draws every leg of it, which is the V294 reason the context line came off this row in the first
-       place. The FOMC list moved to renderHormones, where the reading it describes now lives. */
-
-    /* ================= Version 473: Horizon's row =================
-       The figure is today's spread in points — the same subtraction the two numbers above it invite and that
-       Pressure deliberately does not perform, because the pair is a measurement and the difference is a forecast.
-       Different unit, different claim, different category: 4.96/4.17 in percent on Circulation, +0.79 in points
-       on Mood. The verdict rides INSIDE the figure as a tag, the way Fear & Greed's does, so the two Mood
-       readings that disagree with each other are written the same way; the category list strips both pills to a
-       plain word (the Version 457 rule) and the roster keeps the colour. */
+    /* ================= Horizon's row =================
+       The figure is today's spread in points — the subtraction Pressure deliberately does not perform, because
+       the pair is a measurement and the difference is a forecast. Different unit, different claim, different
+       category: percent on Circulation, points on Mood. The verdict rides INSIDE the figure as a tag, the way
+       Fear's does, so the two Mood readings are written the same way; the category list strips both pills to a
+       plain word and the roster keeps the colour. */
     var hzLabel = document.querySelector('[data-subject="horizon"] .subject-label');
     put(hzLabel, '<span class="peek-mark">' + sunriseSvg() + '</span>Horizon' + CHEV);
     set("horizon", (horizonRead.spread >= 0 ? "+" : "\u2212") + Math.abs(horizonRead.spread).toFixed(2) +
@@ -751,48 +691,41 @@
       '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + '</span>', "");
     say("horizon", "");
     (function(){
-      // the last twelve quarters either side of zero, on the purple rule Version 312 asked for: a diverging peek
-      // is the one case where the reader needs to be told where the line is
+      // the last twelve quarters either side of zero, on the purple rule (Keren, V312: "put a purple line so I can
+      // understand what is above the line and what is below"): a diverging peek is the one case that needs it
       var slot = put("subj-spark-horizon", colPeek(
         t10y3mHistory.map(function(d){ return d.v; }).filter(function(v){ return v != null; }),
         function(v){ return "hzn-col " + (v < 0 ? "neg" : "pos"); }, 0, true));
     })();
 
-    // Sentiment — the Fear & Greed score and where it puts her on the ring (Version 231)
-    // The row shows a miniature of the gauge its page opens, which is the rule every other preview follows since
-    // Version 260 — and it replaces a face that was drawing an emotion rather than a reading (Keren, Sep 20, 2026:
-    // "you can drop the faces and line chart in the preview"). Version 277.
+    // Sentiment — the fear curve on the ring. The row shows a miniature of the reading its page opens, the rule
+    // every other preview follows, not a face drawing an emotion (Keren, V277: "you can drop the faces and line
+    // chart in the preview").
     put("subj-ring-sentiment", vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
         : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat"));
-    // the mood goes where a sign's mark goes — beside its name (Version 342)
+    // the mood goes where a sign's mark goes — beside its name
     (function(){
       // the row does not exist yet — the builder converts the markup a moment later and MOVES the summary's
-      // children into it, so an edit made here survives the move (the Version 314 lesson)
+      // children into it, so an edit made here survives the move
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      // V524, Keren: the heart, freed when Pulse took the trace. The half-dial of V465 named the INSTRUMENT
-      // the index is published as; the heart names what the instrument measures, which is the reading itself.
-      /* V584, Keren: "change the name of the category from fear curve to fear. And the icon should be an
+      /* Keren, V584: "change the name of the category from fear curve to fear. And the icon should be an
          umbrella, meaning fear of winter, basically." The category is the FEELING; the curve is one instrument
-         that measures it, and naming the category after the instrument was the same fault V524 fixed when it
-         took the half-dial's name off this row. The umbrella is the app's own — the VIX has worn it since
-         V467 — and it is the right glyph twice over: what you carry because winter might come. */
+         that measures it, so the category is not named after the instrument. The umbrella is the app's own —
+         the VIX wears it too — and it is what you carry because winter might come. */
       put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() +
         '</span>Fear');
     })();
-    // no context line (Version 232, Keren: "I already have the data below the cycle") — it only re-listed the table
-    // the sentence taken off the row goes where it was always meant to be read — on the page, in full (Keren,
-    // Version 277: "either put it in the inner page or if it already exists drop it"; it did not exist there)
+    // no context line (Keren, V232: "I already have the data below the cycle") — it only re-listed the table
+    // the row's sentence is read on the page, in full (Keren, V277: "either put it in the inner page or if it
+    // already exists drop it")
     set("sentiment", (curveNow == null ? "\u2014" : curveNow.toFixed(2)) +
       '<span class="unit">VIX \u00f7 3M</span><span class="tag ' + curveTag.state + '">' + curveTag.text + '</span>', "");
     say("sentiment", "");
-    // CNN publishes its own look-back with the index — a month ago, a week ago, today. Three real points, no more,
-    // and the builder refuses to draw fewer (Version 252).
-    // no sparkline and no sentence on this row: three points is not a line worth drawing, and the sentence it
-    // carried is the panel's own impression, which the page states in full a tap away (Keren, Version 277)
+    // no sparkline and no sentence on this row: the sentence is the panel's own impression, which the page states
+    // in full a tap away (Keren, V277, above)
     spark("sentiment", "");
 
-    // Valuation — the two gauges, each against its own record (Version 231); the mark is a piggy bank at the fill their
-    // flags imply, neither flagged being cheap and both being richly priced (Version 245)
+    // Valuation — the two gauges, each against its own record; the mark wears the worst of their two flags
     iconMark("valuation", worst(valuation.rows.map(function(r){ return r.flagState || "good"; })), diamondSvg());
     set("valuation", valRow("cape").flagValue + '<span class="unit">CAPE</span><span class="tag ' + valuation.tag.state + '">' + valuation.tag.text + '</span>', "");
     say("valuation", valuation.shortImpression);
@@ -804,14 +737,11 @@
   // Per-cycle growth = US real GDP over the cycle's CLOSED years (the in-progress year is excluded, as it is for
   // the peak-year marker): the compound annual rate (fair across cycles of different length), the total expansion,
   // and a rising/falling verdict from the least-squares slope of the yearly rates (within ±0.1 pp/yr is "flat").
-  // The same aggregation, for prices (Version 275). December's year-over-year reading IS that calendar year's
-  // inflation, so compounding the Decembers across a cycle's closed years gives what the cycle actually did to the
-  // price of everything — the exact counterpart of eraGrowth's total expansion, computed the same way, with the
-  // in-progress year excluded for the same reason. A rate a reader sees every month says "3.4% this year"; only the
-  // compounded total says "everything costs a sixth more than when this cycle opened".
-  // Version 423: the same compounding as eraInflation, over whatever months are in view rather than over a cycle,
-  // so the row can follow a 5Y or 25Y window too. December to December, skipping the year in progress because it
-  // has no December yet — which is why the open cycle's total reads 2022–2025 and not 2022–2026.
+  // eraInflation is the same aggregation for prices: December's year-over-year reading IS that calendar year's
+  // inflation, so compounding the Decembers across a cycle's closed years gives what the cycle did to the price of
+  // everything — the counterpart of eraGrowth's total expansion, in-progress year excluded for the same reason.
+  // totalRiseIn: the same compounding over whatever months are in view rather than over a cycle, so the row can
+  // follow a 5Y or 25Y window too. December to December, skipping the year in progress because it has no December yet.
   function totalRiseIn(vals){
     var years = [], rates = [];
     vals.forEach(function(d){
@@ -849,17 +779,16 @@
     var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
     return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
   }
-  /* Version 612: the minus is the real one, U+2212, not a hyphen. Every other figure in this app already
-     wears it — gauge labels, cycle totals, the deficit — so a signed reading was the one place a hyphen showed
-     up, narrower than the plus above it and out of line in a monospaced column. Fixed here rather than at the
-     call sites, because there are six of them and this is the only function all six go through. */
+  /* The minus is the real one, U+2212, not a hyphen, as on every other figure in this app: a hyphen is
+     narrower than the plus and out of line in a monospaced column. Set here rather than at the call sites,
+     because this is the one function they all go through. */
   function fmtSigned(v, dp){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
-  // Growth in the book's words (Version 216): the direction of growth is expansion or contraction, never "rising" or
-  // "falling" on screen. Since Version 220 the word itself always comes from the season model's reading — r.regime, the
-  // direction of the six-quarter fit — so the chart's colour, the panel's tag and the season on the dial cannot disagree.
+  // Growth in the book's words: the direction of growth is expansion or contraction, never "rising" or "falling" on
+  // screen. The word itself always comes from the season model's reading — r.regime, the direction of the six-quarter
+  // fit — so the chart's colour, the panel's tag and the season on the dial cannot disagree.
   // These only dress it. (Function declarations, not vars: the subject summaries above call them before this line runs.)
   function regimeArrow(regime){ return regime === "contraction" ? "\u2193 " : "\u2191 "; }
-  // Version 304, Keren: the word on screen is "expanding", not "expansion" — and "contracting" the other way.
+  // Keren, V304: the word on screen is "expanding", not "expansion" — and "contracting" the other way.
   // A participle says the body is DOING something, which is what this whole board is for; an abstract noun names
   // a state the reader has to attach to her. The MODEL's own value is untouched — it stays "expansion" and
   // "contraction", because the season logic, the ring and the analysis table all compare against those strings,
@@ -868,7 +797,7 @@
   function growthShown(reg){ return GROWTH_SHOWN[reg] || reg; }
   function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
   function regimeState(regime){ return regime === "contraction" ? "warning" : "good"; }
-  // How the phase is COLOURED (Version 261) — separate from regimeState, which still answers "how worrying is this"
+  // How the phase is COLOURED — separate from regimeState, which still answers "how worrying is this"
   // for the places that genuinely want a severity (the drawer row's mark). Which part of the cycle she is in is a
   // category, and categories do not get the alarm palette.
   function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
@@ -886,11 +815,8 @@
   // reads the model only, so a change here applies to every cycle.
   // ================================================================================================
   var cycleViewEl = byId("cycle-view");
-  /* The Temperature and Growth charts (Version 206) live in today's drawers — Temperature in Lagging, Growth
-     in GDP growth — each standing alone. Version 615 took away the other half of this: a cycle opened from
-     Analysis used to pull both cards into its view, and they were wrong there (see renderCycleView). With
-     nothing left to move them to, the `where` argument had one value and the else branch was unreachable, so
-     both are gone rather than kept for a caller that no longer exists. */
+  /* The Temperature and Growth charts live in today's drawers — Temperature in Lagging, Growth in GDP growth —
+     each standing alone; a cycle opened from Analysis does not pull them into its view (see renderCycleView). */
   var tempCard = byId("temp-card"), growthCard = byId("growth-card");
   function placeCharts(){
     byId("slot-temp").appendChild(tempCard);
@@ -900,8 +826,8 @@
   var shownEra = null; // which cycle the view currently shows
   var calendarReset = null;   // set by the Calendar block below
   var metricPageReset = null; // set by the peek block below — closes an open metric page
-  var openIndicatorsPage = null; // set there too — opens the Indicators page on a named tab (Version 329)
-  // The top bar's back arrow is shared (Version 256): the Calendar's open cycle and a metric page both use it, so it
+  var openIndicatorsPage = null; // set there too — opens the Indicators page on a named tab
+  // The top bar's back arrow is shared: the Calendar's open cycle and a metric page both use it, so it
   // has one listener and a slot for whatever is currently open. Two listeners would both fire on every press.
   var topbarBack = null;
   function setTopbar(title, onBack){

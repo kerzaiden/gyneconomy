@@ -5,8 +5,10 @@ A reading companion to Keren's book *Mrs. Market*, which reads the economy as a 
 `npm run build`. It ships as a hosted site (GitHub Pages, installable) and as a Claude Artifact at
 `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`, from the same file.
 
-Keren owns every design and editorial decision. **A code comment that names a Version and quotes her
-is a decision, not a note.** Don't overrule one; if it seems wrong, say so and ask.
+Keren owns every design and editorial decision. **A code comment that cites her (`Keren, V510: "…"`)
+is a decision, not a note.** Don't overrule one; if it seems wrong, say so and ask. Her words are kept
+verbatim in `docs/DECISIONS.md`: part 1 is every comment that named her up to V648, part 2 is where each
+new decision is added.
 
 ## Read first
 
@@ -15,7 +17,9 @@ is a decision, not a note.** Don't overrule one; if it seems wrong, say so and a
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
   before grepping; the source is ~15,000 lines.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
-- `git log` — every version is a commit `V6NN — Short Name` and an annotated tag.
+- `git log` — every version is a commit `V6NN — Short Name` and an annotated tag. The history lives here,
+  not in the code: since V649 a comment says why the code is as it is today, never how it got there.
+  `git show v648-treasury-quarters:src/<part>` is the last fully annotated source.
 
 ## Never
 
@@ -43,6 +47,10 @@ is a decision, not a note.** Don't overrule one; if it seems wrong, say so and a
   The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part
   can read it (V647).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
+- **A comment says why the code is as it is now** (V649). No history, no version numbers, except to cite
+  one of Keren's decisions as `Keren, V6NN` with her words; add each new decision to part 2 of
+  `docs/DECISIONS.md`. `node tools/comment-proof.js` proves an edit touched comments only: the page it
+  builds must be unchanged.
 - **Functions may shrink, never grow** (V624), and a new one starts at 150 lines or fewer (V647). `npm run
   check` enforces both; `npm run comp:bless` records a deliberate exception, and the commit says why.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the

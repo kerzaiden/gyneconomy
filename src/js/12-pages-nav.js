@@ -1,26 +1,20 @@
 
 
-  // The five signs as subjects of their own (Version 247). Each row's face is the card's face — mark, name, figure,
-  // one sentence — and its body is the card's full detail, so nothing is lost and nothing is nested. The Temperature
-  // Temperature chart is not in here — since Version 249 it sits open on the page, under the dial.
+  // The signs as subjects of their own: each row's face is the card's face and its body the card's full detail,
+  // so nothing is lost and nothing is nested. The Temperature chart is not here; it sits open under the dial.
   function renderSignsList(){
     var host = byId("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };   // signs whose card in the peek row stands in for their row
-    // Version 306, Keren: "put Effort inside the Activity page — it belongs next to the labour market, it's not
-    // that important a metric to preview." She is right on both counts: industrial output and employment are the
-    // same question asked of two parts of the body, and reading them on one page is the point. A folded sign has
-    // no card, no row and no page of its own — it renders inside its host's — but it still registers with its
-    // own timing class, pointing at the page it now lives in, so the taxonomy does not quietly lose it.
+    // Keren, V306: "put Effort inside the Activity page — it belongs next to the labour market, it's not that
+    // important a metric to preview." A folded sign has no card, row or page of its own — it renders inside its
+    // host's — but still registers its own timing class, pointing at the host's page, so the taxonomy keeps it.
     var FOLDED = { "Industrial output":"Activity" }, foldedInto = {};
-    // Version 395: Productivity growth is not a sign in the taxonomy — it has no row, no mark and no page — but
-    // on this page it is a peer of Industrial output, so it is seeded into the same list and drawn by the same
-    // builder. Seeded HERE, before the signs are built, because Activity renders its folded blocks as it is made.
+    // Productivity growth is not a sign (no row, mark or page), but here it is Industrial output's peer, so it is
+    // seeded into the same list, HERE, before the signs are built: Activity renders its folded blocks as it is made.
     foldedInto["Activity"] = [productivityReading];
-    /* Version 497, Keren: "make the activity page more like the power page, where you have an aggregate of
-       indicators below the main chart — the main chart should be the labor market." Three readings that had
-       been in two different components on one page: the labour market as a panel row, Productivity and
-       Industrial output as `.folded-sign` blocks still wearing `meterHtml`'s `.rbar` track, which every other
-       page gave up between V479 and V492. One stack, in the order she named. */
+    /* Keren, V497: "make the activity page more like the power page, where you have an aggregate of indicators
+       below the main chart — the main chart should be the labor market." One stack of panel rows, in the order
+       she named: the labour market, then Productivity and Industrial output. */
     function activityStackHtml(ind){
       var folded = foldedInto["Activity"] || [];
       var byTerm = function(t){ return folded.filter(function(f){ return f.econTerm === t; })[0]; };
@@ -32,9 +26,8 @@
                                    flagged:meterFlagged(prod.meter), bar:panelFromMeter(prod.meter) });
       if (out) rows += panelRow({ name:out.econTerm, info:outputInfoHtml(out), metric:out.metric,
                                   flagged:meterFlagged(out.meter), bar:panelFromMeter(out.meter) });
-      /* Version 498: the aggregate now sits under a chart, which is what Keren asked for in V497 and what the
-         page could not have until the series existed. Power's own order, part for part: the control, the
-         readout the hover fills, the picture, the trend across the window, then the readings. */
+      /* Power's order, part for part: the control, the readout the hover fills, the picture, the trend across
+         the window, then the readings. */
       return histBar("", "act-rangebar") +
         '<div class="page-chart">' +
           histHead("sheet-sign-activity") +
@@ -47,12 +40,9 @@
     function foldedBlock(f){
       var rest = dropWhatIsShown(f.caption, f.lead || f.shortCaption || "");
       var facts = [].concat(f.facts || [], f.aux || []);
-      // Version 352, Keren: "drop the cogwheel icon and Effort and leave only industrial output as the title."
-      // The mark and the body term both went for the same reason the flame left Desire's page in Version 340 —
-      // a mark identifies a sign in a LIST, and this block is not in one. It is the only thing on the page that
-      // is not the labour market, under a top bar that already says Activity, so "Industrial output" is the
-      // whole of what its head has to say. The popup drops the name too, or the (i) would hand back the word
-      // the head just stopped using.
+      // Keren, V352: "drop the cogwheel icon and Effort and leave only industrial output as the title." A mark
+      // identifies a sign in a LIST, and this block is not in one. The popup drops the body term too, or the (i)
+      // would hand back the word the head stopped using.
       return '<section class="folded-sign">' +
         '<div class="spread-history-head">' +
           '<h4>' + f.econTerm + (rest ? expandBtn('<h4>' + f.econTerm + '</h4>' + factsFrom(rest)) : '') + '</h4>' +
@@ -64,13 +54,11 @@
         facts.map(function(a){ return '<div class="aux-stat"><span>' + a.label + '</span><b>' + a.value + '</b></div>'; }).join("") +
       '</section>';
     }
-    // A sign is a ROW that opens a PAGE (Version 269, Keren: "I want the other indicators to have an inner page as
-    // well — of course, aligning to our inner pages format"). It used to be a drawer that expanded where it stood.
-    // The row keeps the face it always had; the body it used to unfold is the page it now opens.
-    /* Where a sign's page actually lives. Two of them do not have one of their own: Temperature's detail sits
-       under the Temperature chart (Version 288). Any
-       row pointing at a sign — the roster's, and a folded sign's — asks here, so a link can never open a sheet
-       that was moved out from under it. One answer, one place; the stray was found by counting the links. */
+    // A sign is a ROW that opens a PAGE (Keren, V269: "I want the other indicators to have an inner page as well —
+    // of course, aligning to our inner pages format").
+    /* Where a sign's page actually lives. One sign has no page of its own: Temperature's detail sits under the
+       Temperature chart. Any row pointing at a sign — the roster's, and a folded sign's — asks here, so a link
+       can never open a sheet that was moved out from under it. */
     function pageFor(term){
       return term === "Temperature" ? "sheet-metric-temp"
            : "sheet-sign-" + term.toLowerCase();
@@ -84,8 +72,7 @@
         text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
               '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
               '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
-              // Version 475: an optional miniature, so a sign row can carry one the way a peek card does. Desire
-              // was the only member of Mood without one, which the category list showed as a hole on its right.
+              // an optional miniature, so a sign row can carry one the way a peek card does
               (ind.peek || "")
       }));
       if (FOLDED[ind.bodyTerm]){                 // it lives inside another page; it gets no row and no sheet
@@ -101,15 +88,13 @@
       var d = document.createElement("div");
       d.className = "metric-sheet"; d.id = id; d.hidden = true;
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
-      // Temperature's page opens with its own chart, and that chart already carries the name, the figure and the
-      // verdict — so the detail below it drops its head, its figure and its reference bar rather than saying all
-      // three a second time (Keren: "I see duplications — temperature, inflation and monetary policy; 3.4%; and we
-      // don't need the low/optimal/high bar, because we already see the graph, which I think is more informative").
+      // Temperature's page opens with its own chart, which already carries the name, the figure and the verdict, so
+      // the detail below drops its head, figure and reference bar (Keren: "I see duplications — temperature,
+      // inflation and monetary policy; 3.4%; and we don't need the low/optimal/high bar, because we already see
+      // the graph…").
       d.querySelector(".sign-detail").innerHTML =
-        // Version 477: Desire has no read-card at all. Its figure, its verdict and its title all live in the
-        // history container now, and a wrapper round nothing is still a box on the page.
-        // Version 487: Activity joins Desire in having no read-card — its panel row carries all three things
-        // the card was carrying, on one line instead of three.
+        // Desire and Activity have no read-card: their figure, verdict and title live in the history container
+        // and the panel row, and a wrapper round nothing is still a box on the page.
         "" +
         cardDetailHtml(ind, { bare: ind.bodyTerm === "Temperature" || ind.bodyTerm === "Desire" ||
                                     ind.bodyTerm === "Volume" || ind.bodyTerm === "Pulse" ||
@@ -118,30 +103,24 @@
                               noMark: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
                               noMeter: ind.bodyTerm === "Desire",
                               chartFirst: ind.bodyTerm === "Pulse" || ind.bodyTerm === "Volume",
-                              // Pulse is here on the same argument, not as a bonus: its spectrum was bare in
-                              // exactly the same way, and the blood test is one named component that should not
-                              // look like two things on two pages (Keren's own consistency rule, V374).
-                              // Version 485: Volume and Pulse carry the reading as a panel row inside their
-                              // own history container now, so the builder emits no blood card for them.
+                              // No blood card on any page: Volume and Pulse carry the reading as a panel row inside
+                              // their own history container, and the blood test is one named component that should
+                              // not look like two things on two pages (Keren's consistency rule, V374).
                               bloodCard: false,
-                              // Version 391, Keren, of Activity: "put the highlights at the bottom of the page,
-                              // above More details." Its Highlights were INSIDE the read-card and therefore above
-                              // the folded Industrial output block — commentary sitting in the middle of the
-                              // measurements it comments on. This is the same fault Desire had in Version 385 and
-                              // the same fix: the builder hands its Highlights back and the caller places them.
+                              // Keren, V391, of Activity: "put the highlights at the bottom of the page, above
+                              // More details." The builder hands its Highlights back and the caller places them, so
+                              // commentary never sits in the middle of the measurements it comments on.
                               deferHighlights: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
                               chart: ind.bodyTerm === "Pulse" ? pulseBlock(ind.meter.value, PULSE_PRE2008, ind)
                                    : ind.bodyTerm === "Volume" ? volumeBlock(ind) : "" }) +
         (ind.bodyTerm === "Desire" ? desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value)
          : ind.bodyTerm === "Activity" ? activityStackHtml(ind)
            : "") +
-        // V497: Activity consumes its folded readings as rows of its own stack, so it emits none here.
+        // Activity consumes its folded readings as rows of its own stack, so it emits none here.
         (ind.bodyTerm === "Activity" ? "" : (foldedInto[ind.bodyTerm] || []).map(foldedBlock).join("")) +
-        // … and they go LAST, after the folded signs, not merely outside the card. Version 385 flushed them
-        // before this line, which was invisible on Desire because Desire has no folded sign; Activity has one,
-        // so the order only becomes a rule here: **Highlights are the last container on the page, whatever a
-        // page appends after its read-card.** Left-to-right evaluation guarantees cardDetailHtml has already
-        // run and set the variable by the time this reads it; the flush also clears it for the next sign, so a
+        // … and the deferred Highlights go LAST, after the folded signs: **Highlights are the last container on
+        // the page, whatever a page appends after its read-card.** Left-to-right evaluation guarantees
+        // cardDetailHtml has already set heldHighlights by the time this reads it; the flush also clears it, so a
         // page that defers nothing cannot inherit the previous page's block.
         (function(){ var h = heldHighlights; heldHighlights = ""; return h; })();
       registerTiming(timing || (ind.bodyTerm === "Temperature" ? "lagging" : null), {
@@ -149,29 +128,21 @@
         tag:ind.tag, icon:'<div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div>',
         target:pageFor(ind.bodyTerm)
       });
-      // A sign with a peek card has no row in the list: the card IS its row (Version 254 for Temperature, and
-      // Version 291 for Effort and Pulse, which Keren asked to sit side by side "like temperature GDP growth").
-      // Temperature is the one that also gives up its page wrapper, because its detail goes under a chart that
-      // already exists; the other two keep their own pages exactly as they were.
+      // A sign with a peek card has no row in the list: the card IS its row (Keren, V291: side by side "like
+      // temperature GDP growth"). Temperature also gives up its page wrapper, because its detail goes under a chart
+      // that already exists; the others keep their own pages.
       if (PEEKED[ind.bodyTerm] && ind.bodyTerm !== "Temperature"){ host.appendChild(d); return d; }
       if (ind.bodyTerm === "Temperature"){
-        // V490: the panel row, rendered once from the indicator — the figure does not move with the window,
-        // so it does not belong in the per-draw code above.
-        /* V582, Keren: "I don't need the test result component in temperature because I already have the
-           average. I have the Fed target. I don't need to see it again as in another form." The row drew
-           3.4% against a 1–3% track — and the chart two inches above already carries 3.4% in its readout,
-           the cycle's average as a line and the Fed's 2% as a dashed one, with Highlights saying in words
-           where today sits. Four statements of one number.
-           The row went; its NOTE did not. panelRow filed o.info into HIST_NOTE so the ⋯ menu could open it
-           (the V518 rule, one string read from one place), and that note is the only place the app explains
-           why 1–3% is a target band rather than a normal range, and that the Fed's 2% is PCE while this
-           reading is CPI. It is filed directly now, the way the yield, horizon and deficit notes already are. */
+        /* Keren, V582: "I don't need the test result component in temperature because I already have the
+           average. I have the Fed target. I don't need to see it again as in another form." No panel row, but
+           its NOTE stays — the only place the app explains why 1–3% is a target band rather than a normal range,
+           and that the Fed's 2% is PCE while this reading is CPI. Filed straight into HIST_NOTE for the ⋯ menu,
+           like the yield, horizon and deficit notes; set once, since it does not move with the window. */
         HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
-        tempCaptionFull = ind.caption;                      // its long form joins the page's own, in one row (V287)
-        tempLeadShown = ind.lead || ind.shortCaption || "";  // \u2026 minus whatever the page is already showing (V288)
-        /* V532: REPLACE, never append. A second render would otherwise leave two `.sign-detail`
-           blocks in the sheet, and the page-foot seater reads `:scope > .sign-detail`, so it would
-           then find the stale one. Idempotent by construction rather than by being called once. */
+        tempCaptionFull = ind.caption;                      // its long form joins the page's own, in one row
+        tempLeadShown = ind.lead || ind.shortCaption || "";  // … minus whatever the page is already showing
+        /* REPLACE, never append. A second render would otherwise leave two `.sign-detail` blocks in the
+           sheet, and the page-foot seater reads `:scope > .sign-detail`, so it would find the stale one. */
         (function(){
           var sheet = byId("sheet-metric-temp");
           var fresh = d.querySelector(".sign-detail");
@@ -181,54 +152,39 @@
       } else { host.appendChild(row); host.appendChild(d); }
       return d;
     }
-    // The section headings are gone (Keren, Sep 20, 2026: "get rid of the Leading, Coincident and Lagging titles on
-    // the main page and make the spaces align"). Three headings over six rows spent a third of the list's height
-    // saying something each row can say for itself — and said it only while the reader was scrolling past, which
-    // is the wrong moment for it. It matters when you are reading the sign, so it travels onto the sign's page.
+    // No section headings (Keren, Sep 20, 2026: "get rid of the Leading, Coincident and Lagging titles on the main
+    // page and make the spaces align"). The timing travels onto each sign's page, where it matters.
     coincident.forEach(function(ind){ signSubject(ind, ind.bodyTerm === "Temperature" ? null : (ind.timing || "coincident")); });
     lagging.forEach(function(ind){ signSubject(ind, "lagging"); });
 
-    // Yield curve and Sentiment were written straight into the markup, so they are converted where they stand rather
-    // than rebuilt (the Version 255 move): the summary becomes the row, the drawer's body becomes the page, and every
-    // id inside either one keeps working. These two are why this was needed — between them they ran longer than
-    // everything else on the tab put together, so anything below them was effectively unreachable (Version 269).
-    /* V596: three, not four. Pressure and Hormones were one reading on two rows — the price of money as
-       the market charges it and as the Fed sets it — and they are one page now, which Hormones names. */
+    // These rows are written straight into the markup, so they are converted where they stand rather than rebuilt:
+    // the summary becomes the row, the drawer's body becomes the page, and every id inside either one keeps working.
     [{ key:"hormones", title:"Hormones", timing:"leading" },
-     /* V597 read the loan survey here; V639 returns the Treasury yields (Keren: "pressure should be yields").
-        Leading, because the market's price of money moves before the activity it finances shows it. */
+     /* Keren, V639: "pressure should be yields". Leading, because the market's price of money moves before
+        the activity it finances shows it. */
      { key:"pressure", title:"Pressure", timing:"leading" },
-     // Version 473: Horizon converts the same way, which is the whole reason it was written into the markup as a
-     // <details> rather than built from an indicator object — its page is a chart with two controls and a
-     // verdict, not a row with a table, and this path gives it a page without inventing a second idiom for one.
+     // Horizon converts the same way: its page is a chart with two controls and a verdict, not a row with a
+     // table, and this path gives it a page without inventing a second idiom for one.
      { key:"horizon", title:"Horizon", timing:"leading" },
-     // NB a real "&": cfg.title is written with setAttribute and read back with textContent, so an entity
-     // here would render literally in the row (it did, once).
+     // NB write a real "&" in a title, never an entity: cfg.title is written with setAttribute and read back with
+     // textContent, so an entity here would render literally in the row.
      { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;
       var row = document.createElement("div");
-      /* V596: no `card-row press-row` any more. Those classes were Pressure's, written in Version 314 for a
-         full-width reading on the Cycle page — and since the categories landed, catItem takes every member
-         row and rebuilds it as a `.cat-item`, so neither class has reached the DOM in a long time. Their three
-         orphaned rules went with them. V631: `.card-row` went too — the Indicators card it dressed had been
-         behind `if (false && ...)` since V447, removed on every load, and its CSS, its placeholder and its
-         fifteen lines of markup were the fourth "place" the ledger counted for the roster row. */
+      /* Only `subject sign-row`: catItem rebuilds every member row as a `.cat-item`, so any other row class
+         would never reach the DOM. */
       row.className = "subject sign-row";
       row.setAttribute("data-subject", cfg.key);
       row.setAttribute("role", "button"); row.tabIndex = 0;
       row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
       var face = document.createElement("div"); face.className = "subject-summary";
       while (sum.firstChild) face.appendChild(sum.firstChild);   // moved, so every id inside it survives
-      /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that we
-         talked about." Twelve of thirteen already were; Fear was blank. Its umbrella is written onto the label
-         by renderFearCurve, the way Horizon's sunrise is — but that runs against the markup row, and by the
-         time the ROSTER is built this converter has moved those children once already, so whichever list is
-         built second gets a row whose label was never touched. Which one that is depends on build order, which
-         is why Horizon looked fine and Fear did not.
-         The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
-         reach any list without it, and a label that already carries its glyph is left exactly as it is. */
+      /* Keren, V587: "make sure that in the all indicators list, all items are updated with the icons that we
+         talked about." The mark is applied HERE, where the row is made, once, and only if the label has none:
+         a glyph written onto the markup row later is at the mercy of build order, because this converter moves
+         the row's children and whichever list is built second would get a label that was never touched. */
       (function(){
         var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:gaugeSvg };
         var lab = face.querySelector(".subject-label");
@@ -245,7 +201,7 @@
       det.parentNode.removeChild(det);
     });
 
-    // the four metric pages say where they sit too, in the same chip and the same place
+    // the metric pages say where they sit too, in the same chip and the same place
     [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
      ["power-timing", "structural"], ["valuation-timing", "structural"],
      ["households-timing", "structural"]].forEach(function(p){
@@ -253,11 +209,9 @@
     });
 
 
-    // One shape for all four inner pages (Version 266): the head, then the chart in its white box, then Highlights,
-    // then the detail drawer. The pages were assembled from four different directions — two wrapped around a drawer
-    // that was already in the markup, two built fresh — and had drifted into four different orders. This sorts the
-    // DOM itself rather than painting over it with flex order, so the reading order a screen reader gets is the
-    // reading order the eye gets.
+    // One shape for every inner page: the timing chip, the head, the chart in its white box, the detail, then
+    // Highlights. The pages are assembled from different directions, so this sorts the DOM itself rather than
+    // painting over it with flex order: the reading order a screen reader gets is the reading order the eye gets.
     ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation",
      "sheet-metric-households"].forEach(function(id){
       var sheet = byId(id); if (!sheet) return;
@@ -267,7 +221,7 @@
         if (/-head$/.test(k)) return 1;
         if (/-chart$/.test(k) || /^slot-/.test(k)) return 2;
         if (/-highlights$/.test(k)) return 4;        // Highlights LAST, because it ends in More details, and
-        return 3;                                    // nothing belongs below the offer to read more (Version 288)
+        return 3;                                    // nothing belongs below the offer to read more
       }
       Array.prototype.slice.call(sheet.children)
         .map(function(el, i){ return { el:el, r:rank(el), i:i }; })
@@ -278,22 +232,12 @@
   }
   GYN.step("renderSignsList", renderSignsList, "build"); renderSignsList();
 
-  // The peek pair (Version 253). Today's readings only — it lives in #today-analysis, not in the cycle view, so a past
-  // cycle opened from the Calendar never borrows it. Both figures are taken from the same place the row below takes
-  // them, so the peek and its drawer can never disagree: Temperature from its own indicator, Growth from the season
-  // model's latest quarter, which is also what the Growth chart reads at its end line.
-  /* ---------------- THE ROSTER'S OWN PIECES (Version 630) ----------------
-     Keren: "a component based app that will be 100% ready for server side integration with controllers
+  /* ---------------- THE ROSTER'S OWN PIECES ----------------
+     Keren, V630: "a component based app that will be 100% ready for server side integration with controllers
      and services."
-
-     Four helpers that read a reading off the page and write it as a roster row. They close over nothing in
-     `renderPagesAndNav` — measured, not assumed: of the 43 names that closure declares, the cards and the
-     inner pages reference NOTHING from the sections below, and the only mention of `openMetricPage` in those
-     990 lines is inside a comment. The cards emit `data-open` and the controller listens; that separation was
-     already there, just not visible from the outside.
-     What the measurement did NOT say is WHEN each piece may run. `registerRoster` below reads the drawn page,
-     so it is a step with a place in an order, and lifting it here without noticing that broke All indicators
-     until the snapshot said so. Closing over nothing and running at any time are two different properties. */
+     Helpers that read a reading off the page and write it as a roster row. They close over nothing in
+     `renderPagesAndNav`, but `registerRoster` reads the drawn page, so it is a step with a place in the
+     order (see renderPagesAndNav). */
   // A figure and its unit are two things. Cloning is what lets them be separated without disturbing the card
   // the reading is lifted from, and it takes the tag out of the figure at the same time, where one sits inside it.
   function partsOf(el, unitSel){
@@ -308,16 +252,13 @@
   function discOf(mark, state){
     return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + '</span></div>' : "";
   }
-  // the three that have no indicator object behind them register from what their own peek card says
-  /* Version 473: the live document first, the Version 473 snapshot second. Everything in a category has been
-     lifted out of the page by now (see `catItem`), so for most of these the snapshot IS the answer — but the
-     live lookup stays first, because a reading that never joined a category is still there to be read. */
+  // readings with no indicator object behind them register from what their own card or row says
+  /* The live document first, then the catItem snapshot: most of these have been lifted out of the page by now
+     (see `catItem`), but a reading that never joined a category is still there to be read. */
   function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
-  /* V630: these two are a STEP, not a helper. Each reads a card or a row off the page that has just been
-     drawn and files it with `registerTiming`, so it has to run AFTER the cards exist. Lifting it to file
-     level made every `authored()` lookup answer null, every loop return early, and the structural group
-     vanish from All indicators — the snapshot said so, 30 states differing. Named now, so when it runs is
-     a decision at the call site rather than a position inside a 1,250-line body. */
+  /* A STEP, not a helper: each loop reads a card or row off the freshly drawn page and files it with
+     `registerTiming`. Run before the cards exist, every `authored()` lookup answers null and the structural
+     group vanishes from All indicators. When it runs is decided at the call site. */
   function registerRoster(){
     [["gdp", "coincident"], ["power", "structural"], ["valuation", "structural"],
      ["households", "structural"]].forEach(function(p){
@@ -342,13 +283,9 @@
         metric:rv.v, unit:rv.u,
         word:rv.w || say, state:rv.s,
         icon:(function(){
-          /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that
-             we talked about." Twelve of thirteen rows wore their reading's glyph in a tinted disc; Fear wore
-             its curve gauge instead, because this preferred a .subject-ring with anything in it over the mark
-             on the label — and Fear is the only row that owns a ring. So the one reading with a picture was
-             the one reading without an icon, in a list whose whole job is to be scannable by icon.
-             The MARK comes first now and the ring is the fallback, which is the order every other list in the
-             app uses. Fear keeps its ring where a ring belongs: on the Mood page, as that row's preview. */
+          /* Keren, V587 (see the converter in renderSignsList): the MARK first and the ring only as a fallback,
+             the order every other list uses — a list scanned by icon needs every row's icon. Fear keeps its ring
+             on the Mood page, as that row's preview. */
           var mk = row.querySelector(".subject-label .peek-mark");
           if (mk) return discOf(mk, rv.s);
           var rg = row.querySelector(".subject-ring");
@@ -359,7 +296,7 @@
     });
   }
 
-  // One page per class (Version 271). A row here is the same row the list uses, and opens the same page.
+  // A roster row: the same row the list uses, opening the same page.
   function memberRow(e){
     var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + '</span>'
             : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + '</span>' : '';
@@ -372,30 +309,24 @@
     });
   }
 
-  /* ---------------- THE NAVIGATION CONTROLLER (Version 630) ----------------
-     What opens, what closes, what the back arrow does, and the page frame all of it moves inside. This is the
-     CONTROLLER: it owns `openSheet`, `openHome`, `pageStack` and `returnScroll`, and nothing outside it can
-     reach that state — a component asks by calling `NAV.open`, or by emitting `data-open` and letting the
-     delegate here find it.
-     `NAV` is the whole public surface, and it is two names. Everything else stays private, which is the point:
-     the roster and the all-indicators sheet used to read `analysisPanel` and call `openMetricPage` out of a
-     shared closure, so there was no way to say what navigation offered and what it merely happened to have
-     in scope. */
+  /* ---------------- THE NAVIGATION CONTROLLER ----------------
+     What opens, what closes, what back does, and the page frame it all moves inside. It owns `openSheet`,
+     `openHome`, `pageStack` and `returnScroll`, and nothing outside can reach that state: a component calls
+     `NAV.open`, or emits `data-open` for the delegate here. `NAV` (two names) is the whole public surface. */
   var NAV = { open: null, panel: null };
   function buildNav(){
-    // ---------------- The metric page (Version 256) ----------------
-    // The Cycle tab's own content steps aside and the metric takes the screen, with its name in the top bar and the
-    // back arrow beside it — the same move the Calendar makes when it opens a cycle. Where the reader was on the
-    // Cycle tab is remembered and restored, because being returned to the top of a long page is its own small loss.
+    // ---------------- The metric page ----------------
+    // The tab's own content steps aside and the metric takes the screen, with its name in the top bar and the back
+    // arrow beside it — the same move the Calendar makes when it opens a cycle. Where the reader was on the tab is
+    // remembered and restored, because being returned to the top of a long page is its own small loss.
     var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
     var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
     var metricPage = document.createElement("div");
     metricPage.id = "metric-page"; metricPage.hidden = true;
     cyclePanel.appendChild(metricPage);
-    // Version 319: pages open from the Analysis tab now too, so "where a page goes home to" stops being the
-    // Cycle tab by assumption and becomes something the opener states. The host element travels to whichever
-    // panel the page was opened from — the tab you were on is the tab you come back to, with its own name in
-    // the top bar. The context is read fresh each time because these children are moved around at runtime.
+    // Pages open from the Cycle and Analysis tabs, so the opener states where a page goes home to: the host
+    // travels to that panel, and back returns to it with its own name in the top bar. Read fresh each time,
+    // because these children are moved around at runtime.
     var PAGE_HOME = {
       cycle:    { panel:cyclePanel,    title:"Current Cycle",
                   hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
@@ -404,9 +335,9 @@
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
-    // One page can now open another — a class page opens a sign's page (Version 271) — so back has to mean "the page
-    // I came from" rather than always "the tab". The stack is the smallest thing that does it: a page remembers
-    // where it was pushed from and how far down it had been read.
+    // One page can open another — a category page opens a reading's page — so back has to mean "the page I came
+    // from" rather than always "the tab". The stack is the smallest thing that does it: a page remembers where it
+    // was pushed from and how far down it had been read.
     var pageStack = [];
 
     function homeFromPage(keepScroll){
@@ -433,7 +364,7 @@
 
     function openMetricPage(el, title, returning, homeKey){
       if (!el) return;
-      seatPageFoot(el);        // Version 298: late-built pages seat their chip on the way in
+      seatPageFoot(el);        // late-built pages seat their chip on the way in
       if (!returning && openSheet && openSheet !== el)
         pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
       var wasOpen = !!openSheet;
@@ -455,7 +386,7 @@
       collapseEmptyBlocks(el);   // now that it is on screen and drawn, anything showing nothing gives up its gap
     }
     // Every peek card and every sign row opens a page the same way, so the listener sits on the tab rather than on
-    // the row of peeks, and matches the attribute rather than the class (Version 269).
+    // the row of peeks, and matches the attribute rather than the class.
     cyclePanel.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
       openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
@@ -470,7 +401,7 @@
       e.preventDefault();
       openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
     });
-    // pressing the trend row shows the fit on the chart above it and steps the readings back (Version 276)
+    // pressing the trend row shows the fit on the chart above it and steps the readings back
     cyclePanel.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
       var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
@@ -481,7 +412,7 @@
     cyclePanel.addEventListener("keydown", function(e){
       if (e.key !== "Enter" && e.key !== " ") return;
       // `tr[data-open]` and not `[data-open]`: the peek cards are real buttons and already fire a click on
-      // Enter, so matching them here would open the same page twice (Version 360).
+      // Enter, so matching them here would open the same page twice.
       var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
       e.preventDefault();
       openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
@@ -491,24 +422,18 @@
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
     });
-    // V630: the two names navigation offers. Assigned last, so the surface cannot be read half-built.
+    // the two names navigation offers. Assigned last, so the surface cannot be read half-built.
     NAV.open = openMetricPage;
     NAV.panel = analysisPanel;
   }
 
-  /* ---------------- ALL INDICATORS (Version 630) ----------------
-     Every reading on the board, on one page, grouped by when it speaks. Lifted out of `renderPagesAndNav`
-     with the two things it actually needed from navigation — where to put itself, and how to open itself —
-     now asked for by name through `NAV` instead of taken from a shared closure. */
+  /* ---------------- ALL INDICATORS ----------------
+     Every reading on the board, on one page, grouped by when it speaks. The two things it needs from
+     navigation — where to put itself, and how to open itself — it asks for by name through `NAV`. */
   function buildIndicatorSheet(){
-    // Version 319: every reading on the board, on one page, grouped by when it speaks. It is built from
-    // `timingMembers`, so it cannot drift out of step with the rows anywhere else — they are the SAME rows,
-    // one component, one destination per reading.
-    // Version 350: the four per-class pages this builder used to make alongside it are gone. Version 329 pointed
-    // every timing chip at a TAB of this page instead of at its own sheet, which left four sheets built into the
-    // DOM on every load — 222 nodes, 8% of the page — that nothing could open. The roster answers "what does
-    // leading mean" perfectly well by grouping under that heading; a second page saying it again was the thing
-    // Version 329 replaced, not something it left standing.
+    // Built from `timingMembers`: the SAME rows as everywhere else, one destination per reading. No per-class
+    // pages — a timing chip opens a TAB of this page (openIndicatorsPage), and the grouping answers "what does
+    // leading mean".
     var indSheet = document.createElement("div");
     indSheet.className = "metric-sheet ind-sheet"; indSheet.id = "sheet-indicators"; indSheet.hidden = true;
     var IND_ORDER = ["structural", "leading", "coincident", "lagging"];
@@ -530,9 +455,9 @@
           '<b>' + t.label + '</b><span>' + t.hint + '</span></div>' +
           list.map(memberRow).join("") + '</div>';
       }).join("");
-    // Version 447: the roster is reached from the Cycle tab's Browse list now, so it lives among that tab's
-    // content — PAGE_HOME.cycle hides #today-analysis, and a page that is not inside what its home hides
-    // stays on screen underneath whatever opens over it.
+    // The roster is reached from the Cycle tab's Browse list, so it lives among that tab's content —
+    // PAGE_HOME.cycle hides #today-analysis, and a page that is not inside what its home hides stays on screen
+    // underneath whatever opens over it.
     (byId("today-analysis") || NAV.panel).appendChild(indSheet);
 
     // Structural has no tab of its own — it is not a moment in the cycle, so it belongs under All and nowhere else.
@@ -551,7 +476,7 @@
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"); if (!b) return;
       setIndTab(b.getAttribute("data-ind-tab"));
     });
-    // Version 329: a reading's timing chip opens THIS page on the matching tab rather than a page of its own.
+    // a reading's timing chip opens THIS page on the matching tab rather than a page of its own
     openIndicatorsPage = function(tab){
       var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
       if (btn && !btn.classList.contains("active")) btn.click();
@@ -560,11 +485,15 @@
     };
   }
 
-  /* ---------------- THE CYCLE TAB: cards and categories (Version 630) ----------------
-     The four big cards at the top, the four category boxes, and the rows physically moved into them.
-     It hands the inner pages the five readings they share and nothing else. */
+  /* ---------------- THE CYCLE TAB: cards and categories ----------------
+     The cards at the top, the four category boxes, and the rows physically moved into them. It hands the
+     inner pages the readings they share and nothing else.
+     The peek cards are today's readings only — they live in #today-analysis, not in the cycle view, so a past
+     cycle opened from the Calendar never borrows them. Both headline figures are taken from the same place
+     their pages take them, so the two can never disagree: Temperature from its own indicator, Growth from the
+     season model's latest quarter, which is also what the Growth chart reads at its end line. */
   function renderPeekAndCategories(){
-    var host = byId("peek-row"); if (!host) return null;   // V630: null, so the caller can stop too
+    var host = byId("peek-row"); if (!host) return null;   // null, so the caller can stop too
     var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
     var r = nowModel.reading, era = nowModel.era;
     var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
@@ -572,8 +501,8 @@
     var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= era.from; });
     var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
     // Both long series are carried to TODAY before anything draws them, so every page's line finishes on the number
-    // printed above it (Version 255). Neither point is invented: the power composite for this year is stressScoreFor()
-    // run on this year's three markers — the same call the row makes — and CAPE's is the published Sep 17 reading
+    // printed above it. Neither point is invented: the power composite for this year is stressScoreFor() run on
+    // this year's three markers — the same call the row makes — and CAPE's is the published Sep 17 reading
     // replacing a January one the year has already left behind. Everything earlier keeps its own convention.
     if (powerHistory[powerHistory.length - 1].y < calendarTodayY) powerHistory.push({ y:calendarTodayY, v:powerScore });
     var capeLast = capeHistory[capeHistory.length - 1];
@@ -585,34 +514,28 @@
                  colClass:function(v){ return "temp-col " + heatStep(v); } }) +
       peekCard({ kicker:"Growth", mark:sproutSvg(), value:(r.gdpLatest.v >= 0 ? "+" : "") + r.gdpLatest.v.toFixed(1) + "%", unit:"YoY",
                  word:growthShownCap(r.regime), state:phaseClass(r.regime),
-                 // a true miniature of its own page (Version 261): the same quarterRegime() the chart reads, so the
-                 // two cannot show different pictures of one cycle
+                 // a true miniature of its own page: the same quarterRegime() the chart reads, so the two cannot
+                 // show different pictures of one cycle
                  target:"sheet-metric-gdp", cols:gq.map(function(d){ return d.v; }),
                  colClass:function(v, i){
                    return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
                  } }) +
-      // Economic power and Valuation can carry a line as of Version 255, because the series behind them now exists.
-      // The power line is keyed by year (xs) rather than by position. That was originally because Gallup skipped
-      // 1980, 1982 and 1992 and the composite could not be formed for them; since Version 392 the series has no
-      // gaps at all, and the keying stays because a year-keyed series cannot silently close one if a gap returns.
-      // Version 353, Keren: "in the power page, change the title to economic power." The card keeps the short
-      // noun Version 304 gave it — four tiles in a grid, and "Economic power" wraps where "Power" does not —
-      // while the page it opens takes the full name back.
+      // Keren, V353: "in the power page, change the title to economic power." The card keeps the short kicker —
+      // tiles in a grid, and "Economic power" wraps where "Power" does not — while the page it opens takes the
+      // full name.
       peekCard({ kicker:"Power", title:"Economic power", mark:boltSvg(), value:powerScore + "%",
                  unit:"reserve", word:powerWord.word,
                  state:powerWord.state, target:"sheet-metric-power", ring:powerScore }) +
-      // a miniature of its own diverging page (Version 262): bars out of the 17× fair line, both ways
+      // a miniature of its own diverging page: bars out of the 17× fair line, both ways
       peekCard({ kicker:"Valuations",
                  mark:diamondSvg(),
                  value:capeNow.toFixed(1) + "\u00d7", unit:"CAPE", word:valuation.tag.text,
                  state:valuation.tag.state, target:"sheet-metric-valuation",
                  cols:capeHistory.map(function(d){ return d.v; }), colBase:CAPE_FAIR,
                  colClass:function(v){ return "dv-bar " + (v > CAPE_FAIR ? "over" : "under"); } }) +
-      // Households (Version 460). Two numbers in one row, the way Pressure carries 10Y and 3M: the bill and
-      // what is left, on the same denominator, so the reader gets the pair at a glance and the page explains it.
-      // Version 463, Keren: "debt service is too general — there is government debt service and household debt
-      // service." Right, and the name was under-describing it twice over: the row carries what is PAID and what is
-      // KEPT, and only saving answers to nobody. Households is what the page is about.
+      // Households: the bill and what is left, on one denominator, a pair at a glance. Keren, V463: "debt service
+      // is too general — there is government debt service and household debt service." The row carries what is
+      // PAID and what is KEPT.
       peekCard({ kicker:"Households",
                  mark:houseSvg(),
                  value:dsrNow.toFixed(1) + "/" + savNow.toFixed(1), unit:"% paid / kept",
@@ -621,11 +544,9 @@
                  colClass:function(){ return "hh-col"; } }) +
       "";
 
-    // Effort and Pulse are cards, but not headline cards (Version 292, Keren: "put Effort and Pulse under
-    // Sentiment"). The top grid is the four readings the whole board is about; these two are coincident signs, so
-    // they belong down among the signs — as a pair of cards rather than two full-width rows, which is what makes
-    // them comparable with each other at a glance. Same component, same grid, a different place in the page.
-    // The unit is named short (ISM PMI, M2 velocity) so nothing wraps: a row of cards has one height.
+    // Keren, V292: "put Effort and Pulse under Sentiment." Coincident signs, not headline readings, so they sit
+    // among the signs as a pair of cards, comparable at a glance. The unit is named short (M2 velocity; M2, YoY)
+    // so nothing wraps: a row of cards has one height.
     (function(){
       var pair = [["Pulse", "M2 velocity"], ["Volume", "M2, YoY"]].map(function(p){
         var ind = coincident.filter(function(x){ return x.bodyTerm === p[0]; })[0];
@@ -651,14 +572,10 @@
       row.innerHTML = pair;
       after.parentNode.insertBefore(row, after.nextSibling);
 
-      /* Hormones sits with this pair: all three read the circulation, so they are read together. Version 317
-         put it under them; Version 348 puts it above (Keren: "put pressure above the pulse and volume row")
-         — the full-width reading first, then the two cards saying what the circulation is doing inside it.
-         V596: it is the Hormones row that is full-width now, Pressure having merged into it, and the argument
-         for the position is the same one strengthened: the rate is the CAUSE, and the pulse and the volume are
-         what it acts on. Moving the node keeps everything inside it alive (the Version 314 lesson) — the
-         miniature drawn into the row, the ids the data blocks write to, the row's own open handler — and
-         its hidden sheet follows it, so every row here is still immediately followed by its own page. */
+      /* Hormones sits above this pair: all three read the circulation (Keren, V348: "put pressure above the
+         pulse and volume row"), and the rate is the CAUSE the pulse and the volume answer to. MOVED, never
+         rebuilt: moving keeps the row's miniature, data ids and open handler alive, and its hidden sheet
+         follows it, so every row here is still immediately followed by its own page. */
       var horm = document.querySelector('.sign-row[data-subject="hormones"]');
       var hormSheet = byId("sheet-sign-hormones");
       if (horm && hormSheet && horm.parentNode === row.parentNode){
@@ -667,13 +584,10 @@
       }
     })();
 
-    // Version 353, Keren: "in the cycle page, switch positions between sentiment and activity." The two rows
-    // live in different containers — Sentiment among today's readings, Activity in the signs list — so this is
-    // a swap of nodes between parents rather than a reorder inside one. Two comment markers hold the outgoing
-    // slots, because the second move would otherwise have nothing left to aim at once the first row has left.
-    // Each row's hidden sheet travels with it, so every row on the page is still immediately followed by its
-    // own page — and moving the nodes keeps everything inside them alive (the Version 314 lesson): the mood
-    // face on Sentiment's label, the ids the data blocks write to, and both rows' open handlers.
+    // Keren, V353: "in the cycle page, switch positions between sentiment and activity." The rows live in
+    // different containers, so nodes swap between parents. Two comment markers hold the outgoing slots, or the
+    // second move would have nothing left to aim at. Each row's sheet travels with it; moving (never rebuilding)
+    // keeps both rows alive, as for Hormones above.
     (function(){
       var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
       var act  = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
@@ -691,87 +605,50 @@
       mAct.parentNode.removeChild(mAct);
     })();
 
-    /* ================= Version 446: the homepage is Summary + Browse =================
-       Keren, copying Apple Health's homepage: "I want to segmentize the KPIs." Her grouping, with two changes she
-       took: the box holding temperature and growth is WEATHER rather than Season, because computeSeason() takes
-       those two and returns the season — so a box named for the season would make the conclusion a peer of the
-       systems that produce it, and the dial above already IS the season; and Power joins Blood rather than
-       standing alone, because bank reserves are how much blood the system is holding, and pressure, pulse, volume
-       and supply are one circulation measured four ways. Apple Health has no categories of one.
-       Then: "for now, drop the pinned components", so the Summary is the dial alone and every reading lives in
-       its category. Ten readings, four systems, nothing orphaned.
-       The members are MOVED, not rebuilt — the Version 314 lesson, applied here for the fourth time: moving a
-       node keeps everything inside it alive, the sparklines already drawn, the ids the data blocks write to, and
-       each row's own open handler. Their hidden pages stay exactly where they are, because openMetricPage finds
-       a page by id and does not care who its parent is; what makes this work at all is that the app has opened a
-       page FROM a page since Version 271, so the back stack already handles two levels. */
+    /* ================= The homepage is Summary + Browse =================
+       Keren, V446, copying Apple Health's homepage: "I want to segmentize the KPIs." Temperature and growth are
+       WEATHER, not Season: computeSeason() turns those two into the season, so a box named for it would make the
+       conclusion a peer of its inputs, and the dial already IS the season. Apple Health has no categories of one.
+       Then: "for now, drop the pinned components" — the Summary is the dial alone.
+       Members are MOVED, not rebuilt, so what is inside stays alive (sparklines, data ids, open handlers). Their
+       hidden pages stay put: openMetricPage finds a page by id, and back already handles a page opened from a
+       page. */
     (function(){
       var host = byId("today-analysis"); if (!host) return;
       var CATS = [
         { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
           picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
         { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
-          /* V596, Keren: "let's fold Treasury into Hormones." Four members became three, and the category is
-             finally a sequence rather than a list with a repetition in it: the RATE that is set, the SPEED the
-             money moves at, the QUANTITY of it. Pressure was the odd one twice over — it measured the same
-             quantity Hormones does, from the other end, and in her own draft pressure is not an instrument at
-             all but what builds WHEN circulation goes wrong. */
-          /* V597: the order is the physiology, read in the direction the causation runs. The SIGNAL the Fed
-             sends, then the two halves of the flow it produces — how fast the money moves and how much of it
-             there is. V639, Keren: Pressure is the Treasury yields again — the rate the market CHARGES, after
-             the rate the Fed SETS — so the sequence reads set, charged, speed, quantity. */
+          /* The order is the physiology, read in the direction the causation runs: the rate the Fed SETS, the
+             rate the market CHARGES (Keren, V639: "pressure should be yields"), how fast the money moves, and
+             how much of it there is. */
           picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
                  '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-        /* Version 473, Keren: "calling it Horizon and judging if it’s optimistic or pessimistic, which
-           correlates with ovulation and menstruation — so it belongs to Mood." The fourth member, and the one
-           that makes this page an argument rather than a list: Valuations is what the market will pay for a
-           dollar of earnings, Fear & Greed how frightened it is today, Desire how much risk it craves — all
-           three about NOW — and Horizon what it expects of the future. Today they disagree, which is the point:
-           36 and Fear beside a curve reading optimistic. */
-        /* V598, Keren: "if the horizon says if we're optimistic or pessimistic, then it should be in mood."
-           She is right and V597 was wrong to move it. Look at what this category holds: Valuations is what the
-           market will PAY, Fear is how frightened it is, Desire is how much risk it WANTS — opinions, every
-           one. Energy holds measurements of the body: the reserve, the debt, the jobs. The yield curve is the
-           bond market saying what it expects of the next few years, which is an opinion, not a measurement.
-           (The market words for the feeling are bullish and bearish; long and short are positions taken, which
-           is a different thing and not what this reading is.) */
+        /* Keren, V473: "calling it Horizon and judging if it’s optimistic or pessimistic, which correlates with
+           ovulation and menstruation — so it belongs to Mood." Keren, V598: "if the horizon says if we're
+           optimistic or pessimistic, then it should be in mood." Mood holds OPINIONS — what the market will PAY,
+           how frightened it is, how much risk it WANTS, what the bond market expects — and Energy measurements.
+           (The market's words for the feeling are bullish and bearish; long and short are positions taken.) */
         { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
-          /* Version 466, Keren: "the VIX is called the fear index — we don't need two fear meters on the Mood
-             page, so put the VIX inside Fear & Greed." Right, and the stronger form of it is that the VIX is one
-             of the index's SEVEN COMPONENTS: a part cannot be the peer of its own composite, which is the rule
-             that moved Power's markers off this kind of list twice already. Version 464 promoted it out of that
-             page; this puts it back, as a reading under the gauge rather than the ring it used to be. */
+          /* Keren, V466: "the VIX is called the fear index — we don't need two fear meters on the Mood page, so
+             put the VIX inside Fear & Greed." The VIX is one of the index's SEVEN COMPONENTS, and a part cannot
+             be the peer of its own composite, so it is a reading under the gauge. */
           picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
                  '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
-        /* Version 457, Keren: "economic power should move from circulation to activity, and activity should be
-           renamed to energy." It settles what Version 446 left uneasy, where Power joined Circulation on the
-           argument that reserves are how much blood the system is holding — true of the metaphor, and the wrong
-           cut of the economics. Energy is the honest pair: Power is the reserve she has, Activity is what she is
-           spending it on, and the app has read them as one thing since Version 228, where Power's own word comes
-           off an energy scale (Energetic, Steady, Tired, Exhausted). It also gives Activity what it lacked as a
-           category of one — a second member, so Energy is a list like the other three rather than a shortcut. */
-        /* Version 462, Keren: "we don't need a new category named Load — stress is connected to energy, so put
-           a debt service page inside Energy." Version 460 had split them, and she is right that it was a split of
-           one idea: `energyFromReserve()` takes the fiscal STRESS score and inverts it, so Power's word is
-           computed FROM the debt markers. A Load category would have shown a verdict in one box and its own
-           inputs in another — the fault Version 446 named when it refused to call this box "Season", because
-           the dial already is the season.
-           So Energy holds the whole reading: how much is left (Power), what is owed (Debt service), and what
-           the energy is going into (Activity's page, absorbed whole as in Version 458). The federal three stay
-           on Power's page, where they are computed into its word; Debt service carries the household side,
-           which is a balance sheet nothing in the app had measured. */
-        /* V598: Horizon went back to Mood one version later (see there). V596 moved it here on the argument
-           that Mood already held three readings of the same instant, so a fourth was a different KIND of
-           claim — true, and beside the point: everything in Mood is an OPINION and everything here is a
-           MEASUREMENT, and the yield curve is an opinion. Energy is Power, Households and Activity. */
+        /* Keren, V457: "economic power should move from circulation to activity, and activity should be renamed
+           to energy." Power is the reserve she has, Activity what she spends it on; Power's word is on an energy
+           scale (Energetic, Steady, Tired, Exhausted). Keren, V462: "we don't need a new category named Load —
+           stress is connected to energy, so put a debt service page inside Energy." `energyFromReserve()` inverts
+           the fiscal STRESS score, so a separate category would show a verdict in one box and its inputs in
+           another. Energy: what is left (Power), what is owed (Households), where it goes (Activity). The federal
+           three stay on Power's page, computed into its word. Horizon is an opinion, so it is in Mood. */
         { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
           picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
                  '.sign-row[data-open="sheet-sign-activity"]'] }
       ];
-      /* Each reading's PERIOD, not a timestamp. Apple Health shows 13:56 because a heart rate is an instant;
-         these are periods — CPI is FOR August, M2 velocity for Q2, the curve for Sep 24 — and a clock time in
-         the corner would be the compile date on all nine, claiming August's CPI was updated today. Every value
-         here is read off the series it labels, so none of them can go stale by being forgotten. */
+      /* Each reading's PERIOD, not a timestamp: CPI is FOR August, M2 velocity for Q2. A clock time would be the
+         compile date on every row, claiming August's CPI was updated today. Every value is read off the series it
+         labels, so none can go stale by being forgotten. */
       function fmtDay(d){ return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
       function qPretty(q){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
       // where a member already STATES its date, it states it inside the unit — "high-yield OAS, Sep 23 2026" —
@@ -786,24 +663,21 @@
         "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
         "sheet-metric-power":     String(powerHistory[powerHistory.length - 1].y),
         "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
-        // V592: the DECISION's date, not the series' — the row states the target the FOMC set, and the
-        // date that belongs beside it is the day they set it.
+        // the DECISION's date, not the series': the row states the target the FOMC set, and the date that
+        // belongs beside it is the day they set it
         "sheet-sign-hormones":    fedFunds.asOf,
-        "sheet-sign-pressure":    fmtDay(DATA_COMPILED),   // V639: a spot yield, like Horizon's spread beside it
+        "sheet-sign-pressure":    fmtDay(DATA_COMPILED),   // a spot yield, like Horizon's spread beside it
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
       var MINI = {
         "sheet-sign-sentiment": ".subject-ring > svg"                 // its Fear & Greed ring
       };
-      /* Version 448: every peek art carries `.peek-chart` now, so this asks for the thing by name rather than
-         by where it happens to sit. The Version 447 version walked from the kicker to its next sibling, which
-         worked but would have broken the moment a card gained anything else between the two. */
+      /* every peek art carries `.peek-chart`, so this asks for the thing by name rather than by where it sits */
       function peekArt(src){ return src.querySelector(".peek-chart"); }
-      /* Volume's row shows a MONTHLY figure (+5.7%, M2 year over year, Aug 2026) above a QUARTERLY chart, so the
-         period has to come from the figure rather than from the series under it — reading the chart's last
-         index gave "Q3 2026", which is true of the chart and wrong for the number printed beside it. Taken from
-         the indicator's own sub-line, which is where the app already states it. */
+      /* Volume's row shows a MONTHLY figure above a QUARTERLY chart, so its period comes from the figure, not the
+         series under it (the chart's last index would be wrong for the number beside it): from the indicator's
+         own sub-line, where the app already states it. */
       function indPeriod(term){
         var all = coincident.concat(lagging);
         for (var i = 0; i < all.length; i++){
@@ -815,26 +689,19 @@
       }
       function catItem(src){
         var open = src.getAttribute("data-open");
-        /* Version 473: a snapshot of the source AS AUTHORED, taken before anything moves out of it. This function
-           MOVES the figure and the verdict into the new item and then removes the source from the document, so
-           anything that reads a row or a card after the categories are built finds nothing there. The roster did
-           exactly that — Pressure, Fear & Greed, Growth, Power, Valuations and Households all register from their
-           own markup, which by then was gone — and it had been quietly listing six of eleven readings since
-           Version 446 without erroring, because a `if (!row) return` reads a missing row as a row to skip. The
-           clone is deliberately taken FIRST: one line later the figure has already left. */
+        /* A snapshot of the source AS AUTHORED, taken FIRST: this function moves the figure and the verdict into
+           the new item and removes the source, so anything reading a row or card afterwards finds nothing — and
+           the roster's `if (!row) return` would skip it silently (see `authored`). */
         (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
         var item = document.createElement("button");
         item.type = "button"; item.className = "cat-item";
         item.setAttribute("data-open", open);
         item.setAttribute("data-title", src.getAttribute("data-title") || "");
         var head = document.createElement("div"); head.className = "ci-head";
-        /* Version 449, Keren, of Desire on the Mood page: "the fire icon is just floating around — it needs
-           the same styling as the icon in valuations, grey and refined, without a green background." A peek
-           carries its mark as a bare 15px glyph; a sign row carries it as a BADGE — a disc tinted with the
-           reading's state — and Version 447 moved whichever it found. Out of its row that badge had no size at
-           all (it measured 390×900, the viewport) and it brought its state colour with it, which is the green
-           disc. The glyph is what a head wants; it is lifted out and given the peek treatment, so a member
-           built from a row and a member built from a card are finally the same object. */
+        /* Keren, V449, of Desire on the Mood page: "the fire icon is just floating around — it needs the same
+           styling as the icon in valuations, grey and refined, without a green background." A row's mark is a
+           state-tinted BADGE that has no size outside its row; the bare glyph is lifted out and given the peek
+           treatment, so members built from rows and from cards are the same object. */
         var markSrc = src.querySelector(".peek-mark, .subject-icon");
         if (markSrc){
           var glyph = markSrc.querySelector("svg");
@@ -844,8 +711,8 @@
           head.appendChild(holder);
         }
         var nm = document.createElement("span"); nm.className = "ci-name";
-        // Version 353's rule still holds: a card's kicker and its page's title are allowed to differ, and the
-        // row is the card's size, not the page's — "Power", not "Economic power".
+        // a card's kicker and its page's title may differ (Keren, V353, at the Power card), and the row is the
+        // card's size, not the page's — "Power", not "Economic power".
         var kick = src.querySelector(".peek-kicker");
         nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
                               : (src.getAttribute("data-title") || "");
@@ -861,21 +728,17 @@
             var m = DATED_UNIT.exec(unit.textContent.trim());
             if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
           }
-          /* Version 504, Keren: "in Mood there are different sizes of fonts — make sure everything is aligned
-             to the same component." The seam was here. This function MOVES the source's own figure element in,
-             so a member built from a peek CARD arrived as `.peek-value` (21px figure, 11px unit) and one built
-             from a sign ROW as `.subject-value` (20px, 14px). Weather looked right to her because both its
-             members are cards; Mood has two of each. The class is normalised on the way in, so what a row looks
-             like stops depending on which markup it was lifted out of. Anything else inside it — a tag, a
-             second figure — keeps its own classes. */
+          /* Keren, V504: "in Mood there are different sizes of fonts — make sure everything is aligned to the
+             same component." The figure element is MOVED in as `.peek-value` (card) or `.subject-value` (row),
+             each with its own sizes, so the class is normalised here: a row's look must not depend on the markup
+             it was lifted from. Anything else inside it — a tag, a second figure — keeps its own classes. */
           val.className = "ci-value";
           if (unit) unit.className = "ci-unit";
           read.appendChild(val);
         }
         /* The verdict, wherever the row keeps it. Most members say it in a word element under the figure;
-           Sentiment says it INSIDE the value, as a tag after the unit, and its own word element is empty — so
-           without this it took the figure's 28px type on the figure's line, reading "34% · Fear & Greed Fear",
-           while every other member had a 12.5px word on a line of its own. One shape for all ten. */
+           Sentiment says it INSIDE the value, as a tag after the unit, and its own word element is empty — so it
+           is taken from there, and every member has its word on a line of its own. One shape for all. */
         var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
         if (!word || !word.textContent.trim()){
           var inline = val ? val.querySelector(".tag") : null;
@@ -892,23 +755,18 @@
         chev.innerHTML = CHEV;
         head.appendChild(chev.firstChild);
         item.appendChild(head); item.appendChild(body);
-        // the card it was built from is empty now, and an empty card is still a card: it stayed on the
-        // homepage with its border and its padding, which is what "strays remain" was reporting
+        // the card it was built from is empty now, and an empty card is still a card: left on the homepage it
+        // would keep its border and its padding
         if (src.parentNode) src.parentNode.removeChild(src);
         return item;
       }
-      /* ================= Version 452: Volume × Pulse =================
-         Keren: "check how the combined insights work — when we talk about blood we can see the correlations."
-         Her example was clinical (low pressure with a high pulse suggests low volume), and the reasoning is
-         right while that particular mapping is not: our Pressure is the yield curve, a FORECAST, and "flat curve
-         plus fast velocity implies a small money stock" is not a relationship anyone could defend. The rule this
-         is built on instead: a combination must hold in economics, not only in anatomy — the body is how an
-         insight is EXPLAINED, never how it is derived.
-         This one is an identity, so it cannot be wrong: M×V = P×Y. Volume IS M, Pulse IS V, and their product
-         is nominal demand — which the Pulse page's own caption has said all along. Every figure below is read
-         off the series it describes; nothing is asserted that the app cannot check. There is deliberately NO
-         state colour: whether money growing and circulating faster is good or bad is a judgement about
-         inflation, and this card's job is to say what the two readings are doing together, not to grade it. */
+      /* ================= Volume × Pulse =================
+         Keren, V452: "check how the combined insights work — when we talk about blood we can see the
+         correlations." A combination must hold in economics, not only in anatomy: the body is how an insight is
+         EXPLAINED, never how it is derived. This one is an identity, M×V = P×Y — Volume IS M, Pulse IS V, and
+         their product is nominal demand — and every figure is read off its series. Deliberately NO state colour:
+         whether money growing and circulating faster is good is a judgement about inflation, and this card says
+         what the two are doing together, not how to grade it. */
       function insightCirculation(){
         var vel = m2vHistory, n = vel.length;
         if (!vel || n < 5) return "";
@@ -943,20 +801,13 @@
         return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
                circLede + hiCard(name, "", txt) + '</section>';
       }
-      /* ================= Version 468: the barometer =================
-         Keren, reading the app's own record: "total growth and total change in prices are equal at the end of each
-         cycle, more or less — I think it can be a good barometer in the weather page." Checked against the five
-         cycles before building anything, which changed the shape of it: they do finish close (Big Tech 17.0%
-         against 17.2%), but the equality is not the reading — the GAP is, and it has widened in each of the last
-         two cycles. So this card measures the distance between them and says which way it leans.
-         Her word, kept: a barometer reads pressure to say which way the weather is going, which is exactly what
-         two totals pulling apart do. The card is named for the instrument rather than for its verdict, unlike
-         Circulation's, because the instrument is the point she asked for.
-         Nothing here is typed. Both totals use the page's OWN methods — totalGrowthYears compounds the annual
-         real-GDP rates, totalRiseIn compounds the Decembers — so the figures are the same ones the Growth and
-         Temperature pages print, over the same closed years, and the ranking across cycles is computed from them.
-         It carries no state colour, for the reason Version 452 gave: whether prices outrunning output is good is a
-         judgement about what comes next, and this card's job is to say what the two are doing together. */
+      /* ================= The barometer =================
+         Keren, V468: "total growth and total change in prices are equal at the end of each cycle, more or less —
+         I think it can be a good barometer in the weather page." They finish close, but the GAP is the reading,
+         so the card measures it and says which way it leans; named for the instrument, her word. Nothing is
+         typed: both totals use the pages' OWN methods (totalGrowthYears compounds annual real-GDP rates,
+         totalRiseIn the Decembers), so the figures are the ones Growth and Temperature print, over the same
+         closed years. No state colour, for the Circulation card's reason. */
       function insightWeather(){
         var rows = marketCycles.map(function(c){
           var to = c.to || calendarTodayY;
@@ -1027,10 +878,9 @@
           text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
         })));
       });
-      // V501: not `cat-row` — this is not a category, and the class it wore was the reason it looked like one.
-      // V501, Keren: the members line went. It was what made this read as a fifth category — the four above it
-      // list their members because a member is a place you can go; these four words are a taxonomy, and the
-      // page behind this row explains it better than a subtitle can.
+      // not `cat-row`: this is not a category. No members line either (Keren, V501): the four above list their
+      // members because a member is a place you can go; these four words are a taxonomy, and the page behind this
+      // row explains it better than a subtitle can.
       list.appendChild(elFrom(subjectRow({
         cls:"all-row", open:"sheet-indicators", title:"All indicators",
         icon: subjectIcon("norm",
@@ -1047,17 +897,14 @@
       });
     })();
 
-    /* V630: the SIX values the inner pages read out of this one. Measured, and measured twice — the first
-       scan read only the first name of each `var a = 1, b = 2;` and so missed `buffNow`, which the Valuations
-       page reads three times. The page threw on load and 60 snapshot states differed. A declarator list is a
-       list; count all of it. Nothing goes the other way, which is what let the seam be cut at all. */
+    /* The six values the inner pages read out of this one. Nothing goes the other way, which is what lets the
+       two be separate functions. */
     return { host:host, tempInd:tempInd, r:r, gq:gq, capeNow:capeNow, buffNow:buffNow };
   }
 
-  /* ---------------- THE INNER PAGES (Version 630) ----------------
-     What each metric draws when it opens: a chart where there is one, then Highlights. Takes the five
-     values the cards computed rather than reaching into their scope for them — which is the whole
-     difference between a component and a region of a long function. */
+  /* ---------------- THE INNER PAGES ----------------
+     What each metric draws when it opens: a chart where there is one, then Highlights. Takes the values the
+     cards computed rather than reaching into their scope for them. */
   function renderMetricPages(ctx){
     var host = ctx.host, tempInd = ctx.tempInd, r = ctx.r, gq = ctx.gq;
     var capeNow = ctx.capeNow, buffNow = ctx.buffNow;
@@ -1065,54 +912,29 @@
     var pct0 = function(v){ return Math.round(v) + "%"; }, pct1 = function(v){ return v.toFixed(1) + "%"; };
     var capeFmt1 = function(v){ return v.toFixed(1) + "\u00d7"; };
 
-    // The subtitle went with the title: "three structural markers, each against its own record" is exactly what the
-    // Power supply bar below already shows, marker by marker, against each one's own range (Keren: "this is basically
-    // the power supply bar, so we can remove it from the top of the page").
-    // Version 360, Keren: "drop the battery indicator." It was the last page head left in the app and the only
-    // unboxed block on this page — but boxing it was never the fix, because almost everything it said was said
-    // again below it. Measured before the cut: **25% appeared four times** on one screen (here, the chart’s own
-    // corner label, the markers table’s lead row, and that row’s meter) and **Exhausted twice**. The gauge was
-    // the one thing here that was not a duplicate, and it duplicated the CHART instead: 20 segments of "now"
-    // sitting directly above 48 bars of the same reading year by year. Nothing is lost — the figure is on the
-    // chart and in the table, the word is on the trend row and in the table, and "4 flagged" is in the context
-    // line under the table. The same cut Valuations took in Version 274 and Temperature in Version 298; this
-    // page was the last one still carrying a head.
+    // No page head on Power. Keren: "this is basically the power supply bar, so we can remove it from the top of
+    // the page"; Keren, V360: "drop the battery indicator." Everything the head said is said below it — the figure
+    // on the chart and in the table, the word on the trend row and in the table, the flagged count in the context
+    // line under the table.
     put("power-head", "");
-    // Valuations has no gauge, so its figure sat alone above a chart whose own end label already states it — the
-    // duplication Keren reported. The page opens on the chart; the verdict moved to the trend row (Version 274).
+    // Valuations has no head either: its figure duplicated the chart's own end label (the duplication Keren
+    // reported). The page opens on the chart; the verdict is on the trend row.
     put("valuation-head", "");
 
     // the bands energyFromReserve() already uses, so a bar's colour and the word beside the figure cannot disagree
     function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
-    // What each page offers the ruler (Version 363). This is the whole of the per-page configuration: the stop
-    // ORDER, the labels, which stops are answerable and what a window means all live in the timeline component itself.
-    //
-    // Temperature and Growth stop at "This cycle" and "Cycles" on purpose. Their charts are drawn by
-    // drawTemperature()/drawGrowth(), which are cycle-scoped and SHARED WITH THE CALENDAR's cycle view; giving them
-    // a 10Y or 25Y window means rewriting that shared machinery, which the app's own rule forbids doing casually.
-    // The control is the same component on all five pages; only the stops differ, which is the point of a component.
-    // "cycles" left every one of these in Version 366: the timeline is now windows on one series and nothing else,
-    // which is why Temperature's timeline disappears entirely — one stop is not a choice. The cross-cycle comparison
-    // lives in the cycle average component under each page's Highlights.
-    // Version 373: Temperature's history joins, with the same four windows Growth and Economic power carry.
-    // 50Y is not answerable on a series that starts in 1989, and the timeline drops it without being told.
-    // Version 418: "This cycle" leaves the ruler. The two submenus now divide cleanly — Years answers "how much
-    // calendar time", Cycles answers "which cycles" — and a stop that meant a cycle sitting inside the years ruler
-    // was the last of the category confusion Version 366 was worried about. 5Y returns on its own, because
-    // timelineFor only withholds it from a page that offers "This cycle", and this page no longer does.
+    // What each page offers the ruler — the whole per-page configuration; order, labels, answerability and what a
+    // window means live in the timeline component. The ruler is windows on one series (Years: how much calendar
+    // time; Cycles: which cycles). A 50Y stop on a series from 1989 is dropped unasked; 5Y is offered because
+    // timelineFor withholds it only where "This cycle" is offered, and nowhere is.
     var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
-    // Version 372, Keren: "drop the this cycle and year on year, add 5Y". Growth's timeline is now four windows
-    // and nothing else — the same four Economic power carries, one row at every width, one kind of thing.
-    // 5Y returns because the timeline only withholds it where "This cycle" is offered, and that stop is gone.
-    // The cycle card it used to show still exists and is still the Calendar's; it is simply no longer on this page,
-    // which also takes the country selector with it — that selector drives the CYCLE chart, and the peer series
-    // are per-cycle, so it has nothing to drive beside a 39-year history. It keeps working on the Cycle tab.
-    // "Year on year" is gone as a stop, but yoyPairs()/pairChart() and the branch below are deliberately left
-    // standing: re-adding "yoy" to this array is all it takes to bring it back.
-    var GDP_STOPS   = ["5y", "10y", "25y", "max"];   // V431: "Current cycle" moves to the Cycles tab, as on Temperature
-    var POWER_STOPS = ["5y", "10y", "25y", "max"];   // V433: "Current cycle" moves to the Cycles tab     // 1948 \u2014 deep enough for 50Y since Version 393
-    var VAL_STOPS   = ["5y", "10y", "25y", "max"];   // V433: likewise     // 1970 \u2014 all five answerable
-    var DEF_STOPS   = ["5y", "10y", "25y", "max"];   // V435: "Current cycle" moves to the Cycles tab             // 1946
+    // Keren, V372: "drop the this cycle and year on year, add 5Y". No country selector: it drives the per-cycle
+    // CYCLE chart and has nothing to drive beside a long history (it still works on the Cycle tab). yoyPairs(),
+    // pairChart() and the yoy branch below are deliberately left standing: re-adding "yoy" here brings it back.
+    var GDP_STOPS   = ["5y", "10y", "25y", "max"];   // "Current cycle" is in the Cycles mode, as on every page
+    var POWER_STOPS = ["5y", "10y", "25y", "max"];   // series from 1948
+    var VAL_STOPS   = ["5y", "10y", "25y", "max"];   // series from 1970
+    var DEF_STOPS   = ["5y", "10y", "25y", "max"];   // series from 1946
 
     function qShort(q){ return q.slice(5) + " \u2019" + q.slice(2, 4); }   // "2026 Q2" -> "Q2 ’26"
     // the last four quarters, each with the quarter a year before it and the rate that falls out of the division
@@ -1130,11 +952,11 @@
     sheetRenderers["sheet-metric-temp"] = function(W){
       var r = pageRange["sheet-metric-temp"], cyclesOn = pageMode["sheet-metric-temp"] === "cycles";
       // the ruler is absent in Cycles mode rather than disabled: there is no window to choose when the x-axis is
-      // the cycle's own age, and a dead control is worse than no control (the Version 366 rule, applied here)
+      // the cycle's own age, and a dead control is worse than no control
       // the mode bar on top, its own submenu under it: Cycles picks cycles, Years picks a window
       put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS }));
-      put("temp-head", histHead("sheet-metric-temp"));   // V519
-      byId("slot-temp").hidden = true;   // the cycle card lives on the Cycle tab now (V373)
+      put("temp-head", histHead("sheet-metric-temp"));
+      byId("slot-temp").hidden = true;   // the cycle card lives on the Cycle tab
       var hist = byId("temp-history"); hist.hidden = false;
       var win, cyc = null;
       if (cyclesOn){
@@ -1154,32 +976,25 @@
         put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                     { rising:"heating", falling:"cooling" }));
       }
-      // Version 423, Keren: "make all the data be relevant to the chosen timeline — the data should be updated
-      // below the chart." This reverses the Version 359 rule on THIS page, and reverses it deliberately: that rule
-      // said the chart is the view and the rows are the record, which is right when the rows are the only place a
-      // record is stated. Here the reader is choosing a window on a control two lines above, and a row that ignored
-      // the choice read as a bug rather than as a principle. So hottest, coldest, latest and the total all describe
-      // the months on screen — which is also why "on record" left the labels: it would be a small untruth in every
-      // window but Max. The average row went entirely, because the average is now ON the chart in every window.
+      // Keren, V423: "make all the data be relevant to the chosen timeline — the data should be updated below the
+      // chart." Every row describes the months on screen (so no "on record" in the labels), and there is no
+      // average row: the average is ON the chart in every window.
       var tri = totalRiseIn(win);
-        // Version 494, Keren: "total price change 16% — in the Highlights component." The NAME is the
-        // considered part and travels with the figure: the BLS's own primary descriptor for what the CPI
-        // measures is "price change", direction-neutral by design, because inflation and deflation are the
-        // directional pair and neither can label a figure that may be either — quite apart from Inflation
-        // being a season here. ("Cost of living" is warmer but the BLS cautions the CPI "differs in important
-        // ways" from one; "change in the price level" is the textbook phrase and is jargon here.) Version 429
-        // cut it to "Total" because the page was named Temperature two lines above; in Highlights it is a row
-        // among sentences, so the full name comes back — which is what Keren asked for.
+        // Keren, V494: "total price change 16% — in the Highlights component." The NAME is the considered part:
+        // "price change" is the BLS's own primary descriptor for what the CPI measures, direction-neutral because
+        // inflation and deflation are the directional pair (and Inflation is a season here). "Cost of living" is
+        // warmer, but the BLS cautions the CPI "differs in important ways" from one; "change in the price level" is
+        // the textbook phrase and jargon here.
         headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
     };
     sheetRenderers["sheet-metric-gdp"] = function(W){
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
       put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
-      put("gdp-head", histHead("sheet-metric-gdp"));   // V519
-      byId("slot-growth").hidden = true;   // the cycle card lives on the Cycle tab now (V372)
-      // V492: the reading is the latest quarter, not the window's, so it is set once and every branch below
-      // leaves it alone — including the one that returns early.
+      put("gdp-head", histHead("sheet-metric-gdp"));
+      byId("slot-growth").hidden = true;   // the cycle card lives on the Cycle tab
+      // the reading is the latest quarter, not the window's, so it is set once and every branch below leaves it
+      // alone — including the one that returns early
       var gp = byId("gdp-panel");
       if (gp && !gp.firstChild) gp.innerHTML = growthPanelHtml();
       var hist = byId("gdp-history"); hist.hidden = yoy;
@@ -1192,10 +1007,9 @@
         var win = gdpQuarterlyYoY.slice(gFrom, gTo);
         hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
         attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
-        // Version 431: the rows describe the window, exactly as Temperature's do since Version 423
+        // the rows describe the window, exactly as Temperature's do
         var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
-        // Version 494, Keren: "total growth 11% — in the Highlights component." The one figure this page's
-        // register had been reduced to, said as a fact row where the words around it are.
+        // Keren, V494: "total growth 11% — in the Highlights component."
         headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
         put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
                     { rising:"quickening", falling:"slowing" }));
@@ -1216,9 +1030,9 @@
       }
     };
 
-    /* Version 498: Activity's history. The window helpers here are generic rather than borrowed — `cycleMonths`
-       is written against cpiYoYHistory, which starts in 1989, and this series starts in 1948, so a cycle's month
-       indices have to be computed from THIS series' own first month. */
+    /* Activity's history. The window helpers here are generic rather than borrowed — `cycleMonths` is written
+       against cpiYoYHistory, which starts in 1989, and this series starts in 1948, so a cycle's month indices
+       have to be computed from THIS series' own first month. */
     var ACT_STOPS = ["5y", "10y", "25y", "max"];
     function actCycleMonths(c){
       var to = c.to || calendarTodayY, a = -1, b = -1;
@@ -1259,14 +1073,12 @@
               (r === "max" ? " since " + powerHistory[0].y : " over the last " + timelineSpan(r) + " years") +
               ", with the fitted trend across the readings in view"
         }, W) +
-        // Version 439, Keren: the caption goes — the Power supply explanation below the chart already says this,
-        // and a line repeating it above the figures is the page telling the reader twice.
-        // (Version 396's colour legend retired in Version 397 — the y axis now says what the bands are.)
-        // V436, Keren: "the exhausted is in a bubble — it's not consistent, in temperature you just write Trend."
-        // The tag was this page saying its verdict twice, since the battery above already carries that word.
+        // No caption (Keren, V439): the Power supply explanation below already says it; the y axis names the bands.
+        // Keren, V436: "the exhausted is in a bubble — it's not consistent, in temperature you just write Trend."
+        // A tag here was the page saying its verdict twice.
         trendPill(powerTrend, null, true) +
-        // V491, Keren: the readings come inside, below the trend. Four of them, so hairlines rather than four
-        // boxes (the V488 rule); one reading in a history container still gets the box, as Temperature has.
+        // Keren, V491: the readings come inside, below the trend. Several readings in one history container are
+        // divided by hairlines rather than boxed one by one; a single reading gets the box.
         '<div class="panel-stack in-hist">' + powerPanelHtml + '</div>' +
         histTip("power-hist-tooltip") + '</div>');
       var pBox = document.querySelector("#power-chart .page-chart");
@@ -1276,10 +1088,9 @@
       });
       attachHistory(pBox, "power-hist-tooltip", "reserveChart");
     };
-    // The deficit's page (Version 360, Keren: "the federal budget deficit needs to be expandable from the
-    // deficit rate in the power supply component"). As a second container on the Economic power page it took
-    // 27% of that page’s height for one of three markers, and it sat between the composite’s chart and the three
-    // markers that make it — interrupting the one argument the page exists to carry.
+    // The deficit's page (Keren, V360: "the federal budget deficit needs to be expandable from the deficit rate in
+    // the power supply component"). As a second container on the Economic power page it sat between the
+    // composite's chart and the three markers that make it — interrupting the one argument the page exists to carry.
     sheetRenderers["sheet-marker-deficit"] = function(W){
       var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
       if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
@@ -1298,22 +1109,22 @@
       var bar = put("deficit-rangebar", histControls("deficit-range",
         { depth:deficitHistory.length, stops:DEF_STOPS }));
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      var defRows = put("deficit-records", "");   // V489: the register went; the readout carries the average
+      var defRows = put("deficit-records", "");   // no register: the readout carries the average
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
       var dTrend = put("deficit-trend", trendPill(
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
         { rising:"improving", falling:"widening" }));
     };
-    /* Households (Version 460). The same six pieces every history on this app has — the controls, the chart,
+    /* Households. The same six pieces every history on this app has — the controls, the chart,
        the unit line, the record rows, the trend pill, the tooltip — so a reader arriving from any other page
        already knows how to read it. The rows follow the BILL, because that is the reading the row is named
        for; the pill follows what is KEPT, because that is the line that is moving, and it says so in its own
        words rather than borrowing "rising" and "falling" from a chart that has two directions in it. */
-    var HH_STOPS = ["5y", "10y", "max"];   // the series is 21 years deep, so 25Y is unanswerable (the V263 rule)
+    var HH_STOPS = ["5y", "10y", "max"];   // the series is 21 years deep, and 25Y needs 25 years of data
     sheetRenderers["sheet-metric-households"] = function(W){
       var id = "sheet-metric-households";
       var hhCyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
-      if (hhCyc && hhCyc.from < DSR_FROM_YEAR) hhCyc = openCycle();   // the V435 rule: never offer a window the data cannot fill
+      if (hhCyc && hhCyc.from < DSR_FROM_YEAR) hhCyc = openCycle();   // never offer a window the data cannot fill
       var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
       var to = idx ? idx[1] : dsrHistory.length;
@@ -1324,8 +1135,8 @@
         householdsChart(W, from, to) +
         trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
                   "Saving", true, { rising:"keeping more", falling:"keeping less" }) +
-        // V492: two readings, so hairlines rather than two boxes (the V488 rule). The bill first because the
-        // chart draws it first, and the cushion second because it is the one that sets the page's word.
+        // two readings, so hairlines (see Power's renderer). The bill first because the chart draws it first,
+        // and the cushion second because it is the one that sets the page's word.
         '<div class="panel-stack in-hist">' + householdsPanelHtml() + '</div>' +
         histTip("households-hist-tooltip") + '</div>';
       var box = host.querySelector(".page-chart");
@@ -1371,11 +1182,10 @@
               (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") +
               ", with the fitted trend across the readings in view"
         }, W) +
-        // V433: the rows follow the window. The Version 416 worry — that a short average makes a near-record
-        // valuation look ordinary — is answered by the CHART rather than by this row: the fair-value midline is
-        // drawn beside the window's average, so the long reference stays in the picture next to the short one.
-        trendPill(capeTrend, null, true) +   // V436: likewise \u2014 the reading's own tag is already on the page
-        // V491, Keren: Buffett and CAPE come inside, below the trend (see Power's renderer for the note)
+        // the rows follow the window; the long reference stays in the picture because the fair-value midline is
+        // drawn beside the window's average, so a short average cannot make a near-record valuation look ordinary
+        trendPill(capeTrend, null, true) +   // no tag, as on Power: the reading's own tag is already on the page
+        // Keren, V491: Buffett and CAPE come inside, below the trend (see Power's renderer)
         '<div class="panel-stack in-hist">' + valuationPanelHtml + '</div>' +
         histTip("valuation-hist-tooltip") + '</div>');
       var vBox = document.querySelector("#valuation-chart .page-chart");
@@ -1390,8 +1200,8 @@
       var h = byId("metric-page"), d = sheetRenderers[id];
       if (d) d(h && h.clientWidth ? h.clientWidth : 340);
     }
-    // Version 419: the cycle picker. One listener covers opening, ticking and closing, and the order of the three
-    // tests is what makes a click on the menu not also count as a click outside it.
+    // The cycle picker. One listener covers opening, ticking and closing, and the order of the three tests is
+    // what makes a click on the menu not also count as a click outside it.
     document.addEventListener("click", function(e){
       if (!e.target.closest) return;
       var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
@@ -1407,17 +1217,15 @@
     // switching a range redraws that page at the width it currently occupies
     document.addEventListener("click", function(e){
       var seg = e.target.closest && e.target.closest(".range-seg"); if (!seg) return;
-      var mid = seg.parentNode.getAttribute("data-mode-for");   // Version 417: the same segmented control, other axis
+      var mid = seg.parentNode.getAttribute("data-mode-for");   // the same segmented control, other axis
       if (mid && (mid in pageMode)){
         pageMode[mid] = seg.getAttribute("data-mode");
         var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
         return;
       }
-      /* V588: the `data-series-for` branch went with the last series BAR. Horizon's spread moved into the
-         head's ⋯ menu in V522 and Pressure's maturity followed in V588, so both choices arrive through
-         .bh-pick now and nothing in the app emits that attribute. Both __pick* functions are still called —
-         from the menu — so only the routing that could no longer fire is removed. */
+      /* series choices (Horizon's spread, Pressure's maturity) arrive through the head's ⋯ menu (.bh-pick),
+         not through a bar here */
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in pageRange)) return;
       pageRange[id] = seg.getAttribute("data-range");
@@ -1468,11 +1276,9 @@
           " \u2014 above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
           Math.round(bDot.v) + "% (" + bDot.q + ")."
         : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
-      // Both of the page's closing cards removed at Keren's instruction (Version 365): "The number you hear quoted"
-      // (added the same day in Version 364) and "What it is and is not", which had stood since the page was built.
-      // The page now ends on its own evidence — CAPE against its own record, the Buffett indicator against its —
-      // and says nothing about what those readings do or do not predict. The long form behind "More details" is
-      // untouched, so a reader who wants the caveat still finds it one tap away.
+      // No closing cards (Keren, V365): the page ends on its own evidence — CAPE against its own record, the
+      // Buffett indicator against its — and says nothing about what those readings do or do not predict. The
+      // long form behind "More details" keeps the caveat one tap away.
       put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
     })();
 
@@ -1483,7 +1289,7 @@
       var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
         'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
         'means anything measured against the level the system is meant to hold.</p>'];
-      /* V605: the total left this section for the head, where the ruler that moves it can be seen moving it. */
+      /* the total is in the head, where the ruler that moves it can be seen moving it */
       cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning",
         "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
         " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
@@ -1510,24 +1316,17 @@
         qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
         (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
         r.regime + "."));
-      put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));   // the strip moved to the ruler's Cycles stop (Version 363)
+      put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));   // the strip lives on the ruler's Cycles stop
     })();
-    // The cycle average component, on every page whose series can fill it (Version 366; placed to the page order
-    // in Version 369). It is positioned against a LIVE NODE rather than dropped into a slot in the markup: a static
-    // div written after #<page>-highlights still parsed ahead of it, so markup order cannot be trusted here.
-    // Rendered once, here, rather than inside a sheet renderer — the strip is flex HTML, not SVG, so it costs
-    // nothing to leave standing and needs no width. Each page passes its own stateOf, so the block and that page's
-    // chart colour the same number alike; Growth passes none, which leaves its bars neutral with the open cycle marked.
+    // The cycle average component. No page carries it now (the list below is empty), but the placement stands:
+    // it anchors to a LIVE NODE, because a static div written after #<page>-highlights still parses ahead of it.
+    // Rendered once, here: the strip is flex HTML, not SVG, so it needs no width. Each page passes its own
+    // stateOf, so the block and that page's chart colour the same number alike.
     (function(){
       var blocks = [
-        // Version 423, Keren: "drop the average CPI by cycle in the temperature page because we are already seeing
-        // it in the history component." Proved rather than assumed before removing it — the chart's average line
-        // reads 4.3% on the open cycle, 1.7% on Big Tech, 3.0% on Dot-Com and 2.5% on COVID-19, which are exactly
-        // the four figures this strip drew. The other three pages keep theirs until they get the cycle mode.
-        // Version 431: gone with Temperature's, for the same reason — the chart's average line reads the same
-        // number for whichever cycle the picker is on, so the strip was a second answer to a question already answered.
-        // Version 433: both gone with Temperature's and Growth's — the chart's average line reads the same number
-        // for whichever cycle the picker is on, so the strip was a second answer to a question already answered.
+        // Keren, V423: "drop the average CPI by cycle in the temperature page because we are already seeing it in
+        // the history component." The other pages' strips went for the same reason: the chart's average line
+        // answers the same question for whichever cycle the picker is on.
       ];
       blocks.forEach(function(b){
         var hl = byId(b[0]); if (!hl) return;
@@ -1535,11 +1334,10 @@
         var host = document.createElement("div");
         host.id = b[1];
         host.innerHTML = html;
-        // THE PAGE ORDER (Version 369, Keren): history, then cycle average, then the blood test, then Highlights,
-        // then More details. So the block goes immediately BEFORE the blood-test block — the markers table with
-        // each reading against its reference range — which is `.subject` on three pages and `.sign-detail` on
-        // Temperature. It is found by CLASS on the sheet rather than by id, so a page that renames its table keeps
-        // the order, and the whole thing still anchors to a live node rather than to markup (the Version 366 rule).
+        // THE PAGE ORDER (Keren, V369): history, cycle average, blood test, Highlights, More details. So the block
+        // goes just BEFORE the blood-test block (the markers table: `.subject` on three pages, `.sign-detail` on
+        // Temperature), found by CLASS on the sheet rather than by id, so a page that renames its table keeps the
+        // order, and anchored to a live node rather than to markup.
         var sheet = hl.parentElement;
         var blood = sheet && sheet.querySelector(":scope > .subject, :scope > .sign-detail");
         if (blood) blood.insertAdjacentElement("beforebegin", host);
@@ -1548,12 +1346,11 @@
     })();
   }
 
-  /* The Cycle tab, in the order its pieces have always run. Every line here is a call now: what used to
-     be 1,250 lines in one closure is five named functions and a hand-over, and the only thing this
-     function still decides is the order — which is the one thing it was always really deciding. */
+  /* The Cycle tab, in order. Every line here is a call to a named function, and the only thing this function
+     decides is the order. */
   function renderPagesAndNav(){
     var ctx = renderPeekAndCategories();
-    if (!ctx) return;       // no peek row, no Cycle tab: the V305 shape, nothing draws on missing ground
+    if (!ctx) return;       // no peek row, no Cycle tab: nothing draws on missing ground
     renderMetricPages(ctx);
     buildNav();             // the frame and its delegates
     registerRoster();       // reads the cards above off the page, so it runs after they are drawn
@@ -1563,6 +1360,7 @@
 
 
 
-  // allSources is the single source of truth for sources.html (the footer links to it). Regenerate that page
-  // whenever this list changes: build-sources.js in the project scratchpad reads window.__sources below.
+  // allSources is the single source of truth for sources.html (the footer links to it). The Sources screen is
+  // built from window.__sources below, and `npm run sources` (tools/gen-sources.js) regenerates sources.html from
+  // that screen: run it whenever this list changes.
   window.__sources = { all: allSources, cards: coincident.concat(lagging).map(function(c){ return {name:c.bodyTerm, src:c.src}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
