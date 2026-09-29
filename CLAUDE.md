@@ -46,7 +46,9 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
 - **Edit `src/`, never `index.html`.** The build is a join of the parts in `src/manifest.json` plus a
   comment strip; **the manifest order is the semantics** (module vars are assigned between parts).
   The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part
-  can read it (V647).
+  can read it (V647). `npm run check` proves the order holds: `tools/load-order.js` follows every
+  statement that runs at load, through the functions it calls, and fails if any shared value is read
+  before something sets it (V654; it found the CAPE verdict computed before its fair value existed).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
 - **No comments in the code** (Keren, V650 and V652): not in `src/`, `tools/`, `test/`, `sw.js` or the
   workflows. The one exception is a one-line section title in `src/` (`// ---- Title ----`), which builds
@@ -54,8 +56,9 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
   commit message. `npm run check` fails on a comment in any JavaScript file; `npm run uncomment` removes
   them, refusing any file whose code would change, and `node tools/comment-proof.js` proves the page is
   unchanged.
-- **Functions may shrink, never grow** (V624), and a new one starts at 150 lines or fewer (V647). `npm run
-  check` enforces both; `npm run comp:bless` records a deliberate exception, and the commit says why.
+- **No function passes 150 lines, and none grows** (V624, V654). `npm run check` enforces both, with no
+  exception: split a function that would pass the cap. `npm run comp:bless` records a deliberate change
+  to the shared-class ledger, and the commit says why.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
   project attached, and Claude Code in this folder); the repo is the only handoff.
 - **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
@@ -80,7 +83,7 @@ npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthr
 npm run check            # the gate before every commit: build, email, map, ledger, 120 tool checks
 npm run check:all        # plus the browser suite (88 checks) and axe — what CI runs
 npm test                 # the browser suite alone; --bless rewrites the baseline, a deliberate act
-npm run snap             # 32-state DOM snapshot; snap:diff proves a refactor changed nothing
+npm run snap             # 38-state DOM snapshot, every page's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`

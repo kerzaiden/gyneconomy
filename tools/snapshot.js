@@ -6,7 +6,8 @@ const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-
 const CATS = ['sheet-cat-weather', 'sheet-cat-circulation', 'sheet-cat-mood', 'sheet-cat-energy'];
 const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity','sheet-metric-power',
   'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
-  'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire'];
+  'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire','sheet-sign-sentiment','sheet-sign-pressure',
+  'sheet-metric-power>sheet-marker-deficit'];
 const TABS = ['cycle','analysis','portfolio','content'];
 
 const NORMALISERS = [
@@ -23,6 +24,25 @@ const click = (p, sel) => p.evaluate(s => {
   const e = [...document.querySelectorAll(s)].filter(x => x.offsetParent !== null)[0];
   if (!e) return false; e.scrollIntoView(); e.click(); return true;
 }, sel);
+
+const notes = p => p.evaluate(() => {
+  const body = document.getElementById('detail-modal-body'), shut = document.getElementById('detail-modal-close');
+  if (!body || !shut) return '';
+  const seen = new Set(), out = [];
+  const scope = '#metric-page, .metric-sheet:not([hidden])';
+  document.querySelectorAll('#metric-page .bh-more, .metric-sheet:not([hidden]) .bh-more').forEach(m => {
+    m.click();
+    const head = m.closest('.band-head'), opt = head && head.querySelector('.bh-opt');
+    if (opt) { const i = opt.getAttribute('data-detail-idx'); if (!seen.has(i)) { seen.add(i); opt.click(); out.push(body.innerHTML); shut.click(); } }
+    if (m.getAttribute('aria-expanded') === 'true') m.click();
+  });
+  document.querySelectorAll(scope.split(', ').map(x => x + ' [data-detail-idx]').join(', ')).forEach(b => {
+    const i = b.getAttribute('data-detail-idx');
+    if (seen.has(i)) return; seen.add(i);
+    b.click(); out.push(body.innerHTML); shut.click();
+  });
+  return out.join('\n----\n');
+});
 
 const grab = (p, label) => p.evaluate(() => {
   const pick = sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML).join('\n');
@@ -53,7 +73,8 @@ async function capture(file, out) {
       await p.waitForTimeout(500);
       snaps.push(await grab(p, w + '/tab:' + t));
     }
-    for (const sheet of SHEETS) {
+    for (const entry of SHEETS) {
+      const [sheet, via] = entry.split('>');
       await p.goto('file://' + file); await p.waitForTimeout(1100);
       let opened = false;
       for (const c of CATS) {
@@ -62,13 +83,22 @@ async function capture(file, out) {
         if (await click(p, '.cat-item[data-open="' + sheet + '"]')) { opened = true; break; }
         await p.goto('file://' + file); await p.waitForTimeout(900);
       }
-      if (opened) { await p.waitForTimeout(800); snaps.push(await grab(p, w + '/page:' + sheet)); }
-      else snaps.push({ label: w + '/page:' + sheet, body: 0, main: 'NOT REACHED', values: '' });
+      if (opened && via) {
+        await p.waitForTimeout(600);
+        opened = await click(p, '[data-open="' + via + '"]');
+      }
+      if (opened) {
+        await p.waitForTimeout(800);
+        const g = await grab(p, w + '/page:' + (via || sheet));
+        g.notes = await notes(p);
+        snaps.push(g);
+      }
+      else snaps.push({ label: w + '/page:' + (via || sheet), body: 0, main: 'NOT REACHED', values: '', notes: '' });
     }
     await ctx.close();
   }
   await b.close();
-  const clean = snaps.map(s => ({ label: s.label, body: s.body, main: norm(s.main), values: norm(s.values) }));
+  const clean = snaps.map(s => ({ label: s.label, body: s.body, main: norm(s.main), values: norm(s.values), notes: norm(s.notes || '') }));
   fs.writeFileSync(out, JSON.stringify({ file, errs, snaps: clean }, null, 1));
   console.log('captured ' + clean.length + ' states -> ' + out + (errs.length ? '  PAGE ERRORS: ' + errs.length : '  no page errors'));
 }
@@ -79,7 +109,7 @@ function diff(af, bf) {
   for (let i = 0; i < Math.max(a.snaps.length, b.snaps.length); i++) {
     const x = a.snaps[i] || {}, y = b.snaps[i] || {};
     if (x.label !== y.label) { console.log('  LABEL ' + x.label + ' != ' + y.label); bad++; continue; }
-    for (const k of ['main', 'values']) {
+    for (const k of ['main', 'values', 'notes']) {
       if (x[k] !== y[k]) {
         bad++;
         const at = [...x[k]].findIndex((c, j) => c !== y[k][j]);
