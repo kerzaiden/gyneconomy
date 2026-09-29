@@ -155,9 +155,15 @@
      replaces was a pun on the word — volume as loudness — and this page measures a QUANTITY: the money
      stock, a body of something, which is what a solid core inside a boundary draws. The proportion is the
      one she sent: the inner disc is a little over half the ring's radius. */
+  /* V646, Keren, with the drawing: "make this the volume icon across the app" — three sound waves, no speaker.
+     This returns to Version 507's idea and takes her three arcs where 507 drew two; the three were checked at the
+     15px sign-card size before shipping, with a gap wider than the stroke so they do not close up. Concentric on
+     a point off the left edge, each a 90° sweep, the set centred in the 24-unit box. Every Volume mark calls this
+     one function (the sign card, the page head, the Cycles roster), so one change reaches all of them. */
   function volumeSvg(){ return markSvg(
-    '<circle cx="12" cy="12" r="9.3" stroke-width="1.9"/>' +
-    '<circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/>'); }
+    '<path d="M6.64 7.76A6 6 0 0 1 6.64 16.24" stroke-width="1.9"/>' +
+    '<path d="M9.82 4.58A10.5 10.5 0 0 1 9.82 19.42" stroke-width="1.9"/>' +
+    '<path d="M13.01 1.39A15 15 0 0 1 13.01 22.61" stroke-width="1.9"/>'); }
   // Pressure's mark: the gauge (Version 312, restored in Version 314 — Keren preferred it to the cuff). The
   // cuff was the truer object but it is three shapes where this is two, and at the 15px this mark now renders at
   // the cylinder and the dial collapse into each other. The foot under the dial is load-bearing: a circle with
