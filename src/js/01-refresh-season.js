@@ -21,6 +21,17 @@
     return n;
   }
   function byIdMaybe(id){ return document.getElementById(id); }
+  /* Version 626, Keren: "markup and placement split." A render used to name its host, check it exists and
+     write into it — three concerns on one line, in 44 copies. `put` is the one placement: it takes an id or a
+     node, writes the markup and hands the node back. The guard moves inside, which matters most for the 29
+     sites that wrote straight into an unchecked lookup: a host that has gone missing is now recorded by `byId`
+     and the render carries on, where before it threw and left the page half drawn. Placement being ONE named
+     operation is also the seam a subscriber needs — nothing else has to know how markup reaches the page. */
+  function put(target, html){
+    var n = (typeof target === "string") ? byId(target) : target;
+    if (n) n.innerHTML = html;
+    return n;
+  }
   // The theme (Version 198): the page follows the phone's setting unless a choice was saved from the menu's Appearance row;
   // the stylesheet keys off data-theme on <html>, so the choice is applied here, before anything paints.
   try{ var savedTheme = localStorage.getItem("gyneconomy-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme); }catch(e){}

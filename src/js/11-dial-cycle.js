@@ -200,7 +200,7 @@
       srcBlock(typicalCycleSrc) +
       '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
-    byId("cycle-kicker").innerHTML = "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>';
+    put("cycle-kicker", "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
   }
   GYN.step("renderCycleKicker", renderCycleKicker, "render"); renderCycleKicker();
   // ---- the hub: the reading inside the circle ----
@@ -213,15 +213,15 @@
   // The big word is the season, the small rose line under it the theme (Version 181, Keren: "switch them"; the other way round
   // before). The element ids kept their names.
   function hubSet(dateHtml, theme, meta, popupHtml){
-    byId("season-wheel-hub-date").innerHTML = dateHtml;
+    put("season-wheel-hub-date", dateHtml);
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = meta.name; themeEl.classList.remove("bull", "bear");
     // the theme IS the link (Version 248): "Inflation ›" rather than the theme and then a "This season ›" line under it
     var who = theme && theme !== meta.name ? theme : "";
-    byId("season-wheel-hub-detail").innerHTML = !who ? "" :
+    put("season-wheel-hub-detail", !who ? "" :
       (popupHtml
         ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + '<span class="who-chev" aria-hidden="true">\u203a</span></button>'
-        : '<div class="who">' + who + '</div>');
+        : '<div class="who">' + who + '</div>'));
     detailTexts[hubDetailIdx] = popupHtml || "";
   }
   // The hub's popup for one quarter of a cycle — prose, not figures (see inside).
@@ -276,13 +276,13 @@
   function hubShowYear(y){
     var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
     var cum = m.cumByYear[y];
-    byId("season-wheel-hub-date").innerHTML = "<b>" + y + "</b>" + (isYtd ? " · Today" : "");
+    put("season-wheel-hub-date", "<b>" + y + "</b>" + (isYtd ? " · Today" : ""));
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0); themeEl.classList.toggle("bear", ret < 0);
-    byId("season-wheel-hub-detail").innerHTML = '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
+    put("season-wheel-hub-detail", '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
       // the compounded return since the cycle's first year; on the most profitable year, the peak is named (Version 158)
-      (cum != null ? '<div><b>' + (cum >= 0 ? "+" : "") + cum.toFixed(1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '') + '</div>' : "");
+      (cum != null ? '<div><b>' + (cum >= 0 ? "+" : "") + cum.toFixed(1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '') + '</div>' : ""));
   }
   // The dial's interaction is wired once — the SVG element stays, only its contents change per cycle. Everything reads
   // out in the hub (Keren, Sep 19, 2026): hover or tap a moon for that quarter, hover or tap a band segment for that
@@ -828,7 +828,7 @@
       var qs = Object.keys(shown.regime).sort().filter(function(q){ return parseInt(q, 10) <= m.endYear; });
       reg = qs.length ? shown.regime[qs[qs.length - 1]] : reg;
     }
-    byId("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>';
+    put("growth-phase", '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>');
   }
   /* ---------------- The economy the Growth chart draws (Version 210, moved into the head menu in V613) -------
      Keren: "I see we built a country picker. Put it in the growth page under the three dots in history."
@@ -869,8 +869,7 @@
     gdpPeers.forEach(function(c){ c.on = c.code === code; });
     if (shownEraModel) renderGrowthPhase(shownEraModel);
     if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); }
-    var hd = byId("gdp-head");
-    if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
+    var hd = put("gdp-head", histHead("sheet-metric-gdp"));
   });
 
   var shownEraModel = null;

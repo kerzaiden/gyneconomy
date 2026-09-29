@@ -33,8 +33,7 @@
         (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : '') +
       '</span>';
     }
-    byId("seasons-rows").innerHTML =
-      '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
+    put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
       seasonRules.map(function(r){
         var m = wheelMeta[r.key], now = r.key === currentSeason;
         // the row carries its season's class, so its target-range bar lights in the season's colour — the dial's own token
@@ -42,22 +41,21 @@
         // growth and temperature are separate cells on desktop and one "Expansion · Cooling" line (.meta) on phones (Version 184)
         return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
           '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
-      }).join("");
-    byId("seasons-kicker").innerHTML = "The Season Model" + expandBtn(
-      '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>');
+      }).join(""));
+    put("seasons-kicker", "The Season Model" + expandBtn(
+      '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
 
     // The framework table
-    byId("framework-rows").innerHTML =
-      '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
-      frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join("");
-    byId("framework-kicker").innerHTML = "The framework" + expandBtn(
+    put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
+      frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
+    put("framework-kicker", "The framework" + expandBtn(
       '<h4>The Seasonal Behaviour framework</h4>' +
       '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as risk appetite shows in current positioning. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' +
       srcBlock([
         {t:"Conference Board — Leading Economic Index components", u:"https://www.conference-board.org/topics/us-leading-indicators"},
         {t:"Schularick & Taylor — Credit Booms Gone Bust (NBER w15512)", u:"https://www.nber.org/papers/w15512"},
         {t:"StatPearls — Fertility Awareness-Based Methods (NCBI)", u:"https://www.ncbi.nlm.nih.gov/books/NBK546666/"}
-      ]));
+      ])));
   }
   GYN.step("renderSeasonRows", renderSeasonRows, "render"); renderSeasonRows();
 
@@ -152,13 +150,13 @@
       var buckets = groups.map(function(){ return []; }), rest = [];
       items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (groups[i][1].test(x.u)){ buckets[i].push(x); return; } } rest.push(x); });
       if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
-      byId("sources-groups").innerHTML = groups.map(function(g, i){
+      put("sources-groups", groups.map(function(g, i){
         if (!buckets[i].length) return "";
         return '<h3 class="menu-section">' + g[0] + '</h3><div class="menu-card">' + buckets[i].map(function(x){
           return '<a class="menu-row" href="' + x.u + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</span>' +
             '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a>';
         }).join("") + '</div>';
-      }).join("");
+      }).join(""));
       built = true;
     }
     // Every menu row with data-sheet opens the sheet of that name (#sheet-<name>) over the menu; the sheet's back arrow,

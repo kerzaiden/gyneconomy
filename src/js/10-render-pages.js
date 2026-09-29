@@ -428,10 +428,9 @@
         fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         histTip("hormones-hist-tooltip") +
         '<div id="hormones-trend"></div></div>';
-      var tr = byId("hormones-trend");
       // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
-      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
-                                       null, true, { rising:"tightening", falling:"easing" });
+      put("hormones-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
+                                      null, true, { rising:"tightening", falling:"easing" }));
       // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
@@ -521,9 +520,8 @@
             : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
     /* Written straight to the element: `set` and `say` are local to renderSubjectRows, and this page renders
        from its own step. The row is the same shape either way \u2014 figure, unit, tag. */
-    var rowVal = byId("subj-value-hormones");
-    if (rowVal) rowVal.innerHTML = fedFundsRange() +
-      '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>';
+    var rowVal = put("subj-value-hormones", fedFundsRange() +
+      '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>');
     /* The miniature every other Circulation row carries: the last two years of the EFFECTIVE rate, standing on
        zero like the chart it opens. Without it this row was the only one on the page with an empty right-hand
        side \u2014 the same hole V475 fixed for Desire on Mood. */
@@ -568,10 +566,9 @@
         lendingHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         histTip("pressure-hist-tooltip") +
         '<div id="pressure-trend"></div></div>';
-      var tr = byId("pressure-trend");
-      // V431\u2019s pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
-      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
-                                       null, true, { rising:"narrowing", falling:"widening" });
+      // V431's pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
+      put("pressure-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
+                                      null, true, { rising:"narrowing", falling:"widening" }));
       // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return lendingHistoryChart(w, from, { to:to, cycle:!!span }); });
@@ -601,9 +598,8 @@
     var w = lendingWord(last.v);
     /* Written straight to the element, as renderHormones does: `set` and `say` are local to
        renderSubjectRows and this page renders from its own step. */
-    var rowVal = byId("subj-value-pressure");
-    if (rowVal) rowVal.innerHTML = (last.v > 0 ? "+" : last.v < 0 ? "\u2212" : "") + Math.abs(last.v).toFixed(1) +
-      '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + '</span>';
+    var rowVal = put("subj-value-pressure", (last.v > 0 ? "+" : last.v < 0 ? "\u2212" : "") + Math.abs(last.v).toFixed(1) +
+      '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + '</span>');
     var rowSay = byId("subj-say-pressure");
     if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d){ return d.v; }),
                                            function(v){ return "ls-col " + (v > 0 ? "tight" : ""); }, 0, true);
@@ -691,7 +687,7 @@
         '<div id="fear-trend"></div></div>';
       var ft = byId("fear-trend");
       // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.
-      if (ft) ft.innerHTML = trendPill(fit, null, true, { rising:"inverting", falling:"steepening" });
+      put("fear-trend", trendPill(fit, null, true, { rising:"inverting", falling:"steepening" }));
       /* The refit comes FIRST and the wiring second, which is the order every other page uses and the reason
          this chart first drew with no legend: refitHistory replaces the svg's outerHTML, so a legend injected
          before it is thrown away with the element it was injected into \u2014 and lastHistGeom is the refit's
@@ -740,18 +736,18 @@
   // the same objects the section itself renders from, so a summary can't drift from its section.
   function renderSubjectRows(){
     function ring(key, pct, state){
-      byId("subj-ring-" + key).innerHTML = vitalRingSvg(pct, state);
+      put("subj-ring-" + key, vitalRingSvg(pct, state));
     }
     function dot(key, state){
-      byId("subj-ring-" + key).innerHTML = '<div class="subject-dot"><span class="dot ' + state + '"></span></div>';
+      put("subj-ring-" + key, '<div class="subject-dot"><span class="dot ' + state + '"></span></div>');
     }
     function iconMark(key, state, svg){ // an icon on its wash instead of a dot (Version 213)
-      byId("subj-ring-" + key).innerHTML = '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>';
+      put("subj-ring-" + key, '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>');
     }
-    function spark(key, html){ var el = byId("subj-spark-" + key); if (el) el.innerHTML = html || ""; }
+    function spark(key, html){ put("subj-spark-" + key, html || ""); }
     function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
     function set(key, valueHtml, contextHtml){
-      byId("subj-value-" + key).innerHTML = valueHtml;
+      put("subj-value-" + key, valueHtml);
       /* A page may have no context paragraph at all — Sentiment's went in Version 282 and Horizon has never
          had one — so this reach is DECLARED optional rather than guarded and hoped for. V620 walked every page
          and these two were the only reaches in the app that found nothing; both were already known, which is
@@ -806,7 +802,7 @@
        readings that disagree with each other are written the same way; the category list strips both pills to a
        plain word (the Version 457 rule) and the roster keeps the colour. */
     var hzLabel = document.querySelector('[data-subject="horizon"] .subject-label');
-    if (hzLabel) hzLabel.innerHTML = '<span class="peek-mark">' + sunriseSvg() + '</span>Horizon' + CHEV;
+    put(hzLabel, '<span class="peek-mark">' + sunriseSvg() + '</span>Horizon' + CHEV);
     set("horizon", (horizonRead.spread >= 0 ? "+" : "\u2212") + Math.abs(horizonRead.spread).toFixed(2) +
       '<span class="unit">pts \u00b7 10Y \u2212 3M</span>' +
       '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + '</span>', "");
@@ -814,19 +810,17 @@
     (function(){
       // the last twelve quarters either side of zero, on the purple rule Version 312 asked for: a diverging peek
       // is the one case where the reader needs to be told where the line is
-      var slot = byId("subj-spark-horizon");
-      if (slot) slot.innerHTML = colPeek(
+      var slot = put("subj-spark-horizon", colPeek(
         t10y3mHistory.map(function(d){ return d.v; }).filter(function(v){ return v != null; }),
-        function(v){ return "hzn-col " + (v < 0 ? "neg" : "pos"); }, 0, true);
+        function(v){ return "hzn-col " + (v < 0 ? "neg" : "pos"); }, 0, true));
     })();
 
     // Sentiment — the Fear & Greed score and where it puts her on the ring (Version 231)
     // The row shows a miniature of the gauge its page opens, which is the rule every other preview follows since
     // Version 260 — and it replaces a face that was drawing an emotion rather than a reading (Keren, Sep 20, 2026:
     // "you can drop the faces and line chart in the preview"). Version 277.
-    byId("subj-ring-sentiment").innerHTML =
-      vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
-        : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat");
+    put("subj-ring-sentiment", vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading"
+        : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat"));
     // the mood goes where a sign's mark goes — beside its name (Version 342)
     (function(){
       // the row does not exist yet — the builder converts the markup a moment later and MOVES the summary's
@@ -839,8 +833,8 @@
          that measures it, and naming the category after the instrument was the same fault V524 fixed when it
          took the half-dial's name off this row. The umbrella is the app's own \u2014 the VIX has worn it since
          V467 \u2014 and it is the right glyph twice over: what you carry because winter might come. */
-      if (lab) lab.innerHTML = '<span class="peek-mark mood-mark">' + umbrellaSvg() +
-        '</span>Fear';
+      put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() +
+        '</span>Fear');
     })();
     // no context line (Version 232, Keren: "I already have the data below the cycle") — it only re-listed the table
     // the sentence taken off the row goes where it was always meant to be read — on the page, in full (Keren,

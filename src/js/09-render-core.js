@@ -610,19 +610,17 @@
       var pulCycles = pageMode["pulse-range"] === "cycles";
       var pulCyc = pulCycles ? (cycleByName(pageCycles["pulse-range"]) || openCycle()) : null;
       var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
-      var bar = byId("pulse-timeline");
-      if (bar) bar.innerHTML = histControls("pulse-range",
-        { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS });
+      var bar = put("pulse-timeline", histControls("pulse-range",
+        { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS }));
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
-      var vTrend = byId("pulse-trend");
-      if (vTrend) vTrend.innerHTML = trendPill(
+      var vTrend = put("pulse-trend", trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
         // Version 431, Keren: "in the pulse page you write quickening \u2014 the correct word is accelerating, and the
         // opposite is decelerating." Right on both counts, and the second half is the one that matters: Pulse IS a
         // velocity (M2 turned over per year), so acceleration is the literal reading rather than a metaphor.
-        null, true, { rising:"accelerating", falling:"decelerating" });
+        null, true, { rising:"accelerating", falling:"decelerating" }));
     }
     sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
     sheetRenderers["pulse-range"] = drawVelocityRecord;
@@ -633,19 +631,17 @@
       var volCycles = pageMode["volume-range"] === "cycles";
       var volCyc = volCycles ? (cycleByName(pageCycles["volume-range"]) || openCycle()) : null;
       var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
-      var bar = byId("volume-timeline");
-      if (bar) bar.innerHTML = histControls("volume-range",
-        { depth:Math.floor(len / 4), stops:VOL_STOPS });
+      var bar = put("volume-timeline", histControls("volume-range",
+        { depth:Math.floor(len / 4), stops:VOL_STOPS }));
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       // the fit is over the quarters IN VIEW, so the pill and the picture can never describe different stretches
-      var mTrend = byId("volume-trend");
-      if (mTrend) mTrend.innerHTML = trendPill(
+      var mTrend = put("volume-trend", trendPill(
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
         // Version 431: Volume already used "accelerating" and paired it with "slowing", which is half of one pair
         // and half of another. Keren's rule next door finishes it.
-        null, true, { rising:"accelerating", falling:"decelerating" });
+        null, true, { rising:"accelerating", falling:"decelerating" }));
     }
     sheetRenderers["sheet-sign-volume"] = drawM2Record;
     sheetRenderers["volume-range"] = drawM2Record;
@@ -667,10 +663,9 @@
                  pageRange["desire-range"]) + '</div>';
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
       attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
-      var tr = byId("desire-trend");
       // widening and tightening are the credit market's own pair, and the only pair for a spread
-      if (tr) tr.innerHTML = trendPill(trendOf(win, "points", "day"), null, true,
-        { rising:"widening", falling:"tightening" });
+      put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
+        { rising:"widening", falling:"tightening" }));
     }
     sheetRenderers["desire-range"] = drawDesireRecord;
     sheetRenderers["sheet-sign-desire"] = drawDesireRecord;
@@ -754,8 +749,7 @@
       };
       HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
                                    : horizonInfoHtml(spreadPick);
-      var hd = byId("hzn-head");
-      if (hd) hd.innerHTML = histHead("hzn-range");
+      var hd = put("hzn-head", histHead("hzn-range"));
     }
     /* The page's one renderer. Whichever reading is off is HIDDEN, never torn down (the Version 314 rule), so
        a switch costs nothing and every id inside both shells stays alive. The spread chart lives in

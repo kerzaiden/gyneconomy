@@ -255,7 +255,7 @@
     [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
      ["power-timing", "structural"], ["valuation-timing", "structural"],
      ["households-timing", "structural"]].forEach(function(p){
-      var el = byId(p[0]); if (el) el.innerHTML = timingPill(p[1]);
+      put(p[0], timingPill(p[1]));
     });
 
 
@@ -810,10 +810,10 @@
     // chart and in the table, the word is on the trend row and in the table, and "4 flagged" is in the context
     // line under the table. The same cut Valuations took in Version 274 and Temperature in Version 298; this
     // page was the last one still carrying a head.
-    byId("power-head").innerHTML = "";
+    put("power-head", "");
     // Valuations has no gauge, so its figure sat alone above a chart whose own end label already states it \u2014 the
     // duplication Keren reported. The page opens on the chart; the verdict moved to the trend row (Version 274).
-    byId("valuation-head").innerHTML = "";
+    put("valuation-head", "");
 
     // the bands energyFromReserve() already uses, so a bar's colour and the word beside the figure cannot disagree
     function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
@@ -865,9 +865,8 @@
       // the ruler is absent in Cycles mode rather than disabled: there is no window to choose when the x-axis is
       // the cycle's own age, and a dead control is worse than no control (the Version 366 rule, applied here)
       // the mode bar on top, its own submenu under it: Cycles picks cycles, Years picks a window
-      byId("temp-rangebar").innerHTML =
-        histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS });
-      byId("temp-head").innerHTML = histHead("sheet-metric-temp");   // V519
+      put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS }));
+      put("temp-head", histHead("sheet-metric-temp"));   // V519
       byId("slot-temp").hidden = true;   // the cycle card lives on the Cycle tab now (V373)
       var hist = byId("temp-history"); hist.hidden = false;
       var win, cyc = null;
@@ -878,17 +877,15 @@
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                          { to:span ? span[1] : undefined, cycle:true });
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");   // same chart, so the same crosshair
-        byId("temp-trend").innerHTML =
-          trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                    { rising:"heating", falling:"cooling" });
+        put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
+                    { rising:"heating", falling:"cooling" }));
       } else {
         var from = mWindowFrom(cpiYoYHistory.length, r); win = cpiYoYHistory.slice(from);
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
         // the fit is over the months IN VIEW, so the pill and the picture can never describe different stretches
-        byId("temp-trend").innerHTML =
-          trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                    { rising:"heating", falling:"cooling" });
+        put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
+                    { rising:"heating", falling:"cooling" }));
       }
       // Version 423, Keren: "make all the data be relevant to the chosen timeline \u2014 the data should be updated
       // below the chart." This reverses the Version 359 rule on THIS page, and reverses it deliberately: that rule
@@ -911,9 +908,8 @@
     sheetRenderers["sheet-metric-gdp"] = function(W){
       var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
-      byId("gdp-rangebar").innerHTML =
-        histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS });
-      byId("gdp-head").innerHTML = histHead("sheet-metric-gdp");   // V519
+      put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
+      put("gdp-head", histHead("sheet-metric-gdp"));   // V519
       byId("slot-growth").hidden = true;   // the cycle card lives on the Cycle tab now (V372)
       // V492: the reading is the latest quarter, not the window's, so it is set once and every branch below
       // leaves it alone — including the one that returns early.
@@ -934,9 +930,8 @@
         // Version 494, Keren: "total growth 11% — in the Highlights component." The one figure this page's
         // register had been reduced to, said as a fact row where the words around it are.
         headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-        byId("gdp-trend").innerHTML =
-          trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
-                    { rising:"quickening", falling:"slowing" });
+        put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
+                    { rising:"quickening", falling:"slowing" }));
         return;
       }
       if (yoy){
@@ -945,14 +940,12 @@
           pairs:pairs, unit:"real GDP, chained 2017 dollars",
           alt:"The four latest quarters of real GDP, each joined to the same quarter a year earlier; the gap between the two is that quarter\u2019s year-over-year growth"
         }, W);
-        byId("gdp-trend").innerHTML =
-          trendPill({ word:fmtSigned(last.pct, 1) + "% this quarter",
-                      detail:last.label.replace("\u2019", "20") + " measured against " + last.wasLabel.replace("\u2019", "20") }, "Year on year");
+        put("gdp-trend", trendPill({ word:fmtSigned(last.pct, 1) + "% this quarter",
+                      detail:last.label.replace("\u2019", "20") + " measured against " + last.wasLabel.replace("\u2019", "20") }, "Year on year"));
       } else {
         var eraQ = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= currentEra.from; });
-        byId("gdp-trend").innerHTML =
-          trendPill(trendOf(eraQ.map(function(d){ return d.v; }), "points", "quarter"), null, false,
-                    { rising:"quickening", falling:"slowing" });
+        put("gdp-trend", trendPill(trendOf(eraQ.map(function(d){ return d.v; }), "points", "quarter"), null, false,
+                    { rising:"quickening", falling:"slowing" }));
       }
     };
 
@@ -980,10 +973,9 @@
       hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
       attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
       var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
-      var tr = byId("act-trend");
       // the pair of words is the labour market's own, not a chart's: unemployment RISES as the market loosens
-      if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
-                                       { rising:"loosening", falling:"tightening" });
+      put("act-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
+                                 { rising:"loosening", falling:"tightening" }));
     };
     sheetRenderers["sheet-metric-power"] = function(W){
       var r = pageRange["sheet-metric-power"], pwCycles = pageMode["sheet-metric-power"] === "cycles";
@@ -991,8 +983,7 @@
       var pwSpan = pwCyc ? cycleSlice(powerHistory, pwCyc) : null;
       var vals = pwSpan ? powerHistory.slice(pwSpan[0], pwSpan[1]) : timelineWindow(powerHistory, r);
       var powerTrend = trendOf(vals.map(function(d){ return d.v; }), "points", "year");
-      byId("power-chart").innerHTML =
-        histBar(histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS })) +
+      put("power-chart", histBar(histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS })) +
         '<div class="page-chart">' + histHead("sheet-metric-power") +
         reserveChart({
           vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
@@ -1010,7 +1001,7 @@
         // V491, Keren: the readings come inside, below the trend. Four of them, so hairlines rather than four
         // boxes (the V488 rule); one reading in a history container still gets the box, as Temperature has.
         '<div class="panel-stack in-hist">' + powerPanelHtml + '</div>' +
-        histTip("power-hist-tooltip") + '</div>';
+        histTip("power-hist-tooltip") + '</div>');
       var pBox = document.querySelector("#power-chart .page-chart");
       refitHistory(pBox, function(w){
         return reserveChart({ vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
@@ -1037,17 +1028,14 @@
       var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
                              Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
       var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
-      var bar = byId("deficit-rangebar");
-      if (bar) bar.innerHTML = histControls("deficit-range",
-        { depth:deficitHistory.length, stops:DEF_STOPS });
+      var bar = put("deficit-rangebar", histControls("deficit-range",
+        { depth:deficitHistory.length, stops:DEF_STOPS }));
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      var defRows = byId("deficit-records");
-      if (defRows) defRows.innerHTML = "";   // V489: the register went; the readout carries the average
+      var defRows = put("deficit-records", "");   // V489: the register went; the readout carries the average
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-      var dTrend = byId("deficit-trend");
-      if (dTrend) dTrend.innerHTML = trendPill(
+      var dTrend = put("deficit-trend", trendPill(
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
-        { rising:"improving", falling:"widening" });
+        { rising:"improving", falling:"widening" }));
     };
     /* Households (Version 460). The same six pieces every history on this app has \u2014 the controls, the chart,
        the unit line, the record rows, the trend pill, the tooltip \u2014 so a reader arriving from any other page
@@ -1076,8 +1064,7 @@
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return householdsChart(w, from, to); });
       attachHistory(box, "households-hist-tooltip", "householdsChart");
-      var hl = byId("households-highlights");
-      if (hl) hl.innerHTML = householdsHighlights();
+      var hl = put("households-highlights", householdsHighlights());
     };
     /* Two cards, one for each line, and every figure in them is read off the series it describes \u2014 including
        the count, which is the whole point of carrying the saving rate back to 1947. */
@@ -1106,8 +1093,7 @@
       var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
       var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
       var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
-      byId("valuation-chart").innerHTML =
-        histBar(histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS })) +
+      put("valuation-chart", histBar(histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS })) +
         '<div class="page-chart">' + histHead("sheet-metric-valuation") +
         divergeChart({
           vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
@@ -1124,7 +1110,7 @@
         trendPill(capeTrend, null, true) +   // V436: likewise \u2014 the reading's own tag is already on the page
         // V491, Keren: Buffett and CAPE come inside, below the trend (see Power's renderer for the note)
         '<div class="panel-stack in-hist">' + valuationPanelHtml + '</div>' +
-        histTip("valuation-hist-tooltip") + '</div>';
+        histTip("valuation-hist-tooltip") + '</div>');
       var vBox = document.querySelector("#valuation-chart .page-chart");
       refitHistory(vBox, function(w){
         return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7",
@@ -1191,8 +1177,7 @@
       if (eraStart) cards.push(hiCard("Since this cycle opened", "serious",
         "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " +
         (eraStart.v - powerScore) + " points since."));
-      byId("power-highlights").innerHTML =
-        highlightsHtml(cards, "", moreRow(powerPageNote));
+      put("power-highlights", highlightsHtml(cards, "", moreRow(powerPageNote)));
     })();
 
     // ---- Valuation
@@ -1221,8 +1206,7 @@
       // The page now ends on its own evidence \u2014 CAPE against its own record, the Buffett indicator against its \u2014
       // and says nothing about what those readings do or do not predict. The long form behind "More details" is
       // untouched, so a reader who wants the caveat still finds it one tap away.
-      byId("valuation-highlights").innerHTML =
-        highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression)));
+      put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
     })();
 
     // ---- Temperature
@@ -1239,11 +1223,10 @@
       cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning",
         "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
         r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
-      byId("temp-highlights").innerHTML =
-        highlightsHtml(cards, "", moreRow(tempInfo + (function(){
+      put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
           var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
           return rest ? factsFrom(rest) : "";
-        })()));
+        })())));
     })();
 
     // ---- GDP growth
@@ -1260,8 +1243,7 @@
         qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
         (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
         r.regime + "."));
-      byId("gdp-highlights").innerHTML =
-        highlightsHtml(cards, "", moreRow(growthDetail));   // the strip moved to the ruler's Cycles stop (Version 363)
+      put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));   // the strip moved to the ruler's Cycles stop (Version 363)
     })();
     // The cycle average component, on every page whose series can fill it (Version 366; placed to the page order
     // in Version 369). It is positioned against a LIVE NODE rather than dropped into a slot in the markup: a static
