@@ -257,7 +257,9 @@
       paint: [repaintValuationRow]
     }
   };
-  /* The nightly refresh moves all nine. `LIVE_DOCS` and `LIVE_SCALARS` are NOT derived to replace them:
+  /* The pipeline moves six of the nine — `sentiment`, `valuation` and `coincident` have no fetcher and arrive
+     only if a session writes them to the database by hand (V637 records this; it is an open question, not a
+     bug). `LIVE_DOCS` and `LIVE_SCALARS` are NOT derived to replace them:
      both are gone. One was the database path's fetch list, which is this list now; the other was never read
      by anything. Histories stay out of here deliberately — they change a few times a year, they are the bulk
      of the payload, and a stale history would be a worse trade than a stale daily print. */

@@ -18,7 +18,8 @@ same door.
 **The reading registry is the contract (V629).** `READINGS` in `js/02-live.js` has one row per reading that
 arrives from outside the file: its kind (object, series or scalar), a scalar's band, where the value lands, and
 what redraws when it does — or `onOpen`, meaning its only display is an inner page that redraws in full when it
-opens. Nine rows. `applyLive(name, value)` does the same four steps for all nine; a `set` that cannot place its
+opens. Nine rows, six of them with a writer today (the pipeline's six documents; see "Who refreshes what" and
+"Open questions"). `applyLive(name, value)` does the same four steps for all nine; a `set` that cannot place its
 value throws, and a throw is a refusal. A number outside its band is refused, never clamped — the V305 rule the
 histories follow. `checkLiveCoverage` fails the suite on an incomplete row, so a tenth reading is one row and
 cannot be added half-declared.
@@ -60,16 +61,20 @@ second.
 working: the assertion is about the literal, the cache is about today, and the suite's warning collector turns
 the disagreement into a failing check rather than a line nobody reads.
 
-**Re-exporting the whole dataset** (rare): an exporter inside the IIFE assigns the named vars to
-`window.__EXPORT`, Playwright dumps each to JSON, and `ArtifactData batch` writes them — at most 50 per call, and
-`if_version` pinned on every document that already exists or the whole batch is refused.
+**Re-exporting the whole dataset** (rare): there is no exporter in `src/` today — the `window.__EXPORT` hook an
+earlier version had is gone (V637 checked). If one is needed again, it is a Playwright script that reads the
+named vars through the `window.__GYN` seam and dumps each to JSON; `ArtifactData batch` then writes them — at
+most 50 per call, and `if_version` pinned on every document that already exists or the whole batch is refused.
 ## Why there is a build step
 
 The app proudly had none. Two things are both true: the Artifact and the service worker need ONE self-contained
 file, and a fifteen-thousand-line file is not something a person can hold. So the source is split into the parts
 `src/manifest.json` lists and the deliverable is assembled by concatenation — nothing cleverer, because the
 script is one IIFE sharing one closure scope, and joining the pieces in order reproduces that scope EXACTLY. The
-first build reproduced the previous `index.html` byte for byte, which is what made the split provable. The order
+first build reproduced the previous `index.html` byte for byte, which is what made the split provable. Since V548
+a comment strip follows the join (44% of the deliverable was comment), so that proof gave way to `npm run snap`:
+32 DOM states identical before and after. Since V636 the build also stamps `sw.js`'s cache name from
+`package.json`, and `build:check` fails if either output drifted. The order
 in the manifest is the semantics: module-level vars are assigned between parts, so moving a part can change
 behaviour with nothing inside it changed. `CLAUDE.md` has the commands and the parts.
 ## Who refreshes what
@@ -79,7 +84,7 @@ removed.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **The Data workflow** (`data.yml`) | the nine live readings, from their primary sources | weekdays | the SITE, by committing `data/live.json` |
+| **The Data workflow** (`data.yml`) | six of the nine live readings, from their primary sources | weekdays | the SITE, by committing `data/live.json` |
 | **The scheduled task** (`docs/task.md`) | nothing of its own — it copies that file into the artifact's database | weekly | the ARTIFACT |
 | **A session** | the source itself | when something changes | both, by building and publishing |
 
@@ -397,6 +402,10 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 - **Portfolio**: settle first where its numbers come from — the reader's own holdings (needs storage), a model allocation per season, or what each asset class did by season (needs three series the app doesn't hold).
 - **The growth-direction threshold ±0.025 pp/qtr is not ratified** (Keren ratified the six-quarter window, not this); it is the one number that can flip Autumn–Stagflation vs Summer.
 - **Whether Spring–Deflation's action is "Growing"** is not the manuscript's — change `wheelMeta.springdeflation.action` if she says otherwise.
+- **Three registry rows have no writer** (V637 recorded): `sentiment`, `valuation` and `coincident` are declared in
+  `READINGS`, reachable and repainted, but no fetcher produces them and the courier copies only the pipeline's six
+  documents. Either give each a primary source in `tools/fetch-live.js`, or declare them static and let the suite
+  assert that every row is one or the other. Until then they move only when a session writes them by hand.
 - **Spring–Deflation has no Content-tab narrative.**
 - **`levelZone`'s 2% lower edge is undefended**; Pressure's band remains a decision not to draw one.
 - **The app's other segmented controls** (indicators tabs, spread toggle, bottom tab bar) sit outside `.hist-bar` and were to be revisited together; they have not been.
@@ -409,7 +418,7 @@ About the book (`#sheet-book`, plain HTML in the menu markup): the author paragr
 
 ### Refresh
 
-The nine live readings refresh themselves through the registry (see Live data). What follows is the upkeep the
+Six of the nine live readings refresh themselves through the registry (see Live data). What follows is the upkeep the
 pipeline does NOT do, and the reason each item is the way it is.
 
 `DATA_COMPILED` (top of the script) flows to the Sources sheet's "Data compiled" phrase, the year-to-date label and
@@ -454,7 +463,7 @@ somewhere, and 120 tool checks: every branch of the season table, every shipped 
 consecutive periods, and the two fetchers' pure steps against real rows.
 
 **The slow gate, `npm run check:slow`, is the browser suite and axe.** The suite walks every page at two widths
-in both schemes and asserts, among 85 checks, the six runtime invariants: geometry is owned by the chart that
+in both schemes and asserts, among 90 checks, the six runtime invariants: geometry is owned by the chart that
 made it, a reading prints where it is painted, every reach finds something, every action has an answer, every id
 is one element, and no data check fired. The last one is why `console.warn` is a failing check here — ten data
 checks had no listener for two hundred versions (V623).

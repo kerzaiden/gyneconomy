@@ -37,7 +37,8 @@ npm run check:all        # plus the browser suite and axe — what CI runs
 whose order is the semantics — then `npm run build`. CI runs `build:check`, so the output
 cannot drift from the source.
 
-**Before you push:** `git pull --rebase && git push --follow-tags`. A scheduled workflow
+**Before you commit a version:** `npm run bump`, so `package.json`, the service worker's cache name
+and the `V6NN` commit all say the same number. **Before you push:** `git pull --rebase && git push --follow-tags`. A scheduled workflow
 commits fresh figures to `data/live.json` on weekdays, so the remote is often ahead; the
 rebase keeps your commits on top of the bot's, and nothing conflicts because it only ever
 touches that one file.
@@ -71,8 +72,9 @@ Every figure cites a **primary source** — a statistical agency, a central bank
 index's originator. No news sites, no aggregators. Each figure names the day its own
 number comes from, and the Sources screen states when the set was compiled.
 
-Nine readings refresh themselves on a schedule through one registry that states, for each,
-the shape it arrives in and the band it must fall inside. A fetch that fails, or a value
+Six readings refresh themselves on a schedule through one registry that states, for each,
+the shape it arrives in and the band it must fall inside; three more rows in that registry are
+declared but have no automated source yet. A fetch that fails, or a value
 outside its band, is refused and the previous value stands. Gaps are drawn as gaps.
 
 Nothing here is investment advice.

@@ -2,8 +2,8 @@
 
 A reading companion to Keren's book *Mrs. Market*, which reads the economy as a body with
 seasons. **`index.html` is the whole app** — one self-contained file, no bundler, no framework.
-Since V538 it is BUILT from `src/` by `npm run build`, which is `parts.join("\n")` and nothing
-else, so the shipped file is still one file with no module system in it. It ships as a Claude
+Since V538 it is BUILT from `src/` by `npm run build`, which joins the parts and strips the comments
+(V548) and does nothing cleverer, so the shipped file is still one file with no module system in it. It ships as a Claude
 Artifact at
 `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`.
 
@@ -45,9 +45,10 @@ to see whether it is current.
    dies with it — silently, because the hard-coded fallbacks still render.
 5. **Read the live artifact before publishing over it** (`Artifact action:"read"` on the artifact
    url) and diff it against this repo's `index.html`. Since V540 the scheduled task writes the
-   artifact's DATABASE and no longer republishes its HTML, so the two should be identical and this
-   repo is the canonical source of the page — but a publish from anywhere else would break that,
-   and the diff is the only thing that would tell you. A difference is a merge, not a `force`.
+   artifact's DATABASE and no longer republishes its HTML, so the two should differ only by the
+   wrapper the publish adds — a skeleton `<head>` before the document and a duplicated
+   `</body></html>` after it — and this repo is the canonical source of the page. A publish from
+   anywhere else would break that, and the diff is the only thing that would tell you. A difference is a merge, not a `force`.
    `docs/ARCHITECTURE.md` → "Which copy is canonical" has the whole picture.
 
 ## The three governing rules
@@ -105,7 +106,7 @@ That is the one way the two targets can silently drift apart.
 ```sh
 npm i && npm run setup   # once — npm i alone does NOT fetch the browser
 npm run check            # the fast gate, under a second: build, email, map, ledger, 120 tool checks
-npm run check:all        # plus the browser suite (85 checks) and axe — what CI runs
+npm run check:all        # plus the browser suite (90 checks) and axe — what CI runs
 npm test                 # the browser suite alone
 npm run test:full        # adds the class-coverage walk (2–4 min)
 npm run test:tools       # season table, every series, the two fetchers' pure parts — no browser
@@ -115,8 +116,9 @@ npm run map:check        # is the map current?
 npm run snap             # 32-state DOM snapshot, to prove a refactor changed nothing
 npm run classify         # measure what each step does, to check the declared kinds
 npm run comp             # the component ledger; comp:check fails if a pattern got more duplicated or a function grew
-npm run build            # assemble index.html from src/
-npm run build:check      # does index.html match src/?
+npm run build            # assemble index.html from src/, and stamp sw.js from package.json
+npm run build:check      # does index.html match src/, and is sw.js stamped?
+npm run bump             # next version number (newest tag + 1, or `npm run bump 640`) — before every version commit
 npm run sources          # regenerate sources.html from the app's own Sources screen
 npm run a11y             # axe-core across 24 states; a11y:check fails on serious or critical
 ```
@@ -136,7 +138,7 @@ never a way to clear a failure.**
 
 A change the suite does not cover needs its own probe as well — and if the claim is worth
 keeping, fold the probe into the suite rather than throwing it away. That is how it grew from
-42 checks to 85.
+42 checks to 90.
 
 ## `index.html` is BUILT — edit `src/`, never the output
 
@@ -146,10 +148,12 @@ FRED histories, components, history, charts, forms, model, render core, render p
 pages/nav, analysis, tabs/menu). No function is longer than about 500 lines, and `npm run comp:check`
 fails if one grows.
 
-**The build is `parts.join("\n")` and nothing else.** The script is one IIFE sharing a closure, so
-concatenating the pieces back in order reproduces that scope exactly — which is why the split was
-provable rather than merely plausible: the first build reproduced the previous `index.html` **byte
-for byte**.
+**The build is `parts.join("\n")` followed by a comment strip, and nothing else.** The script is one
+IIFE sharing a closure, so concatenating the pieces back in order reproduces that scope exactly —
+which is why the split was provable rather than merely plausible: the first build reproduced the
+previous `index.html` **byte for byte**. V548 added the strip (44% of the deliverable was comment
+nobody downloading it could read), which cost that byte-identity proof; what replaced it is
+`npm run snap`, 32 DOM states identical before and after. The reasoning stays in `src/`, on GitHub.
 
 **The order in `src/manifest.json` IS the semantics.** Module-level vars are assigned between parts,
 so moving one can change behaviour even when nothing inside it changed. Add a part by adding it to
@@ -185,12 +189,14 @@ listeners bound means run once; DOM settled with no listeners means it may run a
 dial on the first pass and only binds handlers on a second, so it is named render and classified
 wire. They answer different questions, and renaming to match would lose the first answer.
 
-**`build` is the honest kind (V535), and it was earned by measurement.** `renderSignsList` MOVES the
-static markup into the category rows, consuming its own source — the documented "catItem consumes
-its source" behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so a
-second call throws on a host that no longer exists. `renderPsychologyTag` reads a note a later step
-fills, so a second call renders MORE than the first. None is sloppy; all three are one-shot by
-design, and naming them builders says so rather than implying a fix is pending.
+**`build` is the honest kind (V535), and it was earned by measurement.** Five steps carry it today —
+`renderSignsList`, `renderSubjectRows`, `renderFearCurve`, `renderHormones`, `renderPressure` — and
+the suite pins that count. `renderSignsList` MOVES the static markup into the category rows,
+consuming its own source — the documented "catItem consumes its source" behaviour.
+`renderSubjectRows` writes into hosts that `renderSignsList` then moves, so a second call throws on
+a host that no longer exists. `renderFearCurve` reads a note a later step fills, so a second call
+renders MORE than the first. None is sloppy; all are one-shot by design, and naming them builders
+says so rather than implying a fix is pending.
 
 **Exclusions are by KIND, never by name.** A named exception is a note that goes stale; a kind is a
 fact about the step.
@@ -210,7 +216,10 @@ stays a diagnostic for finding non-idempotency, not a production path.
 Live data arriving mid-session goes through **`applyLive(name, value)`**, and what it does for a reading is
 written ONCE, in that reading's row of `READINGS` (`js/02-live.js`): its kind, a scalar's band, where the value
 lands, and what redraws — or `onOpen`, meaning its only display is an inner page that redraws in full when it
-opens. Nine rows. The `set` re-derives whatever was computed from the value at load — `valuation.tag`, the
+opens. Nine rows, of which SIX have a writer today — the pipeline's six documents, which the courier copies
+into the database. `sentiment`, `valuation` and `coincident` are declared and reachable but nothing fetches
+them; they move only if a session writes them by hand. An open question, not a bug: see `docs/ARCHITECTURE.md`
+→ "Open questions". The `set` re-derives whatever was computed from the value at load — `valuation.tag`, the
 Volume and Pulse tags — because a fresh number beside a stale verdict is precisely the drift ONE FIGURE / ONE
 NUMBER forbids. A `set` that cannot place its value throws, and a throw is a refusal. `receive(next, mode)` is
 the one intake both sources call. `checkLiveCoverage` fails the suite on an incomplete row.
@@ -261,8 +270,10 @@ The app is becoming a real site, not only an Artifact. Both targets are served f
 **Installable.** `manifest.webmanifest` plus `sw.js` make it a PWA: standalone display, the lotus
 icon, and it works offline. The service worker is **network-first for HTML and cache-first for
 everything else**, and that asymmetry is deliberate — the figures are baked into `index.html`, so a
-cached page is a stale economic reading, while an icon never goes stale. Bump `VERSION` in `sw.js`
-on any release that changes the shell.
+cached page is a stale economic reading, while an icon never goes stale. `VERSION` in `sw.js` names
+the cache, and the build stamps it from `package.json` (V636) — it had sat at 609 for twenty-five
+versions as a number to remember, so installed readers kept a stale shell. `npm run bump` before
+every version commit; `build:check` fails if the two disagree.
 
 **The registration is a second `<script>` block, outside the app's IIFE, and guarded three ways**
 (not framed, https-or-localhost, feature present) because the same file runs inside the Artifact's
@@ -357,7 +368,7 @@ anything moving.** Verified: pixel-identical screenshots at 414 light, 414 dark 
 | `docs/ARCHITECTURE.md` | the working document: app, design system, mechanics |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md`, `docs/COMPONENTS.md` | generated: the navigation index, and every component with what it owns and who calls it |
-| `tools/` | build, strip, the component ledger, the map and sources generators, the snapshot harness, axe, the step classifier, the two fetchers |
+| `tools/` | build, strip, the version stamp and bump, the component ledger, the map and sources generators, the snapshot harness, axe, the step classifier, the two fetchers |
 | `manifest.webmanifest`, `sw.js` | the PWA: installable, offline |
 | `data/live.json` | the fetched figures — generated, committed by the Data workflow, never hand-edited |
 | `tools/fetch-live.js` | the fetcher: primary sources, sanity bands, silence on failure |
