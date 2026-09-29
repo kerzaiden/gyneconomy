@@ -61,7 +61,8 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
 - **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
   push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump` before
   every version commit; `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
-  to `main` on weekdays, and that bot is the one thing allowed to push there directly.
+  to `main` on weekdays and the Backfill workflow commits the FRED histories on the 3rd of each month; those
+  two bots are the only things allowed to push there directly, and each starts the site deploy itself.
 - **One version, one commit on `main`: squash-merge** (V647). Title the merge `V6NN — Short Name`, so
   `main` reads as one commit per version. Then move the working branch to the new `main` before the
   next change. **Tags are the Tag workflow's job** (`tag.yml`): cloud sessions cannot push tags, so the

@@ -228,15 +228,8 @@
     if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
     return data;
   }
-  function renderPressurePage(){
-    var svg = byId("ylm-svg");
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
-    var el = svgEl;
-
-    var quarters = t3mYieldHistory.map(function(d){ return d.q; });
-
-    var maturities = [
+  function pressureMaturities(){
+    return [
       {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
         detail: '<h4>3-Month Treasury</h4>' +
           '<p class="caption">This tracks the Federal Reserve\'s own overnight policy rate almost directly — when the Fed raises or cuts, this yield moves within days. It\'s the reference rate behind savings accounts, CDs, money-market funds, and most variable-rate consumer debt like credit cards and many lines of credit. Quarterly average of the discount-basis TB3MS series, which reads a touch below the investment-basis short yield shown on the curve above — a real definitional gap, not an inconsistency.</p>' +
@@ -255,9 +248,87 @@
           srcBlock([{t:"FRED — 10-Year Treasury Rate (GS10)", u:"https://fred.stlouisfed.org/series/GS10"}])},
       {code:"30y", name:"30-Year", data: t30yYieldHistory, on:true,
         detail: '<h4>30-Year Treasury</h4>' +
-          '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury stopped issuing 30-year bonds between October 2001 and February 2006, so there is no actual traded yield for that stretch — shown here as a break rather than a guessed figure.</p>' +
+          '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury suspended the 30-year bond from October 2001 to February 2006, and no 30-year constant-maturity yield was published from February 2002 until it returned — shown here as a break rather than a guessed figure.</p>' +
           srcBlock([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}])}
     ];
+  }
+  function registerFlowPages(){
+    function drawVelocityRecord(){
+      var host = byId("pulse-record");
+      if (!host || !host.clientWidth) return;
+      var key = pageRange["pulse-range"];
+      var pulCycles = pageMode["pulse-range"] === "cycles";
+      var pulCyc = pulCycles ? (cycleByName(pageCycles["pulse-range"]) || openCycle()) : null;
+      var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
+      var bar = put("pulse-timeline", histControls("pulse-range",
+        { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS }));
+      var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
+      host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
+      attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
+      var vTrend = put("pulse-trend", trendPill(
+        trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
+        null, true, { rising:"accelerating", falling:"decelerating" }));
+    }
+    sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
+    sheetRenderers["pulse-range"] = drawVelocityRecord;
+    function drawM2Record(){
+      var host = byId("m2-record");
+      if (!host || !host.clientWidth) return;
+      var len = m2Yoy.length - 4, key = pageRange["volume-range"];
+      var volCycles = pageMode["volume-range"] === "cycles";
+      var volCyc = volCycles ? (cycleByName(pageCycles["volume-range"]) || openCycle()) : null;
+      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
+      var bar = put("volume-timeline", histControls("volume-range",
+        { depth:Math.floor(len / 4), stops:VOL_STOPS }));
+      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
+      host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
+      attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
+      var mTrend = put("volume-trend", trendPill(
+        trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
+        null, true, { rising:"accelerating", falling:"decelerating" }));
+    }
+    sheetRenderers["sheet-sign-volume"] = drawM2Record;
+    sheetRenderers["volume-range"] = drawM2Record;
+    function drawDesireRecord(){
+      var host = byId("desire-record");
+      if (!host || !host.clientWidth) return;
+      var from = hyWindowFrom(pageRange["desire-range"]);
+      var win = hyOas.slice(from);
+      var bar = byId("desire-timeline");
+      if (bar) bar.innerHTML = '<div class="hist-controls">' +
+        rangeBar("desire-range", timelineFor({ depth:3, stops:DESIRE_STOPS }),
+                 pageRange["desire-range"]) + '</div>';
+      host.innerHTML = desireHistoryChart(host.clientWidth, from);
+      attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
+      put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
+        { rising:"widening", falling:"tightening" }));
+    }
+    sheetRenderers["desire-range"] = drawDesireRecord;
+    sheetRenderers["sheet-sign-desire"] = drawDesireRecord;
+    (function(){
+      var t; window.addEventListener("resize", function(){
+        clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); drawDesireRecord(); }, 150);
+      });
+    })();
+  }
+  function renderPressureRow(){
+    var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+    put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
+      '<span class="unit">10-year Treasury</span>');
+    var rowSay = byId("subj-say-pressure");
+    if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
+                                           function(){ return "yl-col normal"; }, 0, true);
+  }
+  function renderPressurePage(){
+    var svg = byId("ylm-svg");
+    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
+    var el = svgEl;
+
+    var quarters = t3mYieldHistory.map(function(d){ return d.q; });
+
+    var maturities = pressureMaturities();
+
     var latestLabel = "", latestSpread = null;
     maturities.forEach(function(m){ m.base = m.data; });
     function withLatest(){
@@ -410,63 +481,7 @@
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
       drawPressure();
     });
-    function drawVelocityRecord(){
-      var host = byId("pulse-record");
-      if (!host || !host.clientWidth) return;
-      var key = pageRange["pulse-range"];
-      var pulCycles = pageMode["pulse-range"] === "cycles";
-      var pulCyc = pulCycles ? (cycleByName(pageCycles["pulse-range"]) || openCycle()) : null;
-      var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
-      var bar = put("pulse-timeline", histControls("pulse-range",
-        { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS }));
-      var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
-      host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
-      attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
-      var vTrend = put("pulse-trend", trendPill(
-        trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
-        null, true, { rising:"accelerating", falling:"decelerating" }));
-    }
-    sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
-    sheetRenderers["pulse-range"] = drawVelocityRecord;
-    function drawM2Record(){
-      var host = byId("m2-record");
-      if (!host || !host.clientWidth) return;
-      var len = m2Yoy.length - 4, key = pageRange["volume-range"];
-      var volCycles = pageMode["volume-range"] === "cycles";
-      var volCyc = volCycles ? (cycleByName(pageCycles["volume-range"]) || openCycle()) : null;
-      var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
-      var bar = put("volume-timeline", histControls("volume-range",
-        { depth:Math.floor(len / 4), stops:VOL_STOPS }));
-      var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
-      host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
-      attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
-      var mTrend = put("volume-trend", trendPill(
-        trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
-        null, true, { rising:"accelerating", falling:"decelerating" }));
-    }
-    sheetRenderers["sheet-sign-volume"] = drawM2Record;
-    sheetRenderers["volume-range"] = drawM2Record;
-    function drawDesireRecord(){
-      var host = byId("desire-record");
-      if (!host || !host.clientWidth) return;
-      var from = hyWindowFrom(pageRange["desire-range"]);
-      var win = hyOas.slice(from);
-      var bar = byId("desire-timeline");
-      if (bar) bar.innerHTML = '<div class="hist-controls">' +
-        rangeBar("desire-range", timelineFor({ depth:3, stops:DESIRE_STOPS }),
-                 pageRange["desire-range"]) + '</div>';
-      host.innerHTML = desireHistoryChart(host.clientWidth, from);
-      attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
-      put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
-        { rising:"widening", falling:"tightening" }));
-    }
-    sheetRenderers["desire-range"] = drawDesireRecord;
-    sheetRenderers["sheet-sign-desire"] = drawDesireRecord;
-    (function(){
-      var t; window.addEventListener("resize", function(){
-        clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); drawDesireRecord(); }, 150);
-      });
-    })();
+    registerFlowPages();
 
     function matOf(code){ return maturities.filter(function(m){ return m.code === code; })[0]; }
     function matTitle(){ var m = matOf(matPick); return (m ? m.name : "") + " U.S. Treasury"; }
@@ -514,12 +529,7 @@
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
 
-    var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
-    put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
-      '<span class="unit">10-year Treasury</span>');
-    var rowSay = byId("subj-say-pressure");
-    if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
-                                           function(){ return "yl-col normal"; }, 0, true);
+    renderPressureRow();
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();
 
