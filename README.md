@@ -22,6 +22,7 @@ are always there as the fallback.
 | work on the app | **`CONTRIBUTING.md`**, then `CLAUDE.md` |
 | know why something is the way it is | `docs/ARCHITECTURE.md` |
 | find your way around `index.html` | `docs/MAP.md` — generated, grep anchors, 13k lines indexed |
+| name a piece of the UI, and know what it owns and who uses it | `docs/COMPONENTS.md` — generated, 73 components, the shared vocabulary |
 | know what changed and when | `docs/ARCHIVE.md` — every version, newest first |
 
 ```sh
@@ -44,8 +45,8 @@ npm test                 # 60 checks
 | `tools/` | the fetcher, the map generator, the snapshot harness, the step classifier, the build template |
 | `.github/workflows/` | `ci.yml` tests then deploys; `data.yml` fetches then commits |
 
-Three files in there are generated and should never be edited by hand: `docs/MAP.md`
-(`npm run map`), `data/live.json` (the Data workflow) and `sources.html`
+Four files in there are generated and should never be edited by hand: `docs/MAP.md` and
+`docs/COMPONENTS.md` (`npm run map`), `data/live.json` (the Data workflow) and `sources.html`
 (`npm run sources`, from the app's own Sources screen).
 
 ## Data
