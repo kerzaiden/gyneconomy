@@ -117,7 +117,7 @@
   // close; a missing credit-spread reading (not on record before 2023) leaves the VIX to speak alone.
   /* THE FEAR CURVE (Version 546). What replaced CNN's Fear & Greed index, which the app carried from
      Version 237 until CNN's edge began refusing automated clients (HTTP 418) and no honest route to
-     keeping it current was left — see docs/ARCHITECTURE.md, "The two sources that said no".
+     keeping it current was left — see docs/ARCHITECTURE.md, "Sources that were refused".
 
      Version 237 retired a COMPUTED sentiment composite and warned "don't rebuild it", because that
      composite scored seven-ish components against record extremes and had to be explained to anyone
