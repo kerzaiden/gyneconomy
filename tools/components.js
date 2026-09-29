@@ -263,8 +263,15 @@ if (arg === '--check') {
     console.error('\nBuild it once and call it, or if the duplication is deliberate, run: npm run comp:bless');
     process.exit(1);
   }
+  /* V647: a function the ledger has never seen had NO limit — the cap is its recorded length, and a new one has
+     none recorded. It now starts under a ceiling instead. V624's rule for the functions already here is
+     unchanged: they may shrink and never grow. The ceiling is for what gets written next. */
+  const NEW_FN_MAX = 150;
   const caps = past['#functions'] || {}, now = sizes(), longer = [];
-  for (const [fn, n] of Object.entries(now)) if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
+  for (const [fn, n] of Object.entries(now)) {
+    if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
+    else if (caps[fn] == null && n > NEW_FN_MAX) longer.push(fn + ' is new and ' + n + ' lines (a new function starts at most ' + NEW_FN_MAX + ')');
+  }
   if (longer.length) {
     console.error('SIZE \u2014 a function got longer:\\n');
     longer.forEach(l => console.error('  ' + l));

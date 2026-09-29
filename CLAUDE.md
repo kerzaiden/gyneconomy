@@ -40,13 +40,22 @@ is a decision, not a note.** Don't overrule one; if it seems wrong, say so and a
 - **One figure, one number.** Computed in one place, read everywhere else.
 - **Edit `src/`, never `index.html`.** The build is a join of the parts in `src/manifest.json` plus a
   comment strip; **the manifest order is the semantics** (module vars are assigned between parts).
+  The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part
+  can read it (V647).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
+- **Functions may shrink, never grow** (V624), and a new one starts at 150 lines or fewer (V647). `npm run
+  check` enforces both; `npm run comp:bless` records a deliberate exception, and the commit says why.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
   project attached, and Claude Code in this folder); the repo is the only handoff.
 - **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
   push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump` before
   every version commit; `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
   to `main` on weekdays, and that bot is the one thing allowed to push there directly.
+- **One version, one commit on `main`: squash-merge** (V647). Title the merge `V6NN — Short Name`, so
+  `main` reads as one commit per version. Then move the working branch to the new `main` before the
+  next change. **Tags are the Tag workflow's job** (`tag.yml`): cloud sessions cannot push tags, so the
+  workflow tags each version when it lands. `npm run bump` counts from `package.json` as well as the
+  newest tag, so a tag that has not been made yet cannot send the number backwards.
 - **`main` and the artifact are the same version, always.** Whoever merges to `main` republishes the
   artifact from that commit, in the same sitting (rules 1, 4 and 5 above), with `label` = the version
   name. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
