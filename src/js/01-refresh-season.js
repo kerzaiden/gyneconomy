@@ -1,17 +1,14 @@
 (function(){
-  /* ================= EVERY REACH IS ACCOUNTED FOR (Version 620) =================
-     Keren asked where the UI architecture stands, and this was the third of the three things holding it down:
-     renderers reach into the global document by NAME, 158 times, and almost every reach is guarded with
-     `if (!el) return`. The guard is right — a page renders only some of these — and it is also a blanket over
-     three different failures that look identical from outside:
-       • the name does not exist at all. V617's wiring check fails the build on that one now.
-       • the name exists, but not on the page being rendered, so the renderer silently does nothing.
+  /* ================= EVERY REACH IS ACCOUNTED FOR =================
+     Renderers reach into the document by NAME, and the usual guard, `if (!el) return`, is right (a page renders
+     only some of these) but is a blanket over three failures that look identical from outside:
+       • the name does not exist at all — the wiring check fails the build on that one;
+       • the name exists, but not on the page being rendered, so the renderer silently does nothing;
        • the name is on the page and the renderer skipped it, so yesterday's content stays.
      `byId` is the one way to reach an element, and it RECORDS every reach that came up empty. `byIdMaybe` is how a
-     reach says it expects nothing sometimes — a control that only some pages carry, an element built later —
-     so the difference between "optional" and "broken" is written down in the code instead of being guessed
-     from a guard. The suite walks every page and asserts the record is empty: a `byId` that found nothing is a
-     renderer reaching for something that is not there, which is a bug with no symptom. */
+     reach says it expects nothing sometimes — a control that only some pages carry, an element built later — so
+     "optional" and "broken" are told apart in the code instead of guessed from a guard. The suite walks every
+     page and asserts the record is empty: a `byId` that found nothing is a bug with no symptom. */
   function byId(id){
     var n = document.getElementById(id);
     if (!n){
@@ -21,21 +18,19 @@
     return n;
   }
   function byIdMaybe(id){ return document.getElementById(id); }
-  /* Version 626, Keren: "markup and placement split." A render used to name its host, check it exists and
-     write into it — three concerns on one line, in 44 copies. `put` is the one placement: it takes an id or a
-     node, writes the markup and hands the node back. The guard moves inside, which matters most for the 29
-     sites that wrote straight into an unchecked lookup: a host that has gone missing is now recorded by `byId`
-     and the render carries on, where before it threw and left the page half drawn. Placement being ONE named
-     operation is also the seam a subscriber needs — nothing else has to know how markup reaches the page. */
+  /* Keren, V626: "markup and placement split." `put` is the one placement: it takes an id or a node, writes the
+     markup and hands the node back. The guard is inside, so a missing host is recorded by `byId` and the render
+     carries on instead of throwing and leaving the page half drawn. Placement being ONE named operation is also
+     the seam a subscriber needs — nothing else has to know how markup reaches the page. */
   function put(target, html){
     var n = (typeof target === "string") ? byId(target) : target;
     if (n) n.innerHTML = html;
     return n;
   }
-  /* V631: markup to one element, for the three sites that build a row as a string and then need the node to
-     append or move. A component returns a string; this is how a controller takes hold of it. */
+  /* Markup to one element, for a site that builds a row as a string and then needs the node to append or move.
+     A component returns a string; this is how a controller takes hold of it. */
   function elFrom(html){ var t = document.createElement("template"); t.innerHTML = html; return t.content.firstElementChild; }
-  // The theme (Version 198): the page follows the phone's setting unless a choice was saved from the menu's Appearance row;
+  // The theme: the page follows the phone's setting unless a choice was saved from the menu's Appearance row;
   // the stylesheet keys off data-theme on <html>, so the choice is applied here, before anything paints.
   try{ var savedTheme = localStorage.getItem("gyneconomy-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme); }catch(e){}
   // ---------------- REFRESH: the one date to edit ----------------
@@ -45,23 +40,14 @@
   var DATA_COMPILED = new Date(2026, 8, 25);
   var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
-  // The dial's date line, Version 356, Keren — overruling Version 355's second branch: "just write today,
-  // September 22nd. The data will show the date that it derives from in each metric. And the cycle is the
-  // single point of truth. I want it to be updated for today."
-  //
-  // Version 355 had the hub print "As of <DATA_COMPILED>" whenever a closed US session was missing from the
-  // page, so that a stalled refresh would show on the dial. Keren's argument against it is the stronger one
-  // and it is about what this object IS. The dial answers "where are we now", and now is today — a reader
-  // opening the app on the 22nd is not asking what was true on the 18th. Provenance does not live here and
-  // never did: EVERY figure on the board already names the day it derives from, on its own card ("high-yield
-  // OAS, Sep 17 2026", "CPI, YoY, Aug 2026", the VIX's close date), and the Sources screen states the compile
-  // date verbatim. So the hub was doing a job three other places already do better, and doing it by making
-  // the one thing that should always read "now" read like a date stamp.
-  //
-  // What that trades away, recorded so nobody re-derives it by surprise: the dial will no longer betray a
-  // frozen refresh. That surveillance moves entirely to the scheduled task — its WHEN TO PUBLISH rule (a
-  // trading-day run that publishes nothing is a failed run) and its per-figure date labels. If the page ever
-  // looks current while the figures are old, look at the task, not at the dial.
+  // The dial's date line always reads today. Keren, V356: "just write today, September 22nd. The data will show
+  // the date that it derives from in each metric. And the cycle is the single point of truth. I want it to be
+  // updated for today." So the hub never prints "As of <DATA_COMPILED>": the dial answers "where are we now".
+  // Provenance lives elsewhere — every figure names the day it derives from on its own card ("high-yield OAS,
+  // Sep 17 2026", "CPI, YoY, Aug 2026", the VIX's close date), and the Sources screen states the compile date.
+  // The trade, so nobody re-derives it by surprise: the dial does not betray a frozen refresh. That watch belongs
+  // to the scheduled task — its WHEN TO PUBLISH rule (a trading-day run that publishes nothing is a failed run)
+  // and its per-figure date labels. If the page looks current while the figures are old, look at the task.
   function hubTodayHtml(){
     var d = new Date();
     return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -73,12 +59,9 @@
 
   // ---------------- SEASON ----------------
   // Six seasons (Keren's table, Sep 16, 2026) in their canonical order — the sequence a textbook cycle runs
-  // through. The dial no longer draws this order as a ring (dropped Sep 17, 2026 as redundant); it paints each
-  // quarter of the current cycle in the season the rule computed for it, and the Content tab's table is the legend.
-  // Each season carries the book's own ACTION for it — the four quadrants of the manuscript's cycle figure
-  // with Spring–Deflation sharing Growing too (Keren, Sep 18, 2026: replaces the retired Goldilocks Zone) — and a
-  // small line icon for it. There is no asset-class lead anymore: the
-  // Investment Clock tilt was dropped on Sep 17, 2026 at Keren's instruction. Two seasons carry the book's
+  // through. The dial does not draw this order as a ring (redundant); it paints each quarter of the current cycle
+  // in the season the rule computed for it, and the Content tab's table is the legend. No asset-class lead: the
+  // Investment Clock tilt was dropped at Keren's instruction (Sep 17, 2026). Two seasons carry the book's
   // fertility name (Ovulation = Summer, Groundation = Winter); leave altName null elsewhere until the manuscript
   // supplies one — don't invent one here.
   var wheelMeta = {
@@ -89,20 +72,19 @@
     springdeflation:{name:"Spring", theme:"Deflation", altName:null}, // expansion + cooling, within or below the range — replaces the Goldilocks Zone (Keren, Sep 18, 2026)
     spring:{name:"Spring", theme:"Reflation", altName:null}
   };
-  // currentSeason is COMPUTED (computeSeason(), further down, from the direction of growth and the level and
+  // currentSeason is COMPUTED (readSeason(), in the model part, from the direction of growth and the level and
   // direction of inflation — Keren's rule: inflation rising while growth falls is stagflation). Set
-  // seasonOverride to a wheelOrder key only to pin the season by hand; leave null to let the data decide.
+  // seasonOverride to a wheelMeta key only to pin the season by hand; leave null to let the data decide.
   var seasonOverride = null;
   // The Cycle tab's one line on where we are now — deliberately short; editorial, refreshed by hand. (The
   // Calendar tab carries each cycle's fuller blurb; this is not a copy of it.)
   var cycleNowNote = "Four years into an AI-driven bull run, growth has slowed each year since 2023 while inflation has climbed back above 3% — the stagflation stretch of the cycle, with the Fed now raising rates into it.";
 
-  // CPI-U inflation, year over year, monthly. The series opens well before the current cycle does, so every
-  // quarter of it has a twelve-month window behind it. The season reads the DIRECTION of inflation from a
-  // fitted trend over the last twelve readings (not one month against the next) and its level from the latest.
-  // The dial re-runs the same reading at the end of every quarter of a cycle, and the cycle view draws any cycle's
-  // months, so the series runs from Jan 1989 — comfortably before the first cycle opens (1991 since Version 511),
-  // so its opening quarter already has its twelve months behind it. Oct 2025 has no BLS reading (the government shutdown) and is simply absent.
+  // CPI-U inflation, year over year, monthly. The season reads the DIRECTION of inflation from a fitted trend over
+  // the last twelve readings (not one month against the next) and its level from the latest. The dial re-runs that
+  // reading at the end of every quarter of any cycle, so the series runs from Jan 1989, before the first cycle opens
+  // (1991): every quarter has its twelve months behind it. Oct 2025 has no BLS reading (the government shutdown)
+  // and is simply absent.
   // REFRESH: append the newest month; never drop earlier ones. Source: FRED CPIAUCSL (index), YoY computed from it.
   var cpiYoYHistory = [
     {m:"1989-01", v:4.48}, {m:"1989-02", v:4.65}, {m:"1989-03", v:4.89}, {m:"1989-04", v:5.03}, {m:"1989-05", v:5.28}, {m:"1989-06", v:5.17},
@@ -184,8 +166,8 @@
   ];
   // Real GDP growth, YEAR OVER YEAR, by quarter, from 1988 Q1 — two years before the first cycle opened, so
   // every quarter of every cycle has its growth window behind it. This is the season's growth-direction
-  // input (the annual series above still measures each cycle as a whole). Computed from FRED GDPC1 levels
-  // (chained 2017 dollars, SAAR): each quarter against the same quarter a year earlier, the standard growth
+  // input (the annual World Bank series in the data part measures each cycle as a whole). Computed from FRED GDPC1
+  // levels (chained 2017 dollars, SAAR): each quarter against the same quarter a year earlier, the standard growth
   // rate and far steadier than the quarter-on-quarter annualized print. Note the 2020 collapse and 2021 rebound
   // sit inside the windows for 2022, which is why early 2022 reads as rising growth.
   // REFRESH after each BEA release (late Jan/Apr/Jul/Oct, revised twice after): append the new quarter and
@@ -234,7 +216,7 @@
   // Real GDP in billions of chained 2017 dollars (FRED GDPC1, last updated Aug 26, 2026) — the LEVELS the rates above
   // are made from. Stored rather than derived, because a rate cannot be un-divided back into the two numbers it came
   // from, and the Year-on-year view has to show both. Reconciled against gdpQuarterlyYoY: every quarter from 2022 Q1
-  // to 2026 Q2 divides out to the stored rate at two decimals (Version 267). REFRESH with each BEA release.
+  // to 2026 Q2 divides out to the stored rate at two decimals. REFRESH with each BEA release.
   var gdpLevels = [
     {q:"2021 Q1", v:21082.134}, {q:"2021 Q2", v:21440.929}, {q:"2021 Q3", v:21617.828}, {q:"2021 Q4", v:21988.737},
     {q:"2022 Q1", v:21932.710}, {q:"2022 Q2", v:21967.045}, {q:"2022 Q3", v:22125.625}, {q:"2022 Q4", v:22278.345},
@@ -243,8 +225,6 @@
     {q:"2025 Q1", v:23548.210}, {q:"2025 Q2", v:23770.976}, {q:"2025 Q3", v:24026.834}, {q:"2025 Q4", v:24055.749},
     {q:"2026 Q1", v:24180.419}, {q:"2026 Q2", v:24269.613}
   ];
-  /* The Fed funds target range and its last move. REFRESH after each FOMC decision — and since Version 517 that
-     refresh actually reaches the screen: Pressure's `policyFacts` rows read THIS object rather than the three
-     hand-typed strings they used to carry. `vote` joined it in V517 for the same reason; it was the one fact on
-     that row with nowhere to live. A single target rather than a range (the Fed published one before Dec 2008)
+  /* The Fed funds target range and its last move. REFRESH after each FOMC decision: the Hormones page's
+     `policyFacts` rows, `vote` included, read THIS object and nothing else. A single target rather than a range (the Fed published one before Dec 2008)
      is written by setting lo and hi to the same number, which `fedFundsRange()` renders as one figure. */

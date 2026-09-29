@@ -1,44 +1,33 @@
-  /* ================= THE ANALYSIS TAB (Version 624) =================
-     Keren: "explain to me what the 12 pages nav is — maybe we need to work on it now before we will have to
+  /* ================= THE ANALYSIS TAB =================
+     Keren, V624: "explain to me what the 12 pages nav is — maybe we need to work on it now before we will have to
      refactor the entire app 200 versions from now."
-     She is right about the direction, and the measurement says where to cut. 12-pages-nav.js does six jobs;
-     four of them are the Cycle tab (the peek row, the signs, the four categories, the pages and the
-     navigation between them) and they live inside ONE 1,270-line function that shares a closure. Those cannot
-     be pulled apart cheaply and, on today's evidence, are not what grows.
-     These four are the Analysis tab, they were all written in the last fortnight, and they reference NOTHING
-     inside that function — the only mention crossing the line is in a comment. So this is the cut that costs
-     nothing and takes the part that is actually growing: the cycle list, a closed cycle's categories, the
-     roster the categories and Rhymes share, and Rhymes itself.
-     ONE ORDERING CHANGE, and it is a correction rather than a cost. renderCycleList used to register first,
-     ahead of renderPagesAndNav; it now registers after, like everything else in this file, which is the side
-     of the V255 CAPE carry the readings belong on. Nothing here reads the roster at load — a cycle's
-     categories are built when a cycle is opened — so the move is safe as well as tidier. */
+     The Analysis tab's four parts — the cycle list, a closed cycle's categories, the roster the categories and
+     Rhymes share, and Rhymes itself — reference NOTHING inside the Cycle tab's one closure in 12-pages-nav.js, so
+     they live here, apart from it.
+     ORDERING: everything in this file registers after renderPagesAndNav, which carries capeHistory's last point
+     to today; the readings belong on that side of the carry. Nothing here reads the roster at load — a cycle's
+     categories are built when a cycle is opened. */
 
   // ---------------- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----------------
   function renderCycleList(){
     var list = byId("cycle-list");
-    // Version 517: the two-pass scale is gone with it. It existed to find the longest cycle on the board and
-    // draw every other row against that; the scale is a typical cycle now, which every row can work out for
-    // itself, so one pass does what two did.
+    // One pass: each row's scale is a typical cycle, which every row can work out for itself.
     var strips = {};
     marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
     list.innerHTML = marketCycles.slice().reverse().map(function(cyc){
       var total = eraMarketTotal(cyc), strip = strips[cyc.from];
       return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' +
             '<div class="era-head"><span class="era-name">' + cyc.name + '</span>' +
-              /* V523: the span reads off `cycLabel`, which the picker and its menu already use. It was a
-                 hand-written copy here, and the copy is how "2023–Today" in the control ended up beside
-                 "2023–today" two taps away. */
+              /* the span reads off `cycLabel`, which the picker and its menu already use, so the control and
+                 this list cannot spell a cycle's years two ways ("2023–Today" beside "2023–today"). */
               '<span class="era-years">' + cycLabel(cyc).years +
                 ' <b>(' + strip.years + 'Y)</b></span>' +
               CHEV + '</div>' +
-            // the seasons of this cycle, the picture the old Analysis tab showed on its own (Version 259)
+            // the seasons of this cycle
             '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + '</div>' +
-            // What the cycle did to output and to prices, side by side (Keren, Sep 20, 2026, on seeing the pair:
-            // "this is so interesting — put it in the analysis tab per cycle"). Two totals computed the same way
-            // over the same closed years, so the comparison is real: the Big Tech decade ran dead even, and the
-            // Dot-Com Cycle is the only one of the five where output beat prices (Version 276; renamed in Version
-            // 413, so those two are 2008–2017 and 1990–1999, the same years as before).
+            // What the cycle did to output and to prices, side by side (Keren, V276, on seeing the pair: "this is
+            // so interesting — put it in the analysis tab per cycle"). Two totals computed the same way over the
+            // same closed years, so the comparison is real.
             // one line, not three: what the cycle was, then what it did. They wrap together at phone width
             // rather than each taking a row of its own.
             '<div class="era-foot">' +
@@ -50,12 +39,9 @@
             '</div>' +
       '</div>';
     }).join('');
-    // Version 354: two cycles show, the rest wait. PREVIEW_CYCLES is the only number here — the rows are
-    // already built, so this hides the tail rather than rendering a different list, which means an expanded
-    // container and the old five-row one are the same DOM and nothing can drift between them.
-    /* Version 505: every cycle shows. Two was right while the season reading sat under this list and the tab
-       had to hold both; with that gone the tab IS the cycle history, and a history that hides three of its five
-       entries behind a button is a preview of itself — the fault Version 354's own comment named. */
+    // Every cycle shows: the tab IS the cycle history, and a history that hides entries behind a button is a
+    // preview of itself. PREVIEW_CYCLES is the only number here — the rows are already built, so a smaller value
+    // hides the tail rather than rendering a different list, and expanded and collapsed are the same DOM.
     var PREVIEW_CYCLES = 99;
     (function(){
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -75,27 +61,24 @@
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
-      /* Version 616, Keren: "when I click on AI Cycle, which is the current cycle, I just want to go to the
-         current cycle page, because the cycle is not ended yet."
-         Right, and it settles what Version 615 left half-said. That version gave a CLOSED cycle a view of its
-         own — the dial, and every reading as what it finished at and how far it ran — because a cycle that
-         ended has no live page. The open cycle has one: the Cycle tab IS this view, still moving, with its
-         charts and its doors. Building a second, frozen copy of it would be the app telling a reader that the
-         AI Cycle is over, in the one place whose whole subject is whether it is. So the row is still a door;
-         it opens the tab rather than a page.
+      /* Keren, V616: "when I click on AI Cycle, which is the current cycle, I just want to go to the current
+         cycle page, because the cycle is not ended yet."
+         A CLOSED cycle has no live page, so it gets a view of its own here. The open cycle has one: the Cycle tab
+         IS this view, still moving, with its charts and its doors, and a frozen copy would tell the reader the
+         AI Cycle is over. So the row is still a door; it opens the tab rather than a page.
          It leaves through the tab button rather than by assembling the tab here, so the Cycle tab does its own
          setup — placeCharts, the live cycle, the top bar — in the one place that knows how. */
       if (era.ongoing){
         var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
         if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       }
-      showCycle(era, true);   // V615: the dial only — the two cards stay in their drawers
+      showCycle(era, true);   // the dial only — the two cards stay in their drawers
       slot.appendChild(cycleViewEl);
       renderCycleCats(era);
       listWrap.hidden = true; detail.hidden = false;
       // the top bar becomes the cycle's: its name as the title, the back arrow on the left (Keren, Sep 19, 2026: in the
       // top menu, not a link under it)
-      setTopbar(era.name, back);   // V616: only closed cycles reach here, and each has a name
+      setTopbar(era.name, back);   // only closed cycles reach here, and each has a name
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function back(){
@@ -115,14 +98,13 @@
   // First paint: the current cycle on the Cycle tab.
   renderCycleView(nowModel);
 
-  /* ---------------- RENDER: a closed cycle's four categories (Version 613) ----------------
-     Keren: "I want the view to be exactly like the current cycle page — four categories of Weather, Mood,
+  /* ---------------- RENDER: a closed cycle's four categories ----------------
+     Keren, V613: "I want the view to be exactly like the current cycle page — four categories of Weather, Mood,
      Circulation, Energy. But instead of going to another inner page, just show the data very briefly."
-     Same four categories, same row anatomy, one difference that is the whole point: on the Cycle tab a
-     category is a DOOR, because behind it is a live page that keeps moving. A cycle that ended has no live
-     page. So the row shows what the reading FINISHED at and how far it travelled getting there, and there is
-     nothing to open.
-     WHERE IT ENDED AND ITS RANGE — her choice over the peak reading and over first-against-last. It answers
+     Same four categories, same row anatomy, one difference: on the Cycle tab a category is a DOOR, because
+     behind it is a live page that keeps moving. A cycle that ended has no live page, so the row shows what the
+     reading FINISHED at and how far it travelled getting there, and there is nothing to open.
+     WHERE IT ENDED AND ITS RANGE — Keren's choice over the peak reading and over first-against-last. It answers
      both questions a closed cycle raises: how did this end, and how far did this reading move. The extreme is
      usually the story and first-against-last would hide it; the peak reading would leave the Big Tech Cycle
      empty, since it never had a bear market to have a peak at.
@@ -146,12 +128,9 @@
         var end = span[span.length - 1];
         var vs = span.map(function(d){ return d.v; });
         var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-        /* Version 615: the SHAPE, in the row. Taking the two charts off this view (see renderCycleView) left
-           it able to say where a reading finished and how far it ran, and not how it got there — which is the
-           part Keren is still turning over ("I'm still thinking how can we see the past data"). A sparkline
-           answers it inside the row she already has, with no page to open and no component to invent:
-           `sparkHtml` has drawn exactly this on peek cards since Version 253, and `.ci-mini` is the slot a
-           member's small picture has always gone in.
+        /* The SHAPE, in the row: where a reading finished and how far it ran does not say how it got there. A
+           sparkline answers that inside the row, with no page to open and no component to invent: `sparkHtml`
+           is what peek cards draw, and `.ci-mini` is the slot a member's small picture goes in.
            It is drawn in the accent rather than in a state colour, because `.ci-mini` already neutralises
            every other mini it holds — a closed cycle is not being graded, it is being read. */
         var art = span.length >= 3
@@ -170,12 +149,11 @@
     }).join("");
   }
 
-  /* ---------------- THE ROSTER AS SERIES (Version 613) ----------------
-     The thirteen readings, in the app’s own four categories, each as one {k,v} list keyed by the period it
-     was measured in. Version 612 built this inside Rhymes; Version 613 needs the same thirteen rows for a past
-     cycle’s categories, and two copies of a list like this is how two components quietly start disagreeing
-     about what the roster is. So it is lifted whole — Version 314, move rather than rebuild — and memoised,
-     because turning eight hundred months of federal funds into places in a record is work worth doing once.
+  /* ---------------- THE ROSTER AS SERIES ----------------
+     The thirteen readings, in the app’s own four categories, each as one {k,v} list keyed by the period it was
+     measured in. Rhymes and a past cycle’s categories both read this one copy: two copies of a list like this is
+     how two components quietly start disagreeing about what the roster is. Memoised, because turning eight
+     hundred months of federal funds into places in a record is work worth doing once.
      Built LAZILY on first call rather than at load, because capeHistory’s last point is carried to today by
      renderPagesAndNav and a roster built before that would hold January where every page shows September. */
   var __roster = null;
@@ -227,13 +205,10 @@
     }); });
     return (__roster = GRPS);
   }
-  /* A reading printed the way its own page prints it. Lives beside the roster because both components print
-     from it, and a figure formatted two ways is a figure that can disagree with itself.
-     The sign is decided AFTER rounding, which is the whole of this function’s care. December 2008 CPI is a
-     hair under nought, and `(-0.02).toFixed(1)` is "-0.0" — a minus sign in front of a zero, which says the
-     reading was negative while the digits say it was not. A value that rounds to nought prints without a sign,
-     on a signed row and an unsigned one alike, and a negative one wears the real minus every other figure in
-     this app wears. */
+  /* A reading printed the way its own page prints it. Both components print from it, so a figure cannot be
+     formatted two ways. The sign is decided AFTER rounding: December 2008 CPI is a hair under nought, and
+     `(-0.02).toFixed(1)` is "-0.0", a minus in front of a zero. A value that rounds to nought prints without a
+     sign, on signed and unsigned rows alike; a negative one wears the real minus every other figure here wears. */
   function readFig(r, v){
     var a = Math.abs(v).toFixed(r.dp);
     var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
@@ -249,22 +224,17 @@
     return k;
   }
 
-  /* ---------------- RENDER: Rhymes — today beside a past top (Version 610, rebuilt in Version 612) ----------
-     Keren, Sep 28, 2026: "history doesn't repeat, but it rhymes. I want the app to help me see how history
-     repeats itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and
-     now we are in with 41.3. I think this is the good comparison."
-
-     VERSION 611 SHIPPED THAT COMPARISON TWICE, once as figures here and once as a grid of dots called Echoes,
-     and she read the dots and could not check them: a mark saying two readings are alike, with neither reading
-     on the screen, asks to be believed. The dots are gone and the idea they carried is now a mark on a row
-     that HAS both numbers on it, so "alike" is always something the reader can verify by eye. One card.
-
+  /* ---------------- RENDER: Rhymes — today beside a past top ----------
+     Keren, V610: "history doesn't repeat, but it rhymes. I want the app to help me see how history repeats
+     itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and now we
+     are in with 41.3. I think this is the good comparison."
+     ONE CARD. A mark saying two readings are alike, with neither reading on the screen, asks to be believed; so
+     "alike" is a mark on a row that HAS both numbers on it, and the reader can always verify it by eye.
      THE PAIR RULE. Both columns come out of the SAME series, so "at the peak" and "now" are one gauge read
-     twice (Version 294), and each figure carries the period it was taken in beneath it — which is how the
-     reader can see the CAPE column reads January 2000 and not the March the market turned in.
+     twice, and each figure carries the period it was taken in beneath it — which is how the reader can see the
+     CAPE column reads January 2000 and not the March the market turned in.
      A series that does not reach the top leaves an em dash and says from when it IS measured. Nothing is
      interpolated: the record either covers the date or it does not.
-
      WHAT THE MARK MEANS. A reading is turned into its place in its OWN record — today's CAPE sits above 96% of
      that record — and the row is marked when the peak's place and today's are within five points of each
      other. A place carries no units, so one rule works on all thirteen rows: five per cent of the federal
@@ -273,10 +243,8 @@
      federal funds band for ever.
      There is no count of marks and no score. Thirteen rows agreeing is not a prediction, and a number claiming
      it was would be invented.
-
-     The rows are the roster in the order the four categories run, and the categories are labelled because
-     thirteen rows without them is a list rather than a body. Like everything that reads capeHistory this runs
-     after renderPagesAndNav, because Version 255 carries that series' last point to today. */
+     The categories are labelled because thirteen rows without them is a list rather than a body. Like everything
+     that reads capeHistory this runs after renderPagesAndNav (see the top of this file). */
   function renderRhymes(){
     var pick = byId("rhy-pick"), body = byId("rhy-body");
     if (!pick || !body) return;

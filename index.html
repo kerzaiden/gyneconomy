@@ -424,6 +424,7 @@
 
   .page-chart svg, .spread-history svg, .chart-shell svg,
   .page-chart svg *, .spread-history svg *, .chart-shell svg *{ touch-action:pan-y; }
+
   .cycle-dial .dial-today-badge{ cursor:grab; touch-action:none; transition:transform 0.18s ease;
     filter:var(--badge-lift); }
   .cycle-dial .dial-today-badge.scrubbing{ cursor:grabbing; }
@@ -444,7 +445,6 @@
   .cycle-dial .dial-mkt.ytd{ opacity:0.55; }
 
   .cycle-dial .dial-peak{ pointer-events:auto; }
-
   .cycle-dial .dial-peak .disc{ fill:var(--surface); stroke-width:2; }
   .cycle-dial .dial-peak.up .disc{ stroke:var(--ovulate); } .cycle-dial .dial-peak.up .dot{ fill:var(--ovulate); }
   .cycle-dial .dial-peak.down .disc{ stroke:var(--bleed-mid); } .cycle-dial .dial-peak.down .dot{ fill:var(--bleed-mid); }
@@ -662,7 +662,6 @@
   .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:14px; padding:10px 12px; }
   .seasons-rows .lag-row.lag-row-head{ font-size:11px; }
   .seasons-rows .meta{ display:none; }
-
   @media (max-width:640px){
 
     .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
@@ -1146,7 +1145,6 @@
   .meterpeek .mp-here.serious{ stroke:var(--serious); } .meterpeek .mp-here.critical{ stroke:var(--critical); }
   .meterpeek .mp-core.good{ fill:var(--good); } .meterpeek .mp-core.warning{ fill:var(--warning); }
   .meterpeek .mp-core.serious{ fill:var(--serious); } .meterpeek .mp-core.critical{ fill:var(--critical); }
-
   @media (max-width:400px){ .peek{ padding:13px 12px 12px; } .peek-value{ font-size:19px; } }
 
   .metric-sheet{ display:flex; flex-direction:column; }
@@ -1681,7 +1679,6 @@
 
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
   .hist-bar > * + *{ margin-top:8px; }
-
   .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
   .spread-history-caption{ font-size:12.5px; color:var(--text-secondary); line-height:1.55; max-width:70ch; margin:4px 0 0; }
@@ -1988,7 +1985,6 @@
       <div class="cv-stats" id="growth-stats"></div>
     </div>
 
-    
   </div>
 
   
@@ -2023,7 +2019,6 @@
       <div id="gdp-history" class="vh-host" hidden></div>
       <div class="gdp-tooltip mono hist-tip" id="gdp-hist-tooltip" hidden></div>
       <div id="gdp-yoy" hidden></div>
-      
       
       <div id="gdp-trend"></div>
       
@@ -2430,7 +2425,6 @@
   </div>
 
   
-  
   <div class="more-menu sources-view" id="sheet-appearance" role="dialog" aria-modal="true" aria-label="Appearance" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -2446,6 +2440,7 @@
       </div>
     </div>
   </div>
+  
   <div class="more-menu sources-view" id="sheet-contact" role="dialog" aria-modal="true" aria-label="Contact" hidden>
     <div class="menu-wrap">
       <div class="topbar">

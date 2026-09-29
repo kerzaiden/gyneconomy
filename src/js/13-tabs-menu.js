@@ -2,11 +2,8 @@
   function renderSeasonRows(){
     var meta = wheelMeta[currentSeason];
 
-    // Version 505: the season reading that stood here moved into `quarterPopup` — three of its five blocks
-    // were the same text that popup already drew from the same data, and the other two went with them.
-
-    // The seasons table — Keren's six-cell rule, the same one computeSeason() runs; today's row is marked.
-    // in colour order (Version 193, Keren): the blues first — Winter, then the two Springs — then the oranges — Summer, then the two Autumns
+    // The seasons table — Keren's six-cell rule, the same one readSeason() runs; today's row is marked.
+    // In colour order (Keren, V193): the blues first — Winter, then the two Springs — then the oranges — Summer, then the two Autumns
     var seasonRules = [
       {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
       {key:"springdeflation", growth:"Expansion",   temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
@@ -36,9 +33,9 @@
     put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
       seasonRules.map(function(r){
         var m = wheelMeta[r.key], now = r.key === currentSeason;
-        // the row carries its season's class, so its target-range bar lights in the season's colour — the dial's own token
-        // (Version 183; a dot before the name in 182): one variable serves the ring, the legend and this table
-        // growth and temperature are separate cells on desktop and one "Expansion · Cooling" line (.meta) on phones (Version 184)
+        // the row carries its season's class, so its target-range bar lights in the season's colour — the dial's own
+        // token: one variable serves the ring, the legend and this table
+        // growth and temperature are separate cells on desktop and one "Expansion · Cooling" line (.meta) on phones
         return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
           '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
       }).join(""));
@@ -99,14 +96,14 @@
     var prevOverflow = "";
     // Sliding a thing that is display:none takes two steps: un-hide it, let the browser lay it out at its start
     // position, and only then add the class that moves it. Reading offsetWidth is what forces that layout — without
-    // it both style changes land in one frame and the browser has nothing to animate FROM (Version 284).
+    // it both style changes land in one frame and the browser has nothing to animate FROM.
     function slideIn(el){ el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
     function slideOut(el, done){
       el.classList.remove("in");
       var fired = false;
       function finish(e){
         // only the transform's end means the screen has actually left: any shorter property finishing first would
-        // otherwise close it mid-travel, which is how the fade used to cut the slide off (Version 286)
+        // otherwise close it mid-travel
         if (e && e.propertyName && e.propertyName !== "transform") return;
         if (fired) return; fired = true;
         el.removeEventListener("transitionend", finish); el.hidden = true; if (done) done();
@@ -130,12 +127,11 @@
     // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
     var built = false;
     var groups = [
-      // ftportfolios and fisherinvestments carry the typical-cycle-length figure the dial's ring is
-      // scaled to. Added in Version 537 because they were falling into "Other", which put a group on
-      // the Sources screen that should never appear. Grouping them is NOT an endorsement: they are
-      // the only citations in the app that are neither a primary source nor a labelled compilation,
-      // and whether they belong at all is Keren's to settle — see the open question in ARCHITECTURE.md.
-      // V640: yardeni joins — the bull/bear market record the rhymes table cites, which is cycle history.
+      // ftportfolios and fisherinvestments carry the typical-cycle-length figure the dial's ring is scaled to;
+      // they are grouped here because "Other" is a group the Sources screen should never show. Grouping them is
+      // NOT an endorsement: they are the only citations in the app that are neither a primary source nor a
+      // labelled compilation, and whether they belong at all is Keren's to settle — see the open question in
+      // ARCHITECTURE.md. yardeni is the bull/bear market record the rhymes table cites, which is cycle history.
       ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/],
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],

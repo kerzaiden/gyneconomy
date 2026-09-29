@@ -5,7 +5,7 @@
     {m:"10Y", y:5.18}, {m:"20Y", y:5.53}, {m:"30Y", y:5.47}
   ];
   yieldCurve = LIVE("yieldCurve", yieldCurve);
-  /* V644: the curve's own date, so a reading drawn from it can say which day it is. The literal above is the
+  /* The curve's own date, so a reading drawn from it can say which day it is. The literal above is the
      Sep 24 2026 close (the VIX note records the 10-year at 5.18% that day); a live document carries its own
      asOf, used only when its rows are the ones LIVE() actually took. */
   var YIELD_CURVE_ASOF = "2026-09-24";
@@ -15,15 +15,13 @@
   }
 
 
-  /* V648: the seven Treasury histories below were compiled by hand until this version; they are now READ from
-     treasuryQuarterly, which the backfill (tools/fetch-fred-history.js) writes into 03b-history-fred.js from FRED's
-     monthly GS2/GS5/GS10/GS30/TB3MS, by the same method the notes below describe — so one vintage, rerunnable,
-     instead of a literal that goes stale. Before the swap every hand value was checked against the generated one;
-     the notes on method and on the 30-year's gap still describe what is shipped. The running quarter is an
-     average of the months printed so far and carries partial:true. */
+  /* The seven Treasury histories below are READ from treasuryQuarterly, which the backfill
+     (tools/fetch-fred-history.js) writes into 03b-history-fred.js from FRED's monthly GS2/GS5/GS10/GS30/TB3MS —
+     one vintage, rerunnable, never a literal that goes stale. The running quarter is an average of the months
+     printed so far and carries partial:true. */
   // 10Y-3M spread, quarterly from Q1 2005 — a compact stand-in for the FRED T10Y3M chart. Quarterly averages
   // (not daily): GS10's quarterly mean less TB3MS's, the method the hand-compiled series used and checked against
-  // Multpl and ycharts; the running quarter is partial. A quarterly average smooths away very short inversions (e.g. the single-day
+  // Multpl and ycharts. A quarterly average smooths away very short inversions (e.g. the single-day
   // Mar 22, 2019 dip) — the point is each cycle's shape, not every daily wiggle.
   var t10y3mHistory = treasuryQuarterly.s3m;
   var t10y3mRecessions = [
@@ -80,12 +78,8 @@
     meter: { value: 21, min: 0, max: 26, optimal: {from: 1, to: 10, label: "1–10 mo (past cycles)"} }
   };
 
-  // GDP growth, peer comparison: real GDP growth (annual %), World Bank WDI (NY.GDP.MKTP.KD.ZG), 2010–2025.
-  // "on" sets which peers are drawn (the United States is the Growth chart's own line and is always on; its row here also
-  // feeds the drawer's summary). Since Version 211 no peer is on by default — the chart opens on the US alone and the
-  // dropdown adds the others. The country's colour is the .peer-<code> class's --peer (Version 209).
-  // US real GDP growth back to 1990 (same World Bank series) — the Calendar tab's per-era growth figures and
-  // charts read this; the GDP comparison chart's United States row is derived from it below, so there is one copy.
+  // US real GDP growth (annual %), World Bank WDI (NY.GDP.MKTP.KD.ZG), 1990–2025 — the Calendar tab's per-era
+  // growth figures and charts read this.
   // REFRESH: add the newly-closed year once the World Bank publishes it (usually mid-year for the prior year).
   var usRealGdpGrowth = {
     1990:1.89, 1991:-0.11, 1992:3.52, 1993:2.75, 1994:4.03, 1995:2.68, 1996:3.77, 1997:4.45, 1998:4.48, 1999:4.79,
@@ -94,8 +88,7 @@
     2020:-2.08, 2021:6.15, 2022:2.52, 2023:2.93, 2024:2.79, 2025:2.16
   };
   // The peers on the Growth chart: real GDP, YEAR OVER YEAR, BY QUARTER, seasonally adjusted — the same measure as
-  // gdpQuarterlyYoY above, so the chart reads on one basis throughout (Version 212; the World Bank's annual series, six
-  // countries, one figure a year, from Version 16 to 211). Israel and Japan: OECD Quarterly National Accounts
+  // gdpQuarterlyYoY above, so the chart reads on one basis throughout. Israel and Japan: OECD Quarterly National Accounts
   // (DSD_NAMAIN1@DF_QNA_EXPENDITURE_GROWTH_OECD, Q.Y.<area>.S1..B1GQ......GY.). European Union (EU27 from 2020):
   // Eurostat namq_10_gdp, chain-linked volumes, percentage change on the same quarter a year earlier, calendar and
   // seasonally adjusted. "on" is which peers are drawn; none is, so the chart opens on the United States alone.
@@ -149,22 +142,20 @@
 
   var longCycleImpressionShort = "Interest costs are at their historical record and debt is near its own, moving together mid-expansion, with no recession present.";
 
-  /* ================= Version 488: the fiscal panel reads against CBO's own 50-year averages =================
-     The Version 485 audit found all three of these bands hand-drawn: debt "< 60% of GDP", interest "1.5–2%",
-     the deficit "2–4%". Plausible, conventional, and attributable to nobody. CBO publishes the figure each of
-     them was reaching for, in one document — the February 2026 Budget and Economic Outlook and its companion
-     primer on net interest — so all three now read against the same benchmark: **what the last fifty years
-     averaged.** Debt held by the public 51% of GDP, net interest 2.0%, the deficit 3.8%.
-     They also became ONE-SIDED, which is the bigger correction. A two-sided band called a 1%-of-GDP deficit
-     abnormal, and nobody thinks a small deficit is a problem worth flagging — the reading on all three is how
-     far ABOVE the long-run average they sit, so the band runs from the floor up to it and the grey above is
-     what unusual looks like. `stressScoreFor` normalises on `meter.min`/`meter.max` and never reads `optimal`,
-     so Economic power is untouched by this; checked before changing anything. */
+  /* ================= The fiscal panel reads against 50-year averages =================
+     Every band is the same benchmark: **what the last fifty years averaged.** CBO publishes it, in one document —
+     the February 2026 Budget and Economic Outlook and its companion primer on net interest: debt held by the
+     public 51% of GDP, net interest 2.0%, the deficit 3.8%. The debt row reads GROSS debt, whose 50-year average
+     (70%) CBO does not publish, so it is computed here by CBO's rule (see that row's note).
+     The bands are ONE-SIDED. A two-sided band would call a 1%-of-GDP deficit abnormal, and nobody thinks a small
+     deficit is a problem worth flagging — the reading on all three is how far ABOVE the long-run average they
+     sit, so the band runs from the floor up to it and the grey above is what unusual looks like.
+     `stressScoreFor` normalises on `meter.min`/`meter.max` and never reads `optimal`, so the bands do not move
+     Economic power. */
   var labPanel = [
     {
-      // V643, Keren: "switch the bar to gross debt." The headline 122% everyone quotes is GROSS federal debt; the
-      // app read debt held by the public (101%) and explained the gap in the (i) from V641. She chose the bar to
-      // show what readers meet. Every number below is the gross series, checked on load against fiscalHistory
+      // Keren, V643: "switch the bar to gross debt." The headline 122% everyone quotes is GROSS federal debt, so
+      // the bar shows what readers meet. Every number below is the gross series, checked on load against fiscalHistory
       // (03b, OMB via FRED) by checkGrossDebt in 04-components — so this row, its record and Power move together.
       marker:"Debt burden", sub:"gross federal debt ÷ GDP",
       meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
@@ -182,71 +173,52 @@
       direction:"up", flagValue:"3.3%", flagState:"critical"
     },
     {
-      // Version 397, Keren: "you write deficit rate, and it's not always deficit — it can be a surplus, so
-      // maybe we should call it federal budget instead." She is right, and the row's own bar proves it: its
-      // range starts at −2.3%, the FY2000 SURPLUS, and the budget was in surplus for four straight years to
-      // FY2001. A row named for one sign of a two-signed reading is wrong four years in eighty. The new name
-      // also matches the page it opens and the top bar of that page, which have both said "Federal budget"
-      // since Version 361 — so the row, the door and the room finally agree.
+      // Keren, V397: "you write deficit rate, and it's not always deficit — it can be a surplus, so maybe we
+      // should call it federal budget instead." The row's own range starts at −2.3%, the FY2000 SURPLUS, and the
+      // budget was in surplus four straight years to FY2001: a name for one sign of a two-signed reading is
+      // wrong. It also matches the page it opens and that page's top bar — the row, the door and the room agree.
       marker:"Federal budget", sub:"federal deficit or surplus ÷ GDP",
       meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:3.8, label:"\u2264 3.8%"},
              ends:{ zone:"50-year average", high:"Large" }},
       shortNote:"FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",
       note:"FY2026, ~$1.9T, CBO's February 2026 projection (FY2025 actual: 5.8%). Below emergency-level spikes, but deficits this size used to require a recession or a war — neither is present now. Range spans the largest surplus of the modern era (FY2000, +2.3% of GDP; the last one was FY2001, +1.2%) to the WWII deficit peak (FY1943, 26.9%), both from the OMB series on FRED. The green band ends at 3.8% of GDP, CBO's stated average deficit over the last fifty years; this year's 5.8% is half again as large.",
       direction:"up", flagValue:"5.8%", flagState:"serious",
-      // the only one of the three with a series behind it, so the only one with a page (Version 360). When
-      // another marker gets a history, it gets an `opens` too — this is a rule, not a favourite.
-      // The TOP BAR name is short (Version 361, Keren). The container inside keeps the full
-      // "Federal budget deficit or surplus": the bar names the page, the card names the reading, which is the
-      // same split Pulse uses — bar "Pulse", container "Velocity of money (M2)".
+      // the only one of the three with a series behind it, so the only one with a page. When another marker
+      // gets a history, it gets an `opens` too — this is a rule, not a favourite.
+      // Keren, V361: the TOP BAR name is short. The container inside keeps the full "Federal budget deficit or
+      // surplus": the bar names the page, the card names the reading — the split Pulse uses too (bar "Pulse",
+      // container "Velocity of money (M2)").
       opens:{ id:"sheet-marker-deficit", title:"Federal budget" }
     }
   ];
-  /* ---- Productivity growth left this panel in Version 395 (Keren: "I think it doesn't belong to economic power —
-     I think it belongs to activity"). She is right on subject matter: output per hour is a measure of what the body
-     is DOING, and it sits beside the labour market and industrial output rather than beside three claims on the
-     sovereign balance sheet. The tell was in the code all along — it was the one row needing `invert:true`,
-     because it is not a pressure at all.
+  /* ---- Productivity growth is not in this panel ----
+     Keren, V395: "I think it doesn't belong to economic power — I think it belongs to activity." Output per hour
+     measures what the body is DOING; it sits beside the labour market and industrial output, not beside three
+     claims on the sovereign balance sheet. It was the one row needing `invert:true`, because it is not a pressure.
+     The cost: Power has no offsetting term, so it is a gauge that can only fall. The gain: the composite is one
+     question asked three ways — the stock she owes, what carrying it costs, and what she is adding this year. */
 
-     What the move costs, stated plainly: Power loses its only offsetting term, so it is now a gauge that can only
-     fall, and today's reading drops from 30% to 26%. What it gains: the composite is one question asked three
-     ways — the stock she owes, what carrying it costs, and what she is adding this year — instead of three of
-     those plus something else.
-
-     And it fixed a flaw neither of us was looking for. Productivity was normalised against −11.7% to +20.9%,
-     the QUARTERLY annualised extremes, while the figure actually read was the ANNUAL year-over-year one, which
-     has never left −1.7% to +6.7%. Every realistic annual reading therefore landed near the middle of that
-     range and scored about 50 whatever it was — so through the 1950s–70s, when productivity was genuinely
-     strong, it was the single biggest DRAG on the composite. That is why the history lifts so much here: 1969
-     goes from 72% to 81%. The marker's own note had disclosed the mismatch since it was written; nothing had
-     drawn the conclusion. Its range on the Activity page is the annual one, because that is what it plots. ---- */
-
-  // Productivity growth, as a reading of its own on Activity (Version 395). It keeps its note and its sourcing;
-  // the range is rebuilt on the series actually shown — annual output per hour against the year before, whose
-  // true extremes across 1948–2025 are −1.68% (1974) and +6.65% (1950).
+  // Productivity growth, as a reading of its own on Activity. Its range is the series actually shown — annual
+  // output per hour against the year before, whose true extremes across 1948–2025 are −1.68% (1974) and +6.65%
+  // (1950) — never the quarterly annualised extremes, which would put every annual reading mid-range.
   var productivityReading = {
     econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY",
     metric:"2.2%", tag:{ state:"good", text:"Above trend" },
-    // V497: the low end of this track is 1974, when output per hour FELL — "Low" said nothing
+    // the low end of this track is 1974, when output per hour FELL — "Low" said nothing
     meter:{ min:-1.7, max:6.7, value:2.2, optimal:{gte:1.3, label:"\u2265 1.3% YoY"},
             ends:{ low:"Falling" } },
     shortCaption:"Q2 2026 — running above the post-2010 slowdown average and roughly at the 70-year trend.",
     caption:"Q2 2026, BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. Range is the true annual span since 1948: −1.7% in 1974 to +6.7% in 1950."
   };
 
-  /* ---- Institutional trust left this panel in Version 392 (Keren: "drop the institutional trust Gallup survey —
-     we don't need it, because the trust is embodied in the bond market. So the power supply indicator should only be
-     comprised of debt burden, interest burden, deficit rate and productivity growth"). It was the Gallup confidence
-     reading, 27% against a 26–48 range. The argument for cutting it is that it was measuring the same thing twice
-     and worse: what a nation's creditors actually think of it is priced, continuously, in what they charge her to
-     borrow — which is the interest burden already sitting two rows above, and the yield curve on Pressure. A survey
-     of how people say they feel about banks is a slower, noisier proxy for a number the market publishes daily.
-     Dropping it also removed the panel's one non-fiscal series and its only gap: Gallup did not poll in 1980, 1982
-     or 1992, which is why the power history had three years missing. It now has none.
-     What went with it: the row, its meter, its two historical comparison values, and the three-year hole. ---- */
+  /* ---- Institutional trust is not in this panel ----
+     Keren, V392: "drop the institutional trust Gallup survey — we don't need it, because the trust is embodied in
+     the bond market. …" What a nation's creditors think of her is priced, continuously, in what they charge her
+     to borrow — the interest burden above, and the yield curve on Pressure. A survey of how people say they feel
+     about banks is a slower, noisier proxy for a number the market publishes daily. */
 
   // Overall stress score: composite of the three labPanel markers, each normalized to its own reference range
-  // (all three now point the same way: more is worse, so none is inverted). Feeds both the
+  // (all three point the same way: more is worse, so none is inverted). Feeds both the
   // "Financial resilience" summary pill above and the stress bar inside the panel itself, so the two always agree.
   // stressScoreFor() is the single formula — reused below to score real 2007 and 2020 readings the same way,
   // so "today vs. history" is the same math applied to different inputs, never two different models.
@@ -257,7 +229,7 @@
     }, 0) / labPanel.length);
   }
   var stressScore = stressScoreFor(labPanel.map(function(row){ return row.meter.value; }));
-  // Economic power is that composite read from the other end (Version 229, Keren: "instead of financial stress, let's call
+  // Economic power is that composite read from the other end (Keren, V229: "instead of financial stress, let's call
   // it economic power, because we are talking on a nation level"): what is left in the battery once the three structural
   // pressures have taken their share. One number, two ways of saying it — powerScore is what the page shows, stressScore
   // stays the maths underneath so nothing silently changes meaning. The word and its state come from energyFromReserve(),
@@ -266,93 +238,54 @@
   var powerScore = powerOf(stressScore), powerWord = energyFromReserve(powerScore);
 
   // Historical comparison points: actual 2007 (pre-crisis) and 2020 (COVID) readings for the same three markers,
-  // in labPanel order [debt burden, interest burden, deficit rate],
-  // run through stressScoreFor() above. Fixed/editorial — do not recompute or drift these on a data refresh;
-  // update only if better-sourced historical figures turn up. Sources (re-verified Sep 2026 against the primary
-  // series): OMB via FRED — FYPUGDA188S (debt 34.8 / 98.3), FYOIGDA188S (interest 1.6 / 1.6), FYFSGDA188S (deficit
-  // 1.1 / 14.5); BLS nonfarm output per hour, annual average vs. prior year (1.6 / 5.3, current vintage).
-  // The Gallup correction recorded here from Version 255 to Version 391 — 2007's trust reading moved from the 2006
-  // figure to the real 33, which took the '07 power reading from 63% to 58% — is kept in the version history rather
-  // than here, now that the marker it corrected is gone.
-  // Version 392: the trust value drops off each row with the marker. The four that remain are unchanged and were
-  // re-verified against the primary series in the same pass — FRED FYPUGDA188S 2007 34.79 / 2020 98.32,
-  // FYOIGDA188S 1.638 / 1.616, FYFSGDA188S −1.110 / −14.482 (sign flipped, this marker reads deficit-positive),
-  // and BLS output per hour annual-average year over year 1.59 / 5.31. The '07 reading moves from 58% to 65% and
-  // '20 from 42% to 41%: losing trust lifts 2007 markedly, because 2007's fiscal position was strong and its
-  // Gallup number was already weak, and barely moves 2020, whose fiscal shock dominated everything.
+  // in labPanel order [debt burden, interest burden, deficit rate], run through stressScoreFor() above. Fixed/editorial — do not recompute or drift these on a data refresh;
+  // update only if better-sourced historical figures turn up. Sources, OMB via FRED (fiscalHistory in 03b):
+  // GFDGDPA188S gross debt 2007 61.84 / 2020 125.86; FYOIGDA188S interest 1.638 / 1.616 and FYFSGDA188S
+  // −1.110 / −14.482 (sign flipped, this marker reads deficit-positive), both re-verified Sep 2026.
   var stressHistory = [
-    // V643: gross debt, to two decimals, straight from fiscalHistory — at one decimal the '07 reading would
+    // gross debt, to two decimals, straight from fiscalHistory — at one decimal the '07 reading would
     // print 68% beside a chart point of 67%. Same numbers checkGrossDebt compares.
     { label:"'07 pre-crisis", values:[61.84, 1.64, 1.11] },
     { label:"'20 COVID",      values:[125.86, 1.62, 14.48] }
   ];
   stressHistory.forEach(function(h){ h.score = stressScoreFor(h.values); });
 
-  // Same "lab result" bar as the 12 individual meters below, read as charge (Version 229, Keren: "the meter of exhausted
+  // Same "lab result" bar as the 12 individual meters below, read as charge (Keren, V229: "the meter of exhausted
   // to energetic would give us the whole range of depletion and energetics"): the bar runs empty to full, the green zone
   // is the charged end (70 and up, roughly where the composite has historically sat outside a downturn), and a
   // dot short of it reads as flagged, exactly like every other meter on the page. `ends` renames the bar's two end words,
   // which are "Low" and "Optimal" everywhere else.
-  var powerMeter = { min:0, max:100, value:powerScore, optimal:{gte:70, label:"\u2265 70%"},   // V488: "(ample reserve)" moved to the (i); the label row is a column, not a sentence
+  var powerMeter = { min:0, max:100, value:powerScore, optimal:{gte:70, label:"\u2265 70%"},   // no "(ample reserve)" here: the label row is a column, not a sentence
     ends:{ low:"Exhausted", zone:"Energetic" } };
   var stressNoteFull = "Each of the three markers is normalized 0–100 against its own actual historical U.S. high and low — a real benchmark, not a padded scale — then averaged equally, and the average subtracted from 100: what the three pressures leave in reserve. It is a quick read on total power, not a substitute for reading each marker. A full charge — 100% — is every one of the three at the best value the United States has actually recorded, so this is a percentage of her own best, not a share of anything measured out in the economy. For comparison, the same formula leaves the actual 2007 pre-crisis reading " + powerOf(stressHistory[0].score) + "% and the actual 2020 COVID reading " + powerOf(stressHistory[1].score) + "% — today's " + powerScore + "% sits below both.";
 
-  // Economic power, year by year (Version 255; recomputed on four markers in Version 392). The SAME stressScoreFor()
-  // maths as today's reading, applied to each year's actual markers — so a point on this line means exactly what the
-  // number on the row means. That identity is the reason this series could not simply keep its old values when
-  // Institutional trust was dropped: the chart would have gone on measuring five things while the figure above it
-  // measured four, and the line would have quietly stopped being the same reading.
-  //
-  // Rebuilt from the primary annual series rather than adjusted: FRED FYPUGDA188S (debt held by the public ÷ GDP),
-  // FYOIGDA188S (net interest ÷ GDP), FYFSGDA188S (surplus/deficit ÷ GDP, sign flipped) and BLS nonfarm output per
-  // hour (OPHNFB, annual average against the prior year). The method was validated before it was trusted: run on the
-  // five-marker inputs it reproduces the app's own stored 2007 and 2020 figures exactly, so the only thing that
-  // changed here is the marker count.
-  //
-  // 1980, 1982 and 1992 now EXIST. They were absent because Gallup did not poll in those years and the composite
-  // could not be formed; with trust gone the four fiscal and productivity series are complete and so is the line.
-  //
-  // Version 393 opens the window to 1948, which is the series' true limit rather than a choice (Keren, asked
-  // whether to take it back: "yes"). 1979 was never a judgement about what was worth showing — it was where
-  // Gallup's poll began, and it outlived the marker that needed it by one version. The binding constraint now is
-  // productivity: BLS output per hour starts in 1947 Q1, so the first year that HAS a year behind it is 1948.
-  // Debt runs from FY1939, interest from FY1940 and the deficit from FY1929, so three of the four could go
-  // further still; the composite cannot, and a composite of three markers where the chart says four would be the
-  // exact fault Version 392 was fixing.
-  //
-  // This is an EXTENSION, not a recomputation: the 1979-onward values are identical, value for value, to the ones
-  // Version 392 shipped — checked by comparing the two strings, not by eye. Only the earlier years are new.
-  // What they add is the post-war deleveraging, and it changes the headline: the strongest reading on record is
-  // no longer 2002 but 1966 at 72%, and today's 30% is now the weakest in seventy-eight years rather than
-  // forty-eight. The 50Y stop appears on its own — the timeline offers a window only when the series is that
-  // deep (Version 366), so nothing had to be told about it.
+  // Economic power, year by year. The SAME stressScoreFor() maths as today's reading, applied to each fiscal
+  // year's actual markers — so a point on this line means exactly what the number on the row means, and the whole
+  // series is recomputed whenever the markers change, never adjusted.
+  // Inputs, OMB via FRED (fiscalHistory in 03b): GFDGDPA188S (gross federal debt ÷ GDP), FYOIGDA188S (net
+  // interest ÷ GDP), FYFSGDA188S (surplus/deficit ÷ GDP, sign flipped). checkGrossDebt recomputes every year on
+  // each load and warns if a single year differs, so the chart cannot drift from the row it explains.
+  // It starts at 1948 (Keren, V393, asked whether to take the window back that far: "yes"). 1948 was set by BLS
+  // output per hour, which starts in 1947 Q1 and was then a marker; debt runs from FY1939, interest from FY1940
+  // and the deficit from FY1929, so the three markers left could now reach FY1940.
+  // The timeline offers a window only when the series is that deep, so the 50Y stop appears on its own.
   // REFRESH: append one year when the CBO/OMB actuals for it are out.
-  // V643: recomputed on GROSS debt (GFDGDPA188S) with the same stressScoreFor maths, after the method was proved by
-  // reproducing all 78 shipped values exactly from FYPUGDA188S. checkGrossDebt recomputes it on every load and
-  // warns if a single year differs, so the chart cannot drift from the row it explains.
   var powerHistory = [{y:1948,v:64},{y:1949,v:60},{y:1950,v:61},{y:1951,v:71},{y:1952,v:70},{y:1953,v:69},{y:1954,v:71},{y:1955,v:73},{y:1956,v:76},{y:1957,v:77},{y:1958,v:75},{y:1959,v:74},{y:1960,v:75},{y:1961,v:76},{y:1962,v:76},{y:1963,v:76},{y:1964,v:77},{y:1965,v:79},{y:1966,v:80},{y:1967,v:79},{y:1968,v:77},{y:1969,v:81},{y:1970,v:79},{y:1971,v:78},{y:1972,v:79},{y:1973,v:80},{y:1974,v:79},{y:1975,v:76},{y:1976,v:74},{y:1977,v:75},{y:1978,v:75},{y:1979,v:75},{y:1980,v:71},{y:1981,v:67},{y:1982,v:60},{y:1983,v:58},{y:1984,v:55},{y:1985,v:51},{y:1986,v:50},{y:1987,v:53},{y:1988,v:53},{y:1989,v:51},{y:1990,v:48},{y:1991,v:45},{y:1992,v:46},{y:1993,v:48},{y:1994,v:50},{y:1995,v:48},{y:1996,v:49},{y:1997,v:53},{y:1998,v:57},{y:1999,v:62},{y:2000,v:66},{y:2001,v:68},{y:2002,v:69},{y:2003,v:69},{y:2004,v:69},{y:2005,v:69},{y:2006,v:67},{y:2007,v:67},{y:2008,v:62},{y:2009,v:56},{y:2010,v:55},{y:2011,v:52},{y:2012,v:55},{y:2013,v:58},{y:2014,v:59},{y:2015,v:61},{y:2016,v:58},{y:2017,v:57},{y:2018,v:54},{y:2019,v:50},{y:2020,v:35},{y:2021,v:42},{y:2022,v:45},{y:2023,v:37},{y:2024,v:29},{y:2025,v:27}];
 
-  /* ---------------- The deficit, year by year (Version 358) ----------------
-     Keren, Sep 23, 2026, with ARK's chart of the federal deficit as a share of GDP: "where do you think this fits
-     in the app? I think when I look at debt burden, that's what we were trying to achieve, but we are saying 101%,
-     which is a completely different number." The app already had the reading and was drawing it badly.
-
-     Debt burden is the STOCK — everything she has ever borrowed and not repaid. The Deficit rate is the FLOW — how
-     much she is adding this year. Both are true at once and neither is the other, which is why 101% and 5.8% sit on
-     one page without contradicting each other; and the interest burden beside them is what carrying the stock costs
-     her each year. Three markers, three questions.
-
-     What the app lacked was the PICTURE. The Deficit rate's range bar runs from a modern surplus to the FY1943
-     wartime peak, and on that scale today's 5.8% lands a quarter of the way along and reads as mild — so the row's
-     own picture was quietly contradicting the sentence underneath it, which says a deficit this size used to require
-     a recession or a war. That claim is comparative and it is about WHEN, so it needs a series, not a bar.
-
+  /* ---------------- The deficit, year by year ----------------
+     Keren, V358, with ARK's chart of the federal deficit as a share of GDP: "where do you think this fits in the
+     app? I think when I look at debt burden, that's what we were trying to achieve, but we are saying 101%, which
+     is a completely different number."
+     Debt burden is the STOCK — everything she has ever borrowed and not repaid. The deficit is the FLOW — how much
+     she is adding this year. Both are true at once and neither is the other; and the interest burden beside them
+     is what carrying the stock costs her each year. Three markers, three questions.
+     The row's range bar runs from a modern surplus to the FY1943 wartime peak, and on that scale today's deficit
+     reads as mild, while the sentence under it says a deficit this size used to require a recession or a war.
+     That claim is comparative and it is about WHEN, so it needs a series, not a bar.
      Two choices, both Keren's. It starts at 1946, because peacetime is the only frame in which 1983 and today are
-     comparable at all, and the wartime record is STATED in the rows beneath rather than drawn — kept honest without
-     being allowed to flatten eighty years into a band. And it lives here, as a second container on this page,
-     rather than taking an inner page of its own: one of three markers outranking the other two would invite the
-     same claim from Debt burden the next day.
-
+     comparable at all, and the wartime record is STATED in the rows beneath rather than drawn. And it lives here,
+     as a second container on this page, rather than on an inner page of its own: one of three markers outranking
+     the other two would invite the same claim from Debt burden the next day.
      80 fiscal years of FRED FYFSGDA188S (OMB), the series this marker already cites, checked on load against the
      two records it sets inside this window. Positive is a surplus. */
   var DEF_FROM_YEAR = 1946;
@@ -375,24 +308,17 @@
   }
   GYN.step("checkDeficitHistory", checkDeficitHistory, "check"); checkDeficitHistory();
 
-  /* Version 359, Keren, with ARK's own chart beside it: "I want the title to be federal budget deficit or
-     surplus. All the text can be in an info icon next to the title. Also I want a timeline menu — year to
-     date, one year, five year, and max."
-
-     The title and the (i) are done as asked. The menu is done at the spans this series can actually answer.
-     ARK can offer year-to-date and one-year windows because their chart is a ROLLING 12-MONTH deficit plotted
-     monthly; ours is one bar per fiscal year, so a one-year window is a single bar and a year-to-date window
-     is a single bar that is still a projection. The menu therefore zooms by decade — 10Y / 25Y / 50Y / Max —
-     which is the same move their range control makes and the one this data supports. Keren's call once the
-     alternatives were laid out: keeping the annual series also keeps the 1946 start and all twelve surplus
-     years, which the monthly source (Treasury's MTS, October 1980 onward) would have cost.
-
-     The one thing taken from their design unchanged is the dashed 1983 reference line. It is what makes their
-     picture land, it is the comparison Keren arrived with, and it is drawn at EVERY range — the level is the
-     point, so it stays on screen even when 1983 itself is off the left edge. It replaces the average line
-     rather than joining it: two dashed plum lines on one plot is two references and no reading, and the
-     average is stated in the rows below. */
-  // Version 362, Keren: "add five year to the ruler, because that’s the standard visual most economists use."
-  // It also earns its place mechanically: five years is the FIRST window that clears FY2020’s −14.5%, so it is
-  // the only one where the scale actually rescales and the recent plateau can be read against the 1983 line.
-  // Every longer window contains 2020 and is dominated by it.
+  /* Keren, V359, with ARK's own chart beside it: "I want the title to be federal budget deficit or surplus. All
+     the text can be in an info icon next to the title. Also I want a timeline menu — year to date, one year, five
+     year, and max."
+     The menu zooms at the spans this series can answer. ARK's chart is a ROLLING 12-MONTH deficit plotted
+     monthly; ours is one bar per fiscal year, so a one-year window is a single bar and a year-to-date window is
+     a single bar that is still a projection. So the menu zooms by decade — 10Y / 25Y / 50Y / Max — Keren's call
+     once the alternatives were laid out: the annual series keeps the 1946 start and all twelve surplus years,
+     which the monthly source (Treasury's MTS, October 1980 onward) would have cost.
+     The dashed 1983 reference line is drawn at EVERY range — the level is the point, so it stays on screen even
+     when 1983 itself is off the left edge. It replaces the average line rather than joining it: two dashed plum
+     lines on one plot is two references and no reading, and the average is stated in the rows below. */
+  // Keren, V362: "add five year to the ruler, because that’s the standard visual most economists use."
+  // Five years is also the FIRST window that clears FY2020’s −14.5%, so it is the only one where the scale
+  // rescales and the recent plateau can be read against the 1983 line; every longer window is dominated by 2020.

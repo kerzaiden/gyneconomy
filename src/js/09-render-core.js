@@ -1,38 +1,21 @@
   // ---------------- RENDER: range bars + card helpers ----------------
   function clampPct(v, lo, hi){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
 
-  // Progressive disclosure: every card/row shows only its short, load-bearing sentence by default; the fuller
-  // explanation (sourcing detail, caveats, the body↔economy metaphor) sits behind a small (i) button next to it.
-  // Since Version 142 (Keren: "make the info icons open in the new popup format as well") these open in the same
-  // sheet/modal as the expand buttons below, not a floating popover: infoIcon() just files the text in detailTexts,
-  // wrapping plain text in a heading (the icon's label) and a paragraph so it reads like the other sheets.
+  // Progressive disclosure: a card shows its short, load-bearing sentence; the fuller explanation sits behind
+  // an (i). Keren, V142: "make the info icons open in the new popup format as well" — the expand buttons' modal,
+  // not a popover. Plain text gets a heading (the icon's label) and a facts list, like the other notes.
   function infoIcon(fullHtml, title){
     var html = /^\s*<h4/.test(fullHtml) ? fullHtml : '<h4>' + (title || "About this reading") + '</h4>' + factsFrom(fullHtml);
     return expandBtn(html).replace('class="expand-btn"', 'class="info-btn expand-btn"').replace('aria-label="Expand details"', 'aria-label="More detail"');
   }
 
-  // Every indicator below (Financial resilience & Psychology table rows, Coincident & Lagging cards) defaults to
-  // a minimal view — name/term, headline metric, at most one short line. detailTexts holds the full expanded
-  // markup for each (reference-range bar, full note/caption, aux stat, sources), opened in one shared modal
-  // rather than a popover, since there's more to show here than a paragraph of text.
+  // Every indicator defaults to a minimal view (name, headline metric, at most one short line); detailTexts
+  // holds each one's full markup, opened in one shared modal.
   var detailTexts = [];
-  /* A CONTENT-ADDRESSED slot table (Version 532).
-
-     `detailTexts` was append-only: every `expandBtn` and `moreRow` pushed a fresh entry and handed
-     back its index, so re-rendering a block allocated NEW slots and `data-detail-idx` climbed. That
-     made the array grow as a reader browsed, and it made rendering twice impossible — the DOM came
-     back 22KB larger with different indices, which is how Version 531's registry found it.
-
-     The key is the note's own HTML, so identical content resolves to the same slot however many
-     times it is built, and no call site has to pass anything. Strings are immutable and shared by
-     reference in JS, so the map's key and the array's entry are the same string — the table costs
-     bookkeeping, not a second copy of every note.
-
-     A note whose text genuinely changes (a figure moved) takes a new slot, which is correct: it is
-     a different note. Growth is therefore bounded by DISTINCT content rather than by render count.
-
-     `headNoteIdx` and `hubDetailIdx` already keyed their slots by hand — by page id and by being
-     allocated once — and are left exactly as they were. This generalises what they were doing. */
+  /* A CONTENT-ADDRESSED slot table: the key is the note's own HTML, so re-rendering a block neither grows
+     `detailTexts` nor changes `data-detail-idx` — rendering twice gives the same DOM. Key and entry are one
+     shared string, so no note is stored twice. A note whose text changes takes a new slot, so growth is bounded
+     by distinct content. `headNoteIdx` and `hubDetailIdx` key their slots by hand (page id; allocated once). */
   var detailSlots = Object.create(null);
   function detailSlot(html){
     var key = String(html == null ? "" : html);
@@ -44,11 +27,10 @@
     }
     return idx;
   }
-  // V491: the two multi-reading panels, built once at init and placed by their page's renderer (see above).
+  // The two multi-reading panels, built once at init and placed by their page's renderer.
   var powerPanelHtml = "", valuationPanelHtml = "";
-  /* V492: Growth's and Households' rows, built on first use and kept. Same reason as V491's two — a renderer
-     that rebuilds on every window change would otherwise push a fresh (i) into `detailTexts` each time. These
-     are functions rather than vars because they call `panelRow`, which is declared after their meters. */
+  /* Growth's and Households' rows, built on first use and kept, for the same reason. Functions rather than
+     vars because they call `panelRow`, which is declared after their meters. */
   var _growthPanel = null, _householdsPanel = null;
   function growthPanelHtml(){
     return _growthPanel || (_growthPanel = panelRow({
@@ -64,7 +46,7 @@
       panelRow({ name:"Saving rate", info:savInfoHtml(), metric:savNow.toFixed(1) + "%",
                  flagged:meterFlagged(savMeter), bar:panelFromMeter(savMeter) }));
   }
-  // Every (i) reads the same way (Version 227, Keren: "bullet points, only the central information, one clean swoop"):
+  // Every (i) reads the same way — Keren, V227: "bullet points, only the central information, one clean swoop":
   // a lede line, then facts, one per line. facts() takes them written; factsFrom() splits a written note into its own
   // sentences, for the marker notes, whose figures and dates are better left in their own words than paraphrased.
   function facts(list){ return '<ul class="facts">' + list.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>'; }
@@ -76,50 +58,39 @@
     return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
            '" aria-label="Expand details">i</button>';
   }
-  // The modal is back to what it was built for (Version 256): one note, opened by an (i), closed and forgotten.
-  // Metric pages left it — see openMetricPage below.
+  // The modal holds one note, opened by an (i), closed and forgotten. Metric pages are not in it — see openMetricPage.
   var sheetRenderers = {};
-  // Which stop each page is showing. It sits beside sheetRenderers because the two are one mechanism: a key in
-  // both is all the delegated .range-seg handler needs to drive a control, which is how the deficit block, Volume
-  // and Pulse get a timeline without a second control idiom or a listener of their own.
-  // "deficit-range", "volume-range" and "pulse-range" are not sheets — they are a block's own zoom.
-  // Every timeline opens on TEN YEARS (Version 368, Keren: "make the default marker 10 years"). The deficit had
-  // opened there since Version 361 and the rest opened on Max, so the same control started in two different places
-  // depending on which page you reached it from — which is the one thing a shared component must never do.
-  // Ten is also the better first view: it is the window an economist quotes, it is long enough to hold a cycle and
-  // a shock, and Max is one tap away for the reader who wants the whole record.
-  // Growth and Temperature are not listed with a window because they do not offer one; their default is unchanged.
-  // Version 410: every history opens on the cycle the front page is showing. The 10-year default came in when
-  // "This cycle" was not a real window; it is one now, and a reading opened from Current cycle should be about
-  // the current cycle.
-  // Version 417: which mode each page's history is in. Only Temperature has the cycle overlay so far; the default
-  // stays "calendar" until every page has one, so the app is never inconsistent between pages mid-rollout. Keren
-  // asked for Cycles as the DEFAULT — that is one word here, and it flips in the last stage of the rollout.
+  // Which mode each page's history is in. Cycles is the default, as Keren asked: every history opens on the
+  // cycle the front page is showing, because a reading opened from Current cycle should be about that cycle.
+  // "*-range" keys are not sheets — they are a block's own zoom (see pageRange).
   var pageMode = { "sheet-metric-temp":"cycles", "sheet-metric-gdp":"cycles",
                    "sheet-metric-power":"cycles", "sheet-metric-valuation":"cycles",
                    "volume-range":"cycles", "pulse-range":"cycles",
                    "deficit-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles", "pressure-range":"cycles",
-                   "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };   // V498
-  // Which cycles the overlay draws. null means all of them, which is the default because the comparison IS the
-  // landing view; a toggled-off cycle simply is not drawn. The handler never lets the last one be turned off.
+                   "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };
+  // Which cycle each history shows in Cycles mode, by name, as the cycle picker sets it.
   var pageCycles = { "sheet-metric-temp":null, "sheet-metric-gdp":null,
                      "sheet-metric-power":null, "sheet-metric-valuation":null,
                      "volume-range":null, "pulse-range":null,
                      "deficit-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null, "pressure-range":null,
-                     "sheet-metric-households":null, "sheet-sign-activity":null };   // null = the open cycle (V420)
-  var pageRange = { "sheet-metric-power":"10y", "sheet-metric-valuation":"10y",   // V433: "cycle" left both rulers
-                    "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y", // V418/V431: "cycle" left both rulers
-                    "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",   // V434\u2013435: "cycle" left all three
+                     "sheet-metric-households":null, "sheet-sign-activity":null };   // null = the open cycle
+  // Which stop each page's Years mode is showing. A key here and in sheetRenderers is all the delegated
+  // .range-seg handler needs, so no page needs its own control idiom or listener. Keren, V368: "make the
+  // default marker 10 years" — the same start on every page; ten holds a cycle and a shock, and Max is one tap
+  // away. Desire opens on Max: its series is three years deep (see drawDesireRecord).
+  var pageRange = { "sheet-metric-power":"10y", "sheet-metric-valuation":"10y",
+                    "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y",
+                    "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",
                     "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y", "pressure-range":"10y",
                     "sheet-metric-households":"10y",
-                    "sheet-sign-activity":"10y" };   // V498
+                    "sheet-sign-activity":"10y" };
   function wireDetailModal(){
     var backdrop = byId('detail-backdrop');
     var body = byId('detail-modal-body');
     function openFrom(idx, btn){
       body.innerHTML = detailTexts[idx];
-      // Version 329: the reading's timing chip comes with the note — a copy, so the page keeps the original and
-      // a second opening finds it again.
+      // The reading's timing chip comes with the note — a copy, so the page keeps the original and a second
+      // opening finds it again.
       var sheet = btn && btn.closest && btn.closest(".metric-sheet");
       var chip = sheet && sheet.querySelector(".timing-row");
       if (chip) body.appendChild(chip.cloneNode(true));
@@ -128,8 +99,8 @@
 
     function close(){ backdrop.classList.remove('show'); body.innerHTML = ""; }
     document.addEventListener('click', function(e){
-      // V518: .bh-opt is the head's ⋯ menu row. It opens exactly what an (i) opens, by the same index, which
-      // is the whole reason the note could leave the reading row without being written a second time.
+      // .bh-opt is the head's ⋯ menu row. It opens exactly what an (i) opens, by the same index, so a note is
+      // never written a second time for the menu.
       var btn = e.target.closest && e.target.closest('.expand-btn, .details-link, .more-row, .bh-opt');
       if (btn){ if (btn.closest('summary')) e.preventDefault(); // an (i) on a drawer's own row opens the modal, not the drawer
         openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
@@ -151,16 +122,14 @@
   byId("asof-text").textContent = "Data compiled " + dataCompiledLabel; // the disclaimer beside it says it is a snapshot, not a feed
 
 
-  // Individual indicator meters: a clean "lab result" bar — plain track, a solid green "optimal" zone,
-  // and a single dot at today's value (dark if inside the optimal band, orange if outside). Historical
-  // low/high still set the bar's own min/max (so the dot's position is still honest against real extremes),
-  // but there are no interior tick marks or floating pointer labels cluttering the bar itself — the value
-  // is already printed big, above, next to the marker name.
+  // A "lab result" bar: plain track, a solid "optimal" zone, one dot at today's value (flagged outside the
+  // band). Historical low/high set the bar's min/max, so the dot is honest against real extremes; no ticks or
+  // pointer labels, because the value is already printed big above it.
   // m.optimal is one of: {from, to, label} | {gte, label} | {lte, label} — from/to/gte/lte are plain numbers
   // used for positioning + the flagged check; label is the pre-formatted display string (units vary by metric).
   function meterHtml(m){
     var pct = clampPct(m.value, m.min, m.max);
-    var o = m.optimal, ends = m.ends || {}, flagged = false, zoneHtml = '', labelsHtml = ''; // `ends` renames a bar's end words (V229, all branches V231)
+    var o = m.optimal, ends = m.ends || {}, flagged = false, zoneHtml = '', labelsHtml = ''; // `ends` renames a bar's end words, in every branch
     if (o){
       if (o.from != null && o.to != null){
         var l = clampPct(o.from, m.min, m.max), r = clampPct(o.to, m.min, m.max);
@@ -180,23 +149,16 @@
       }
     }
     var dotHtml = '<div class="rbar-dot' + (flagged ? ' flagged' : '') + '" style="left:' + pct.toFixed(1) + '%"></div>';
-    // V634: `m.stops` — named hover positions along the track (Version 235) — went. No meter has passed one since
-    // the record rows left in V494; the branch and its CSS rule were the dead code the working document itself
-    // called "unused", proved by grep and by the snapshot.
     return labelsHtml + '<div class="rbar-track">' + zoneHtml + dotHtml + '</div>';
   }
-  /* Version 616: every one of the nineteen callers wrote the same wrapper around this, so the wrapper is the
-     component and srcHtml is its inside. Nothing about the markup changed — the nineteen `<div class="src">`
-     that were typed out are now written once, which is the whole of it. */
+  /* The source-list block: the wrapper is the component and srcHtml is its inside, so no caller types out
+     `<div class="src">` itself. */
   function srcBlock(list){ return '<div class="src">' + srcHtml(list) + '</div>'; }
-  /* ---------------- THE SUBJECT ROW (Version 631) ----------------
-     Keren: "make it a 10." The one row the app opens pages from — a sign in the category list, a member of the
-     roster, a category in Browse, the All-indicators door. Four functions built it, each spelling out the same
-     summary/ring/text/chevron anatomy, and the ledger said so (`.subject-label` in 4 places) once V630 stopped
-     hiding three of them inside one giant closure. One of the four was dead; these are the three that remain,
-     built here once. What differs between them — what sits in the ring, what the text says — is what the
-     caller passes. What is the same — the door, its role, its title, its chevron — is nobody's to respell.
-     Attribute order is the order the element sites used to set them in, so the serialized DOM is unchanged. */
+  /* ---------------- THE SUBJECT ROW ----------------
+     Keren, V631: "make it a 10." The one row the app opens pages from (category list, roster, Browse, the
+     All-indicators door), built here once. The caller passes what differs (ring, text); the door, role, title
+     and chevron are nobody's to respell. Attribute order is the order the element sites used to set them in,
+     so the serialized DOM is unchanged. */
   function subjectRow(o){
     return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
       (o.subject ? ' data-subject="' + o.subject + '"' : '') +
@@ -211,14 +173,11 @@
      it already lifted off the page (`discOf`), so this is only for rows built from data. */
   function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
   function srcHtml(list){ return list.map(function(s){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
-  // A READING ON A RING (Version 280, Keren: "I want the VIX and the high-yield spread to have a ring
-  // representation … the ring on the left and the text adjacent to it on the right, and you can drop the current
-  // bars"). It is the half-dial of Version 277 closed into a circle, and for the same reason: these two scales are
-  // heavily skewed — the VIX's record high is five times its usual home, the spread's eight times — so a ring
-  // FILLED from zero would sit at 8% and 2% and say nothing. The reading is carried by the disc's POSITION on the
-  // track, with the usual band marked behind it, which is skew-proof and is already this app's grammar.
+  // A READING ON A RING — Keren, V280: "I want the VIX and the high-yield spread to have a ring representation …".
+  // Both scales are skewed (records five and eight times their usual home), so a ring FILLED from zero would say
+  // nothing; the disc's POSITION on the track, with the usual band behind it, carries the reading.
   // Where a sign sits relative to the turn of the cycle. Kept beside the signs rather than in a section heading,
-  // because it is a property of the sign and travels with it onto its page (Version 269).
+  // because it is a property of the sign and travels with it onto its page.
   var TIMING = {
     leading:    { label:"Leading",    hint:"moves before the cycle turns" },
     coincident: { label:"Coincident", hint:"turns with the cycle" },
@@ -233,12 +192,9 @@
                              : '<circle class="tm-dot" cx="' + cx + '" cy="6" r="2.7"/>') +
       '</svg>';
   }
-  // Version 271, Keren: "I don't need the text beside it — but what I would want is to click on it and see all the
-  // metrics by indicator type." The sentence was explaining the glyph once per page, forever, to a reader who had
-  // long since learnt it. It moves to the one place it is actually wanted — the page the chip now opens, which is
-  // where a reader who does NOT know the word goes to find out — and the chip becomes a door instead of a caption.
-  // The section headings deleted in Version 269 come back here, as pages you can reach rather than titles you must
-  // scroll past: the same grouping, asked for rather than imposed.
+  // Keren, V271: "I don't need the text beside it — but what I would want is to click on it and see all the
+  // metrics by indicator type." The chip is a door, not a caption: it opens the page grouping the readings by
+  // timing, which is where the word is explained.
   function timingPill(kind){
     var t = TIMING[kind]; if (!t) return "";
     return '<div class="timing-row">' +
@@ -248,18 +204,13 @@
       '</button></div>';
   }
 
-  // Version 298, Keren: "make it so the timing indicator would be at the bottom, next to More details." Where a
-  // sign sits in the cycle is a footnote about the reading, not a heading over it, so it leaves the top of the
-  // page and shares the last row with the other thing offered at the end. Every inner page carries exactly one
-  // chip and at most one More details row — which is what makes a blind move safe — and pages with no chip
-  // (the timing class pages themselves) are skipped. Idempotent, so it can run at build time AND on open.
-  // A container with nothing to show takes no room (Version 383, Keren: "between average growth and highlights
-  // I think there's 20 pixels, even more, maybe 30"). It was 32 on Growth. Version 381 collapsed an :empty block,
-  // which caught Temperature's emptied sign card but NOT Growth's, whose markers section is a CLOSED <details>
-  // with a display:none summary — 169 characters of text and zero height, so no selector could see it was
-  // showing nothing. Measuring is the only honest test. It has to run AFTER the sheet is on screen: seatPageFoot
-  // is called at the TOP of openMetricPage, while the sheet is still hidden and every child reports zero, which
-  // is exactly why the first attempt did nothing.
+  // A container with nothing to show takes no room — Keren, V383: "between average growth and highlights I think
+  // there's 20 pixels, even more, maybe 30". Measure, because a CLOSED <details> with a display:none summary has
+  // text but zero height and no :empty selector sees it. Run AFTER the sheet is on screen: hidden, every child
+  // reports zero (which is why seatPageFoot, at the top of openMetricPage, cannot do it).
+  // seatPageFoot — Keren, V298: "make it so the timing indicator would be at the bottom, next to More details."
+  // Every inner page has exactly one chip and at most one More details row, which makes a blind move safe; pages
+  // with no chip (the timing class pages) are skipped. Idempotent: it runs at build time AND on open.
   function collapseEmptyBlocks(sheet){
     if (!sheet || sheet.hidden || !sheet.offsetHeight) return;
     [].forEach.call(sheet.children, function(kid){
@@ -273,16 +224,11 @@
     var chip = sheet.querySelector(".timing-row"); if (!chip) return;
     var foot = sheet.querySelector(".page-foot");
     if (!foot){ foot = document.createElement("div"); foot.className = "page-foot"; sheet.appendChild(foot); }
-    // not "already done?" but "is each piece where it belongs?" — the four metric pages build their Highlights,
-    // and with it their More details row, AFTER the first pass runs, so the second pass has to be able to
-    // collect a latecomer rather than seeing a foot and giving up.
+    // not "already done?" but "is each piece where it belongs?" — the metric pages build their Highlights (and
+    // More details row) AFTER the first pass, so the second pass must collect a latecomer.
     if (chip.parentNode !== foot) foot.appendChild(chip);
-    // Version 426, Keren: "put the More details button inside the highlights container." It was seated in the
-    // page foot beside the timing chip, which made sense while Highlights was a bare section; since Version 288
-    // gave .metric-sheet .highlights a surface, a border and a radius, a button sitting just below that box reads
-    // as belonging to the page rather than to the Highlights it summarises. highlightsHtml has always emitted it
-    // inside the section — this function was moving it out again — so the fix is to seat it back where it was
-    // built, and to keep the foot only as the fallback for a page that has no Highlights box to put it in.
+    // Keren, V426: "put the More details button inside the highlights container." The foot is only the
+    // fallback for a page with no Highlights box.
     var more = sheet.querySelector(".more-row"), hl = sheet.querySelector(".highlights");
     var home = hl || foot;
     if (more && more.parentNode !== home) home.appendChild(more);
@@ -290,14 +236,12 @@
   }
 
   // Each page registers itself with its class as it is built, so the class pages are assembled from the same
-  // objects the signs are, and cannot drift out of step with them (Version 271).
+  // objects the signs are, and cannot drift out of step with them.
   var timingMembers = { leading:[], coincident:[], lagging:[], structural:[] };
   function registerTiming(kind, entry){ if (timingMembers[kind]) timingMembers[kind].push(entry); }
 
-  // Version 299 gave the head a mark and made it the control that opened the whole record; Version 303 puts that
-  // record on the page instead, so the mark has nothing left to open and stops being a button. It stays as what
-  // Keren asked for in the first place — an icon beside the name — and now every sign page that has a mark shows
-  // it, not only the one that had something behind it.
+  // The head's mark is an icon beside the name, as Keren asked, not a button: the record is on the page, so the
+  // mark has nothing to open. Every sign page that has a mark shows it.
   function headHtml(ind, noMark){
     var mk = "";
     if (signMarks[ind.bodyTerm] && !noMark){
@@ -306,53 +250,39 @@
     }
     return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>';
   }
-  // Full detail for a card indicator — the reference-range bar, the long-form caption, the aux stat and its
-  // sources — all the things the minimal card below leaves out.
-  // Version 270, all of it Keren's (Sep 20, 2026), and all of it the same instinct: a page should carry the things
-  // only it can say. `lead` is the note cut to what prose is FOR here — the metaphor, which is the book — with every
-  // figure that was buried in it lifted out into `facts`, where it can be found at a glance ("either you put it in
-  // bullet points or make it minimal as much as possible, because nobody will read so much text"). An indicator
-  // without a `lead` still reads its old caption, so the two can be converted one at a time. The source list is
-  // gone from every page: the app has a Sources screen listing every figure's primary source by section, and
-  // repeating four links under each page was furniture ("we can put this in sources, we don't need it for every
-  // page"). `opts` lets a page drop the parts it has already said for itself.
-  var heldHighlights = "";   // a deferred Highlights block, claimed by the caller that places it (V385)
+  // Full detail for a card indicator — what the minimal card leaves out. A page carries the things only it can say. `lead` is the note cut to what prose is FOR here — the metaphor,
+  // which is the book — with every figure lifted out into `facts`, where it can be found at a glance (Keren, V270:
+  // "either you put it in bullet points or make it minimal as much as possible, because nobody will read so much
+  // text"). An indicator without a `lead` still reads its caption, so they can be converted one at a time. No
+  // source list on the page: the Sources screen lists every figure's primary source by section (Keren, V270: "we
+  // can put this in sources, we don't need it for every page"). `opts` lets a page drop what it says for itself.
+  var heldHighlights = "";   // a deferred Highlights block, claimed by the caller that places it
   function cardDetailHtml(ind, opts){
     opts = opts || {};
     var facts = [].concat(ind.facts || [], ind.aux || []);
     // `bare` drops the whole top (Temperature, whose chart says all three things); `noHead` drops only the name
     // row and the figure and keeps the spectrum — for a page whose FIRST CONTAINER carries the title and states
-    // the figure itself, which is Pulse since Version 305 (Keren: "put the title inside the first container as a
-    // title, remove 1.42× and the heart icon"). The figure was on screen three times: the head, the card's NOW
-    // row, and the record's Latest row.
-    // Version 384, Keren, on Pulse: "I want the history container to be first — and the blood test component
-    // needs to be below the history container." That is the Version 369 page order (history, then the reading
-    // against its reference range), which this builder had backwards for the signs: it emitted the meter first
-    // because it was written before that order existed. `chartFirst` lets a page take the right one.
+    // the figure itself, as Pulse does (Keren, V305: "put the title inside the first container as a title,
+    // remove 1.42× and the heart icon"), so the figure is not on screen twice.
+    // `chartFirst`: history, then the blood test (Keren, V384, on Pulse: "I want the history container to be
+    // first — and the blood test component needs to be below the history container.").
     var chartHtml = opts.chart || '';
-    // Version 476: `noMeter` drops the bar alone and keeps the head and the figure, for a page whose history
-    // container has taken the bar in — where leaving it here would be one reading twice, on two scales.
+    // `noMeter` drops the bar alone and keeps the head and the figure, for a page whose history container has
+    // taken the bar in — where leaving it here would be one reading twice, on two scales.
     var bloodTest = opts.bare ? '' :
       ((opts.noHead ? '' : headHtml(ind, opts.noMark) +
         '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + '</span></div>') +
       (opts.noMeter ? '' : meterHtml(ind.meter)));
-    // Version 390, Keren, of Volume: "the blood test component should be below the history chart, and it should
-    // have a white container just like in the power page." On a page that opens with a chart, the spectrum was
-    // the one thing on screen with no box under it — it floated on the page background directly beneath the top
-    // bar, which read as unfinished rather than as a second reading. Every other container on an inner page is a
-    // .page-chart; the blood test is a reading too, so it takes the same box. The wrapper is an OPTION rather
-    // than a change to the component, because on the metric pages the spectrum is already inside a card (it is
-    // the top row of the markers table) and would otherwise end up in two boxes.
+    // Keren, V390, of Volume: "the blood test component should be below the history chart, and it should have a
+    // white container just like in the power page." An OPTION, not part of the component: on the metric pages the
+    // spectrum is already inside a card (the markers table) and would otherwise sit in two boxes.
     if (bloodTest && opts.bloodCard) bloodTest = '<div class="page-chart blood-card">' + bloodTest + '</div>';
     return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) +
-      // An indicator may now say NOTHING here, by setting shortCaption to "" (Version 378). Before this the chain
-    // fell through on any falsy value, so emptying the short line silently promoted the long caption onto the page
-    // — which on Temperature would have put back the very metaphor Version 376 moved into the note.
-    // Version 384, Keren, of Pulse's line and its COVID-era-low row: "no, no, no — I think this belongs to
-    // insights." She is right, and it is true of every sign: a short verdict and the figures that qualify it are
-    // commentary, not measurement, so they take the Highlights block and its own ground (Version 379) rather than
-    // sitting loose under the chart. It also gives the sign pages the metric pages' shape: history, blood test,
-    // Highlights, More details.
+      // An indicator may say NOTHING here by setting shortCaption to "": the chain tests for null, not falsy,
+    // so an empty short line does not promote the long caption onto the page.
+    // Keren, V384, of Pulse's line and its COVID-era-low row: "no, no, no — I think this belongs to insights."
+    // For every sign, a short verdict and its figures are commentary, so they go in Highlights: history, blood
+    // test, Highlights, More details.
     (function(){
       var lede = ind.lead != null ? ind.lead : (ind.shortCaption != null ? ind.shortCaption : (ind.caption || ""));
       var figs = facts.map(function(a){
@@ -362,7 +292,7 @@
       var block = '<section class="highlights"><div class="hi-head">Highlights</div>' +
         (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
       // A page whose last container is appended AFTER this card (Desire's risk matrix) holds its Highlights back,
-      // so the page order still ends history → blood test → Highlights → More details (Version 385).
+      // so the page order still ends history → blood test → Highlights → More details.
       if (opts.deferHighlights){ heldHighlights = block; return ""; }
       return block;
     })() +
@@ -375,18 +305,14 @@
   }
 
 
-  // ---------------- RENDER: Pressure — U.S. Treasury yields, one maturity at a time (V639) ----------------
-  /* The name is true again. This block drew the Treasury levels under three page names — Pressure until V596,
-     Hormones for one version, Horizon's ⋯ menu from V598 — and V639 gives it back to Pressure, where Keren
-     put it: the 10-year is the risk-free loan the whole economy prices off, and its level is the pressure
-     the borrower is under. See the PRESSURE comment in page-body.html for her words. */
-  /* V644, Keren: "I'm seeing Q3 26, 4.7% where the current number is 5.25% for the 10-year yield. I want to see
-     the latest data and not the quarterly data." V640 labelled that last column "· so far" — true, and still a
-     three-month average standing where a reader looks for today. Now the Pressure history keeps its quarterly
-     averages, and the column for the quarter still running is the LATEST CLOSE from the par curve the row already
-     prints, labelled with its date. When the curve's date falls in a quarter the history has not reached, it is
-     added as a new last column rather than dropped. The quarterly arrays are not touched: Horizon and the rhymes
-     table read them as averages, which is what they are. */
+  // ---------------- RENDER: Pressure — U.S. Treasury yields, one maturity at a time ----------------
+  /* The Treasury levels belong to Pressure, where Keren put them: the 10-year is the risk-free loan the whole
+     economy prices off, and its level is the pressure the borrower is under. See the PRESSURE comment in
+     page-body.html for her words. */
+  /* Keren, V644: "… I want to see the latest data and not the quarterly data." The column for the quarter still
+     running is the LATEST CLOSE from the par curve the row prints, labelled with its date (a new last column if
+     the history has not reached that quarter). The quarterly arrays are not touched: Horizon and the rhymes table
+     read them as averages. */
   var CURVE_KEY = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
   function latestYieldPoint(){
     var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
@@ -403,9 +329,8 @@
   }
   function renderPressurePage(){
     var svg = byId("ylm-svg");
-    // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
-    // drawn at the size it will occupy rather than scaled down from 780. The values here are only a seed.
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has (V571)
+    // A seed only: render recomputes these from the host's own width, so the chart is drawn at its real size.
+    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;   // +LEG: the legend strip at the head of the frame, as every other history has
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
 
@@ -433,7 +358,7 @@
           '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury stopped issuing 30-year bonds between October 2001 and February 2006, so there is no actual traded yield for that stretch — shown here as a break rather than a guessed figure.</p>' +
           srcBlock([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}])}
     ];
-    var latestLabel = "", latestSpread = null;   // V644 — see latestYieldPoint above
+    var latestLabel = "", latestSpread = null;   // see latestYieldPoint above
     maturities.forEach(function(m){ m.base = m.data; });
     function withLatest(){
       var L = latestYieldPoint();
@@ -448,13 +373,13 @@
       {t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}
     ]);
 
-    // Version 394: the chart carries a window, like every other inner-page history (Keren: "have the
-    // configuration of all the rest of the inner pages history — so a year bar at the top"). `ylmFrom` is the
-    // first visible quarter and every geometry function reads it, so nothing below needs to know a window exists.
-    var ylmFrom = 0, ylmTo = quarters.length;   // V435: the window is now half-open, so a cycle can close it
+    // The chart carries a window, like every other inner-page history (Keren, V394: "have the configuration of
+    // all the rest of the inner pages history — so a year bar at the top"). `ylmFrom` is the first visible
+    // quarter and every geometry function reads it, so nothing below needs to know a window exists.
+    var ylmFrom = 0, ylmTo = quarters.length;   // half-open, so a cycle can close it
     function ylmCount(){ return ylmTo - ylmFrom; }
     function x(i){
-      var half = innerW / (2 * Math.max(1, ylmCount()));   // V443: keep the end columns inside the plot
+      var half = innerW / (2 * Math.max(1, ylmCount()));   // keep the end columns inside the plot
       return padL + half + ((innerW - 2 * half) * (i - ylmFrom)) / ((ylmCount() - 1) || 1);
     }
     var minV, maxV;
@@ -477,9 +402,8 @@
     var onMaturities; // the toggle-invariant part of showAt()'s filter, recomputed once per render() not per hover frame
 
     function render(){
-      /* Version 496: measure first. A fixed viewBox scaled to a phone made this chart 130px tall against the
-         other histories' 288 and shrank its labels by the same factor — the one thing the Version 303 rule
-         exists to prevent. The height formula is the one the other seven share, so all nine now agree. */
+      /* Measure first: a fixed viewBox scaled to a phone would shrink the chart and its labels, and a chart is
+         drawn at its box's real width. The height formula is the one the other histories share. */
       var shell = svg.parentNode;
       W = Math.max(270, Math.round((shell && shell.clientWidth) || 360));
       H = W < 430 ? 268 : 300;
@@ -489,38 +413,29 @@
       onMaturities = maturities.filter(function(m){ return m.on; });
       svg.innerHTML = "";
 
-      // Version 401: the last history onto the shared emitter. This one builds DOM nodes rather than a string,
-      // so the string goes in with insertAdjacentHTML — the only accommodation the consolidation needed. Its own
-      // steps are kept (they divide the span evenly rather than landing on round numbers) because the scale here
-      // runs 0 to whatever the maturity reached, and round stops would leave the top of the chart unlabelled.
+      // The shared axis emitter, via insertAdjacentHTML (this chart builds nodes). Steps divide the span evenly:
+      // the scale runs 0 to whatever the maturity reached, and round stops would leave the top unlabelled.
       var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
       for (var s = 0; s <= steps; s++) ylmTicks.push(minV + ((maxV - minV) * s) / steps);
       svg.insertAdjacentHTML("beforeend", chartAxes({ ticks:ylmTicks, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(H - padB),
         base:y(0), noGridAt:0, fmt:function(v){ return v.toFixed(0) + "%"; } }));
-      // Version 409, the last history onto the shared hover. This chart had one of its OWN — a crosshair and a
-      // tooltip through attachHoverTracking, written when it was a five-line comparison and the tooltip had to
-      // list every maturity at once. It draws one maturity now (Version 293), so the thing it was built for is
-      // gone and what is left is a second way of doing what one function already does. `x()` already maps the
-      // window, so the geometry it publishes is the first and last VISIBLE column.
+      // The shared hover (attachHistory); the geometry published is the first and last VISIBLE column.
       svg.classList.add("hist-svg");
       svg.insertAdjacentHTML("beforeend",
         crossLine(padT, (H - padB)));
       var picked = matOf(matPick);
       publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
-                       /* V644: the last column is the latest close, and its plate says the day (see withLatest) */
+                       /* the last column is the latest close, and its plate says the day (see withLatest) */
                        n:ylmCount(), at:function(d, i){ return colLabel(ylmFrom + i); },
                        fmt:function(v){ return v.toFixed(2) + "%"; },
-                       /* V570: the zone key moves up into the legend at the head of the grid, out of the row
-                          it had under the chart. Same three entries, same colours, the place every other
-                          history keeps its key — and a row of the page's height given back. */
+                       /* the zone key, in the legend where every history keeps its key */
                        refs:[{ label:"Inverted", swatch:"var(--critical)" },
                              { label:"Normal",   swatch:"var(--season-autumn)" },
                              { label:"Steep",    swatch:"var(--good)" }],
                        vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
                               return d.v == null ? null : { v:d.v }; }) : []) });
 
-      // The year labels were a hand-written list, which only worked while the chart always showed 2005–2026.
-      // With a window they are derived: about four evenly spaced Q1s inside whatever is on screen.
+      // Year labels are derived from the window: about four evenly spaced Q1s inside whatever is on screen.
       var firstYear = parseInt(quarters[ylmFrom].slice(0, 4), 10);
       var lastYear = parseInt(quarters[ylmTo - 1].slice(0, 4), 10);
       var step = Math.max(1, Math.round((lastYear - firstYear) / 4));
@@ -538,18 +453,13 @@
         }
       });
 
-      // ---- The picked maturity is drawn as COLUMNS, each shaded by what the curve was doing that quarter
-      // (Version 394). It replaces a single thin line in one flat purple. Two things changed for one reason:
-      // Keren asked for the rest of the inner pages' history configuration, and every one of those draws its
-      // reading as columns with colour carrying a second variable (Temperature's heat ramp, Volume's blood ramp).
-      // Here the second variable is the page's own headline — the 10-year-minus-3-month spread — read through
-      // `pressureZone()`, the SAME function the preview card's zone bar calls. So the inversions of 2006–07,
-      // 2019 and 2022–24 appear as red stretches on this chart without a word of explanation, and the reader no
-      // longer has to hold the spread chart in their head to see when the yield above was under a warning.
+      // ---- The picked maturity is drawn as COLUMNS (Keren, V394 — see ylmFrom), shaded by the 10-year-minus-
+      // 3-month spread through `pressureZone()`, the SAME function the preview card's zone bar calls, so the
+      // inversions of 2006–07, 2019 and 2022–24 show red without a word of explanation.
       var spreadAt = {};
       t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
       var lastCol = maturities[0].data[quarters.length - 1];
-      if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;   // V644: that day's curve
+      if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;   // that day's curve
       var colW = colWidth(innerW / Math.max(1, ylmCount()));
       maturities.forEach(function(mat){
         if (!mat.on) return;
@@ -566,8 +476,7 @@
         });
       });
 
-      // Version 404: the fit across the quarters in view, for the maturity on screen. This chart builds nodes
-      // rather than a string, so the string goes in the same way its axes did.
+      // The fit across the quarters in view, for the maturity on screen; the string goes in as the axes did.
       var fitVals = [];
       maturities.forEach(function(m){
         if (!m.on) return;
@@ -608,58 +517,30 @@
         tooltip.style.opacity = 1;
       }
       function hide(){ crosshair.setAttribute("opacity", 0); tooltip.style.opacity = 0; }
-      // attachHoverTracking retired here in Version 409 — see above. It stays in the app for the spread chart,
-      // which is a line with two series and genuinely needs a different readout.
       var shell = byId("ylm-shell");
       attachHistory(shell, "ylm-tooltip", "ylm");
     }
 
-    // ONE MATURITY AT A TIME, CHOSEN FROM A ROW OF CARDS (Version 293, Keren: "I don't understand anything from the
-    // chart and it's kind of distorted, it's coloured in black … I'd much rather have cards, scrollable, with an
-    // icon that says what each maturity means, and if I click on it I see the appropriate graph"). The smear had a
-    // cause: five lines plus a dot on every one of 85 quarters is 425 marks in five dark purples, on one small
-    // picture. Drawing one line answers the question the page is actually asking — what has THIS maturity done —
-    // and the cards carry what the deleted paragraph was trying to say, one line each, next to an icon for the thing
-    // that maturity prices.
+    // ONE MATURITY AT A TIME (Keren, V293: "I don't understand anything from the chart and it's kind of distorted
+    // … if I click on it I see the appropriate graph"): what has THIS maturity done.
     var matPick = "10y";   // the most-referenced benchmark opens the page
-    // Today's reading, from the curve the page's own headline is computed from — NOT the last point of the
-    // quarterly history, which is a three-month AVERAGE and so reads 0.2–0.9 points different. Keren caught the two
-    // side by side ("you write 10-year 4.94 and I see inside the container 10-year 4.70"), and she is right that a
-    // page cannot print two numbers for one thing. The history line keeps its quarterly averages, because that is
-    // what it plots; the card says today (Version 294).
-    /* Version 470, Keren: "the maturity ladder needs to become a control." It was five cards carrying an icon, a
-       name, today's rate and a caption apiece — four pieces of furniture each to do one job, choose the line below.
-       As segments it is one row, and the room that frees is what let the SPREAD move into this band as a sixth
-       segment instead of standing in a second container with a second chart, a second legend and a second copy of
-       the figure. The rates the cards carried are not lost: they are what the chart plots. */
+    // Today's reading comes from the live curve, NOT the quarterly history's last point, a three-month AVERAGE
+    // that reads 0.2–0.9 points different. Keren, V294: "you write 10-year 4.94 and I see inside the container
+    // 10-year 4.70" — a page cannot print two numbers for one thing.
+    /* Keren, V470: "the maturity ladder needs to become a control." Choosing the line is one job, so it is one
+       control, not five cards; the rates are what the chart plots. */
     var SERIES = maturities.map(function(m){ return { key:m.code, label:m.name.replace("-Month", "M").replace("-Year", "Y") }; });
-    /* V588, Keren: "it would be very informative to see interest rates by cycles and years, similar to other
-       history components in the app."
-       Version 473 deleted this page's window ruler for a real reason, and it has to be answered rather than
-       overridden: "a window ruler labelled 5Y a centimetre from a maturity labelled 5Y was the collision."
-       Both numbers are years and they mean different things — one is how long the loan runs, the other how far
-       back you are looking — so no amount of labelling makes them safe side by side.
-       The answer is the one V522 already found for Horizon: "10Y minus 3 months, 10Y minus 2 years shouldn't be
-       a new ruler — you can put it in the three dots." A control that chooses WHICH SERIES the chart draws
-       belongs in the head's menu; the control ROW is for the window. So the maturity moves to the ⋯ menu and
-       this row becomes the same Cycles / Years bar and cycle picker every other history page carries. The two
-       year-numbers are never on screen together, which is the collision gone rather than relabelled.
-       ["5y","10y","max"] for the reason HZN_STOPS gives: the series starts in 2005, so 25Y is unanswerable. */
-    /* V598: `renderLegend` and YLM_STOPS went with this page's own control row. The levels and the spread are
-       two readings of ONE series of quarters, so they share one ruler — the Horizon page's — and the choice
-       between them lives in the ⋯ menu, which is where V522 put a which-series choice in the first place. */
+    /* Keren, V588: "it would be very informative to see interest rates by cycles and years, similar to other
+       history components in the app." A window ruler labelled 5Y beside a maturity labelled 5Y is a collision —
+       loan length and look-back are both years — so, as for Horizon (Keren, V522: "… shouldn't be a new ruler —
+       you can put it in the three dots"), the choice of SERIES lives in the head's ⋯ menu and the control ROW is
+       the window, the Cycles / Years bar every history carries. */
     GYN.on("pickSeries", function(bar, code){
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
       drawPressure();
     });
-    /* V598: the Hormones page is one chart again, so its opener is registered by renderHormones itself — the
-       pair V596 composed here existed only because that page held the Treasury chart too. */
-    // the record is drawn at the box's own width (Version 303) — a hidden element has no width, so this has to
-    // happen on open, the same reason the yield page centres its card there
-    // Volume and Pulse on the timeline (Version 367), riding the deficit block's machinery exactly: a key in
-    // pageRange and a matching sheetRenderers entry is all the delegated .range-seg handler needs, so neither page
-    // gets a second control idiom and neither gets its own listener. Each measures its OWN host, because these
-    // charts sit inside a padded card and the width the handler passes is the page's.
+    // A record is drawn at its box's own width; a hidden element has none, so it happens on open.
+    // Each measures its OWN host: these charts sit in a padded card and the handler passes the page's width.
     function drawVelocityRecord(){
       var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
@@ -674,9 +555,8 @@
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
       var vTrend = put("pulse-trend", trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
-        // Version 431, Keren: "in the pulse page you write quickening — the correct word is accelerating, and the
-        // opposite is decelerating." Right on both counts, and the second half is the one that matters: Pulse IS a
-        // velocity (M2 turned over per year), so acceleration is the literal reading rather than a metaphor.
+        // Keren, V431: "in the pulse page you write quickening — the correct word is accelerating, and the
+        // opposite is decelerating." Pulse IS a velocity (M2 turned over per year), so acceleration is literal.
         null, true, { rising:"accelerating", falling:"decelerating" }));
     }
     sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
@@ -696,16 +576,14 @@
       // the fit is over the quarters IN VIEW, so the pill and the picture can never describe different stretches
       var mTrend = put("volume-trend", trendPill(
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
-        // Version 431: Volume already used "accelerating" and paired it with "slowing", which is half of one pair
-        // and half of another. Keren's rule next door finishes it.
+        // the same pair as Pulse (Keren, V431, in drawVelocityRecord)
         null, true, { rising:"accelerating", falling:"decelerating" }));
     }
     sheetRenderers["sheet-sign-volume"] = drawM2Record;
     sheetRenderers["volume-range"] = drawM2Record;
-    /* Version 475: Desire's record. No window control, and that is a decision rather than an omission — the
-       series is three years deep, so every stop in `TIMELINE_STOPS` except Max is unanswerable (the Version 263
-       rule), and inventing a 3M/1Y/3Y vocabulary for one page is the drift Version 411 closed. Three years is
-       short enough to read whole. */
+    /* Desire's record. The series is three years deep, so only the stops it can answer are offered (a stop needs
+       that many years of data): 1Y and Max, from the one vocabulary in `TIMELINE_STOPS` — no page invents its
+       own. Three years is short enough to read whole. */
     function drawDesireRecord(){
       var host = byId("desire-record");
       if (!host || !host.clientWidth) return;
@@ -713,8 +591,8 @@
       var win = hyOas.slice(from);
       var bar = byId("desire-timeline");
       // no mode bar: at three years "Current cycle" and "Max" are the same window, and two stops that mean the
-      // same thing are worse than one (the V366 rule). A bare range bar wears the same chrome.
-      // V519: the head is inside the band; this is the page's own bare range bar, on the ground
+      // same thing are worse than one. A bare range bar wears the same chrome.
+      // the head is inside the band; this is the page's own bare range bar, on the ground
       if (bar) bar.innerHTML = '<div class="hist-controls">' +
         rangeBar("desire-range", timelineFor({ depth:3, stops:DESIRE_STOPS }),
                  pageRange["desire-range"]) + '</div>';
@@ -733,25 +611,17 @@
     })();
 
     function matOf(code){ return maturities.filter(function(m){ return m.code === code; })[0]; }
-    // "since 2005" came off with Version 394's year bar: the bar states the window, and a heading that
-    // contradicts the control directly beneath it is worse than one that says less (the Version 384 lesson).
+    // No "since 2005" in the title: the bar states the window, and a heading that contradicts the control
+    // directly beneath it is worse than one that says less.
     function matTitle(){ var m = matOf(matPick); return (m ? m.name : "") + " U.S. Treasury"; }
     function matDetail(){ var m = matOf(matPick); return m ? m.detail : ""; }
 
-    // The year bar rides exactly what Volume and Pulse ride (Version 367): a key in pageRange and a matching
-    // sheetRenderers entry, which is all the delegated .range-seg handler needs. No second control idiom, no
-    // listener of its own. `timelineFor` decides which stops the data can answer, so this chart offers 25Y the
-    // day its series is that deep and nothing has to be edited for it (Version 366).
+    // The year bar rides the pageRange + sheetRenderers mechanism (see pageRange). `timelineFor` decides which
+    // stops the data can answer, so a chart offers 25Y the day its series is that deep with no edit.
     function drawYlm(){
-      /* Version 473: the spread left this page for Horizon, so the levels no longer share it with anything and
-         the whole two-rulers argument of Version 472 dissolves with it. One chart, one control — the maturity
-         bar. The levels take the whole record, which is what they took on the Yields tab anyway: a window ruler
-         labelled 5Y a centimetre from a maturity labelled 5Y was the collision Version 472 hid behind a third
-         tab, and deleting the ruler is the version of that fix that needs no tab at all. */
-      /* V588: the window. Every maturity shares one index space — `quarters` is t3mYieldHistory's own
-         quarters — so the slice is computed once here and every series is drawn through it. */
-      /* V639: the page's own control row again, under its own key. The stops are Horizon's for Horizon's
-         reason: the series starts in 2005, so 25Y is unanswerable (the V263 rule). */
+      /* The window. Every maturity shares one index space — `quarters` is t3mYieldHistory's own quarters — so
+         the slice is computed once here and every series is drawn through it. The stops are Horizon's for
+         Horizon's reason: the series starts in 2005, and 25Y needs 25 years of data. */
       withLatest();
       var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
       var ylmCyc = pageMode["pressure-range"] === "cycles"
@@ -765,8 +635,8 @@
       render();
       var yTrend = byId("ylm-trend");
       if (yTrend){
-        /* V588: the fit is over the quarters IN VIEW, so the pill and the picture can never describe
-           different stretches — the rule Temperature states in the same words. */
+        /* the fit is over the quarters IN VIEW, so the pill and the picture can never describe
+           different stretches */
         var w = [], mt = matOf(matPick);
         if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
@@ -774,14 +644,9 @@
       }
       drawPressureHead();
     }
-    /* V518: one function for both the first paint and every redraw — the old pair of identical `ylm-title`
-       writes was the duplication this version is here to end. `expandBtn` is gone from it: the note goes into
-       HIST_NOTE and opens from the ⋯, which also stops drawYlm pushing a fresh copy into detailTexts on every
-       maturity the reader tries. */
-    /* V639: Pressure's own head. It is built HERE and not in the HIST_HEAD literal for the V588 reason:
-       `maturities` and `matPick` are this block's own state and that literal cannot see them. One group —
-       the five maturities — because one group is a legitimate menu (V602) and the spreads are Horizon's
-       again. Each maturity row drops the word "Treasury" because the group has already said it. */
+    /* Pressure's head, for first paint and every redraw; its note opens from the ⋯ (HIST_NOTE). Built HERE, not
+       in the HIST_HEAD literal, because `maturities` and `matPick` are this block's state. One group, the five
+       maturities (the spreads are Horizon's); rows drop "Treasury" because the group has said it. */
     function drawPressureHead(){
       var H = HIST_HEAD["pressure-range"];
       H.mark  = gaugeSvg;
@@ -798,17 +663,16 @@
       put("pressure-head", histHead("pressure-range"));
     }
     /* The page's one renderer: the window, the picked maturity, the trend pill and the head, in that order.
-       `sheet-sign-pressure` opens it, which is what makes the chart draw at its box's real width (V303). */
-    function drawPressure(){ drawYlm(); renderPressureInsights(); }   // V640: the insights follow the live figure
+       `sheet-sign-pressure` opens it, which is what makes the chart draw at its box's real width. */
+    function drawPressure(){ drawYlm(); renderPressureInsights(); }   // the insights follow the live figure
     sheetRenderers["pressure-range"] = drawPressure;
     sheetRenderers["sheet-sign-pressure"] = drawPressure;
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
 
-    /* V639: the row. Today's 10-year from the live par curve — the same object Horizon's spread is computed
-       from, and NOT the last point of the quarterly history, which is a three-month average and reads 0.2–0.9
-       points different (Keren caught the two side by side in Version 294). No verdict word: there is no sourced
-       band for a rate, and a figure without a band gets no word (CLAUDE.md, band provenance). The live layer
+    /* The row. Today's 10-year from the live par curve — the same object Horizon's spread is computed from, and
+       NOT the quarterly history's last point (see matPick). No verdict word: there is no sourced band for a
+       rate, and a figure without a band gets no word (CLAUDE.md, band provenance). The live layer
        repaints the figure when the curve lands — `repaintPressureRow` in 02-live.js — so it is written here
        once in the row's own shape and edited in place after that. */
     var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
@@ -820,15 +684,13 @@
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();
 
-  /* ---------------- V640: Pressure's Insights ----------------
-     Keren: "add an insights component to the pressure page saying what is the 10-year US Treasury yield, why
-     it's important, and in accordance to the rules we based about biology, economy, and gyneconomy."
-     The lede is the body, the first card the economy, the second the reading in this app's terms, the third
-     the division of labour with Horizon. Every figure is computed: today's 10-year from the live curve the row
-     prints, the policy range from `fedFunds`, and the record, the cycle average and the extremes from the
-     quarterly series the chart draws. Nothing is typed in that a refresh could leave stale. A separate step
-     rather than lines inside renderPressurePage, so that function does not grow (the V624 ratchet), and it is
-     re-run on every open of the page so the figures follow the live curve. */
+  /* ---------------- Pressure's Insights ----------------
+     Keren, V640: "add an insights component to the pressure page saying what is the 10-year US Treasury yield,
+     why it's important, and in accordance to the rules we based about biology, economy, and gyneconomy."
+     Lede: the body; cards: the economy, the reading in this app's terms, the division of labour with Horizon.
+     Every figure is computed (the live curve, `fedFunds`, the quarterly series the chart draws), so nothing
+     typed in can go stale. A separate step so renderPressurePage does not grow (functions may only shrink);
+     re-run on every open so the figures follow the live curve. */
   function renderPressureInsights(){
     var ins = byId("pressure-insights"); if (!ins || !t10yYieldHistory.length) return;
     var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
