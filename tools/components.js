@@ -77,6 +77,35 @@ const where = scan();
 const shared = [...where].filter(([, v]) => v.size > 1).sort((a, b) => b[1].size - a[1].size);
 const owned = [...where].filter(([, v]) => v.size === 1);
 
+/* THE SECOND HALF OF THE SAME QUESTION (Version 617).
+
+   These components are wired to the document by NAME: 124 ids reached through getElementById, every call
+   guarded with `if (!el) return` because any given page renders only some of them. That guard is right, and it
+   is also why a name that does not exist fails in total silence \u2014 the same shape as the bug Version 473 found,
+   where `if (!row) return` read a missing row as a row to skip and quietly listed six readings out of eleven.
+   The audit that prompted this found #pulse-span: three lines computing a sentence about the Pulse window,
+   guarded, for an element that has never existed in any version of the markup.
+   So the ledger checks the wiring too. An id reached in code must be written in the markup, assigned by a
+   literal in code, or belong to one of the families built by concatenation \u2014 listed here, because a short list
+   that has to be maintained is honest where a check that cannot see them would not be. */
+const DYNAMIC = [/^sheet-/, /^peek-row-/, /^metric-page$/];
+
+function wiring() {
+  const markup = ['src/page-body.html', 'src/page-head.html', 'src/page-tail.html']
+    .filter(f => fs.existsSync(path.join(ROOT, f)))
+    .map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
+  const js = fs.readdirSync(SRC).map(f => fs.readFileSync(path.join(SRC, f), 'utf8')).join('\n');
+  const reached = new Set([...js.matchAll(/getElementById\("([A-Za-z0-9_-]+)"\)/g)].map(m => m[1]));
+  const dangling = [];
+  for (const id of reached) {
+    if (markup.includes('id="' + id + '"') || js.includes('id="' + id + '"')) continue;
+    if (js.includes('.id = "' + id + '"')) continue;
+    if (DYNAMIC.some(re => re.test(id))) continue;
+    dangling.push(id);
+  }
+  return { reached: reached.size, dangling: dangling.sort() };
+}
+
 const arg = process.argv[2];
 
 if (arg === '--bless') {
@@ -102,6 +131,13 @@ if (arg === '--check') {
     console.error('\nBuild it once and call it, or if the duplication is deliberate, run: npm run comp:bless');
     process.exit(1);
   }
+  const w = wiring();
+  if (w.dangling.length) {
+    console.error('WIRING \u2014 code reaches an element id that nothing ever creates:\n');
+    w.dangling.forEach(id => console.error('  #' + id));
+    console.error('\nEvery getElementById here is guarded, so this fails in silence. Delete the code, or add the element.');
+    process.exit(1);
+  }
   console.log(shrank.length
     ? `ledger ok — ${shrank.length} pattern(s) less duplicated than recorded:\n  ${shrank.join('\n  ')}\n  run: npm run comp:bless`
     : `ledger ok — ${shared.length} shared classes, none worse`);
@@ -117,5 +153,8 @@ for (const [c, v] of owned) {
 const comps = [...byFn].filter(([, cs]) => cs.length >= 2).sort((a, b) => b[1].length - a[1].length);
 console.log(`COMPONENTS — a builder and the classes only it writes (${comps.length})\n`);
 for (const [fn, cs] of comps) console.log('  %s\n      %s', fn.padEnd(34), cs.map(c => '.' + c).join(' '));
+const w = wiring();
+console.log('\nWIRING \u2014 %d ids reached in code, %d created nowhere%s\n', w.reached, w.dangling.length,
+  w.dangling.length ? ': ' + w.dangling.map(i => '#' + i).join(', ') : '');
 console.log(`\nSHARED — written from more than one place (${shared.length})\n`);
 for (const [c, v] of shared) console.log('  .%s %s', c.padEnd(20), String(v.size).padStart(2) + ' places');

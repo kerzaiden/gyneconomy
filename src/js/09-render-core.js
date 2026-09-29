@@ -614,9 +614,6 @@
       if (bar) bar.innerHTML = histControls("pulse-range",
         { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS });
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
-      var span = document.getElementById("pulse-span");
-      if (span) span.textContent = (m2vHistory.length - vFrom) + " quarters" +
-        (vFrom === 0 ? " since " + M2V_FROM_YEAR : ", from " + (M2V_FROM_YEAR + Math.floor(vFrom / 4)));
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       host.__geom = lastHistGeom;
       wireHistHover(host, "pulse-hist-tooltip");
