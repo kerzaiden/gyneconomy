@@ -587,7 +587,7 @@
          : v < 8.5 ? "serious" : "critical";
   }
   function unempHistoryChart(Wpx, from, o){
-    o = o || {}; lastChartAvg = null;
+    o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -628,7 +628,6 @@
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
-    lastChartAvg = avgV;
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -641,10 +640,10 @@
     out.push(meanRule(L, R, Y(NROU_NOW)));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
+    publishGeom("unempHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                      refs:[{ label:"Average", v:avgV },
                            { label:"CBO estimate", v:NROU_NOW, dash:true }],
-                     fmt:function(v){ return v.toFixed(1) + "%"; } };
+                     fmt:function(v){ return v.toFixed(1) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
       ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
@@ -694,7 +693,7 @@
      scale, their ink and their x-axis, which is quarterly here. Folding them together behind a flag is how a
      component stops being readable. */
   function lendingHistoryChart(Wpx, from, o){
-    o = o || {}; lastChartAvg = null;
+    o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -736,20 +735,19 @@
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
-    lastChartAvg = avgV;
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals,
+    publishGeom("lendingHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals,
                      at:function(d){ return qLabel(d.q); },
                      refs:[{ label:"Average", v:avgV }],
-                     fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v).toFixed(1) + "%"; } };
+                     fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v).toFixed(1) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + ' to ' + y1 + '">' +
       out.join("") + '</svg>';
   }
   function fedFundsHistoryChart(Wpx, from, o){
-    o = o || {}; lastChartAvg = null;
+    o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -802,16 +800,15 @@
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
-    lastChartAvg = avgV;
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(2) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
+    publishGeom("fedFundsHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                      refs:[{ label:"Average", v:avgV }],
-                     fmt:function(v){ return v.toFixed(2) + "%"; } };
+                     fmt:function(v){ return v.toFixed(2) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
@@ -821,7 +818,6 @@
   // A quarter's name from its position in a series that starts at `y0` — the three histories holding bare
   // numbers rather than {q,v} objects need this to label what the pointer is on (Version 407).
   function qAtIndex(y0, i){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
-  var lastHistGeom = null;   // the geometry of whichever history just drew; the renderer hands it to its host
   /* Version 417's five-cycle overlay lived here and was removed in Version 420 (Keren: "not multiple select,
      because I want the same visuals as the years \u2014 the bars with the colouring the same"). She is right that two
      drawings of one metric on one page is a worse problem than the comparison was a gain: the overlay had to be
@@ -900,20 +896,19 @@
        hands the index across \u2014 the same left-to-right guarantee the deferred Highlights rely on. A tooltip
        that named one of two lines would be answering half the question the chart asks. */
     var hovAt = 0;
-    lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n,
+    publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
       // neither carries a value: these name the two SERIES, not a line the reader measures against
       refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
       at:function(d, i){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
       fmt:function(v){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
-      vals:bill.map(function(v){ return { v:v }; }) };
+      vals:bill.map(function(v){ return { v:v }; }) });
     return '<svg class="hist-svg vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
       'aria-label="Household debt service and the personal saving rate, both as a share of disposable ' +
       'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
   }
 
-  var lastChartAvg = null;   // Version 427: what the key under the chart prints, set by the drawing that owns it
   function cpiHistoryChart(Wpx, from, o){
-    o = o || {}; lastChartAvg = null;
+    o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -972,7 +967,6 @@
     if (n){
       var avgV = vals.reduce(function(a, d){ return a + d.v; }, 0) / n, avgY = Y(avgV);
       out.push('<path class="temp-avg" d="M' + L + ',' + f(avgY) + 'L' + R + ',' + f(avgY) + '"/>');
-      lastChartAvg = avgV;
       avgShown = avgV;   // Version 427: the value moved to the key under the chart, so no plate is drawn here
     }
     // Version 402: the fit across the months in view, drawn always and shown only while the pill is pressed —
@@ -987,10 +981,10 @@
     // not a thing anyone can point at, so the nearest column is computed from the pointer instead
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
-                     refs:[{ label:"Average", v:lastChartAvg },
+    publishGeom("cpiHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
+                     refs:[{ label:"Average", v:avgShown },
                            { label:"Fed target", v:CPI_TARGET, dash:true }],
-                     fmt:function(v){ return v.toFixed(1) + "%"; } };
+                     fmt:function(v){ return v.toFixed(1) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="Consumer prices year over year, every month from ' + y0 + ' to ' + y1 +
       ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + '</svg>';
@@ -1030,7 +1024,7 @@
       ]);
   }
   function gdpHistoryChart(Wpx, from, o){
-    o = o || {}; lastChartAvg = null;
+    o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
         L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
@@ -1076,7 +1070,6 @@
     // Version 431: the window's own average, the same line Temperature draws
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(gAvg)) + 'L' + R + ',' + f(Y(gAvg)) + '"/>');
-    lastChartAvg = gAvg;
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -1084,10 +1077,10 @@
     out.push(meanRule(L, R, Y(GDP_NORM)));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atQuarter,
+    publishGeom("gdpHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atQuarter,
                      refs:[{ label:"Average", v:gAvg },
                            { label:"Long-run", v:GDP_NORM, dash:true }],
-                     fmt:function(v){ return v.toFixed(1) + "%"; } };
+                     fmt:function(v){ return v.toFixed(1) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
       ', against the long-run average of ' + GDP_NORM + ' per cent; expansion in teal, contraction in orange">' +
@@ -1139,11 +1132,11 @@
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(vAvg)) + 'H' + R + '"/>');
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
+    publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
                      // the window's average and the long-run pace, in the order they are drawn
                      refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
-                     vals:vals.map(function(v){ return v == null ? null : { v:v }; }) };
+                     vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
     // Version 403: the fit across the quarters in view. Nulls are filtered for the regression — they only occur
     // at the head of the series, which a window can include — but the line still spans the plot, because the
     // reader is being shown the slope of what is on screen, not of a subset of it.

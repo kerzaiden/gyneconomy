@@ -385,6 +385,29 @@ async function openPage(p, url, sheet) {
     (!shape.dragged && shape.home && shape.sparks >= 10 && !shape.stale)
       ? ok('closed cycle drops the live cards', shape.sparks + ' rows carry their own shape')
       : bad('closed cycle drops the live cards', JSON.stringify(shape));
+
+    /* V616: the open cycle is not a closed one. Its row still opens \u2014 onto the Cycle tab, which IS this view
+       still moving \u2014 rather than building a frozen copy of a cycle that has not ended. The two halves matter
+       separately: landing on the Cycle tab is the feature, and NOT having built the closed-cycle view is what
+       says the app is not quietly calling the AI Cycle over. */
+    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
+    await p.waitForTimeout(500);
+    const noRow = await p.evaluate(() => {
+      const row = [...document.querySelectorAll('.era-row')].find(x => /Today/.test(x.textContent));
+      if (!row) return 'no ongoing row';
+      row.click(); return null;
+    });
+    await p.waitForTimeout(700);
+    const landed = await p.evaluate(() => ({
+      tab: (document.querySelector('.tab-btn.active') || {}).getAttribute
+             ? document.querySelector('.tab-btn.active').getAttribute('data-tab') : null,
+      frozen: !document.getElementById('calendar-cycle').hidden,
+      dial: !!document.querySelector('#cycle-view .season-card'),
+      bar: document.getElementById('topbar-title').textContent.trim()
+    }));
+    (!noRow && landed.tab === 'cycle' && !landed.frozen && landed.dial && /Current Cycle/i.test(landed.bar))
+      ? ok('the open cycle opens the live page', 'landed on the Cycle tab')
+      : bad('the open cycle opens the live page', JSON.stringify({ noRow, landed }));
   }
   await p.close();
 

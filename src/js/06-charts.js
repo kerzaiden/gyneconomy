@@ -652,10 +652,10 @@
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
     out.push(crossLine(padT, (padT + ih)));
-    lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
+    publishGeom("reserveChart", { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
                      refs:(o.ref != null ? [{ label:"Average", v:rAvg }, { label:refName(o.refLabel), v:o.ref, dash:true, cls:"bt-ref" }]
                                         : [{ label:"Average", v:rAvg }]),
-                     vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt };
+                     vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt });
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
   }
 
@@ -847,6 +847,28 @@
     return '<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + y.toFixed(1) + 'H' + (R + AXIS.R) + '"/>';
   }
   function meanRule(L, R, y){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
+  /* ================= A HISTORY WEARS ONLY ITS OWN GEOMETRY (Version 618) =================
+     Every history chart computes the frame it drew on \u2014 where the columns start and end, how many there are,
+     how to turn an index back into a date \u2014 and the crosshair needs it. Until now that travelled on a module
+     variable: thirteen charts wrote `lastHistGeom` and fifteen callers read it on the next line. The
+     correctness of that was the ORDER of two statements, with nothing between them by convention alone, and
+     one path does not redraw at all \u2014 refitHistory returns early when the width already matches \u2014 so that
+     caller attached whatever the last page happened to leave behind. A crosshair reading another chart's scale
+     is invisible: the numbers are plausible and simply wrong.
+     So the geometry now carries the NAME of the chart that made it, and attachHistory is the only thing that
+     reads it. When a page asks for a geometry that no one drew for it, that is recorded rather than attached
+     quietly \u2014 the suite asserts the record is empty, so the day this breaks is the day it is seen. */
+  var pendingGeom = null;
+  function publishGeom(name, g){ g.src = name; pendingGeom = g; return g; }
+  function attachHistory(host, tipId, expect){
+    if (!host) return null;
+    var g = pendingGeom;
+    if (expect && (!g || g.src !== expect))
+      (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
+    host.__geom = g;
+    if (tipId) wireHistHover(host, tipId);
+    return g;
+  }
   function vhOpen(W, H){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
   function chartAxes(o){
     var out = [], ticks = o.ticks;
@@ -958,13 +980,13 @@
     // names the centre of the first slot and the centre of the last — which is what the hover's index maths
     // reads. The chart that knows its own layout does the translating; the hover stays one function.
     out.push(crossLine(padT, (padT + ih)));
-    lastHistGeom = { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
+    publishGeom("divergeChart", { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
                      refs:(o.mid != null ? [{ label:"Average", v:dAvg }, { label:refName(o.midLabel), v:o.mid, dash:true, cls:"dv-mid" }]
                                         : [{ label:"Average", v:dAvg }]),
                      /* V590: `at` names the reading in the readout plate. It defaulted to d.y, which is
                         right for the annual series this chart was built for and prints "undefined" for a
                         monthly one \u2014 so a caller with months passes its own. */
-                     vals:o.vals, at:(o.at || function(d){ return String(d.y); }), fmt:o.fmt };
+                     vals:o.vals, at:(o.at || function(d){ return String(d.y); }), fmt:o.fmt });
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
   }
 

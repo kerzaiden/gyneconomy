@@ -604,11 +604,11 @@
     // a hoisted `undefined` — harmless while only a hover row read it, wrong the moment the readout states the
     // average at rest. Same fault as V486's pAvg/hyAvg: compute the average before the geometry that names it.
     var dfAvg = vals.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-    lastHistGeom = { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return "FY" + (y0 + i); },
+    publishGeom("deficitChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return "FY" + (y0 + i); },
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
                      refs:[{ label:"Average", v:dfAvg },
                            { label:"1983 level", v:DEF_1983, dash:true }],
-                     vals:vals.map(function(v){ return { v:v }; }) };
+                     vals:vals.map(function(v){ return { v:v }; }) });
     out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(dfAvg)) + 'H' + R + '"/>');
     if (defFit && defFit.n > 1)
       out.push(fitGroup({ fit:defFit, fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; } },
@@ -999,11 +999,11 @@
     // Pulse draws a line, so there is no column to light under the pointer. The crosshair and the readout carry
     // it, and the mark lookup simply finds nothing — which the hover already guards for rather than assuming.
     var pAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-    lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2V_FROM_YEAR, from + i); },
+    publishGeom("velocityHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2V_FROM_YEAR, from + i); },
                      fmt:function(v){ return v.toFixed(3) + "\u00d7"; },
                      refs:[{ label:"Average", v:pAvg },
                            { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true }],
-                     vals:ser.map(function(v){ return { v:v }; }) };
+                     vals:ser.map(function(v){ return { v:v }; }) });
     // Version 434: the inline plate goes and the key names both lines, as on the other five
     out.push('<path class="temp-avg" d="M' + f(X(0)) + ',' + f(Y(pAvg)) + 'H' + f(X(n - 1)) + '"/>');
 
@@ -1092,13 +1092,13 @@
     }
     out.push(crossLine(T, B));
     var hyAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-    lastHistGeom = { L:L, R:R, T:T, B:B, W:W, n:n,
+    publishGeom("desireHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n,
                      at:function(d, i){ return hyLabel(from + i); },
                      fmt:function(v){ return v.toFixed(2) + "%"; },
                      // .hy-avg, not the app's .temp-avg: this chart's average is drawn in the range bar's grey
                      // by the Version 477 decision, and the legend's mark wears the line it names (V561)
                      refs:[{ label:"Average", v:hyAvg, cls:"hy-avg" }],
-                     vals:ser.map(function(v){ return { v:v }; }) };
+                     vals:ser.map(function(v){ return { v:v }; }) });
     /* Version 477: the key went. The bar directly beneath this chart now names the band in the band's own
        colour, four centimetres away, so a key repeating it inside the plot was both duplication and a collision
        — it sat exactly where the 4.61% peak label lands. The average line stays, because where the average sits

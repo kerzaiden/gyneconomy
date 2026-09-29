@@ -435,7 +435,7 @@
       // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
-      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "hormones-hist-tooltip"); }
+      attachHistory(box, "hormones-hist-tooltip", "fedFundsHistoryChart");
     }
     sheetRenderers["hormones-range"] = draw;
     /* V598: one chart, so one opener again — the pair V596 composed in 09-render-core existed only while this
@@ -575,7 +575,7 @@
       // the refit first, the wiring second \u2014 the V591 lesson: refitHistory replaces the svg, legend and all
       var box = bar.querySelector(".page-chart");
       refitHistory(box, function(w){ return lendingHistoryChart(w, from, { to:to, cycle:!!span }); });
-      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "pressure-hist-tooltip"); }
+      attachHistory(box, "pressure-hist-tooltip", "lendingHistoryChart");
     }
     sheetRenderers["pressure-range"] = draw;
     sheetRenderers["sheet-sign-pressure"] = draw;
@@ -698,7 +698,7 @@
          geometry, not the first draw's, so reading __geom before it pins the hover to a chart that is gone. */
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return divergeChart(opts(), w); });
-      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "fear-hist-tooltip"); }
+      attachHistory(box, "fear-hist-tooltip", "divergeChart");
     }
     sheetRenderers["fear-range"] = drawFearHistory;
     /* V593: and on OPEN. Without this the chart kept its build-time drawing, made while the sheet was hidden

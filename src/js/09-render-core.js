@@ -451,7 +451,7 @@
       svg.insertAdjacentHTML("beforeend",
         crossLine(padT, (H - padB)));
       var picked = matOf(matPick);
-      lastHistGeom = { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
+      publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
                        n:ylmCount(), at:function(d, i){ return quarters[ylmFrom + i]; },
                        fmt:function(v){ return v.toFixed(2) + "%"; },
                        /* V570: the zone key moves up into the legend at the head of the grid, out of the row
@@ -461,7 +461,7 @@
                              { label:"Normal",   swatch:"var(--season-autumn)" },
                              { label:"Steep",    swatch:"var(--good)" }],
                        vals:(picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d){
-                              return d.v == null ? null : { v:d.v }; }) : []) };
+                              return d.v == null ? null : { v:d.v }; }) : []) });
 
       // The year labels were a hand-written list, which only worked while the chart always showed 2005–2026.
       // With a window they are derived: about four evenly spaced Q1s inside whatever is on screen.
@@ -553,7 +553,7 @@
       // attachHoverTracking retired here in Version 409 — see above. It stays in the app for the spread chart,
       // which is a line with two series and genuinely needs a different readout.
       var shell = document.getElementById("ylm-shell");
-      if (shell){ shell.__geom = lastHistGeom; wireHistHover(shell, "ylm-tooltip"); }
+      attachHistory(shell, "ylm-tooltip", "ylm");
     }
 
     // ONE MATURITY AT A TIME, CHOSEN FROM A ROW OF CARDS (Version 293, Keren: "I don't understand anything from the
@@ -615,8 +615,7 @@
         { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS });
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
-      host.__geom = lastHistGeom;
-      wireHistHover(host, "pulse-hist-tooltip");
+      attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
       var vTrend = document.getElementById("pulse-trend");
       if (vTrend) vTrend.innerHTML = trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
@@ -639,8 +638,7 @@
         { depth:Math.floor(len / 4), stops:VOL_STOPS });
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
-      host.__geom = lastHistGeom;
-      wireHistHover(host, "m2-hist-tooltip");
+      attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       // the fit is over the quarters IN VIEW, so the pill and the picture can never describe different stretches
       var mTrend = document.getElementById("volume-trend");
       if (mTrend) mTrend.innerHTML = trendPill(
@@ -668,8 +666,7 @@
         rangeBar("desire-range", timelineFor({ depth:3, stops:DESIRE_STOPS }),
                  pageRange["desire-range"]) + '</div>';
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
-      host.__geom = lastHistGeom;
-      wireHistHover(host, "desire-hist-tooltip");
+      attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
       var tr = document.getElementById("desire-trend");
       // widening and tightening are the credit market's own pair, and the only pair for a spread
       if (tr) tr.innerHTML = trendPill(trendOf(win, "points", "day"), null, true,

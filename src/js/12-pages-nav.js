@@ -977,16 +977,14 @@
         win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                          { to:span ? span[1] : undefined, cycle:true });
-        hist.__geom = lastHistGeom;          // same chart, so the same crosshair works unchanged
-        wireHistHover(hist, "temp-hist-tooltip");
+        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");   // same chart, so the same crosshair
         document.getElementById("temp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                     { rising:"heating", falling:"cooling" });
       } else {
         var from = mWindowFrom(cpiYoYHistory.length, r); win = cpiYoYHistory.slice(from);
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
-        hist.__geom = lastHistGeom;
-        wireHistHover(hist, "temp-hist-tooltip");
+        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
         // the fit is over the months IN VIEW, so the pill and the picture can never describe different stretches
         document.getElementById("temp-trend").innerHTML =
           trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
@@ -1030,8 +1028,7 @@
         var gTo = gSpan ? gSpan[1] : undefined;
         var win = gdpQuarterlyYoY.slice(gFrom, gTo);
         hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
-        hist.__geom = lastHistGeom;
-        wireHistHover(hist, "gdp-hist-tooltip");
+        attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
         // Version 431: the rows describe the window, exactly as Temperature's do since Version 423
         var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
         // Version 494, Keren: "total growth 11% — in the Highlights component." The one figure this page's
@@ -1081,8 +1078,7 @@
       var from = span ? span[0] : mWindowFrom(unempHistory.length, pageRange[id]);
       var to = span ? span[1] : undefined;
       hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
-      hist.__geom = lastHistGeom;
-      wireHistHover(hist, "act-hist-tooltip");
+      attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
       var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
       var tr = document.getElementById("act-trend");
       // the pair of words is the labour market's own, not a chart's: unemployment RISES as the market loosens
@@ -1120,7 +1116,7 @@
         return reserveChart({ vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
                               fit:powerTrend.fit, alt:"Power supply, one charge per year" }, w);
       });
-      if (pBox){ pBox.__geom = lastHistGeom; wireHistHover(pBox, "power-hist-tooltip"); }
+      attachHistory(pBox, "power-hist-tooltip", "reserveChart");
     };
     // The deficit's page (Version 360, Keren: "the federal budget deficit needs to be expandable from the
     // deficit rate in the power supply component"). As a second container on the Economic power page it took
@@ -1147,8 +1143,7 @@
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
       var defRows = document.getElementById("deficit-records");
       if (defRows) defRows.innerHTML = "";   // V489: the register went; the readout carries the average
-      host.__geom = lastHistGeom;
-      wireHistHover(host, "deficit-hist-tooltip");
+      attachHistory(host, "deficit-hist-tooltip", "deficitChart");
       var dTrend = document.getElementById("deficit-trend");
       if (dTrend) dTrend.innerHTML = trendPill(
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
@@ -1180,7 +1175,7 @@
         '<div class="gdp-tooltip mono hist-tip" id="households-hist-tooltip" hidden></div></div>';
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return householdsChart(w, from, to); });
-      if (box){ box.__geom = lastHistGeom; wireHistHover(box, "households-hist-tooltip"); }
+      attachHistory(box, "households-hist-tooltip", "householdsChart");
       var hl = document.getElementById("households-highlights");
       if (hl) hl.innerHTML = householdsHighlights();
     };
@@ -1236,7 +1231,7 @@
                               fmt:capeFmt1, tickFmt:function(v){ return v + "\u00d7"; }, fit:capeTrend.fit,
                               alt:"Shiller CAPE against its long-run fair value, each January" }, w);
       });
-      if (vBox){ vBox.__geom = lastHistGeom; wireHistHover(vBox, "valuation-hist-tooltip"); }
+      attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
     };
     function redrawSheet(id){
       var h = document.getElementById("metric-page"), d = sheetRenderers[id];
