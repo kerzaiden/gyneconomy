@@ -14,7 +14,7 @@ is a decision, not a note.** Don't overrule one; if it seems wrong, say so and a
   Read the part that covers what you are touching.
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
   before grepping; the source is ~15,000 lines.
-- `docs/task.md` — the weekly courier task's only instructions. Edit that file to change the task.
+- `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
 - `git log` — every version is a commit `V6NN — Short Name` and an annotated tag.
 
 ## Never

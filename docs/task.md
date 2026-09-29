@@ -1,4 +1,4 @@
-# The weekly refresh task
+# The daily refresh task
 
 **This file is the task's instructions.** The scheduled task itself holds only a pointer to this
 URL; everything it does is written here, so it can be diffed, reviewed and reverted like any other
@@ -58,8 +58,10 @@ season the page computes. A run that wrote nothing says why.
 **Notify (push) if:** a document was missing or `_meta.failed` is not empty · the newest date in the
 file is more than four days old · a write failed · the season changed. Otherwise finish quietly.
 
-## The known limitation, by design
+## When it runs (V645)
 
-The task runs weekly, so the artifact's figures can sit up to seven days behind the site's. Every
-figure prints its own date, so no reader is misled. If Keren wants the artifact as fresh as the
-site, move the schedule to daily — nothing else changes.
+Weekdays at 23:07 UTC, 27 minutes after the Data workflow commits `data/live.json` (22:40 UTC, after the
+New York close), so each run copies that evening's figures. Keren moved it from weekly to daily on
+Sep 29 2026, so the artifact keeps pace with the site. Weekends are skipped because the pipeline does not
+run then and there is nothing new to copy. A run can still find the file unchanged, for example on a market
+holiday; writing the same values again is harmless, and every figure prints its own date.
