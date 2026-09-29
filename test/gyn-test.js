@@ -646,6 +646,50 @@ async function openPage(p, url, sheet) {
         : bad('repaint refuses bad input', JSON.stringify(rv));
 
       perr.length ? bad('no errors while repainting', perr.join(' | ')) : ok('no errors while repainting');
+
+      /* ---- V629: the registry IS the contract, so the contract gets tested ----
+         Every scalar declares a band, and a number outside it is REFUSED rather than clamped (the V305 rule).
+         Walked through `applyLive`, which is the one door: just inside each edge must be accepted, just
+         outside must be refused, and the edges themselves are inclusive because a band that excluded its own
+         ends would make a legitimate reading unprintable. Zero is a real policy rate; 5.00 is a real VIX. */
+      const bands = await g.evaluate(() => {
+        const R = window.__GYN.READINGS, out = {};
+        Object.keys(R).forEach(n => {
+          if (R[n].kind !== 'scalar') return;
+          const [lo, hi] = R[n].band, A = window.__GYN.applyLive;
+          out[n] = {
+            lo: A(n, lo), hi: A(n, hi),
+            under: A(n, lo - 0.01), over: A(n, hi + 0.01),
+            nan: A(n, NaN), str: A(n, String(lo)), arr: A(n, [lo])
+          };
+        });
+        return out;
+      });
+      const bn = Object.keys(bands);
+      const bandOk = bn.length === 4 && bn.every(n => {
+        const b = bands[n];
+        return b.lo === true && b.hi === true && b.under === false && b.over === false
+            && b.nan === false && b.str === false && b.arr === false;
+      });
+      bandOk ? ok('every scalar band is inclusive and refuses outside it', bn.join(', '))
+             : bad('every scalar band is inclusive and refuses outside it', JSON.stringify(bands));
+
+      /* Each row must say where its value lands and what redraws. `paint` and `onOpen` are exclusive: a
+         reading that claims both is claiming two different things about the same number. */
+      const rows = await g.evaluate(() => {
+        const R = window.__GYN.READINGS;
+        return Object.keys(R).map(n => {
+          const r = R[n];
+          return { n, kind: r.kind, set: typeof r.set, paints: (r.paint || []).length, open: !!r.onOpen,
+                   band: r.kind === 'scalar' ? (r.band || []).length : 2 };
+        });
+      });
+      const rowOk = rows.length === 9 && rows.every(r =>
+        ['object', 'series', 'scalar'].indexOf(r.kind) >= 0 && r.set === 'function' &&
+        r.band === 2 && ((r.paints > 0) !== r.open));
+      rowOk ? ok('every reading declares shape, landing and display', rows.length + ' rows')
+            : bad('every reading declares shape, landing and display',
+                  JSON.stringify(rows.filter(r => !(r.set === 'function' && ((r.paints > 0) !== r.open)))));
     }
     await c.close();
   }

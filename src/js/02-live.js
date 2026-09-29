@@ -15,6 +15,15 @@
     try { return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {}; }
     catch (e) { return {}; }
   })();
+  /* V629: one shallow merge. It was written twice — here, decoding an object document, and again inside
+     applyLive's fedFunds case, which is the same operation on the same kind of thing. */
+  function merge(base, over){
+    var o = {};
+    if (base && typeof base === "object" && !Array.isArray(base))
+      for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
+    for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
+    return o;
+  }
   function LIVE(name, fallback){
     var d = LIVE_CACHE[name];
     if (!d || typeof d !== "object") return fallback;
@@ -30,27 +39,15 @@
          carry keeps the value in the file. That is the same principle the literals already serve
          under — they are the floor, not a duplicate — extended one level down, into the object. */
       if (d.kind === "object"){
-        var o = {}, any = false;
-        if (fallback && typeof fallback === "object" && !Array.isArray(fallback)){
-          for (var f in fallback) if (Object.prototype.hasOwnProperty.call(fallback, f)) o[f] = fallback[f];
-        }
-        for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)){ o[k] = d[k]; any = true; }
-        return any ? o : fallback;
+        var over = {}, any = false;
+        for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)){ over[k] = d[k]; any = true; }
+        return any ? merge(fallback, over) : fallback;   // V629: one merge, shared with the registry's fedFunds
       }
     } catch (e) {}
     return fallback;
   }
-  /* The six the nightly refresh moves. Histories are deliberately not cached: they change a few times a year,
-     they are the bulk of the payload, and a stale one would be a worse trade than a stale daily print. */
-  var LIVE_DOCS = ["fedFunds", "yieldCurve", "sentiment", "valuation", "coincident"];
-  // the scalars the pipeline publishes, which land INSIDE the objects above (V533, V541)
-  /* V545: `hyOasNow`, not `hyOas`. The app already has a var called `hyOas` — the 787-point
-     history the Desire chart draws — and a live document of the same name is a trap with a fuse
-     in it: nothing reads the history through LIVE() today, so the two never met, but the day
-     someone wraps that array the scalar would answer instead and the chart would get one number.
-     A live document's name is a name in the same space as the file's own vars, so it has to be
-     unique against them. `vixClose` and `capeValue` already were; this one was not. */
-  var LIVE_SCALARS = ["vixClose", "vix3mClose", "hyOasNow", "capeValue"];
+  // Version 629: the nine readings — their shapes, their bands, where each one lands and what redraws when
+  // it does — are declared in ONE place, the reading registry below. `LIVE_NAMES` is its key list.
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
   fedFunds = LIVE("fedFunds", fedFunds);
@@ -167,31 +164,141 @@
     if (!row) return;
     paintReading("sheet-metric-valuation", row.flagValue, valuation.tag || null);
   }
-  /* Which repaints each live name owes. Version 628: seven keys stood against nine live names. `vixClose`
-     repainted the curve from inside its own case in `applyLive` rather than from here, and `hyOasNow` was
-     not mentioned anywhere — and a MISSING key looked exactly like an EMPTY one, so "this reading draws on
-     its own page" and "nobody has written this yet" were the same shape. They are two statements now. A name
-     in REPAINT has a painter; a name in ON_OPEN declares that its only display is an inner page, which
-     redraws in full when it opens. `checkLiveCoverage` asserts every live name sits in exactly one, so a
-     tenth document cannot arrive without saying where it shows. */
-  var REPAINT = {
-    fedFunds:   [repaintPolicy],
-    yieldCurve: [repaintHorizonRow],
-    valuation:  [repaintValuationRow],
-    capeValue:  [repaintValuationRow],
-    vixClose:   [repaintFearCurve],   // the near leg: a new VIX moves the curve's shape, not just its own row
-    vix3mClose: [repaintFearCurve]    // and the far leg does the same
+  /* ---------------- THE READING REGISTRY (Version 629) ----------------
+     Keren: "a component based app that will be 100% ready for server side integration with controllers
+     and services."
+
+     Nine readings arrive from outside this file. Their contract used to be spread across four places that
+     had to be kept in step by hand: `LIVE_DOCS` and `LIVE_SCALARS` named them, a 75-line switch inside
+     `applyLive` validated each one and knew where it landed, and REPAINT and ON_OPEN said what redraws.
+     Four lists drift, and these had: V628 found two names missing from one of them, and `LIVE_SCALARS`
+     turns out to have been declared and then never read by anything at all — which was hiding a real
+     asymmetry between the two sources, below.
+
+     One row per reading now, and the row is the whole contract:
+       kind    the shape it arrives in — object, series or scalar
+       band    a scalar's floor and ceiling; a number outside it is refused, never clamped
+       ok      an object's own admission test, where it has one beyond being an object
+       set     where the value lands. The ONE thing that genuinely differs between readings.
+       paint   what redraws when it moves
+       onOpen  true instead of `paint`: its only display is an inner page, which redraws in full on open
+
+     `LIVE_NAMES` is the registry's own key list, so the fetchers cannot ask for a name it does not know.
+     `checkLiveCoverage` asserts every row is complete and that `paint` and `onOpen` are exclusive — a
+     tenth reading is one row, and an incomplete row fails the suite.
+
+     THE SERVICE SEAM. Above this, `receive` is the only door a reading comes in through, and the two
+     sources this app has — the artifact's own database, and the hosted site's JSON file — each do nothing
+     but produce a {name: document} object and knock on it. A server-side backend is a third function of
+     that shape and nothing else in the app changes: the registry already states what it expects, the band
+     already refuses a wrong number, and the painters already know where it shows. */
+  var READINGS = {
+    fedFunds: {
+      kind: "object",
+      ok: function(v){ return typeof v.lo === "number"; },
+      /* MERGE, not replace (V544): a refresh carries lo and hi, and the editorial fields around them —
+         the FOMC date, the vote, the next meeting — belong to the file, which no fetcher knows. */
+      set: function(v){ fedFunds = merge(fedFunds, v); },
+      paint: [repaintPolicy]
+    },
+    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow] },
+    sentiment:  { kind: "object", set: function(v){ sentiment = v; }, onOpen: true },
+    valuation:  {
+      kind: "object",
+      /* The verdict is derived at load, so a fresh object without it would print a stale word beside a
+         fresh number — the drift ONE FIGURE / ONE NUMBER forbids. Re-derived, never carried over. */
+      set: function(v){
+        valuation = v;
+        if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
+      },
+      paint: [repaintValuationRow]
+    },
+    coincident: {
+      kind: "series",
+      set: function(v){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
+      onOpen: true
+    },
+    /* The scalars. Each is a single number inside an object the app owns outright — the bands, the notes
+       and the words around them are editorial and belong in the file, not in a fetcher, so the pipeline
+       publishes the number bare and the row it belongs to is named here. */
+    vixClose: {
+      kind: "scalar", band: [5, 100],
+      set: function(v){
+        var row = sentiment.rows[0];            // throws if the row is gone, which applyLive reads as a refusal
+        row.meter.value = v;
+        row.flagValue = v.toFixed(1);
+        if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
+      },
+      paint: [repaintFearCurve]                 // the near leg: a new VIX moves the curve, not just its own row
+    },
+    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ vix3mClose = v; },
+                  paint: [repaintFearCurve] },  // and the far leg does the same
+    hyOasNow: {
+      kind: "scalar", band: [1, 30],
+      set: function(v){
+        var row = coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0];
+        row.meter.value = v;
+        row.metric = v.toFixed(2) + "%";
+        if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
+      },
+      onOpen: true
+    },
+    capeValue: {
+      kind: "scalar", band: [4, 60],
+      set: function(v){
+        var row = valRow("cape");
+        row.meter.value = v;
+        // the row PRINTS flagValue and it carries its own unit: "41.3×", not "41.3". Taking the suffix
+        // from the value already there keeps it right without hard-coding it.
+        row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
+        if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
+        valuation.tag = valuationVerdict(v);
+      },
+      paint: [repaintValuationRow]
+    }
   };
-  /* The VIX row, and the Desire, Volume and Pulse rows, are drawn by the page that holds them and by nothing
-     else. Naming them here is what turns a missing repaint from an oversight into a decision. */
-  var ON_OPEN = ["sentiment", "coincident", "hyOasNow"];
+  /* The nightly refresh moves all nine. `LIVE_DOCS` and `LIVE_SCALARS` are NOT derived to replace them:
+     both are gone. One was the database path's fetch list, which is this list now; the other was never read
+     by anything. Histories stay out of here deliberately — they change a few times a year, they are the bulk
+     of the payload, and a stale history would be a worse trade than a stale daily print. */
+  var LIVE_NAMES = Object.keys(READINGS);
+  var KINDS = ["object", "series", "scalar"];
   function checkLiveCoverage(){
-    var all = LIVE_DOCS.concat(LIVE_SCALARS), seen = {}, bad = [];
-    Object.keys(REPAINT).forEach(function(k){ seen[k] = (seen[k] || 0) + 1; });
-    ON_OPEN.forEach(function(k){ seen[k] = (seen[k] || 0) + 1; });
-    all.forEach(function(k){ if (seen[k] !== 1) bad.push(k + " in " + (seen[k] || 0)); });
-    Object.keys(seen).forEach(function(k){ if (all.indexOf(k) < 0) bad.push(k + " is not a live name"); });
-    if (bad.length && window.console) console.warn("live coverage: " + bad.join(", "));
+    var bad = [];
+    LIVE_NAMES.forEach(function(n){
+      var r = READINGS[n], shows = (r.paint && r.paint.length) ? 1 : 0;
+      if (KINDS.indexOf(r.kind) < 0) bad.push(n + ": kind " + r.kind);
+      if (r.kind === "scalar" && !(r.band && r.band.length === 2 && r.band[0] < r.band[1]))
+        bad.push(n + ": a scalar needs a band");
+      if (typeof r.set !== "function") bad.push(n + ": nowhere to land");
+      if (shows + (r.onOpen ? 1 : 0) !== 1)
+        bad.push(n + ": " + (shows ? (r.onOpen ? "paints AND declares onOpen" : "") : "no painter and no onOpen"));
+      (r.paint || []).forEach(function(f){ if (typeof f !== "function") bad.push(n + ": painter is not a function"); });
+    });
+    if (bad.length && window.console) console.warn("reading registry: " + bad.join(", "));
+  }
+  /* ONE INTAKE. Both sources ended with the same twenty lines — merge into the cache, write it back, diff
+     against what the page rendered from, apply what moved — written twice, and the two copies had drifted:
+     the database path walked LIVE_DOCS and so could not deliver a scalar at all, while the site path walked
+     whatever its file carried. That is what `LIVE_SCALARS` was declared for and never used to do.
+     `mode` is the one honest difference between them. The database is the record, so its answer REPLACES the
+     cache and a document deleted there stops being remembered. The site file is a diff of whatever the
+     Action last committed, so its answer MERGES. */
+  function receive(next, mode){
+    var names = Object.keys(next).filter(function(n){ return READINGS[n]; });
+    if (!names.length) return 0;
+    var prev = LIVE_CACHE, moved = 0;
+    var now = mode === "replace" ? next : merge(LIVE_CACHE, next);
+    try { window.localStorage.setItem("gyn.live", JSON.stringify(now)); } catch (e) {}
+    LIVE_CACHE = now;   // swapped in FIRST, so LIVE() does the shape-decoding — one decoder, not two
+    names.forEach(function(name){
+      try {
+        if (next[name] && next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
+        if (prev && prev[name] && JSON.stringify(prev[name]) === JSON.stringify(next[name])) return;
+      } catch (e) {}
+      if (applyLive(name, LIVE(name, null))) moved++;
+    });
+    return moved;
   }
   /* Assign a freshly-arrived document to the module var it belongs to, re-derive whatever was
      computed FROM it at load, then repaint. The re-derivation is the subtle part: `valuation.tag`
@@ -207,80 +314,34 @@
     if (!m) return "";
     return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
   }
+  /* Version 629: one applyLive for nine readings. It used to be a 75-line switch in which every reading
+     restated the same four steps in its own words — check the shape, check the band, put the value where it
+     lives, redraw. Three of the nine checked their band with a hand-written pair of comparisons; two forgot
+     to say what redraws. The steps are the same for all nine, so they are written once here and the part that
+     genuinely differs — where the value lands — is the one function each row carries.
+     A `set` that cannot place its value THROWS, and a throw is a refusal: the reading is left alone and
+     `false` goes back, which is what the by-hand guards returned. So `sentiment.rows[0].meter` needs no null
+     check; if it is not there, the assignment throws before anything has moved. */
   function applyLive(name, value){
     if (value == null) return false;
+    var r = READINGS[name];
+    if (!r) return false;
     try {
-      switch (name){
-        /* MERGE, for the same reason LIVE merges (V544): a refresh carries lo and hi, and the
-           editorial fields around them — the FOMC date, the vote, the next meeting — belong to
-           the file. Replacing here would drop them the moment a refresh arrived mid-session. */
-        case "fedFunds": {
-          if (!value || typeof value.lo !== "number") return false;
-          var ff = {}; for (var ffk in fedFunds) ff[ffk] = fedFunds[ffk];
-          for (var nk in value) if (Object.prototype.hasOwnProperty.call(value, nk)) ff[nk] = value[nk];
-          fedFunds = ff;
-          break;
-        }
-        case "yieldCurve": if (!Array.isArray(value) || !value.length) return false; yieldCurve = value; break;
-        case "sentiment":  sentiment = value; break;
-        case "valuation":  valuation = value;
-                           if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
-                           break;
-        case "coincident": if (!Array.isArray(value) || !value.length) return false;
-                           coincident = value; deriveVolumeTag(); derivePulseTag(); break;
-        case "vix3mClose": {
-          if (typeof value !== "number" || value < 5 || value > 100) return false;
-          vix3mClose = value;
-          break;
-        }
-        /* The VIX close and the high-yield spread are single numbers inside objects the app owns
-           outright — the bands, the notes and the words around them are editorial and belong here,
-           not in a fetcher. So the pipeline publishes them as bare scalars and this is where they
-           are placed, next to the prose they have to agree with. Both rows are drawn when their
-           page opens, so neither owes a repaint; the figure is right on the next load either way,
-           because the cache carries it. */
-        case "vixClose": {
-          if (typeof value !== "number" || value < 5 || value > 100) return false;
-          var vrow = sentiment && sentiment.rows && sentiment.rows[0];
-          if (!vrow || !vrow.meter) return false;
-          vrow.meter.value = value;
-          vrow.flagValue = value.toFixed(1);
-          if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
-          break;   // V628: the curve's repaint is declared in REPAINT now, with the far leg's, not called here
-
-        }
-        /* V541: CAPE arrives from Shiller's own dataset, monthly. It lands in the valuation row and
-           the VERDICT is recomputed from it — `valuation.tag` is derived at load, so a fresh number
-           beside a stale word is exactly the drift ONE FIGURE / ONE NUMBER forbids. */
-        case "capeValue": {
-          if (typeof value !== "number" || value < 4 || value > 60) return false;
-          var crow = valRow("cape");
-          if (!crow || !crow.meter) return false;
-          crow.meter.value = value;
-          // the row PRINTS flagValue, and it carries its own unit: "41.3×", not "41.3".
-          // Taking the suffix from the value already there keeps it right without hard-coding it.
-          var suffix = String(crow.flagValue || "").replace(/^[\d.,\s-]+/, "");
-          crow.flagValue = value.toFixed(1) + suffix;
-          if (liveAsOf.capeValue) crow.sub = liveAsOf.capeValue;
-          valuation.tag = valuationVerdict(value);
-          break;
-        }
-        case "hyOasNow": {
-          if (typeof value !== "number" || value < 1 || value > 30) return false;
-          var drow = coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0];
-          if (!drow || !drow.meter) return false;
-          drow.meter.value = value;
-          drow.metric = value.toFixed(2) + "%";
-          if (liveAsOf.hyOasNow) drow.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
-          break;
-        }
-        default: return false;
-      }
+      if (!shapeOk(r, value)) return false;
+      r.set(value);
     } catch (e) { return false; }
-    (REPAINT[name] || []).forEach(function(fn){
+    (r.paint || []).forEach(function(fn){
       try { fn(); } catch (e) { if (window.console) console.warn("repaint " + name + " failed", e); }
     });
     return true;
+  }
+  /* The band is the registry's, not the caller's. A number outside it is REFUSED rather than clamped — the
+     V305 rule the histories already follow: a reading the app cannot vouch for does not get drawn. */
+  function shapeOk(r, v){
+    if (r.kind === "series") return Array.isArray(v) && v.length > 0;
+    if (r.kind === "scalar") return typeof v === "number" && v >= r.band[0] && v <= r.band[1];
+    if (!v || typeof v !== "object" || Array.isArray(v)) return false;
+    return r.ok ? !!r.ok(v) : true;
   }
 
   /* V596: the FOMC list moved to the Hormones page, and so does its repaint — plus the thing that was
@@ -369,16 +430,17 @@
       return this.repeatable().length;
     }
   };
-  try { window.__GYN = GYN; GYN.applyLive = applyLive; } catch (e) {}   // a test seam, not an API
+  // V629: the registry joins the seam, so the suite can walk every band without restating one
+  try { window.__GYN = GYN; GYN.applyLive = applyLive; GYN.READINGS = READINGS; } catch (e) {}
 
-  // V628: registered here rather than beside REPAINT, because `GYN` is declared below it
+  // V628: registered here rather than beside the registry, because `GYN` is declared below it
   GYN.step("checkLiveCoverage", checkLiveCoverage, "check"); checkLiveCoverage();
 
   function refreshLiveData(){
     if (!window.claude || typeof window.claude.use !== "function") return;
     window.claude.use("db").then(function(db){
       if (!db) return;
-      return Promise.all(LIVE_DOCS.map(function(name){
+      return Promise.all(LIVE_NAMES.map(function(name){
         return db.doc("data/" + name).get().then(function(row){
           var d = row && (row.data || row);
           return (d && typeof d === "object") ? [name, d] : null;
@@ -387,19 +449,7 @@
         var next = {}, got = 0;
         rows.forEach(function(r){ if (r){ next[r[0]] = r[1]; got++; } });
         if (!got) return;
-        try { window.localStorage.setItem("gyn.live", JSON.stringify(next)); } catch (e) {}
-        /* V533: every document that actually CHANGED lands on this load, not only the policy rate.
-           The comparison is against the cache we rendered from, so an unchanged document costs
-           nothing. LIVE_CACHE is swapped in FIRST so that LIVE() does the shape-decoding — one
-           decoder, not two. */
-        var prev = LIVE_CACHE;
-        LIVE_CACHE = next;
-        LIVE_DOCS.forEach(function(name){
-          var before = prev && prev[name], after = next[name];
-          if (!after) return;
-          try { if (before && JSON.stringify(before) === JSON.stringify(after)) return; } catch (e) {}
-          applyLive(name, LIVE(name, null));
-        });
+        receive(next, "replace");
       });
     }).catch(function(){});
   }
@@ -427,21 +477,7 @@
       if (!doc || typeof doc !== "object") return;
       var next = {};
       for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k];
-      // the cache is what the NEXT load renders from, so it is written whether or not anything
-      // repaints now
-      var merged = {};
-      for (var a in LIVE_CACHE) merged[a] = LIVE_CACHE[a];
-      for (var b in next) merged[b] = next[b];
-      try { window.localStorage.setItem("gyn.live", JSON.stringify(merged)); } catch (e) {}
-      var prev = LIVE_CACHE;
-      LIVE_CACHE = merged;
-      Object.keys(next).forEach(function(name){
-        try {
-          if (next[name] && next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
-          if (prev && prev[name] && JSON.stringify(prev[name]) === JSON.stringify(next[name])) return;
-        } catch (e) {}
-        applyLive(name, LIVE(name, null));
-      });
+      receive(next, "merge");
     }).catch(function(){ /* silence: the page already rendered */ });
   }
   GYN.step("fetchSiteData", fetchSiteData, "live"); fetchSiteData();
