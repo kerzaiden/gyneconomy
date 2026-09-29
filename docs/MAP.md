@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `a53744c` on 2026-09-29.
+Generated from commit `c6b4709` on 2026-09-29.
 
 ## The five regions
 
@@ -54,7 +54,7 @@ _line 3,936_ · 5 declarations
 
 ### SEASON
 
-_line 3,969_ · 6 declarations
+_line 3,969_ · 10 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -64,129 +64,129 @@ _line 3,969_ · 6 declarations
 | 4,002 | `cpiYoYHistory` | `var cpiYoYHistory =` |
 | 4,088 | `gdpQuarterlyYoY` | `var gdpQuarterlyYoY =` |
 | 4,133 | `gdpLevels` | `var gdpLevels =` |
+| 4,161 | `fedFundsHistory` | `var fedFundsHistory =` |
+| 4,162 | `fearCurveHistory` | `var fearCurveHistory =` |
+| 4,170 | `fiscalHistory` | `var fiscalHistory =` |
+| 4,176 | `grossDebtQuarterly` | `var grossDebtQuarterly =` |
 
 ### Version 528: live data without a render refactor
 
-_line 4,146_ · 3 declarations
+_line 4,178_ · 3 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,165 | `merge` | `function merge(` |
-| 4,172 | `LIVE` | `function LIVE(` |
-| 4,196 | `fedFunds` | `var fedFunds =` |
+| 4,197 | `merge` | `function merge(` |
+| 4,204 | `LIVE` | `function LIVE(` |
+| 4,228 | `fedFunds` | `var fedFunds =` |
 
 ### Version 525: the first series to come from outside the file
 
-_line 4,199_ · 6 declarations
+_line 4,231_ · 6 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,252 | `paintReading` | `function paintReading(` |
-| 4,275 | `repaintFearCurve` | `function repaintFearCurve(` |
-| 4,299 | `repaintHorizonRow` | `function repaintHorizonRow(` |
-| 4,309 | `repaintPressureRow` | `function repaintPressureRow(` |
-| 4,315 | `repaintPressureChart` | `function repaintPressureChart(` |
-| 4,319 | `repaintValuationRow` | `function repaintValuationRow(` |
+| 4,284 | `paintReading` | `function paintReading(` |
+| 4,307 | `repaintFearCurve` | `function repaintFearCurve(` |
+| 4,331 | `repaintHorizonRow` | `function repaintHorizonRow(` |
+| 4,341 | `repaintPressureRow` | `function repaintPressureRow(` |
+| 4,347 | `repaintPressureChart` | `function repaintPressureChart(` |
+| 4,351 | `repaintValuationRow` | `function repaintValuationRow(` |
 
 ### THE READING REGISTRY (Version 629)
 
-_line 4,324_ · 14 declarations
+_line 4,356_ · 14 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,352 | `READINGS` | `var READINGS =` |
-| 4,423 | `LIVE_NAMES` | `var LIVE_NAMES =` |
-| 4,424 | `KINDS` | `var KINDS =` |
-| 4,425 | `checkLiveCoverage` | `function checkLiveCoverage(` |
-| 4,446 | `receive` | `function receive(` |
-| 4,470 | `liveAsOf` | `var liveAsOf =` |
-| 4,471 | `fmtAsOf` | `function fmtAsOf(` |
-| 4,484 | `applyLive` | `function applyLive(` |
-| 4,499 | `shapeOk` | `function shapeOk(` |
-| 4,509 | `repaintPolicy` | `function repaintPolicy(` |
-| 4,561 | `GYN` | `var GYN =` |
-| 4,598 | `refreshLiveData` | `function refreshLiveData(` |
-| 4,627 | `fetchSiteData` | `function fetchSiteData(` |
-| 4,643 | `fedFundsRange` | `function fedFundsRange(` |
+| 4,384 | `READINGS` | `var READINGS =` |
+| 4,455 | `LIVE_NAMES` | `var LIVE_NAMES =` |
+| 4,456 | `KINDS` | `var KINDS =` |
+| 4,457 | `checkLiveCoverage` | `function checkLiveCoverage(` |
+| 4,478 | `receive` | `function receive(` |
+| 4,502 | `liveAsOf` | `var liveAsOf =` |
+| 4,503 | `fmtAsOf` | `function fmtAsOf(` |
+| 4,516 | `applyLive` | `function applyLive(` |
+| 4,531 | `shapeOk` | `function shapeOk(` |
+| 4,541 | `repaintPolicy` | `function repaintPolicy(` |
+| 4,593 | `GYN` | `var GYN =` |
+| 4,630 | `refreshLiveData` | `function refreshLiveData(` |
+| 4,659 | `fetchSiteData` | `function fetchSiteData(` |
+| 4,675 | `fedFundsRange` | `function fedFundsRange(` |
 
 ### DATA (single source of truth — edit here on refresh)
 
-_line 4,657_ · 6 declarations
+_line 4,689_ · 6 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,658 | `yieldCurve` | `var yieldCurve =` |
-| 4,667 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
-| 4,668 | `curveAsOf` | `function curveAsOf(` |
-| 4,679 | `t10y3mHistory` | `var t10y3mHistory =` |
-| 4,703 | `t10y3mRecessions` | `var t10y3mRecessions =` |
-| 4,715 | `t10y2yHistory` | `var t10y2yHistory =` |
+| 4,690 | `yieldCurve` | `var yieldCurve =` |
+| 4,699 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
+| 4,700 | `curveAsOf` | `function curveAsOf(` |
+| 4,711 | `t10y3mHistory` | `var t10y3mHistory =` |
+| 4,735 | `t10y3mRecessions` | `var t10y3mRecessions =` |
+| 4,747 | `t10y2yHistory` | `var t10y2yHistory =` |
 
 ### Yield LEVELS by maturity, quarterly, Q1 2005–Q3 2026 — not spreads, the actual yields themselves,
 
-_line 4,743_ · 5 declarations
+_line 4,775_ · 5 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,748 | `t3mYieldHistory` | `var t3mYieldHistory =` |
-| 4,772 | `t2yYieldHistory` | `var t2yYieldHistory =` |
-| 4,796 | `t5yYieldHistory` | `var t5yYieldHistory =` |
-| 4,820 | `t10yYieldHistory` | `var t10yYieldHistory =` |
-| 4,847 | `t30yYieldHistory` | `var t30yYieldHistory =` |
+| 4,780 | `t3mYieldHistory` | `var t3mYieldHistory =` |
+| 4,804 | `t2yYieldHistory` | `var t2yYieldHistory =` |
+| 4,828 | `t5yYieldHistory` | `var t5yYieldHistory =` |
+| 4,852 | `t10yYieldHistory` | `var t10yYieldHistory =` |
+| 4,879 | `t30yYieldHistory` | `var t30yYieldHistory =` |
 
 ### Un-inversion → recession lag, computed from actual history (not a forecasting model or a survey)
 
-_line 4,872_ · 8 declarations
+_line 4,904_ · 8 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 4,881 | `uninvLagCycles` | `var uninvLagCycles =` |
-| 4,891 | `uninvLagToday` | `var uninvLagToday =` |
-| 4,903 | `usRealGdpGrowth` | `var usRealGdpGrowth =` |
-| 4,916 | `gdpPeers` | `var gdpPeers =` |
-| 4,957 | `gdpSrc` | `var gdpSrc =` |
-| 4,958 | `gdpPeerSrc` | `var gdpPeerSrc =` |
-| 4,963 | `longCycleImpressionShort` | `var longCycleImpressionShort =` |
-| 4,976 | `labPanel` | `var labPanel =` |
+| 4,913 | `uninvLagCycles` | `var uninvLagCycles =` |
+| 4,923 | `uninvLagToday` | `var uninvLagToday =` |
+| 4,935 | `usRealGdpGrowth` | `var usRealGdpGrowth =` |
+| 4,948 | `gdpPeers` | `var gdpPeers =` |
+| 4,989 | `gdpSrc` | `var gdpSrc =` |
+| 4,990 | `gdpPeerSrc` | `var gdpPeerSrc =` |
+| 4,995 | `longCycleImpressionShort` | `var longCycleImpressionShort =` |
+| 5,008 | `labPanel` | `var labPanel =` |
 
 ### Productivity growth left this panel in Version 395 (Keren: "I think it doesn't belong to economic power —
 
-_line 5,018_ · 1 declaration
+_line 5,050_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 5,040 | `productivityReading` | `var productivityReading =` |
+| 5,072 | `productivityReading` | `var productivityReading =` |
 
 ### Institutional trust left this panel in Version 392 (Keren: "drop the institutional trust Gallup survey —
 
-_line 5,050_ · 8 declarations
+_line 5,082_ · 8 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 5,066 | `stressScoreFor` | `function stressScoreFor(` |
-| 5,072 | `stressScore` | `var stressScore =` |
-| 5,078 | `powerOf` | `var powerOf =` |
-| 5,079 | `powerScore` | `var powerScore =` |
-| 5,096 | `stressHistory` | `var stressHistory =` |
-| 5,109 | `powerMeter` | `var powerMeter =` |
-| 5,111 | `stressNoteFull` | `var stressNoteFull =` |
-| 5,146 | `powerHistory` | `var powerHistory =` |
+| 5,098 | `stressScoreFor` | `function stressScoreFor(` |
+| 5,104 | `stressScore` | `var stressScore =` |
+| 5,110 | `powerOf` | `var powerOf =` |
+| 5,111 | `powerScore` | `var powerScore =` |
+| 5,128 | `stressHistory` | `var stressHistory =` |
+| 5,141 | `powerMeter` | `var powerMeter =` |
+| 5,143 | `stressNoteFull` | `var stressNoteFull =` |
+| 5,178 | `powerHistory` | `var powerHistory =` |
 
 ### The deficit, year by year (Version 358)
 
-_line 5,148_ · 9 declarations
+_line 5,180_ · 5 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 5,171 | `DEF_FROM_YEAR` | `var DEF_FROM_YEAR =` |
-| 5,172 | `deficitHistory` | `var deficitHistory =` |
-| 5,175 | `DEF_MEAN` | `var DEF_MEAN =` |
-| 5,182 | `DEF_RECESSION_FY` | `var DEF_RECESSION_FY =` |
-| 5,184 | `checkDeficitHistory` | `function checkDeficitHistory(` |
-| 5,227 | `fedFundsHistory` | `var fedFundsHistory =` |
-| 5,228 | `fearCurveHistory` | `var fearCurveHistory =` |
-| 5,236 | `fiscalHistory` | `var fiscalHistory =` |
-| 5,242 | `grossDebtQuarterly` | `var grossDebtQuarterly =` |
+| 5,203 | `DEF_FROM_YEAR` | `var DEF_FROM_YEAR =` |
+| 5,204 | `deficitHistory` | `var deficitHistory =` |
+| 5,207 | `DEF_MEAN` | `var DEF_MEAN =` |
+| 5,214 | `DEF_RECESSION_FY` | `var DEF_RECESSION_FY =` |
+| 5,216 | `checkDeficitHistory` | `function checkDeficitHistory(` |
 
 ### Version 411, Keren: "make it consistent across the app — sometimes I see 50 years … we don't want to
 
@@ -1030,7 +1030,7 @@ authority for them** and the working document quotes it.
 
 | Lines | Assigns to | Section it sits in |
 |---|---|---|
-| 4,159–4,162 | `LIVE_CACHE` | Version 528: live data without a render refactor |
+| 4,191–4,194 | `LIVE_CACHE` | Version 528: live data without a render refactor |
 | 8,779–8,792 | `horizonRead` | The inner pages' chart (Version 255, kept for nothing — see above) |
 | 9,631–9,644 | `seasonTrackAll` | The season, computed |
 | 9,666–9,670 | `regimeByQ` | The season, computed |
@@ -1050,7 +1050,7 @@ which function draws an inner page, called with the measured width when the page
 | `fear-range` | 11,492 |
 | `hormones-range` | 11,302 |
 | `hzn-range` | 11,161 |
-| `pressure-range` | 4,317 |
+| `pressure-range` | 4,349 |
 | `pulse-range` | 10,666 |
 | `sheet-marker-deficit` | 14,066 |
 | `sheet-metric-gdp` | 13,958 |

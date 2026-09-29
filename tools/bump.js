@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /* Move the app to its next version number.
 
-     npm run bump          # newest tag + 1  (v634-… tagged → 635)
+     npm run bump          # one past the higher of package.json and the newest tag
+                           #   (V647: tags are made by the Tag workflow after a merge, so a checkout
+                           #   can be a version ahead of its newest tag; counting from the tag alone
+                           #   named V644 twice)
      npm run bump 640      # a number you name
 
    Writes package.json and stamps sw.js from it (see tools/version.js). Run it before committing a
@@ -14,10 +17,8 @@ let n;
 if (arg !== undefined) {
   n = Number(arg);
   if (!Number.isInteger(n) || n <= 0) { console.error('bump: not a version number: ' + arg); process.exit(2); }
-} else if (tag !== null) {
-  n = tag + 1;
 } else {
-  console.error('bump: no v6NN tags here to count from — name the version: npm run bump 635'); process.exit(2);
+  n = Math.max(V.major(), tag || 0) + 1;
 }
 
 const was = V.major();
