@@ -1058,9 +1058,6 @@
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
 
-  .ls-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
-  .ls-col.tight{ stroke:var(--critical); }
-
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--warning); }
   .unemp-col.serious{ stroke:var(--serious); }
@@ -1187,7 +1184,7 @@
   .trend-on .bt-bar, .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
-  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .ls-col, .trend-on .unemp-col,
+  .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
   .trend-on .hh-col, .trend-on .hy-col2, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
 
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }
@@ -2173,13 +2170,8 @@
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
         
-        <div class="chart-shell" id="ylm-shell" hidden>
-          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
-          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
-        </div>
         
         <div id="hzn-trend"></div>
-        <div id="ylm-trend" hidden></div>
       </div>
       <div id="horizon-insights"></div>
       
@@ -2199,8 +2191,17 @@
       <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
     </summary>
     <div class="subject-body">
-      <div id="pressure-history"></div>
-      <div id="pressure-highlights"></div>
+    <section class="hero" aria-label="Pressure — U.S. Treasury yields by maturity">
+      <div class="hist-bar" id="pressure-timeline"></div>
+      <div class="spread-history">
+        <div id="pressure-head"></div>
+        <div class="chart-shell" id="ylm-shell">
+          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
+          <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
+        </div>
+        <div id="ylm-trend"></div>
+      </div>
+    </section>
     </div>
   </details>
 
@@ -4523,6 +4524,13 @@
       state: w.state
     });
   }
+  function repaintPressureRow() {
+    var h = yieldCurve.filter(function(d) {
+      return d.m === "10Y";
+    })[0];
+    if (!h || h.y == null) return;
+    paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
+  }
   function repaintValuationRow() {
     var row = valRow("cape");
     if (!row) return;
@@ -4544,7 +4552,7 @@
       set: function(v) {
         yieldCurve = v;
       },
-      paint: [ repaintHorizonRow ]
+      paint: [ repaintHorizonRow, repaintPressureRow ]
     },
     sentiment: {
       kind: "object",
@@ -10711,445 +10719,6 @@
     m: "2026-09",
     v: .807
   } ];
-  var lendingStandardsHistory = [ {
-    q: "1990 Q2",
-    v: 54.4
-  }, {
-    q: "1990 Q3",
-    v: 46.7
-  }, {
-    q: "1990 Q4",
-    v: 54.2
-  }, {
-    q: "1991 Q1",
-    v: 38.6
-  }, {
-    q: "1991 Q2",
-    v: 20
-  }, {
-    q: "1991 Q3",
-    v: 18.6
-  }, {
-    q: "1991 Q4",
-    v: 16.7
-  }, {
-    q: "1992 Q1",
-    v: 10
-  }, {
-    q: "1992 Q2",
-    v: 3.5
-  }, {
-    q: "1992 Q3",
-    v: -3.4
-  }, {
-    q: "1992 Q4",
-    v: 5.2
-  }, {
-    q: "1993 Q1",
-    v: 3.4
-  }, {
-    q: "1993 Q2",
-    v: -12.1
-  }, {
-    q: "1993 Q3",
-    v: -25
-  }, {
-    q: "1993 Q4",
-    v: -20
-  }, {
-    q: "1994 Q1",
-    v: -18.6
-  }, {
-    q: "1994 Q2",
-    v: -15.5
-  }, {
-    q: "1994 Q3",
-    v: -10.3
-  }, {
-    q: "1994 Q4",
-    v: -22.4
-  }, {
-    q: "1995 Q1",
-    v: -10.2
-  }, {
-    q: "1995 Q2",
-    v: -6.8
-  }, {
-    q: "1995 Q3",
-    v: -8.6
-  }, {
-    q: "1995 Q4",
-    v: -5.2
-  }, {
-    q: "1996 Q1",
-    v: 6.9
-  }, {
-    q: "1996 Q2",
-    v: -1.8
-  }, {
-    q: "1996 Q3",
-    v: -7.4
-  }, {
-    q: "1996 Q4",
-    v: -8.6
-  }, {
-    q: "1997 Q1",
-    v: -8.9
-  }, {
-    q: "1997 Q2",
-    v: -10.3
-  }, {
-    q: "1997 Q3",
-    v: -5.8
-  }, {
-    q: "1997 Q4",
-    v: -7
-  }, {
-    q: "1998 Q1",
-    v: 1.8
-  }, {
-    q: "1998 Q2",
-    v: -7.1
-  }, {
-    q: "1998 Q3",
-    v: 0
-  }, {
-    q: "1998 Q4",
-    v: 36.4
-  }, {
-    q: "1999 Q1",
-    v: 7.4
-  }, {
-    q: "1999 Q2",
-    v: 10
-  }, {
-    q: "1999 Q3",
-    v: 5.4
-  }, {
-    q: "1999 Q4",
-    v: 9.1
-  }, {
-    q: "2000 Q1",
-    v: 10.9
-  }, {
-    q: "2000 Q2",
-    v: 24.6
-  }, {
-    q: "2000 Q3",
-    v: 33.9
-  }, {
-    q: "2000 Q4",
-    v: 43.9
-  }, {
-    q: "2001 Q1",
-    v: 59.6
-  }, {
-    q: "2001 Q2",
-    v: 50.9
-  }, {
-    q: "2001 Q3",
-    v: 40.4
-  }, {
-    q: "2001 Q4",
-    v: 50.9
-  }, {
-    q: "2002 Q1",
-    v: 45.5
-  }, {
-    q: "2002 Q2",
-    v: 25
-  }, {
-    q: "2002 Q3",
-    v: 21.4
-  }, {
-    q: "2002 Q4",
-    v: 20
-  }, {
-    q: "2003 Q1",
-    v: 22
-  }, {
-    q: "2003 Q2",
-    v: 8.9
-  }, {
-    q: "2003 Q3",
-    v: 3.4
-  }, {
-    q: "2003 Q4",
-    v: 0
-  }, {
-    q: "2004 Q1",
-    v: -17.9
-  }, {
-    q: "2004 Q2",
-    v: -22.8
-  }, {
-    q: "2004 Q3",
-    v: -20
-  }, {
-    q: "2004 Q4",
-    v: -21.1
-  }, {
-    q: "2005 Q1",
-    v: -23.6
-  }, {
-    q: "2005 Q2",
-    v: -24.1
-  }, {
-    q: "2005 Q3",
-    v: -16.7
-  }, {
-    q: "2005 Q4",
-    v: -8.8
-  }, {
-    q: "2006 Q1",
-    v: -10.7
-  }, {
-    q: "2006 Q2",
-    v: -12.3
-  }, {
-    q: "2006 Q3",
-    v: -8.9
-  }, {
-    q: "2006 Q4",
-    v: 0
-  }, {
-    q: "2007 Q1",
-    v: 0
-  }, {
-    q: "2007 Q2",
-    v: -3.8
-  }, {
-    q: "2007 Q3",
-    v: 7.5
-  }, {
-    q: "2007 Q4",
-    v: 19.2
-  }, {
-    q: "2008 Q1",
-    v: 32.1
-  }, {
-    q: "2008 Q2",
-    v: 55.4
-  }, {
-    q: "2008 Q3",
-    v: 57.7
-  }, {
-    q: "2008 Q4",
-    v: 83.6
-  }, {
-    q: "2009 Q1",
-    v: 64.2
-  }, {
-    q: "2009 Q2",
-    v: 39.6
-  }, {
-    q: "2009 Q3",
-    v: 31.5
-  }, {
-    q: "2009 Q4",
-    v: 14
-  }, {
-    q: "2010 Q1",
-    v: -5.5
-  }, {
-    q: "2010 Q2",
-    v: -7.1
-  }, {
-    q: "2010 Q3",
-    v: -8.8
-  }, {
-    q: "2010 Q4",
-    v: -10.5
-  }, {
-    q: "2011 Q1",
-    v: -10.5
-  }, {
-    q: "2011 Q2",
-    v: -16.4
-  }, {
-    q: "2011 Q3",
-    v: -21.8
-  }, {
-    q: "2011 Q4",
-    v: -5.9
-  }, {
-    q: "2012 Q1",
-    v: 5.4
-  }, {
-    q: "2012 Q2",
-    v: -6.9
-  }, {
-    q: "2012 Q3",
-    v: -9.5
-  }, {
-    q: "2012 Q4",
-    v: -7.6
-  }, {
-    q: "2013 Q1",
-    v: -7.4
-  }, {
-    q: "2013 Q2",
-    v: -19.1
-  }, {
-    q: "2013 Q3",
-    v: -18.1
-  }, {
-    q: "2013 Q4",
-    v: -8.3
-  }, {
-    q: "2014 Q1",
-    v: -13.7
-  }, {
-    q: "2014 Q2",
-    v: -11.1
-  }, {
-    q: "2014 Q3",
-    v: -10.7
-  }, {
-    q: "2014 Q4",
-    v: -10.5
-  }, {
-    q: "2015 Q1",
-    v: -5.5
-  }, {
-    q: "2015 Q2",
-    v: -5.3
-  }, {
-    q: "2015 Q3",
-    v: -7
-  }, {
-    q: "2015 Q4",
-    v: 7.4
-  }, {
-    q: "2016 Q1",
-    v: 8.2
-  }, {
-    q: "2016 Q2",
-    v: 11.6
-  }, {
-    q: "2016 Q3",
-    v: 8.5
-  }, {
-    q: "2016 Q4",
-    v: 1.5
-  }, {
-    q: "2017 Q1",
-    v: 1.4
-  }, {
-    q: "2017 Q2",
-    v: -2.8
-  }, {
-    q: "2017 Q3",
-    v: -3.9
-  }, {
-    q: "2017 Q4",
-    v: -8.5
-  }, {
-    q: "2018 Q1",
-    v: -10
-  }, {
-    q: "2018 Q2",
-    v: -11.3
-  }, {
-    q: "2018 Q3",
-    v: -15.9
-  }, {
-    q: "2018 Q4",
-    v: -15.9
-  }, {
-    q: "2019 Q1",
-    v: 2.8
-  }, {
-    q: "2019 Q2",
-    v: -4.2
-  }, {
-    q: "2019 Q3",
-    v: -2.8
-  }, {
-    q: "2019 Q4",
-    v: 5.4
-  }, {
-    q: "2020 Q1",
-    v: 0
-  }, {
-    q: "2020 Q2",
-    v: 41.5
-  }, {
-    q: "2020 Q3",
-    v: 71.2
-  }, {
-    q: "2020 Q4",
-    v: 37.7
-  }, {
-    q: "2021 Q1",
-    v: 5.5
-  }, {
-    q: "2021 Q2",
-    v: -15.1
-  }, {
-    q: "2021 Q3",
-    v: -32.4
-  }, {
-    q: "2021 Q4",
-    v: -18.2
-  }, {
-    q: "2022 Q1",
-    v: -14.5
-  }, {
-    q: "2022 Q2",
-    v: -1.5
-  }, {
-    q: "2022 Q3",
-    v: 24.2
-  }, {
-    q: "2022 Q4",
-    v: 39.1
-  }, {
-    q: "2023 Q1",
-    v: 44.8
-  }, {
-    q: "2023 Q2",
-    v: 46
-  }, {
-    q: "2023 Q3",
-    v: 50.8
-  }, {
-    q: "2023 Q4",
-    v: 33.9
-  }, {
-    q: "2024 Q1",
-    v: 14.5
-  }, {
-    q: "2024 Q2",
-    v: 15.6
-  }, {
-    q: "2024 Q3",
-    v: 7.9
-  }, {
-    q: "2024 Q4",
-    v: 0
-  }, {
-    q: "2025 Q1",
-    v: 6.2
-  }, {
-    q: "2025 Q2",
-    v: 18.5
-  }, {
-    q: "2025 Q3",
-    v: 9.5
-  }, {
-    q: "2025 Q4",
-    v: 6.5
-  }, {
-    q: "2026 Q1",
-    v: 5.3
-  }, {
-    q: "2026 Q2",
-    v: 8.1
-  }, {
-    q: "2026 Q3",
-    v: 0
-  } ];
   var TIMELINE_STOPS = [ {
     key: "cycle",
     label: "Current cycle"
@@ -13164,10 +12733,13 @@
       title: "Federal Funds Rate"
     },
     "pressure-range": {
-      mark: pressureSvg,
-      title: "Banks Tightening Lending Standards"
+      mark: gaugeSvg,
+      title: ""
     }
   };
+  function headPickRow(on, attr, key, label) {
+    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
+  }
   function histHead(id) {
     var H = HIST_HEAD[id];
     if (!H) return "";
@@ -13548,101 +13120,6 @@
   }
   GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check");
   checkFedFundsHistory();
-  function checkLendingStandards() {
-    var vs = lendingStandardsHistory.map(function(d) {
-      return d.v;
-    });
-    var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
-    if (!lendingStandardsHistory.length || lendingStandardsHistory[0].q !== "1990 Q2" || hi < 83 || hi > 84 || lo > -32 || lo < -33) console.warn("lendingStandardsHistory failed its check", lendingStandardsHistory.length, lo, hi, lendingStandardsHistory[0] && lendingStandardsHistory[0].q);
-  }
-  GYN.step("checkLendingStandards", checkLendingStandards, "check");
-  checkLendingStandards();
-  function lendingHistoryChart(Wpx, from, o) {
-    o = o || {};
-    var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
-    from = from || 0;
-    var vals = lendingStandardsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
-    if (!n) return "";
-    var seen = vals.filter(function(d) {
-      return d.v != null;
-    });
-    if (!seen.length) return "";
-    var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
-    var sc = windowScale(seen.map(function(d) {
-      return d.v;
-    }), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
-    var f = function(v) {
-      return v.toFixed(1);
-    };
-    var out = [], zero = Y(0);
-    out.push(chartAxes({
-      ticks: sc.ticks,
-      y: Y,
-      x0: L,
-      x1: R,
-      base: zero,
-      noGridAt: 0,
-      top: T - AXIS.LEG - AXIS.READ,
-      bot: B,
-      fmt: function(g) {
-        return (g > 0 ? "+" : g < 0 ? "−" : "") + Math.abs(Math.round(g)) + "%";
-      }
-    }));
-    if (o.cycle) {
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY) {
-        var cix = (cyr - y0) * 4;
-        if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
-      var i = (yr - y0) * 4;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
-    var sw = colWidth((R - L) / n);
-    vals.forEach(function(d, i) {
-      if (d.v == null) return;
-      out.push('<path class="ls-col hcol' + (d.v > 0 ? " tight" : "") + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-    });
-    var avgV = seen.reduce(function(a, d) {
-      return a + d.v;
-    }, 0) / seen.length;
-    out.push(avgRule(L, R, f(Y(avgV))));
-    out.push(zeroRule(L, R, zero));
-    out.push(crossLine(T, B));
-    out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-    publishGeom("lendingHistoryChart", {
-      L: X(0),
-      R: X(n - 1),
-      T: T,
-      B: B,
-      W: W,
-      n: n,
-      vals: vals,
-      at: function(d) {
-        return qLabel(d.q);
-      },
-      refs: [ {
-        label: "Average",
-        v: avgV
-      } ],
-      fmt: function(v) {
-        return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
-      }
-    });
-    return vhOpen(W, H) + 'aria-label="The net percentage of banks tightening lending standards, every quarter from ' + y0 + " to " + y1 + '">' + out.join("") + "</svg>";
-  }
   function fedFundsHistoryChart(Wpx, from, o) {
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -15275,9 +14752,6 @@
   function markSvg(body, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
   }
-  function pressureSvg() {
-    return markSvg('<path d="M12 3.4v17.2" stroke-width="1.6" opacity="0.55"/>' + '<path d="M2.6 12h5.1" stroke-width="1.9"/><path d="M5.6 9.3 8.3 12l-2.7 2.7" stroke-width="1.9"/>' + '<path d="M21.4 12h-5.1" stroke-width="1.9"/><path d="M18.4 9.3 15.7 12l2.7 2.7" stroke-width="1.9"/>');
-  }
   function hormoneSvg() {
     return markSvg('<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' + '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<circle cx="18.4" cy="16.6" r="2.6" stroke-width="1.7"/>' + '<path d="M10.7 7.7 6.9 14.3M13.3 7.7 17.1 14.3M8.2 16.6h7.6" stroke-width="1.7"/>');
   }
@@ -15801,7 +15275,6 @@
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + ">" + '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' + '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' + 'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' + "</svg>";
   }
   var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
-  var tsyView = "spread";
   var HZN_SPREADS = [ {
     key: "3m",
     label: "10Y − 3M"
@@ -16508,8 +15981,7 @@
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
-      tsyView = "level";
-      drawTreasury();
+      drawPressure();
     });
     function drawVelocityRecord() {
       var host = byId("pulse-record");
@@ -16599,10 +16071,16 @@
       return m ? m.detail : "";
     }
     function drawYlm() {
-      var ylmCyc = pageMode["hzn-range"] === "cycles" ? cycleByName(pageCycles["hzn-range"]) || openCycle() : null;
+      var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
+      var ylmCyc = pageMode["pressure-range"] === "cycles" ? cycleByName(pageCycles["pressure-range"]) || openCycle() : null;
+      if (ylmCyc && ylmCyc.from < ylmY0) ylmCyc = openCycle();
       var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
       ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
+      put("pressure-timeline", histControls("pressure-range", {
+        depth: Math.floor(quarters.length / 4),
+        stops: [ "5y", "10y", "max" ]
+      }, ylmY0));
       render();
       var yTrend = byId("ylm-trend");
       if (yTrend) {
@@ -16615,55 +16093,44 @@
           falling: "easing"
         });
       }
-      drawTreasuryHead();
+      drawPressureHead();
     }
-    function drawTreasuryHead() {
-      var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
-      H.mark = lvl ? gaugeSvg : sunriseSvg;
-      H.title = lvl ? matTitle() : spreadLabel(spreadPick) + " Treasury Spread";
+    function drawPressureHead() {
+      var H = HIST_HEAD["pressure-range"];
+      H.mark = gaugeSvg;
+      H.title = matTitle();
       H.menu = function() {
-        function row(on, attr, key, label) {
-          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
-        }
         return [ {
-          key: "spreads",
-          label: "Spreads",
-          on: !lvl,
-          value: spreadLabel(spreadPick),
-          rows: HZN_SPREADS.map(function(r) {
-            return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-          }).join("")
-        }, {
           key: "levels",
           label: "Treasury yields",
-          on: lvl,
+          on: true,
           value: (matOf(matPick) || {}).name || "",
           rows: maturities.map(function(m) {
-            return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+            return headPickRow(matPick === m.code, "data-ylm-mat", m.code, m.name);
           }).join("")
         } ];
       };
-      HIST_NOTE["hzn-range"] = lvl ? "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()) : horizonInfoHtml(spreadPick);
-      var hd = put("hzn-head", histHead("hzn-range"));
+      HIST_NOTE["pressure-range"] = "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail());
+      put("pressure-head", histHead("pressure-range"));
     }
-    function drawTreasury() {
-      var lvl = tsyView === "level";
-      [ [ "#spread-history-shell", lvl ], [ "#hzn-trend", lvl ], [ "#ylm-shell", !lvl ], [ "#ylm-trend", !lvl ] ].forEach(function(pair) {
-        var el = document.querySelector(pair[0]);
-        if (el) el.hidden = pair[1];
-      });
-      if (lvl) drawYlm(); else {
-        var f = sheetRenderers["hzn-spread"];
-        if (f) f();
-      }
-      drawTreasuryHead();
+    function drawPressure() {
+      drawYlm();
     }
-    GYN.on("treasuryView", drawTreasury);
-    sheetRenderers["hzn-range"] = drawTreasury;
-    sheetRenderers["sheet-sign-horizon"] = drawTreasury;
+    sheetRenderers["pressure-range"] = drawPressure;
+    sheetRenderers["sheet-sign-pressure"] = drawPressure;
     maturities.forEach(function(m) {
       m.on = m.code === matPick;
     });
+    var y10 = (yieldCurve.filter(function(d) {
+      return d.m === "10Y";
+    })[0] || {}).y;
+    put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") + '<span class="unit">10-year Treasury</span>');
+    var rowSay = byId("subj-say-pressure");
+    if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d) {
+      return d.v;
+    }), function() {
+      return "yl-col normal";
+    }, 0, true);
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();
@@ -16945,6 +16412,24 @@
   }
   GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive");
   deriveUninversionDetail();
+  function drawHznHead() {
+    var H = HIST_HEAD["hzn-range"];
+    H.mark = sunriseSvg;
+    H.title = spreadLabel(spreadPick) + " Treasury Spread";
+    H.menu = function() {
+      return [ {
+        key: "spreads",
+        label: "Spreads",
+        on: true,
+        value: spreadLabel(spreadPick),
+        rows: HZN_SPREADS.map(function(r) {
+          return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+        }).join("")
+      } ];
+    };
+    HIST_NOTE["hzn-range"] = horizonInfoHtml(spreadPick);
+    put("hzn-head", histHead("hzn-range"));
+  }
   function renderHorizonPage() {
     var host = byId("hzn-timeline");
     if (!host) return;
@@ -16976,13 +16461,14 @@
           falling: "flattening"
         });
       }
+      drawHznHead();
     }
     GYN.on("pickSpread", function(code) {
       spreadPick = code;
-      tsyView = "spread";
-      if (GYN.has("treasuryView")) GYN.fire("treasuryView"); else drawHzn();
+      drawHzn();
     });
-    sheetRenderers["hzn-spread"] = drawHzn;
+    sheetRenderers["hzn-range"] = drawHzn;
+    sheetRenderers["sheet-sign-horizon"] = drawHzn;
     drawHzn();
     var r = horizonRead;
     var sgn = function(v) {
@@ -17154,81 +16640,6 @@
   }
   GYN.step("renderHormones", renderHormones, "build");
   renderHormones();
-  function lendingWord(v) {
-    var a = Math.abs(v), dir = v > 0 ? "tightening" : "easing";
-    if (a <= 5) return {
-      text: "Basically unchanged",
-      state: "good"
-    };
-    if (a <= 10) return {
-      text: "Modest " + dir,
-      state: v > 0 ? "warning" : "good"
-    };
-    if (a <= 20) return {
-      text: "Moderate " + dir,
-      state: v > 0 ? "warning" : "good"
-    };
-    if (a < 50) return {
-      text: "Significant " + dir,
-      state: v > 0 ? "serious" : "good"
-    };
-    return {
-      text: "Major " + dir,
-      state: v > 0 ? "critical" : "good"
-    };
-  }
-  function renderPressure() {
-    var host = byId("pressure-history");
-    if (!host || !lendingStandardsHistory.length) return;
-    var PRESS_STOPS = [ "5y", "10y", "25y", "max" ];
-    var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
-    function draw() {
-      var bar = byId("pressure-history");
-      if (!bar) return;
-      var id = "pressure-range";
-      var cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
-      var span = cyc ? cycleSlice(lendingStandardsHistory, cyc) : null;
-      var from = span ? span[0] : qWindowFrom(lendingStandardsHistory.length, pageRange[id]);
-      var to = span ? span[1] : undefined;
-      var win = lendingStandardsHistory.slice(from, to);
-      bar.innerHTML = histBar(histControls(id, {
-        series: lendingStandardsHistory,
-        stops: PRESS_STOPS
-      }, LS_Y0)) + '<div class="page-chart">' + histHead(id) + lendingHistoryChart(bar.clientWidth || 340, from, {
-        to: to,
-        cycle: !!span
-      }) + histTip("pressure-hist-tooltip") + '<div id="pressure-trend"></div></div>';
-      put("pressure-trend", trendPill(trendOf(win.map(function(d) {
-        return d.v;
-      }), "points", "quarter"), null, true, {
-        rising: "narrowing",
-        falling: "widening"
-      }));
-      var box = bar.querySelector(".page-chart");
-      refitHistory(box, function(w) {
-        return lendingHistoryChart(w, from, {
-          to: to,
-          cycle: !!span
-        });
-      });
-      attachHistory(box, "pressure-hist-tooltip", "lendingHistoryChart");
-    }
-    sheetRenderers["pressure-range"] = draw;
-    sheetRenderers["sheet-sign-pressure"] = draw;
-    draw();
-    HIST_NOTE["pressure-range"] = "<h4>Banks tightening lending standards</h4>" + factsFrom("The net percentage of banks that tightened their standards on commercial and industrial loans to " + "large and middle-market firms, minus those that eased them, every quarter since the survey began. " + "It is the RESISTANCE the circulating money meets: the policy rate is what the Fed sets, and this is " + "how wide the banks leave the channel it has to travel through. Zero is not a chosen midpoint but the " + "definition — as many banks easing as tightening — which is why this chart carries a zero rule and " + "no band. The words come from the survey’s own footnote: up to 5 percent is basically unchanged, " + "above 5 modest, above 10 moderate, above 20 significant, and 50 or more major. " + "The record runs " + lendingStandardsHistory.length + " quarters from " + lendingStandardsHistory[0].q + ". Its peak is +83.6% in 2008 Q4 and its floor −32.4% in 2021 Q3; the four highest quarters in the " + "series are 2008 Q4, 2020 Q3, 2009 Q1 and 2001 Q1, which is every recession in the record. That is " + "why this reading sits on the front of the app rather than inside it: a tightening shows nothing in " + "Growth or Activity for three or four quarters, by which time it has already happened. " + "Source: Board of Governors of the Federal Reserve System, Senior Loan Officer Opinion Survey on Bank " + "Lending Practices, series DRTSCILM.");
-    var last = lendingStandardsHistory[lendingStandardsHistory.length - 1];
-    var w = lendingWord(last.v);
-    var rowVal = put("subj-value-pressure", (last.v > 0 ? "+" : last.v < 0 ? "−" : "") + Math.abs(last.v).toFixed(1) + '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + "</span>");
-    var rowSay = byId("subj-say-pressure");
-    if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d) {
-      return d.v;
-    }), function(v) {
-      return "ls-col " + (v > 0 ? "tight" : "");
-    }, 0, true);
-  }
-  GYN.step("renderPressure", renderPressure, "build");
-  renderPressure();
   function renderFearCurve() {
     HIST_NOTE["fear-range"] = curveDetailHtml();
     var FEAR_STOPS = [ "5y", "10y", "max" ];
@@ -18788,7 +18199,7 @@
           horizon: sunriseSvg,
           sentiment: umbrellaSvg,
           hormones: hormoneSvg,
-          pressure: pressureSvg
+          pressure: gaugeSvg
         };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg")) lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + "</span>" + lab.innerHTML;
@@ -19299,7 +18710,7 @@
         "sheet-metric-power": String(powerHistory[powerHistory.length - 1].y),
         "sheet-sign-sentiment": fmtDay(DATA_COMPILED),
         "sheet-sign-hormones": fedFunds.asOf,
-        "sheet-sign-pressure": qPretty(lendingStandardsHistory[lendingStandardsHistory.length - 1].q),
+        "sheet-sign-pressure": fmtDay(DATA_COMPILED),
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };
@@ -20185,10 +19596,10 @@
       }, {
         name: "Pressure",
         on: "q",
-        mark: pressureSvg,
-        list: byQ(lendingStandardsHistory),
-        dp: 1,
-        signed: true
+        mark: gaugeSvg,
+        list: byQ(t10yYieldHistory),
+        dp: 2,
+        unit: "%"
       }, {
         name: "Pulse",
         on: "q",

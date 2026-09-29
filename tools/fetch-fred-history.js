@@ -29,22 +29,10 @@
    would report a shape that never traded. The app's fearCurve() rounds to three decimals; so does
    this, so the live reading and the last point of the history are computed identically.
 
-   lendingStandardsHistory — DRTSCILM, the net percentage of domestic banks tightening standards on
-                     commercial and industrial loans to large and middle-market firms, quarterly from
-                     1990 Q2. This is the RESISTANCE the circulating money meets: the policy rate is
-                     what the Fed sets, and this is how wide the banks leave the channel it has to
-                     travel through. Positive is tightening, negative is easing, and zero is not a
-                     chosen midpoint but the definition — as many banks easing as tightening.
-
-   WHY THIS SERIES AND NOT A RATE. Blood pressure is flow times resistance, and the app measures the
-   flow already (Volume times Pulse). The readings that would have priced the resistance directly
-   are licence-blocked for this app, which is a commercial product: Freddie Mac's mortgage survey
-   forbids redistribution or commercial exploitation without a written agreement, and Moody's Baa
-   yield carries an explicit no-redistribution notice. The Chicago Fed's financial conditions index
-   is free of both, but it is built FROM the high-yield spread and the term spread, which are two
-   readings the app already carries — a composite cannot be the peer of its own parts (the V466
-   rule). What is left is the Board of Governors' own survey, which is public domain, is not a price
-   containing resistance but a measurement OF it, and duplicates nothing.
+   lendingStandardsHistory (DRTSCILM, the loan survey) was fetched here from V597 to V638 as Pressure's
+   reading; V639 returned Pressure to the Treasury yields and the series went. Its reasoning — why a
+   survey and not a rate, and which priced readings are licence-blocked for a commercial app (Freddie
+   Mac, Moody's) — is at tag v638-fewer-words.
 
    Usage: FRED_API_KEY=... node tools/fetch-fred-history.js */
 
@@ -140,17 +128,11 @@ function emit(fedFunds, fearCurve, lending, stamp) {
                      1.00 is a flat curve; above it the curve is inverted. ${fearCurve.length} months
                      from ${fearCurve.length ? fearCurve[0].m : '—'} — VXVCLS begins in Dec 2007, so the
                      ratio cannot be computed before then and this history does not pretend it can.
-   lendingStandardsHistory
-                     DRTSCILM, the net percentage of banks tightening C&I standards for large and
-                     middle-market firms. Quarterly, because the survey is quarterly; the app is not
-                     told it is monthly. ${lending.length} quarters from ${lending.length ? lending[0].q : '—'}.
-                     Positive tightening, negative easing, zero the definitional midpoint.
 
    Source: Federal Reserve Bank of St. Louis (FRED), redistributing Cboe and the Board of Governors.
    Fetched ${stamp}. */
   var fedFundsHistory = [${rows(fedFunds)}];
   var fearCurveHistory = [${rows(fearCurve)}];
-  var lendingStandardsHistory = [${qrows(lending)}];
 `;
 }
 
@@ -167,15 +149,9 @@ async function main() {
   if (!fearCurve.length) throw new Error('fear curve: no month had both legs');
   say('VIX ÷ VIX3M   ' + fearCurve.length + ' months, ' + fearCurve[0].m + ' → ' + fearCurve[fearCurve.length - 1].m);
 
-  /* The band is ±100 because the series IS a net percentage: every bank tightening is +100, every
-     bank easing is −100, and nothing outside that is a reading. Its record high is the 2008 quarter
-     and its low a 2010s easing quarter; both sit well inside, so this catches an error page or a
-     decimal slip and nothing real. */
-  const ls = await fredSeries('DRTSCILM', '1990-04-01');
-  const lending = quarterly(ls, -100, 100);
-  say('DRTSCILM      ' + lending.length + ' quarters, ' + lending[0].q + ' → ' + lending[lending.length - 1].q);
-
-  fs.writeFileSync(OUT, emit(fedFunds, fearCurve, lending, new Date().toISOString().slice(0, 10)));
+  /* V639: DRTSCILM (the loan survey, V597) is no longer fetched — Pressure reads the Treasury yields again.
+     `quarterly` stays: it is tested, and the next quarterly series will want it. */
+  fs.writeFileSync(OUT, emit(fedFunds, fearCurve, new Date().toISOString().slice(0, 10)));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

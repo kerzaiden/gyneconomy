@@ -261,6 +261,25 @@
      installed, the same un-inversion (i). What is new is the order of the two controls — the window first, then
      which spread — and the reason for the verdict, which is the part a relocated chart could not bring with it.
      This runs AFTER the lag panel, because the first thing its Highlights ask for is `UNINV_DETAIL`. */
+  /* V639: Horizon's own head again, one group — the two spreads. The Treasury levels went back to Pressure
+     (Keren: "the spreads are the Horizon because it's what the market sees long-term versus short-term"),
+     so the menu no longer has a second kind of reading to name. V599's title rule stands: the title READS
+     ITS OWN MENU ROW rather than spelling the pair a second way — one label, one source. */
+  function drawHznHead(){
+    var H = HIST_HEAD["hzn-range"];
+    H.mark  = sunriseSvg;
+    H.title = spreadLabel(spreadPick) + " Treasury Spread";
+    H.menu = function(){
+      return [
+        { key:"spreads", label:"Spreads", on:true, value:spreadLabel(spreadPick),
+          rows:HZN_SPREADS.map(function(r){
+            return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+          }).join("") }
+      ];
+    };
+    HIST_NOTE["hzn-range"] = horizonInfoHtml(spreadPick);
+    put("hzn-head", histHead("hzn-range"));
+  }
   function renderHorizonPage(){
     var host = byId("hzn-timeline"); if (!host) return;
     var HZN_STOPS = ["5y", "10y", "max"];   // the V263 rule: 25Y is unanswerable on a series that starts in 2005
@@ -273,9 +292,6 @@
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
       var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["hzn-range"]);
       var to = idx ? idx[1] : data.length;
-      /* V598: ONE control row for the page, written whichever reading is on — the levels and the spread are
-         two readings of one series of quarters, so a second ruler would be the collision V473 named. The head
-         is written by drawTreasuryHead after this returns, because it names whichever reading is showing. */
       host.innerHTML = histControls("hzn-range",
         { depth:Math.floor(data.length / 4), stops:HZN_STOPS }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
@@ -289,14 +305,11 @@
           { rising:"steepening", falling:"flattening" });
       }
       // V493: the title and its (i) are gone — the reading below carries both now.
+      drawHznHead();
     }
-    /* V598: both pickers go through the page's one renderer, which lives in 09-render-core beside the levels
-       chart. This half is published under its own key and looked up there at call time — the V596 seam. */
-    GYN.on("pickSpread", function(code){
-      spreadPick = code; tsyView = "spread";
-      if (GYN.has("treasuryView")) GYN.fire("treasuryView"); else drawHzn();
-    });
-    sheetRenderers["hzn-spread"] = drawHzn;
+    GYN.on("pickSpread", function(code){ spreadPick = code; drawHzn(); });
+    sheetRenderers["hzn-range"] = drawHzn;
+    sheetRenderers["sheet-sign-horizon"] = drawHzn;
     drawHzn();
 
     var r = horizonRead;
@@ -531,80 +544,10 @@
   }
   GYN.step("renderHormones", renderHormones, "build"); renderHormones();
 
-  /* ---------------- RENDER: Pressure (V597) ----------------
-     The reading is a NET PERCENTAGE, so its word comes from the Fed’s own magnitude vocabulary rather than
-     from a band anyone here chose. Footnote 3 of the release, verbatim: "basically unchanged" is 0 to 5
-     percent inclusive; "modest" is above 5 and up to 10; "moderate" is above 10 and up to 20; "significant"
-     is above 20 and below 50; "major" is 50 or more. The sign supplies the direction. THE BAND PROVENANCE
-     RULE, satisfied by the source itself — which is why this reading gets a five-step word where Hormones,
-     whose level has no published vocabulary, gets only a direction.
-     The state is ONE-SIDED, the V488 lesson: tight credit is a condition and loose credit is not, so a
-     two-sided band here would flag the healthy end as a fault. */
-  function lendingWord(v){
-    var a = Math.abs(v), dir = v > 0 ? "tightening" : "easing";
-    if (a <= 5)  return { text:"Basically unchanged", state:"good" };
-    if (a <= 10) return { text:"Modest " + dir,       state:v > 0 ? "warning" : "good" };
-    if (a <= 20) return { text:"Moderate " + dir,     state:v > 0 ? "warning" : "good" };
-    if (a <  50) return { text:"Significant " + dir,  state:v > 0 ? "serious" : "good" };
-    return             { text:"Major " + dir,         state:v > 0 ? "critical" : "good" };
-  }
-  function renderPressure(){
-    var host = byId("pressure-history"); if (!host || !lendingStandardsHistory.length) return;
-    var PRESS_STOPS = ["5y", "10y", "25y", "max"];
-    var LS_Y0 = parseInt(lendingStandardsHistory[0].q.slice(0, 4), 10);
-    function draw(){
-      var bar = byId("pressure-history"); if (!bar) return;
-      var id = "pressure-range";
-      var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
-      var span = cyc ? cycleSlice(lendingStandardsHistory, cyc) : null;
-      var from = span ? span[0] : qWindowFrom(lendingStandardsHistory.length, pageRange[id]);
-      var to = span ? span[1] : undefined;
-      var win = lendingStandardsHistory.slice(from, to);
-      bar.innerHTML =
-        histBar(histControls(id, { series:lendingStandardsHistory, stops:PRESS_STOPS }, LS_Y0)) +
-        '<div class="page-chart">' + histHead(id) +
-        lendingHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
-        histTip("pressure-hist-tooltip") +
-        '<div id="pressure-trend"></div></div>';
-      // V431's pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
-      put("pressure-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"),
-                                      null, true, { rising:"narrowing", falling:"widening" }));
-      // the refit first, the wiring second — the V591 lesson: refitHistory replaces the svg, legend and all
-      var box = bar.querySelector(".page-chart");
-      refitHistory(box, function(w){ return lendingHistoryChart(w, from, { to:to, cycle:!!span }); });
-      attachHistory(box, "pressure-hist-tooltip", "lendingHistoryChart");
-    }
-    sheetRenderers["pressure-range"] = draw;
-    sheetRenderers["sheet-sign-pressure"] = draw;
-    draw();
-
-    HIST_NOTE["pressure-range"] = '<h4>Banks tightening lending standards</h4>' + factsFrom(
-      "The net percentage of banks that tightened their standards on commercial and industrial loans to " +
-      "large and middle-market firms, minus those that eased them, every quarter since the survey began. " +
-      "It is the RESISTANCE the circulating money meets: the policy rate is what the Fed sets, and this is " +
-      "how wide the banks leave the channel it has to travel through. Zero is not a chosen midpoint but the " +
-      "definition \u2014 as many banks easing as tightening \u2014 which is why this chart carries a zero rule and " +
-      "no band. The words come from the survey\u2019s own footnote: up to 5 percent is basically unchanged, " +
-      "above 5 modest, above 10 moderate, above 20 significant, and 50 or more major. " +
-      "The record runs " + lendingStandardsHistory.length + " quarters from " + lendingStandardsHistory[0].q +
-      ". Its peak is +83.6% in 2008 Q4 and its floor \u221232.4% in 2021 Q3; the four highest quarters in the " +
-      "series are 2008 Q4, 2020 Q3, 2009 Q1 and 2001 Q1, which is every recession in the record. That is " +
-      "why this reading sits on the front of the app rather than inside it: a tightening shows nothing in " +
-      "Growth or Activity for three or four quarters, by which time it has already happened. " +
-      "Source: Board of Governors of the Federal Reserve System, Senior Loan Officer Opinion Survey on Bank " +
-      "Lending Practices, series DRTSCILM.");
-
-    var last = lendingStandardsHistory[lendingStandardsHistory.length - 1];
-    var w = lendingWord(last.v);
-    /* Written straight to the element, as renderHormones does: `set` and `say` are local to
-       renderSubjectRows and this page renders from its own step. */
-    var rowVal = put("subj-value-pressure", (last.v > 0 ? "+" : last.v < 0 ? "\u2212" : "") + Math.abs(last.v).toFixed(1) +
-      '<span class="unit">net % tightening</span><span class="tag ' + w.state + '">' + w.text + '</span>');
-    var rowSay = byId("subj-say-pressure");
-    if (rowSay) rowSay.outerHTML = colPeek(lendingStandardsHistory.map(function(d){ return d.v; }),
-                                           function(v){ return "ls-col " + (v > 0 ? "tight" : ""); }, 0, true);
-  }
-  GYN.step("renderPressure", renderPressure, "build"); renderPressure();
+  /* V639: `renderPressure` and `lendingWord` (V597, the Senior Loan Officer Survey) are gone with the survey —
+     Pressure is the Treasury yields again, drawn by `renderPressurePage` in 09-render-core. The survey's
+     renderer, its five-step word from the Fed's own footnote, and the reasoning for choosing it are at tag
+     v638-fewer-words, should it ever come back as a reading of its own. */
 
   // ---------------- RENDER: Sentiment (fast) — the fear curve, then the VIX it is half of ----------------
   function renderFearCurve(){

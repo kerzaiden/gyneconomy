@@ -74,7 +74,6 @@ const KEYED = [
   ['03-data.js',           'powerHistory',            'y',  75],
   ['03b-history-fred.js',  'fedFundsHistory',         'm', 860],
   ['03b-history-fred.js',  'fearCurveHistory',        'm', 220],
-  ['03b-history-fred.js',  'lendingStandardsHistory', 'q', 140],
   ['04-components.js',     'buffettHistory',          'q', 220],
   ['04-components.js',     'capeHistory',             'y',  55],
 ];

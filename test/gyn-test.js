@@ -245,7 +245,7 @@ async function openPage(p, url, sheet) {
         (onHover === root.length) ? ok('head menu ignores hover', root.length + ' groups')
           : bad('head menu ignores hover', 'hover changed the menu: ' + root.length + ' -> ' + onHover);
       }
-      (root.length >= 2 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
+      (root.length >= 1 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
         ? ok('head menu drills and returns', root.join(', '))
         : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
     } else bad('head menu drills and returns', 'no door to Horizon');
@@ -357,11 +357,12 @@ async function openPage(p, url, sheet) {
   /* ---- 2b7. every action has an answer (V625) ----
      A view that reaches another view names an action; the view that owns the answer registers it. A fire with
      no handler is the one failure that used to be invisible — a `window` callback nobody set reads exactly
-     like a control that does nothing. Walking the pages above exercises all four: the Growth economy picker,
-     the Horizon spread picker, the Pressure maturity picker and the Treasury redraw. */
+     like a control that does nothing. Walking the pages above exercises all three: the Growth economy picker,
+     the Horizon spread picker and the Pressure maturity picker. (V639: the Treasury redraw went — it swapped
+     Horizon between its two readings, and Horizon has one reading again.) */
   {
     const acts = await p.evaluate(() => Object.keys((window.__GYN || {}).acts || {}).sort());
-    acts.length === 4 ? ok('every action is registered once', acts.join(', '))
+    acts.length === 3 ? ok('every action is registered once', acts.join(', '))
                       : bad('every action is registered once', acts.join(', ') || 'none');
     const am = await p.evaluate(() => Array.from(new Set(window.__actMiss || [])));
     am.length ? bad('every action has an answer', am.join(', '))
@@ -419,9 +420,11 @@ async function openPage(p, url, sheet) {
       ? ok('rhymes picker swaps the comparison', y2000.first + ' -> ' + y2007.first)
       : bad('rhymes picker swaps the comparison', JSON.stringify({ y2000, y2007 }));
 
-    // Four at 2000 \u2014 Fear (2007-12), Desire (2023-09), Horizon and Households (both 2005 Q1); two at 2007,
-    // because the fear curve begins two months AFTER that October peak and Desire is a three-year licence.
-    (y2000.na === 4 && y2007.na === 2 && y2000.subs.some(t => /^from 2005 Q1$/.test(t)) &&
+    // Five at 2000 \u2014 Fear (2007-12), Desire (2023-09), Horizon, Households and, since V639, Pressure (all
+    // three 2005 Q1: Pressure reads the 10-year Treasury now, whose quarterly record starts where Horizon's
+    // does); two at 2007, because the fear curve begins two months AFTER that October peak and Desire is a
+    // three-year licence.
+    (y2000.na === 5 && y2007.na === 2 && y2000.subs.some(t => /^from 2005 Q1$/.test(t)) &&
      y2000.subs.some(t => /^Jan 2000$/.test(t)))
       ? ok('rhymes leaves the record blank', y2000.na + ' at 2000, ' + y2007.na + ' at 2007')
       : bad('rhymes leaves the record blank', JSON.stringify({ na2000: y2000.na, na2007: y2007.na, subs: y2000.subs }));
@@ -755,9 +758,11 @@ async function openPage(p, url, sheet) {
       // V592: build 3 -> 4 and check 6 -> 7, both from Hormones — renderHormones is a build step and
       // checkFedFundsHistory is the V305 data check its chart is not allowed to draw without.
       // V610: wire 7 -> 8, renderRhymes. V611 added renderEchoes; V612 folded it back in and took it away.
-      (k.build === 5 && k.mixed === 2 && k.wire === 8)
+      // V639: build 5 -> 4 — renderPressure (the loan survey's one-shot renderer) went with the survey;
+      // Pressure is drawn by renderPressurePage, which was already counted under mixed.
+      (k.build === 4 && k.mixed === 2 && k.wire === 8)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 5, mixed 2, wire 8');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 8');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

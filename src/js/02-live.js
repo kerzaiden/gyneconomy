@@ -159,6 +159,13 @@
     var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
     paintReading("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), { text:w.word, state:w.state });
   }
+  /* V639: Pressure's row prints today's 10-year from the same live curve, so the same document moves it.
+     The figure only — the row wears no verdict word, because a rate has no sourced band. */
+  function repaintPressureRow(){
+    var h = yieldCurve.filter(function(d){ return d.m === "10Y"; })[0];
+    if (!h || h.y == null) return;
+    paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
+  }
   function repaintValuationRow(){
     var row = valRow("cape");
     if (!row) return;
@@ -201,7 +208,7 @@
       set: function(v){ fedFunds = merge(fedFunds, v); },
       paint: [repaintPolicy]
     },
-    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow] },
+    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow, repaintPressureRow] },
     sentiment:  { kind: "object", set: function(v){ sentiment = v; }, onOpen: true },
     valuation:  {
       kind: "object",

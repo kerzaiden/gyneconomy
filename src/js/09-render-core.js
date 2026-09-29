@@ -375,7 +375,11 @@
   }
 
 
-  // ---------------- RENDER: yield-by-maturity comparison chart (multiselect by maturity) ----------------
+  // ---------------- RENDER: Pressure — U.S. Treasury yields, one maturity at a time (V639) ----------------
+  /* The name is true again. This block drew the Treasury levels under three page names — Pressure until V596,
+     Hormones for one version, Horizon's ⋯ menu from V598 — and V639 gives it back to Pressure, where Keren
+     put it: the 10-year is the risk-free loan the whole economy prices off, and its level is the pressure
+     the borrower is under. See the PRESSURE comment in page-body.html for her words. */
   function renderPressurePage(){
     var svg = byId("ylm-svg");
     // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
@@ -612,8 +616,7 @@
        between them lives in the ⋯ menu, which is where V522 put a which-series choice in the first place. */
     GYN.on("pickSeries", function(bar, code){
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
-      tsyView = "level";
-      drawTreasury();
+      drawPressure();
     });
     /* V598: the Hormones page is one chart again, so its opener is registered by renderHormones itself — the
        pair V596 composed here existed only because that page held the Treasury chart too. */
@@ -713,11 +716,17 @@
          tab, and deleting the ruler is the version of that fix that needs no tab at all. */
       /* V588: the window. Every maturity shares one index space — `quarters` is t3mYieldHistory's own
          quarters — so the slice is computed once here and every series is drawn through it. */
-      var ylmCyc = pageMode["hzn-range"] === "cycles"
-                 ? (cycleByName(pageCycles["hzn-range"]) || openCycle()) : null;
+      /* V639: the page's own control row again, under its own key. The stops are Horizon's for Horizon's
+         reason: the series starts in 2005, so 25Y is unanswerable (the V263 rule). */
+      var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
+      var ylmCyc = pageMode["pressure-range"] === "cycles"
+                 ? (cycleByName(pageCycles["pressure-range"]) || openCycle()) : null;
+      if (ylmCyc && ylmCyc.from < ylmY0) ylmCyc = openCycle();
       var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["hzn-range"]);
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
       ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
+      put("pressure-timeline", histControls("pressure-range",
+        { depth:Math.floor(quarters.length / 4), stops:["5y", "10y", "max"] }, ylmY0));
       render();
       var yTrend = byId("ylm-trend");
       if (yTrend){
@@ -728,71 +737,50 @@
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"climbing", falling:"easing" });
       }
-      drawTreasuryHead();
+      drawPressureHead();
     }
     /* V518: one function for both the first paint and every redraw — the old pair of identical `ylm-title`
        writes was the duplication this version is here to end. `expandBtn` is gone from it: the note goes into
        HIST_NOTE and opens from the ⋯, which also stops drawYlm pushing a fresh copy into detailTexts on every
        maturity the reader tries. */
-    /* V598: ONE head for the whole Treasury page. It carries both groups of rows — the two spreads and the
-       five maturities, separated — and its title, mark and note follow whichever is on. It is built HERE and
-       not in the HIST_HEAD literal for the V588 reason: `maturities` and `matPick` are this block's own state
-       and that literal cannot see them. The spreads it CAN see, because HZN_SPREADS and `spreadPick` are
-       module-level, which is what makes one menu out of two possible. */
-    function drawTreasuryHead(){
-      var H = HIST_HEAD["hzn-range"], lvl = tsyView === "level";
-      H.mark  = lvl ? gaugeSvg : sunriseSvg;
-      /* V599, Keren: "make the title 10 minus 3 — it's too long." It was: "10-year minus 3-month Treasury
-         spread" ran past the ⋯ on a phone. The short form is the one the menu already uses, so the title now
-         READS ITS OWN MENU ROW rather than spelling the same pair a second way — one label, one source. */
-      H.title = lvl ? matTitle() : (spreadLabel(spreadPick) + " Treasury Spread");
+    /* V639: Pressure's own head. It is built HERE and not in the HIST_HEAD literal for the V588 reason:
+       `maturities` and `matPick` are this block's own state and that literal cannot see them. One group —
+       the five maturities — because one group is a legitimate menu (V602) and the spreads are Horizon's
+       again. Each maturity row drops the word "Treasury" because the group has already said it. */
+    function drawPressureHead(){
+      var H = HIST_HEAD["pressure-range"];
+      H.mark  = gaugeSvg;
+      H.title = matTitle();
       H.menu = function(){
-        function row(on, attr, key, label){
-          return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-            '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
-            '<span class="cycsel-tick" aria-hidden="true"></span>' +
-            '<span class="cycsel-nm">' + label + '</span></button>';
-        }
-        /* V600: two GROUPS rather than two labelled runs of one list — the root of the menu names the two
-           kinds of reading and says which one is on, and the rows live one level in. Each maturity row drops
-           the word "Treasury" because the group it sits under has already said it. */
         return [
-          { key:"spreads", label:"Spreads", on:!lvl, value:spreadLabel(spreadPick),
-            rows:HZN_SPREADS.map(function(r){
-              return row(!lvl && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-            }).join("") },
-          { key:"levels", label:"Treasury yields", on:lvl, value:(matOf(matPick) || {}).name || "",
+          { key:"levels", label:"Treasury yields", on:true, value:(matOf(matPick) || {}).name || "",
             rows:maturities.map(function(m){
-              return row(lvl && matPick === m.code, "data-ylm-mat", m.code, m.name);
+              return headPickRow(matPick === m.code, "data-ylm-mat", m.code, m.name);
             }).join("") }
         ];
       };
-      HIST_NOTE["hzn-range"] = lvl ? '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())
-                                   : horizonInfoHtml(spreadPick);
-      var hd = put("hzn-head", histHead("hzn-range"));
+      HIST_NOTE["pressure-range"] = '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail());
+      put("pressure-head", histHead("pressure-range"));
     }
-    /* The page's one renderer. Whichever reading is off is HIDDEN, never torn down (the Version 314 rule), so
-       a switch costs nothing and every id inside both shells stays alive. The spread chart lives in
-       10-render-pages, which loads after this block, so it is reached through the registry at call time — the
-       same seam V596 used for the Hormones page. */
-    function drawTreasury(){
-      var lvl = tsyView === "level";
-      /* V599: the spread's reading box went with the lab-result row it was seated from, so there are four
-         things to swap here, not six. */
-      [["#spread-history-shell", lvl], ["#hzn-trend", lvl],
-       ["#ylm-shell", !lvl], ["#ylm-trend", !lvl]].forEach(function(pair){
-        var el = document.querySelector(pair[0]); if (el) el.hidden = pair[1];
-      });
-      if (lvl) drawYlm();
-      else { var f = sheetRenderers["hzn-spread"]; if (f) f(); }
-      drawTreasuryHead();
-    }
-    GYN.on("treasuryView", drawTreasury);
-    /* V598: the page's key is `hzn-range` now — one control row, one menu, one renderer for both readings.
-       `sheet-sign-horizon` opens it, which is what makes the chart draw at its box's real width (V303). */
-    sheetRenderers["hzn-range"] = drawTreasury;
-    sheetRenderers["sheet-sign-horizon"] = drawTreasury;
+    /* The page's one renderer: the window, the picked maturity, the trend pill and the head, in that order.
+       `sheet-sign-pressure` opens it, which is what makes the chart draw at its box's real width (V303). */
+    function drawPressure(){ drawYlm(); }
+    sheetRenderers["pressure-range"] = drawPressure;
+    sheetRenderers["sheet-sign-pressure"] = drawPressure;
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
+
+    /* V639: the row. Today's 10-year from the live par curve — the same object Horizon's spread is computed
+       from, and NOT the last point of the quarterly history, which is a three-month average and reads 0.2–0.9
+       points different (Keren caught the two side by side in Version 294). No verdict word: there is no sourced
+       band for a rate, and a figure without a band gets no word (CLAUDE.md, band provenance). The live layer
+       repaints the figure when the curve lands — `repaintPressureRow` in 02-live.js — so it is written here
+       once in the row's own shape and edited in place after that. */
+    var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+    put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
+      '<span class="unit">10-year Treasury</span>');
+    var rowSay = byId("subj-say-pressure");
+    if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
+                                           function(){ return "yl-col normal"; }, 0, true);
   }
   GYN.step("renderPressurePage", renderPressurePage, "mixed"); renderPressurePage();

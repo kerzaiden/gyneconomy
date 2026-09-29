@@ -195,8 +195,8 @@
     /* V596: three, not four. Pressure and Hormones were one reading on two rows — the price of money as
        the market charges it and as the Fed sets it — and they are one page now, which Hormones names. */
     [{ key:"hormones", title:"Hormones", timing:"leading" },
-     /* V597: Pressure returns, reading the resistance rather than the Treasury curve V596 retired it from.
-        Leading, because a bank narrowing its channel does so before anything downstream shows it. */
+     /* V597 read the loan survey here; V639 returns the Treasury yields (Keren: "pressure should be yields").
+        Leading, because the market's price of money moves before the activity it finances shows it. */
      { key:"pressure", title:"Pressure", timing:"leading" },
      // Version 473: Horizon converts the same way, which is the whole reason it was written into the markup as a
      // <details> rather than built from an indicator object — its page is a chart with two controls and a
@@ -230,7 +230,7 @@
          The mark is applied HERE instead, where the row is made, once, and only if it has none: the row cannot
          reach any list without it, and a label that already carries its glyph is left exactly as it is. */
       (function(){
-        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:pressureSvg };
+        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:gaugeSvg };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
           lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
@@ -717,10 +717,9 @@
              quantity Hormones does, from the other end, and in her own draft pressure is not an instrument at
              all but what builds WHEN circulation goes wrong. */
           /* V597: the order is the physiology, read in the direction the causation runs. The SIGNAL the Fed
-             sends, the RESISTANCE the banks leave it, then the two halves of the flow it produces — how fast
-             the money moves and how much of it there is. Mean arterial pressure is cardiac output times
-             resistance, and Volume times Pulse is the cardiac output this category has been computing since
-             long before it had a name for it. */
+             sends, then the two halves of the flow it produces — how fast the money moves and how much of it
+             there is. V639, Keren: Pressure is the Treasury yields again — the rate the market CHARGES, after
+             the rate the Fed SETS — so the sequence reads set, charged, speed, quantity. */
           picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
                  '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
         /* Version 473, Keren: "calling it Horizon and judging if it’s optimistic or pessimistic, which
@@ -790,8 +789,7 @@
         // V592: the DECISION's date, not the series' — the row states the target the FOMC set, and the
         // date that belongs beside it is the day they set it.
         "sheet-sign-hormones":    fedFunds.asOf,
-        // the survey's own quarter, which is the period the net percentage is FOR
-        "sheet-sign-pressure":    qPretty(lendingStandardsHistory[lendingStandardsHistory.length - 1].q),
+        "sheet-sign-pressure":    fmtDay(DATA_COMPILED),   // V639: a spot yield, like Horizon's spread beside it
         "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
         "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
       };

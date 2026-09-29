@@ -197,7 +197,7 @@
       ]},
       { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
         { name:"Hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%" },
-        { name:"Pressure",    on:"q", mark:pressureSvg, list:byQ(lendingStandardsHistory), dp:1, signed:true },
+        { name:"Pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%" },
         { name:"Pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2 },
         { name:"Volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
       ]},

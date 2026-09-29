@@ -281,13 +281,8 @@
 
   // the spread chart's long form, handed up so the band's title can offer it on the Spread segment (V470)
   var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
-  /* V598, Keren: "the spread is 10 years minus three months — it's comprised out of the treasury yields, so
-     maybe you can merge them, and in the three dots a sub menu that I can see the data."
-     One page, one control row, one ⋯ menu, and TWO readings of the same Treasury data: the SHAPE (a spread,
-     hanging off zero) and the LEVEL (a maturity, standing on zero). This says which is showing. It is a view,
-     not a series — `spreadPick` and `matPick` each keep their own choice, so switching back returns to the
-     reading you left rather than to a default. */
-  var tsyView = "spread";
+  /* V639: `tsyView` is gone. V598 merged the Treasury levels into Horizon as a second view of one page; Keren
+     unmerged them — the levels are Pressure's, the spreads Horizon's — so there is no view to switch. */
   // V522: the two spreads, named once. The head's ⋯ menu draws them and the chart reads the pick.
   var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
   // V599: the head's title reads the same label the menu row wears, so the pair is spelled in exactly one place

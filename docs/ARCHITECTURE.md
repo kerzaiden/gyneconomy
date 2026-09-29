@@ -230,9 +230,14 @@ computed once over the full history, never per cycle.
 **One direction, one source.** Every expansion/contraction on screen comes from `r.regime`/`regimeByQ`.
 Growth's chart is coloured by regime, **never by the sign of growth**.
 
-**Hormones = the policy rate; Pressure = the level the market sets; Horizon = the slope.** Pressure is
-written as a cuff writes 120/80 (4.96/4.17), long over short. The gap is a forecast, not a pressure, so it
-is Mood's fourth member, Horizon, judged optimistic or pessimistic. **Horizon's word is slope AND
+**Hormones = the policy rate; Pressure = the level the market sets; Horizon = the slope.** Pressure (V639,
+Keren: "the 10-year is the risk-free loan across the economy, so whenever it goes up we can see the pressure
+the US government has to repay its debts") is the Treasury yields, one maturity at a time, opening on the
+10-year with the others in the ⋯ menu; its row prints today's 10-year from the live curve with **no verdict
+word**, because a rate has no sourced band. This reversed V597 (the loan survey as "resistance") and V598
+(the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
+The gap is a forecast, not a pressure, so it is Mood's fourth member, Horizon, judged optimistic or
+pessimistic. **Horizon's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
 is fixed at four quarters and does not follow the chart's window; its (i) carries the NY Fed's caution that
 it is the level of the spread that forecasts, not the crossing.
