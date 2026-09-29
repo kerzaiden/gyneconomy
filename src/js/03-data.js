@@ -15,35 +15,17 @@
   }
 
 
-  // 10Y-3M spread, quarterly, Q1 2005–Q3 2026 — a compact stand-in for the FRED T10Y3M chart. Quarterly averages
-  // (not daily), each cross-checked against at least two independent sources (FRED's own GS10/TB3MS series,
-  // Multpl, ycharts); Q3 2026 is a partial-quarter estimate since only ~2.5 of its 3 months exist as of the
-  // "Data compiled" date above. A quarterly average smooths away very short inversions (e.g. the single-day
+  /* V648: the seven Treasury histories below were compiled by hand until this version; they are now READ from
+     treasuryQuarterly, which the backfill (tools/fetch-fred-history.js) writes into 03b-history-fred.js from FRED's
+     monthly GS2/GS5/GS10/GS30/TB3MS, by the same method the notes below describe — so one vintage, rerunnable,
+     instead of a literal that goes stale. Before the swap every hand value was checked against the generated one;
+     the notes on method and on the 30-year's gap still describe what is shipped. The running quarter is an
+     average of the months printed so far and carries partial:true. */
+  // 10Y-3M spread, quarterly from Q1 2005 — a compact stand-in for the FRED T10Y3M chart. Quarterly averages
+  // (not daily): GS10's quarterly mean less TB3MS's, the method the hand-compiled series used and checked against
+  // Multpl and ycharts; the running quarter is partial. A quarterly average smooths away very short inversions (e.g. the single-day
   // Mar 22, 2019 dip) — the point is each cycle's shape, not every daily wiggle.
-  var t10y3mHistory = [
-    {q:"2005 Q1", v:1.76}, {q:"2005 Q2", v:1.30}, {q:"2005 Q3", v:0.85}, {q:"2005 Q4", v:0.66},
-    {q:"2006 Q1", v:0.18}, {q:"2006 Q2", v:0.37}, {q:"2006 Q3", v:-0.01}, {q:"2006 Q4", v:-0.27},
-    {q:"2007 Q1", v:-0.30}, {q:"2007 Q2", v:0.11}, {q:"2007 Q3", v:0.43}, {q:"2007 Q4", v:0.87},
-    {q:"2008 Q1", v:1.62}, {q:"2008 Q2", v:2.26}, {q:"2008 Q3", v:2.37}, {q:"2008 Q4", v:2.96},
-    {q:"2009 Q1", v:2.52}, {q:"2009 Q2", v:3.14}, {q:"2009 Q3", v:3.36}, {q:"2009 Q4", v:3.40},
-    {q:"2010 Q1", v:3.61}, {q:"2010 Q2", v:3.34}, {q:"2010 Q3", v:2.63}, {q:"2010 Q4", v:2.73},
-    {q:"2011 Q1", v:3.33}, {q:"2011 Q2", v:3.16}, {q:"2011 Q3", v:2.40}, {q:"2011 Q4", v:2.03},
-    {q:"2012 Q1", v:1.97}, {q:"2012 Q2", v:1.74}, {q:"2012 Q3", v:1.54}, {q:"2012 Q4", v:1.62},
-    {q:"2013 Q1", v:1.86}, {q:"2013 Q2", v:1.95}, {q:"2013 Q3", v:2.68}, {q:"2013 Q4", v:2.68},
-    {q:"2014 Q1", v:2.72}, {q:"2014 Q2", v:2.59}, {q:"2014 Q3", v:2.47}, {q:"2014 Q4", v:2.26},
-    {q:"2015 Q1", v:1.94}, {q:"2015 Q2", v:2.15}, {q:"2015 Q3", v:2.18}, {q:"2015 Q4", v:2.07},
-    {q:"2016 Q1", v:1.63}, {q:"2016 Q2", v:1.50}, {q:"2016 Q3", v:1.27}, {q:"2016 Q4", v:1.70},
-    {q:"2017 Q1", v:1.85}, {q:"2017 Q2", v:1.37}, {q:"2017 Q3", v:1.21}, {q:"2017 Q4", v:1.16},
-    {q:"2018 Q1", v:1.20}, {q:"2018 Q2", v:1.08}, {q:"2018 Q3", v:0.89}, {q:"2018 Q4", v:0.72},
-    {q:"2019 Q1", v:0.27}, {q:"2019 Q2", v:0.03}, {q:"2019 Q3", v:-0.18}, {q:"2019 Q4", v:0.22},
-    {q:"2020 Q1", v:0.27}, {q:"2020 Q2", v:0.54}, {q:"2020 Q3", v:0.54}, {q:"2020 Q4", v:0.77},
-    {q:"2021 Q1", v:1.27}, {q:"2021 Q2", v:1.57}, {q:"2021 Q3", v:1.28}, {q:"2021 Q4", v:1.48},
-    {q:"2022 Q1", v:1.63}, {q:"2022 Q2", v:1.85}, {q:"2022 Q3", v:0.44}, {q:"2022 Q4", v:-0.21},
-    {q:"2023 Q1", v:-0.98}, {q:"2023 Q2", v:-1.48}, {q:"2023 Q3", v:-1.14}, {q:"2023 Q4", v:-0.84},
-    {q:"2024 Q1", v:-1.07}, {q:"2024 Q2", v:-0.80}, {q:"2024 Q3", v:-1.04}, {q:"2024 Q4", v:-0.12},
-    {q:"2025 Q1", v:0.24}, {q:"2025 Q2", v:0.13}, {q:"2025 Q3", v:0.16}, {q:"2025 Q4", v:0.37},
-    {q:"2026 Q1", v:0.60}, {q:"2026 Q2", v:0.80}, {q:"2026 Q3", v:0.91}
-  ];
+  var t10y3mHistory = treasuryQuarterly.s3m;
   var t10y3mRecessions = [
     {from:"2007 Q4", to:"2009 Q2", label:"2007–09"},
     {from:"2020 Q1", to:"2020 Q2", label:"2020"}
@@ -52,166 +34,27 @@
   // and un-inverted in a choppy transition: quarterly averages turn positive in Q4 2024, but daily data dipped
   // negative again briefly in late Feb 2025 before settling durably positive by Q2–Q3 2025.
 
-  // 10Y-2Y spread, quarterly, Q1 2005–Q3 2026 — same methodology as the 3-month series above: quarterly
-  // averages, cross-checked against FRED's own GS10/GS2 constant-maturity series (which reproduce FRED's
-  // T10Y2YM to 2 decimals) plus a secondary source (multpl.com) for spot years across the range. Q3 2026 is
-  // a partial-quarter estimate (Jul/Aug full-month averages + a single mid-Sep data point).
-  var t10y2yHistory = [
-    {q:"2005 Q1", v:0.85}, {q:"2005 Q2", v:0.52}, {q:"2005 Q3", v:0.26}, {q:"2005 Q4", v:0.13},
-    {q:"2006 Q1", v:-0.03}, {q:"2006 Q2", v:0.08}, {q:"2006 Q3", v:-0.03}, {q:"2006 Q4", v:-0.11},
-    {q:"2007 Q1", v:-0.09}, {q:"2007 Q2", v:0.04}, {q:"2007 Q3", v:0.35}, {q:"2007 Q4", v:0.78},
-    {q:"2008 Q1", v:1.64}, {q:"2008 Q2", v:1.46}, {q:"2008 Q3", v:1.51}, {q:"2008 Q4", v:2.04},
-    {q:"2009 Q1", v:1.83}, {q:"2009 Q2", v:2.30}, {q:"2009 Q3", v:2.48}, {q:"2009 Q4", v:2.59},
-    {q:"2010 Q1", v:2.80}, {q:"2010 Q2", v:2.62}, {q:"2010 Q3", v:2.25}, {q:"2010 Q4", v:2.38},
-    {q:"2011 Q1", v:2.77}, {q:"2011 Q2", v:2.64}, {q:"2011 Q3", v:2.14}, {q:"2011 Q4", v:1.78},
-    {q:"2012 Q1", v:1.75}, {q:"2012 Q2", v:1.53}, {q:"2012 Q3", v:1.38}, {q:"2012 Q4", v:1.44},
-    {q:"2013 Q1", v:1.68}, {q:"2013 Q2", v:1.73}, {q:"2013 Q3", v:2.34}, {q:"2013 Q4", v:2.42},
-    {q:"2014 Q1", v:2.39}, {q:"2014 Q2", v:2.20}, {q:"2014 Q3", v:1.98}, {q:"2014 Q4", v:1.74},
-    {q:"2015 Q1", v:1.36}, {q:"2015 Q2", v:1.55}, {q:"2015 Q3", v:1.53}, {q:"2015 Q4", v:1.36},
-    {q:"2016 Q1", v:1.08}, {q:"2016 Q2", v:0.98}, {q:"2016 Q3", v:0.84}, {q:"2016 Q4", v:1.12},
-    {q:"2017 Q1", v:1.20}, {q:"2017 Q2", v:0.97}, {q:"2017 Q3", v:0.88}, {q:"2017 Q4", v:0.67},
-    {q:"2018 Q1", v:0.60}, {q:"2018 Q2", v:0.45}, {q:"2018 Q3", v:0.25}, {q:"2018 Q4", v:0.23},
-    {q:"2019 Q1", v:0.17}, {q:"2019 Q2", v:0.21}, {q:"2019 Q3", v:0.11}, {q:"2019 Q4", v:0.20},
-    {q:"2020 Q1", v:0.28}, {q:"2020 Q2", v:0.50}, {q:"2020 Q3", v:0.51}, {q:"2020 Q4", v:0.71},
-    {q:"2021 Q1", v:1.18}, {q:"2021 Q2", v:1.42}, {q:"2021 Q3", v:1.10}, {q:"2021 Q4", v:1.01},
-    {q:"2022 Q1", v:0.50}, {q:"2022 Q2", v:0.21}, {q:"2022 Q3", v:-0.28}, {q:"2022 Q4", v:-0.56},
-    {q:"2023 Q1", v:-0.70}, {q:"2023 Q2", v:-0.67}, {q:"2023 Q3", v:-0.77}, {q:"2023 Q4", v:-0.36},
-    {q:"2024 Q1", v:-0.32}, {q:"2024 Q2", v:-0.38}, {q:"2024 Q3", v:-0.08}, {q:"2024 Q4", v:0.13},
-    {q:"2025 Q1", v:0.30}, {q:"2025 Q2", v:0.50}, {q:"2025 Q3", v:0.54}, {q:"2025 Q4", v:0.57},
-    {q:"2026 Q1", v:0.62}, {q:"2026 Q2", v:0.45}, {q:"2026 Q3", v:0.39}
-  ];
+  // 10Y-2Y spread, quarterly from Q1 2005 — same methodology as the 3-month series above: GS10's quarterly mean
+  // less GS2's (which reproduce FRED's T10Y2YM to 2 decimals); the running quarter is partial.
+  var t10y2yHistory = treasuryQuarterly.s2y;
   // Inverted Jul 6, 2022 (about 3 months before the 3-month spread did) and un-inverted Sep 6, 2024 —
   // its first sustained positive reading in over two years. Both dates are directly readable off this series
   // crossing zero, not a separately-sourced news claim.
 
-  // ---- Yield LEVELS by maturity, quarterly, Q1 2005–Q3 2026 — not spreads, the actual yields themselves,
-  // for the "how has each part of the curve moved" comparison chart. Cross-checked against FRED's own series
-  // (TB3MS, GS2, GS5, GS10, GS30) plus independent recomputation from Treasury.gov's daily par-yield curve.
+  // ---- Yield LEVELS by maturity, quarterly from Q1 2005 — not spreads, the actual yields themselves,
+  // for the "how has each part of the curve moved" comparison chart. FRED's own series (TB3MS, GS2, GS5, GS10,
+  // GS30), which the hand-compiled arrays were cross-checked against along with Treasury.gov's daily par curve.
   // 3-month uses TB3MS (a discount-basis rate, so it reads a touch below the investment/CMT-basis short yield
   // shown on the curve snapshot above — a real definitional gap, not an inconsistency between the two charts).
-  var t3mYieldHistory = [
-    {q:"2005 Q1", v:2.54}, {q:"2005 Q2", v:2.86}, {q:"2005 Q3", v:3.36}, {q:"2005 Q4", v:3.83},
-    {q:"2006 Q1", v:4.39}, {q:"2006 Q2", v:4.70}, {q:"2006 Q3", v:4.91}, {q:"2006 Q4", v:4.90},
-    {q:"2007 Q1", v:4.98}, {q:"2007 Q2", v:4.74}, {q:"2007 Q3", v:4.30}, {q:"2007 Q4", v:3.39},
-    {q:"2008 Q1", v:2.04}, {q:"2008 Q2", v:1.63}, {q:"2008 Q3", v:1.49}, {q:"2008 Q4", v:0.30},
-    {q:"2009 Q1", v:0.21}, {q:"2009 Q2", v:0.17}, {q:"2009 Q3", v:0.16}, {q:"2009 Q4", v:0.06},
-    {q:"2010 Q1", v:0.11}, {q:"2010 Q2", v:0.15}, {q:"2010 Q3", v:0.16}, {q:"2010 Q4", v:0.14},
-    {q:"2011 Q1", v:0.13}, {q:"2011 Q2", v:0.05}, {q:"2011 Q3", v:0.02}, {q:"2011 Q4", v:0.01},
-    {q:"2012 Q1", v:0.07}, {q:"2012 Q2", v:0.09}, {q:"2012 Q3", v:0.10}, {q:"2012 Q4", v:0.09},
-    {q:"2013 Q1", v:0.09}, {q:"2013 Q2", v:0.05}, {q:"2013 Q3", v:0.03}, {q:"2013 Q4", v:0.06},
-    {q:"2014 Q1", v:0.05}, {q:"2014 Q2", v:0.03}, {q:"2014 Q3", v:0.03}, {q:"2014 Q4", v:0.02},
-    {q:"2015 Q1", v:0.03}, {q:"2015 Q2", v:0.02}, {q:"2015 Q3", v:0.04}, {q:"2015 Q4", v:0.12},
-    {q:"2016 Q1", v:0.29}, {q:"2016 Q2", v:0.26}, {q:"2016 Q3", v:0.30}, {q:"2016 Q4", v:0.43},
-    {q:"2017 Q1", v:0.59}, {q:"2017 Q2", v:0.89}, {q:"2017 Q3", v:1.04}, {q:"2017 Q4", v:1.21},
-    {q:"2018 Q1", v:1.56}, {q:"2018 Q2", v:1.84}, {q:"2018 Q3", v:2.04}, {q:"2018 Q4", v:2.32},
-    {q:"2019 Q1", v:2.39}, {q:"2019 Q2", v:2.30}, {q:"2019 Q3", v:1.98}, {q:"2019 Q4", v:1.58},
-    {q:"2020 Q1", v:1.11}, {q:"2020 Q2", v:0.14}, {q:"2020 Q3", v:0.11}, {q:"2020 Q4", v:0.09},
-    {q:"2021 Q1", v:0.05}, {q:"2021 Q2", v:0.03}, {q:"2021 Q3", v:0.05}, {q:"2021 Q4", v:0.05},
-    {q:"2022 Q1", v:0.31}, {q:"2022 Q2", v:1.08}, {q:"2022 Q3", v:2.66}, {q:"2022 Q4", v:4.04},
-    {q:"2023 Q1", v:4.63}, {q:"2023 Q2", v:5.07}, {q:"2023 Q3", v:5.29}, {q:"2023 Q4", v:5.28},
-    {q:"2024 Q1", v:5.23}, {q:"2024 Q2", v:5.24}, {q:"2024 Q3", v:4.99}, {q:"2024 Q4", v:4.40},
-    {q:"2025 Q1", v:4.21}, {q:"2025 Q2", v:4.23}, {q:"2025 Q3", v:4.10}, {q:"2025 Q4", v:3.73},
-    {q:"2026 Q1", v:3.59}, {q:"2026 Q2", v:3.62}, {q:"2026 Q3", v:3.81}
-  ];
-  var t2yYieldHistory = [
-    {q:"2005 Q1", v:3.44}, {q:"2005 Q2", v:3.64}, {q:"2005 Q3", v:3.95}, {q:"2005 Q4", v:4.36},
-    {q:"2006 Q1", v:4.60}, {q:"2006 Q2", v:4.99}, {q:"2006 Q3", v:4.93}, {q:"2006 Q4", v:4.74},
-    {q:"2007 Q1", v:4.77}, {q:"2007 Q2", v:4.81}, {q:"2007 Q3", v:4.38}, {q:"2007 Q4", v:3.48},
-    {q:"2008 Q1", v:2.02}, {q:"2008 Q2", v:2.42}, {q:"2008 Q3", v:2.36}, {q:"2008 Q4", v:1.21},
-    {q:"2009 Q1", v:0.91}, {q:"2009 Q2", v:1.01}, {q:"2009 Q3", v:1.03}, {q:"2009 Q4", v:0.87},
-    {q:"2010 Q1", v:0.92}, {q:"2010 Q2", v:0.87}, {q:"2010 Q3", v:0.54}, {q:"2010 Q4", v:0.48},
-    {q:"2011 Q1", v:0.69}, {q:"2011 Q2", v:0.57}, {q:"2011 Q3", v:0.28}, {q:"2011 Q4", v:0.26},
-    {q:"2012 Q1", v:0.29}, {q:"2012 Q2", v:0.29}, {q:"2012 Q3", v:0.26}, {q:"2012 Q4", v:0.27},
-    {q:"2013 Q1", v:0.27}, {q:"2013 Q2", v:0.27}, {q:"2013 Q3", v:0.37}, {q:"2013 Q4", v:0.33},
-    {q:"2014 Q1", v:0.37}, {q:"2014 Q2", v:0.42}, {q:"2014 Q3", v:0.52}, {q:"2014 Q4", v:0.54},
-    {q:"2015 Q1", v:0.60}, {q:"2015 Q2", v:0.61}, {q:"2015 Q3", v:0.69}, {q:"2015 Q4", v:0.83},
-    {q:"2016 Q1", v:0.84}, {q:"2016 Q2", v:0.77}, {q:"2016 Q3", v:0.73}, {q:"2016 Q4", v:1.01},
-    {q:"2017 Q1", v:1.24}, {q:"2017 Q2", v:1.29}, {q:"2017 Q3", v:1.36}, {q:"2017 Q4", v:1.70},
-    {q:"2018 Q1", v:2.16}, {q:"2018 Q2", v:2.47}, {q:"2018 Q3", v:2.67}, {q:"2018 Q4", v:2.80},
-    {q:"2019 Q1", v:2.48}, {q:"2019 Q2", v:2.12}, {q:"2019 Q3", v:1.69}, {q:"2019 Q4", v:1.59},
-    {q:"2020 Q1", v:1.10}, {q:"2020 Q2", v:0.19}, {q:"2020 Q3", v:0.14}, {q:"2020 Q4", v:0.15},
-    {q:"2021 Q1", v:0.13}, {q:"2021 Q2", v:0.17}, {q:"2021 Q3", v:0.23}, {q:"2021 Q4", v:0.53},
-    {q:"2022 Q1", v:1.44}, {q:"2022 Q2", v:2.72}, {q:"2022 Q3", v:3.38}, {q:"2022 Q4", v:4.39},
-    {q:"2023 Q1", v:4.35}, {q:"2023 Q2", v:4.26}, {q:"2023 Q3", v:4.92}, {q:"2023 Q4", v:4.80},
-    {q:"2024 Q1", v:4.48}, {q:"2024 Q2", v:4.82}, {q:"2024 Q3", v:4.03}, {q:"2024 Q4", v:4.15},
-    {q:"2025 Q1", v:4.15}, {q:"2025 Q2", v:3.86}, {q:"2025 Q3", v:3.72}, {q:"2025 Q4", v:3.52},
-    {q:"2026 Q1", v:3.57}, {q:"2026 Q2", v:3.97}, {q:"2026 Q3", v:4.31}
-  ];
-  var t5yYieldHistory = [
-    {q:"2005 Q1", v:3.88}, {q:"2005 Q2", v:3.87}, {q:"2005 Q3", v:4.04}, {q:"2005 Q4", v:4.39},
-    {q:"2006 Q1", v:4.55}, {q:"2006 Q2", v:4.99}, {q:"2006 Q3", v:4.84}, {q:"2006 Q4", v:4.60},
-    {q:"2007 Q1", v:4.65}, {q:"2007 Q2", v:4.76}, {q:"2007 Q3", v:4.50}, {q:"2007 Q4", v:3.79},
-    {q:"2008 Q1", v:2.75}, {q:"2008 Q2", v:3.16}, {q:"2008 Q3", v:3.11}, {q:"2008 Q4", v:2.18},
-    {q:"2009 Q1", v:1.76}, {q:"2009 Q2", v:2.23}, {q:"2009 Q3", v:2.47}, {q:"2009 Q4", v:2.30},
-    {q:"2010 Q1", v:2.42}, {q:"2010 Q2", v:2.25}, {q:"2010 Q3", v:1.55}, {q:"2010 Q4", v:1.49},
-    {q:"2011 Q1", v:2.12}, {q:"2011 Q2", v:1.86}, {q:"2011 Q3", v:1.15}, {q:"2011 Q4", v:0.95},
-    {q:"2012 Q1", v:0.90}, {q:"2012 Q2", v:0.79}, {q:"2012 Q3", v:0.67}, {q:"2012 Q4", v:0.69},
-    {q:"2013 Q1", v:0.83}, {q:"2013 Q2", v:0.92}, {q:"2013 Q3", v:1.51}, {q:"2013 Q4", v:1.44},
-    {q:"2014 Q1", v:1.60}, {q:"2014 Q2", v:1.66}, {q:"2014 Q3", v:1.70}, {q:"2014 Q4", v:1.60},
-    {q:"2015 Q1", v:1.45}, {q:"2015 Q2", v:1.52}, {q:"2015 Q3", v:1.55}, {q:"2015 Q4", v:1.59},
-    {q:"2016 Q1", v:1.37}, {q:"2016 Q2", v:1.24}, {q:"2016 Q3", v:1.13}, {q:"2016 Q4", v:1.61},
-    {q:"2017 Q1", v:1.94}, {q:"2017 Q2", v:1.81}, {q:"2017 Q3", v:1.82}, {q:"2017 Q4", v:2.07},
-    {q:"2018 Q1", v:2.54}, {q:"2018 Q2", v:2.77}, {q:"2018 Q3", v:2.81}, {q:"2018 Q4", v:2.88},
-    {q:"2019 Q1", v:2.47}, {q:"2019 Q2", v:2.12}, {q:"2019 Q3", v:1.63}, {q:"2019 Q4", v:1.62},
-    {q:"2020 Q1", v:1.16}, {q:"2020 Q2", v:0.36}, {q:"2020 Q3", v:0.27}, {q:"2020 Q4", v:0.37},
-    {q:"2021 Q1", v:0.60}, {q:"2021 Q2", v:0.84}, {q:"2021 Q3", v:0.80}, {q:"2021 Q4", v:1.18},
-    {q:"2022 Q1", v:1.82}, {q:"2022 Q2", v:2.95}, {q:"2022 Q3", v:3.23}, {q:"2022 Q4", v:4.00},
-    {q:"2023 Q1", v:3.80}, {q:"2023 Q2", v:3.69}, {q:"2023 Q3", v:4.31}, {q:"2023 Q4", v:4.42},
-    {q:"2024 Q1", v:4.12}, {q:"2024 Q2", v:4.46}, {q:"2024 Q3", v:3.79}, {q:"2024 Q4", v:4.13},
-    {q:"2025 Q1", v:4.25}, {q:"2025 Q2", v:3.96}, {q:"2025 Q3", v:3.80}, {q:"2025 Q4", v:3.67},
-    {q:"2026 Q1", v:3.77}, {q:"2026 Q2", v:4.10}, {q:"2026 Q3", v:4.45}
-  ];
-  var t10yYieldHistory = [
-    {q:"2005 Q1", v:4.30}, {q:"2005 Q2", v:4.16}, {q:"2005 Q3", v:4.21}, {q:"2005 Q4", v:4.49},
-    {q:"2006 Q1", v:4.57}, {q:"2006 Q2", v:5.07}, {q:"2006 Q3", v:4.90}, {q:"2006 Q4", v:4.63},
-    {q:"2007 Q1", v:4.68}, {q:"2007 Q2", v:4.85}, {q:"2007 Q3", v:4.73}, {q:"2007 Q4", v:4.26},
-    {q:"2008 Q1", v:3.66}, {q:"2008 Q2", v:3.89}, {q:"2008 Q3", v:3.86}, {q:"2008 Q4", v:3.25},
-    {q:"2009 Q1", v:2.74}, {q:"2009 Q2", v:3.31}, {q:"2009 Q3", v:3.52}, {q:"2009 Q4", v:3.46},
-    {q:"2010 Q1", v:3.72}, {q:"2010 Q2", v:3.49}, {q:"2010 Q3", v:2.79}, {q:"2010 Q4", v:2.86},
-    {q:"2011 Q1", v:3.46}, {q:"2011 Q2", v:3.21}, {q:"2011 Q3", v:2.43}, {q:"2011 Q4", v:2.05},
-    {q:"2012 Q1", v:2.04}, {q:"2012 Q2", v:1.82}, {q:"2012 Q3", v:1.64}, {q:"2012 Q4", v:1.71},
-    {q:"2013 Q1", v:1.95}, {q:"2013 Q2", v:2.00}, {q:"2013 Q3", v:2.71}, {q:"2013 Q4", v:2.75},
-    {q:"2014 Q1", v:2.76}, {q:"2014 Q2", v:2.62}, {q:"2014 Q3", v:2.50}, {q:"2014 Q4", v:2.28},
-    {q:"2015 Q1", v:1.97}, {q:"2015 Q2", v:2.17}, {q:"2015 Q3", v:2.22}, {q:"2015 Q4", v:2.19},
-    {q:"2016 Q1", v:1.92}, {q:"2016 Q2", v:1.75}, {q:"2016 Q3", v:1.56}, {q:"2016 Q4", v:2.13},
-    {q:"2017 Q1", v:2.44}, {q:"2017 Q2", v:2.26}, {q:"2017 Q3", v:2.24}, {q:"2017 Q4", v:2.37},
-    {q:"2018 Q1", v:2.76}, {q:"2018 Q2", v:2.92}, {q:"2018 Q3", v:2.93}, {q:"2018 Q4", v:3.03},
-    {q:"2019 Q1", v:2.65}, {q:"2019 Q2", v:2.33}, {q:"2019 Q3", v:1.80}, {q:"2019 Q4", v:1.79},
-    {q:"2020 Q1", v:1.38}, {q:"2020 Q2", v:0.69}, {q:"2020 Q3", v:0.65}, {q:"2020 Q4", v:0.86},
-    {q:"2021 Q1", v:1.32}, {q:"2021 Q2", v:1.59}, {q:"2021 Q3", v:1.32}, {q:"2021 Q4", v:1.54},
-    {q:"2022 Q1", v:1.94}, {q:"2022 Q2", v:2.93}, {q:"2022 Q3", v:3.11}, {q:"2022 Q4", v:3.83},
-    {q:"2023 Q1", v:3.65}, {q:"2023 Q2", v:3.59}, {q:"2023 Q3", v:4.15}, {q:"2023 Q4", v:4.44},
-    {q:"2024 Q1", v:4.16}, {q:"2024 Q2", v:4.44}, {q:"2024 Q3", v:3.95}, {q:"2024 Q4", v:4.28},
-    {q:"2025 Q1", v:4.45}, {q:"2025 Q2", v:4.36}, {q:"2025 Q3", v:4.26}, {q:"2025 Q4", v:4.10},
-    {q:"2026 Q1", v:4.20}, {q:"2026 Q2", v:4.42}, {q:"2026 Q3", v:4.70}
-  ];
+  var t3mYieldHistory = treasuryQuarterly.m3;
+  var t2yYieldHistory = treasuryQuarterly.y2;
+  var t5yYieldHistory = treasuryQuarterly.y5;
+  var t10yYieldHistory = treasuryQuarterly.y10;
   // The 30-year has a real gap: Treasury stopped issuing 30-year bonds Oct 2001–Feb 2006, so there is no real
   // traded 30-year yield for all of 2005 — shown as a genuine break in the line (null) rather than a guessed
-  // or extrapolated figure. Q1 2006 blends 2 real trading months with 1 pre-resumption month; still flagged.
-  var t30yYieldHistory = [
-    {q:"2005 Q1", v:null}, {q:"2005 Q2", v:null}, {q:"2005 Q3", v:null}, {q:"2005 Q4", v:null},
-    {q:"2006 Q1", v:4.62}, {q:"2006 Q2", v:5.14}, {q:"2006 Q3", v:4.99}, {q:"2006 Q4", v:4.74},
-    {q:"2007 Q1", v:4.80}, {q:"2007 Q2", v:4.99}, {q:"2007 Q3", v:4.94}, {q:"2007 Q4", v:4.61},
-    {q:"2008 Q1", v:4.41}, {q:"2008 Q2", v:4.58}, {q:"2008 Q3", v:4.45}, {q:"2008 Q4", v:3.68},
-    {q:"2009 Q1", v:3.45}, {q:"2009 Q2", v:4.17}, {q:"2009 Q3", v:4.32}, {q:"2009 Q4", v:4.33},
-    {q:"2010 Q1", v:4.62}, {q:"2010 Q2", v:4.37}, {q:"2010 Q3", v:3.85}, {q:"2010 Q4", v:4.16},
-    {q:"2011 Q1", v:4.56}, {q:"2011 Q2", v:4.34}, {q:"2011 Q3", v:3.70}, {q:"2011 Q4", v:3.04},
-    {q:"2012 Q1", v:3.14}, {q:"2012 Q2", v:2.94}, {q:"2012 Q3", v:2.75}, {q:"2012 Q4", v:2.86},
-    {q:"2013 Q1", v:3.14}, {q:"2013 Q2", v:3.15}, {q:"2013 Q3", v:3.72}, {q:"2013 Q4", v:3.79},
-    {q:"2014 Q1", v:3.68}, {q:"2014 Q2", v:3.44}, {q:"2014 Q3", v:3.26}, {q:"2014 Q4", v:2.97},
-    {q:"2015 Q1", v:2.55}, {q:"2015 Q2", v:2.89}, {q:"2015 Q3", v:2.96}, {q:"2015 Q4", v:2.96},
-    {q:"2016 Q1", v:2.72}, {q:"2016 Q2", v:2.57}, {q:"2016 Q3", v:2.28}, {q:"2016 Q4", v:2.82},
-    {q:"2017 Q1", v:3.04}, {q:"2017 Q2", v:2.90}, {q:"2017 Q3", v:2.82}, {q:"2017 Q4", v:2.82},
-    {q:"2018 Q1", v:3.03}, {q:"2018 Q2", v:3.08}, {q:"2018 Q3", v:3.07}, {q:"2018 Q4", v:3.27},
-    {q:"2019 Q1", v:3.01}, {q:"2019 Q2", v:2.78}, {q:"2019 Q3", v:2.28}, {q:"2019 Q4", v:2.26},
-    {q:"2020 Q1", v:1.88}, {q:"2020 Q2", v:1.38}, {q:"2020 Q3", v:1.36}, {q:"2020 Q4", v:1.62},
-    {q:"2021 Q1", v:2.07}, {q:"2021 Q2", v:2.26}, {q:"2021 Q3", v:1.93}, {q:"2021 Q4", v:1.95},
-    {q:"2022 Q1", v:2.25}, {q:"2022 Q2", v:3.04}, {q:"2022 Q3", v:3.26}, {q:"2022 Q4", v:3.90},
-    {q:"2023 Q1", v:3.74}, {q:"2023 Q2", v:3.80}, {q:"2023 Q3", v:4.24}, {q:"2023 Q4", v:4.58},
-    {q:"2024 Q1", v:4.33}, {q:"2024 Q2", v:4.57}, {q:"2024 Q3", v:4.22}, {q:"2024 Q4", v:4.50},
-    {q:"2025 Q1", v:4.71}, {q:"2025 Q2", v:4.83}, {q:"2025 Q3", v:4.84}, {q:"2025 Q4", v:4.71},
-    {q:"2026 Q1", v:4.82}, {q:"2026 Q2", v:4.96}, {q:"2026 Q3", v:5.20}
-  ];
+  // or extrapolated figure. FRED's GS30 carries values in the gap; the backfill writes null there (GS30_GAP). Q1 2006
+  // blends 2 real trading months with 1 pre-resumption month.
+  var t30yYieldHistory = treasuryQuarterly.y30;
 
   // ---- Un-inversion → recession lag, computed from actual history (not a forecasting model or a survey) ----
   // Scoped to the 10Y-3M spread specifically, since it has the longer, more rigorously cross-sourced track
