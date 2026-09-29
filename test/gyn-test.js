@@ -287,6 +287,21 @@ async function openPage(p, url, sheet) {
     await pp.close();
   }
 
+  /* ---- 2b4. no history wears another chart's geometry (V618) ----
+     The crosshair reads a geometry \u2014 where the columns start and end, how many, how to turn an index back
+     into a date \u2014 and until V618 that travelled on a module variable thirteen charts wrote and fifteen
+     callers read on the following line. One caller does not redraw at all (refitHistory returns early when
+     the width already matches), so it attached whatever the last page left behind: a crosshair reading
+     another chart's scale, which is invisible, because the numbers it shows are plausible and simply wrong.
+     Geometry now carries the name of the chart that made it, attachHistory is the only reader, and a page
+     asking for one nobody drew is recorded. This asserts the record is empty after walking every page \u2014 so
+     the day this breaks is the day it is seen, rather than a year later. */
+  {
+    const misses = await p.evaluate(() => (window.__geomMiss || []).slice(0, 6));
+    misses.length ? bad('every history wears its own geometry', misses.join(' | '))
+                  : ok('every history wears its own geometry');
+  }
+
   perr.length ? bad('no errors while navigating', perr.join(' | ')) : ok('no errors while navigating');
 
   // 2c. the cycle picker says Today, capital T

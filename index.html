@@ -4489,40 +4489,28 @@
     next: "Oct 28, 2026"
   };
   fedFunds = LIVE("fedFunds", fedFunds);
-  function repaintFigureText(id, text) {
-    var el = document.getElementById(id);
-    if (!el) return false;
-    var n = el.firstChild;
-    if (!n || n.nodeType !== 3) return false;
-    n.nodeValue = String(text);
-    return true;
-  }
-  function repaintRow(sheet, fig, tag) {
-    var doors = document.querySelectorAll('[data-open="' + sheet + '"]');
+  function paintReading(sheet, value, tag) {
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"]'), painted = 0;
     Array.prototype.forEach.call(doors, function(d) {
       var v = d.querySelector(".ci-value, .subject-value");
-      if (v && v.firstChild && v.firstChild.nodeType === 3) v.firstChild.nodeValue = String(fig);
-      var t = d.querySelector(".tag");
-      if (t && tag) {
-        var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
-        t.textContent = tag.text;
-        t.className = "tag " + tag.state + word;
+      if (v && v.firstChild && v.firstChild.nodeType === 3) {
+        v.firstChild.nodeValue = String(value);
+        painted++;
       }
+      if (!tag) return;
+      var t = d.querySelector(".tag, .member-word");
+      if (!t) return;
+      t.textContent = tag.text;
+      if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
     });
-  }
-  function repaintTag(id, text, state) {
-    var el = document.getElementById(id);
-    var tag = el && el.querySelector(".tag");
-    if (!tag) return false;
-    tag.textContent = text;
-    tag.className = "tag " + (state || "");
-    return true;
+    if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
+    return painted;
   }
   function repaintFearCurve() {
     var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "—" : r.toFixed(2);
     var ring = document.getElementById("subj-ring-sentiment");
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", where 1.00 is flat");
-    repaintRow("sheet-sign-sentiment", txt, tag);
+    paintReading("sheet-sign-sentiment", txt, tag);
   }
   function repaintHorizonRow() {
     var pick = function(m) {
@@ -4535,7 +4523,7 @@
     if (y10 == null || y3m == null) return;
     var sp = y10 - y3m;
     var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
-    repaintRow("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), {
+    paintReading("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), {
       text: w.word,
       state: w.state
     });
@@ -4543,8 +4531,7 @@
   function repaintValuationRow() {
     var row = valRow("cape");
     if (!row) return;
-    repaintFigureText("subj-value-valuation", row.flagValue);
-    if (valuation.tag) repaintTag("subj-value-valuation", valuation.tag.text, valuation.tag.state);
+    paintReading("sheet-metric-valuation", row.flagValue, valuation.tag || null);
   }
   var REPAINT = {
     fedFunds: [ repaintPolicy ],
@@ -4659,11 +4646,10 @@
   function repaintPolicy() {
     var box = document.getElementById("policy-facts");
     if (box) box.innerHTML = policyFactRows();
-    var rowVal = document.getElementById("subj-value-hormones");
-    if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3) rowVal.firstChild.nodeValue = fedFundsRange();
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
-    var t = rowVal && rowVal.querySelector(".tag");
-    if (t) t.textContent = dir;
+    paintReading("sheet-sign-hormones", fedFundsRange(), {
+      text: dir
+    });
   }
   var GYN = {
     steps: [],

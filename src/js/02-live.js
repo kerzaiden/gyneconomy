@@ -85,40 +85,49 @@
 
      Everything else needs no repaint: the inner pages draw on open, from these same module vars,
      through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT opening a page. */
-  function repaintFigureText(id, text){
-    var el = document.getElementById(id);
-    if (!el) return false;
-    var n = el.firstChild;
-    if (!n || n.nodeType !== 3) return false;
-    n.nodeValue = String(text);
-    return true;
-  }
+
   /* V596: a reading that opens a page wears its figure on every list that offers that door — the category
      item (.ci-value, with its verdict lifted out into a sibling .ci-word) and the All-indicators row
      (.subject-value, with the verdict still inline). A repaint that goes by id reaches exactly ONE of them,
      which is the V593 fault one level up from where V593 found it: that version fixed Fear's VERDICT across
      both doors and left Fear's FIGURE on the roster row still stale. This walks the doors. */
-  function repaintRow(sheet, fig, tag){
-    var doors = document.querySelectorAll('[data-open="' + sheet + '"]');
+  /* ================= ONE READING, ONE PAINT (Version 619) =================
+     A reading is printed on every list that offers a door to its page — the category item in Weather or Mood,
+     and the row in All indicators — and `[data-open="<sheet>"]` is what those two have in common. Walking the
+     doors is the only honest way to repaint a reading, and this is now the only function that does it.
+     The two that went with it painted by ELEMENT ID, and both were wrong in the app as shipped:
+       • a fresh CAPE moved #subj-value-valuation, an element no reader sees, and left BOTH visible copies
+         showing the old number;
+       • an FOMC cut moved the Hormones figure on its category item and left the roster row a rate cycle
+         behind, still labelled Tightening after a cut.
+     Neither had a symptom anyone could notice — a stale figure looks exactly like a fresh one — which is why
+     the fix is to delete the by-id painters rather than correct their two callers. V593 corrected one such
+     caller, V596 corrected two more, and each time the NEXT one was already written. There is nothing left to
+     correct now: painting a reading by id is not possible here any more.
+     A tag with no `state` has only its words replaced, because the policy row's class carries a meaning the
+     caller does not own. A reading whose doors print nothing is recorded, and the suite asserts that record
+     stays empty. */
+  function paintReading(sheet, value, tag){
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"]'), painted = 0;
     Array.prototype.forEach.call(doors, function(d){
       var v = d.querySelector(".ci-value, .subject-value");
-      if (v && v.firstChild && v.firstChild.nodeType === 3) v.firstChild.nodeValue = String(fig);
-      var t = d.querySelector(".tag");
-      if (t && tag){
-        var word = /\bci-word\b/.test(t.className) ? " ci-word" : "";
-        t.textContent = tag.text;
-        t.className = "tag " + tag.state + word;
-      }
+      if (v && v.firstChild && v.firstChild.nodeType === 3){ v.firstChild.nodeValue = String(value); painted++; }
+      if (!tag) return;
+      /* The verdict wears a different class on each kind of door — `.tag` inside a category item, lifted out
+         as `.ci-word`, and `.member-word` on the All-indicators row. Three names for one word, which is how
+         the Hormones roster row went on saying Tightening after a cut while the item beside it said Easing.
+         Only a `.tag` carries state in its class; the roster's word is plain, so it takes the words alone. */
+      var t = d.querySelector(".tag, .member-word");
+      if (!t) return;
+      t.textContent = tag.text;
+      if (tag.state != null && /\btag\b/.test(t.className))
+        t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
     });
+    if (doors.length && !painted)
+      (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
+    return painted;
   }
-  function repaintTag(id, text, state){
-    var el = document.getElementById(id);
-    var tag = el && el.querySelector(".tag");
-    if (!tag) return false;
-    tag.textContent = text;
-    tag.className = "tag " + (state || "");
-    return true;
-  }
+
   /* The curve is DERIVED from two figures that arrive separately, so either leg landing repaints it,
      and it is RECOMPUTED here rather than read from a stored copy. One figure, one number. */
   function repaintFearCurve(){
@@ -127,7 +136,7 @@
     if (ring) ring.innerHTML = vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
       : "Fear curve at " + txt + ", where 1.00 is flat");
     /* V593: the half-dial, its figure, its verdict word and its date line all left with the meter, and taking
-       them out exposed something the dial had been hiding. repaintTag() above looks for a `.tag` INSIDE
+       them out exposed something the dial had been hiding. the by-id painter V619 retired looked for a `.tag` INSIDE
        #subj-value-sentiment, and there is not one: catItem lifts this reading's inline tag out of the figure
        and into the row's own `.ci-word` (the V504 rule, because Sentiment is the one member that writes its
        verdict inside the value). So that call has been returning false, and the only thing keeping the verdict
@@ -137,7 +146,7 @@
        The Fear page's chart is deliberately NOT repainted from these legs: it plots the monthly record, every
        point labelled with its month, and a live tick is not a new month. Highlights quotes today's two legs a
        line below, which is the V294 shape \u2014 a card says today, a chart says its series, both say which. */
-    repaintRow("sheet-sign-sentiment", txt, tag);
+    paintReading("sheet-sign-sentiment", txt, tag);
   }
   /* V596: the yieldCurve document's repaint follows the reading it moves. It used to print Pressure's 10Y/3M
      pair, and that row went with Pressure; what the pair still decides on the home tab is HORIZON's figure, and
@@ -152,13 +161,12 @@
     if (y10 == null || y3m == null) return;
     var sp = y10 - y3m;
     var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
-    repaintRow("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), { text:w.word, state:w.state });
+    paintReading("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), { text:w.word, state:w.state });
   }
   function repaintValuationRow(){
     var row = valRow("cape");
     if (!row) return;
-    repaintFigureText("subj-value-valuation", row.flagValue);
-    if (valuation.tag) repaintTag("subj-value-valuation", valuation.tag.text, valuation.tag.state);
+    paintReading("sheet-metric-valuation", row.flagValue, valuation.tag || null);
   }
   /* Which repaints each document owes. An empty list is a statement, not an omission: the VIX row
      and the Desire/Volume/Pulse rows live on inner pages that redraw on open. */
@@ -269,13 +277,12 @@
        mid-session rewrites the four facts and leaves the cards above them alone. */
     var box = document.getElementById("policy-facts");
     if (box) box.innerHTML = policyFactRows();
-    var rowVal = document.getElementById("subj-value-hormones");
-    if (rowVal && rowVal.firstChild && rowVal.firstChild.nodeType === 3)
-      rowVal.firstChild.nodeValue = fedFundsRange();
+    /* V619: through the doors, not the id. The id reached the category item and left the roster row a rate
+       cycle behind — still saying Tightening after a cut, because its tag was never touched either. The word
+       carries no state: which direction is good is not this row's claim to make. */
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
             : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
-    var t = rowVal && rowVal.querySelector(".tag");
-    if (t) t.textContent = dir;
+    paintReading("sheet-sign-hormones", fedFundsRange(), { text:dir });
   }
   /* THE STEP REGISTRY (Version 531).
 
