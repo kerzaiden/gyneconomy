@@ -9,7 +9,7 @@
    shape that never traded — and it would look entirely plausible on the chart.
 
    Usage: node test/fetch-fred-history.test.js        Exit 0 = every case passed. */
-const { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -87,6 +87,25 @@ ok('a negative spread averages as a negative',
    quarterlyMean([d('2023-04-03', -1.5), d('2023-04-04', -1.3)], -10, 25).map(x => x.v), [-1.4]);
 ok('a value outside the band is left out of the mean, not clamped',
    quarterlyMean([d('2026-07-01', 4), d('2026-07-02', 99)], 0, 25).map(x => [x.v, x.n]), [[4, 1]]);
+/* ---- spreadQuarterly: the hand method, long mean less short mean, rounded ONCE ---- */
+const qm = (rows) => quarterlyMean(rows, 0, 25);
+ok('a spread rounds the difference, not each leg',
+   /* 4.304 and 2.546 round to 4.30 and 2.55, whose difference is 1.75; the true difference, 1.758, is 1.76 */
+   spreadQuarterly(qm([d('2005-01-01', 4.304)]), qm([d('2005-01-01', 2.546)])).map(x => x.v), [1.76]);
+ok('an inverted spread is negative',
+   spreadQuarterly(qm([d('2023-04-01', 3.6)]), qm([d('2023-04-01', 5.1)])).map(x => x.v), [-1.5]);
+ok('a quarter only one leg printed is left out',
+   spreadQuarterly(qm([d('2026-04-01', 4), d('2026-07-01', 4)]), qm([d('2026-04-01', 3)])).map(x => x.q), ['2026 Q2']);
+ok('a spread is partial when either leg is',
+   spreadQuarterly([{ q: '2026 Q3', v: 4, raw: 4, partial: true }], [{ q: '2026 Q3', v: 3, raw: 3 }]).map(x => x.partial), [true]);
+ok('a null leg writes no spread',
+   spreadQuarterly([{ q: '2005 Q1', v: null, raw: null }], [{ q: '2005 Q1', v: 2, raw: 2 }]), []);
+
+/* ---- withoutGap: no 30-year bond Feb 2002 – Feb 2006, so no 30-year yield ---- */
+const g30 = [d('2005-10-01', 4.6), d('2005-11-01', 4.7), d('2006-01-01', 4.5), d('2006-02-01', 4.6), d('2006-03-01', 4.7)];
+ok('a quarter wholly inside the gap is null',
+   withoutGap(qm(g30), g30, ['2002-03', '2006-01']).map(x => [x.q, x.v]), [['2005 Q4', null], ['2006 Q1', 4.6]]);
+
 ok('the treasury block is written with its partial mark',
    /treasuryQuarterly = \{\s*y10:\[\{q:"2026 Q3",v:4\.7,partial:true\}\]/.test(emit([], [], 'x', null,
      { y10: [{ q: '2026 Q3', v: 4.7, partial: true }] })), true);

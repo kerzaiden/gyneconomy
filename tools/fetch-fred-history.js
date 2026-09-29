@@ -126,7 +126,32 @@ function quarterlyMean(rows, lo, hi) {
     const a = acc.get(q) || { sum: 0, n: 0, last: r.date };
     a.sum += r.v; a.n++; a.last = r.date; acc.set(q, a);
   }
-  return [...acc.entries()].map(([q, a]) => ({ q, v: Math.round(a.sum / a.n * 100) / 100, n: a.n, last: a.last }));
+  return [...acc.entries()].map(([q, a]) => ({ q, v: Math.round(a.sum / a.n * 100) / 100, raw: a.sum / a.n, n: a.n, last: a.last }));
+}
+
+/* V648: a spread as the hand-compiled arrays computed it — "cross-checked against FRED's own GS10/TB3MS" and
+   "GS10/GS2" (03-data.js) — the long leg's quarterly mean less the short leg's, each UNROUNDED, rounded once at
+   the end. Checked against the hand arrays before they were replaced: FRED's daily T10Y3M averages to a different
+   number in 59 of 87 quarters, and subtracting two already-rounded means misses by 0.01 in a further 20. A
+   quarter only one leg printed is left out, and a quarter either leg has still running is partial. */
+function spreadQuarterly(long, short) {
+  const s = new Map(short.map(d => [d.q, d]));
+  return long.filter(d => s.has(d.q) && d.v != null && s.get(d.q).v != null).map(d => {
+    const o = s.get(d.q);
+    return { q: d.q, v: Math.round((d.raw - o.raw) * 100) / 100, partial: !!(d.partial || o.partial) };
+  });
+}
+
+/* V648: the 30-year's real gap. The Treasury issued no 30-year bond from 18 Feb 2002 to 9 Feb 2006, and the hand
+   array (03-data.js) shows those quarters as a break rather than a figure: "no real traded 30-year yield for all
+   of 2005 — shown as a genuine break in the line (null) rather than a guessed or extrapolated figure". FRED's
+   GS30 carries values there; a quarter with no month outside the gap is written null, which keeps that call.
+   2006 Q1, with two traded months, keeps its three-month mean, as the hand array did. */
+const GS30_GAP = ['2002-03', '2006-01'];
+function withoutGap(qs, rows, gap) {
+  const traded = new Set(rows.filter(r => r.date.slice(0, 7) < gap[0] || r.date.slice(0, 7) > gap[1])
+    .map(r => r.date.slice(0, 4) + ' Q' + Math.ceil(Number(r.date.slice(5, 7)) / 3)));
+  return qs.map(d => traded.has(d.q) ? d : Object.assign({}, d, { v: null, raw: null }));
 }
 
 /* An annual FISCAL-YEAR series from OMB, as FRED carries it. FRED dates fiscal year N at N-01-01, so the
@@ -163,14 +188,15 @@ function emit(fedFunds, fearCurve, stamp, fiscal, treasury) {
 ` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '');
 }
 
-/* V648: the Treasury histories behind Pressure and Horizon, averaged by quarter from 2005 Q1. Monthly for the
-   levels (the GS and TB3MS series the hand-compiled arrays cite), daily for the two spreads. `partial` marks the
-   quarter still running. */
+/* V648: the Treasury histories behind Pressure and Horizon, averaged by quarter from 2005 Q1 from the monthly GS
+   and TB3MS series the hand-compiled arrays cite; the two spreads are differences of those means. `partial` marks
+   the quarter still running. */
 function treasuryBlock(t) {
   const rows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + (d.partial ? ',partial:true' : '') + '}').join(',');
   return `
   /* treasuryQuarterly — FRED, % (levels) and percentage points (spreads), calendar-quarter averages:
-       m3 TB3MS · y2 GS2 · y5 GS5 · y10 GS10 · y30 GS30 (monthly)   s3m T10Y3M · s2y T10Y2Y (daily) */
+       m3 TB3MS · y2 GS2 · y5 GS5 · y10 GS10 · y30 GS30 (monthly means)   s3m GS10 − TB3MS · s2y GS10 − GS2
+       y30 is null for 2005: no 30-year bond was issued Feb 2002 – Feb 2006. */
   var treasuryQuarterly = {
 ${Object.keys(t).map(k => '    ' + k + ':[' + rows(t[k]) + ']').join(',\n')}
   };
@@ -240,20 +266,23 @@ async function main() {
   }
   say('grossQ        ' + fiscal.grossQ.length + ' quarters, ' + fiscal.grossQ[0].q + ' → ' + fiscal.grossQ[fiscal.grossQ.length - 1].q);
 
-  /* V648: the Treasury quarterly histories. The quarter of the newest observation is marked partial unless
-     that observation is the quarter's last month (monthly) — a daily series is always partial until the next
-     quarter prints. Checked on load against the hand-compiled arrays before any of them is replaced. */
-  const T = { m3: ['TB3MS', 'm'], y2: ['GS2', 'm'], y5: ['GS5', 'm'], y10: ['GS10', 'm'], y30: ['GS30', 'm'],
-              s3m: ['T10Y3M', 'd'], s2y: ['T10Y2Y', 'd'] };
-  const treasury = {};
-  for (const [k, [id, freq]] of Object.entries(T)) {
-    const lo = k[0] === 's' ? -10 : 0, hi = 25;
-    const qs = quarterlyMean(await fredSeries(id, '2005-01-01'), lo, hi);
+  /* V648: the Treasury quarterly histories, all monthly. The quarter of the newest observation is marked partial
+     unless that observation is the quarter's last month. */
+  const T = { m3: 'TB3MS', y2: 'GS2', y5: 'GS5', y10: 'GS10', y30: 'GS30' };
+  const treasury = {}, full = {};
+  for (const [k, id] of Object.entries(T)) {
+    const rows = await fredSeries(id, '2005-01-01');
+    let qs = quarterlyMean(rows, 0, 25);
+    if (k === 'y30') qs = withoutGap(qs, rows, GS30_GAP);
     const last = qs[qs.length - 1];
-    const closed = freq === 'm' && /-(03|06|09|12)-/.test(last.last);
-    treasury[k] = qs.map(d => ({ q: d.q, v: d.v, partial: d === last && !closed }));
+    const closed = /-(03|06|09|12)-/.test(last.last);
+    full[k] = qs.map(d => Object.assign({}, d, { partial: d === last && !closed }));
     say(id.padEnd(13) + ' ' + qs.length + ' quarters, ' + qs[0].q + ' → ' + last.q + (closed ? '' : ' (partial)'));
   }
+  full.s3m = spreadQuarterly(full.y10, full.m3);
+  full.s2y = spreadQuarterly(full.y10, full.y2);
+  for (const k of Object.keys(full)) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
+  if (treasury.y30.slice(0, 4).some(d => d.v != null)) throw new Error('GS30: 2005 should be the no-issuance gap');
 
   fs.writeFileSync(OUT, emit(fedFunds, fearCurve, new Date().toISOString().slice(0, 10), fiscal, treasury));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
@@ -262,5 +291,5 @@ async function main() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, fiscalYears, band, emit };
+  module.exports = { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }
