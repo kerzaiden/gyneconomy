@@ -339,6 +339,21 @@ async function openPage(p, url, sheet) {
               : ok('every reading prints where it is painted');
   }
 
+  /* ---- 2b8. every id is one element (V630) ----
+     Splitting `renderPagesAndNav` left its three build calls at the end of the inner-pages half AND in the new
+     wrapper, so the All-indicators sheet was built twice, the roster filed twice and Escape bound twice — and
+     no check said so, because a duplicate `id` renders exactly like a single one. `getElementById` returns the
+     first, so every other reach was quietly fine. This is the check that would have failed. */
+  {
+    const dups = await p.evaluate(() => {
+      const seen = {}, out = [];
+      document.querySelectorAll('[id]').forEach(e => { seen[e.id] = (seen[e.id] || 0) + 1; });
+      Object.keys(seen).forEach(k => { if (seen[k] > 1) out.push('#' + k + ' \u00d7' + seen[k]); });
+      return out;
+    });
+    dups.length ? bad('every id is one element', dups.join(', ')) : ok('every id is one element');
+  }
+
   /* ---- 2b7. every action has an answer (V625) ----
      A view that reaches another view names an action; the view that owns the answer registers it. A fire with
      no handler is the one failure that used to be invisible — a `window` callback nobody set reads exactly

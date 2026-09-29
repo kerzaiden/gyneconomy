@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **14,921 lines**, about 1235 KB, roughly **351 thousand tokens**. No session can read it
+The source is **14,992 lines**, about 1240 KB, roughly **352 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `3b830d7` on 2026-09-29.
+Generated from commit `653a01a` on 2026-09-29.
 
 ## The five regions
 
@@ -19,10 +19,10 @@ Generated from commit `3b830d7` on 2026-09-29.
 | **Boot** | 1–4 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist — mirrors `--page` on purpose, so hex literals here are deliberate |
 | **Styles** | 5–3,143 | the whole stylesheet, every token and rule |
 | **Markup** | 3,144–3,920 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| **Script** | 3,921–14,868 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 14,869–14,921 | </body></html> |
+| **Script** | 3,921–14,939 | one IIFE containing everything: data, model, renderers, wiring |
+| **Close** | 14,940–14,992 | </body></html> |
 
-Counts: **274** top-level functions, **180** top-level vars, **4** top-level IIFEs in the script.
+Counts: **283** top-level functions, **181** top-level vars, **4** top-level IIFEs in the script.
 
 ## Script, section by section
 
@@ -888,7 +888,7 @@ _line 12,599_ · 4 declarations
 
 ### A cycle's season strip (Version 205, lifted out of the old Analysis tab in Version 259 so the
 
-_line 12,644_ · 7 declarations
+_line 12,644_ · 6 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -898,66 +898,118 @@ _line 12,644_ · 7 declarations
 | 12,756 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
 | 12,757 | `settleStrips` | `function settleStrips(` |
 | 12,792 | `renderSignsList` | `function renderSignsList(` |
-| 13,077 | `renderPagesAndNav` | `function renderPagesAndNav(` |
+
+### THE ROSTER'S OWN PIECES (Version 630)
+
+_line 13,077_ · 5 declarations
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13,091 | `partsOf` | `function partsOf(` |
+| 13,100 | `discOf` | `function discOf(` |
+| 13,107 | `authored` | `function authored(` |
+| 13,113 | `registerRoster` | `function registerRoster(` |
+| 13,155 | `memberRow` | `function memberRow(` |
+
+### THE NAVIGATION CONTROLLER (Version 630)
+
+_line 13,171_ · 2 declarations
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13,180 | `NAV` | `var NAV =` |
+| 13,181 | `buildNav` | `function buildNav(` |
+
+### ALL INDICATORS (Version 630)
+
+_line 13,295_ · 1 declaration
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13,299 | `buildIndicatorSheet` | `function buildIndicatorSheet(` |
+
+### THE CYCLE TAB: cards and categories (Version 630)
+
+_line 13,379_ · 1 declaration
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13,382 | `renderPeekAndCategories` | `function renderPeekAndCategories(` |
+
+### THE INNER PAGES (Version 630)
+
+_line 13,895_ · 1 declaration
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13,899 | `renderMetricPages` | `function renderMetricPages(` |
+
+### GDP growth
+
+_line 14,337_ · 1 declaration
+
+| Line | Name | Anchor |
+|---|---|---|
+| 14,392 | `renderPagesAndNav` | `function renderPagesAndNav(` |
 
 ### RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it
 
-_line 14,353_ · 1 declaration
+_line 14,424_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,354 | `renderCycleList` | `function renderCycleList(` |
+| 14,425 | `renderCycleList` | `function renderCycleList(` |
 
 ### RENDER: a closed cycle's four categories (Version 613)
 
-_line 14,454_ · 1 declaration
+_line 14,525_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,466 | `renderCycleCats` | `function renderCycleCats(` |
+| 14,537 | `renderCycleCats` | `function renderCycleCats(` |
 
 ### THE ROSTER AS SERIES (Version 613)
 
-_line 14,509_ · 4 declarations
+_line 14,580_ · 4 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,517 | `__roster` | `var __roster =` |
-| 14,518 | `readingRoster` | `function readingRoster(` |
-| 14,573 | `readFig` | `function readFig(` |
-| 14,581 | `prettyK` | `function prettyK(` |
+| 14,588 | `__roster` | `var __roster =` |
+| 14,589 | `readingRoster` | `function readingRoster(` |
+| 14,644 | `readFig` | `function readFig(` |
+| 14,652 | `prettyK` | `function prettyK(` |
 
 ### RENDER: Rhymes — today beside a past top (Version 610, rebuilt in Version 612)
 
-_line 14,588_ · 1 declaration
+_line 14,659_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,616 | `renderRhymes` | `function renderRhymes(` |
+| 14,687 | `renderRhymes` | `function renderRhymes(` |
 
 ### RENDER: Content tab — reading companion (season reading · flagged now · framework)
 
-_line 14,669_ · 1 declaration
+_line 14,740_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,670 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 14,741 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 ### TAB NAVIGATION (Cycle / Calendar / Analysis / Content)
 
-_line 14,730_ · 1 declaration
+_line 14,801_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,731 | `renderTopbar` | `function renderTopbar(` |
+| 14,802 | `renderTopbar` | `function renderTopbar(` |
 
 ### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
-_line 14,764_ · 1 declaration
+_line 14,835_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,765 | `wireContactForm` | `function wireContactForm(` |
+| 14,836 | `wireContactForm` | `function wireContactForm(` |
 
 ## The top-level IIFEs
 
@@ -984,7 +1036,7 @@ which function draws an inner page, called with the measured width when the page
 
 | Key | Line |
 |---|---|
-| `deficit-range` | 13,805 |
+| `deficit-range` | 14,124 |
 | `desire-range` | 10,688 |
 | `fear-range` | 11,495 |
 | `hormones-range` | 11,235 |
@@ -992,13 +1044,13 @@ which function draws an inner page, called with the measured width when the page
 | `hzn-spread` | 10,785 |
 | `pressure-range` | 11,373 |
 | `pulse-range` | 10,644 |
-| `sheet-marker-deficit` | 13,802 |
-| `sheet-metric-gdp` | 13,694 |
-| `sheet-metric-households` | 13,832 |
-| `sheet-metric-power` | 13,766 |
-| `sheet-metric-temp` | 13,649 |
-| `sheet-metric-valuation` | 13,876 |
-| `sheet-sign-activity` | 13,750 |
+| `sheet-marker-deficit` | 14,121 |
+| `sheet-metric-gdp` | 14,013 |
+| `sheet-metric-households` | 14,151 |
+| `sheet-metric-power` | 14,085 |
+| `sheet-metric-temp` | 13,968 |
+| `sheet-metric-valuation` | 14,195 |
+| `sheet-sign-activity` | 14,069 |
 | `sheet-sign-desire` | 10,689 |
 | `sheet-sign-horizon` | 10,792 |
 | `sheet-sign-hormones` | 11,238 |
@@ -1014,15 +1066,15 @@ the window a page's range control starts on
 
 | Key | Line |
 |---|---|
-| `deficit-range` | 13,811 |
+| `deficit-range` | 14,130 |
 | `desire-range` | 10,673 |
 | `fear-range` | 11,452 |
 | `hzn-range` | 10,717 |
 | `pulse-range` | 10,627 |
-| `sheet-metric-gdp` | 13,695 |
-| `sheet-metric-power` | 13,767 |
-| `sheet-metric-temp` | 13,650 |
-| `sheet-metric-valuation` | 13,877 |
+| `sheet-metric-gdp` | 14,014 |
+| `sheet-metric-power` | 14,086 |
+| `sheet-metric-temp` | 13,969 |
+| `sheet-metric-valuation` | 14,196 |
 | `volume-range` | 10,648 |
 
 ### `HIST_HEAD`

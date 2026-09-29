@@ -288,8 +288,313 @@
   // cycle opened from the Calendar never borrows it. Both figures are taken from the same place the row below takes
   // them, so the peek and its drawer can never disagree: Temperature from its own indicator, Growth from the season
   // model's latest quarter, which is also what the Growth chart reads at its end line.
-  function renderPagesAndNav(){
-    var host = byId("peek-row"); if (!host) return;
+  /* ---------------- THE ROSTER'S OWN PIECES (Version 630) ----------------
+     Keren: "a component based app that will be 100% ready for server side integration with controllers
+     and services."
+
+     Four helpers that read a reading off the page and write it as a roster row. They close over nothing in
+     `renderPagesAndNav` — measured, not assumed: of the 43 names that closure declares, the cards and the
+     inner pages reference NOTHING from the sections below, and the only mention of `openMetricPage` in those
+     990 lines is inside a comment. The cards emit `data-open` and the controller listens; that separation was
+     already there, just not visible from the outside.
+     What the measurement did NOT say is WHEN each piece may run. `registerRoster` below reads the drawn page,
+     so it is a step with a place in an order, and lifting it here without noticing that broke All indicators
+     until the snapshot said so. Closing over nothing and running at any time are two different properties. */
+  // A figure and its unit are two things. Cloning is what lets them be separated without disturbing the card
+  // the reading is lifted from, and it takes the tag out of the figure at the same time, where one sits inside it.
+  function partsOf(el, unitSel){
+    if (!el) return { v:"", u:"", w:"", s:"" };
+    var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
+    var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
+    var st = t ? (t.className.match(/good|warning|serious|critical/) || [""])[0] : "";
+    if (u) u.parentNode.removeChild(u);
+    if (t) t.parentNode.removeChild(t);
+    return { v:c.textContent.trim(), u:unit, w:word, s:st };
+  }
+  function discOf(mark, state){
+    return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + '</span></div>' : "";
+  }
+  // the three that have no indicator object behind them register from what their own peek card says
+  /* Version 473: the live document first, the Version 473 snapshot second. Everything in a category has been
+     lifted out of the page by now (see `catItem`), so for most of these the snapshot IS the answer — but the
+     live lookup stays first, because a reading that never joined a category is still there to be read. */
+  function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
+  /* V630: these two are a STEP, not a helper. Each reads a card or a row off the page that has just been
+     drawn and files it with `registerTiming`, so it has to run AFTER the cards exist. Lifting it to file
+     level made every `authored()` lookup answer null, every loop return early, and the structural group
+     vanish from All indicators — the snapshot said so, 30 states differing. Named now, so when it runs is
+     a decision at the call site rather than a position inside a 1,250-line body. */
+  function registerRoster(){
+    [["gdp", "coincident"], ["power", "structural"], ["valuation", "structural"],
+     ["households", "structural"]].forEach(function(p){
+      var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]); if (!card) return;
+      var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
+      var st = (card.className.match(/good|warning|serious|critical/) || [""])[0];
+      registerTiming(p[1], {
+        title:card.getAttribute("data-title"),
+        metric:pv.v, unit:pv.u,
+        word:(card.querySelector(".peek-word") || {}).textContent || "",
+        state:st, icon:discOf(card.querySelector(".peek-mark"), st),
+        target:"sheet-metric-" + p[0]
+      });
+    });
+    ["hormones", "pressure", "horizon", "sentiment"].forEach(function(key){
+      var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key); if (!row) return;
+      var rv = partsOf(row.querySelector(".subject-value"), ".unit");
+      var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
+      registerTiming("leading", {
+        title:row.getAttribute("data-title"),
+        sub:(row.querySelector(".subject-label") || {}).textContent || "",
+        metric:rv.v, unit:rv.u,
+        word:rv.w || say, state:rv.s,
+        icon:(function(){
+          /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that
+             we talked about." Twelve of thirteen rows wore their reading's glyph in a tinted disc; Fear wore
+             its curve gauge instead, because this preferred a .subject-ring with anything in it over the mark
+             on the label — and Fear is the only row that owns a ring. So the one reading with a picture was
+             the one reading without an icon, in a list whose whole job is to be scannable by icon.
+             The MARK comes first now and the ring is the fallback, which is the order every other list in the
+             app uses. Fear keeps its ring where a ring belongs: on the Mood page, as that row's preview. */
+          var mk = row.querySelector(".subject-label .peek-mark");
+          if (mk) return discOf(mk, rv.s);
+          var rg = row.querySelector(".subject-ring");
+          return rg && rg.firstElementChild ? rg.innerHTML : "";
+        })(),
+        target:row.getAttribute("data-open")
+      });
+    });
+  }
+
+  // One page per class (Version 271). A row here is the same row the list uses, and opens the same page.
+  function memberRow(e){
+    var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + '</span>'
+            : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + '</span>' : '';
+    var unit = e.unit ? '<span class="member-unit">' + e.unit + '</span>' : '';
+    return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target +
+      '" data-title="' + e.title + '"><div class="subject-summary">' +
+      '<div class="subject-ring">' + (e.icon || "") + '</div>' +
+      '<div class="subject-text">' +
+        '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " \u00b7 " + e.sub : "")) + '</div>' +
+        '<div class="subject-value">' + e.metric + unit + tag + '</div>' +
+        (e.metricSub ? '<p class="subject-say">' + e.metricSub + '</p>' : '') +
+      '</div>' +
+      '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
+    '</div></div>';
+  }
+
+  /* ---------------- THE NAVIGATION CONTROLLER (Version 630) ----------------
+     What opens, what closes, what the back arrow does, and the page frame all of it moves inside. This is the
+     CONTROLLER: it owns `openSheet`, `openHome`, `pageStack` and `returnScroll`, and nothing outside it can
+     reach that state — a component asks by calling `NAV.open`, or by emitting `data-open` and letting the
+     delegate here find it.
+     `NAV` is the whole public surface, and it is two names. Everything else stays private, which is the point:
+     the roster and the all-indicators sheet used to read `analysisPanel` and call `openMetricPage` out of a
+     shared closure, so there was no way to say what navigation offered and what it merely happened to have
+     in scope. */
+  var NAV = { open: null, panel: null };
+  function buildNav(){
+    // ---------------- The metric page (Version 256) ----------------
+    // The Cycle tab's own content steps aside and the metric takes the screen, with its name in the top bar and the
+    // back arrow beside it — the same move the Calendar makes when it opens a cycle. Where the reader was on the
+    // Cycle tab is remembered and restored, because being returned to the top of a long page is its own small loss.
+    var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
+    var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
+    var metricPage = document.createElement("div");
+    metricPage.id = "metric-page"; metricPage.hidden = true;
+    cyclePanel.appendChild(metricPage);
+    // Version 319: pages open from the Analysis tab now too, so "where a page goes home to" stops being the
+    // Cycle tab by assumption and becomes something the opener states. The host element travels to whichever
+    // panel the page was opened from — the tab you were on is the tab you come back to, with its own name in
+    // the top bar. The context is read fresh each time because these children are moved around at runtime.
+    var PAGE_HOME = {
+      cycle:    { panel:cyclePanel,    title:"Current Cycle",
+                  hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
+      analysis: { panel:analysisPanel, title:"Analysis",
+                  hide:function(){ return [byId("calendar-list")]; } }
+    };
+    var homeCtx = PAGE_HOME.cycle;
+    var openSheet = null, openHome = null, returnScroll = 0;
+    // One page can now open another — a class page opens a sign's page (Version 271) — so back has to mean "the page
+    // I came from" rather than always "the tab". The stack is the smallest thing that does it: a page remembers
+    // where it was pushed from and how far down it had been read.
+    var pageStack = [];
+
+    function homeFromPage(keepScroll){
+      if (!openSheet) return;
+      openHome.appendChild(openSheet); openSheet.hidden = true;
+      openSheet = null; openHome = null;
+      metricPage.hidden = true;
+      homeCtx.hide().forEach(function(n){ if (n) n.hidden = false; });
+      setTopbar(homeCtx.title, null);
+      if (keepScroll) return;
+      var y = returnScroll;
+      window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
+    }
+    function closeMetricPage(){ pageStack.length = 0; homeFromPage(); }
+    function backFromPage(){
+      var prev = pageStack.pop();
+      if (!prev){ closeMetricPage(); return; }
+      var el = byId(prev.id);
+      homeFromPage(true);
+      openMetricPage(el, prev.title, true);
+      window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
+    }
+    metricPageReset = closeMetricPage;
+
+    function openMetricPage(el, title, returning, homeKey){
+      if (!el) return;
+      seatPageFoot(el);        // Version 298: late-built pages seat their chip on the way in
+      if (!returning && openSheet && openSheet !== el)
+        pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
+      var wasOpen = !!openSheet;
+      homeFromPage(true);
+      if (!wasOpen) returnScroll = window.scrollY || 0;
+      // Only a page opened from a tab sets the home — a page opened FROM a page inherits it, and so does a
+      // step back, which arrives here with nothing open but must not be read as a fresh start from the Cycle tab.
+      if (!wasOpen && !returning){
+        homeCtx = PAGE_HOME[homeKey] || PAGE_HOME.cycle;
+        homeCtx.panel.appendChild(metricPage);
+      }
+      openSheet = el; openHome = el.parentNode;
+      homeCtx.hide().forEach(function(n){ if (n) n.hidden = true; });
+      el.hidden = false; metricPage.appendChild(el); metricPage.hidden = false;
+      setTopbar(title, backFromPage);
+      if (!returning) window.scrollTo({ top:0, behavior:"auto" });
+      // a hidden element has no width, so a page that draws its own chart draws it now, at the real one
+      var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
+      collapseEmptyBlocks(el);   // now that it is on screen and drawn, anything showing nothing gives up its gap
+    }
+    // Every peek card and every sign row opens a page the same way, so the listener sits on the tab rather than on
+    // the row of peeks, and matches the attribute rather than the class (Version 269).
+    cyclePanel.addEventListener("click", function(e){
+      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
+    });
+    analysisPanel.addEventListener("click", function(e){
+      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
+    });
+    analysisPanel.addEventListener("keydown", function(e){
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var row = e.target.closest && e.target.closest("[data-open]"); if (!row) return;
+      e.preventDefault();
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+    });
+    // pressing the trend row shows the fit on the chart above it and steps the readings back (Version 276)
+    cyclePanel.addEventListener("click", function(e){
+      var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
+      var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
+      var on = btn.getAttribute("aria-pressed") !== "true";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      box.classList.toggle("trend-on", on);
+    });
+    cyclePanel.addEventListener("keydown", function(e){
+      if (e.key !== "Enter" && e.key !== " ") return;
+      // `tr[data-open]` and not `[data-open]`: the peek cards are real buttons and already fire a click on
+      // Enter, so matching them here would open the same page twice (Version 360).
+      var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
+      e.preventDefault();
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
+    });
+
+    // Escape comes back, the way it closes every other layer in this app
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
+    });
+    // V630: the two names navigation offers. Assigned last, so the surface cannot be read half-built.
+    NAV.open = openMetricPage;
+    NAV.panel = analysisPanel;
+  }
+
+  /* ---------------- ALL INDICATORS (Version 630) ----------------
+     Every reading on the board, on one page, grouped by when it speaks. Lifted out of `renderPagesAndNav`
+     with the two things it actually needed from navigation — where to put itself, and how to open itself —
+     now asked for by name through `NAV` instead of taken from a shared closure. */
+  function buildIndicatorSheet(){
+    // Version 319: every reading on the board, on one page, grouped by when it speaks. It is built from
+    // `timingMembers`, so it cannot drift out of step with the rows anywhere else — they are the SAME rows,
+    // one component, one destination per reading.
+    // Version 350: the four per-class pages this builder used to make alongside it are gone. Version 329 pointed
+    // every timing chip at a TAB of this page instead of at its own sheet, which left four sheets built into the
+    // DOM on every load — 222 nodes, 8% of the page — that nothing could open. The roster answers "what does
+    // leading mean" perfectly well by grouping under that heading; a second page saying it again was the thing
+    // Version 329 replaced, not something it left standing.
+    var indSheet = document.createElement("div");
+    indSheet.className = "metric-sheet ind-sheet"; indSheet.id = "sheet-indicators"; indSheet.hidden = true;
+    var IND_ORDER = ["structural", "leading", "coincident", "lagging"];
+    var IND_TABS = [{ key:"all", label:"All" }, { key:"leading", label:"Leading" },
+                    { key:"coincident", label:"Coincident" }, { key:"lagging", label:"Lagging" }];
+    indSheet.innerHTML =
+      // no head: `.metric-sheet .body-term` is display:none (the top bar names the page), so with the subtitle
+      // gone the head rendered a zero-height wrapper and nothing else
+      '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' +
+        IND_TABS.map(function(t, i){
+          return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
+            'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
+        }).join("") +
+      '</div>' +
+      IND_ORDER.map(function(kind){
+        var t = TIMING[kind], list = timingMembers[kind];
+        if (!list.length) return "";
+        return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) +
+          '<b>' + t.label + '</b><span>' + t.hint + '</span></div>' +
+          list.map(memberRow).join("") + '</div>';
+      }).join("");
+    // Version 447: the roster is reached from the Cycle tab's Browse list now, so it lives among that tab's
+    // content — PAGE_HOME.cycle hides #today-analysis, and a page that is not inside what its home hides
+    // stays on screen underneath whatever opens over it.
+    (byId("today-analysis") || NAV.panel).appendChild(indSheet);
+
+    // Structural has no tab of its own — it is not a moment in the cycle, so it belongs under All and nowhere else.
+    function setIndTab(kind){
+      kind = kind || "all";
+      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b){
+        var on = b.getAttribute("data-ind-tab") === kind;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g){
+        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
+      });
+    }
+    indSheet.addEventListener("click", function(e){
+      var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"); if (!b) return;
+      setIndTab(b.getAttribute("data-ind-tab"));
+    });
+    // Version 329: a reading's timing chip opens THIS page on the matching tab rather than a page of its own.
+    openIndicatorsPage = function(tab){
+      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
+      if (btn && !btn.classList.contains("active")) btn.click();
+      setIndTab(tab && tab !== "structural" ? tab : "all");
+      NAV.open(indSheet, "All indicators", false, "cycle");
+    };
+
+    // The preview: name, picture, figures, word — the card anatomy, with the four classes as the picture and
+    // their counts as the figure, because the shape of the roster is what this card has to say.
+    var indPeek = byId("indicators-peek");
+    if (indPeek) indPeek.remove();   // V447: its door is the Browse list's last row now
+    if (false && indPeek){
+      indPeek.innerHTML =
+        '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' +
+          'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' +
+          '<div class="subject-text">' +
+            '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + '</div>' +
+            '<div class="ind-classes">' +
+              Object.keys(timingMembers).map(function(kind){
+                return '<span class="ind-class">' + timingMark(kind) +
+                  '<b>' + timingMembers[kind].length + '</b><i>' + TIMING[kind].label + '</i></span>';
+              }).join("") +
+            '</div>' +
+          '</div>' +
+        '</div></div>';
+    }
+  }
+
+  /* ---------------- THE CYCLE TAB: cards and categories (Version 630) ----------------
+     The four big cards at the top, the four category boxes, and the rows physically moved into them.
+     It hands the inner pages the five readings they share and nothing else. */
+  function renderPeekAndCategories(){
+    var host = byId("peek-row"); if (!host) return null;   // V630: null, so the caller can stop too
     var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
     var r = nowModel.reading, era = nowModel.era;
     var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
@@ -794,6 +1099,20 @@
       });
     })();
 
+    /* V630: the SIX values the inner pages read out of this one. Measured, and measured twice — the first
+       scan read only the first name of each `var a = 1, b = 2;` and so missed `buffNow`, which the Valuations
+       page reads three times. The page threw on load and 60 snapshot states differed. A declarator list is a
+       list; count all of it. Nothing goes the other way, which is what let the seam be cut at all. */
+    return { host:host, tempInd:tempInd, r:r, gq:gq, capeNow:capeNow, buffNow:buffNow };
+  }
+
+  /* ---------------- THE INNER PAGES (Version 630) ----------------
+     What each metric draws when it opens: a chart where there is one, then Highlights. Takes the five
+     values the cards computed rather than reaching into their scope for them — which is the whole
+     difference between a component and a region of a long function. */
+  function renderMetricPages(ctx){
+    var host = ctx.host, tempInd = ctx.tempInd, r = ctx.r, gq = ctx.gq;
+    var capeNow = ctx.capeNow, buffNow = ctx.buffNow;
     // ---------------- The inner pages: a chart where there is one to draw, then Highlights ----------------
     var pct0 = function(v){ return Math.round(v) + "%"; }, pct1 = function(v){ return v.toFixed(1) + "%"; };
     var capeFmt1 = function(v){ return v.toFixed(1) + "\u00d7"; };
@@ -1279,266 +1598,18 @@
         else hl.insertAdjacentElement("beforebegin", host);   // no table on this page: still ahead of Highlights
       });
     })();
+  }
 
-    // ---------------- The metric page (Version 256) ----------------
-    // The Cycle tab's own content steps aside and the metric takes the screen, with its name in the top bar and the
-    // back arrow beside it — the same move the Calendar makes when it opens a cycle. Where the reader was on the
-    // Cycle tab is remembered and restored, because being returned to the top of a long page is its own small loss.
-    var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
-    var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
-    var metricPage = document.createElement("div");
-    metricPage.id = "metric-page"; metricPage.hidden = true;
-    cyclePanel.appendChild(metricPage);
-    // Version 319: pages open from the Analysis tab now too, so "where a page goes home to" stops being the
-    // Cycle tab by assumption and becomes something the opener states. The host element travels to whichever
-    // panel the page was opened from — the tab you were on is the tab you come back to, with its own name in
-    // the top bar. The context is read fresh each time because these children are moved around at runtime.
-    var PAGE_HOME = {
-      cycle:    { panel:cyclePanel,    title:"Current Cycle",
-                  hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
-      analysis: { panel:analysisPanel, title:"Analysis",
-                  hide:function(){ return [byId("calendar-list")]; } }
-    };
-    var homeCtx = PAGE_HOME.cycle;
-    var openSheet = null, openHome = null, returnScroll = 0;
-    // One page can now open another — a class page opens a sign's page (Version 271) — so back has to mean "the page
-    // I came from" rather than always "the tab". The stack is the smallest thing that does it: a page remembers
-    // where it was pushed from and how far down it had been read.
-    var pageStack = [];
-
-    function homeFromPage(keepScroll){
-      if (!openSheet) return;
-      openHome.appendChild(openSheet); openSheet.hidden = true;
-      openSheet = null; openHome = null;
-      metricPage.hidden = true;
-      homeCtx.hide().forEach(function(n){ if (n) n.hidden = false; });
-      setTopbar(homeCtx.title, null);
-      if (keepScroll) return;
-      var y = returnScroll;
-      window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
-    }
-    function closeMetricPage(){ pageStack.length = 0; homeFromPage(); }
-    function backFromPage(){
-      var prev = pageStack.pop();
-      if (!prev){ closeMetricPage(); return; }
-      var el = byId(prev.id);
-      homeFromPage(true);
-      openMetricPage(el, prev.title, true);
-      window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
-    }
-    metricPageReset = closeMetricPage;
-
-    function openMetricPage(el, title, returning, homeKey){
-      if (!el) return;
-      seatPageFoot(el);        // Version 298: late-built pages seat their chip on the way in
-      if (!returning && openSheet && openSheet !== el)
-        pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
-      var wasOpen = !!openSheet;
-      homeFromPage(true);
-      if (!wasOpen) returnScroll = window.scrollY || 0;
-      // Only a page opened from a tab sets the home — a page opened FROM a page inherits it, and so does a
-      // step back, which arrives here with nothing open but must not be read as a fresh start from the Cycle tab.
-      if (!wasOpen && !returning){
-        homeCtx = PAGE_HOME[homeKey] || PAGE_HOME.cycle;
-        homeCtx.panel.appendChild(metricPage);
-      }
-      openSheet = el; openHome = el.parentNode;
-      homeCtx.hide().forEach(function(n){ if (n) n.hidden = true; });
-      el.hidden = false; metricPage.appendChild(el); metricPage.hidden = false;
-      setTopbar(title, backFromPage);
-      if (!returning) window.scrollTo({ top:0, behavior:"auto" });
-      // a hidden element has no width, so a page that draws its own chart draws it now, at the real one
-      var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
-      collapseEmptyBlocks(el);   // now that it is on screen and drawn, anything showing nothing gives up its gap
-    }
-    // Every peek card and every sign row opens a page the same way, so the listener sits on the tab rather than on
-    // the row of peeks, and matches the attribute rather than the class (Version 269).
-    cyclePanel.addEventListener("click", function(e){
-      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
-    });
-    analysisPanel.addEventListener("click", function(e){
-      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
-    });
-    analysisPanel.addEventListener("keydown", function(e){
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest("[data-open]"); if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
-    });
-    // pressing the trend row shows the fit on the chart above it and steps the readings back (Version 276)
-    cyclePanel.addEventListener("click", function(e){
-      var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
-      var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
-      var on = btn.getAttribute("aria-pressed") !== "true";
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      box.classList.toggle("trend-on", on);
-    });
-    cyclePanel.addEventListener("keydown", function(e){
-      if (e.key !== "Enter" && e.key !== " ") return;
-      // `tr[data-open]` and not `[data-open]`: the peek cards are real buttons and already fire a click on
-      // Enter, so matching them here would open the same page twice (Version 360).
-      var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
-    });
-    // A figure and its unit are two things. Cloning is what lets them be separated without disturbing the card
-    // the reading is lifted from, and it takes the tag out of the figure at the same time, where one sits inside it.
-    function partsOf(el, unitSel){
-      if (!el) return { v:"", u:"", w:"", s:"" };
-      var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-      var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
-      var st = t ? (t.className.match(/good|warning|serious|critical/) || [""])[0] : "";
-      if (u) u.parentNode.removeChild(u);
-      if (t) t.parentNode.removeChild(t);
-      return { v:c.textContent.trim(), u:unit, w:word, s:st };
-    }
-    function discOf(mark, state){
-      return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + '</span></div>' : "";
-    }
-    // the three that have no indicator object behind them register from what their own peek card says
-    /* Version 473: the live document first, the Version 473 snapshot second. Everything in a category has been
-       lifted out of the page by now (see `catItem`), so for most of these the snapshot IS the answer — but the
-       live lookup stays first, because a reading that never joined a category is still there to be read. */
-    function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
-    [["gdp", "coincident"], ["power", "structural"], ["valuation", "structural"],
-     ["households", "structural"]].forEach(function(p){
-      var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]); if (!card) return;
-      var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
-      var st = (card.className.match(/good|warning|serious|critical/) || [""])[0];
-      registerTiming(p[1], {
-        title:card.getAttribute("data-title"),
-        metric:pv.v, unit:pv.u,
-        word:(card.querySelector(".peek-word") || {}).textContent || "",
-        state:st, icon:discOf(card.querySelector(".peek-mark"), st),
-        target:"sheet-metric-" + p[0]
-      });
-    });
-    ["hormones", "pressure", "horizon", "sentiment"].forEach(function(key){
-      var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key); if (!row) return;
-      var rv = partsOf(row.querySelector(".subject-value"), ".unit");
-      var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
-      registerTiming("leading", {
-        title:row.getAttribute("data-title"),
-        sub:(row.querySelector(".subject-label") || {}).textContent || "",
-        metric:rv.v, unit:rv.u,
-        word:rv.w || say, state:rv.s,
-        icon:(function(){
-          /* V587, Keren: "make sure that in the all indicators list, all items are updated with the icons that
-             we talked about." Twelve of thirteen rows wore their reading's glyph in a tinted disc; Fear wore
-             its curve gauge instead, because this preferred a .subject-ring with anything in it over the mark
-             on the label — and Fear is the only row that owns a ring. So the one reading with a picture was
-             the one reading without an icon, in a list whose whole job is to be scannable by icon.
-             The MARK comes first now and the ring is the fallback, which is the order every other list in the
-             app uses. Fear keeps its ring where a ring belongs: on the Mood page, as that row's preview. */
-          var mk = row.querySelector(".subject-label .peek-mark");
-          if (mk) return discOf(mk, rv.s);
-          var rg = row.querySelector(".subject-ring");
-          return rg && rg.firstElementChild ? rg.innerHTML : "";
-        })(),
-        target:row.getAttribute("data-open")
-      });
-    });
-
-    // One page per class (Version 271). A row here is the same row the list uses, and opens the same page.
-    function memberRow(e){
-      var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + '</span>'
-              : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + '</span>' : '';
-      var unit = e.unit ? '<span class="member-unit">' + e.unit + '</span>' : '';
-      return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target +
-        '" data-title="' + e.title + '"><div class="subject-summary">' +
-        '<div class="subject-ring">' + (e.icon || "") + '</div>' +
-        '<div class="subject-text">' +
-          '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " \u00b7 " + e.sub : "")) + '</div>' +
-          '<div class="subject-value">' + e.metric + unit + tag + '</div>' +
-          (e.metricSub ? '<p class="subject-say">' + e.metricSub + '</p>' : '') +
-        '</div>' +
-        '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
-      '</div></div>';
-    }
-    // Version 319: every reading on the board, on one page, grouped by when it speaks. It is built from
-    // `timingMembers`, so it cannot drift out of step with the rows anywhere else — they are the SAME rows,
-    // one component, one destination per reading.
-    // Version 350: the four per-class pages this builder used to make alongside it are gone. Version 329 pointed
-    // every timing chip at a TAB of this page instead of at its own sheet, which left four sheets built into the
-    // DOM on every load — 222 nodes, 8% of the page — that nothing could open. The roster answers "what does
-    // leading mean" perfectly well by grouping under that heading; a second page saying it again was the thing
-    // Version 329 replaced, not something it left standing.
-    var indSheet = document.createElement("div");
-    indSheet.className = "metric-sheet ind-sheet"; indSheet.id = "sheet-indicators"; indSheet.hidden = true;
-    var IND_ORDER = ["structural", "leading", "coincident", "lagging"];
-    var IND_TABS = [{ key:"all", label:"All" }, { key:"leading", label:"Leading" },
-                    { key:"coincident", label:"Coincident" }, { key:"lagging", label:"Lagging" }];
-    indSheet.innerHTML =
-      // no head: `.metric-sheet .body-term` is display:none (the top bar names the page), so with the subtitle
-      // gone the head rendered a zero-height wrapper and nothing else
-      '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' +
-        IND_TABS.map(function(t, i){
-          return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
-            'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
-        }).join("") +
-      '</div>' +
-      IND_ORDER.map(function(kind){
-        var t = TIMING[kind], list = timingMembers[kind];
-        if (!list.length) return "";
-        return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) +
-          '<b>' + t.label + '</b><span>' + t.hint + '</span></div>' +
-          list.map(memberRow).join("") + '</div>';
-      }).join("");
-    // Version 447: the roster is reached from the Cycle tab's Browse list now, so it lives among that tab's
-    // content — PAGE_HOME.cycle hides #today-analysis, and a page that is not inside what its home hides
-    // stays on screen underneath whatever opens over it.
-    (byId("today-analysis") || analysisPanel).appendChild(indSheet);
-
-    // Structural has no tab of its own — it is not a moment in the cycle, so it belongs under All and nowhere else.
-    function setIndTab(kind){
-      kind = kind || "all";
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b){
-        var on = b.getAttribute("data-ind-tab") === kind;
-        b.classList.toggle("on", on);
-        b.setAttribute("aria-selected", on ? "true" : "false");
-      });
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g){
-        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
-      });
-    }
-    indSheet.addEventListener("click", function(e){
-      var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"); if (!b) return;
-      setIndTab(b.getAttribute("data-ind-tab"));
-    });
-    // Version 329: a reading's timing chip opens THIS page on the matching tab rather than a page of its own.
-    openIndicatorsPage = function(tab){
-      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
-      if (btn && !btn.classList.contains("active")) btn.click();
-      setIndTab(tab && tab !== "structural" ? tab : "all");
-      openMetricPage(indSheet, "All indicators", false, "cycle");
-    };
-
-    // The preview: name, picture, figures, word — the card anatomy, with the four classes as the picture and
-    // their counts as the figure, because the shape of the roster is what this card has to say.
-    var indPeek = byId("indicators-peek");
-    if (indPeek) indPeek.remove();   // V447: its door is the Browse list's last row now
-    if (false && indPeek){
-      indPeek.innerHTML =
-        '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' +
-          'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' +
-          '<div class="subject-text">' +
-            '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + '</div>' +
-            '<div class="ind-classes">' +
-              Object.keys(timingMembers).map(function(kind){
-                return '<span class="ind-class">' + timingMark(kind) +
-                  '<b>' + timingMembers[kind].length + '</b><i>' + TIMING[kind].label + '</i></span>';
-              }).join("") +
-            '</div>' +
-          '</div>' +
-        '</div></div>';
-    }
-
-    // Escape comes back, the way it closes every other layer in this app
-    document.addEventListener("keydown", function(e){
-      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
-    });
+  /* The Cycle tab, in the order its pieces have always run. Every line here is a call now: what used to
+     be 1,250 lines in one closure is five named functions and a hand-over, and the only thing this
+     function still decides is the order — which is the one thing it was always really deciding. */
+  function renderPagesAndNav(){
+    var ctx = renderPeekAndCategories();
+    if (!ctx) return;       // no peek row, no Cycle tab: the V305 shape, nothing draws on missing ground
+    renderMetricPages(ctx);
+    buildNav();             // the frame and its delegates
+    registerRoster();       // reads the cards above off the page, so it runs after they are drawn
+    buildIndicatorSheet();  // and after the roster is filed, because it lists what was filed
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 

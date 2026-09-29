@@ -18854,9 +18854,276 @@
   }
   GYN.step("renderSignsList", renderSignsList, "build");
   renderSignsList();
-  function renderPagesAndNav() {
+  function partsOf(el, unitSel) {
+    if (!el) return {
+      v: "",
+      u: "",
+      w: "",
+      s: ""
+    };
+    var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
+    var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
+    var st = t ? (t.className.match(/good|warning|serious|critical/) || [ "" ])[0] : "";
+    if (u) u.parentNode.removeChild(u);
+    if (t) t.parentNode.removeChild(t);
+    return {
+      v: c.textContent.trim(),
+      u: unit,
+      w: word,
+      s: st
+    };
+  }
+  function discOf(mark, state) {
+    return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + "</span></div>" : "";
+  }
+  function authored(sel, key) {
+    return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null;
+  }
+  function registerRoster() {
+    [ [ "gdp", "coincident" ], [ "power", "structural" ], [ "valuation", "structural" ], [ "households", "structural" ] ].forEach(function(p) {
+      var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]);
+      if (!card) return;
+      var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
+      var st = (card.className.match(/good|warning|serious|critical/) || [ "" ])[0];
+      registerTiming(p[1], {
+        title: card.getAttribute("data-title"),
+        metric: pv.v,
+        unit: pv.u,
+        word: (card.querySelector(".peek-word") || {}).textContent || "",
+        state: st,
+        icon: discOf(card.querySelector(".peek-mark"), st),
+        target: "sheet-metric-" + p[0]
+      });
+    });
+    [ "hormones", "pressure", "horizon", "sentiment" ].forEach(function(key) {
+      var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key);
+      if (!row) return;
+      var rv = partsOf(row.querySelector(".subject-value"), ".unit");
+      var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
+      registerTiming("leading", {
+        title: row.getAttribute("data-title"),
+        sub: (row.querySelector(".subject-label") || {}).textContent || "",
+        metric: rv.v,
+        unit: rv.u,
+        word: rv.w || say,
+        state: rv.s,
+        icon: function() {
+          var mk = row.querySelector(".subject-label .peek-mark");
+          if (mk) return discOf(mk, rv.s);
+          var rg = row.querySelector(".subject-ring");
+          return rg && rg.firstElementChild ? rg.innerHTML : "";
+        }(),
+        target: row.getAttribute("data-open")
+      });
+    });
+  }
+  function memberRow(e) {
+    var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + "</span>" : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + "</span>" : "";
+    var unit = e.unit ? '<span class="member-unit">' + e.unit + "</span>" : "";
+    return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target + '" data-title="' + e.title + '"><div class="subject-summary">' + '<div class="subject-ring">' + (e.icon || "") + "</div>" + '<div class="subject-text">' + '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " · " + e.sub : "")) + "</div>" + '<div class="subject-value">' + e.metric + unit + tag + "</div>" + (e.metricSub ? '<p class="subject-say">' + e.metricSub + "</p>" : "") + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div></div>";
+  }
+  var NAV = {
+    open: null,
+    panel: null
+  };
+  function buildNav() {
+    var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
+    var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
+    var metricPage = document.createElement("div");
+    metricPage.id = "metric-page";
+    metricPage.hidden = true;
+    cyclePanel.appendChild(metricPage);
+    var PAGE_HOME = {
+      cycle: {
+        panel: cyclePanel,
+        title: "Current Cycle",
+        hide: function() {
+          return [ cycleViewEl, byId("today-analysis") ];
+        }
+      },
+      analysis: {
+        panel: analysisPanel,
+        title: "Analysis",
+        hide: function() {
+          return [ byId("calendar-list") ];
+        }
+      }
+    };
+    var homeCtx = PAGE_HOME.cycle;
+    var openSheet = null, openHome = null, returnScroll = 0;
+    var pageStack = [];
+    function homeFromPage(keepScroll) {
+      if (!openSheet) return;
+      openHome.appendChild(openSheet);
+      openSheet.hidden = true;
+      openSheet = null;
+      openHome = null;
+      metricPage.hidden = true;
+      homeCtx.hide().forEach(function(n) {
+        if (n) n.hidden = false;
+      });
+      setTopbar(homeCtx.title, null);
+      if (keepScroll) return;
+      var y = returnScroll;
+      window.requestAnimationFrame(function() {
+        window.scrollTo({
+          top: y,
+          behavior: "auto"
+        });
+      });
+    }
+    function closeMetricPage() {
+      pageStack.length = 0;
+      homeFromPage();
+    }
+    function backFromPage() {
+      var prev = pageStack.pop();
+      if (!prev) {
+        closeMetricPage();
+        return;
+      }
+      var el = byId(prev.id);
+      homeFromPage(true);
+      openMetricPage(el, prev.title, true);
+      window.requestAnimationFrame(function() {
+        window.scrollTo({
+          top: prev.scroll,
+          behavior: "auto"
+        });
+      });
+    }
+    metricPageReset = closeMetricPage;
+    function openMetricPage(el, title, returning, homeKey) {
+      if (!el) return;
+      seatPageFoot(el);
+      if (!returning && openSheet && openSheet !== el) pageStack.push({
+        id: openSheet.id,
+        title: byId("topbar-title").textContent,
+        scroll: window.scrollY || 0
+      });
+      var wasOpen = !!openSheet;
+      homeFromPage(true);
+      if (!wasOpen) returnScroll = window.scrollY || 0;
+      if (!wasOpen && !returning) {
+        homeCtx = PAGE_HOME[homeKey] || PAGE_HOME.cycle;
+        homeCtx.panel.appendChild(metricPage);
+      }
+      openSheet = el;
+      openHome = el.parentNode;
+      homeCtx.hide().forEach(function(n) {
+        if (n) n.hidden = true;
+      });
+      el.hidden = false;
+      metricPage.appendChild(el);
+      metricPage.hidden = false;
+      setTopbar(title, backFromPage);
+      if (!returning) window.scrollTo({
+        top: 0,
+        behavior: "auto"
+      });
+      var draw = sheetRenderers[el.id];
+      if (draw) draw(metricPage.clientWidth);
+      collapseEmptyBlocks(el);
+    }
+    cyclePanel.addEventListener("click", function(e) {
+      var btn = e.target.closest && e.target.closest("[data-open]");
+      if (!btn) return;
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
+    });
+    analysisPanel.addEventListener("click", function(e) {
+      var btn = e.target.closest && e.target.closest("[data-open]");
+      if (!btn) return;
+      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
+    });
+    analysisPanel.addEventListener("keydown", function(e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var row = e.target.closest && e.target.closest("[data-open]");
+      if (!row) return;
+      e.preventDefault();
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+    });
+    cyclePanel.addEventListener("click", function(e) {
+      var btn = e.target.closest && e.target.closest(".trendpill.can-toggle");
+      if (!btn) return;
+      var box = btn.closest(".page-chart, .spread-history");
+      if (!box) return;
+      var on = btn.getAttribute("aria-pressed") !== "true";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      box.classList.toggle("trend-on", on);
+    });
+    cyclePanel.addEventListener("keydown", function(e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]");
+      if (!row) return;
+      e.preventDefault();
+      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
+    });
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
+    });
+    NAV.open = openMetricPage;
+    NAV.panel = analysisPanel;
+  }
+  function buildIndicatorSheet() {
+    var indSheet = document.createElement("div");
+    indSheet.className = "metric-sheet ind-sheet";
+    indSheet.id = "sheet-indicators";
+    indSheet.hidden = true;
+    var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ];
+    var IND_TABS = [ {
+      key: "all",
+      label: "All"
+    }, {
+      key: "leading",
+      label: "Leading"
+    }, {
+      key: "coincident",
+      label: "Coincident"
+    }, {
+      key: "lagging",
+      label: "Lagging"
+    } ];
+    indSheet.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' + IND_TABS.map(function(t, i) {
+      return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' + 'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + "</button>";
+    }).join("") + "</div>" + IND_ORDER.map(function(kind) {
+      var t = TIMING[kind], list = timingMembers[kind];
+      if (!list.length) return "";
+      return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) + "<b>" + t.label + "</b><span>" + t.hint + "</span></div>" + list.map(memberRow).join("") + "</div>";
+    }).join("");
+    (byId("today-analysis") || NAV.panel).appendChild(indSheet);
+    function setIndTab(kind) {
+      kind = kind || "all";
+      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b) {
+        var on = b.getAttribute("data-ind-tab") === kind;
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g) {
+        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
+      });
+    }
+    indSheet.addEventListener("click", function(e) {
+      var b = e.target.closest && e.target.closest(".ind-tabs .range-seg");
+      if (!b) return;
+      setIndTab(b.getAttribute("data-ind-tab"));
+    });
+    openIndicatorsPage = function(tab) {
+      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
+      if (btn && !btn.classList.contains("active")) btn.click();
+      setIndTab(tab && tab !== "structural" ? tab : "all");
+      NAV.open(indSheet, "All indicators", false, "cycle");
+    };
+    var indPeek = byId("indicators-peek");
+    if (indPeek) indPeek.remove();
+    if (false && indPeek) {
+      indPeek.innerHTML = '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' + 'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' + '<div class="subject-text">' + '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + "</div>" + '<div class="ind-classes">' + Object.keys(timingMembers).map(function(kind) {
+        return '<span class="ind-class">' + timingMark(kind) + "<b>" + timingMembers[kind].length + "</b><i>" + TIMING[kind].label + "</i></span>";
+      }).join("") + "</div>" + "</div>" + "</div></div>";
+    }
+  }
+  function renderPeekAndCategories() {
     var host = byId("peek-row");
-    if (!host) return;
+    if (!host) return null;
     var tempInd = lagging.concat(coincident).filter(function(c) {
       return c.bodyTerm === "Temperature";
     })[0];
@@ -19272,6 +19539,18 @@
         if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
       });
     })();
+    return {
+      host: host,
+      tempInd: tempInd,
+      r: r,
+      gq: gq,
+      capeNow: capeNow,
+      buffNow: buffNow
+    };
+  }
+  function renderMetricPages(ctx) {
+    var host = ctx.host, tempInd = ctx.tempInd, r = ctx.r, gq = ctx.gq;
+    var capeNow = ctx.capeNow, buffNow = ctx.buffNow;
     var pct0 = function(v) {
       return Math.round(v) + "%";
     }, pct1 = function(v) {
@@ -19716,261 +19995,14 @@
         if (blood) blood.insertAdjacentElement("beforebegin", host); else hl.insertAdjacentElement("beforebegin", host);
       });
     })();
-    var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
-    var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
-    var metricPage = document.createElement("div");
-    metricPage.id = "metric-page";
-    metricPage.hidden = true;
-    cyclePanel.appendChild(metricPage);
-    var PAGE_HOME = {
-      cycle: {
-        panel: cyclePanel,
-        title: "Current Cycle",
-        hide: function() {
-          return [ cycleViewEl, byId("today-analysis") ];
-        }
-      },
-      analysis: {
-        panel: analysisPanel,
-        title: "Analysis",
-        hide: function() {
-          return [ byId("calendar-list") ];
-        }
-      }
-    };
-    var homeCtx = PAGE_HOME.cycle;
-    var openSheet = null, openHome = null, returnScroll = 0;
-    var pageStack = [];
-    function homeFromPage(keepScroll) {
-      if (!openSheet) return;
-      openHome.appendChild(openSheet);
-      openSheet.hidden = true;
-      openSheet = null;
-      openHome = null;
-      metricPage.hidden = true;
-      homeCtx.hide().forEach(function(n) {
-        if (n) n.hidden = false;
-      });
-      setTopbar(homeCtx.title, null);
-      if (keepScroll) return;
-      var y = returnScroll;
-      window.requestAnimationFrame(function() {
-        window.scrollTo({
-          top: y,
-          behavior: "auto"
-        });
-      });
-    }
-    function closeMetricPage() {
-      pageStack.length = 0;
-      homeFromPage();
-    }
-    function backFromPage() {
-      var prev = pageStack.pop();
-      if (!prev) {
-        closeMetricPage();
-        return;
-      }
-      var el = byId(prev.id);
-      homeFromPage(true);
-      openMetricPage(el, prev.title, true);
-      window.requestAnimationFrame(function() {
-        window.scrollTo({
-          top: prev.scroll,
-          behavior: "auto"
-        });
-      });
-    }
-    metricPageReset = closeMetricPage;
-    function openMetricPage(el, title, returning, homeKey) {
-      if (!el) return;
-      seatPageFoot(el);
-      if (!returning && openSheet && openSheet !== el) pageStack.push({
-        id: openSheet.id,
-        title: byId("topbar-title").textContent,
-        scroll: window.scrollY || 0
-      });
-      var wasOpen = !!openSheet;
-      homeFromPage(true);
-      if (!wasOpen) returnScroll = window.scrollY || 0;
-      if (!wasOpen && !returning) {
-        homeCtx = PAGE_HOME[homeKey] || PAGE_HOME.cycle;
-        homeCtx.panel.appendChild(metricPage);
-      }
-      openSheet = el;
-      openHome = el.parentNode;
-      homeCtx.hide().forEach(function(n) {
-        if (n) n.hidden = true;
-      });
-      el.hidden = false;
-      metricPage.appendChild(el);
-      metricPage.hidden = false;
-      setTopbar(title, backFromPage);
-      if (!returning) window.scrollTo({
-        top: 0,
-        behavior: "auto"
-      });
-      var draw = sheetRenderers[el.id];
-      if (draw) draw(metricPage.clientWidth);
-      collapseEmptyBlocks(el);
-    }
-    cyclePanel.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest("[data-open]");
-      if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
-    });
-    analysisPanel.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest("[data-open]");
-      if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
-    });
-    analysisPanel.addEventListener("keydown", function(e) {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest("[data-open]");
-      if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
-    });
-    cyclePanel.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".trendpill.can-toggle");
-      if (!btn) return;
-      var box = btn.closest(".page-chart, .spread-history");
-      if (!box) return;
-      var on = btn.getAttribute("aria-pressed") !== "true";
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      box.classList.toggle("trend-on", on);
-    });
-    cyclePanel.addEventListener("keydown", function(e) {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]");
-      if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
-    });
-    function partsOf(el, unitSel) {
-      if (!el) return {
-        v: "",
-        u: "",
-        w: "",
-        s: ""
-      };
-      var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-      var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
-      var st = t ? (t.className.match(/good|warning|serious|critical/) || [ "" ])[0] : "";
-      if (u) u.parentNode.removeChild(u);
-      if (t) t.parentNode.removeChild(t);
-      return {
-        v: c.textContent.trim(),
-        u: unit,
-        w: word,
-        s: st
-      };
-    }
-    function discOf(mark, state) {
-      return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + "</span></div>" : "";
-    }
-    function authored(sel, key) {
-      return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null;
-    }
-    [ [ "gdp", "coincident" ], [ "power", "structural" ], [ "valuation", "structural" ], [ "households", "structural" ] ].forEach(function(p) {
-      var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]);
-      if (!card) return;
-      var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
-      var st = (card.className.match(/good|warning|serious|critical/) || [ "" ])[0];
-      registerTiming(p[1], {
-        title: card.getAttribute("data-title"),
-        metric: pv.v,
-        unit: pv.u,
-        word: (card.querySelector(".peek-word") || {}).textContent || "",
-        state: st,
-        icon: discOf(card.querySelector(".peek-mark"), st),
-        target: "sheet-metric-" + p[0]
-      });
-    });
-    [ "hormones", "pressure", "horizon", "sentiment" ].forEach(function(key) {
-      var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key);
-      if (!row) return;
-      var rv = partsOf(row.querySelector(".subject-value"), ".unit");
-      var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
-      registerTiming("leading", {
-        title: row.getAttribute("data-title"),
-        sub: (row.querySelector(".subject-label") || {}).textContent || "",
-        metric: rv.v,
-        unit: rv.u,
-        word: rv.w || say,
-        state: rv.s,
-        icon: function() {
-          var mk = row.querySelector(".subject-label .peek-mark");
-          if (mk) return discOf(mk, rv.s);
-          var rg = row.querySelector(".subject-ring");
-          return rg && rg.firstElementChild ? rg.innerHTML : "";
-        }(),
-        target: row.getAttribute("data-open")
-      });
-    });
-    function memberRow(e) {
-      var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + "</span>" : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + "</span>" : "";
-      var unit = e.unit ? '<span class="member-unit">' + e.unit + "</span>" : "";
-      return '<div class="subject sign-row" role="button" tabindex="0" data-open="' + e.target + '" data-title="' + e.title + '"><div class="subject-summary">' + '<div class="subject-ring">' + (e.icon || "") + "</div>" + '<div class="subject-text">' + '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " · " + e.sub : "")) + "</div>" + '<div class="subject-value">' + e.metric + unit + tag + "</div>" + (e.metricSub ? '<p class="subject-say">' + e.metricSub + "</p>" : "") + "</div>" + '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' + "</div></div>";
-    }
-    var indSheet = document.createElement("div");
-    indSheet.className = "metric-sheet ind-sheet";
-    indSheet.id = "sheet-indicators";
-    indSheet.hidden = true;
-    var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ];
-    var IND_TABS = [ {
-      key: "all",
-      label: "All"
-    }, {
-      key: "leading",
-      label: "Leading"
-    }, {
-      key: "coincident",
-      label: "Coincident"
-    }, {
-      key: "lagging",
-      label: "Lagging"
-    } ];
-    indSheet.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' + IND_TABS.map(function(t, i) {
-      return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' + 'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + "</button>";
-    }).join("") + "</div>" + IND_ORDER.map(function(kind) {
-      var t = TIMING[kind], list = timingMembers[kind];
-      if (!list.length) return "";
-      return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) + "<b>" + t.label + "</b><span>" + t.hint + "</span></div>" + list.map(memberRow).join("") + "</div>";
-    }).join("");
-    (byId("today-analysis") || analysisPanel).appendChild(indSheet);
-    function setIndTab(kind) {
-      kind = kind || "all";
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b) {
-        var on = b.getAttribute("data-ind-tab") === kind;
-        b.classList.toggle("on", on);
-        b.setAttribute("aria-selected", on ? "true" : "false");
-      });
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g) {
-        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
-      });
-    }
-    indSheet.addEventListener("click", function(e) {
-      var b = e.target.closest && e.target.closest(".ind-tabs .range-seg");
-      if (!b) return;
-      setIndTab(b.getAttribute("data-ind-tab"));
-    });
-    openIndicatorsPage = function(tab) {
-      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
-      if (btn && !btn.classList.contains("active")) btn.click();
-      setIndTab(tab && tab !== "structural" ? tab : "all");
-      openMetricPage(indSheet, "All indicators", false, "cycle");
-    };
-    var indPeek = byId("indicators-peek");
-    if (indPeek) indPeek.remove();
-    if (false && indPeek) {
-      indPeek.innerHTML = '<div class="subject sign-row card-row ind-row" role="button" tabindex="0" ' + 'data-open="sheet-indicators" data-title="Indicators"><div class="subject-summary">' + '<div class="subject-text">' + '<div class="subject-label"><span class="peek-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/><path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg></span>Indicators' + CHEV + "</div>" + '<div class="ind-classes">' + Object.keys(timingMembers).map(function(kind) {
-        return '<span class="ind-class">' + timingMark(kind) + "<b>" + timingMembers[kind].length + "</b><i>" + TIMING[kind].label + "</i></span>";
-      }).join("") + "</div>" + "</div>" + "</div></div>";
-    }
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
-    });
+  }
+  function renderPagesAndNav() {
+    var ctx = renderPeekAndCategories();
+    if (!ctx) return;
+    renderMetricPages(ctx);
+    buildNav();
+    registerRoster();
+    buildIndicatorSheet();
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
