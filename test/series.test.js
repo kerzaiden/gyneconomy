@@ -25,10 +25,14 @@ function source(file) { return fs.readFileSync(path.join(__dirname, '..', 'src/j
 /* Read a literal out of the source it ships in — never a copy. Walks brackets rather than matching a regex,
    because these arrays hold objects and a lazy pattern stops at the first `]` inside one. */
 function literal(file, name) {
+  /* "treasuryQuarterly.s3m" reads one member of an object literal (V648: the generated Treasury histories). */
+  const [base, member] = name.split('.');
+  if (member) return literal(file, base)[member];
   const s = source(file), at = s.indexOf('var ' + name + ' = ');
   if (at < 0) throw new Error('not found: ' + name + ' in ' + file);
-  const open = s.indexOf(s[s.indexOf('=', at) + 2] === '(' ? '(' : '[', at);
-  const shut = s[open] === '(' ? ')' : ']';
+  const c = s[s.indexOf('=', at) + 2];
+  const open = s.indexOf(c === '(' || c === '{' ? c : '[', at);
+  const shut = { '(': ')', '{': '}', '[': ']' }[s[open]];
   let depth = 0, i = open;
   for (; i < s.length; i++) {
     if (s[i] === s[open]) depth++;
@@ -70,7 +74,8 @@ const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11' };
 const KEYED = [
   ['01-refresh-season.js', 'cpiYoYHistory',           'm', 440],
   ['01-refresh-season.js', 'gdpQuarterlyYoY',         'q', 150],
-  ['03-data.js',           't10y3mHistory',           'q',  85],
+  /* V648: the Treasury histories are generated; 03-data.js names each one (t10y3mHistory is .s3m, and so on) */
+  ...['m3', 'y2', 'y5', 'y10', 'y30', 's3m', 's2y'].map(k => ['03b-history-fred.js', 'treasuryQuarterly.' + k, 'q', 86]),
   ['03-data.js',           'powerHistory',            'y',  75],
   ['03b-history-fred.js',  'fedFundsHistory',         'm', 860],
   ['03b-history-fred.js',  'fearCurveHistory',        'm', 220],

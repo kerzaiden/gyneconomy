@@ -2,13 +2,17 @@
 # generated source part, rebuilds index.html and COMMITS both — so the record arrives as a diff you
 # can read, blame or revert, exactly as data.yml does for the daily figures.
 #
-# On demand only. data.yml keeps TODAY current; this is the record, tens of years of it, and it
-# changes only when FRED revises. Committing to main triggers ci.yml, so a backfill that breaks the
-# suite never reaches the site.
+# On demand, and monthly since V648. data.yml keeps TODAY current; this is the record, tens of years of
+# it, and it changes when FRED revises — and, for the quarterly Treasury histories, when a month prints
+# into the running quarter. FRED publishes each month's GS/TB3MS mean on the first business day after,
+# so the 3rd catches it. Committing to main triggers ci.yml, so a backfill that breaks the suite never
+# reaches the site.
 name: Backfill
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "40 23 3 * *"
 
 permissions:
   contents: write
@@ -52,7 +56,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/js/03b-history-fred.js index.html docs/MAP.md
-          git commit -m "Backfill: Fed funds, the fear curve and the OMB fiscal series, from FRED"
+          git commit -m "Backfill: Fed funds, the fear curve, the OMB fiscal series and the Treasury quarters, from FRED"
           git push
           {
             echo "### Backfill committed"
