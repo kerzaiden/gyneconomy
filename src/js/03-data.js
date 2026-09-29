@@ -311,12 +311,16 @@
      so Economic power is untouched by this; checked before changing anything. */
   var labPanel = [
     {
-      marker:"Debt burden", sub:"federal debt held by the public ÷ GDP",
-      meter:{min:0, max:106.3, value:101, optimal:{lte:51, label:"\u2264 51%"},
+      // V643, Keren: "switch the bar to gross debt." The headline 122% everyone quotes is GROSS federal debt; the
+      // app read debt held by the public (101%) and explained the gap in the (i) from V641. She chose the bar to
+      // show what readers meet. Every number below is the gross series, checked on load against fiscalHistory
+      // (03b, OMB via FRED) by checkGrossDebt in 04-components — so this row, its record and Power move together.
+      marker:"Debt burden", sub:"gross federal debt ÷ GDP",
+      meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
              ends:{ zone:"50-year average", high:"Elevated" }},
-      shortNote:"FY2026 — on pace to break the 80-year-old WWII record within the decade.",
-      note:"FY2026, CBO's February 2026 projection (FY2025 actual: 98%). On pace to break the 80-year-old WWII record — CBO has it at 108% by 2030. Bar runs from the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own historical ledger shows just $33,733 outstanding) to the WWII peak (106% in FY1946, per the OMB series on FRED). The green band ends at 51% of GDP, which is CBO's stated 50-year average for debt held by the public — today's 101% is roughly twice it. Why this reads lower than the 120-odd percent in the headlines: that figure is GROSS federal debt, which adds the roughly $7 trillion the government owes to itself, mostly to the Social Security trust funds. Debt held by the public is what was actually borrowed from outside, which is CBO's measure of the burden and the basis of this bar's whole scale, including the 1946 record (V641, Keren's question).",
-      direction:"up", flagValue:"101%", flagState:"serious"
+      shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
+      note:"Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
+      direction:"up", flagValue:"122.6%", flagState:"serious"
     },
     {
       marker:"Interest burden", sub:"net interest costs ÷ GDP",
@@ -426,8 +430,10 @@
   // '20 from 42% to 41%: losing trust lifts 2007 markedly, because 2007's fiscal position was strong and its
   // Gallup number was already weak, and barely moves 2020, whose fiscal shock dominated everything.
   var stressHistory = [
-    { label:"'07 pre-crisis", values:[34.8, 1.6, 1.1] },
-    { label:"'20 COVID",      values:[98.3, 1.6, 14.5] }
+    // V643: gross debt, to two decimals, straight from fiscalHistory — at one decimal the '07 reading would
+    // print 68% beside a chart point of 67%. Same numbers checkGrossDebt compares.
+    { label:"'07 pre-crisis", values:[61.84, 1.64, 1.11] },
+    { label:"'20 COVID",      values:[125.86, 1.62, 14.48] }
   ];
   stressHistory.forEach(function(h){ h.score = stressScoreFor(h.values); });
 
@@ -470,7 +476,10 @@
   // forty-eight. The 50Y stop appears on its own — the timeline offers a window only when the series is that
   // deep (Version 366), so nothing had to be told about it.
   // REFRESH: append one year when the CBO/OMB actuals for it are out.
-  var powerHistory = [{y:1948,v:63},{y:1949,v:60},{y:1950,v:61},{y:1951,v:71},{y:1952,v:70},{y:1953,v:69},{y:1954,v:71},{y:1955,v:74},{y:1956,v:77},{y:1957,v:77},{y:1958,v:75},{y:1959,v:75},{y:1960,v:76},{y:1961,v:76},{y:1962,v:77},{y:1963,v:77},{y:1964,v:78},{y:1965,v:80},{y:1966,v:80},{y:1967,v:79},{y:1968,v:78},{y:1969,v:81},{y:1970,v:80},{y:1971,v:79},{y:1972,v:80},{y:1973,v:81},{y:1974,v:80},{y:1975,v:77},{y:1976,v:75},{y:1977,v:76},{y:1978,v:75},{y:1979,v:76},{y:1980,v:72},{y:1981,v:68},{y:1982,v:60},{y:1983,v:58},{y:1984,v:55},{y:1985,v:52},{y:1986,v:51},{y:1987,v:54},{y:1988,v:53},{y:1989,v:53},{y:1990,v:50},{y:1991,v:47},{y:1992,v:48},{y:1993,v:50},{y:1994,v:53},{y:1995,v:50},{y:1996,v:52},{y:1997,v:56},{y:1998,v:60},{y:1999,v:65},{y:2000,v:70},{y:2001,v:72},{y:2002,v:74},{y:2003,v:74},{y:2004,v:74},{y:2005,v:74},{y:2006,v:72},{y:2007,v:73},{y:2008,v:68},{y:2009,v:62},{y:2010,v:60},{y:2011,v:57},{y:2012,v:59},{y:2013,v:62},{y:2014,v:63},{y:2015,v:65},{y:2016,v:62},{y:2017,v:61},{y:2018,v:57},{y:2019,v:54},{y:2020,v:38},{y:2021,v:44},{y:2022,v:47},{y:2023,v:39},{y:2024,v:30},{y:2025,v:29}];
+  // V643: recomputed on GROSS debt (GFDGDPA188S) with the same stressScoreFor maths, after the method was proved by
+  // reproducing all 78 shipped values exactly from FYPUGDA188S. checkGrossDebt recomputes it on every load and
+  // warns if a single year differs, so the chart cannot drift from the row it explains.
+  var powerHistory = [{y:1948,v:64},{y:1949,v:60},{y:1950,v:61},{y:1951,v:71},{y:1952,v:70},{y:1953,v:69},{y:1954,v:71},{y:1955,v:73},{y:1956,v:76},{y:1957,v:77},{y:1958,v:75},{y:1959,v:74},{y:1960,v:75},{y:1961,v:76},{y:1962,v:76},{y:1963,v:76},{y:1964,v:77},{y:1965,v:79},{y:1966,v:80},{y:1967,v:79},{y:1968,v:77},{y:1969,v:81},{y:1970,v:79},{y:1971,v:78},{y:1972,v:79},{y:1973,v:80},{y:1974,v:79},{y:1975,v:76},{y:1976,v:74},{y:1977,v:75},{y:1978,v:75},{y:1979,v:75},{y:1980,v:71},{y:1981,v:67},{y:1982,v:60},{y:1983,v:58},{y:1984,v:55},{y:1985,v:51},{y:1986,v:50},{y:1987,v:53},{y:1988,v:53},{y:1989,v:51},{y:1990,v:48},{y:1991,v:45},{y:1992,v:46},{y:1993,v:48},{y:1994,v:50},{y:1995,v:48},{y:1996,v:49},{y:1997,v:53},{y:1998,v:57},{y:1999,v:62},{y:2000,v:66},{y:2001,v:68},{y:2002,v:69},{y:2003,v:69},{y:2004,v:69},{y:2005,v:69},{y:2006,v:67},{y:2007,v:67},{y:2008,v:62},{y:2009,v:56},{y:2010,v:55},{y:2011,v:52},{y:2012,v:55},{y:2013,v:58},{y:2014,v:59},{y:2015,v:61},{y:2016,v:58},{y:2017,v:57},{y:2018,v:54},{y:2019,v:50},{y:2020,v:35},{y:2021,v:42},{y:2022,v:45},{y:2023,v:37},{y:2024,v:29},{y:2025,v:27}];
 
   /* ---------------- The deficit, year by year (Version 358) ----------------
      Keren, Sep 23, 2026, with ARK's chart of the federal deficit as a share of GDP: "where do you think this fits

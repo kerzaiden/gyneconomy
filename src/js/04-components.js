@@ -757,6 +757,8 @@
 
   var longCycleSrc = [
     {t:"CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)", u:"https://www.cbo.gov/publication/62105"},
+    {t:"Treasury and BEA via FRED — Total public debt, % of GDP, quarterly, 1966– (GFDEGDQ188S; today's reading)", u:"https://fred.stlouisfed.org/series/GFDEGDQ188S"},
+    {t:"OMB via FRED — Gross federal debt, % of GDP, FY1939– (GFDGDPA188S; the record and the band)", u:"https://fred.stlouisfed.org/series/GFDGDPA188S"},
     {t:"OMB via FRED — Federal debt held by the public, % of GDP, FY1939– (FYPUGDA188S)", u:"https://fred.stlouisfed.org/series/FYPUGDA188S"},
     {t:"OMB via FRED — Federal interest outlays, % of GDP, FY1940– (FYOIGDA188S)", u:"https://fred.stlouisfed.org/series/FYOIGDA188S"},
     {t:"OMB via FRED — Federal surplus or deficit, % of GDP, FY1929– (FYFSGDA188S)", u:"https://fred.stlouisfed.org/series/FYFSGDA188S"},
@@ -768,6 +770,28 @@
     {t:"BLS — Productivity and Costs, Second Quarter 2026 (revised)", u:"https://www.bls.gov/news.release/archives/prod2_09032026.htm"},
     {t:"BLS via FRED — Nonfarm business output per hour, index (OPHNFB) and quarterly % change (PRS85006092), 1947–", u:"https://fred.stlouisfed.org/series/PRS85006092"}
   ];
+
+  /* V643: the Debt burden row, its record, its band and the whole Power history are typed into 03-data (the build
+     order puts that part before this data), so each is checked here against the fetched series it came from. A
+     backfill that revises FRED, or a hand edit that drifts, warns — and a warning fails the suite. */
+  function checkGrossDebt(){
+    if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
+    var row = labPanel[0], by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
+    var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
+    var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
+    if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
+    var last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
+    if (Math.abs(row.meter.value - last.v) > 0.05) bad.push("value " + row.meter.value + " vs " + last.q + " " + last.v);
+    var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
+    if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
+    powerHistory.forEach(function(p){
+      if (g[p.y] == null || it[p.y] == null || bu[p.y] == null){ bad.push("FY" + p.y + " missing"); return; }
+      var v = powerOf(stressScoreFor([g[p.y], it[p.y], -bu[p.y]]));
+      if (v !== p.v) bad.push("power FY" + p.y + " " + p.v + " vs " + v);
+    });
+    if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
+  }
+  GYN.step("checkGrossDebt", checkGrossDebt, "check"); checkGrossDebt();
 
   // Psychology (leading signs): rendered as a lab-report-style panel, matching Financial resilience's table —
   // same labreport/labtable classes, marker + reference-range + flag columns, one "Impression" line at the

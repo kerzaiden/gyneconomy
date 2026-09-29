@@ -9,7 +9,7 @@
    shape that never traded — and it would look entirely plausible on the chart.
 
    Usage: node test/fetch-fred-history.test.js        Exit 0 = every case passed. */
-const { monthEnd, curveMonthly, monthlyLevels, quarterly, band } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyLevels, quarterly, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -76,6 +76,25 @@ ok('a level outside the band is left out, not clamped',
    [{ m: '1954-07', v: 0.8 }]);
 ok('zero is a real policy rate and survives the band',
    monthlyLevels([d('2015-01-01', 0)], 0, 25), [{ m: '2015-01', v: 0 }]);
+
+/* ---- fiscalYears: OMB's fiscal year N is dated N-01-01 on FRED, and nothing else is one ---- */
+ok('a fiscal-year series keeps its years',
+   fiscalYears([d('1946-01-01', 106.3), d('2007-01-01', 34.79)], 0, 300),
+   [{ y: 1946, v: 106.3 }, { y: 2007, v: 34.79 }]);
+ok('a deficit is negative and survives a two-sided band',
+   fiscalYears([d('1943-01-01', -26.9)], -50, 50), [{ y: 1943, v: -26.9 }]);
+ok('a value outside the band is left out, not clamped',
+   fiscalYears([d('1946-01-01', 999)], 0, 300), []);
+throws('a date that is not 1 January is refused', () => fiscalYears([d('1946-10-01', 1)], 0, 300), /not a fiscal-year date/);
+
+/* ---- emit: the stamp is the fetch date (V643 found it arriving as the third argument's neighbour) ---- */
+ok('the generated file carries its fetch date',
+   /Fetched 2026-09-29\./.test(emit([], [], '2026-09-29')), true);
+ok('without fiscal data, no fiscal block is written',
+   /fiscalHistory/.test(emit([], [], '2026-09-29')), false);
+ok('with fiscal data, the block is written',
+   /var fiscalHistory = \{\s*gross:\[\{y:1946,v:118\}\]/.test(emit([], [], 'x',
+     { gross: [{ y: 1946, v: 118 }], held: [], interest: [], budget: [], grossQ: [] })), true);
 
 /* ---- quarterly: FRED dates a quarter at its first month, and only at its first month ---- */
 ok('each quarter start month names its quarter',
