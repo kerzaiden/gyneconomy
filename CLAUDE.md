@@ -18,7 +18,8 @@ in one place, roughly 19,000 words. **Read the part that covers what you are tou
 you touch it.** It is not optional reading and it is not a summary of the code; it records why
 things are the way they are, including several decisions that look like bugs and are not.
 
-`docs/ARCHIVE.md` is the version history and the retired ideas.
+Version history is `git log`: every version is a commit `V6NN — Short Name` and a tag. V633 retired
+`docs/ARCHIVE.md`; it is still readable at `git show v632-component-page:docs/ARCHIVE.md`.
 
 `docs/task.md` is what the weekly refresh task does. It is the task's ONLY copy of its instructions —
 the task's prompt just fetches that URL — so change the task by editing that file and pushing. Read it when you want to know
@@ -107,7 +108,6 @@ npm i && npm run setup   # once — npm i alone does NOT fetch the browser
 npm test                 # the suite: 60 checks, exit 0 or 1
 npm run test:full        # adds the class-coverage walk (2–4 min)
 npm run test:tools       # the fetcher's pure parts — no network, no browser
-npm run css              # stylesheet rule count + last selector
 npm run email            # must print ok
 npm run map              # regenerate docs/MAP.md after a structural change
 npm run map:check        # is the map current?
@@ -156,10 +156,10 @@ instead of the source, CI says so.
 
 ## How to edit a part
 
-Never hand-edit a large region, and never re-type a region from tool output. Copy
-`tools/build-template.py`, express each edit as an asserted replacement, and run it: the file is
-written once at the end, so a failed assertion means nothing was written. For multi-line
-deletions use line-index surgery applied **bottom-up**. `docs/ARCHITECTURE.md` has the escaping
+Never hand-edit a large region, and never re-type a region from tool output. Write each edit as
+a short script that ASSERTS its anchor before anything is written and writes the file once at the
+end, so a failed assertion means nothing was written. For multi-line deletions use line-index
+surgery applied **bottom-up**. `docs/ARCHITECTURE.md` has the escaping
 traps, which are real and have cost hours.
 
 ## The step registry (V531)
@@ -378,7 +378,6 @@ anything moving.** Verified: pixel-identical screenshots at 414 light, 414 dark 
 | `index.html` | the app, **built** from `src/` by `npm run build` |
 | `sources.html` | the published citation page — **generated, never hand-edited** |
 | `docs/ARCHITECTURE.md` | the working document: app, design system, mechanics |
-| `docs/ARCHIVE.md` | version history and retired ideas |
 | `test/gyn-test.js`, `test/baseline.json` | the suite |
 | `docs/MAP.md` | generated navigation index for `index.html` — read it before grepping |
 | `tools/` | the build, the sources and map generators, the snapshot harness, the step classifier, the stylesheet check |
@@ -386,8 +385,8 @@ anything moving.** Verified: pixel-identical screenshots at 414 light, 414 dark 
 | `data/live.json` | the fetched figures — generated, committed by the Data workflow, never hand-edited |
 | `tools/fetch-live.js` | the fetcher: primary sources, sanity bands, silence on failure |
 | `.github/workflows/ci.yml` | test on every push; deploy to Pages only if the suite passes |
-| `assets/` | app icon artwork (not referenced by the page) |
+| `assets/` | the app icon: one SVG master and the two PNGs the manifest names |
 
 Versions are **commits now**. The old `curve-and-cycle-vNNN.html` chain is retired — don't
-recreate it. Keep referring to versions by their number in commit messages and in
-`docs/ARCHIVE.md`, since every rule in the docs is anchored to one.
+recreate it. Keep referring to versions by their number in commit messages, since every rule
+in the docs is anchored to one.

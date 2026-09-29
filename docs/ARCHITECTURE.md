@@ -272,7 +272,7 @@ keeping them from destroying each other.
 |---|---|---|
 | The app | **`src/`** — `index.html` is built from it | the published artifact, which should be byte-identical |
 | The docs | **`CLAUDE.md`, `docs/ARCHITECTURE.md`** | nobody |
-| Version history | **git, plus `docs/ARCHIVE.md`** — different jobs, see below | nobody |
+| Version history | **git** — a named commit and a tag per version | nobody |
 
 **The app: the repo wins now, and that is a change (V540/V541).** It used not to. The task used to
 republish the artifact's HTML nightly and could not write to the repo, so the repo's `index.html`
@@ -287,31 +287,30 @@ publish adds — a skeleton `<head>` before the document and a duplicated `</bod
 other way, something published from outside this repo, and that is a merge — never a `force`.
 
 **The docs: do not mirror them anywhere. That was retired in V547.** The Mrs. Market project used to
-carry copies of this file, `ARCHIVE.md`, `MAP.md` and the test suite, because a cloud or scheduled
+carry copies of this file, `MAP.md` and the test suite, because a cloud or scheduled
 session could not reach a PRIVATE repo. **The repo is public**, so any session can fetch any of it
 from `raw.githubusercontent.com` with no credentials, and the copies were duplicates whose only
 possible future was going stale. They were deleted, and the project now holds one short pointer
 (`claude/README.md`) naming the raw URLs. **Do not recreate them.** If a session cannot reach the
 repo, give it a raw URL rather than a copy.
 
-**Version history lives in two places in the repo, and they are not the same thing.** **Git** is the
-record of what changed and why — a commit message here carries the reasoning, not just the diff, so
-`git log` is the version history in the strict sense. **`docs/ARCHIVE.md`** holds what was never a
-commit: retired figures, ideas that were tried and dropped, the superseded doc set, and the research
-the app was built from. The one-line-per-version list at its top does overlap git, and it earns its
-place by being readable in one pass; everything below it exists nowhere else. Entries are only ever
-added, never rewritten.
+**Version history is git.** A commit message here carries the reasoning, not just the diff, and every
+version is a named commit and a tag, so `git log` is the record. `docs/ARCHIVE.md` used to hold what
+was never a commit — retired figures, dropped ideas, the research the app was built from. Its
+version list stopped at the 500s while the commits carried on, which is the one thing a record must
+not do, so V633 retired it (Keren: "minimal code base, only what is necessary"). It is a git object
+like everything else: `git show v632-component-page:docs/ARCHIVE.md`.
 
 **A cloud or scheduled session cannot PUSH to the git repo, and that is expected.** No credentials
 exist outside Keren's own machine, and none should. But it can READ every file, because the repo is
 public — `raw.githubusercontent.com/kerzaiden/gyneconomy/main/<path>` needs no credentials at all.
-So a session that needs this file, the archive, the map or the suite fetches it; it does not need a
+So a session that needs this file, the map or the suite fetches it; it does not need a
 copy, and it should not ask for one.
 
 ## The two documents
 
-This file is everything needed to work on the app. `ARCHIVE.md` is everything that is no longer true: the
-version history, the long narratives, retired figures and the superseded doc set. Nothing else.
+This file is everything needed to work on the app. What is no longer true is in git history, reachable by
+tag. Nothing else.
 
 **A fact lives in exactly one place in this file.** If you find it twice, one of them is wrong.
 
@@ -700,8 +699,9 @@ from before the repo existed; the suite absorbed all three.
    a difference is a real difference. Compare with `node tools/snapshot.js a.json b.json --diff`.
 5. **`npm run classify`** if you touched a registered step — it measures what each one does and
    flags a declared kind it disagrees with.
-6. **`npm run css`** — the rule count is 1,166 and the last selector `a:hover`. A sudden drop, or a
-   last selector from the middle of the sheet, means an unclosed brace killed every rule after it.
+6. The suite's **`stylesheet intact`** check — the last selector must be `a:hover`. Anything else means an
+   unclosed brace killed every rule after it. (A rule COUNT was checked too, until V625: it rose with every
+   style added, so it could only ever ask to be blessed.)
 7. **The probe for what you changed**: open the pages it touches and assert the claim in the DOM. A
    screenshot is for judging design, an assertion for proving behaviour — both, for anything
    visible. If the claim is worth keeping, fold the probe into the suite rather than throwing it
@@ -716,7 +716,7 @@ from before the repo existed; the suite absorbed all three.
 
 **Regenerating `sources.html`.** Load the built page in Playwright, read `window.__sources` (`all`, `cards[].src`, `annual`, `gdp`), de-duplicate by URL preserving order, group by URL/title keyword into the page's sections, and splice the `<li>` lists into the live page's head/style (read it from the artifact first with `path:"sources.html"`); assert nothing is left unassigned. Regenerate whenever `allSources`, `longCycleSrc`, `psychology.src`, `sp500AnnualReturnSource` or a card's `src` changes. `gen-sources.py` (in the archive's sources-policy entry) is the reference implementation. `sources.html` groups into **seven** sections, defined by the `groups` array of `[name, pattern]` pairs; an unmatched source lands in "Other" — and if the in-app Sources screen ever shows one, stop and add the pattern.
 
-**Then write the docs, every time.** One entry in `ARCHIVE.md`'s version history, and the RULE — if the change made one — in this file (Part 1 for the app, Part 2 for the design system). **A fact belongs in exactly one doc**: a rule in this file, never the version history; a story in `ARCHIVE.md`; where the same rule appears twice, this file wins and the other is cut to a pointer. Send Keren screenshots with a plain summary. Colour, type, tokens, chart language, components and fixed wording live in **Part 2** of this file — read it before styling anything, and keep it current.
+**Then write the docs, every time.** The reasoning goes in the commit message, and the RULE — if the change made one — in this file (Part 1 for the app, Part 2 for the design system). **A fact belongs in exactly one doc**: a rule in this file, never the version history; a story in `ARCHIVE.md`; where the same rule appears twice, this file wins and the other is cut to a pointer. Send Keren screenshots with a plain summary. Colour, type, tokens, chart language, components and fixed wording live in **Part 2** of this file — read it before styling anything, and keep it current.
 
 ---
 
