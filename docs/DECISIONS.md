@@ -6761,3 +6761,11 @@ Keren: "if you feel that we can delete all the comments, do so."
 The tools, tests, service worker, map script and workflows lost their comments too. What still mattered
 moved to docs/ARCHITECTURE.md: the generated histories' series and sources, and the xlsx advisory.
 ~~~
+
+### V655
+
+~~~text
+Keren: "Desire note: remove"
+The long Desire caption is gone. No page displayed it: the Desire page renders bare and reads only the
+short caption, and the 38-state snapshot is identical without it.
+~~~
