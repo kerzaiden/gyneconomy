@@ -166,6 +166,11 @@
     if (!h || h.y == null) return;
     paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
   }
+  // V644: the Pressure chart's last column is this same close, so a curve that lands while the page is open redraws it
+  function repaintPressureChart(){
+    var s = byIdMaybe("sheet-sign-pressure");
+    if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
+  }
   function repaintValuationRow(){
     var row = valRow("cape");
     if (!row) return;
@@ -208,7 +213,7 @@
       set: function(v){ fedFunds = merge(fedFunds, v); },
       paint: [repaintPolicy]
     },
-    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow, repaintPressureRow] },
+    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow, repaintPressureRow, repaintPressureChart] },
     sentiment:  { kind: "object", set: function(v){ sentiment = v; }, onOpen: true },
     valuation:  {
       kind: "object",

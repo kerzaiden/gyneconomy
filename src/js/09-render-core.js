@@ -380,6 +380,27 @@
      Hormones for one version, Horizon's ⋯ menu from V598 — and V639 gives it back to Pressure, where Keren
      put it: the 10-year is the risk-free loan the whole economy prices off, and its level is the pressure
      the borrower is under. See the PRESSURE comment in page-body.html for her words. */
+  /* V644, Keren: "I'm seeing Q3 26, 4.7% where the current number is 5.25% for the 10-year yield. I want to see
+     the latest data and not the quarterly data." V640 labelled that last column "· so far" — true, and still a
+     three-month average standing where a reader looks for today. Now the Pressure history keeps its quarterly
+     averages, and the column for the quarter still running is the LATEST CLOSE from the par curve the row already
+     prints, labelled with its date. When the curve's date falls in a quarter the history has not reached, it is
+     added as a new last column rather than dropped. The quarterly arrays are not touched: Horizon and the rhymes
+     table read them as averages, which is what they are. */
+  var CURVE_KEY = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
+  function latestYieldPoint(){
+    var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
+    var at = function(k){ var h = yieldCurve.filter(function(d){ return d.m === k; })[0]; return h && h.y != null ? h.y : null; };
+    var v = {}, all = !!mm;
+    Object.keys(CURVE_KEY).forEach(function(c){ v[c] = at(CURVE_KEY[c]); if (v[c] == null) all = false; });
+    if (!all) return null;   // all five or none, so the maturities' columns stay aligned
+    return { q:mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3), label:fmtAsOf(iso), v:v, spread:at("10Y") - at("3M") };
+  }
+  function withLatestPoint(base, pt){
+    var data = base.slice(), last = data[data.length - 1];
+    if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
+    return data;
+  }
   function renderPressurePage(){
     var svg = byId("ylm-svg");
     // Version 496: these are recomputed per draw from the host's own width (see render), so the chart is
@@ -388,7 +409,7 @@
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
 
-    var quarters = t3mYieldHistory.map(function(d){ return d.q; }), openQ = DATA_COMPILED.getFullYear() + " Q" + (Math.floor(DATA_COMPILED.getMonth() / 3) + 1);   // V640: the quarter still running
+    var quarters = t3mYieldHistory.map(function(d){ return d.q; });
 
     var maturities = [
       {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
@@ -412,6 +433,16 @@
           '<p class="caption">Reflects the compensation investors demand for the genuine uncertainty of the longest possible horizon — economists call this the term premium. It anchors the longest corporate and government bonds. The line has a real gap in 2005: the Treasury stopped issuing 30-year bonds between October 2001 and February 2006, so there is no actual traded yield for that stretch — shown here as a break rather than a guessed figure.</p>' +
           srcBlock([{t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}])}
     ];
+    var latestLabel = "", latestSpread = null;   // V644 — see latestYieldPoint above
+    maturities.forEach(function(m){ m.base = m.data; });
+    function withLatest(){
+      var L = latestYieldPoint();
+      latestLabel = L ? L.label : ""; latestSpread = L ? L.spread : null;
+      maturities.forEach(function(m){ m.data = withLatestPoint(m.base, L && { q:L.q, v:L.v[m.code], latest:true }); });
+      quarters = maturities[0].data.map(function(d){ return d.q; });
+    }
+    function colLabel(i){ var d = maturities[0].data[i]; return d && d.latest ? latestLabel : quarters[i]; }
+
     addSources([
       {t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"},
       {t:"FRED — 30-Year Treasury Rate (GS30)", u:"https://fred.stlouisfed.org/series/GS30"}
@@ -476,10 +507,8 @@
         crossLine(padT, (H - padB)));
       var picked = matOf(matPick);
       publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
-                       /* V640, Keren: "the 10-year is 5.25 and the app says 4.70." The row says today; this plate says
-                          the QUARTER, which is an average, and for the quarter still running an average of part of it
-                          — so it says so, or it reads as a second, lower "today" (her Version 294 catch, again). */
-                       n:ylmCount(), at:function(d, i){ var q = quarters[ylmFrom + i]; return q === openQ ? q + " · so far" : q; },
+                       /* V644: the last column is the latest close, and its plate says the day (see withLatest) */
+                       n:ylmCount(), at:function(d, i){ return colLabel(ylmFrom + i); },
                        fmt:function(v){ return v.toFixed(2) + "%"; },
                        /* V570: the zone key moves up into the legend at the head of the grid, out of the row
                           it had under the chart. Same three entries, same colours, the place every other
@@ -519,6 +548,8 @@
       // longer has to hold the spread chart in their head to see when the yield above was under a warning.
       var spreadAt = {};
       t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
+      var lastCol = maturities[0].data[quarters.length - 1];
+      if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;   // V644: that day's curve
       var colW = colWidth(innerW / Math.max(1, ylmCount()));
       maturities.forEach(function(mat){
         if (!mat.on) return;
@@ -567,7 +598,7 @@
         }).join("");
         var sp = spreadAt[q];
         var zn = sp == null ? null : pressureZone(sp);
-        tooltip.innerHTML = "<b>" + q + "</b>" + rows +
+        tooltip.innerHTML = "<b>" + colLabel(i) + "</b>" + rows +
           (zn ? '<div class="row"><span><span class="sw" style="background:var(--' +
                 (zn.key === "inverted" ? "-critical" : zn.key === "normal" ? "-season-autumn" : "-good").slice(1) +
                 ')"></span>Curve</span><b>' + zn.label + '</b></div>' : "");
@@ -721,11 +752,12 @@
          quarters — so the slice is computed once here and every series is drawn through it. */
       /* V639: the page's own control row again, under its own key. The stops are Horizon's for Horizon's
          reason: the series starts in 2005, so 25Y is unanswerable (the V263 rule). */
+      withLatest();
       var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
       var ylmCyc = pageMode["pressure-range"] === "cycles"
                  ? (cycleByName(pageCycles["pressure-range"]) || openCycle()) : null;
       if (ylmCyc && ylmCyc.from < ylmY0) ylmCyc = openCycle();
-      var ylmSpan = ylmCyc ? cycleSlice(t3mYieldHistory, ylmCyc) : null;
+      var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
       ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
       ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
       put("pressure-timeline", histControls("pressure-range",

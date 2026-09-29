@@ -5,6 +5,14 @@
     {m:"10Y", y:5.18}, {m:"20Y", y:5.53}, {m:"30Y", y:5.47}
   ];
   yieldCurve = LIVE("yieldCurve", yieldCurve);
+  /* V644: the curve's own date, so a reading drawn from it can say which day it is. The literal above is the
+     Sep 24 2026 close (the VIX note records the 10-year at 5.18% that day); a live document carries its own
+     asOf, used only when its rows are the ones LIVE() actually took. */
+  var YIELD_CURVE_ASOF = "2026-09-24";
+  function curveAsOf(){
+    var d = LIVE_CACHE && LIVE_CACHE.yieldCurve;
+    return (d && Array.isArray(d.rows) && d.rows.length && d.asOf) || YIELD_CURVE_ASOF;
+  }
 
 
   // 10Y-3M spread, quarterly, Q1 2005–Q3 2026 — a compact stand-in for the FRED T10Y3M chart. Quarterly averages
