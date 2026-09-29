@@ -79,9 +79,9 @@
          year in progress lighter, from the quarters so far. The Growth ring that used to sit below went with it
          ("not really indicative of the growth itself"). -->
     <div class="card temp-card" id="growth-card">
-      <!-- the head (Version 211): the title (hidden inside the drawer, where the summary above already says it) with its (i)
-           on the left, the country dropdown on the right -->
-      <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div><div class="peer-pills" id="growth-peers" aria-label="Compare with other countries"></div></div>
+      <!-- the head (Version 211): the title (hidden inside the drawer, where the summary above already says it)
+           with its (i) on the left. V613 took the country dropdown out of it and into the history \u22ef menu. -->
+      <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div></div>
       <div class="temp-chart"><svg id="growth-svg" viewBox="0 0 780 250" role="img" aria-label="Real GDP growth across this cycle, quarter by quarter, for the economy chosen above"></svg><div class="gdp-tooltip mono" id="growth-tooltip"></div></div>
       <!-- The cycle total reads AFTER the chart that sums it (Version 370, Keren: "make the total cycle below
            the chart and don't delete it"). It is a conclusion, not a heading: above the plot it announced a
@@ -531,6 +531,13 @@
     </div>
     <div id="calendar-cycle" hidden>
       <div id="calendar-cycle-slot"></div>
+      <!-- Version 613, Keren: "when I press, for example, Housing Cycle, I want the view to be exactly like the
+           current cycle page \u2014 I would see four categories of Weather, Mood, Circulation, Energy. But instead of
+           going to another inner page, just show the data very briefly." So the Cycle tab's four categories come
+           to a closed cycle, with the readings SHOWN rather than behind a door: on the Cycle tab a category is a
+           door because there is a live page behind it, and a cycle that ended has no live page \u2014 only what it
+           finished at and how far it travelled. -->
+      <div id="cycle-cats"></div>
     </div>
   </div>
 

@@ -2567,6 +2567,22 @@
   .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
     vertical-align:1.5px; }
   .rhy-row.alike .rhy-name{ color:var(--text-primary); }
+  /* ---------- A closed cycle's categories (Version 613) ----------
+     Almost nothing, and that is the point: the rows ARE `.cat-item`, wearing the same head, the same figure and
+     the same word as the Cycle tab's, so the two views cannot drift apart in type or spacing. `.flat` only
+     takes away what a door has \u2014 the pointer, the hover border, the chevron \u2014 because a cycle that ended has
+     nothing to open. */
+  #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
+  .cc-grp .cat-list{ margin-top:var(--gap); }
+  .cc-grp .cyc-title{ padding:0 2px; }
+  .cat-item.flat{ cursor:default; }
+  .cat-item.flat:hover{ border-color:var(--border); }
+  .cat-item.flat .ci-value{ font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700;
+    letter-spacing:-0.02em; line-height:1.05; color:var(--text-primary); }
+  .cat-item.flat .ci-value .unit{ font-size:0.55em; font-weight:700; margin-left:2px; color:var(--text-muted); }
+  .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
+  .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
+    font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
@@ -2610,28 +2626,9 @@
   /* each economy sets its paint and, for words, its ink — Autumn's gold is too light to read as a label (the DSM's rule:
      never write in a paint token), so the European Union's code is written in the amber ink (Version 217) */
   /* (the per-country colours are gone with the comparison chart — the line is red and green now, Version 226) */
-  /* the country picker (Version 210, Keren: "a multiselect dropdown"; five pills in 209): a trigger naming what is on and
-     a panel of checkboxes grouped Core / Europe, in the system's grammar — surface, strong border, the sheet's radius,
-     rows in Public Sans 14 with the country's colour as a dot and the checkbox in the accent, a wash under a row that is on */
-  .peer-pills{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-left:auto; } /* top right of the chart's head (Version 211; under the chart in 209–210) */
-  .peer-picker{ position:relative; }
-  .peer-trigger{ display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:0 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:transparent;
-    font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-primary); cursor:pointer; }
-  .peer-trigger:hover{ border-color:var(--accent); }
-  .peer-trigger:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .peer-caret{ width:10px; height:10px; flex:none; color:var(--text-muted); transition:transform 0.15s ease; }
-  .peer-trigger[aria-expanded="true"]{ border-color:var(--accent); }
-  .peer-trigger[aria-expanded="true"] .peer-caret{ transform:rotate(180deg); }
-  .peer-panel{ position:absolute; top:calc(100% + 6px); right:0; z-index:6; min-width:250px; background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); box-shadow:var(--shadow); padding:8px; }
-  .peer-panel[hidden]{ display:none; }
-  .peer-group{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); padding:8px 10px 10px; }
-  /* a row is a 44px target with a rule above it, the country's dot, its name, and its code in mono at the right; the chosen
-     ones sit on the accent's wash — the app's one selected-row colour, not three (the DSM's call, Version 217) */
-  .peer-row{ display:grid; grid-template-columns:16px minmax(0,1fr) auto; align-items:center; gap:10px; min-height:44px; padding:0 10px; border-top:1px solid var(--border); cursor:pointer; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-primary); }
-  .peer-row:hover{ background:var(--surface-2); }
-  .peer-row input{ margin:0; width:15px; height:15px; accent-color:var(--accent); flex:none; }
-  .peer-row .code{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); }
-  .peer-row.on{ background:var(--accent-wash); }
+  /* V613: the country picker went into the Growth history's \u22ef menu, so its trigger, panel, caret and
+     rows went with it \u2014 fourteen rules replaced by a group the shared menu component already knows how to
+     draw. Nothing styles a choice-of-series control on this page any more, which is the point of a component. */
   .gdp-tooltip .row .sw.peer{ background:var(--peer); }
   /* Version 378: this one follows the pointer over the whole page, so it is fixed and translated onto its own
      column rather than absolutely placed inside a card that would clip it. */

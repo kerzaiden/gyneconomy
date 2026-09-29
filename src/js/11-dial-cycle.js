@@ -808,7 +808,6 @@
     // the Growth page's own copy, under its history chart (Version 372) \u2014 written from the same figure, here,
     // so the two can never disagree about what this cycle is worth
     renderGrowthPhase(m);
-    renderPeerPills(m);
     shownEraModel = m;
     shownEra = era;
   }
@@ -822,66 +821,49 @@
     }
     document.getElementById("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>';
   }
-  // The country picker under the Growth chart (Version 210, Keren: "a multiselect dropdown"; five pills in 209): a trigger
-  // naming what is on, a panel of checkboxes grouped as the data groups them. Toggling a country redraws both charts.
-  // Hidden for a cycle the World Bank series (2010–) does not reach.
-  var PEER_CARET = '<svg class="peer-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5 L5 6.5 L8 3.5"/></svg>';
-  function peerList(){ return gdpPeers; }
-  function peerChosen(){ return peerList().filter(function(c){ return c.on; })[0] || null; }
-  function peerTriggerHtml(){
+  /* ---------------- The economy the Growth chart draws (Version 210, moved into the head menu in V613) -------
+     Keren: "I see we built a country picker. Put it in the growth page under the three dots in history."
+     It was a dropdown of its own in the Growth card's head \u2014 a trigger, a panel, eight rules of stylesheet and
+     two document listeners \u2014 which is a second control doing what the \u22ef menu was built to do. V522 settled
+     where a WHICH-SERIES choice belongs ("you can put it in the three dots on the history container"), and V602
+     made that menu a component, so this is now four lines of groups rather than a component of its own. The
+     picker, its panel, its caret and its CSS are gone; nothing was rebuilt, and the behaviour it had \u2014 one
+     economy at a time, the United States by default \u2014 is unchanged.
+     The group is BUILT FRESH on every paint, so it reads the live choice and the live cycle without being told
+     when either moved; and it returns nothing at all for a cycle no peer's series reaches, which is the same
+     rule the old picker enforced by hiding itself. */
+  function peerChosen(){ return gdpPeers.filter(function(c){ return c.on; })[0] || null; }
+  function peerReaches(m){
+    return !!m && gdpPeers.some(function(c){
+      return Object.keys(c.q).some(function(k){
+        var yr = parseInt(k, 10); return yr >= m.era.from && yr <= m.endYear;
+      });
+    });
+  }
+  HIST_HEAD["sheet-metric-gdp"].menu = function(){
+    if (!peerReaches(shownEraModel)) return [];
     var on = peerChosen();
-    return '<span id="peer-trigger-label">' + (on ? on.name : "United States") + '</span>' + PEER_CARET;
-  }
-  function renderPeerPills(m){
-    var host = document.getElementById("growth-peers");
-    // no other economy reaches this cycle, so there is nothing to switch to
-    if (!peerList().some(function(c){ return Object.keys(c.q).some(function(k){ var yr = parseInt(k, 10); return yr >= m.era.from && yr <= m.endYear; }); })){
-      host.innerHTML = ""; host.hidden = true; return;
+    function row(sel, code, label){
+      return '<button type="button" class="cycsel-opt bh-pick' + (sel ? " on" : "") +
+        '" role="menuitemradio" aria-checked="' + (sel ? "true" : "false") + '" data-gdp-peer="' + code + '">' +
+        '<span class="cycsel-tick" aria-hidden="true"></span>' +
+        '<span class="cycsel-nm">' + label + '</span></button>';
     }
-    host.hidden = false;
-    // one economy at a time (Version 225): the chart shows whichever is chosen, the United States by default
-    var rows = '<div class="peer-group">Show</div>' +
-      '<label class="peer-row' + (peerChosen() ? "" : " on") + '"><input type="radio" name="peer-choice" data-code=""' + (peerChosen() ? "" : " checked") + '>' +
-        '<span>United States</span><span class="code">US</span></label>' +
-      peerList().map(function(c){
-        return '<label class="peer-row' + (c.on ? " on" : "") + '"><input type="radio" name="peer-choice" data-code="' + c.code + '"' + (c.on ? " checked" : "") + '>' +
-          '<span>' + c.name + '</span><span class="code">' + c.code.toUpperCase() + '</span></label>';
-      }).join("");
-    host.innerHTML = '<div class="peer-picker">' +
-        '<button type="button" class="peer-trigger" id="peer-trigger" aria-haspopup="true" aria-expanded="false">' + peerTriggerHtml() + '</button>' +
-        '<div class="peer-panel" id="peer-panel" hidden>' + rows + '</div>' +
-      '</div>';
-    var trigger = document.getElementById("peer-trigger"), panel = document.getElementById("peer-panel");
-    function close(){ panel.hidden = true; trigger.setAttribute("aria-expanded", "false"); }
-    trigger.addEventListener("click", function(evt){
-      evt.stopPropagation();
-      if (panel.hidden){ panel.hidden = false; trigger.setAttribute("aria-expanded", "true"); } else close();
-    });
-    panel.querySelectorAll("input[type=radio]").forEach(function(box){
-      box.addEventListener("change", function(){
-        var code = box.getAttribute("data-code");
-        gdpPeers.forEach(function(c){ c.on = c.code === code; });
-        panel.querySelectorAll(".peer-row").forEach(function(row){ row.classList.remove("on"); });
-        box.parentElement.classList.add("on");
-        trigger.innerHTML = peerTriggerHtml();
-        close();
-        if (shownEraModel) renderGrowthPhase(shownEraModel);
-            if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); } // redraws both charts (the key would otherwise skip the redraw)
-      });
-    });
-    // one pair of document listeners for the life of the page, whichever panel is open (the picker is rebuilt per cycle)
-    if (!renderPeerPills.bound){
-      renderPeerPills.bound = true;
-      document.addEventListener("click", function(evt){
-        var pnl = document.getElementById("peer-panel"), trg = document.getElementById("peer-trigger");
-        if (pnl && !pnl.hidden && !pnl.contains(evt.target) && !trg.contains(evt.target)){ pnl.hidden = true; trg.setAttribute("aria-expanded", "false"); }
-      });
-      document.addEventListener("keydown", function(evt){
-        var pnl = document.getElementById("peer-panel"), trg = document.getElementById("peer-trigger");
-        if (evt.key === "Escape" && pnl && !pnl.hidden){ pnl.hidden = true; trg.setAttribute("aria-expanded", "false"); trg.focus(); }
-      });
-    }
-  }
+    return [{ key:"economy", label:"Economy", on:true, value:(on ? on.name : "United States"),
+      rows:row(!on, "", "United States") + gdpPeers.map(function(c){
+        return row(!!c.on, c.code, c.name);
+      }).join("") }];
+  };
+  /* The pick itself. One economy at a time (Version 225), and drawTemperature redraws BOTH charts \u2014 clearing
+     the key first, because an unchanged key is how that function skips a redraw. */
+  window.__pickPeer = function(code){
+    gdpPeers.forEach(function(c){ c.on = c.code === code; });
+    if (shownEraModel) renderGrowthPhase(shownEraModel);
+    if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); }
+    var hd = document.getElementById("gdp-head");
+    if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
+  };
+
   var shownEraModel = null;
   function showCycle(era){ if (shownEra !== era) renderCycleView(cycleModel(era)); }
 

@@ -1586,6 +1586,18 @@
   .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
     vertical-align:1.5px; }
   .rhy-row.alike .rhy-name{ color:var(--text-primary); }
+
+  #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
+  .cc-grp .cat-list{ margin-top:var(--gap); }
+  .cc-grp .cyc-title{ padding:0 2px; }
+  .cat-item.flat{ cursor:default; }
+  .cat-item.flat:hover{ border-color:var(--border); }
+  .cat-item.flat .ci-value{ font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700;
+    letter-spacing:-0.02em; line-height:1.05; color:var(--text-primary); }
+  .cat-item.flat .ci-value .unit{ font-size:0.55em; font-weight:700; margin-left:2px; color:var(--text-muted); }
+  .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
+  .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
+    font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
@@ -1622,24 +1634,6 @@
   }
   .hero-hit{ fill:transparent; }
 
-  .peer-pills{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-left:auto; }
-  .peer-picker{ position:relative; }
-  .peer-trigger{ display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:0 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:transparent;
-    font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-primary); cursor:pointer; }
-  .peer-trigger:hover{ border-color:var(--accent); }
-  .peer-trigger:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .peer-caret{ width:10px; height:10px; flex:none; color:var(--text-muted); transition:transform 0.15s ease; }
-  .peer-trigger[aria-expanded="true"]{ border-color:var(--accent); }
-  .peer-trigger[aria-expanded="true"] .peer-caret{ transform:rotate(180deg); }
-  .peer-panel{ position:absolute; top:calc(100% + 6px); right:0; z-index:6; min-width:250px; background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius); box-shadow:var(--shadow); padding:8px; }
-  .peer-panel[hidden]{ display:none; }
-  .peer-group{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); padding:8px 10px 10px; }
-
-  .peer-row{ display:grid; grid-template-columns:16px minmax(0,1fr) auto; align-items:center; gap:10px; min-height:44px; padding:0 10px; border-top:1px solid var(--border); cursor:pointer; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-primary); }
-  .peer-row:hover{ background:var(--surface-2); }
-  .peer-row input{ margin:0; width:15px; height:15px; accent-color:var(--accent); flex:none; }
-  .peer-row .code{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); }
-  .peer-row.on{ background:var(--accent-wash); }
   .gdp-tooltip .row .sw.peer{ background:var(--peer); }
 
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
@@ -2011,7 +2005,7 @@
     
     <div class="card temp-card" id="growth-card">
       
-      <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div><div class="peer-pills" id="growth-peers" aria-label="Compare with other countries"></div></div>
+      <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div></div>
       <div class="temp-chart"><svg id="growth-svg" viewBox="0 0 780 250" role="img" aria-label="Real GDP growth across this cycle, quarter by quarter, for the economy chosen above"></svg><div class="gdp-tooltip mono" id="growth-tooltip"></div></div>
       
       <div class="cv-stats" id="growth-stats"></div>
@@ -2298,6 +2292,8 @@
     </div>
     <div id="calendar-cycle" hidden>
       <div id="calendar-cycle-slot"></div>
+      
+      <div id="cycle-cats"></div>
     </div>
   </div>
 
@@ -13222,6 +13218,11 @@
         if (window.__pickSeries) window.__pickSeries(null, mat);
         return;
       }
+      var peer = pick.getAttribute("data-gdp-peer");
+      if (peer != null) {
+        if (window.__pickPeer) window.__pickPeer(peer);
+        return;
+      }
       if (window.__pickSpread) window.__pickSpread(pick.getAttribute("data-hzn-spread"));
       return;
     }
@@ -18424,7 +18425,6 @@
     statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
     statsEl.innerHTML = statsHtml;
     renderGrowthPhase(m);
-    renderPeerPills(m);
     shownEraModel = m;
     shownEra = era;
   }
@@ -18440,86 +18440,47 @@
     }
     document.getElementById("growth-phase").innerHTML = '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + "</span>";
   }
-  var PEER_CARET = '<svg class="peer-caret" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3.5 L5 6.5 L8 3.5"/></svg>';
-  function peerList() {
-    return gdpPeers;
-  }
   function peerChosen() {
-    return peerList().filter(function(c) {
+    return gdpPeers.filter(function(c) {
       return c.on;
     })[0] || null;
   }
-  function peerTriggerHtml() {
-    var on = peerChosen();
-    return '<span id="peer-trigger-label">' + (on ? on.name : "United States") + "</span>" + PEER_CARET;
-  }
-  function renderPeerPills(m) {
-    var host = document.getElementById("growth-peers");
-    if (!peerList().some(function(c) {
+  function peerReaches(m) {
+    return !!m && gdpPeers.some(function(c) {
       return Object.keys(c.q).some(function(k) {
         var yr = parseInt(k, 10);
         return yr >= m.era.from && yr <= m.endYear;
       });
-    })) {
-      host.innerHTML = "";
-      host.hidden = true;
-      return;
-    }
-    host.hidden = false;
-    var rows = '<div class="peer-group">Show</div>' + '<label class="peer-row' + (peerChosen() ? "" : " on") + '"><input type="radio" name="peer-choice" data-code=""' + (peerChosen() ? "" : " checked") + ">" + '<span>United States</span><span class="code">US</span></label>' + peerList().map(function(c) {
-      return '<label class="peer-row' + (c.on ? " on" : "") + '"><input type="radio" name="peer-choice" data-code="' + c.code + '"' + (c.on ? " checked" : "") + ">" + "<span>" + c.name + '</span><span class="code">' + c.code.toUpperCase() + "</span></label>";
-    }).join("");
-    host.innerHTML = '<div class="peer-picker">' + '<button type="button" class="peer-trigger" id="peer-trigger" aria-haspopup="true" aria-expanded="false">' + peerTriggerHtml() + "</button>" + '<div class="peer-panel" id="peer-panel" hidden>' + rows + "</div>" + "</div>";
-    var trigger = document.getElementById("peer-trigger"), panel = document.getElementById("peer-panel");
-    function close() {
-      panel.hidden = true;
-      trigger.setAttribute("aria-expanded", "false");
-    }
-    trigger.addEventListener("click", function(evt) {
-      evt.stopPropagation();
-      if (panel.hidden) {
-        panel.hidden = false;
-        trigger.setAttribute("aria-expanded", "true");
-      } else close();
     });
-    panel.querySelectorAll("input[type=radio]").forEach(function(box) {
-      box.addEventListener("change", function() {
-        var code = box.getAttribute("data-code");
-        gdpPeers.forEach(function(c) {
-          c.on = c.code === code;
-        });
-        panel.querySelectorAll(".peer-row").forEach(function(row) {
-          row.classList.remove("on");
-        });
-        box.parentElement.classList.add("on");
-        trigger.innerHTML = peerTriggerHtml();
-        close();
-        if (shownEraModel) renderGrowthPhase(shownEraModel);
-        if (tempState.model) {
-          tempState.key = null;
-          drawTemperature(tempState.model);
-        }
-      });
-    });
-    if (!renderPeerPills.bound) {
-      renderPeerPills.bound = true;
-      document.addEventListener("click", function(evt) {
-        var pnl = document.getElementById("peer-panel"), trg = document.getElementById("peer-trigger");
-        if (pnl && !pnl.hidden && !pnl.contains(evt.target) && !trg.contains(evt.target)) {
-          pnl.hidden = true;
-          trg.setAttribute("aria-expanded", "false");
-        }
-      });
-      document.addEventListener("keydown", function(evt) {
-        var pnl = document.getElementById("peer-panel"), trg = document.getElementById("peer-trigger");
-        if (evt.key === "Escape" && pnl && !pnl.hidden) {
-          pnl.hidden = true;
-          trg.setAttribute("aria-expanded", "false");
-          trg.focus();
-        }
-      });
-    }
   }
+  HIST_HEAD["sheet-metric-gdp"].menu = function() {
+    if (!peerReaches(shownEraModel)) return [];
+    var on = peerChosen();
+    function row(sel, code, label) {
+      return '<button type="button" class="cycsel-opt bh-pick' + (sel ? " on" : "") + '" role="menuitemradio" aria-checked="' + (sel ? "true" : "false") + '" data-gdp-peer="' + code + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
+    }
+    return [ {
+      key: "economy",
+      label: "Economy",
+      on: true,
+      value: on ? on.name : "United States",
+      rows: row(!on, "", "United States") + gdpPeers.map(function(c) {
+        return row(!!c.on, c.code, c.name);
+      }).join("")
+    } ];
+  };
+  window.__pickPeer = function(code) {
+    gdpPeers.forEach(function(c) {
+      c.on = c.code === code;
+    });
+    if (shownEraModel) renderGrowthPhase(shownEraModel);
+    if (tempState.model) {
+      tempState.key = null;
+      drawTemperature(tempState.model);
+    }
+    var hd = document.getElementById("gdp-head");
+    if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
+  };
   var shownEraModel = null;
   function showCycle(era) {
     if (shownEra !== era) renderCycleView(cycleModel(era));
@@ -18688,6 +18649,7 @@
       showCycle(era);
       placeCharts("view");
       slot.appendChild(cycleViewEl);
+      renderCycleCats(era);
       listWrap.hidden = true;
       detail.hidden = false;
       setTopbar(era.ongoing ? "Current Cycle" : era.name, back);
@@ -20081,10 +20043,34 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
-  function renderRhymes() {
-    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
-    if (!pick || !body) return;
-    var ALIKE = 5;
+  function renderCycleCats(era) {
+    var host = document.getElementById("cycle-cats");
+    if (!host) return;
+    var from = era.from, to = era.to || calendarTodayY;
+    host.innerHTML = readingRoster().map(function(g) {
+      var rows = g.rows.map(function(r) {
+        var span = r.seen.filter(function(d) {
+          var y = +d.k.slice(0, 4);
+          return y >= from && y <= to;
+        });
+        var mark = '<span class="peek-mark" aria-hidden="true">' + r.mark() + "</span>";
+        if (!span.length) {
+          return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value cc-none">—</div>' + '<div class="ci-word">Not measured before ' + prettyK(r, r.first.k) + "</div></div></div></div>";
+        }
+        var end = span[span.length - 1];
+        var vs = span.map(function(d) {
+          return d.v;
+        });
+        var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+        var travel = lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
+        return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span>" + '<span class="ci-when">' + prettyK(r, end.k) + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + "</div>" + '<div class="ci-word">' + travel + "</div></div></div></div>";
+      }).join("");
+      return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' + g.mark() + "</span>" + g.label + '</div><div class="cat-list">' + rows + "</div></div>";
+    }).join("");
+  }
+  var __roster = null;
+  function readingRoster() {
+    if (__roster) return __roster;
     var byM = function(a) {
       return a.map(function(d) {
         return {
@@ -20117,14 +20103,6 @@
         };
       });
     };
-    var yFrom = function(a, y0) {
-      return a.map(function(v, i) {
-        return {
-          k: String(y0 + i),
-          v: v
-        };
-      });
-    };
     var hyList = hyOas.map(function(v, i) {
       var a = hyAt(i);
       return {
@@ -20133,51 +20111,64 @@
       };
     });
     var GRPS = [ {
+      key: "weather",
       label: "Weather",
+      mark: weatherSvg,
       rows: [ {
         name: "Temperature",
         on: "m",
+        mark: thermoSvg,
         list: byM(cpiYoYHistory),
         dp: 1,
         unit: "%"
       }, {
         name: "Growth",
         on: "q",
+        mark: sproutSvg,
         list: byQ(gdpQuarterlyYoY),
         dp: 1,
         unit: "%"
       } ]
     }, {
+      key: "circulation",
       label: "Circulation",
+      mark: circulationSvg,
       rows: [ {
         name: "Hormones",
         on: "m",
+        mark: hormoneSvg,
         list: byM(fedFundsHistory),
         dp: 2,
         unit: "%"
       }, {
         name: "Pressure",
         on: "q",
+        mark: pressureSvg,
         list: byQ(lendingStandardsHistory),
         dp: 1,
         signed: true
       }, {
         name: "Pulse",
         on: "q",
+        mark: ecgSvg,
         list: qFrom(m2vHistory, M2V_FROM_YEAR),
         dp: 2
       }, {
         name: "Volume",
         on: "q",
+        mark: volumeSvg,
         list: qFrom(m2Yoy, M2_FROM_YEAR),
         dp: 1,
         unit: "%"
       } ]
     }, {
+      key: "mood",
       label: "Mood",
+      mark: moodSvg,
       rows: [ {
         name: "Valuations",
         on: "y",
+        mark: diamondSvg,
         list: byY(capeHistory),
         dp: 1,
         pre: "Jan ",
@@ -20185,37 +20176,45 @@
       }, {
         name: "Fear",
         on: "m",
+        mark: umbrellaSvg,
         list: byM(fearCurveHistory),
         dp: 2
       }, {
         name: "Desire",
         on: "m",
+        mark: flameSvg,
         list: hyList,
         dp: 2,
         unit: "%"
       }, {
         name: "Horizon",
         on: "q",
+        mark: sunriseSvg,
         list: byQ(t10y3mHistory),
         dp: 2,
         signed: true
       } ]
     }, {
+      key: "energy",
       label: "Energy",
+      mark: boltSvg,
       rows: [ {
         name: "Power",
         on: "y",
+        mark: boltSvg,
         list: byY(powerHistory),
         dp: 0
       }, {
         name: "Activity",
         on: "m",
+        mark: trendUpSvg,
         list: byM(unempHistory),
         dp: 1,
         unit: "%"
       }, {
         name: "Households",
         on: "q",
+        mark: houseSvg,
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
         dp: 1,
         unit: "%"
@@ -20240,16 +20239,32 @@
         };
         r.first = seen[0];
         r.now = seen[seen.length - 1];
+        r.seen = seen;
       });
     });
+    return __roster = GRPS;
+  }
+  function readFig(r, v) {
+    var a = Math.abs(v).toFixed(r.dp);
+    var sign = +a === 0 ? "" : v < 0 ? "−" : r.signed ? "+" : "";
+    return sign + a + (r.unit ? '<span class="unit">' + r.unit + "</span>" : "");
+  }
+  function prettyK(r, k) {
+    if (r.pre) return r.pre + k;
+    if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
+    if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
+    return k;
+  }
+  function renderRhymes() {
+    var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
+    if (!pick || !body) return;
+    var ALIKE = 5;
+    var GRPS = readingRoster();
     function stamp(r, k) {
       return (r.pre || "") + k;
     }
-    function fig(r, v) {
-      return (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) + (r.unit ? '<span class="unit">' + r.unit + "</span>" : "");
-    }
     function cell(r, v, when, na) {
-      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' + "<b>" + (v == null ? "—" : fig(r, v)) + "</b><i>" + (v == null ? na : when) + "</i></span>";
+      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' + "<b>" + (v == null ? "—" : readFig(r, v)) + "</b><i>" + (v == null ? na : when) + "</i></span>";
     }
     function dstr(iso) {
       return +iso.slice(8) + " " + MONTHS_SHORT[+iso.slice(5, 7) - 1] + " " + iso.slice(0, 4);

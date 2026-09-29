@@ -62,6 +62,7 @@
       showCycle(era);
       placeCharts("view");
       slot.appendChild(cycleViewEl);
+      renderCycleCats(era);
       listWrap.hidden = true; detail.hidden = false;
       // the top bar becomes the cycle's: its name as the title, the back arrow on the left (Keren, Sep 19, 2026: in the
       // top menu, not a link under it)
@@ -1651,6 +1652,130 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
+  /* ---------------- RENDER: a closed cycle's four categories (Version 613) ----------------
+     Keren: "I want the view to be exactly like the current cycle page \u2014 four categories of Weather, Mood,
+     Circulation, Energy. But instead of going to another inner page, just show the data very briefly."
+     Same four categories, same row anatomy, one difference that is the whole point: on the Cycle tab a
+     category is a DOOR, because behind it is a live page that keeps moving. A cycle that ended has no live
+     page. So the row shows what the reading FINISHED at and how far it travelled getting there, and there is
+     nothing to open.
+     WHERE IT ENDED AND ITS RANGE \u2014 her choice over the peak reading and over first-against-last. It answers
+     both questions a closed cycle raises: how did this end, and how far did this reading move. The extreme is
+     usually the story and first-against-last would hide it; the peak reading would leave the Big Tech Cycle
+     empty, since it never had a bear market to have a peak at.
+     A reading with nothing inside the cycle says so. Nothing is carried in from outside the years. */
+  function renderCycleCats(era){
+    var host = document.getElementById("cycle-cats"); if (!host) return;
+    var from = era.from, to = era.to || calendarTodayY;
+    host.innerHTML = readingRoster().map(function(g){
+      var rows = g.rows.map(function(r){
+        // the period key always opens with its year, whatever shape it is: "2007-10", "2007 Q4", "2007"
+        var span = r.seen.filter(function(d){
+          var y = +d.k.slice(0, 4); return y >= from && y <= to;
+        });
+        var mark = '<span class="peek-mark" aria-hidden="true">' + r.mark() + '</span>';
+        if (!span.length){
+          return '<div class="cat-item flat"><div class="ci-head">' + mark +
+            '<span class="ci-name">' + r.name + '</span></div>' +
+            '<div class="ci-body"><div class="ci-read"><div class="ci-value cc-none">\u2014</div>' +
+            '<div class="ci-word">Not measured before ' + prettyK(r, r.first.k) + '</div></div></div></div>';
+        }
+        var end = span[span.length - 1];
+        var vs = span.map(function(d){ return d.v; });
+        var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+        // A cycle in which a reading never moved has no range to state, and "5.2 to 5.2" is furniture.
+        var travel = lo === hi ? "Flat all cycle"
+          : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
+        return '<div class="cat-item flat"><div class="ci-head">' + mark +
+          '<span class="ci-name">' + r.name + '</span>' +
+          '<span class="ci-when">' + prettyK(r, end.k) + '</span></div>' +
+          '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + '</div>' +
+          '<div class="ci-word">' + travel + '</div></div></div></div>';
+      }).join("");
+      return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' +
+        g.mark() + '</span>' + g.label + '</div><div class="cat-list">' + rows + '</div></div>';
+    }).join("");
+  }
+
+  /* ---------------- THE ROSTER AS SERIES (Version 613) ----------------
+     The thirteen readings, in the app\u2019s own four categories, each as one {k,v} list keyed by the period it
+     was measured in. Version 612 built this inside Rhymes; Version 613 needs the same thirteen rows for a past
+     cycle\u2019s categories, and two copies of a list like this is how two components quietly start disagreeing
+     about what the roster is. So it is lifted whole \u2014 Version 314, move rather than rebuild \u2014 and memoised,
+     because turning eight hundred months of federal funds into places in a record is work worth doing once.
+     Built LAZILY on first call rather than at load, because capeHistory\u2019s last point is carried to today by
+     renderPagesAndNav and a roster built before that would hold January where every page shows September. */
+  var __roster = null;
+  function readingRoster(){
+    if (__roster) return __roster;
+    // Every series in this app is one of three shapes. Five makers turn all of them into the same list, so a
+    // row is a line and nothing downstream has to know which shape it came from.
+    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
+    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
+    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
+    var qFrom = function(a, y0){ return a.map(function(v, i){
+      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
+    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
+      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
+    var GRPS = [
+      { key:"weather", label:"Weather", mark:weatherSvg, rows:[
+        { name:"Temperature", on:"m", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
+        { name:"Growth",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
+      ]},
+      { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
+        { name:"Hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%" },
+        { name:"Pressure",    on:"q", mark:pressureSvg, list:byQ(lendingStandardsHistory), dp:1, signed:true },
+        { name:"Pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2 },
+        { name:"Volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
+      ]},
+      { key:"mood", label:"Mood", mark:moodSvg, rows:[
+        { name:"Valuations",  on:"y", mark:diamondSvg,  list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
+        { name:"Fear",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2 },
+        { name:"Desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%" },
+        { name:"Horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true }
+      ]},
+      { key:"energy", label:"Energy", mark:boltSvg, rows:[
+        { name:"Power",       on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
+        { name:"Activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" },
+        { name:"Households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" }
+      ]}
+    ];
+    /* One pass per row. `place` is where a value sits in the whole of its own record, which is the only
+       comparison that means the same thing on thirteen rows measured in six different units; `now` is the last
+       reading, which every peak is measured against. */
+    GRPS.forEach(function(g){ g.rows.forEach(function(r){
+      var seen = r.list.filter(function(d){ return d.v != null; });
+      var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
+      r.place = function(v){
+        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
+        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+      };
+      r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
+    }); });
+    return (__roster = GRPS);
+  }
+  /* A reading printed the way its own page prints it. Lives beside the roster because both components print
+     from it, and a figure formatted two ways is a figure that can disagree with itself.
+     The sign is decided AFTER rounding, which is the whole of this function\u2019s care. December 2008 CPI is a
+     hair under nought, and `(-0.02).toFixed(1)` is "-0.0" \u2014 a minus sign in front of a zero, which says the
+     reading was negative while the digits say it was not. A value that rounds to nought prints without a sign,
+     on a signed row and an unsigned one alike, and a negative one wears the real minus every other figure in
+     this app wears. */
+  function readFig(r, v){
+    var a = Math.abs(v).toFixed(r.dp);
+    var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
+    return sign + a + (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
+  }
+  /* A period key said the way the rest of the app says one. The keys are exact by design \u2014 "2008-12",
+     "2008 Q4" \u2014 and Rhymes prints them raw, in mono, because there they are provenance under a figure. Here
+     the slot is `.ci-when`, which on the Cycle tab has always read "Aug 2026", so the key is spelled out. */
+  function prettyK(r, k){
+    if (r.pre) return r.pre + k;
+    if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
+    if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
+    return k;
+  }
+
   /* ---------------- RENDER: Rhymes \u2014 today beside a past top (Version 610, rebuilt in Version 612) ----------
      Keren, Sep 28, 2026: "history doesn't repeat, but it rhymes. I want the app to help me see how history
      repeats itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and
@@ -1683,63 +1808,11 @@
     var pick = document.getElementById("rhy-pick"), body = document.getElementById("rhy-body");
     if (!pick || !body) return;
     var ALIKE = 5;                       // points of the record, out of a hundred
-    // Every series in this app is one of three shapes. Three makers turn all of them into the same {k,v} list,
-    // keyed by the period it was measured in, so a row is a line and the lookup below never branches.
-    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
-    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
-    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
-    var qFrom = function(a, y0){ return a.map(function(v, i){
-      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
-    var yFrom = function(a, y0){ return a.map(function(v, i){ return { k:String(y0 + i), v:v }; }); };
-    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
-      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
-
-    var GRPS = [
-      { label:"Weather", rows:[
-        { name:"Temperature", on:"m", list:byM(cpiYoYHistory),           dp:1, unit:"%" },
-        { name:"Growth",      on:"q", list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
-      ]},
-      { label:"Circulation", rows:[
-        { name:"Hormones",    on:"m", list:byM(fedFundsHistory),         dp:2, unit:"%" },
-        { name:"Pressure",    on:"q", list:byQ(lendingStandardsHistory), dp:1, signed:true },
-        { name:"Pulse",       on:"q", list:qFrom(m2vHistory, M2V_FROM_YEAR),  dp:2 },
-        { name:"Volume",      on:"q", list:qFrom(m2Yoy, M2_FROM_YEAR),        dp:1, unit:"%" }
-      ]},
-      { label:"Mood", rows:[
-        { name:"Valuations",  on:"y", list:byY(capeHistory),             dp:1, pre:"Jan ", last:"today" },
-        { name:"Fear",        on:"m", list:byM(fearCurveHistory),        dp:2 },
-        { name:"Desire",      on:"m", list:hyList,                       dp:2, unit:"%" },
-        { name:"Horizon",     on:"q", list:byQ(t10y3mHistory),           dp:2, signed:true }
-      ]},
-      { label:"Energy", rows:[
-        { name:"Power",       on:"y", list:byY(powerHistory),            dp:0 },
-        { name:"Activity",    on:"m", list:byM(unempHistory),            dp:1, unit:"%" },
-        { name:"Households",  on:"q", list:qFrom(dsrHistory, DSR_FROM_YEAR), dp:1, unit:"%" }
-      ]}
-    ];
-    // One pass per row, done once. `place` is where a value sits in the whole of its own record; `now` is the
-    // last reading and where IT sits, which is what every peak is measured against.
-    GRPS.forEach(function(g){ g.rows.forEach(function(r){
-      var seen = r.list.filter(function(d){ return d.v != null; });
-      var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
-      r.place = function(v){
-        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
-        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-      };
-      r.first = seen[0]; r.now = seen[seen.length - 1];
-    }); });
-
+    var GRPS = readingRoster();
     function stamp(r, k){ return (r.pre || "") + k; }
-    // A signed reading prints its sign, EXCEPT at exactly zero: "+0.0" would read as a small positive, and the
-    // one series here that can land on nought is the net share of banks tightening, where nought is the whole
-    // point \u2014 no bank moved either way.
-    function fig(r, v){
-      return (r.signed && v !== 0 ? fmtSigned(v, r.dp) : v.toFixed(r.dp)) +
-             (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
-    }
     function cell(r, v, when, na){
       return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' +
-        '<b>' + (v == null ? "\u2014" : fig(r, v)) + '</b><i>' + (v == null ? na : when) + '</i></span>';
+        '<b>' + (v == null ? "\u2014" : readFig(r, v)) + '</b><i>' + (v == null ? na : when) + '</i></span>';
     }
     function dstr(iso){
       return +iso.slice(8) + " " + MONTHS_SHORT[+iso.slice(5, 7) - 1] + " " + iso.slice(0, 4);
