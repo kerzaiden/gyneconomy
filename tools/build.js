@@ -94,11 +94,29 @@ if (escapes.length) {
   process.exit(1);
 }
 
+/* V636: the build stamps sw.js too. The worker's VERSION names its cache, and it had stood at 609 for
+   twenty-five versions because it was a number to remember. Now it is read from package.json, written
+   here, and checked here — the same discipline index.html has. `npm run bump` is how the number moves. */
+const V = require('./version');
+function versionCheck() {
+  const want = V.major(), have = V.swMajor();
+  if (have !== want) {
+    console.error('sw.js is OUT OF DATE — its VERSION is gyn-' + have + ', package.json says ' + want + '. Run: npm run build');
+    return false;
+  }
+  const tag = V.newestTag();
+  if (tag !== null && want <= tag)
+    console.warn('note: package.json is at ' + want + ' and v' + tag + ' is already tagged — run `npm run bump` before committing the next version');
+  return true;
+}
+
 strip(joined).then(built => {
   const current = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : null;
 
   if (CHECK) {
-    if (current === built) { console.log('index.html matches src/ (' + manifest.length + ' parts)'); process.exit(0); }
+    const swOk = versionCheck();
+    if (current === built && swOk) { console.log('index.html matches src/ (' + manifest.length + ' parts), sw.js is stamped gyn-' + V.major()); process.exit(0); }
+    if (current === built) process.exit(1);
     if (current === null) { console.error('index.html does not exist — run: npm run build'); process.exit(1); }
     const at = [...current].findIndex((c, i) => c !== built[i]);
     console.error('index.html is OUT OF DATE — run: npm run build');
@@ -108,6 +126,8 @@ strip(joined).then(built => {
     process.exit(1);
   }
 
+  const stamped = V.stamp();
+  if (stamped) console.log('stamped sw.js at gyn-' + V.major());
   if (current === built) { console.log('index.html already current (' + manifest.length + ' parts)'); process.exit(0); }
   fs.writeFileSync(OUT, built);
   const lines = built.split('\n').length;
