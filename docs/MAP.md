@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **14,860 lines**, about 1231 KB, roughly **350 thousand tokens**. No session can read it
+The source is **14,878 lines**, about 1232 KB, roughly **350 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `c8770ff` on 2026-09-29.
+Generated from commit `8932c04` on 2026-09-29.
 
 ## The five regions
 
@@ -19,8 +19,8 @@ Generated from commit `c8770ff` on 2026-09-29.
 | **Boot** | 1–4 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist — mirrors `--page` on purpose, so hex literals here are deliberate |
 | **Styles** | 5–3,143 | the whole stylesheet, every token and rule |
 | **Markup** | 3,144–3,920 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| **Script** | 3,921–14,807 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 14,808–14,860 | </body></html> |
+| **Script** | 3,921–14,825 | one IIFE containing everything: data, model, renderers, wiring |
+| **Close** | 14,826–14,878 | </body></html> |
 
 Counts: **269** top-level functions, **180** top-level vars, **4** top-level IIFEs in the script.
 
@@ -876,7 +876,7 @@ _line 12,535_ · 4 declarations
 
 ### A cycle's season strip (Version 205, lifted out of the old Analysis tab in Version 259 so the
 
-_line 12,581_ · 5 declarations
+_line 12,581_ · 7 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -885,67 +885,67 @@ _line 12,581_ · 5 declarations
 | 12,630 | `marketStripHtml` | `function marketStripHtml(` |
 | 12,693 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
 | 12,694 | `settleStrips` | `function settleStrips(` |
+| 12,729 | `renderSignsList` | `function renderSignsList(` |
+| 13,014 | `renderPagesAndNav` | `function renderPagesAndNav(` |
 
 ### RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it
 
-_line 12,724_ · 3 declarations
+_line 14,308_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 12,725 | `renderCycleList` | `function renderCycleList(` |
-| 12,829 | `renderSignsList` | `function renderSignsList(` |
-| 13,114 | `renderPagesAndNav` | `function renderPagesAndNav(` |
+| 14,309 | `renderCycleList` | `function renderCycleList(` |
 
 ### RENDER: a closed cycle's four categories (Version 613)
 
-_line 14,386_ · 1 declaration
+_line 14,409_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,398 | `renderCycleCats` | `function renderCycleCats(` |
+| 14,421 | `renderCycleCats` | `function renderCycleCats(` |
 
 ### THE ROSTER AS SERIES (Version 613)
 
-_line 14,441_ · 4 declarations
+_line 14,464_ · 4 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,449 | `__roster` | `var __roster =` |
-| 14,450 | `readingRoster` | `function readingRoster(` |
-| 14,505 | `readFig` | `function readFig(` |
-| 14,513 | `prettyK` | `function prettyK(` |
+| 14,472 | `__roster` | `var __roster =` |
+| 14,473 | `readingRoster` | `function readingRoster(` |
+| 14,528 | `readFig` | `function readFig(` |
+| 14,536 | `prettyK` | `function prettyK(` |
 
 ### RENDER: Rhymes \u2014 today beside a past top (Version 610, rebuilt in Version 612)
 
-_line 14,520_ · 1 declaration
+_line 14,543_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,548 | `renderRhymes` | `function renderRhymes(` |
+| 14,571 | `renderRhymes` | `function renderRhymes(` |
 
 ### RENDER: Content tab — reading companion (season reading · flagged now · framework)
 
-_line 14,606_ · 1 declaration
+_line 14,624_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,607 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 14,625 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 ### TAB NAVIGATION (Cycle / Calendar / Analysis / Content)
 
-_line 14,669_ · 1 declaration
+_line 14,687_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,670 | `renderTopbar` | `function renderTopbar(` |
+| 14,688 | `renderTopbar` | `function renderTopbar(` |
 
 ### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
-_line 14,703_ · 1 declaration
+_line 14,721_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14,704 | `wireContactForm` | `function wireContactForm(` |
+| 14,722 | `wireContactForm` | `function wireContactForm(` |
 
 ## The top-level IIFEs
 
@@ -972,7 +972,7 @@ which function draws an inner page, called with the measured width when the page
 
 | Key | Line |
 |---|---|
-| `deficit-range` | 13,851 |
+| `deficit-range` | 13,751 |
 | `desire-range` | 10,617 |
 | `fear-range` | 11,429 |
 | `hormones-range` | 11,166 |
@@ -980,13 +980,13 @@ which function draws an inner page, called with the measured width when the page
 | `hzn-spread` | 10,715 |
 | `pressure-range` | 11,306 |
 | `pulse-range` | 10,570 |
-| `sheet-marker-deficit` | 13,848 |
-| `sheet-metric-gdp` | 13,734 |
-| `sheet-metric-households` | 13,881 |
-| `sheet-metric-power` | 13,811 |
-| `sheet-metric-temp` | 13,686 |
-| `sheet-metric-valuation` | 13,926 |
-| `sheet-sign-activity` | 13,794 |
+| `sheet-marker-deficit` | 13,748 |
+| `sheet-metric-gdp` | 13,634 |
+| `sheet-metric-households` | 13,781 |
+| `sheet-metric-power` | 13,711 |
+| `sheet-metric-temp` | 13,586 |
+| `sheet-metric-valuation` | 13,826 |
+| `sheet-sign-activity` | 13,694 |
 | `sheet-sign-desire` | 10,618 |
 | `sheet-sign-horizon` | 10,722 |
 | `sheet-sign-hormones` | 11,169 |
@@ -1002,15 +1002,15 @@ the window a page's range control starts on
 
 | Key | Line |
 |---|---|
-| `deficit-range` | 13,857 |
+| `deficit-range` | 13,757 |
 | `desire-range` | 10,601 |
 | `fear-range` | 11,386 |
 | `hzn-range` | 10,646 |
 | `pulse-range` | 10,551 |
-| `sheet-metric-gdp` | 13,735 |
-| `sheet-metric-power` | 13,812 |
-| `sheet-metric-temp` | 13,687 |
-| `sheet-metric-valuation` | 13,927 |
+| `sheet-metric-gdp` | 13,635 |
+| `sheet-metric-power` | 13,712 |
+| `sheet-metric-temp` | 13,587 |
+| `sheet-metric-valuation` | 13,827 |
 | `volume-range` | 10,574 |
 
 ### `HIST_HEAD`

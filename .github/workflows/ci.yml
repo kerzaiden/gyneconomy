@@ -63,6 +63,7 @@ jobs:
       # to the debt. Deliberate duplication is allowed \u2014 it just has to be recorded on purpose.
       - name: Components are not more duplicated
         run: npm run comp:check   # V617: this also fails on an id reached in code that nothing creates
+                                  # V624: and on any top-level function getting longer than it is today
 
       # V622: the model's own rule. readSeason decides which season the economy is in, and until now nothing
       # anywhere tested it — it could have returned Autumn for a Spring quarter and every browser check would

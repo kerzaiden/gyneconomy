@@ -106,10 +106,35 @@ function wiring() {
   return { reached: reached.size, dangling: dangling.sort() };
 }
 
+/* THE PART THAT CANNOT BE SPLIT CHEAPLY CANNOT GROW EITHER (Version 624).
+
+   Keren: "maybe we need to work on it now before we will have to refactor the entire app 200 versions from
+   now." The Analysis tab moved out in this version because it was clean to move. What is left is one
+   1,270-line function whose five sections share a closure, and lifting those apart is the riskiest surgery in
+   the app for a payoff no reader or test would notice.
+   So it is not split \u2014 it is CAPPED. Every top-level function's length is recorded, and a function may shrink
+   and never grow. Her worry is then handled by a rule rather than by a heroic afternoon: the next feature
+   physically cannot make the big one bigger without somebody deciding to, on purpose, in a bless.
+   Whole-file sizes are deliberately NOT capped. A file growing by gaining a new function is healthy; the
+   thing worth stopping is one function swallowing more. */
+function sizes() {
+  const out = {};
+  for (const file of fs.readdirSync(SRC).sort()) {
+    const lines = fs.readFileSync(path.join(SRC, file), 'utf8').split('\n');
+    let name = null, start = 0;
+    lines.forEach((l, i) => {
+      const m = FN.exec(l);
+      if (m) { name = m[1]; start = i; }
+      else if (name && l === '  }') { out[name] = i - start + 1; name = null; }
+    });
+  }
+  return out;
+}
+
 const arg = process.argv[2];
 
 if (arg === '--bless') {
-  const out = {};
+  const out = { '#functions': sizes() };
   for (const [c, v] of shared) out[c] = v.size;
   fs.writeFileSync(LEDGER, JSON.stringify(out, null, 2) + '\n');
   console.log(`recorded ${shared.length} shared classes -> test/components.json`);
@@ -124,13 +149,25 @@ if (arg === '--check') {
     else if (v.size > past[c]) grew.push(`.${c} ${past[c]} -> ${v.size} places`);
     else if (v.size < past[c]) shrank.push(`.${c} ${past[c]} -> ${v.size}`);
   }
-  for (const c of Object.keys(past)) if (!where.has(c) || where.get(c).size === 1) shrank.push(`.${c} ${past[c]} -> 1`);
+  for (const c of Object.keys(past)) {
+    if (c === '#functions') continue;
+    if (!where.has(c) || where.get(c).size === 1) shrank.push(`.${c} ${past[c]} -> 1`);
+  }
   if (grew.length || fresh.length) {
     console.error('COMPONENT LEDGER — a pattern got MORE duplicated:\n');
     [...grew, ...fresh].forEach(l => console.error('  ' + l));
     console.error('\nBuild it once and call it, or if the duplication is deliberate, run: npm run comp:bless');
     process.exit(1);
   }
+  const caps = past['#functions'] || {}, now = sizes(), longer = [];
+  for (const [fn, n] of Object.entries(now)) if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
+  if (longer.length) {
+    console.error('SIZE \u2014 a function got longer:\\n');
+    longer.forEach(l => console.error('  ' + l));
+    console.error('\\nSplit it, or if it has to grow, run: npm run comp:bless');
+    process.exit(1);
+  }
+
   const w = wiring();
   if (w.dangling.length) {
     console.error('WIRING \u2014 code reaches an element id that nothing ever creates:\n');

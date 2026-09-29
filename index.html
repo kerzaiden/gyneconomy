@@ -18616,97 +18616,6 @@
       t = setTimeout(settleStrips, 120);
     };
   }());
-  function renderCycleList() {
-    var list = byId("cycle-list");
-    var strips = {};
-    marketCycles.forEach(function(c) {
-      strips[c.from] = seasonStripHtml(c);
-    });
-    list.innerHTML = marketCycles.slice().reverse().map(function(cyc) {
-      var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' + '<div class="era-head"><span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV + "</div>" + '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + "</div>" + '<div class="era-foot">' + '<span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span>" + "</div>" + "</div>";
-    }).join("");
-    var PREVIEW_CYCLES = 99;
-    (function() {
-      var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = byId("cycle-more"), label = byId("cycle-more-label");
-      if (!btn || rows.length <= PREVIEW_CYCLES) {
-        if (btn) btn.hidden = true;
-        return;
-      }
-      var extra = rows.slice(PREVIEW_CYCLES), open = false;
-      function apply() {
-        extra.forEach(function(r) {
-          r.hidden = !open;
-        });
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        label.textContent = open ? "View less" : "View more";
-      }
-      apply();
-      btn.addEventListener("click", function() {
-        open = !open;
-        apply();
-      });
-    })();
-    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle"), slot = byId("calendar-cycle-slot");
-    function open(from) {
-      var era = marketCycles.filter(function(c) {
-        return c.from === from;
-      })[0];
-      if (!era) return;
-      if (era.ongoing) {
-        var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
-        if (tab) {
-          tab.click();
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-          });
-          return;
-        }
-      }
-      showCycle(era, true);
-      slot.appendChild(cycleViewEl);
-      renderCycleCats(era);
-      listWrap.hidden = true;
-      detail.hidden = false;
-      setTopbar(era.name, back);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-    function back() {
-      detail.hidden = true;
-      listWrap.hidden = false;
-      setTopbar("Analysis", null);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-    list.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".era-row");
-      if (row) open(parseInt(row.getAttribute("data-era"), 10));
-    });
-    list.addEventListener("keydown", function(e) {
-      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")) {
-        e.preventDefault();
-        open(parseInt(e.target.getAttribute("data-era"), 10));
-      }
-    });
-    calendarReset = function() {
-      detail.hidden = true;
-      listWrap.hidden = false;
-      topbarBack = null;
-      byId("topbar-back").hidden = true;
-    };
-    addSources(sp500AnnualReturnSource);
-    addSources(typicalCycleSrc);
-  }
-  GYN.step("renderCycleList", renderCycleList, "wire");
-  renderCycleList();
-  renderCycleView(nowModel);
   function renderSignsList() {
     var host = byId("signs-list");
     var PEEKED = {
@@ -20047,6 +19956,108 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
+  window.__sources = {
+    all: allSources,
+    cards: coincident.concat(lagging).map(function(c) {
+      return {
+        name: c.bodyTerm,
+        src: c.src
+      };
+    }),
+    annual: sp500AnnualReturnSource,
+    gdp: gdpSrc
+  };
+  function renderCycleList() {
+    var list = byId("cycle-list");
+    var strips = {};
+    marketCycles.forEach(function(c) {
+      strips[c.from] = seasonStripHtml(c);
+    });
+    list.innerHTML = marketCycles.slice().reverse().map(function(cyc) {
+      var total = eraMarketTotal(cyc), strip = strips[cyc.from];
+      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' + '<div class="era-head"><span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV + "</div>" + '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + "</div>" + '<div class="era-foot">' + '<span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span>" + "</div>" + "</div>";
+    }).join("");
+    var PREVIEW_CYCLES = 99;
+    (function() {
+      var rows = [].slice.call(list.querySelectorAll(".era-row"));
+      var btn = byId("cycle-more"), label = byId("cycle-more-label");
+      if (!btn || rows.length <= PREVIEW_CYCLES) {
+        if (btn) btn.hidden = true;
+        return;
+      }
+      var extra = rows.slice(PREVIEW_CYCLES), open = false;
+      function apply() {
+        extra.forEach(function(r) {
+          r.hidden = !open;
+        });
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        label.textContent = open ? "View less" : "View more";
+      }
+      apply();
+      btn.addEventListener("click", function() {
+        open = !open;
+        apply();
+      });
+    })();
+    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle"), slot = byId("calendar-cycle-slot");
+    function open(from) {
+      var era = marketCycles.filter(function(c) {
+        return c.from === from;
+      })[0];
+      if (!era) return;
+      if (era.ongoing) {
+        var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
+        if (tab) {
+          tab.click();
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+          return;
+        }
+      }
+      showCycle(era, true);
+      slot.appendChild(cycleViewEl);
+      renderCycleCats(era);
+      listWrap.hidden = true;
+      detail.hidden = false;
+      setTopbar(era.name, back);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+    function back() {
+      detail.hidden = true;
+      listWrap.hidden = false;
+      setTopbar("Analysis", null);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+    list.addEventListener("click", function(e) {
+      var row = e.target.closest && e.target.closest(".era-row");
+      if (row) open(parseInt(row.getAttribute("data-era"), 10));
+    });
+    list.addEventListener("keydown", function(e) {
+      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")) {
+        e.preventDefault();
+        open(parseInt(e.target.getAttribute("data-era"), 10));
+      }
+    });
+    calendarReset = function() {
+      detail.hidden = true;
+      listWrap.hidden = false;
+      topbarBack = null;
+      byId("topbar-back").hidden = true;
+    };
+    addSources(sp500AnnualReturnSource);
+    addSources(typicalCycleSrc);
+  }
+  GYN.step("renderCycleList", renderCycleList, "wire");
+  renderCycleList();
+  renderCycleView(nowModel);
   function renderCycleCats(era) {
     var host = byId("cycle-cats");
     if (!host) return;
@@ -20306,17 +20317,6 @@
   }
   GYN.step("renderRhymes", renderRhymes, "wire");
   renderRhymes();
-  window.__sources = {
-    all: allSources,
-    cards: coincident.concat(lagging).map(function(c) {
-      return {
-        name: c.bodyTerm,
-        src: c.src
-      };
-    }),
-    annual: sp500AnnualReturnSource,
-    gdp: gdpSrc
-  };
   function renderSeasonRows() {
     var meta = wheelMeta[currentSeason];
     var seasonRules = [ {
