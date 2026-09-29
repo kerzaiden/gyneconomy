@@ -42,10 +42,15 @@ is a decision, not a note.** Don't overrule one; if it seems wrong, say so and a
   comment strip; **the manifest order is the semantics** (module vars are assigned between parts).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
-  project attached, and Claude Code in this folder); the repo is the only handoff. Only a session with
-  the `Artifact` tool can publish the artifact or write its database; a push deploys the site by itself.
-- **`npm run bump` before every version commit**, then `git pull --rebase` before pushing — the Data
-  workflow commits `data/live.json` on weekdays.
+  project attached, and Claude Code in this folder); the repo is the only handoff.
+- **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
+  push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump` before
+  every version commit; `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
+  to `main` on weekdays, and that bot is the one thing allowed to push there directly.
+- **`main` and the artifact are the same version, always.** Whoever merges to `main` republishes the
+  artifact from that commit, in the same sitting (rules 1, 4 and 5 above), with `label` = the version
+  name. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
+  nobody can publish, say so rather than leaving the two apart.
 
 ## Commands
 
