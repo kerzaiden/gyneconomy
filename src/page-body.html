@@ -2,7 +2,6 @@
 
 <div class="wrap">
 
-  <!-- The top bar sits directly in .wrap (not inside <header>) so position:sticky can hold it for the whole page. -->
   <header class="topbar">
     <button type="button" class="menu-btn back-btn" id="topbar-back" aria-label="Back to all cycles" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
@@ -22,27 +21,13 @@
     </div>
   </nav>
 
-  <!-- The tab panels are the document's main content. Without <main>, axe reports every block outside a
-       landmark and no main landmark at all: a screen reader has no way to skip the chrome. The modal below
-       stays OUTSIDE main: it is a dialog, not content. -->
   <main id="main">
 
-  <!-- ============ TAB: CYCLE — the cycle view, for the current cycle. The view (#cycle-view) is ONE element that
-       the Calendar tab borrows to show a past cycle; renderCycleView() fills it for whichever cycle is asked for.
-       Its markup holds the cycle card with the dial, the Temperature card and the Growth card; placeCharts()
-       moves the two chart cards into today's drawers (#slot-temp, #slot-growth). ============ -->
   <div class="tab-panel" data-tab="cycle">
   <div id="cycle-view">
 
-    <!-- One card for "where are we": the current market cycle (from marketCycles), the current season inside it
-         (currentSeason), and the cycle dial. -->
     <div class="season-card">
-      <!-- The card's title, in the Temperature card's style (Keren, Sep 19, 2026): "Gyneconomy" with an (i) beside it that
-           opens the legend — the four seasons' colours, and the market band's colours. The (i) is filled in by the
-           legend builder below (it needs the legend's detail index). -->
       <div class="cv-head season-head"><div class="cv-kicker" id="cycle-kicker">Gyneconomy</div></div>
-      <!-- No cycle name, season line or note beside the wheel (Keren, Sep 19, 2026): the wheel's centre already says
-           the season, the Calendar names the cycle, and the note opens the season's popup ("This season"). -->
       <div class="season-wheel-wrap">
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
@@ -55,8 +40,6 @@
       </div>
     </div>
 
-    <!-- Temperature: monthly CPI across the current cycle, as columns from the 2% target (Natural Cycles' temperature
-         view is the reference). Its today label carries the current reading. -->
     <div class="card temp-card" id="temp-card">
       <div class="cv-head">
         <div class="cv-kicker" id="temp-kicker">Temperature</div>
@@ -66,55 +49,31 @@
         <svg id="temp-svg" viewBox="0 0 780 250" role="img" aria-label="Monthly CPI, year over year, across the current market cycle, against the 2% target"></svg>
         <div class="gdp-tooltip mono" id="temp-tooltip"></div>
       </div>
-      <!-- The cycle total reads AFTER the chart that sums it (Keren, V370: "make the total cycle below the chart and
-           don't delete it"). It is a conclusion, not a heading: above the plot it would announce a figure the reader
-           has no picture for yet, and as a partial sum of an unfinished cycle it should be read last, not first. -->
       <div class="cv-stats" id="temp-stats"></div>
     </div>
 
-    <!-- Growth, year by year, right under Temperature and on the SAME x-axis (Keren, Sep 19, 2026: "I want the years to
-         align") — one bar per calendar year of the cycle, spanning that year's twelve months of the chart above; the
-         year in progress lighter, from the quarters so far. No Growth ring beside it ("not really indicative of the
-         growth itself"). -->
     <div class="card temp-card" id="growth-card">
-      <!-- the head: the title (hidden inside the drawer, where the summary above already says it) with its (i) on
-           the left. The country dropdown is in the history ⋯ menu, not here. -->
       <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div></div>
       <div class="temp-chart"><svg id="growth-svg" viewBox="0 0 780 250" role="img" aria-label="Real GDP growth across this cycle, quarter by quarter, for the economy chosen above"></svg><div class="gdp-tooltip mono" id="growth-tooltip"></div></div>
-      <!-- The cycle total reads after the chart, as on the Temperature card above (Keren, V370). -->
       <div class="cv-stats" id="growth-stats"></div>
     </div>
 
   </div>
 
-  <!-- ============ TODAY'S READINGS: the Insights strip and the subject drawers, under the cycle view — today's
-       figures, so they belong beside today's cycle rather than inside the shared view ============ -->
   <div id="today-analysis">
-    <!-- The peek pair. Temperature and Growth side by side, each a figure and a peek of its line; the full charts are
-         one tap away in their own drawers, so this is not a third full-bleed box in a column of them. -->
     <div class="peek-row" id="peek-row"></div>
-    <!-- The two inner pages. They sit here, hidden, so that #slot-temp and #slot-growth exist before placeCharts()
-         runs and so a Calendar cycle can still borrow both chart cards. A peek moves its whole host into the shared
-         modal and the close puts it back. -->
     <div class="metric-sheet" id="sheet-metric-temp" hidden>
     <div id="temp-timing"></div>
       <div id="temp-chart">
-        <!-- the control on the page ground, the band below it opening on its head -->
         <div class="hist-bar" id="temp-rangebar"></div>
         <div class="page-chart">
         <div id="temp-head"></div>
         <div id="slot-temp"></div>
         <div id="temp-history" class="vh-host" hidden></div>
         <div class="gdp-tooltip mono hist-tip" id="temp-hist-tooltip" hidden></div>
-        <!-- No cycle-total card here: the total is a row in the record list. The Cycle TAB keeps its card
-             (#temp-stats), where the number IS the headline rather than a restatement. -->
         <div id="temp-trend"></div>
-        <!-- the reading goes below the trend pill, inside the history container: the order every history page
-             follows (Keren, V482: "the trend button above the blood test result, and both inside the history
-             container"). -->
       </div></div>
       <div id="temp-highlights"></div>
-      <!-- the Temperature sign's own drawer is appended here by the signs builder, below -->
     </div>
     <div class="metric-sheet" id="sheet-metric-gdp" hidden>
     <div id="gdp-timing"></div>
@@ -126,15 +85,9 @@
       <div id="gdp-history" class="vh-host" hidden></div>
       <div class="gdp-tooltip mono hist-tip" id="gdp-hist-tooltip" hidden></div>
       <div id="gdp-yoy" hidden></div>
-      <!-- No cycle-total card on this page (Keren, V432: "why total 24% if we have 11%?"). Growth's Total row
-           follows the cycle picker; a fixed "Current cycle" card beside it would show a second total that ignores
-           the control above it. The card belongs on the Cycle TAB, where the current cycle is the frame and the
-           number is the headline; here the cycle is chosen. -->
       <div id="gdp-trend"></div>
-      <!-- the reading, below the trend and inside the history container (Keren, V482; see above) -->
       <div id="gdp-panel"></div>
     </div></div>
-    <!-- ============ SECTION: GDP GROWTH, PEER COMPARISON ============ -->
 <details class="subject" data-subject="gdp" open>
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-gdp"></div>
@@ -152,16 +105,11 @@
     </details>
     <div id="gdp-highlights"></div>
     </div>
-    <!-- ============ INSIGHTS: benchmark KPIs, replacing the old per-panel "Impression" notes ============ -->
 
-
-    <!-- Economic power's inner page. The drawer is wrapped where it stood rather than moved, so every id inside it
-         keeps working; the chart and the Highlights are rendered into it below. -->
     <div class="metric-sheet" id="sheet-metric-power" hidden>
     <div id="power-timing"></div>
     <div id="power-head"></div>
     <div id="power-chart"></div>
-    <!-- ============ THE LONG CYCLE (structural, not part of the Four Seasons) ============ -->
 <details class="subject" data-subject="resilience" open>
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-resilience"></div>
@@ -182,40 +130,24 @@
         <span class="tag serious longcycle-tag" id="longcycle-tag">4 markers flagged</span>
       </div>
 
-      <!-- A lab PANEL, not a table — four readings stacked, each one name and figure on the left and its spectrum on
-           the right, the shape of the blood panel Keren sent: every track starts at the same x, so the eye runs
-           down the dots. No column headings: a row that says "Marker", "Reference range" and "Flag" in its own layout
-           does not need them announced.
-           Keren, V491: "the power supply and all the derivatives below the trend button inside the history
-           component." So the panel lives in the chart's own container; what stays here is the drawer skeleton,
-           whose head this page keeps hidden. -->
     </section>
     </div>
     </details>
     <div id="power-highlights"></div>
     </div>
 
-    <!-- The deficit's own page, opened from the Deficit rate row of the markers table above. Empty in the markup on
-         purpose: sheetRenderers fills it on first open, so its chart is drawn at the width it will actually occupy.
-         It carries no timing chip — a chip is a door to the Indicators roster, and this reading is a marker inside
-         a composite rather than a sign on it. -->
     <div class="metric-sheet" id="sheet-marker-deficit" hidden></div>
 
-
-    <!-- Households' inner page. Empty in the markup on purpose, like the deficit's: its renderer fills it on first
-         open, so the chart is drawn at the width it will actually occupy. -->
     <div class="metric-sheet" id="sheet-metric-households" hidden>
     <div id="households-timing"></div>
     <div id="households-chart"></div>
     <div id="households-highlights"></div>
     </div>
 
-    <!-- Valuation's inner page, wrapped the same way. -->
     <div class="metric-sheet" id="sheet-metric-valuation" hidden>
     <div id="valuation-timing"></div>
     <div id="valuation-head"></div>
     <div id="valuation-chart"></div>
-    <!-- ============ VALUATION (slow and structural, beside Economic power) ============ -->
 <details class="subject" data-subject="valuation" open>
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-valuation"></div>
@@ -235,20 +167,12 @@
         </div>
         <span class="tag serious longcycle-tag" id="valuation-tag"></span>
       </div>
-      <!-- a lab panel like Power's, inside the history container below the trend pill (Keren, V491) — see the
-           renderer. -->
     </section>
     </div>
     </details>
     <div id="valuation-highlights"></div>
     </div>
 
-    <!-- ====== LEADING SIGNS — no heading; each sign carries its own timing pill ====== -->
-<!-- ====== HORMONES ======
-     The hormone is the policy rate the Fed sets. Keren's own draft names it: "Interest rates," Mrs. Market once
-     told me, "are like hormones. They're invisible — but you feel them everywhere."
-     The page: the rate the FOMC sets (the secretion), then what it means, and the FOMC's own settings as the list
-     that ends it. The Treasury yields are Pressure's page (Keren, V639; see PRESSURE below). -->
 <details class="subject" data-subject="hormones">
     <summary class="subject-summary">
       <div class="subject-text">
@@ -260,32 +184,12 @@
     </summary>
     <div class="subject-body">
     <section class="hero" aria-label="Hormones — the policy rate and the U.S. Treasury yield curve">
-      <!-- 1. WHAT THE FED SETS. The effective federal funds rate, monthly since 1954. It reads first because it is the
-           cause the curve is the answer to. -->
       <div id="hormones-history"></div>
-      <!-- No Treasury chart here (Keren, V598: "the spread is 10 years minus three months, and it's comprised out of
-           the treasury yields, so maybe you can merge them"). Treasury yields and the policy rate move together, so
-           a yield chart here would be a second statement of this one. One page, one job. -->
-      <!-- 3. WHAT IT MEANS, AND WHAT THE FOMC DECIDED. The four FOMC facts sit under prose, the shape every page with
-           insights carries. The target, the last move and its vote, and the next meeting are the page's facts;
-           the cards above them are what the chart is saying. -->
       <div id="hormones-insights"></div>
     </section>
     </div>
   </details>
 
-<!-- ====== HORIZON ======
-     Keren, V473: "calling it Horizon and judging if it's optimistic or pessimistic, which correlates with ovulation
-     and menstruation — so it belongs to Mood."
-     Horizon is not a category but Mood's fourth MEMBER, and Mood is the room where the market's feelings are
-     kept. Valuations is what it will pay for a dollar of earnings, Fear & Greed how frightened it is today,
-     Desire how much risk it craves — and Horizon is what it expects of the future, the one reading on the page
-     that routinely disagrees with the other three. The gap between two rate levels is not a pressure, it is a
-     forecast.
-     The page is the spread's own machinery, MOVED rather than rebuilt: the same svg, the same tooltip, the
-     same `drawSpreadWindow`, the same un-inversion panel. What is its own is the verdict word and the reason
-     for it — see `horizonWord`, which refuses to read a steepening as optimism without asking which end did
-     the steepening. -->
 <details class="subject" data-subject="horizon">
     <summary class="subject-summary">
       <div class="subject-text">
@@ -298,9 +202,6 @@
     </summary>
     <div class="subject-body">
     <section class="hero" aria-label="Horizon — what the yield curve expects">
-      <!-- Keren, V522: "10Y minus 3 months / 10Y minus 2 years shouldn't be a new ruler — you can put it in the three
-           dots on the history container." So this page carries the one ruler every page carries, the window; which
-           series is drawn is a choice, and a choice lives in the head's menu. -->
       <div class="hist-bar" id="hzn-timeline"></div>
       <div class="spread-history">
         <div id="hzn-head"></div>
@@ -308,33 +209,13 @@
           <svg id="spread-history-svg" viewBox="0 0 780 220" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
-        <!-- No Treasury levels here. Keren, V639: "we combined two data sets that are not really the same. The spreads
-             are the Horizon because it's what the market sees long-term versus short-term. And the yields are the
-             pressure." One page, one reading: the shape of the curve. -->
-        <!-- the key is in the chart's own legend, top right of the grid -->
         <div id="hzn-trend"></div>
       </div>
       <div id="horizon-insights"></div>
-      <!-- No highlights block: its three facts read under the prose in #horizon-insights, one section for the page's
-           commentary. -->
     </section>
     </div>
     </details>
 
-
-<!-- ====== PRESSURE ======
-     Keren, V639: "Pressure should be yields, and the default should be the 10-year Treasury yield, because it's
-     considered the risk-free loan across the economy — so whenever it goes up we can see the pressure the
-     US government has to repay its debts. It's basically pressure."
-     The spread is what the market sees long-term versus short-term, which is Horizon; the yields are the price
-     the economy's risk-free borrower pays, which is Pressure. (The Senior Loan Officer Survey this page once
-     read was dropped, her choice; it is at tag v638-fewer-words.)
-     So Circulation reads in the order the causation runs: the rate the Fed SETS (Hormones), the rate the
-     market CHARGES (Pressure), the speed the money moves at (Pulse), the quantity of it (Volume).
-     The machinery is MOVED, not rebuilt: the same #ylm-* svg, the same renderPressurePage, the same maturity
-     menu, under this page's own head and control row. The row prints today's 10-year from the live curve, no
-     verdict word: there is no sourced band for a rate (Keren declined three constructions), and a figure with
-     no band gets no word. -->
 <details class="subject" data-subject="pressure">
     <summary class="subject-summary">
       <div class="subject-text">
@@ -355,10 +236,6 @@
         </div>
         <div id="ylm-trend"></div>
       </div>
-      <!-- Keren, V640: "add an insights component to the pressure page saying what is the 10-year US Treasury yield,
-           why it's important, and in accordance to the rules we based about biology, economy, and gyneconomy."
-           The shape every insights page carries: the biology in the lede, the cards under it, every figure
-           computed from the series the chart draws or the live curve the row prints. -->
       <div id="pressure-insights"></div>
     </section>
     </div>
@@ -376,56 +253,27 @@
       <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
     </summary>
     <div class="subject-body">
-    <!-- No heading, tag or paragraph here (Keren, V282: "the containers are inside a container — drop the outer
-         container with the subtitle Sentiment, because it repeats itself and it takes up room; and the Fear label
-         should just be inside the Fear & Greed component"). The top bar already names the page and the gauge
-         already says Fear under its own number. -->
     <section class="longcycle" aria-labelledby="psych-title">
-      <!-- the published index, as the half-dial it is published as -->
-      <!-- the curve over time, under the gauge that reads it today: the gauge says where the curve IS and this
-           says where it has been — one argument, in order. -->
       <div id="fear-history"></div>
       <div id="curve-highlights"></div>
 
-      <!-- No rings for the index's markets here. The high-yield spread is Desire's own figure (Keren, V464: "is it the
-           same thing? If so, unite it"), so it is not repeated here. The VIX reads as a reading rather than a ring: it
-           is one of the index's seven components, so it belongs under the gauge and not beside it. -->
     </section>
     </div>
     </details>
 
-    <!-- the five coincident and lagging signs, each its own subject — built in JS from the same arrays the cards
-         were built from, so there is one source of truth; #slot-temp is kept in the markup because placeCharts()
-         runs before this list is built, and the Temperature subject adopts it -->
     <div id="signs-list"></div>
 
   </div>
   </div>
 
-  <!-- ============ TAB: CALENDAR — the five cycles in marketCycles as a list, newest first; tapping one opens the
-       cycle view for it (the same element the Cycle tab shows), with a way back to the list. ============ -->
-  <!-- ============ TAB: ANALYSIS — the five cycles, each as one row carrying both the ring you can open and the
-       season strip. ============ -->
   <div class="tab-panel" data-tab="analysis" hidden>
     <div id="calendar-list">
-      <!-- Keren, V320: "I want the indicators to come first, and then a Cycle history container." The roster is the
-           board as it stands, which a reader wants before the history of how boards like it behaved. The list of
-           cycles has a title of its own, not just a kicker: a kicker reads as a caption, not a name. -->
-      <!-- Keren, V610: "Like Mark Twain once said, history doesn't repeat, but it rhymes. I want the app to help me see
-           how history repeats itself." So this card stands today beside ONE past top at a time — her choice over a
-           grid of all three: a comparison a reader can hold is one comparison.
-           It deliberately does NOT score, rank or forecast. A single number claiming a bear market is coming
-           would be a prediction invented out of six readings. The card shows two readings and the period each was
-           taken in; the reader draws the conclusion.
-           It sits ABOVE the cycle history because it is about today, and the history below is about the past. -->
       <div class="cyc-card" id="rhymes-card">
         <div class="cyc-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3 9.6c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/><path d="M3 15.4c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/></svg></span>Rhymes</div>
         </div>
-        <!-- The lede is the legend for the two groups below, which is why neither carries a subtitle of its own:
-             one sentence of body, one of market, in that order. -->
         <p class="rhy-lede">A body can be at risk and still feel perfectly well. Valuation says how far there is to
           fall and never says when — the CAPE passed 30 in 1998, and the top was two years away. A dot marks a
           reading sitting about as high in its own record as it did at that peak.</p>
@@ -438,46 +286,21 @@
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
         </div>
-        <!-- THE NAMES. Keren, V413: "I want the cycle name to be the growth, what really happened, and not just what
-             started it." So a cycle is named for the boom that GROWS inside it, and the bleed is explained as the
-             bursting of it: the name sits on the years the thing actually happened, which is the popular dating.
-             The cost, kept in view: Dot-Com, Housing, Big Tech and AI name an asset; COVID-19 names a mid-cycle event.
-             Keren, V414: drop the naming note, and the cycle then dated 2018–2021 is the COVID-19 Cycle. A cycle
-             named for an event is not an instance of the rule, so a note stating the rule would be contradicted by
-             the list beneath it; the claim stays off the screen. The rule is the app's working principle, not a
-             promise to the reader. .cyc-note went with the note, so the class is gone from the stylesheet too. -->
         <div id="cycle-list"></div>
-        <!-- Keren, V354: "put two cycles in the preview in the cycle history container." Five full rows would make the
-             container the whole tab. The button sits OUTSIDE #cycle-list on purpose — that element carries the
-             delegated row-click handler, and a control inside it would be read as a cycle. It expands in place
-             rather than opening a page: this tab IS the cycle history, so a page listing the same five rows would
-             be a preview of itself. -->
         <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
           <span id="cycle-more-label">View more</span>
           <span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>
         </button>
       </div>
-      <!-- No "Reading for this season" here (Keren, V505). Three of its five blocks were the same text the season popup
-           draws from the same data, and the other two live there too — see quarterPopup. This tab is the cycle
-           history. -->
     </div>
     <div id="calendar-cycle" hidden>
       <div id="calendar-cycle-slot"></div>
-      <!-- Keren, V613: "when I press, for example, Housing Cycle, I want the view to be exactly like the current cycle
-           page — I would see four categories of Weather, Mood, Circulation, Energy. But instead of going to another
-           inner page, just show the data very briefly." So a closed cycle gets the Cycle tab's four categories with
-           the readings SHOWN rather than behind a door: a cycle that ended has no live page — only what it finished
-           at and how far it travelled. -->
       <div id="cycle-cats"></div>
     </div>
   </div>
 
-  <!-- ============ TAB: PORTFOLIO — nothing here yet, and it says so (Keren, V259: "just put an empty space and write
-       Coming soon"). No placeholder figures: a fake number in a financial app is not a neutral placeholder. ============ -->
   <div class="tab-panel" data-tab="portfolio" hidden>
     <div class="soon">
-      <!-- the tab's own mark, at rest: drawn at the weight every icon in this app is drawn at, and on the dial's own
-           track so an empty tab still looks like part of the instrument -->
       <svg class="soon-mark" viewBox="0 0 96 96" aria-hidden="true">
         <circle class="soon-ring" cx="48" cy="48" r="38"/>
         <g class="soon-icon" transform="translate(24 24) scale(2)" fill="none" stroke="currentColor"
@@ -492,20 +315,8 @@
     </div>
   </div>
 
-  <!-- ============ TAB: CONTENT — the reading companion, matched to the current season and to what's flagged right
-       now. Every section renders from data: seasonReading / frameworkRows and the live indicator arrays. ============ -->
   <div class="tab-panel" data-tab="content" hidden>
 
-    <!-- THE CYCLE MODEL. Keren, V423: "add to the content page the cycle model … very, very, very short, and put the
-         colours like we did with the seasons." The model itself is Keren, V511: "A cycle should be counted from the
-         first bull year to the last bear year of that cycle." So the bleed CLOSES it — see marketCycles. This
-         paragraph is the only place on SCREEN that states the model in words, so it must change whenever the model
-         does. It sits FIRST because a cycle contains the seasons, not the other way round.
-         The swatches are `.season-sw` with --season set inline, and the two colours are the ones the Calendar and
-         the dial's market band use — --bleed-mid for a down year, --ovulate for an up one. Keren said red and
-         green; the app's bull is TEAL and is left teal, because every bull year drawn on the dial and the Calendar
-         is that colour, and a legend that disagreed with the picture would be worse than one that names an
-         unexpected hue. -->
     <section class="journal-about" aria-label="The cycle model">
       <h2>The Cycle Model</h2>
       <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
@@ -529,8 +340,6 @@
 
   </div>
 
-  <!-- The menu (Keren, Sep 19, 2026: the hamburger holds the title "Gyneconomy" and a Resources section like Clue's
-       More Menu; "just sources, one row linking to the sources page; and remove sources from the rest of the app"). -->
   <div class="more-menu" id="more-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -562,8 +371,6 @@
     </div>
   </div>
 
-  <!-- "How to read" (Keren, Sep 19, 2026): the primer a new reader has no other way to find — the wheel, the six seasons,
-       the charts, the tiles, the tabs. Drafted from the app's own (i) texts so it can never disagree with them. -->
   <div class="more-menu sources-view" id="sheet-howto" role="dialog" aria-modal="true" aria-label="How to read" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -607,7 +414,6 @@
     </div>
   </div>
 
-  <!-- "About the book" (Keren, Sep 19, 2026) — a first draft for Keren to edit; the book is unpublished as of this writing. -->
   <div class="more-menu sources-view" id="sheet-book" role="dialog" aria-modal="true" aria-label="About the book" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -636,7 +442,6 @@
     </div>
   </div>
 
-  <!-- Appearance (after Clue's screen): three choices with a preview tile each, the chosen one checked in purple -->
   <div class="more-menu sources-view" id="sheet-appearance" role="dialog" aria-modal="true" aria-label="Appearance" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -652,9 +457,6 @@
       </div>
     </div>
   </div>
-  <!-- Contact (Keren, Sep 19, 2026): a published page has no server, so the form hands the note to the visitor's own mail app
-       with the title and message filled in. The address is never printed on the page — it is assembled by the script
-       only when Send is pressed (see the contact handler), so it isn't in the markup for a scraper to lift. -->
   <div class="more-menu sources-view" id="sheet-contact" role="dialog" aria-modal="true" aria-label="Contact" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -675,9 +477,6 @@
     </div>
   </div>
 
-  <!-- Sources, as a screen inside the app (Keren, Sep 19, 2026: going to sources.html and back reloaded the app — "a weird
-       glitch"). Built on first open from the same citation list the (i) notes use (window.__sources), grouped the way the
-       standalone sources.html is; its back arrow returns to the menu instantly. sources.html stays published for links. -->
   <div class="more-menu sources-view" id="sheet-sources" role="dialog" aria-modal="true" aria-label="Sources" hidden>
     <div class="menu-wrap">
       <div class="topbar">
@@ -686,13 +485,10 @@
         </button>
         <h2 class="topbar-title sources-title">Sources</h2>
       </div>
-      <!-- The compile date is filled from DATA_COMPILED in the script (#asof-text) — one place to edit on each refresh. Never
-           claim an automatic refresh here. (Keren, Sep 19, 2026: the menu's footnote and footer merged into this one paragraph.) -->
       <p class="menu-lede">Every figure is compiled by hand from primary sources — statistical agencies, central banks and index originators — with the two compilations that remain (the S&amp;P 500 calendar-year table, ISM's record high/low) labelled as such. Grouped below by the part of the app that uses them; the same list the (i) notes cite. <span class="mono" id="asof-text"></span> — a snapshot, not a live feed; figures can revise after publication. For information only, not financial advice.</p>
       <div id="sources-groups"></div>
     </div>
   </div>
-
 
   </main>
 

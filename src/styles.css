@@ -5,65 +5,43 @@
     --surface-2: #fbf8f3;
     --border: rgba(30,20,30,0.10);
     --border-strong: rgba(30,20,30,0.18);
-    /* Keren, V440: "you can really see the grid lines…" Its own solid token: --border faded and dashed is no line
-       at all. One number to tune. */
     --grid: rgba(30,20,30,0.11);
-    /* Ink for a label sitting ON a saturated fill. These do NOT follow the theme — they follow the colour of
-       the bar underneath, which is the same in both — so they are declared here once and never overridden. */
-    --ink-on-fill: #100d12;      /* dark ink on teal and on the dark theme's lighter red (≥ 6:1) */
-    --ink-on-fill-inv: #ffffff;  /* white on the light theme's deeper red (4.8:1) */
+    --ink-on-fill: #100d12;
+    --ink-on-fill-inv: #ffffff;
     --text-primary: #1c1620;
     --text-secondary: #55505a;
-    --text-muted: #6d666f;             /* the DSM's muted: 5.0:1, so the quietest label passes AA with room */
-    --accent: #8a4d97;                 /* plum — the brand's paint */
-    --accent-ink: #5e2a6b;             /* its ink: words, the tab in use (10.4:1 on white) */
+    --text-muted: #6d666f;
+    --accent: #8a4d97;
+    --accent-ink: #5e2a6b;
     --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--surface));
-    --on-accent: #ffffff;              /* text on a plum button */
-    --overlay: rgba(28,22,32,0.38);    /* the ground behind a sheet (the DSM) */
-    /* the rose is not a colour role (the DSM: "seven colours, clear jobs"): its tokens are aliases of the brand purple, and
-       only the hub's theme line wears them */
+    --on-accent: #ffffff;
+    --overlay: rgba(28,22,32,0.38);
     --rose: var(--accent); --rose-ink: var(--accent-ink); --rose-wash: var(--accent-wash);
     --track: #ece6dd;
-    /* Keren, V503: "I want this background to be a little less pale." One step deeper than `--track`, an EMPTY
-       METER's colour meant to disappear; a badge must read as a shape holding a glyph. */
     --mark-wash: #e3dacd;
-    --good: #1ea8a3;                   /* up — the one teal — paint */
-    --good-ink: #0f6f6c;               /* 6.0:1 */
+    --good: #1ea8a3;
+    --good-ink: #0f6f6c;
     --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
-    /* amber and coral are not colour roles (the DSM): the severity steps between good and critical are lighter shades of the
-       one red — "where a lighter or darker value is needed it remains a shade of the same named colour" */
     --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 8%, var(--surface));
-    --warm: #1ea8a3; /* the Temperature chart's warm months (1–3%): the app's own teal, the dial's bull colour (Keren, Sep 19, 2026) */
-    --cold: var(--season-winter); /* its cold months (below 1%): Winter's periwinkle — one family, not a separate role (the DSM) */
+    --warm: #1ea8a3;
+    --cold: var(--season-winter);
     --cold-ink: #3c5cb5;
-    /* The heat ramp's hot end, as an INK. --season-summer is 3.37:1 on white — fine as a column, unreadable as a
-       word — so the word wears a darker step of the same hue: 6.68:1, like --phase-up-ink (6.57) and --cold-ink (6.19). */
     --heat-hot-ink: #8f4921;
-    /* the cycle's PHASE — a category, not a severity, so it has its own pair and never borrows red/green */
     --phase-up: var(--season-autumn); --phase-up-ink: #7a5709; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 16%, var(--surface));
     --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 16%, var(--surface));
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
-    --critical: #d63a2e;               /* down — the one red, the dial's own — paint */
-    --m2-deep: #4a0f0a;                /* Volume's heaviest step mixes toward this */
-    --ff-blue: #2f6fb5;                /* Hormones' own hue — the one blue, for the sea change ramp */
-    --ff-deep: #0b2340;                /* its heaviest step mixes toward this, as --m2-deep does for Volume */
-    --critical-ink: #b33d29;           /* 5.8:1 */
+    --critical: #d63a2e;
+    --m2-deep: #4a0f0a;
+    --ff-blue: #2f6fb5;
+    --ff-deep: #0b2340;
+    --critical-ink: #b33d29;
     --critical-wash: color-mix(in srgb, var(--critical) 12%, var(--surface));
-    /* Calendar tab colors — --bleed-mid is a down year, --ovulate an up year and each era's peak-year ring.
-       Kept separate from --warning/--serious/--critical, which mark many unrelated severities elsewhere. */
-    --bleed-mid: #d63a2e; /* Keren, Sep 19, 2026: "a bit more red" */
+    --bleed-mid: #d63a2e;
     --ovulate: #1ea8a3;
-    /* the same two as ink on an 18% wash of themselves, for "Bull year" / "Bear year" in the hub (Keren, Sep 19,
-       2026: "a lighter shade of that same color"). The band's teal is 2.9:1 on white, so the ink is darker: 5.0:1
-       (teal) and 4.6:1 (coral) on the washes, WCAG AA. */
     --bull-ink: #0f6f6c; --bull-wash: color-mix(in srgb, var(--ovulate) 18%, var(--surface));
     --bear-ink: #b33d29; --bear-wash: color-mix(in srgb, var(--bleed-mid) 18%, var(--surface));
-    --shadow: none; /* quiet pass: borders only, no drop shadows */
-    /* Ordinal ramp for the yield-by-maturity chart: short duration light, long dark, since maturity order is
-       meaningful (validated with scripts/validate_palette.js --ordinal from the dataviz skill). */
+    --shadow: none;
     --ylm-3m:#baa8e8; --ylm-2y:#9683d5; --ylm-5y:#7258ba; --ylm-10y:#54329a; --ylm-30y:#3a2a7a;
-    /* Leading, Coincident, Lagging as one purple in three steps, as --ylm-* does: they ARE ordered (before, with,
-       after the turn), and a ramp adds no eighth colour. Structural sits outside the order on the neutral track. */
     --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 20%, var(--surface));
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
@@ -99,13 +77,13 @@
       --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #eb4839; --m2-deep: #ffd2c8;
-      --ff-blue: #6fa8e0; --ff-deep: #d7e8fb;   /* dark mode inverts the ramp's deep end, as m2 does */
+      --ff-blue: #6fa8e0; --ff-deep: #d7e8fb;
       --critical-ink: #f28a78;
       --critical-wash: color-mix(in srgb, var(--critical) 18%, var(--surface));
       --bleed-mid: #eb4839;
       --ovulate: #3dc2bb;
-      --bull-ink: #3dc2bb; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface)); /* 5.3:1 on its wash */
-      --bear-ink: #f28a78; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface)); /* 5.3:1 — a lighter coral than the band's, which is 3.9:1 on the wash */
+      --bull-ink: #3dc2bb; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
+      --bear-ink: #f28a78; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
       --shadow: none;
       --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-10y:#9075e0; --ylm-30y:#7458c8;
       --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 16%, var(--surface));
@@ -170,27 +148,20 @@
   }
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 64px; }
   .mono{ font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
-  .serif{ font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; } /* italic 600 is the only Cormorant the page loads */
+  .serif{ font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; }
 
-  /* ---------- top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu
-       button on the right; sticks to the top of the page. The big "Gyneconomy" title is in the menu. ---------- */
+  /* ---- top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu ---- */
   .topbar{
     position:sticky; top:0; z-index:30; margin:0 -20px var(--topbar-gap); padding:10px 20px;
     display:grid; grid-template-columns:44px 1fr 44px; align-items:center;
     background:color-mix(in srgb, var(--page) 86%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-    /* Keren, Sep 20, 2026: "I need a borderline on the bottom edge so I can see a separation between the top bar and
-       the page." The bar is translucent and blurred, so without an edge it dissolves into what scrolls under it. */
     border-bottom:1px solid var(--border);
   }
-  /* The top bar names the page in Cormorant (Keren, Sep 20, 2026: "the title of the page should be in feminine
-     letters — I think it's Cormorant"). The Sources-style sheets keep a sans title via .sources-title. */
   .topbar-title{
     grid-column:2; text-align:center; margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:italic;
     font-size:23px; font-weight:600; letter-spacing:0; line-height:1.15; color:var(--text-primary);
   }
   @media (max-width:400px){ .topbar-title{ font-size:21px; } }
-  /* Keren, Sep 20, 2026: "all buttons in the top bar should not have a round border around it", and "…it should be
-     only purple stroke." The mark alone is the control; the 44×44 hit area stays whatever the paint does. */
   .menu-btn{
     grid-column:3; width:44px; height:44px; border-radius:50%; padding:0; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
     border:0; background:transparent; color:var(--accent-ink); transition:color 0.12s;
@@ -198,20 +169,12 @@
   .menu-btn:hover{ color:var(--accent); background:transparent; }
   .menu-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .menu-btn svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; }
-  /* the menu: a full-screen sheet with its own top bar (back arrow, "Gyneconomy"), then grouped rows the way Clue's
-     More Menu is built — a section heading over a rounded card of rows with a chevron. Below the modal backdrop (80). */
-  /* The menu slides in from the RIGHT (Keren, Sep 20, 2026: "make the slide menu slide and not just appear — so it
-     has an easing flow"; Keren, V285: "the menu should slide from right to left, not top down"), as every stacked
-     screen does on a phone. Keren, V286: "when I close it, it closes really, really fast." NO fade: a pushed screen
-     slides at full opacity, and a second, shorter transition would fire the `transitionend` that closes the menu
-     mid-slide. In DECELERATES over 0.34s, out ACCELERATES over 0.26s: an exit shorter than its entrance. */
   .more-menu{ position:fixed; inset:0; z-index:70; background:var(--page); overflow:auto; -webkit-overflow-scrolling:touch;
     transform:translateX(100%);
     transition:transform 0.26s cubic-bezier(0.4, 0.0, 1, 1); }
   .more-menu.in{ transform:none;
     transition:transform 0.34s cubic-bezier(0.22, 0.61, 0.36, 1); }
   .more-menu[hidden]{ display:none; }
-  /* a preference against motion is a preference, not a suggestion */
   @media (prefers-reduced-motion: reduce){
     .more-menu, .more-menu.in{ transition:none; transform:none; }
   }
@@ -232,11 +195,8 @@
   .menu-row svg{ width:18px; height:18px; flex:none; fill:none; stroke:var(--text-muted); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   button.menu-row{ width:100%; text-align:left; background:transparent; border:0; border-bottom:1px solid var(--border); cursor:pointer; font:inherit; }
   button.menu-row:last-child{ border-bottom:none; }
-  /* the Sources screen: the same sheet as the menu, a plain title, one card of links per section */
   .sources-view{ z-index:71; }
   .sources-view .topbar-title.sources-title{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:17px; color:var(--text-primary); }
-  /* the Appearance sheet (after Clue's screen): a title in the voice, three rows with a preview tile each, the
-     chosen row checked in purple */
   .appearance-title{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:30px; line-height:1.1; color:var(--text-primary); margin:6px 0 26px; }
   .appearance-choice{ width:100%; text-align:left; background:transparent; border:0; border-bottom:1px solid var(--border); cursor:pointer; font:inherit; gap:16px; padding:14px 20px; }
   .appearance-choice:last-child{ border-bottom:0; }
@@ -253,7 +213,6 @@
   .appearance-choice[aria-checked="true"] .appearance-check{ opacity:1; transform:none; }
   .menu-lede{ font-size:14px; color:var(--text-secondary); line-height:1.6; margin:0 0 26px; }
   .menu-lede .mono{ font-size:12.5px; color:var(--text-primary); }
-  /* the contact form: two fields in a card, a Send button in the app's accent */
   .contact-form{ padding:6px 20px 16px; }
   .contact-field{ display:block; padding:12px 0; border-bottom:1px solid var(--border); }
   .contact-field:last-of-type{ border-bottom:none; }
@@ -273,7 +232,6 @@
   .sources-view .menu-section{ font-family:"Public Sans",sans-serif; font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
   .sources-view .menu-row{ font-size:15px; padding:14px 18px; line-height:1.45; }
   .sources-view .menu-row svg{ width:14px; height:14px; }
-  /* prose cards on the Guide screens: paragraphs, not rows */
   .menu-prose{ padding:6px 20px 8px; }
   .menu-prose p{ font-size:15px; line-height:1.6; color:var(--text-primary); margin:12px 0; }
   .menu-prose b{ font-weight:600; }
@@ -281,16 +239,10 @@
   .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 22px; }
   .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
-
-  /* the daily Feeling/Energy readout — reuses .tag's existing good/warning/serious/critical colors, no new palette.
-     Each tag carries a small inline-SVG mood icon (weather for Feeling, battery level for Energy) drawn in
-     currentColor, so it inherits the tag's own severity color in both themes. */
-
-  /* ---------- calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) ---------- */
+  /* ---- calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) ---- */
   .calendar-head{ padding:2px 4px 0; }
   #calendar-list .sect-head{ margin:var(--gap) 2px 0; }
   #calendar-list .sect-head:first-child{ margin-top:2px; }
-  /* An empty tab that admits it: centred in the space it will one day fill, in the voice, and quiet. */
   .soon{ min-height:46vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px; }
   .soon-mark{ width:96px; height:96px; margin-bottom:8px; color:var(--text-muted); opacity:0.75; }
   .soon-ring{ fill:none; stroke:var(--border); stroke-width:1.5; }
@@ -301,54 +253,34 @@
     font-family:"Public Sans",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
     color:var(--text-muted); font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:2px;
   }
-  /* the cycle row: name, years and chevron on one line, the strips full width beneath, then what the cycle was
-     and did. A season run is a pill as wide as its share of quarters; the open cycle's remaining quarters are dots. */
   .era-head{ display:flex; align-items:baseline; gap:8px; }
   .era-name{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600; font-size:20px;
     line-height:1.15; color:var(--text-primary); }
   .era-years{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
     text-transform:uppercase; color:var(--text-muted); }
-  /* Beside the label, not at the far edge. `align-self:center` centres it on a line whose height
-     is set by the 20px name, which lands it above the small caps beside it — the 1.5px seats it on them. */
   .era-head .peek-chev{ margin-left:-3px; align-self:center; position:relative; top:1.5px; }
   .era-row:hover .era-head .peek-chev{ color:var(--accent-ink); opacity:1; }
-  /* The band carries the cycle's LENGTH: its width is the cycle's share of the longest on the board, and both
-     strips inside share it, which keeps the seasons and the market aligned. */
   .era-bands{ margin:9px 0 0; }
   .era-bands .strip{ margin:0; }
-  .era-bands .strip + .strip{ margin-top:5px; }   /* the two are a pair, closer to each other than to anything else */
-  /* the chips are the whole line, so they start where everything else on the row does */
+  .era-bands .strip + .strip{ margin-top:5px; }
   .era-foot{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
     margin-top:8px; font-size:12.5px; color:var(--text-secondary); }
   .era-years b{ font-weight:700; color:inherit; }
-  /* the cycle's two economic totals, as a pair on their own line so they read against each other rather than
-     against the market total below them */
   .era-econ{ display:flex; gap:8px; flex-wrap:wrap; }
-  .era-foot-text{ white-space:nowrap; }   /* one flex item, or space-between scatters its words */
+  .era-foot-text{ white-space:nowrap; }
   .era-foot b{ color:var(--text-primary); font-weight:700; }
-  /* No tab-level spacing between containers (see THE GAP in :root): a margin here at (0,2,0) would out-weigh the
-     token rule at (0,1,0) and set the dial apart from the Browse list by a different amount than its rows. */
   #today-analysis{ display:flex; flex-direction:column; gap:10px; margin-top:0; }
   #signs-list{ display:flex; flex-direction:column; gap:10px; }
   .strip-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px 14px; box-shadow:var(--shadow); }
   .strip-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .strip-name{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; line-height:1.1; color:var(--text-primary); }
   .strip-years{ font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-muted); }
-  /* NO `gap` and no border between runs: either takes track per run (`flex:n 1 0` shares out the rest), and the
-     seasons strip has five or six runs to the market strip's two, so the two would end on different pixels. The
-     separator is an inset shadow, which changes no size, so every boundary is a pure function of the flex fractions. */
   .strip{ display:flex; align-items:center; height:14px; margin-top:12px; }
   .strip > * + *{ box-shadow:inset 3px 0 0 var(--surface); }
-  /* A run is never narrower than it is tall (Keren, Sep 20, 2026: "the seasons are sometimes squeezed — I would rather
-     have them like a round dot rather than a squeezed ellipse"). At the floor a run is exactly the dot the ring draws. */
   .strip-run{ height:12px; border-radius:var(--radius); background:var(--season); min-width:12px; }
-  /* A one-quarter season and a run the settle pass rescued are dots, as on the ring: the run KEEPS its box (so both
-     strips keep one flex basis) and the DOT is painted inside it. A dot drawn as the box itself puts the 3px
-     separator inside the circle — the squeezed crescent Keren has rejected. A settled box is 15px: 12 for the dot,
-     3 for the separation. `aspect-ratio`, not a fixed height, so a clamped dot stays a circle. */
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
-  .strip-run.settled{ flex:none; }  /* its width is set by the settle pass below, which does move the end */
+  .strip-run.settled{ flex:none; }
   .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
   .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-foot{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-secondary); }
@@ -358,36 +290,28 @@
   .next-card h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; color:var(--text-primary); margin:0 0 6px; }
   .next-card p{ font-size:15px; line-height:1.6; color:var(--text-secondary); margin:0; }
   @media (max-width:640px){ .strip-card{ padding:14px 14px 12px; } .next-card{ padding:14px 14px 12px; } }
-  /* ---------- yearly calendar — one card per year, grouped into five eras ---------- */
+  /* ---- yearly calendar — one card per year, grouped into five eras ---- */
   .cycle-group{ margin-bottom:26px; }
   .cycle-group:last-child{ margin-bottom:0; }
   .cycle-group-head{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
   .cycle-group-range{ font-size:11px; color:var(--text-muted); }
   .cycle-group-name{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:600; font-style:italic; font-size:20px; color:var(--text-primary); }
   .cycle-group-blurb{ font-size:12.5px; color:var(--text-secondary); line-height:1.55; max-width:70ch; margin:0 0 10px; }
-  /* ---------- season strip ---------- */
-  /* The hero. Keren, V254: "give the main cycle a white container", so the dial, Temperature and Growth read as one
-     group. It leads by size: the padding is tighter than a normal card's and the wheel reaches past it. */
+  /* ---- season strip ---- */
   .season-card{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 16px; box-shadow: var(--shadow);
-    display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center; /* the wheel alone, centred (Sep 19, 2026) */
+    display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;
     position:relative;
   }
-  /* the card's header: the same kicker + (i) as the Temperature card, across the top of the card */
-  .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; } /* order: the wheel wrap is order -1 on phones */
-  /* the legend popup's rows */
+  .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
   .detail-modal .legend-rows, .metric-sheet .legend-rows, .sign-detail .legend-rows, .hero .legend-rows, .journal-about .legend-rows{ margin:12px 0 4px; }
   .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:14px; color:var(--text-primary); }
   .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
-  /* the four seasons' colours: a class per season sets --season, which the ring's strokes and the legend's swatches wear */
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
-  /* the market wears the strip too, in the dial band’s own two colours, so one picture serves both */
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
   .strip-run.ytd{ opacity:0.55; }
-  /* the legend's swatches, the Season Model table's range bars and the ring's strokes all read the same --season, so a token
-     change in :root recolours all three at once (Keren, V182: "one change fixes the entire app") */
   .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
   .detail-modal .legend-row .bar, .metric-sheet .legend-row .bar, .sign-detail .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
   .detail-modal .legend-row .bar.ytd, .metric-sheet .legend-row .bar.ytd, .sign-detail .legend-row .bar.ytd{ opacity:0.55; }
@@ -395,65 +319,25 @@
   .detail-modal .legend-head, .metric-sheet .legend-head, .sign-detail .legend-head{ font-family:"Public Sans",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
   :root{
-    /* The dial's moons (Keren, Sep 17, 2026): the seasons as phases of the moon — Winter new, Summer full — so no
-       season colour is needed; two tokens, the lit and dark faces, black and white. The market band keeps teal / coral. */
     --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(20,18,26,0.6); --dial-accent:#14121a;
-    /* the year badge (Keren, V295: "make the year marker on the cycle dial dark purple"): the brand's deep plum,
-       9.4:1 against the page, with the page's own colour reversed out of it. Purple also tells the badge apart from the
-       season ring it rides, which the old near-black disc did not. */
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    /* The battery's four charge steps (Keren, V396: "if she has medium size reserve it should be, let's say,
-       yellow, and if it has ample supply it should be green, like a battery"). A charge, not a severity: in light
-       mode --warning and --serious are both mixes of --critical, so "Steady" would read pale red. (Known: the
-       [data-theme="dark"] block's --warning is a real amber, #eda100, so the themes disagree on a warning.) */
     --batt-1:#a32b1c; --batt-2:#e0574a; --batt-3:#dfb63f; --batt-4:#1ea8a3;
-    /* the four seasons (the DSM): Winter periwinkle, Spring a muted periwinkle, Summer orange, Autumn gold — the dial's
-       colours and nowhere else; the Temperature chart's cold shares Winter's hue. Fixed values, light here and dark below. */
     --season-winter:#5b7fd6; --season-spring:#9aa7d4; --season-summer:#d86f32; --season-autumn:#d8a23c;
-    /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change
-       one number — do not repeat yourself"). Every distance between one container and the next reads --gap; a new
-       container takes `margin-top:var(--gap)`, never a figure of its own. Marks and type keep their own figures (a
-       4px bar cap, a 13px label gap): shapes and alignments, not spacing. ---- */
-    --mini-w:80px;   /* the category row's miniature, matched to Apple Health's 76-85px */
-    --mini-h:42px;   /* Keren, V507: "make the power preview chart a little bit smaller in height, like 20%
-                        shorter." A token here and PEEK_H in the script, read together. 42, not 41.6, keeps
-                        the 12 columns' slot arithmetic whole. */
-    /* Keren, V505: "make outer spacing 15 pixels and inner spacing 10 pixels." TWO numbers: --gap BETWEEN
-       containers, --pad INSIDE one. */
+    /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
+    --mini-w:80px;
+    --mini-h:42px;
     --pad:10px;
-    /* Keren, V507: "…the spacing between power, households and activity is too big — five pixels shorter, and this
-       applies to all of the app." Between two cards is --gap; under the bar, separating page from chrome, is --gap-top. */
-    --gap:10px;       /* BETWEEN containers */
-    /* Keren, V595: "…every page in the app has 20 pixels padding from all sides." The sides are .wrap's 20px; the
-       bottom, --topbar-gap and the inner pages' first-element margins read this token. */
-    --gap-top:20px;   /* the page's own frame: under the top bar, above the tab bar, and both sides */
-    /* the space under the sticky top bar. A token because something has to CANCEL it — see #metric-page. */
-    --topbar-gap:calc(var(--gap-top) - 2px);   /* + .tab-panel's 2px padding = one --gap-top under the bar */
-    /* Keren, V444: "decide on a border radius that will apply to all containers in the app…" One number, never a
-       999px pill for "round", which renders differently at every height. Keren, V507: "I really wanted it to look
-       more round and more feminine, like the Apple app": 16 is the roundest that still reads as a card, not a bubble.
-       The inner value is 3px tighter for a segment inside a 3px-padded track, or the curves fight. Small marks (a 4px
-       bar cap, a 2px swatch) keep their own radii, and circles stay circles. */
+    --gap:10px;
+    --gap-top:20px;
+    --topbar-gap:calc(var(--gap-top) - 2px);
     --radius:16px;
-    --radius-inner:13px;   /* --radius minus the 3px padding of a segmented track */
+    --radius-inner:13px;
   }
-  /* dark theme: the dark face stays black but wears a pale edge, or a new moon would vanish into the surface */
   :root[data-theme="dark"]{ --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(246,243,247,0.5); --dial-accent:#f6f3f7; --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --batt-1:#c2402f; --batt-2:#f4776a; --batt-3:#f2d264; --batt-4:#3dc2bb; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; }
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(246,243,247,0.5); --dial-accent:#f6f3f7; --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --batt-1:#c2402f; --batt-2:#f4776a; --batt-3:#f2d264; --batt-4:#3dc2bb; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; } }
 
-
-  /* The cycle dial (Clue's cycle wheel as the reference): the inner ring is the seasons; the outer ring the current
-     market cycle's years, scaled to a typical cycle's length so the pale remainder reads as "how far a typical cycle
-     still has to run". The hub says the date and theme; the badge on the track says which year of the cycle this is. */
-  /* The dial's size is one variable; the SVG (viewBox 216 units) fills the box, so moons, band and labels scale with it.
-     Desktop: 340px beside the text. Phone: it fills the width and comes first — the thing you land on, as in Clue. */
-  /* `width` is load-bearing: without it the wrap shrinks to the wheel, so the wheel's max-width:100% resolves
-     against a box the wheel itself sized and constrains nothing. The phone rule adds the 22px its −11px margins take. */
-  .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; } /* as big as the card or the viewport allows */
-  /* --dial comes from 100vw, which INCLUDES a classic scrollbar while the card's width does not, and overflow is
-     clamped to the start edge, so an unguarded wheel sits off-centre to the right. max-width is the guard. --dial
-     stays a length because the hub's type is scaled from it. See the phone rule for the other half. */
+  .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
   .season-wheel-hub{
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -462,25 +346,18 @@
   .season-wheel-hub-date{ font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.042); color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
   .season-wheel-hub-theme, .season-wheel-hub-detail .who, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
-  /* the year read-out's word: ink on a pale wash of the band's color, a soft pill (Keren, Sep 19, 2026) */
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
-  .season-wheel-hub-theme{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.116); color:var(--text-primary); line-height:1.05; margin-top:calc(var(--dial) * 0.012); } /* ≈40px on a phone — the DSM's season word */
-  /* The reading, inside the circle (Keren, Sep 19, 2026): hold the year badge and drag round the ring to read any
-     quarter; hover or tap a moon does the same. Three short lines under the theme word, sized off the dial and kept
-     short to clear the market band. */
+  .season-wheel-hub-theme{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.116); color:var(--text-primary); line-height:1.05; margin-top:calc(var(--dial) * 0.012); }
   .season-wheel-hub-detail{ margin-top:calc(var(--dial) * 0.02); font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.034); line-height:1.4; color:var(--text-secondary); }
   .season-wheel-hub-detail div{ white-space:nowrap; }
-  .season-wheel-hub-detail .who{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.058); color:var(--accent-ink); } /* the DSM's phase line: 20px, accent ink */
-  /* the phase line doubles as the way into the season's popup: a chevron beside the word, no second line */
+  .season-wheel-hub-detail .who{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.058); color:var(--accent-ink); }
   .season-wheel-hub-detail button.who{ background:none; border:0; padding:0; cursor:pointer; pointer-events:auto;
     display:inline-flex; align-items:baseline; gap:0.22em; color:var(--accent-ink); }
   .season-wheel-hub-detail button.who:hover{ text-decoration:underline; }
   .season-wheel-hub-detail button.who:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
   .who-chev{ font-size:0.82em; opacity:0.75; }
-  /* the one thing in the hub that takes the pointer: the link to the quarter's full read-out (Keren, Sep 19, 2026 —
-     "a link below Autumn that will open a pop up with all of this quarter's information") */
   .season-wheel-hub-detail .details-link:not(.who){
     pointer-events:auto; cursor:pointer; background:none; border:none; padding:2px 6px; margin-top:calc(var(--dial) * 0.01);
     font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.036); font-weight:600; color:var(--accent-ink);
@@ -489,13 +366,9 @@
   .season-wheel-hub.away .season-wheel-hub-date b{ color:var(--rose-ink); }
   .cycle-dial{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
   .cycle-dial .dial-track{ fill:none; stroke:var(--border); stroke-width:var(--track-w, 16); opacity:0.6; stroke-linecap:round; }
-  /* the quarters still to come in a typical cycle, as small dots on the inner ring — Clue's days ahead */
   .cycle-dial .dial-dot{ fill:var(--text-muted); opacity:0.45; }
-  /* a history's plot takes horizontal drags and leaves vertical ones to the page (see wireHistHover); without this
-     the browser claims the gesture as a scroll and the readout never moves. */
   .page-chart svg, .spread-history svg, .chart-shell svg,
   .page-chart svg *, .spread-history svg *, .chart-shell svg *{ touch-action:pan-y; }
-  /* the today badge rides the track just ahead of the last moon and carries the year of the cycle */
   .cycle-dial .dial-today-badge{ cursor:grab; touch-action:none; transition:transform 0.18s ease;
     filter:var(--badge-lift); }
   .cycle-dial .dial-today-badge.scrubbing{ cursor:grabbing; }
@@ -504,36 +377,25 @@
   .cycle-dial .dial-today-badge .lbl{ font-size:4.2px; font-weight:600; letter-spacing:0.2px;
     fill:var(--text-muted); }
   .cycle-dial .dial-today-badge .num{ font-size:11px; font-weight:700; }
-  /* the outer ring: one round-ended shape per season run (the two Springs and two Autumns each one season), with a
-     hair of track where the season changes. Width 7 on every cycle (Keren, V514: the thinner ring matches the market
-     band inside it); drawDial thins it only if 7 cannot hold a quarter plus its two gaps. The literals are the fallback. */
   .cycle-dial .dial-moon{ pointer-events:auto; fill:none; stroke:var(--season); stroke-width:var(--moon-w, 11); stroke-linecap:butt; transition:stroke-width 0.12s; }
   .cycle-dial .dial-moon.cap{ stroke-linecap:round; pointer-events:none; }
-  /* the quarter being read (hovered, tapped, or scrubbed to) swells to the track's full width */
   .cycle-dial .dial-moon.active{ stroke-width:var(--moon-w-active, 16); }
-  /* the market band: one segment per calendar year, just inside the seasons — thinner because it is a yearly series */
   .cycle-dial .dial-mkt{ fill:none; stroke-width:6; stroke-linecap:round; pointer-events:auto; }
   .cycle-dial .dial-mkt.up{ stroke:var(--ovulate); }
   .cycle-dial .dial-mkt.down{ stroke:var(--bleed-mid); }
   .cycle-dial .dial-mkt.ytd{ opacity:0.55; }
-  /* the cycle's peak year on the band, Clue's ovulation mark in the DSM's form: a surface disc ringed and cored in the
-     band's own colour */
   .cycle-dial .dial-peak{ pointer-events:auto; }
   .cycle-dial .dial-peak .disc{ fill:var(--surface); stroke-width:2; }
   .cycle-dial .dial-peak.up .disc{ stroke:var(--ovulate); } .cycle-dial .dial-peak.up .dot{ fill:var(--ovulate); }
   .cycle-dial .dial-peak.down .disc{ stroke:var(--bleed-mid); } .cycle-dial .dial-peak.down .dot{ fill:var(--bleed-mid); }
-  /* the legend: one soft pill per color — a tint of the color behind the name, the exact swatch as a dot */
   .dot.good{background:var(--good);} .dot.warning{background:var(--warning);}
   .dot.serious{background:var(--serious);} .dot.critical{background:var(--critical);}
 
-
-  /* ---------- tab bar (app-style segmented navigation) ---------- */
+  /* ---- tab bar (app-style segmented navigation) ---- */
   .tabbar{
     display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius);
     padding:4px; margin:22px 0 24px;
   }
-  /* app-style tabs: a line icon stacked over its label (Clue's own bottom nav is the reference); icons are inline
-     SVG in currentColor, so the active tab's accent color reaches the icon too */
   .tab-btn{
     flex:1; border:none; background:transparent; padding:9px 8px 8px; border-radius:var(--radius); cursor:pointer;
     display:flex; flex-direction:column; align-items:center; gap:4px;
@@ -544,10 +406,6 @@
   .tab-btn.active{ background:var(--surface); color:var(--accent-ink); border:1px solid var(--border); margin:-1px; }
   .tab-btn.active svg{ opacity:1; }
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
-  /* Phones: the tab bar sits on the bottom EDGE, as the top bar sits on the top one (Keren, Sep 27, 2026: "the
-     bottom menu bar is hovering over the content. I want it to look like the top bar…"): full width, flush, the page
-     colour at 86% behind a 14px blur, one hairline facing the page. The safe-area inset is INSIDE the padding, so the
-     bar still reaches the bottom edge above a home indicator. The modal backdrop (z-index 80) covers it. */
   @media (max-width:640px){
     .tabbar{
       position:fixed; left:0; right:0; bottom:0; z-index:40; margin:0;
@@ -556,27 +414,19 @@
       -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
       border:0; border-top:1px solid var(--border);
     }
-    /* The bar's height, MEASURED (72px at 390, 414 and 430; content-driven), so the page's bottom padding is written
-       from it. Re-measure if the icons, labels or padding change. The safe-area inset lives inside the bar's padding. */
     .tabbar{ --tabbar-h:72px; }
     .tab-btn{ padding:2px 0 5px; gap:2px; border-radius:var(--radius); font-size:11px; font-weight:600; color:var(--text-muted); }
     .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
-    .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; } /* the label in primary text; only the chip is purple (the DSM) */
+    .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; }
     .tab-btn.active svg{ background:var(--accent-wash); }
-    /* Keren, V595: "the padding on the bottom should be the same as the padding on the top." The same TOKEN, so they
-       cannot drift. The home indicator's space below is not padding and not ours to even out. */
     .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
-    .tabnav{ margin-bottom:0; }   /* --topbar-gap comes from --gap-top at every width, so there is no phone value to set */
+    .tabnav{ margin-bottom:0; }
   }
   .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
-  /* Keren, V594: "…make the spacing even, like the spacing between the current cycle and weather/mood." #signs-list
-     holds four hidden sign pages, and a zero-height flex CHILD still costs the column a gap; the list cannot be
-     removed, it holds the pages. So a container whose every child is hidden takes no gap, until one opens. */
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
   .tab-panel[hidden]{ display:none; }
 
-  /* ---------- vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used
-     elsewhere; Temperature is the chart card above them) ---------- */
+  /* ---- vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used ---- */
   .vital-tile{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 12px 16px;
     box-shadow: var(--shadow); display:flex; flex-direction:column; align-items:center; text-align:center;
@@ -589,15 +439,8 @@
     transition:stroke-dashoffset 0.6s ease;
   }
   .vital-ring-fill.accent{ stroke:var(--accent); }
-  /* Keren, V583: "…I want the power preview to be a ring. So a full ring is 100% and 26% would be less than third
-     full." The app's OWN ring (the vitals', the rates level's), where five bars would light the same two for 26% and
-     39%. At mark size a 9-wide stroke shrinks to 1.1px, so 15 lands on the 1.9px other glyphs use. currentColor,
-     not a state hue: a head mark stays quiet grey, and the reading is never carried by colour alone. */
   .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
   .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
-  /* the face inside the ring: the app's own five mouths, in the quiet ink a mark wears while the ring keeps the
-     brand colour and the word beside it keeps the verdict */
-  /* the mood beside the name, at the size every other row's mark is drawn */
   .subject-label .mood-mark{ width:16px; height:16px; margin-right:5px; color:var(--text-secondary); }
   .sign-row .subject-label{ display:inline-flex; align-items:center; }
   .vital-ring-fill.good{ stroke:var(--good); } .vital-ring-fill.warning{ stroke:var(--warning); }
@@ -607,33 +450,21 @@
   .vital-unit{ font-size:11px; font-weight:400; color:var(--text-muted); margin-left:1px; }
   .vital-label{ font-size:12.5px; font-weight:700; color:var(--text-primary); display:inline-flex; align-items:center; gap:2px; }
   .vital-sub{ font-size:12.5px; color:var(--text-muted); margin-top:6px; }
-  /* word tiles: the season's action and the Feeling/Energy words, same tile as the rings but an icon instead of a ring */
 
-  /* ---------- temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the
-     cycle from the 2% target line, the 1–3% range as a pale green band, a "today" line with the reading. Columns wear
-     the Season Model's tap colours. No bear-year shading (Keren): the dial's market band carries them. ---------- */
-  /* the view's chart cards share one head: a kicker with its (i) on the left, a short sub-line on the right */
+  /* ---- temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the ---- */
   .temp-card, .cv-card{ padding:var(--pad) 20px 14px; }
   .cv-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  #growth-card .cv-head{ align-items:center; } /* the country dropdown sits in this one */
-  #growth-phase{ display:inline-flex; } /* the phase, said once, in both views */
+  #growth-card .cv-head{ align-items:center; }
+  #growth-phase{ display:inline-flex; }
   .cv-kicker{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
   .cv-sub{ font-size:12.5px; color:var(--text-muted); display:inline-flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
   .cv-sub .chip{ font-size:14px; font-weight:600; color:var(--text-primary); }
   .cv-sub .chip i{ font-style:normal; font-weight:400; font-size:12.5px; color:var(--text-muted); margin-right:4px; }
   .cv-sub .chip .unit{ font-size:12.5px; font-weight:600; color:var(--text-muted); }
-  /* the big number over a chart (Keren's reference): the value large in the mono face, a small uppercase
-     label beneath it with the trend word in the tag's colour */
   .cv-stats{ display:flex; gap:26px; flex-wrap:wrap; margin:8px 0 0; }
-  /* the cycle's own figures, fenced off from the chart's latest reading (Keren, V213: "use borders or something to
-     organise the view…"), in one box component (Keren, Sep 20, 2026: "…maybe we can apply it to temperature as well") */
   .cv-stats.cycle-stats{ display:block; border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px 12px; margin:12px 0 2px; }
   .cv-stats.cycle-stats .cv-kicker{ margin-bottom:6px; }
   .cv-stats.cycle-stats .cv-stat + .cv-stat{ margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
-  /* the Pressure row hands its value slot to that box, and the box needs no top margin when it IS first under the
-     name. Keren, V314: "…and the border only on the numbers, not on the whole block": two borders round one reading
-     is a fault. */
-  /* The page: the same rows the class pages use, under a head per class rather than one page per class. */
   .ind-group{ margin-top:var(--gap); }
   .ind-tabs{ margin:2px 0 0; }
   .ind-tabs + .ind-group{ margin-top:var(--gap); }
@@ -644,19 +475,12 @@
   .ind-group-head span{ font-family:"Public Sans",sans-serif; font-size:12px; font-weight:400;
     color:var(--text-muted); }
   .ind-group .sign-row + .sign-row{ margin-top:10px; }
-  /* Keren, V509: "in the All indicators page colour the icons dark purple and make the round background light
-     purple…" A per-row wash reads as a key, but the verdict is in the word and the roster is a directory: ONE wash is
-     decoration. Unlike the home tiles, this dense list keeps a disc, or the labels drift. An empty slot draws none. */
   .ind-sheet .subject-icon span{ background:color-mix(in srgb, var(--accent) 18%, var(--surface)); color:var(--accent-ink); }
   .ind-sheet .subject-icon span:empty{ background:none; }
-  /* a member row's unit and its unflagged word — the same clothes they wear on the card they came from */
   .member-unit{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
     letter-spacing:0.01em; color:var(--text-muted); align-self:baseline; }
   .member-word{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
     color:var(--text-muted); letter-spacing:0.01em; align-self:baseline; }
-  /* today's reading inside the spread block, in the Temperature card's box. The figure is smaller
-     than that box's 30px default because this one is a PAIR of numbers and a slash, and it has a sentence under
-     it rather than a three-word label. */
   .cv-stats.press-box{ margin:var(--gap) 0 0; }
   .press-box .cv-stat-v{ font-size:26px; }
   .press-box .press-note{ font-size:13px; line-height:1.55; color:var(--text-secondary); margin:9px 0 0; }
@@ -665,33 +489,16 @@
   .cv-stat-l{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; margin-top:3px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .cv-stat-l .cv-trend{ font-family:"Public Sans",sans-serif; font-weight:700; letter-spacing:0.06em; }
   .cv-trend.good{ color:var(--good-ink); } .cv-trend.warning{ color:var(--warning-ink); } .cv-trend.norm{ color:var(--text-secondary); }
-  /* the view is one element that moves between the Cycle tab and the Calendar's detail; it spaces its own blocks */
   #cycle-view, #calendar-list, #calendar-cycle{ display:flex; flex-direction:column; gap:16px; }
-  /* the Calendar list: the same row as a subject card, but it opens the cycle view rather than a drawer */
   .era-row{ cursor:pointer; }
-  /* a row inside a card cannot darken its own edge — it has none — so hover is the wash the menu rows use */
   .era-row:hover{ background:var(--surface-2); }
   .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .menu-btn[hidden]{ display:none; }
-  /* The yellow-to-orange ramp (Keren, V257: "different shades of yellow to orange — we have that in our DSM,
-     and it fits temperature really well"). Every step is mixed from --season-autumn and --season-summer, the two warm
-     seasons on the dial, so the chart and the ring are drawn out of one palette. The steps climb in darkness as well
-     as in hue, so the ramp survives being read without colour. s0 is below the range and keeps the app's periwinkle. */
-  /* Growth's columns: quiet, so the average line stays the loudest thing, except through a contraction — the one
-     reading a growth chart is not allowed to let recede. `neg` is the season model's regime, not the sign of the number. */
-  /* The phase, in the dial's own seasons rather than in the severity palette (Keren, V260: "blue for
-     contraction, yellow for expansion"). Expansion is Autumn's gold, contraction Winter's periwinkle — one hue for
-     each phase, and the two degrees of contraction are two steps of the same blue rather than two different alarms. */
-  /* Growth's HISTORY diverges about zero in the season palette (Keren, V380: "it needs to be either
-     orange-yellow for contraction or blue-green for expansion"). Note this is a GROWTH semantic, not the wheel's:
-     in the season model colour encodes temperature, so contraction spans blue Winter and yellow Autumn. Here the
-     question is only which side of zero a quarter fell, so the two families split on that — cool for expansion,
-     warm for contraction — and the caption says so. The cycle chart's own .gdp-col below keeps the phase colours. */
   .growth-col{ fill:none; stroke-linecap:round; stroke:var(--good); }
   .growth-col.down{ stroke:var(--season-summer); }
   .gdp-col{ fill:none; stroke-linecap:round; stroke:var(--season-autumn); opacity:0.95; }
-  .gdp-col.neg{ stroke:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); opacity:1; }  /* the trend is falling */
-  .gdp-col.below{ stroke:var(--season-winter); opacity:1; }                                        /* the quarter actually shrank */
+  .gdp-col.neg{ stroke:color-mix(in srgb, var(--season-winter) 60%, var(--surface)); opacity:1; }
+  .gdp-col.below{ stroke:var(--season-winter); opacity:1; }
 
   .temp-col{ fill:none; stroke-linecap:round; }
   .temp-col.s0{ stroke:var(--cold); }
@@ -700,17 +507,13 @@
   .temp-col.s3{ stroke:var(--season-autumn); }
   .temp-col.s4{ stroke:color-mix(in srgb, var(--season-summer) 62%, var(--season-autumn)); }
   .temp-col.s5{ stroke:var(--season-summer); }
-  /* the average: the only saturated line in the picture, and deliberately outside the warm family so it cannot be
-     mistaken for one more reading */
   .temp-avg{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .temp-avg-label{ font-size:10.5px; font-weight:700; fill:var(--accent-ink); }
-  .avg-label{ fill:var(--accent-ink); font-weight:700; }   /* GDP's, which uses the chart-label plate */
+  .avg-label{ fill:var(--accent-ink); font-weight:700; }
 
   .temp-chart{ position:relative; margin:8px -6px 0; }
   .temp-chart svg{ width:100%; height:auto; display:block; overflow:visible; }
-  /* the line charts: a round-capped line coloured by where it is (gradient stops on the band edges or the zero
-     line), a wash fading to the baseline, hollow dots on the readings, a dark badge at the end */
-  .chart-line{ fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }  /* a hairline (Keren, V157: "delicate and feminine") */
+  .chart-line{ fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
   .chart-area{ opacity:0.2; }
   .chart-dot{ fill:var(--surface); stroke-width:1.5; }
   .chart-dot.hot{ stroke:var(--bleed-mid); } .chart-dot.cold{ stroke:var(--cold); } .chart-dot.within{ stroke:var(--warm); }
@@ -720,15 +523,14 @@
   .chart-hover-dot.pos{ fill:var(--ovulate); } .chart-hover-dot.neg{ fill:var(--bleed-mid); }
   .gs-hot{ stop-color:var(--bleed-mid); } .gs-cold{ stop-color:var(--cold); } .gs-within{ stop-color:var(--warm); }
   .gs-pos{ stop-color:var(--ovulate); } .gs-neg{ stop-color:var(--bleed-mid); }
-  .temp-range{ fill:var(--border); opacity:0.55; } /* the dial's track, laid flat: the 1–3% band */
-  .temp-badge .disc{ fill:var(--text-primary); stroke:var(--surface); stroke-width:1.25; } .temp-badge .dot{ fill:var(--surface); } /* white on the light theme, the card's dark on the dark one — the disc is the text colour */
+  .temp-range{ fill:var(--border); opacity:0.55; }
+  .temp-badge .disc{ fill:var(--text-primary); stroke:var(--surface); stroke-width:1.25; } .temp-badge .dot{ fill:var(--surface); }
   .temp-target{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
   .temp-target-label{ font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--text-secondary); }
   .temp-today-line{ stroke:var(--text-primary); stroke-width:1; opacity:0.35; }
-  #growth-svg .temp-today-line{ stroke:var(--border-strong); opacity:1; } /* the Growth chart's end line is a quiet rule (the DSM) */
+  #growth-svg .temp-today-line{ stroke:var(--border-strong); opacity:1; }
   .temp-today-date{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-muted); }
   .temp-today-value{ font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:700; fill:var(--text-primary); }
-  /* the gauge's marks: the dial's own weights */
   .gauge-arc{ display:block; width:100%; max-width:280px; margin:6px auto 0; overflow:visible; }
   .gauge-arc.mini{ max-width:none; margin:0; }
   .gauge-track{ stroke:var(--border); opacity:0.6; fill:none; stroke-linecap:round; }
@@ -751,37 +553,25 @@
     font-size:11.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:600; }
   .subject-ring .gauge-arc.mini{ width:100%; }
 
-  /* The rule between a history's chart and its figures (Keren, V427: "add a line above total price change so that it
-     would divide the data from the chart"), on every history (Keren, V439). A container rule, on the block not the
-     row; Pressure's Fed-funds box, the only other legend-rows, sits outside a .page-chart. Keren, V430: ten pixels
-     out of the space above it, taken from this margin — the rest is SVG below the x labels, and trimming it would
-     move the labels. */
   .page-chart .legend-rows{ border-top:1px solid var(--border); padding-top:4px; margin-top:2px; }
-  .legend-row.lead small{ font-weight:700; color:var(--text-primary); }   /* Keren, V423: the total in bold, as the row that leads the list; Keren, V428: the NUMBER is the bold thing, not its name */
-  /* The chart's key is inside the plot, stacked in its whitespace (Keren, V428: "wherever there's white space in the
-     chart, put that number, preferably close to the purple line"). */
-  .chart-label-plate{ fill:var(--surface); } /* the plate under a label that floats over the plot (the DSM) */
-  /* The reference legend at the foot of the grid: muted, 11px, the axis labels' weight — it states two constants
-     and the chart is what the reader came for. Its mark repeats the LINE, solid or dashed: shape, not colour, since
-     one hue cannot serve both themes here. */
+  .legend-row.lead small{ font-weight:700; color:var(--text-primary); }
+  .chart-label-plate{ fill:var(--surface); }
   .hl-lab{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-muted); }
   .temp-today-read{ font-family:"Public Sans",sans-serif; font-size:11px; fill:var(--text-secondary); }
-  /* phones: the sub-line goes (the kicker and the (i) carry it) and the "2% target" tag goes (the axis tick says it),
-     since at that width the tag would sit on the today line */
-  @media (max-width:640px){ .temp-card, .cv-card{ padding:14px 14px 12px; } .temp-card .cv-sub{ display:none; } .temp-chart svg .temp-target-label:not(.avg-label){ display:none; } } /* the 2% tag goes on phones (the tick says it); the average's label stays — nothing else says it */
+  @media (max-width:640px){ .temp-card, .cv-card{ padding:14px 14px 12px; } .temp-card .cv-sub{ display:none; } .temp-chart svg .temp-target-label:not(.avg-label){ display:none; } }
 
-  /* ---------- journal (editorial content tab) ---------- */
+  /* ---- journal (editorial content tab) ---- */
   .journal-about{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow: var(--shadow); }
   .journal-about h2, .journal-about h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
   .journal-about p{ font-size:15px; color:var(--text-secondary); line-height:1.65; margin:0 0 12px; }
   .journal-about p:last-child{ margin-bottom:0; }
   .journal-about a{ color:var(--accent-ink); font-weight:600; }
-  /* ---------- content tab: reading companion ---------- */
+  /* ---- content tab: reading companion ---- */
   .journal-about h2, .journal-about h4{ display:flex; align-items:center; gap:2px; }
   .reading-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px 28px; margin-top:4px; }
   .reading-block h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; color:var(--text-primary); margin:0 0 6px; }
   .reading-block p{ margin:0; font-size:15px; line-height:1.6; }
-  .detail-modal .reading-block, .metric-sheet .reading-block, .sign-detail .reading-block{ margin-top:14px; } .detail-modal .reading-block p{ color:var(--text-secondary); } /* the Content tab reads at 15px */
+  .detail-modal .reading-block, .metric-sheet .reading-block, .sign-detail .reading-block{ margin-top:14px; } .detail-modal .reading-block p{ color:var(--text-secondary); }
   .reading-watch{ margin:0; padding:0; list-style:none; }
   .reading-watch li{ font-size:15px; color:var(--text-secondary); padding:4px 0 4px 14px; position:relative; line-height:1.5; }
   .reading-watch li::before{ content:""; position:absolute; left:0; top:11px; width:6px; height:6px; border-radius:50%; background:var(--text-muted); }
@@ -793,7 +583,6 @@
   .seasons-rows .lag-row.lag-row-head{ font-size:11px; }
   .seasons-rows .meta{ display:none; }
   @media (max-width:640px){
-    /* phones: three lines per row — the season at 15px, what it is, then the target range, taller, across the full width */
     .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
     .seasons-rows .lag-row.lag-row-head{ padding:9px 12px; grid-template-areas: "name"; }
     .seasons-rows .lag-row.lag-row-head span:last-child{ display:none; }
@@ -807,38 +596,26 @@
     .seasons-rows .range-bar i{ width:14px; height:14px; margin:-7px 0 0 -7px; }
   }
   .seasons-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  .seasons-rows .range-bar b.on{ background:var(--season); } /* the lit zones wear the row's season colour — the dial's token */
-  /* the transition seasons fade in from the scale's deep end: Spring's below-range zone runs from the snowflake's
-     periwinkle into the light blue, Autumn's above-range zone from the flame's orange into the light yellow-orange */
+  .seasons-rows .range-bar b.on{ background:var(--season); }
   .seasons-rows .lag-row.spring .range-bar b.on.below{ background:linear-gradient(90deg, var(--season-winter), var(--season-spring)); }
   .seasons-rows .lag-row.autumn .range-bar b.on.above{ background:linear-gradient(270deg, var(--season-summer), var(--season-autumn)); }
   .seasons-rows .lag-row span:last-child{ text-align:left; font-family:inherit; }
-  /* the Target range cell as a lab result: three grey bars — below · the 1–3% range · above — the ones that apply
-     lit in the tap's colours, and today's CPI as a dot on today's row */
   .range-cell{ display:flex; align-items:center; gap:6px; }
   .range-cell svg{ width:13px; height:13px; flex:none; }
-  .range-cell svg.cold{ color:var(--season-winter); } .range-cell svg.hot{ color:var(--season-summer); } /* the scale's two deep ends */
+  .range-cell svg.cold{ color:var(--season-winter); } .range-cell svg.hot{ color:var(--season-summer); }
   .range-bar{ position:relative; display:flex; gap:2px; height:9px; width:100%; max-width:150px; }
   .range-bar b{ display:block; height:100%; border-radius:5px; background:var(--track); }
   .range-bar b.below{ flex:0 0 28%; } .range-bar b.within{ flex:0 0 40%; } .range-bar b.above{ flex:0 0 28%; }
-  .range-bar b.on{ background:var(--season, var(--text-muted)); } /* the season's colour */
+  .range-bar b.on{ background:var(--season, var(--text-muted)); }
   .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
   .seasons-rows .lag-row.now{ background:var(--accent-wash); }
   .seasons-rows .lag-row em{ font-style:normal; font-family:"Public Sans",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
   .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; }
   .framework-rows .lag-row span:last-child{ font-family:"Public Sans",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
-  /* phones: drop the body-side column (the indicator name already carries it) so the row stays on one line */
   @media (max-width:520px){ .framework-rows .lag-row{ grid-template-columns: 1fr 1.6fr 0.9fr; } .framework-rows .lag-row span:nth-child(2){ display:none; } }
 
-  /* ---------- Analysis tab: subjects — each section is a collapsible card whose summary row carries the one
-     figure that matters (Clue's Analysis screen is the reference: ring + headline value + a chevron). The full
-     section sits inside and only renders open on demand. Native <details>, so no JS is needed to toggle. ---------- */
-  /* The section head: the book's own spine (Structural, Leading, Coincident, Lagging), one word in the voice over a
-     hairline with an accent cap — a section mark in print, NOT a container: that would be a fourth level of enclosure. */
-  /* Where a sign sits in the cycle: one line, a tick for now, and the dot BEFORE, ON or AFTER it — three classes as
-     one picture with one thing moved. A structural sign spans the line. Neutral ink: a category, not a severity.
-     Under the figure, ahead of the chart (Keren, Sep 20, 2026: "prominent, but not too prominent"). */
+  /* ---- Analysis tab: subjects — each section is a collapsible card whose summary row carries the one ---- */
   .timing-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0 0; }
   .timing{ display:inline-flex; align-items:center; gap:8px; background:var(--track); border:0; border-radius:var(--radius);
     padding:5px 10px 5px 9px; font-family:"Public Sans",sans-serif; font-size:12px; font-weight:700;
@@ -847,20 +624,15 @@
   .timing.leading{ background:var(--tm-lead-wash); }
   .timing.coincident{ background:var(--tm-coin-wash); }
   .timing.lagging{ background:var(--tm-lag-wash); }
-  .timing.structural{ background:var(--track); }   /* outside the before/with/after order, so outside the ramp */
-  /* on a tinted ground the glyph reads from the chip's own ink, not from a fixed border colour */
+  .timing.structural{ background:var(--track); }
   .timing .tm-line{ stroke:currentColor; opacity:0.34; }
   .timing .tm-now{ stroke:currentColor; opacity:0.55; }
   .timing .tm-dot{ fill:currentColor; }
   .timing .tm-span{ stroke:currentColor; }
-  /* Keren, V377: "the leading tag at the bottom of the page — I want it in the info pop-up for each indicator…" The
-     note's opener CLONES this chip into the modal (outside any .metric-sheet), so this hides it on the page only.
-     Hide, never remove: openFrom() copies it, and the copy stays a door because its handler is delegated on document. */
   .metric-sheet .timing-row{ display:none; }
   .timing:hover{ filter:brightness(0.97); }
   .timing:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .timing .peek-chev{ margin-left:1px; opacity:0.75; }
-  /* the class's own page: the class's sentence, said once, where it is asked for */
   .timing-lede{ font-family:"Public Sans",sans-serif; font-size:14px; color:var(--text-secondary);
     display:flex; align-items:center; gap:10px; margin:2px 0 4px; }
   .timing-lede svg{ width:24px; height:14px; flex:none; overflow:visible; }
@@ -871,17 +643,13 @@
   .tm-span{ stroke:var(--text-primary); stroke-width:4.4; stroke-linecap:round; fill:none; }
   .timing-hint{ font-family:"Public Sans",sans-serif; font-size:12px; color:var(--text-muted); }
 
-  /* A sign row opens a page rather than expanding in place — the same move the Calendar's cycle rows
-     make, so they share their manners. */
   .sign-row{ cursor:pointer; }
   .sign-row:hover{ border-color:var(--border-strong); }
   .sign-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .sign-row .subject-chev{ transform:rotate(-45deg); }   /* it points at a page, so it never turns */
-  /* A hidden sheet must be gone: `.metric-sheet{display:flex}` out-weighs the browser's rule for [hidden], and a
-     closed page would sit in the column as a zero-height flex item, still collecting the parent's gap. */
+  .sign-row .subject-chev{ transform:rotate(-45deg); }
   .metric-sheet[hidden]{ display:none; }
 
-  .sect-head{ margin:22px 2px 2px; } /* + the 10px gap = 32 above, 12 below. One value at every width. */
+  .sect-head{ margin:22px 2px 2px; }
   .sect-head h2{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600;
     font-size:30px; line-height:1.1; margin:0; color:var(--text-primary); }
   .sect-rule{ display:block; position:relative; height:1px; background:var(--border-strong); margin-top:9px; }
@@ -890,10 +658,6 @@
   @media (max-width:640px){ .sect-head h2{ font-size:27px; } }
 
   .subject{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
-  /* the sentence on the face of the row (Keren, V247: "more info, like in Desire, Effort and Pulse") — the figure
-     alone informs nobody */
-  /* The trend: small, quiet, and only where a real series exists. Oura's shape — no axis, no labels, the
-     last point marked — with its window named beside it so the span is never a guess. */
   .spark{ display:flex; align-items:center; gap:9px; margin:9px 0 0; }
   .spark svg{ display:block; width:108px; height:26px; flex:none; overflow:visible; }
   .spark .spark-line{ fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
@@ -904,11 +668,11 @@
   .spark.warning .spark-line, .spark.warning .spark-end{ stroke:var(--warning); } .spark.warning .spark-fill, .spark.warning .spark-end{ fill:var(--warning); }
   .spark.serious .spark-line, .spark.serious .spark-end{ stroke:var(--serious); } .spark.serious .spark-fill, .spark.serious .spark-end{ fill:var(--serious); }
   .spark.critical .spark-line, .spark.critical .spark-end{ stroke:var(--critical); } .spark.critical .spark-fill, .spark.critical .spark-end{ fill:var(--critical); }
-  .subject[open] .spark{ display:none; } /* open, the drawer's own chart says it properly */
+  .subject[open] .spark{ display:none; }
   @media (max-width:560px){ .spark svg{ width:96px; height:24px; } }
 
   .subject-say{ font-size:13px; line-height:1.55; color:var(--text-secondary); margin:7px 0 0; max-width:54ch; }
-  .subject[open] .subject-say{ display:none; } /* open, the body says it at length */
+  .subject[open] .subject-say{ display:none; }
   .subject-summary{
     list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:var(--pad);
     user-select:none;
@@ -921,8 +685,6 @@
   .subject-ring .vital-ring-fill{ stroke-width:10; }
   .subject-ring .subject-dot{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .subject-ring .subject-dot span{ width:14px; height:14px; border-radius:50%; }
-  /* a subject whose mark is an icon rather than a ring or a dot: the icon in the state's ink on its wash,
-     the word tiles' pairing */
   .subject-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .subject-icon span{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .subject-icon svg{ width:27px; height:27px; }
@@ -931,15 +693,12 @@
   .subject-icon .serious{ background:var(--serious-wash); color:var(--serious-ink); }
   .subject-icon .critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .subject-icon .norm{ background:var(--mark-wash); color:var(--text-secondary); }
-  /* A sign with no mark draws no disc: an empty washed circle reads as a missing icon. The 54px slot stays, so every
-     label in the roster starts at the same x. */
   .subject-icon span:empty{ background:none; }
   @media (max-width:560px){ .subject-icon span{ width:42px; height:42px; } .subject-icon svg{ width:24px; height:24px; } }
   .subject-text{ flex:1; min-width:0; }
   .subject-label{ font-size:12.5px; color:var(--text-muted); margin-bottom:3px; }
   .subject-label b{ font-weight:600; color:var(--text-secondary); }
   .subject-context{ font-size:12.5px; color:var(--text-muted); margin:14px 0 0; line-height:1.5; }
-  /* the row's headline figure is a figure, so it is mono (the DSM's type rule); the words beside it are not */
   .subject-value{ font-family:"IBM Plex Mono",monospace; font-size:20px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; line-height:1.15; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
   .subject-value .unit{ font-family:"Public Sans",sans-serif; font-size:14px; font-weight:600; letter-spacing:0; color:var(--text-muted); }
   .subject-value .tag{ transform:translateY(-2px); }
@@ -951,58 +710,29 @@
   .subject[open] .subject-chev{ transform:rotate(45deg); }
   .subject-summary:hover .subject-more{ color:var(--accent-ink); }
   .subject-body{ padding:0 var(--pad) 20px; border-top:1px solid var(--border); }
-  /* The peek pair (Keren, V253: "Temperature and Growth side by side below the cycle, both having previews"): a
-     kicker, a figure, its state word in that state's ink and a peek of its line. The whole card opens its drawer. */
   .peek-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
-  /* A card alone in its category (Power in Blood, Valuations in Mood) takes the row: a half-width card with nothing
-     beside it reads as one that lost its pair. */
   .peek-row > .peek:only-child{ grid-column:1 / -1; }
-  /* The Browse list. Same row component as a sign, because it does the same thing — names something and opens
-     its page — and the only difference is that what it opens is a list rather than a reading. */
-  /* Keren, V449: "there is no spacing at the top — equal spacing between the containers themselves and between the
-     containers and the top menu." --gap, never a hand-typed figure. #metric-page cancels the top bar's margin, which
-     suits a history's band; a page that opens on a card takes one gap above its first container. */
-  /* Keren, V502: "make Weather top left, Mood top right, Circulation bottom left, Energy bottom right." Placed
-     EXPLICITLY, not reordered in the DOM: the source order is the taxonomy's, which the roster, the category sheets
-     and the All-indicators page read, so the layout moves the picture and leaves the meaning. */
   .browse-list{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); align-items:stretch; }
-  .browse-list > .cat-row:nth-of-type(1){ grid-area:1 / 1; }   /* Weather */
-  .browse-list > .cat-row:nth-of-type(2){ grid-area:2 / 1; }   /* Circulation */
-  .browse-list > .cat-row:nth-of-type(3){ grid-area:1 / 2; }   /* Mood */
-  .browse-list > .cat-row:nth-of-type(4){ grid-area:2 / 2; }   /* Energy */
-  .browse-list > .all-row{ grid-column:1 / -1; }               /* not one of the four; it spans them */
-  /* A half-width tile turns: mark on top with the chevron opposite, the name under it, the members under that —
-     `.peek`'s own arrangement, taken rather than reinvented. */
+  .browse-list > .cat-row:nth-of-type(1){ grid-area:1 / 1; }
+  .browse-list > .cat-row:nth-of-type(2){ grid-area:2 / 1; }
+  .browse-list > .cat-row:nth-of-type(3){ grid-area:1 / 2; }
+  .browse-list > .cat-row:nth-of-type(4){ grid-area:2 / 2; }
+  .browse-list > .all-row{ grid-column:1 / -1; }
   .browse-list > .cat-row .subject-summary{ flex-direction:column; align-items:stretch; gap:10px;
     padding:var(--pad); height:100%; }
   .browse-list > .cat-row .subject-ring{ width:42px; height:42px; }
-  /* Keren, V507: "make the stroke dark purple…"; Keren, V508: "it doesn't blend well with the rest of the screen — only
-     leave the icons on dark purple stroke, like the Inflation." No disc: every other mark in the app is an outline on
-     its surface. The plum is `--accent-ink`, every link's ink, so the marks read as the four doors. The slot keeps
-     42px so the labels align; the glyph is 26 because, with no disc, it has to hold the space itself. */
   .browse-list > .cat-row .subject-icon span{ width:42px; height:42px;
     background:none; color:var(--accent-ink); }
   .browse-list > .cat-row .subject-icon svg{ width:26px; height:26px; }
-  /* Keren, V503: "I don't need the chevrons on the home page." On a tile the card is obviously the button; a chevron
-     earns its place on a full-width ROW. "All indicators" keeps its one: that row is a way OUT (see .all-row). */
   .browse-list > .cat-row .subject-more{ display:none; }
   .browse-list > .cat-row .subject-text{ display:flex; flex-direction:column; gap:2px; }
-  /* Keren, V506: "the titles should be in a feminine font": Cormorant Garamond italic, the app's voice. The type
-     audit's hard rule: NEVER below 20px, and never upright for a title. */
   .browse-list > .cat-row .subject-label{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic;
     font-weight:600; font-size:22px; line-height:1.15; letter-spacing:0; color:var(--text-primary); }
   .browse-list > .cat-row .cat-sub{ margin-top:0; }
-  /* Keren, V447, from Apple Health: "each container has its own row, the last updated time and the chevron are in
-     the corner, and below it there's a miniature graph of what you can see on the inside." One shape for every
-     member, whatever component it arrives as. */
-  /* The COMBINED reading sits under the category's rows, in the Highlights treatment: a sentence about the figures
-     above, not another figure. Keren, V453: "instead of Together, write Insights like the rest of the app." */
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
-  /* the gap BETWEEN the rows is --gap and the space above the first one is --gap-top: two numbers (Keren, V507 —
-     see --gap in :root) */
   .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }
-  .ind-sheet > .rangebar:first-child{ margin-top:var(--gap-top); }   /* it opens on a control, not on a band, so it takes the space under the bar */
+  .ind-sheet > .rangebar:first-child{ margin-top:var(--gap-top); }
   .cat-item{ display:block; width:100%; text-align:left; box-sizing:border-box; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:12px 14px 13px; font-family:"Public Sans",sans-serif; }
@@ -1012,39 +742,21 @@
   .ci-head .peek-mark{ flex:none; }
   .ci-name{ font-size:13px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
     color:var(--text-secondary); }
-  /* the period is a FIGURE — mono, like every other figure in the app */
   .ci-when{ margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-muted); }
-  /* The SVG chevron (CHEV), not `.subject-chev` (Keren, V450: "I still don't see a chevron on the category items"):
-     that is a border box which depends on flex blockification and currentColor, and inside a <button> like .cat-item
-     the inherited colour is the browser's. A mark that is a picture cannot fail to lay out. */
   .ci-head .peek-chev{ flex:none; margin-left:3px; }
-  /* Keren, V449: "the ring should be very small and the height of the container should be the same as valuations
-     and desire." One picture-slot height for every miniature (the peek arts'), kept even with no picture. */
   .ci-body{ display:flex; align-items:center; gap:14px; margin-top:9px; min-height:52px; }
   .ci-read{ flex:1 1 auto; min-width:0; }
-  /* ONE figure treatment for every member, whatever markup it was built from: the peek card's spec, the one Keren
-     said looks right on Weather. */
   .ci-value{ display:block; font-family:"IBM Plex Mono",monospace; font-size:21px; font-weight:700;
              line-height:1; color:var(--text-primary); margin:0; letter-spacing:0; }
   .ci-unit{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.01em;
             color:var(--text-muted); margin-left:4px; }
-  /* the miniature has a fixed slot, --mini-w, and never pushes the reading off the row. Keren, V459: "the
-     infographic is small and below the date…" Apple's is 76–85px wide on a 350px card (22–24%) and about 50 tall.
-     A miniature is a THUMBNAIL of its page, dense at this width, with the white space between it and the reading. */
   .ci-mini{ flex:0 0 var(--mini-w); width:var(--mini-w); min-width:0;
     display:flex; align-items:center; justify-content:flex-end; }
   .ci-mini > *{ flex:1 1 auto; min-width:0; max-height:var(--mini-h); }
   .ci-mini > .peek-chart{ width:100%; margin:0; }
-  .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }   /* a square ring keeps its ratio */
-  /* the reserve ring is a peek art, so it carries .peek-chart and would take that class's width:100%
-     and stretch to an ellipse. It is square, so it sizes off the slot's HEIGHT like every other ring here. */
+  .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }
   .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
   .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
-  /* The miniatures' colour. Keren, V504: "use light purple for the previews…"; Keren, V508: "in Volume you should see
-     only the right bar in purple and everything else light grey." History is light grey and the newest mark
-     `--accent-ink`: twelve purple PICTURES would read as twelve things to press; one purple mark in a grey picture
-     is a reading. HERE only — pages keep their own colours. Every mark here is a STROKE with `fill:none`, so stroke
-     and opacity are the whole override. */
   .ci-mini .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.5; }
   .ci-mini .peek-chart.heat .now{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .peek-base{ stroke:var(--border-strong) !important; opacity:0.6; }
@@ -1052,16 +764,9 @@
   .ci-mini .vital-ring-fill{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .pt-ref{ stroke:var(--border-strong) !important; opacity:0.6; }
   .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
-  /* a sign row in a category list spaces its unit like a peek card's — `.subject-value` is a flex with a gap, but
-     computes to block here, so the gap never applies. Takes `.peek-unit`'s own 4px rather than a number of its own. */
   .cat-item .subject-value .unit{ margin-left:4px; }
   .cat-item .subject-say{ margin:3px 0 0; }
-  /* Keren, V501: "make the all-indicators container half height and remove the second line, so it doesn't look
-     like a category — it looks like a more button." It is the way OUT of the list, not a peer of the four subjects:
-     the 64px badge becomes a 30px glyph and the padding follows. It keeps the list's surface and border. */
   .all-row .subject-summary{ padding:9px var(--pad); }
-  /* the slot keeps the categories' WIDTH and loses only its height, so this row's glyph and label stay in
-     the same two columns the four above it set — different, not misaligned */
   .all-row .subject-ring{ width:64px; height:32px; }
   .all-row .subject-icon span{ width:32px; height:32px; background:none; }
   .all-row .subject-icon svg{ width:20px; height:20px; }
@@ -1070,24 +775,17 @@
     .all-row .subject-ring{ width:54px; height:30px; } }
   .cat-row .cat-sub{ font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-muted);
     margin-top:3px; }
-  @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } } /* four across once there is room; 2x2 below that */
+  @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } }
   .peek{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 14px 13px;
     display:flex; flex-direction:column; align-items:flex-start; text-align:left; width:100%;
     font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
-  /* the card opens a page, and says so — the same chevron a subject row wears, beside the name, the way the
-     reference has it — a hairline, not a wedge */
   .peek-kicker{ display:inline-flex; align-items:center; gap:4px; }
-  /* Keren, V300: "they have an icon next to each title — for example in Heart Rate you have a heart." The glyph
-     alone: a disc would be larger than the word. Keren, V301: "make the icons without colour." One neutral ink:
-     six marks in six colours read as a legend. The mark names the subject; the word carries the verdict. */
   .peek-mark{ flex:none; width:15px; height:15px; color:var(--text-secondary); }
   .peek-mark svg{ display:block; width:100%; height:100%; }
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
   .peek:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
-  /* Keren, V299: "…I want it a little darker, not purple." Hover marks WHICH thing the pointer is on, not a state
-     of the reading, so a card goes to --border-strong as a sign row does; the chevron warms to the accent ink. */
   .peek:hover{ border-color:var(--border-strong); }
   .peek:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .peek-kicker{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em;
@@ -1096,102 +794,53 @@
     color:var(--text-primary); margin-top:9px; }
   .peek-unit{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; color:var(--text-muted);
     letter-spacing:0.01em; margin-left:4px; }
-  /* The verdict word is neutral (Keren, V309): "Highly overvalued" is not made more alarming by being red. A step
-     quieter than the figure, so the card descends kicker → picture → figure → verdict. Severity speaks in the sign
-     rows' chips and the inner pages' tags. */
   .peek-word{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; margin-top:6px;
     letter-spacing:0.01em; color:var(--text-secondary); }
-  /* Load's two readings, as columns (Keren, V500: "make sure all the charts are bars"), on one axis: both are shares
-     of disposable income. The bill wears the accent, being the reading the row is named for; what is kept wears
-     plain ink, because green or red would grade the household. `.hh-bill`/`.hh-kept` are the legend's swatch strokes. */
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-kept{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
   .hh-col{ fill:none; stroke-linecap:round; }
   .hh-col.bill{ stroke:var(--accent); opacity:0.9; }
   .hh-col.kept{ stroke:var(--text-secondary); opacity:0.85; }
-  /* Desire's columns carry the band: tight below it, good inside, warming above. */
   .hy-col2{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hy-col2.tight, .hy-col2.warning{ stroke:var(--warning); }
   .hy-col2.serious{ stroke:var(--serious); }
-  /* Pulse hangs its columns off the pre-2008 mean rather than zero, on `divergeChart`'s spec: below the
-     old normal is the reading this page is about, so that side takes the warning ink and above it the good. */
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
 
   .peek-text{ display:flex; flex-direction:column; align-items:stretch; width:100%; }
-  /* the picture sits between the name and the reading, with the same air on both sides */
   .peek-text > .peek-chart{ margin:12px 0 13px; }
   .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
-  /* the miniature's marks keep their real weight under the stretch, the same rule the peek line follows */
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar,
   .peek-chart.heat .m2-col, .peek-chart.heat .yc-col,
   .peek-chart.heat .hzn-col, .peek-chart.heat .ls-col, .peek-chart.heat .unemp-col,
   .peek-chart.heat .hy-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
-  /* On a preview the history is shape, not colour: greyed, so the latest reading is the only lit thing. Scoped to
-     the peek because it has to out-weigh .temp-col.s5 and .gdp-col.neg. */
-  /* zero, on a peek whose series crosses it (Keren, V312: "put a purple line so I can understand what is above the
-     line and what is below"): the brand colour, as a reference, not a reading */
   .peek-base{ stroke:var(--accent); stroke-width:1.1; fill:none; opacity:0.8; vector-effect:non-scaling-stroke; }
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
-  /* Keren, V353: "…we should use the same colour as the chart in the inner pages… Everything up to this point is grey,
-     and then the coloured bar is the colour of the corresponding chart." A peek is a door and should look like its
-     room: every mark keeps the class its page's chart paints with (.temp-col.s0-s5, .gdp-col, .dv-bar, .m2-col,
-     .vital-ring-fill.<state>), so the two cannot drift. The zero rule and the pulse trace stay plum. The category
-     list's miniatures are the exception — see .ci-mini. */
   .peek-chart.heat .now{ opacity:1; }
-  /* Drawn in a 152x52 box stretched to the card's width, so every stroke carries vector-effect="non-scaling-stroke"
-     and the end point is a round cap on a zero-length path — a circle the stretch cannot squash into an ellipse. */
   .peek-chart svg{ display:block; width:100%; height:var(--mini-h); overflow:visible; }
-  /* the flat track, its band and the reading on it */
-  /* the pulse trace: spacing is the only variable, so size cannot be misread as data. The live trace in plum, the
-     reference in the quietest ink — a tempo is not a verdict. */
   .pt-svg{ display:block; width:100%; height:52px; overflow:visible; }
   .pt-svg path{ fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
   .pt-now{ stroke:var(--accent); }
   .pt-ref{ stroke:var(--text-muted); opacity:0.8; }
-  /* Keren, V298: "make it so the timing indicator would be at the bottom, next to More details." Where a sign sits
-     is a footnote about the reading, so it shares the last row with the other thing offered at the end. */
-  /* the head's mark: a 44px target around a 34px disc — the subject mark one size down, and pressable. */
-  /* with three children in the head, space-between would strand the titles in the middle — they take the
-     space instead, so the mark stays left and the verdict stays right. */
   .card-head .card-titles{ flex:1 1 auto; min-width:0; }
   .head-mark{ flex:none; width:44px; height:44px; margin:-5px 10px -5px -10px; padding:0; border:0;
     background:none; display:grid; place-items:center; }
-  /* neutral too (Keren, V301): the verdict is already a tag on the same row, two inches to the right */
   .head-mark-disc{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
     background:var(--track); color:var(--text-secondary); transition:background 0.12s; }
   .head-mark-disc svg{ width:19px; height:19px; display:block; }
-  /* the FRAME runs to the card's edges, so the host sits square and the grid is symmetric without a nudge */
-  .vh-host{ margin:10px 0 2px; }   /* the readout above it has its own edge and its own gap */
-  /* a sign folded into another sign's page is a card, not a footnote under a rule — it is a reading of its own
-     that happens to live on another reading's page, and the page reads as two things because it is two things. */
+  .vh-host{ margin:10px 0 2px; }
   .folded-sign{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin-top:var(--gap); padding:16px 16px 20px; }
-  /* the (i) beside the title and the tag held at the right end — and no wrapping, or the tag drops to a
-     line of its own the moment the card is narrower than the page */
   .folded-sign .spread-history-head{ margin-bottom:12px; justify-content:flex-start; gap:8px;
     flex-wrap:nowrap; }
   .folded-sign .spread-history-head h4{ min-width:0; }
   .folded-sign .spread-history-head .tag{ margin-left:auto; }
   .folded-sign .metric-row{ margin-bottom:12px; }
-  /* the same head is reused inside the modal, where the mark would open a modal from within a modal — and
-     where the record it offers is already on screen. It belongs to the page only. */
   .detail-modal .head-mark{ display:none; }
-  /* the record itself */
-  /* Keren, V559: "it has a big spacing between it and the grid … make like a 10 pixels gap." The whole gap is
-     AXIS.T — the plot's own top inset — so there is one number to tune rather than two stacked. */
   .vh-svg{ display:block; width:100%; height:auto; margin:10px 0 2px; overflow:visible; }
-  /* `.vh-line` is gone — no chart in this app draws a line any more. */
-  /* the money-stock columns: one hue, and the side of zero is the reading */
-  /* Keren, V311: "the chart in the Volume preview is not rounded in the corners like the rest of the charts are."
-     A new mark is copied from the spec of the one beside it, never written fresh: round caps, and a stroke that does
-     not stretch when the peek's viewBox is squeezed. */
-  /* ---- Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of
-     red from light pink to dark red…"). The metaphor wins: this page IS the blood, and a sequential ramp suits a
-     quantity (one flat severity red would not). Six steps of the app's red mixed toward the surface; the lightest is
-     a definite pink so a contraction stays visible below zero. Geometry carries direction, colour weight. */
+  /* ---- Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of ---- */
   .m2-col{ fill:none; stroke-linecap:round; }
   .m2-col.v0{ stroke:color-mix(in srgb, var(--critical) 30%, var(--surface)); }
   .m2-col.v1{ stroke:color-mix(in srgb, var(--critical) 45%, var(--surface)); }
@@ -1199,57 +848,35 @@
   .m2-col.v3{ stroke:color-mix(in srgb, var(--critical) 80%, var(--surface)); }
   .m2-col.v4{ stroke:var(--critical); }
   .m2-col.v5{ stroke:color-mix(in srgb, var(--critical) 62%, var(--m2-deep)); }
-  /* the spread’s columns, copied from the spec of the ones they stand beside (see .m2-col) */
   .yc-col{ fill:none; stroke-linecap:round; stroke:var(--text-primary); opacity:0.8; }
-  /* Horizon's peek: the spread's last twelve quarters either side of zero, `colPeek`'s diverging case with its base
-     rule. The colours are the page chart's own, so the two cannot disagree about which side is which. */
   .hzn-col{ fill:none; stroke-linecap:round; }
   .hzn-col.pos{ stroke:var(--ovulate); }
   .hzn-col.neg{ stroke:var(--bleed-mid); }
-  /* Desire's peek columns (`.yc-col`'s spec) and its chart's typical band, in the meter's own optimal colour, so the
-     chart's band and the bar under the reading are visibly the same claim. */
   .hy-col{ fill:none; stroke-linecap:round; stroke:var(--text-primary); opacity:0.8; }
   .hy-band{ fill:var(--good); opacity:0.14; }
   .hy-band-line{ stroke:var(--good); stroke-width:1; opacity:0.5; fill:none; }
   .hy-avg{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linecap:round; opacity:0.75; }
-  /* ---------- the reading, after the blood-panel design Keren sent: title, then the figure, flagged in
-     `--warning-ink` when outside the normal band — the panel's one colour, the text-legible partner of the track's
-     dot, so the two flag together. The bar is `meterHtml`, as every other bar is. ---------- */
+  /* ---- the reading, after the blood-panel design Keren sent: title, then the figure, flagged in ---- */
   .wb-read{ font-family:"IBM Plex Mono",monospace; font-size:25px; font-weight:700; letter-spacing:-0.02em;
             color:var(--text-primary); line-height:1.15; margin:2px 0 0; }
   .wb-read.flagged{ color:var(--warning-ink); }
-  /* ---------- the panel bar. Keren, V479: "if there's a normal range, I would want to see it in a consistent
-     way." THREE FIXED SEGMENTS, low | normal | high, so the green is in the same place on every reading; the value's
-     position inside its segment still carries the arithmetic. ---------- */
+  /* ---- the panel bar. Keren, V479: "if there's a normal range, I would want to see it in a consistent ---- */
   .pbar-labels{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; font-size:11.5px;
                 color:var(--text-secondary); margin:13px 0 7px; }
   .pbar-labels span{ white-space:nowrap; }
   .pbar-labels.two{ grid-template-columns:auto 1fr; }
   .pbar-labels.two span:last-child{ text-align:right; }
-  /* ---------- one row, as the panel Keren sent lays a marker out: name and figure on the left, the spectrum
-     filling the rest, so every track starts at the same x and the eye runs down the dots ("it's okay if the text
-     is a bit smaller"). ---------- */
-  /* A panel row (Keren, V483: "no divider line — a container sort of a look inside the history panel, with the
-     border all across just like the trend button"): a box says "this is its own reading". The trend pill's radius
-     and width, so the two stack as a pair, action and reading. `--surface` (Keren, V484): `--surface-2` reads as a
-     well sunk INTO the card. 16px sides, not the pill's 22: this holds a track. */
-  /* a card holding SEVERAL readings separates them with hairlines rather than giving each its own border — as the
-     panel Keren sent does, and the right weight for a divider between siblings in one container. */
+  /* ---- one row, as the panel Keren sent lays a marker out: name and figure on the left, the spectrum ---- */
   .panel-stack{ padding:2px 16px; }
   .panel-stack .panel-row{ background:none; border:0; border-radius:0; border-top:1px solid var(--border);
                            margin:0; padding:13px 0; }
   .panel-stack .panel-row:first-child{ border-top:0; }
   .panel-stack .panel-row.lab-door{ cursor:pointer; }
   .panel-stack .panel-row.lab-door:hover{ background:var(--surface-2); }
-  /* A stack inside a history container (Keren, V493: "in a container with a stroke around it…"): the GROUP takes
-     the box, the siblings keep their hairlines. `.panel-row`'s box and margins, so a stack and a single reading
-     sit in the same place under the trend pill. */
   .panel-stack.in-hist{ background:var(--surface); border:1px solid var(--border);
                         border-radius:var(--radius); padding:0 16px; margin:12px 0 2px; }
   .panel-stack.in-hist .panel-row:first-child{ border-top:0; }
-  /* ---- the reading's own container, below the history (Keren, V520). `seatBandReading` moves whatever the page
-     built — a row, a stack or a named wrapper — into it, so these rules undress all three and dress the box: ONE
-     edge outside, hairlines between rows, the app's container spec unmodified. */
+  /* ---- the reading's own container, below the history (Keren, V520). `seatBandReading` moves whatever the page ---- */
   .reading-box{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:0 1px 2px rgba(0,0,0,0.04); margin:var(--gap) 0 0; padding:0 16px; }
   .reading-box:empty{ display:none; }
@@ -1259,19 +886,13 @@
     margin:0; padding:13px 0; border-top:1px solid var(--border); }
   .reading-box > *:first-child .panel-row:first-child,
   .reading-box > .panel-row:first-child{ border-top:0; }
-  /* One reading, already named by the head above it — the figure and its spectrum are the whole row, which is
-     what the blood-test panel Keren sent shows. The name stays in the markup for the screen reader. */
   .reading-box.solo .pbr-name h3, .reading-box.solo .pbr-name h4{ position:absolute; width:1px; height:1px; overflow:hidden;
     clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
-  /* with the name gone the figure is the whole left column, so it sizes to the figure rather than to a
-     share of the row — 28% of a phone is 95px and "+0.94 pts" wants 120. */
   .reading-box.solo .panel-row{ grid-template-columns:auto minmax(0, 1fr); }
   .reading-box.solo .wb-read{ white-space:nowrap; }
   .panel-row{ display:grid; grid-template-columns:minmax(0, 41%) 1fr; gap:14px; align-items:center;
               background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
               padding:13px 16px; margin:12px 0 2px; }
-  /* block, not inline-flex: with a two-line name, inline-flex parks the (i) at the right of the first line, away
-     from its words; as a block it follows the last word. */
   .panel-row .pbr-name h3, .panel-row .pbr-name h4{ margin:0; font-size:13.5px; font-weight:600; color:var(--text-primary);
                            display:block; line-height:1.25; }
   .panel-row .pbr-name h3 .expand-btn, .panel-row .pbr-name h4 .expand-btn{ vertical-align:middle; margin-left:3px; }
@@ -1295,39 +916,24 @@
              background:var(--text-primary); transform:translate(-50%, -50%);
              box-shadow:0 0 0 2px var(--surface); }
   .pbar-dot.flagged{ background:var(--warning); }
-  /* no drain colour on .m2-col: the ramp says weight and the zero line says direction. */
-  /* the deficit’s columns: the side of the line is the reading, in the app's two colours for that — and the
-     surpluses are worth lighting: in eighty years there have been twelve, none since 2001. */
-  /* the spread's columns, on the deficit chart's spec — the same picture (a reading standing
-     out of a zero line in one of two directions) drawn the same way. The two colours are the legend's own. */
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
-  /* Activity's columns carry the BAND, as the reading below does: teal inside 3.5–5%, the warning ink outside it,
-     deepening as slack grows — so 1982 and 2020 read as the events they were. */
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .unemp-col.tight, .unemp-col.warning{ stroke:var(--warning); }
   .unemp-col.serious{ stroke:var(--serious); }
   .unemp-col.critical{ stroke:var(--critical); }
   .def-col{ fill:none; stroke-linecap:round; stroke:var(--serious); opacity:0.85; }
   .def-col.surplus{ stroke:var(--good); opacity:0.95; }
-  /* The history chrome's spacing is set inside the component, never from outside it (see histControls()). A bar
-     leads its box by default; the federal budget's box, whose does not, says so on its own host. When a rule here
-     seems to do nothing, weigh it against the rule it is fighting before changing its value. */
-  /* this head does not open its box, it introduces the figures below it, so it takes the gap a container takes */
   .vol-figures-head{ margin-top:var(--gap); }
-  .m2-zero{ stroke:var(--grid); stroke-width:1; fill:none; }   /* the grid's own ink — zero is a gridline, not a heavier statement */
+  .m2-zero{ stroke:var(--grid); stroke-width:1; fill:none; }
   .vh-mean{ fill:none; stroke:var(--accent); stroke-width:1.4; stroke-dasharray:5 4; stroke-linecap:round; }
   .page-foot{ display:flex; align-items:center; gap:10px; margin-top:22px; }
   .page-foot > .timing-row{ margin:0; flex:none; }
   .page-foot > .more-row{ margin:0; flex:1 1 auto; }
-  /* The timing chip is the popup’s: it stays in the foot for the modal to copy, and is hidden only on a sheet with
-     a More details row (on the sheet, since that row sits inside Highlights). Sentiment and Pressure have none, so
-     there the chip stays. */
   .metric-sheet:has(.more-row) .timing-row, .sign-detail:has(.more-row) .timing-row{ display:none; }
   .detail-modal .timing-row{ margin:18px 0 0; padding-top:16px; border-top:1px solid var(--border); }
-  .page-chart.pulsebox{ padding:16px 16px 14px; }   /* no trend footer to supply the bottom padding */
+  .page-chart.pulsebox{ padding:16px 16px 14px; }
   .pulsetrace{ margin:0; }
-  /* the trace's first lane label sits closer under the container's own title than a lane does under a lane */
   .pulsetrace .spread-history-head + .pt-head{ margin-top:12px; }
   .pulsetrace .pt-svg.solo{ height:42px; }
   .pulsetrace .pt-svg.solo.past .pt-now{ stroke:var(--text-muted); opacity:0.85; }
@@ -1339,30 +945,17 @@
   .pt-v{ font-size:13px; color:var(--text-secondary); }
   .pt-head.past .pt-v{ color:var(--text-muted); }
   .pt-note{ font-size:12.5px; color:var(--text-muted); line-height:1.55; margin:12px 0 0; }
-  /* the appetite × fragility grid. Divs rather than SVG: no viewBox to stretch, so the cells and the marker stay
-     square at any width. */
-  /* a compact diagram, not a chart: it is capped and centred rather than stretched, because nine empty
-     cells at a desktop's full width are mostly empty cells */
-  /* the reading wears the grid's card, but closes its padding: it holds type, where `.page-chart`'s charts sit
-     flush. `.page-chart.read-card`, because `.page-chart` sets the same shorthand later and would win a tie. */
   .page-chart.read-card{ padding:16px 16px 20px; margin-top:0; }
-  /* the blood test in a box of its own. .page-chart's base padding leaves the bottom open because a chart fills
-     it; a spectrum ends at its track, so this one closes. The labels take no top margin: nothing stands above them. */
   .page-chart.blood-card{ padding:14px 14px 16px; }
   .blood-card .rbar-labels{ margin-top:0; }
   .blood-card .rbar-track{ margin-bottom:0; }
   .page-chart.riskmx{ padding-bottom:var(--pad); }
   .read-card .card-head{ margin-top:0; }
   .read-card .caption{ margin-bottom:0; }
-  /* the two cards on this page introduce themselves the same way — a 15px title in the text ink with its tag
-     beside it, the head `.spread-history-head` uses. */
   .read-card .card-head{ align-items:center; margin-bottom:12px; }
   .read-card .card-titles .econ-term{ font-size:15px; font-weight:600; color:var(--text-primary);
     text-transform:none; letter-spacing:0; }
-  /* the (i) belongs against the words it explains, not at the other end of the row */
   .riskmx .spread-history-head{ justify-content:flex-start; gap:4px; }
-  /* the grid sits inside an L of axis rules, the way a plot sits on its axes — which is the whole
-     of what Keren meant by "borderlines outside the metric", and it also gives the labels something to hang on. */
   .rm-frame{ display:flex; align-items:stretch; gap:7px; margin:14px auto 0; max-width:340px; }
   .rm-grid{ flex:1 1 auto; min-width:0; display:grid; grid-template-columns:13px 1fr; gap:6px; }
   .rm-ylabs{ display:grid; grid-template-rows:repeat(3, 1fr); gap:6px; }
@@ -1377,30 +970,18 @@
   .riskmx .pt-note{ max-width:66ch; }
   .rm-y, .rm-x{ font-family:"Public Sans",sans-serif; font-size:9.5px; font-weight:600; letter-spacing:0.06em;
     text-transform:uppercase; color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
-  /* on their side, so three words cost 13px of width instead of sixty-two */
   .rm-y{ writing-mode:vertical-rl; transform:rotate(180deg); }
   .rm-x{ padding-top:6px; }
-  /* the band you are standing in says so, on both edges — which is what makes the grid readable at a glance */
   .rm-y.on, .rm-x.on{ color:var(--text-primary); font-weight:700; }
   .rm-c{ position:relative; aspect-ratio:1 / 0.72; border-radius:var(--radius); background:var(--track); }
-  /* the wash inherits the corner: `.here` lifts the clipping so the marker can overhang, and without this the LIT
-     cell, and only that one, paints square corners over a rounded box. */
   .rm-c::before{ content:""; position:absolute; inset:0; border-radius:inherit; background:var(--accent); }
   .rm-c.s0::before{ opacity:0.05; } .rm-c.s1::before{ opacity:0.09; } .rm-c.s2::before{ opacity:0.14; }
   .rm-c.s3::before{ opacity:0.20; } .rm-c.s4::before{ opacity:0.27; }
-  /* the dial badge again, at grid scale — one marker, three sizes across the app */
   .rm-mark{ position:absolute; inset:0; margin:auto; width:20px; height:20px; border-radius:50%;
     background:var(--surface); border:1px solid var(--border-strong); box-sizing:border-box;
     box-shadow:0 1px 2.5px rgba(30,20,30,0.18); }
   .rm-mark::after{ content:""; position:absolute; inset:4.5px; border-radius:50%; background:var(--accent); }
-  /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the
-     pressure like we do — in the preview we have red, orange and green"), decided by the same `pressureZone()` as
-     the preview's zone bar, so card, verdict and columns cannot disagree. Not the preview's pale tokens: --zone-mid
-     and --zone-high (lightness 0.873, 0.868) are 9.6 apart for normal vision and 5.2 under protanopia, below the
-     floor. --critical, --season-autumn, --good measure 21.5 and 13.9 in light, 22.2 and 15.3 in dark, and the legend
-     names all three, the relief the sub-3:1 surface contrast asks for. Colour is NOT height: a 10-year yield has no
-     good or bad level (1% in 2020 was a recession signal), so height says what the yield WAS and colour what the
-     curve was doing. ---- */
+  /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the ---- */
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
   .yl-col.normal{ stroke:var(--season-autumn); }
@@ -1414,92 +995,52 @@
   .meterpeek .mp-core.good{ fill:var(--good); } .meterpeek .mp-core.warning{ fill:var(--warning); }
   .meterpeek .mp-core.serious{ fill:var(--serious); } .meterpeek .mp-core.critical{ fill:var(--critical); }
   @media (max-width:400px){ .peek{ padding:13px 12px 12px; } .peek-value{ font-size:19px; } }
-  /* An inner page: the metric's chart card and its detail in the shared modal, without the drawer's summary row or
-     border — the sheet IS the detail. */
   .metric-sheet{ display:flex; flex-direction:column; }
   .metric-sheet .subject{ border:0; border-radius:0; background:transparent; box-shadow:none; }
-  /* a drawer inside a sheet has no summary worth showing — but a sign ROW inside a class page is nothing BUT
-     its summary, so it keeps its face and its card */
   .metric-sheet .subject:not(.sign-row) .subject-summary{ display:none; }
   .metric-sheet .sign-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:var(--shadow); }
   .metric-sheet .sign-row + .sign-row{ margin-top:10px; }
   .metric-sheet > .timing-lede + .sign-row{ margin-top:6px; }
-  /* the chip labels the page and then gets out of the way (Keren, V296: "a little space below, it's too close") */
-  .metric-sheet > .timing-row{ margin-bottom:16px; }   /* only until it is seated at the foot */
+  .metric-sheet > .timing-row{ margin-bottom:16px; }
   .metric-sheet .subject-body{ padding:0; border-top:0; }
   .metric-sheet .subject-body > *{ margin-top:0; }
   .metric-sheet .subject-context{ margin:14px 0 0; }
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
-  /* Highlights: Apple Health's block under the chart, in our system — a rule, then one sentence per
-     card with the metric's name in its state ink, then the cycle strip. */
-  /* The inner pages' charts, in the dial's grammar: a track carrying the whole of what is possible, the reading a
-     little narrower inside it, round caps, direct labels. */
-  /* The range bar: the app's segmented control, at chart scale. Only the ranges a page's data can
-     answer are ever rendered — see the note in the renderer. */
-  /* Keren, V425: "make it a rule that all the buttons and drop-down menus have the same height." --ctl-h IS the rule:
-     with border-box a control lands on it whatever its padding. Keren, V580: "the date picker bar is very small to my
-     fingers on an iPhone … maybe we can use the proportions of the trend button." A segment at a 34px bar was 26 × 60,
-     past WCAG 2.5.8's 24 but far from Apple's 44, so selectors take the action buttons' --btn-h and every segmented
-     control in the app grows with it. */
   :root{ --ctl-h:40px; --btn-h:40px; }
-  /* Keren, V579: "the background should be white, and choose whatever is appropriate for the selector colour…" The
-     control is a CARD like every container; the chosen segment wears the accent wash, the app's "you can act on
-     this" colour, adding none. */
   .rangebar{ display:flex; gap:3px; background:var(--surface); border:1px solid var(--border);
     border-radius:var(--radius); padding:3px; margin:14px 0 2px;
     min-height:var(--ctl-h); box-sizing:border-box; }
   .range-seg{ flex:1 1 0; border:0; background:transparent; border-radius:var(--radius-inner); padding:7px 10px; cursor:pointer;
     font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
-  .range-seg.on{ background:var(--accent-wash); color:var(--text-primary); }   /* the wash, not a lifted white */
+  .range-seg.on{ background:var(--accent-wash); color:var(--text-primary); }
   .range-seg:hover:not(.on){ color:var(--text-primary); }
-  /* The trend, stated under the chart the way the reference does — and reading "not available" rather than inventing
-     one when the series is too short to fit. */
-  /* The trend is one idea in two places, a line across the chart and a row under it, in the same purple so the eye
-     joins them without a label (Keren, Sep 20, 2026: "just put a trend line, a purple trend line … light purple would
-     be a good fit for us in terms of background colour"). Purple is already the hue for the computed and actionable. */
   .fit-line{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; fill:none; }
   .fit-lab{ font-size:12px; font-weight:700; fill:var(--accent-ink); }
-  /* `.trend-on` alone, not `.page-chart.trend-on`: Pressure's chart lives in a .spread-history and Volume's
-     readings in a .pulsebox, and `trend-on` is set by one handler and nothing else. */
   .fit{ display:none; }
-  /* Pressed, the trend takes the picture: the bars keep their heights and lose their colour, as a peek's .past does,
-     and every other number steps back, leaving only the fit's own figures. */
   .trend-on .fit{ display:block; }
-  /* the marks that step back. Each must be a class a history draws (Growth's are `.growth-col`, not `.gdp-col`): a
-     dead selector here is invisible until that page's trend pill becomes pressable. */
   .trend-on .bt-bar, .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
   .trend-on .hh-col, .trend-on .hy-col2, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
-  /* the average is plum too, so it steps back as well: one plum line on screen at a time */
   .trend-on .temp-avg, .trend-on .gdp-avg{ opacity:0.16; }
   .trend-on .temp-avg-label, .trend-on .avg-label,
   .trend-on .temp-range, .trend-on .temp-target-label{ opacity:0.3; }
   .trend-on .bt-track{ opacity:0.35; }
   .trend-on .bt-ref, .trend-on .dv-mid{ opacity:0.4; }
   .trend-on .bt-reflab, .trend-on .bt-end{ opacity:0.35; }
-  /* Fully round, as a pressable pill is here and in the reference (Keren, Sep 20, 2026: "the trend button doesn't
-     look like a trend — it needs to have round corners"), with side padding that grows with the radius. */
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    /* a capsule, not the card radius (Keren, V572: "the trend button is a little bit more rounded on the corners … a
-       rounded button would be more clear"), like the pressable things over the chart */
     border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
-    min-height:var(--btn-h); box-sizing:border-box;   /* an action button, the same height as More details */
+    min-height:var(--btn-h); box-sizing:border-box;
     width:100%; text-align:left; font:inherit; }
-  /* nothing to report: an outline and muted ink, as Apple Health's empty trend row. The outline is an inset shadow,
-     so a window with no trend and one with a trend leave the container the same height. */
-  .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }   /* inset, so the outline costs no height */
+  .trendpill.none{ background:transparent; box-shadow:inset 0 0 0 1px var(--border); }
   .trendpill.none .tp-k, .trendpill.none .tp-v{ color:var(--text-muted); font-weight:600; }
   .trendpill.can-toggle{ cursor:pointer; transition:background 0.14s; }
   .trendpill.can-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  /* pressed, the row itself is the accent — the same colour the line on the chart is drawn in */
   .trendpill[aria-pressed="true"]{ background:var(--accent); }
   .trendpill[aria-pressed="true"] .tp-k, .trendpill[aria-pressed="true"] .tp-v,
   .trendpill[aria-pressed="true"] .tp-v i{ color:var(--on-accent); }
-  /* A verdict inside the trend pill wears the pill, not its own severity: red on a purple ground is two colour
-     systems in one control, and the word already says what the colour would (Keren, V291). */
   .trendpill .tp-k .tag{ background:transparent; color:var(--text-primary);
     box-shadow:inset 0 0 0 1px var(--border-strong); }
   .trendpill[aria-pressed="true"] .tp-k .tag{ background:transparent; color:var(--on-accent);
@@ -1507,125 +1048,64 @@
   .tp-k{ font-family:"Public Sans",sans-serif; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
   .tp-v{ font-family:"Public Sans",sans-serif; font-size:13px; font-weight:700; color:var(--text-primary); text-align:right; }
   .tp-v.quiet{ color:var(--text-muted); font-weight:600; }
-  /* --text-secondary for the same reason .cycsel-yr took it — muted is measured against
-     --surface and this sits on the pill's own ground, where dark mode fell under 4.5:1. */
   .tp-v em{ font-style:normal; font-weight:400; color:var(--text-secondary); }
   .tp-arrow{ width:15px; height:15px; vertical-align:-2px; margin-right:5px; fill:none; stroke:currentColor;
     stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
   .trendpill[aria-pressed="true"] .tp-v em{ color:color-mix(in srgb, var(--on-accent) 78%, transparent); }
 
-  /* One white box per inner page: the range on top, the chart, the trend at the bottom (Keren, Sep 20, 2026: "a white
-     container containing the years by cycle and the expanded chart and the trend at the bottom"). Highlights and the
-     drawer sit on the page: the box is the reading, the rest is commentary. */
   .page-chart{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:14px 14px 0; margin:var(--gap) 0 0; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
-  /* Keren, V571: "…I want the top padding and the bottom padding to be equal." The gap under the last thing is the
-     container's OWN padding: whatever ends up last gives up its bottom margin, so nothing can add to it. */
   .page-chart > *:last-child, .spread-history > *:last-child{ margin-bottom:0; }
-  /* ---- One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner
-     page needs to be equal"): one token, so a new container inherits the rhythm. */
-  .metric-sheet{ --page-gap:var(--gap); }   /* the one number: THE GAP, in :root */
+  /* ---- One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner ---- */
+  .metric-sheet{ --page-gap:var(--gap); }
   .metric-sheet .page-chart{ margin-top:var(--page-gap); }
   .metric-sheet > .subject, .metric-sheet > .sign-detail{ margin-top:var(--page-gap); }
-  /* an empty block would still take a gap, so a block with nothing in it takes no room */
   .metric-sheet > .sign-detail:empty, .metric-sheet > .subject:empty{ display:none; }
   .metric-sheet .page-foot{ margin-top:var(--page-gap); }
-  /* ...and the first container sits UP under the top bar (Keren: "make the first container a little bit higher —
-     the space between the top menu and the first component 15, 20 pixels"). Not positional (the leading children are
-     zero-height divs) and not a JS class (the cards re-render on every timeline stop): `:has(.band-head)` names the
-     box holding the history, whose first child is its head. */
   .metric-sheet .page-chart:has(.band-head){ margin-top:0; }
-  /* the history chrome's own root, emitted by histControls(): the mode bar and whichever submenu the mode calls for
-     (a years ruler or the cycle dropdown). It spaces its own children (see .hist-controls), so no page competes. */
-  /* Keren, V444: "…make them one next to the other — cycles years on the left and right adjacent to it the current
-     cycle." Both choose a window, one by kind and one by which, so they share a row (on a phone, 44px more chart). The
-     mode bar fits its two words; the picker, whose content varies, takes the rest. */
-  /* Keren, V518, of a dashboard: "in the main chart you have an icon and a background in grey, which I like — you have
-     the title, then the figures, and on the right side three horizontal dots…" ONE head for every history: a grey
-     badge with the page's mark, a title naming WHAT THE CHART MEASURES (never the page's name), and a ⋯. Keren: "put
-     the (i) inside the ⋯ menu": the note is the menu's first row and the reading row gives its (i) up — one
-     affordance per subject, hence `panelRow`'s `head:`. The menu is .cycsel-menu unchanged: the app has one menu. */
   .band-head{ display:flex; align-items:center; gap:10px; }
-  /* Keren, V520: "…make the background smaller and brighter." BRIGHTER: a neutral wash mixed from `--text-primary`
-     (so dark mode inverts it), not the warm `--mark-wash`, a stain on white. Keren, V521: "the height of the icon,
-     INCLUDING the background, should be more or less the height of the title next to it": the title's line box is
-     about 20px, so 21 and a 13px glyph, radius 7 (9 would be a circle). "And maybe the stroke needs to be lighter":
-     set HERE, because the marks are shared with places where 1.7 is right, and a CSS rule outranks the path's
-     presentation attribute. */
   .bh-mark{ flex:0 0 auto; width:21px; height:21px; border-radius:7px; display:flex; align-items:center;
     justify-content:center; color:var(--text-secondary);
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
-  /* two head components, `.band-head` on a history and `.spread-history-head` on the risk matrix, the folded blocks
-     and the pulse trace, are one object and wear one type spec. They differ in what they CARRY: a badge and ⋯, a tag. */
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:14.5px;
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
-  /* the title hugs its text so the Σ sits BESIDE it ("next to the title", where Keren put it); the ⋯ is pushed to the
-     edge by its own auto margin, with or without a Σ. */
   .bh-title{ flex:0 1 auto; min-width:0; margin:0; }
-  /* The window's total, at the TITLE's size (Keren, V606: "instead of the year over year, make it in the same size
-     font"): mono, being a number, and muted, being a note on the title. Keren, V607: "there is too much space between
-     the title and the sigma…": the head's 10px gap suits mark-to-title, so the negative margin leaves one space. */
   .bh-sigma{ flex:0 0 auto; margin-left:-5px; font-family:"IBM Plex Mono",monospace; font-size:14.5px;
     font-weight:600; color:var(--text-secondary); white-space:nowrap; letter-spacing:-0.02em; }
   .bh-more-wrap{ position:relative; flex:0 0 auto; margin-left:auto; }
-  /* Keren, V521: "the only thing is that you don't have a light circle around the three dots." A round hairline
-     button, as the reference draws it, sized to the badge so the head is one height. */
   .bh-more{ width:21px; height:21px; padding:0; cursor:pointer; border-radius:50%;
     border:1px solid var(--border); background:none;
     color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
   .bh-more svg{ width:13px; height:13px; }
   .bh-more:hover{ color:var(--text-primary); border-color:var(--border-strong); }
   .bh-menu{ min-width:0; }
-  /* a menu that carries a choice above an action needs the two told apart. One hairline, the weight the
-     app uses between rows inside a container. */
   .bh-sep{ height:1px; background:var(--border); margin:4px 6px; }
-  /* the ⋯ menu's group rows are rows you open: the same type as any row, with a chevron, and the reading currently
-     on between name and chevron, so the root tells you where you are. */
   .bh-grp-row .peek-chev, .bh-back .peek-chev{ color:var(--text-muted); opacity:0.75; }
   .bh-back .peek-chev{ transform:rotate(180deg); }
-  /* the head leads the band and the thing under it is the readout, which brings its own top margin. */
   .band-head{ margin-bottom:2px; }
   .hist-controls{ display:flex; align-items:flex-start; gap:8px; }
   .hist-controls > *{ margin:0; }
   .hist-controls > .rangebar[data-mode-for]{ flex:0 0 auto; }
   .hist-controls > .cycsel, .hist-controls > .rangebar[data-range-for]{ flex:1 1 auto; min-width:0; }
-  /* the years ruler has four or five segments and is the control that runs out of room first, so it is the
-     one allowed to shrink its padding rather than wrap */
   .hist-controls > .rangebar[data-range-for] .range-seg{ padding-left:4px; padding-right:4px; }
-  /* The history's control row is quiet (Keren, V520: "the top bar should be grey with grey strokes and grey overall,
-     because it is an action that would be RARELY USED…"): a grey hairline on white, as .rangebar (Keren, V579). Scoped
-     to .hist-bar, so every control on the row (Horizon carries two) wears one chrome. */
   .hist-bar .rangebar,
-  .hist-bar .cycsel-btn{ background:var(--surface); border:1px solid var(--border); }   /* as .rangebar */
-  /* The two controls share a row, so --ctl-h is their height, border included, not a minimum their different
-     paddings clear by different amounts; the contents centre inside it. */
+  .hist-bar .cycsel-btn{ background:var(--surface); border:1px solid var(--border); }
   .hist-bar .rangebar,
   .hist-bar .cycsel-btn{ height:var(--ctl-h); }
-  /* Keren, V582: "I want it to be round like the trend button — both the current cycle and the cycle's years
-     picker." Every control on the row, and the segment inside (a chip in a capsule is a capsule). The dropdown MENU
-     keeps --radius: it is a sheet of options, and a pill-shaped menu reads as a mistake. */
   .hist-bar .rangebar,
   .hist-bar .spread-toggle,
   .hist-bar .range-seg,
   .hist-bar .cycsel-btn{ border-radius:999px; }
   .hist-bar .range-seg{ display:flex; align-items:center; justify-content:center;
     padding-top:0; padding-bottom:0; }
-  /* A segment's BOX is 32 (the 40px bar less border and inset) but it answers taps across both, so its target is the
-     bar's full 40, the trend button's, with no visible change. Not sideways: that would reach into the next segment.
-     Known limit: the series bar, which scrolls, gets 38 — `overflow` clips at the padding box. */
   .range-seg{ position:relative; }
   .range-seg::after{ content:""; position:absolute; left:0; right:0; top:-4px; bottom:-4px; }
   .hist-bar .cycsel-btn{ padding-top:0; padding-bottom:0; }
-  /* "Current cycle  2022–today  ⌄" wants 218px of the picker's 217 at a fixed height: nowrap, and 12px sides with an
-     8px gap so it need not wrap. A longer name ellipses — a control that silently reflows is worse than one that truncates. */
   .hist-bar .cycsel-btn{ padding-left:12px; padding-right:12px; gap:8px; white-space:nowrap; }
   .hist-controls .cycsel-nm{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
-  /* the chosen segment's highlight is `.range-seg.on`'s own rule, so there is nothing to write here */
-  /* The cycle picker is a dropdown (Keren, V419: "I think I prefer a drop down"), with room for the YEARS beside each
-     name: "COVID-19  2018–2021" is a cycle a reader can place. The closed button shows the cycle's name and years. */
-  .cycsel{ position:relative; }   /* its gap belongs to .hist-controls, which is the thing that knows */
+  .cycsel{ position:relative; }
   .cycsel-btn .cycsel-yr{ margin-left:auto; }
   .cycsel-btn{ width:100%; display:flex; align-items:center; gap:10px; min-height:var(--ctl-h); box-sizing:border-box;
     background:var(--track); border:0; border-radius:var(--radius); padding:9px 15px; cursor:pointer;
@@ -1640,24 +1120,17 @@
     border-radius:var(--radius); padding:9px 10px; cursor:pointer; text-align:left;
     font-family:"Public Sans",sans-serif; font-size:13px; color:var(--text-primary); }
   .cycsel-opt:hover{ background:var(--track); }
-  .cycsel-tick{ width:15px; height:15px; flex:none; border-radius:50%; border:1.5px solid var(--border); }  /* one choice, so a radio */
+  .cycsel-tick{ width:15px; height:15px; flex:none; border-radius:50%; border:1.5px solid var(--border); }
   .cycsel-opt.on .cycsel-tick{ background:var(--accent); border-color:var(--accent); }
   .cycsel-nm{ font-weight:600; }
-  /* --text-secondary, not --text-muted: muted's 5.0:1 is against --surface, and on --track it measures 4.48 light and
-     4.19 dark, under the design system's 4.5 floor. Still quieter than the cycle name beside it. */
   .cycsel-yr{ margin-left:auto; padding-left:12px; color:var(--text-secondary); font-size:11.5px; font-family:"IBM Plex Mono",monospace; }
-  .page-chart .dchart{ margin:10px 0 0; }   /* as .vh-host */
-  /* inside the box the trend is a footer, not a second pill: a rule across the box and the line under it */
-  /* what the chart measures, said under it rather than over it (Keren: "the cyclically-adjusted P/E ratio … needs
-     to be somewhere, but not above the chart") */
+  .page-chart .dchart{ margin:10px 0 0; }
   .chart-unit{ font-family:"Public Sans",sans-serif; font-size:11.5px; color:var(--text-muted);
     text-align:right; margin:2px 2px 0; }
   .trendpill .tag{ margin:0; }
 
-  .dchart{ margin:10px 0 2px; }   /* as .vh-svg */
+  .dchart{ margin:10px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
-  /* the pair: the gap is the mark, so it gets the weight; the two ends are the dial's own disc, hollow
-     for the reading being measured against and cored for the one being measured */
   .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
   .pc-link.phase-up{ stroke:var(--phase-up); } .pc-link.phase-down{ stroke:var(--phase-down); }
   .pc-was{ fill:var(--surface); stroke:var(--border-strong); stroke-width:1.8; }
@@ -1673,16 +1146,10 @@
   .pc-legend i{ width:9px; height:9px; border-radius:50%; background:var(--surface); flex:none; }
   .pc-key-was{ box-shadow:inset 0 0 0 1.8px var(--border-strong); }
   .pc-key-now.phase-up{ box-shadow:inset 0 0 0 2px var(--phase-up); }
-  /* where the window holds both, the key shows both rather than picking one and misdescribing the other */
   .pc-key-now.mixed{ box-shadow:inset 0 0 0 2px var(--phase-up); background:var(--phase-down-wash); }
   .pc-legend .pc-unit{ margin-left:auto; }
   .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
   .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
-  /* the policy rate's columns. ONE ink, deliberately: this chart has no band, because the level that
-     divides restrictive from accommodative is contested, unpublished and moves — colouring by it would be
-     inventing a band. The height is the reading; the trend pill says which way it is going. */
-  /* Hormones in blue, six steps light to dark, the sequential ramp the sea change needs, mixed toward the surface as
-     Volume's red ramp is, so dark mode comes free. */
   .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
   .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }
   .ff-col.f1{ stroke:color-mix(in srgb, var(--ff-blue) 42%, var(--surface)); }
@@ -1692,73 +1159,34 @@
   .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
   .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
   .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
-  /* On Economic power the four states mean CHARGE, so they take the battery steps — on that chart only; elsewhere a
-     bar against a reference is reading severity. Adjacent steps separate by ΔE 15.9 (normal) and 15.5 (protanopia) in
-     light, 15.8 and 15.6 in dark. The two low steps share a hue on purpose: four steps red to green cannot all be told
-     apart, and Exhausted and Tired both mean "low". The legend names all four, the relief the amber's sub-3:1 surface
-     contrast asks for. */
   #power-chart .bt-bar.critical{ stroke:var(--batt-1); }
   #power-chart .bt-bar.serious{ stroke:var(--batt-2); }
   #power-chart .bt-bar.warning{ stroke:var(--batt-3); }
   #power-chart .bt-bar.good{ stroke:var(--batt-4); }
   .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
-  /* Households' miniature is the saving rate alone — the half of the page's picture that is moving — and it
-     wears plain ink rather than a state colour, for the reason the chart's second line does. */
   .hh-col{ stroke:var(--text-muted); stroke-linecap:round; fill:none; }
   .hh-col.now{ stroke:var(--accent); }
   .bt-ref, .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
-  /* ONE axis type for every history, mono, because FIGURES are mono in this app (the metric, the record rows, the
-     chart's end reading) and an axis label is a figure. The reference label keeps Public Sans: "ample reserve, 70%"
-     and "fair value, 17×" are sentences with a number in them, not figures. */
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; fill:var(--text-muted); }
   .bt-reflab{ font-family:"Public Sans",sans-serif; font-size:10px; fill:var(--text-muted); }
-  /* The chart's own axes. Gridlines only on the values the axis labels, and SOLID: a thin pale line is plainly not
-     data, and a dash would make it vanish. The dashed marks (.vh-mean, .bt-ref, .dv-mid) keep their dash, which is
-     what separates a REFERENCE from the grid. */
   .bt-grid{ stroke:var(--grid); stroke-width:1; fill:none; }
-  /* The OTHER half of the grid (Keren, V442: "the grid like view — you can really see the grid lines"): verticals,
-     dashed, because a vertical is a place on the calendar, not a VALUE to read off the axis. */
   .bt-vgrid{ stroke:var(--grid); stroke-width:1; stroke-dasharray:3 4; fill:none; }
-  /* Keren, V443: "in the Apple Health app you have an upper border that closes the grid." The plot's own box, at a
-     gridline's weight, so the grid does not stop in mid air. */
   .bt-frame{ stroke:var(--grid); stroke-width:1; fill:none; }
-  .bt-axis{ stroke:var(--grid); stroke-width:1; fill:none; }   /* as .m2-zero — one shade for every rule in the grid */
-  /* The reference label sits ON the plot, where saturated bars run through it: a surface-coloured halo keeps it
-     readable in both themes, and paint-order puts the stroke behind the fill, so the letters keep their weight. */
+  .bt-axis{ stroke:var(--grid); stroke-width:1; fill:none; }
   .bt-reflab{ paint-order:stroke; stroke:var(--surface); stroke-width:3.5px; stroke-linejoin:round; }
   .bt-end{ font-size:15px; font-weight:700; fill:var(--text-primary); }
 
-
   .highlights{ margin-top:22px; padding-top:var(--pad); border-top:1px solid var(--border); }
-  /* On an inner page, whatever sits above Highlights is a bordered card, so its rule would be the second of two lines
-     22px apart. The heading is in the display face and separates perfectly well on its own. */
-  /* Keren, V379: "I really like the beige background you made in policy rate — use it for the insights across the
-     inner pages." COMMENTARY sits on its own ground, so a reader sees where the figures stop and the sentences begin.
-     Scoped to .metric-sheet; the Cycle tab's Highlights are untouched. */
   .metric-sheet .highlights{ border-top:0; margin-top:var(--page-gap);
     background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px 4px; }
-  /* the last card's hairline would otherwise draw just above the card's own bottom edge */
   .metric-sheet .highlights .hi-card:last-of-type{ border-bottom:0; }
-  /* a Highlights card that opens on a fact row: `.aux-stat`'s rule above would sit just under the card's own edge */
   .metric-sheet .highlights > .aux-stat:first-child{ border-top:0; margin-top:0; padding-top:2px; }
-  /* ===== Keren, V604: "if you are incorporating data and lines, make sure you have spacing and dividers that show
-     consistency in the UI." ONE HAIRLINE PER SEAM: a `.hi-card` rules BELOW and an `.aux-stat` ABOVE, so the card
-     gives its rule up where facts follow. A ROW ENDS WITH AIR: the last `.aux-stat` gets the 10px it wears on top.
-     A GROUP of fact rows counts as one: `.aux-group` names any host wrapping them (the FOMC four, so the live repaint
-     can rewrite them alone). */
   .metric-sheet .highlights .hi-card:has(+ .aux-stat),
   .metric-sheet .highlights .hi-card:has(+ .aux-group){ border-bottom:0; }
   .metric-sheet .highlights > .aux-stat:last-child,
   .metric-sheet .highlights .aux-group > .aux-stat:last-child{ padding-bottom:10px; }
   .hi-head{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:23px;
     color:var(--text-primary); margin-bottom:12px; }
-  /* One rule between two things, never two (Keren, Sep 20, 2026: "I keep seeing in the pages that there is a double
-     line — clear it up…"). Never `:last-of-type` for a class: it matches the last of the TAG, and .hi-cycles is a
-     <div> too. */
-  /* Keren, V429: "in highlights, explain the temperature is prices rising according to the CPI — one sentence about
-     prices rising or falling." Every other Highlights line is arithmetic on the series, which keeps it from going
-     stale; this is a definition, so NOT a .hi-card with a tag, which would promise a reading. It opens the section:
-     a reader who does not know the metric cannot use the cards. */
   .hi-lede{ margin:0 0 4px; padding:0 0 12px; border-bottom:1px solid var(--border);
     font-size:14px; line-height:1.55; color:var(--text-secondary); }
   .hi-card{ padding:12px 0; border-bottom:1px solid var(--border); }
@@ -1770,43 +1198,23 @@
   .hi-name.serious{ color:var(--serious-ink); } .hi-name.critical{ color:var(--critical-ink); }
   .hi-card p{ margin:0; font-size:14.5px; line-height:1.55; color:var(--text-primary); }
   .hi-cycles{ margin-top:var(--gap); padding-top:14px; border-top:1px solid var(--border); }
-  /* The cycle strip inside a .page-chart is the chart, not a footnote: no separator rule, the chart's top gap.
-     (0,2,0) beats the bare .hi-cycles. */
   .page-chart .hi-cycles{ margin-top:12px; padding-top:0; border-top:0; }
   .page-chart.cyclebox{ padding-bottom:4px; }
-  /* Six stops do not fit one line on a narrow phone. The ruler wraps rather than shrinking its type, because a
-     segmented control whose labels have gone small is harder to hit, not just harder to read. */
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
-  /* the page's long form, offered at the end rather than asserted at the top */
-  /* A pill, like the trend button (Keren, Sep 20, 2026: "make the More details button like a pill-shaped button — I
-     don't really see the chevron"): the two pressable things at a page's foot look alike, the chevron on a ground. */
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
-    /* no stroke (Keren, V426: "drop the deep purple stroke because now it has a background to sit on"): in the
-       Highlights box an outline is a box in a box. The space above is --gap, like any container's. */
     border:0; background:var(--accent-wash); border-radius:var(--radius);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:14.5px; font-weight:700;
     color:var(--accent-ink); }
-  /* .more-row is the last child, so the card above it is not :last-child and draws its own bottom border: whoever
-     follows a bordered thing drops its own rule. */
-  .hi-card + .more-row, .hi-cycles + .more-row, .aux-stat + .more-row{ margin-top:12px; }   /* 18 reads as too much */
-  /* Keren, V427: "a lot of spacing above and not below — it needs to be even spacing." The gap above is the
-     button's own margin and the gap below is the box's bottom padding, so this margin makes up the difference. */
-  .metric-sheet .highlights .more-row{ margin-bottom:7px; }   /* + the box's own 5px = the 12 above it */
+  .hi-card + .more-row, .hi-cycles + .more-row, .aux-stat + .more-row{ margin-top:12px; }
+  .metric-sheet .highlights .more-row{ margin-bottom:7px; }
   .more-row:hover{ filter:brightness(0.97); }
   .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--radius); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
-  /* Sign pages take the same rhythm: the blocks of a sign's body sit --gap apart, and whatever leads the body
-     starts flush, so the gap above it is one gap, never three stacked (see .sign-detail:first-child below). */
   .sign-detail > .page-chart, .sign-detail > .rbar-labels,
   .sign-detail > .highlights, .sign-detail > .aux-stat{ margin-top:var(--gap); }
-  /* AFTER the rule above, not before: they weigh the same (0,2,0), so the general one would otherwise put the
-     gap straight back on the first card. */
   .sign-detail > *:first-child{ margin-top:0; }
-  /* Keren, Sep 27, 2026: "…if you don't have spacing between the top menu and the first element in the page, fix it
-     because it's a rule." A sign page whose body leads takes --gap-top, the token the control row uses elsewhere; the
-     rule above zeroes whatever leads the body, so this is the whole gap. */
   .metric-sheet > .sign-detail:first-child{ margin-top:var(--gap-top); }
   .sign-detail .more-row{ margin-top:var(--gap); }
   .hi-cycles-head{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600; letter-spacing:0.08em;
@@ -1819,107 +1227,75 @@
     font-weight:700; color:var(--text-secondary); }
   .hi-cycle.now .hi-cycle-name, .hi-cycle.now b{ color:var(--text-primary); }
   .hi-cycle.now .hi-cycle-bar i{ background:var(--accent); }
-  /* The caller says what state a cycle average is in; the strip guesses no polarity ("above fair value" is serious
-     on Valuations, "below an ample reserve" on Economic power). Colour is never the only carrier: every row prints
-     its figure and the caption names the line. */
   .hi-cycle.good .hi-cycle-bar i{ background:var(--good); }
   .hi-cycle.warning .hi-cycle-bar i{ background:var(--warning); }
   .hi-cycle.serious .hi-cycle-bar i{ background:var(--serious); }
   .hi-cycle.critical .hi-cycle-bar i{ background:var(--critical); }
   @media (max-width:400px){ .hi-cycle-name{ width:72px; font-size:12.5px; } .hi-cycle b{ width:52px; font-size:12.5px; } }
 
-  .metric-sheet .temp-chart{ margin-left:0; margin-right:0; } /* a chart bleeds 6px past its card; in a sheet that is a sideways scroll */
+  .metric-sheet .temp-chart{ margin-left:0; margin-right:0; }
   .metric-sheet #slot-temp{ margin:var(--gap) 0 2px; }
-  /* A page, not a popup. It sits in the Cycle tab's own column, capped so a 1,180px chart does not sprawl, and
-     needs none of the modal's clearances — there is no close disc over its top-right corner. */
-  /* Keren, V443: "remove the spacing between the top menu and the history component…" The top bar's margin and the
-     tab panel's 2px are cancelled on the inner page only, so the first box starts where the translucent bar ends and
-     scrolls under it; every other tab keeps the air. */
   #metric-page{ max-width:880px; margin:0 auto; width:100%;
-    margin-top:calc(-1 * (var(--topbar-gap) + 2px)); }   /* 2px = .tab-panel's padding-top */
-  /* Keren, V298: "there is a title inside the page which is redundant — you already have the page title at the top."
-     The head keeps what the bar cannot say: what the reading measures, and the verdict. Page only: in a modal the
-     head is the only title. */
+    margin-top:calc(-1 * (var(--topbar-gap) + 2px)); }
   .metric-sheet .card-head .body-term{ display:none; }
-  /* — unless the card is a GUEST on another page, like the VIX inside Fear & Greed, where the body term is the only
-     word saying which reading this is. */
   .metric-sheet .guest-card .card-head .body-term{ display:block; }
   .metric-sheet .card-head{ margin-bottom:14px; }
   .metric-sheet > *:first-child > .card-head{ margin-top:2px; }
 
-  /* Given width, the card keeps its order and simply breathes: one layout for the card, never a second one with the
-     picture beside the text. */
   @media (min-width:760px){
     .peek{ padding:var(--pad); }
     .peek-value{ font-size:23px; }
     .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
   }
 
-  #slot-temp .card, #slot-growth .card{ border:0; border-radius:0; background:transparent; box-shadow:none; padding:16px 0 18px; border-bottom:1px solid var(--border); margin-bottom:6px; } /* a chart inside a drawer is not a card inside a card */
-  #slot-growth{ margin-top:8px; } #slot-growth .card{ padding-top:0; } /* one step of air above the drawer's first thing, not two */
-  /* … and inside a page's white box the card is stripped as usual: the box is the card */
+  #slot-temp .card, #slot-growth .card{ border:0; border-radius:0; background:transparent; box-shadow:none; padding:16px 0 18px; border-bottom:1px solid var(--border); margin-bottom:6px; }
+  #slot-growth{ margin-top:8px; } #slot-growth .card{ padding-top:0; }
   .page-chart #slot-temp .card, .page-chart #slot-growth .card{ padding:4px 0 6px; border-bottom:0; margin-bottom:0; }
-  /* A card on its own page does not repeat the page's name (Keren, Sep 20, 2026: "I don't need the temperature title
-     at the main container — delete it and remove the spacing at the top"); borrowed BACK into a cycle view it keeps it. */
   .metric-sheet .temp-card > .cv-head > .cv-kicker{ display:none; }
-  /* and the phase tag, which the trend row says in words (Keren: "I don't need to see expansion twice") */
   .metric-sheet #growth-phase{ display:none; }
   .metric-sheet .temp-card > .cv-head{ margin-bottom:0; min-height:0; }
   .metric-sheet .temp-card > .cv-head:empty{ display:none; }
   .page-chart #slot-temp .card, .page-chart #slot-growth .card{ padding-top:0; }
   .page-chart #slot-growth{ margin-top:0; }
-  /* the phase and the dropdown sit centred in the air above the chart, not pinned to its top */
   #slot-growth .cv-head{ margin:16px 0 18px; }
-  /* the cycle-total box follows the chart, so its breathing room is above it */
   .temp-chart + .cv-stats{ margin-top:14px; margin-bottom:0; }
   @media (max-width:640px){ #slot-growth .cv-head{ margin:12px 0 16px; } }
-  #slot-growth .card{ border-bottom:0; padding-bottom:4px; margin-bottom:0; } /* the Growth chart is the GDP drawer's last thing */
+  #slot-growth .card{ border-bottom:0; padding-bottom:4px; margin-bottom:0; }
   .subject-body > *{ margin-top:var(--gap); }
   .subject-body > .subject-context{ margin-top:14px; }
   .subject-body > .subject-context:empty{ display:none; }
-  /* sections that are cards elsewhere lose their card chrome inside a subject */
   .subject-body .hero, .subject-body .longcycle{ background:transparent; border:none; box-shadow:none; padding:0; }
   .subject-body .grid{ margin-top:var(--gap); }
-  /* the summary already names the subject — don't repeat the title inside; keep the hero badge, but the lab tables' own
-     head row goes entirely (Keren, V208: "4 markers flagged is redundant" — the summary row and the flags say it) */
   .subject-body .hero-top h3, .subject-body .longcycle-head{ display:none; }
   .subject-body .hero-top{ justify-content:flex-end; margin-bottom:0; }
   @media (max-width:560px){
-    .subject-summary{ gap:13px; padding:var(--pad); }   /* one number at every width */
+    .subject-summary{ gap:13px; padding:var(--pad); }
     .subject-ring{ width:54px; height:54px; }
     .subject-value{ font-size:20px; }
   }
 
-  /* ---------- Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary
-     row carries the cycle's growth verdict (a tiny bar sparkline of its yearly GDP growth, the annualized rate, and
-     rising/falling); the body holds the blurb, the full GDP-growth bar chart, then the yearly market cards. ---------- */
+  /* ---- Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary ---- */
   .era-drawer .subject-label{ font-family:"Public Sans",sans-serif; font-size:11px; }
   .era-drawer .subject-value .era-drawer-name{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:600; font-style:italic; font-size:20px; color:var(--text-primary); }
-  .era-row .subject-value .era-drawer-name{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:600; font-style:italic; font-size:26px; letter-spacing:0; line-height:1.1; color:var(--text-primary); } /* the Calendar's cycle names in the voice */
+  .era-row .subject-value .era-drawer-name{ font-family:"Cormorant Garamond", Georgia, serif; font-weight:600; font-style:italic; font-size:26px; letter-spacing:0; line-height:1.1; color:var(--text-primary); }
   .era-drawer .subject-body > .cycle-group-blurb{ margin-top:10px; }
   .gdp-bar-label{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; fill:var(--text-secondary); }
   .gdp-bar-year{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; fill:var(--text-muted); }
-  .gdp-bar.ytd{ opacity:0.5; }   /* the year in progress: from the quarters so far, lighter */
-  .gdp-bar-label.inside{ fill:var(--ink-on-fill); font-weight:600; }          /* dark ink on the teal reads in both themes (>=6:1) */
-  .gdp-bar-label.inside.on-red{ fill:var(--ink-on-fill-inv); }                          /* the light theme's red wants white (4.8:1) ... */
-  :root[data-theme="dark"] .gdp-bar-label.inside.on-red{ fill:var(--ink-on-fill); } /* ... the dark theme's lighter red wants ink (6:1) */
+  .gdp-bar.ytd{ opacity:0.5; }
+  .gdp-bar-label.inside{ fill:var(--ink-on-fill); font-weight:600; }
+  .gdp-bar-label.inside.on-red{ fill:var(--ink-on-fill-inv); }
+  :root[data-theme="dark"] .gdp-bar-label.inside.on-red{ fill:var(--ink-on-fill); }
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .gdp-bar-label.inside.on-red{ fill:var(--ink-on-fill); } }
-  .growth-legend-sw{ width:10px; height:10px; border-radius:50%; flex:none; background:var(--surface); border:1.75px solid var(--ovulate); box-sizing:border-box; } /* hollow dots in the line's colours (Keren, Sep 19, 2026: the legend must match) */
+  .growth-legend-sw{ width:10px; height:10px; border-radius:50%; flex:none; background:var(--surface); border:1.75px solid var(--ovulate); box-sizing:border-box; }
   .growth-legend-sw.neg{ border-color:var(--bleed-mid); }
-  .growth-legend-sw.thin{ width:16px; height:0; border:0; border-top:1.5px dotted var(--text-secondary); border-radius:0; } /* the comparison country's line in the legend */ 
-  .gdp-era-avg{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; }  /* the same average line Temperature draws */
-  /* the history is ONE container, the menu card's shape, with a hairline between cycles. `overflow:hidden` keeps a
-     row's hover wash inside the radius. */
+  .growth-legend-sw.thin{ width:16px; height:0; border:0; border-top:1.5px dotted var(--text-secondary); border-radius:0; }
+  .gdp-era-avg{ stroke:var(--accent); stroke-width:2.4; stroke-linecap:round; }
   .cyc-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     box-shadow:var(--shadow); overflow:hidden; }
-  /* the same head the Indicators card wears — mark, name, and one line under it. Two containers on
-     one tab should introduce themselves in one voice, and a card’s voice is the kicker, not a page title. */
   .cyc-head{ padding:14px 14px 13px; border-bottom:1px solid var(--border); }
   .cyc-title{ display:inline-flex; align-items:center; gap:4px; font-family:"Public Sans",sans-serif;
     font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .cyc-title .peek-mark{ color:var(--text-secondary); }
-  /* the container's last row: a row of the card, not the .more-row pill a page ends on, so the card's padding and a
-     hairline above. The chevron turns down when open: this expands in place, and a right-pointing one promises a page. */
   .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     border:0; border-top:1px solid var(--border); background:transparent; padding:13px 14px 12px;
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:14px; font-weight:600;
@@ -1928,14 +1304,10 @@
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
-  /* ---------- Rhymes: today beside one past top ----------
-     Only the card's own furniture: surface, head and hairlines are `.cyc-card`'s, so the two containers on this tab
-     speak in one voice. ONE HAIRLINE PER SEAM (`.rhy-cols + .rhy-row` stops the double), and A ROW LIST ENDS WITH AIR. */
+  /* ---- Rhymes: today beside one past top ---- */
   .rhy-lede{ margin:0; padding:13px 14px 0; font-size:14px; line-height:1.55; color:var(--text-secondary); }
   .rhy-ctl{ padding:0 14px 12px; }
   .rhy-ctl .rangebar{ margin:12px 0 0; }
-  /* The chosen top, said rather than chipped: a sentence needs no component, and `.chip` must be re-scoped to every
-     parent that uses it. */
   .rhy-say{ margin:0; padding:0 14px 13px; font-size:14px; line-height:1.5; color:var(--text-secondary); }
   .rhy-say b{ color:var(--text-primary); font-weight:700; }
   .rhy-cols, .rhy-row{ display:grid; grid-template-columns:1fr 84px 84px; gap:8px; align-items:baseline;
@@ -1951,21 +1323,13 @@
   .rhy-cell b{ display:block; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600;
     color:var(--text-primary); }
   .rhy-cell .unit{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
-  /* The period the figure was taken in, under the figure. It is the provenance, not a caption, so it is mono
-     like the number it belongs to. */
   .rhy-cell i{ display:block; margin-top:3px; font-family:"IBM Plex Mono",monospace; font-style:normal;
     font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
-  /* No reading: the record does not reach this top. The dash is muted and unbolded so it cannot be mistaken for
-     a value of zero, and the sub-line says where the record starts instead of when this one was taken. */
   .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
-  /* the whole of Echoes as one mark beside the name (a fourth column costs too much at phone width), in the accent,
-     the colour for the computed, at the size of a full stop */
   .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
     vertical-align:1.5px; }
   .rhy-row.alike .rhy-name{ color:var(--text-primary); }
-  /* ---------- A closed cycle's categories ----------
-     The rows ARE `.cat-item`, so the two views cannot drift apart. `.flat` takes away only what a door has — the
-     pointer, the hover border, the chevron — since a cycle that ended has nothing to open. */
+  /* ---- A closed cycle's categories ---- */
   #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
   .cc-grp .cat-list{ margin-top:var(--gap); }
   .cc-grp .cyc-title{ padding:0 2px; }
@@ -1977,7 +1341,6 @@
   .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
   .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
     font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
-  /* The cycle's shape in the miniature's slot: the spark fills it, in the accent, as `.ci-mini` does every mini. */
   .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
   .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
   .cat-item.flat .ci-mini .spark-line, .cat-item.flat .ci-mini .spark-end{ stroke:var(--accent-ink); }
@@ -1987,9 +1350,9 @@
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
   .era-row{ padding:13px 14px 12px; }
   .era-row + .era-row{ border-top:1px solid var(--border); }
-  .era-market{ margin-top:4px; } .era-market .chip{ font-size:15px; font-weight:700; color:var(--text-primary); } .era-market .chip i{ font-style:normal; font-weight:400; font-size:12.5px; color:var(--text-muted); margin-right:4px; } .era-market .chip .unit{ font-size:12.5px; font-weight:600; color:var(--text-muted); } /* the third line of every row */
+  .era-market{ margin-top:4px; } .era-market .chip{ font-size:15px; font-weight:700; color:var(--text-primary); } .era-market .chip i{ font-style:normal; font-weight:400; font-size:12.5px; color:var(--text-muted); margin-right:4px; } .era-market .chip .unit{ font-size:12.5px; font-weight:600; color:var(--text-muted); }
 
-  /* ---------- hero: yield curve ---------- */
+  /* ---- hero: yield curve ---- */
   .hero{ background: var(--surface); border: 1px solid var(--border); border-radius:var(--radius); padding: 26px 26px 22px; box-shadow: var(--shadow); }
   .hero-top{ display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom: 6px; }
   .hero-top .hero-kicker{ font-family:"Public Sans",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:4px; font-weight:600;}
@@ -2006,9 +1369,8 @@
   .status-badge.critical{ background:var(--critical-wash); color:var(--critical-ink); }
   .status-badge .ring{ width:9px; height:9px; border-radius:50%; background:currentColor; flex:none; }
 
-  .chart-shell{ position:relative; margin:10px -6px 4px; }   /* as .vh-host */
+  .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
-  /* .curve-dot/.curve-dot.end — the spread-history chart's hover dot */
   .curve-dot{ fill:var(--accent); }
   .curve-dot.end{ fill:var(--accent); stroke:var(--surface); stroke-width:2.5; }
   .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; opacity:0; pointer-events:none; }
@@ -2019,24 +1381,13 @@
   }
   .hero-hit{ fill:transparent; }
 
-  /* The country picker is a group in the Growth history's ⋯ menu. Nothing sets --peer and no markup carries
-     `.sw.peer`: the rule below styles nothing. */
   .gdp-tooltip .row .sw.peer{ background:var(--peer); }
-  /* One rule, because there is one hover. A tooltip that rides the pointer over the whole page is fixed and
-     lifted clear of the hand, translated onto its own column rather than placed inside a card that would clip it. */
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
-  /* The hovered column keeps its colour and the rest step back: the one emphasis that works in both themes and on
-     every hue (a brightness filter flips between themes; a highlight colour fights the heat ramp). The hairline is
-     for precision at Max, where a column is 1.4px wide. */
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
-  /* Keren, V407: "…make sure you read from the same source, the same mother component." The rule matches whatever
-     carries `.hcol`, which every history's columns do — never a list of chart classes another chart cannot join. */
   .hovering .hcol{ opacity:0.38; }
   .hovering .hcol.on{ opacity:1; }
   .hist-cross{ stroke:var(--text-primary); stroke-width:1; opacity:0; pointer-events:none; }
   .hovering .hist-cross{ opacity:0.3; }
-  /* the resting reading's thread down to its own bar — a sixth of the hover's weight, so it reads as
-     part of the picture rather than as a mark somebody left behind. A hover overrides it. */
   .resting .hist-cross{ opacity:0.16; }
   .hovering.resting .hist-cross{ opacity:0.3; }
   .gdp-tooltip{
@@ -2047,47 +1398,23 @@
   .gdp-tooltip b{ display:block; font-size:11px; margin-bottom:2px; }
   .gdp-tooltip .row{ display:flex; gap:8px; justify-content:space-between; }
   .gdp-tooltip .row .sw{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; }
-  /* the readout's hierarchy: the reading at full strength, reference lines at 72% with their line's mark, in
-     `currentColor`, because this tooltip inverts against the page and a fixed purple fails in one theme. */
   .gdp-tooltip .tip-now{ font-size:13px; font-weight:700; margin:1px 0 3px; }
-  /* ---------- the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a
-     tooltip. Left-aligned, as Apple has it (her screenshot is a Hebrew build, so there it is on the right). ---------- */
-  /* No border (Keren, V520: "there is no border in the numbers… I think this design is very legible and good"): an
-     edge separates a READING from the page, and this is the chart's own headline inside a bordered box. Aligned to
-     the CARD, not the plot's gutter (Keren, V521: "…it should align to the LEFT"): it starts where the badge starts. */
-  /* Over the plot, not in a row above it (Keren, V560: "maybe we can put the tooltip inside the grid"): the legend
-     states the average, so there is no row to reserve. `pointer-events:none`, or the plate would chase the pointer
-     out from under itself. */
+  /* ---- the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a ---- */
   .has-hist-read{ position:relative; }
   .hist-read{ position:absolute; left:0; right:0; top:0; z-index:3; pointer-events:none; padding:0; margin:0; }
-  /* The plate keeps its padding in BOTH states and the rest position pulls it back by the same amount, so the figure
-     starts where the badge starts and the height never changes when the wash arrives. */
-  /* 8px, not the card's 16, which makes a 41px plate a lozenge: a label that rounds as hard as its card stops reading
-     as one thing on another, which is why Apple's plate is squarer too. */
   .hr-plate{ display:inline-block; padding:3px 9px 4px; border-radius:8px; opacity:0;
              transition:margin-left 0.12s ease-out, opacity 0.12s ease-out; }
   .hist-read.on .hr-plate{ opacity:1; }
-  /* 6% of the page's ink, not --surface-2 (a 2% wash on white, no plate at all); mixing from the ink also lifts the
-     plate off the dark surface, as Apple's does. */
   .hist-read.on .hr-plate{ background:color-mix(in srgb, var(--text-primary) 6%, var(--surface)); }
   @media (prefers-reduced-motion:reduce){ .hr-plate{ transition:opacity 0.12s ease-out; } }
-  /* Keren, V565: "I want August 2026 to be in the same size font like Average 3.3." Both are 11px, but caps with
-     tracking read taller, so the label is the legend's own line: face, size, case and ink. */
   .hr-label{ font-family:"Public Sans",sans-serif; font-size:11px; color:var(--text-muted); white-space:nowrap; }
-  /* Keren, V559: "the number is too big." A plate that rides a column is a reading, not a card's headline figure,
-     and a reading answers to the chart rather than competing with it. */
   .hr-value{ font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:700; line-height:1;
-             color:var(--text-primary); margin:0; white-space:nowrap; }   /* one line, so the plate is one height */
-  /* a two-figure reading steps down rather than spreading, keeping its LINE BOX at 22px while the glyphs shrink,
-     so a stepped-down plate is exactly as tall as every other one (Keren, V574: "I don't want the height of the
-     tooltip to change") */
+             color:var(--text-primary); margin:0; white-space:nowrap; }
   .hr-plate.compact .hr-value{ font-size:15px; line-height:1.467; }
   @media (max-width:400px){ .hr-value{ font-size:20px; } }
   .gdp-tooltip .row.ref{ opacity:0.72; gap:14px; }
   .gdp-tooltip .row.ref .sw{ width:12px; height:0; border-radius:0; border-top:2px solid currentColor;
                              vertical-align:middle; margin-right:6px; }
-  /* a CSS dashed border gives no control over the dash length, and at 12px it drew as one solid stroke —
-     indistinguishable from the solid mark it has to be told apart from. A repeating gradient does. */
   .gdp-tooltip .row.ref .sw.dash{ border-top:0; height:2px;
     background:repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 7px); }
 
@@ -2099,33 +1426,21 @@
   .spread-tile .value.critical{ color:var(--critical-ink); }
   .spread-tile .note{ font-size:12.5px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
 
-  /* ---------- 10Y-3M spread history (quarterly, with recession bands) ---------- */
-  /* each block is its own container (Keren, V293: "divide the container of the maturities and the
-     ten-minus-three, ten-minus-two spread — make them separate containers") */
-  /* whatever leads the hero starts flush — except the control row, which takes `--gap-top` as controls do elsewhere
-     (Keren, V522: "there's no space between the top menu and the selection bar") */
+  /* ---- 10Y-3M spread history (quarterly, with recession bands) ---- */
   .hero > :first-child:not(.hist-bar){ margin-top:0; }
   .hero .spread-history{ margin-top:var(--gap); padding:16px 16px 14px; border:1px solid var(--border);
     border-radius:var(--radius); background:var(--surface); border-top:1px solid var(--border); padding-top:16px; }
   .spread-history{ margin-top:22px; padding-top:20px; border-top:1px solid var(--border); }
 
-  /* ================= the history's box =================
-     Selected by what it CONTAINS, not by a class a page must remember: `:has(.band-head)` is "the box a history
-     opens with", true of every history and nothing else. Keren, V519: "the top menu bar is greyish and it's OUTSIDE
-     the container of the main chart": the control sits on the ground above. Keren, V520: "…the history panel needs
-     to be CONTAINED and not bleed into the edges": `.page-chart`'s own spec — surface, border, radius, padding. */
   .page-chart:has(.band-head), .spread-history:has(.band-head){
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;   /* bottom = top, one number */
+    box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;
   }
-  /* The control on the ground owns the gap to the box below and keeps the page's padding. Its lead is `--gap-top`,
-     as for `.ind-sheet > .rangebar:first-child`, the same object. */
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
   .hist-bar > * + *{ margin-top:8px; }
   .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }   /* type: the shared rule above */
+  .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
   .spread-history-caption{ font-size:12.5px; color:var(--text-secondary); line-height:1.55; max-width:70ch; margin:4px 0 0; }
-  /* Segmented toggle for choosing which spread the history chart plots — same pill idiom as .tabbar, sized to content. */
   .spread-toggle{ display:inline-flex; gap:3px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:3px; flex:none; }
   .spread-toggle-btn{
     border:none; background:transparent; padding:6px 11px; border-radius:var(--radius-inner); cursor:pointer;
@@ -2134,16 +1449,13 @@
   }
   .spread-toggle-btn.active{ background:var(--surface); color:var(--accent-ink); box-shadow:var(--shadow); }
   .spread-toggle-btn:hover:not(.active){ color:var(--text-primary); }
-  .spread-history-band{ fill:var(--border); opacity:0.7; }                 /* recessions: the dial's track grey */
-  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }   /* the grid's own ink; the dash is what marks it as zero */
-  .spread-history-area-pos{ fill:var(--ovulate); opacity:0.16; }           /* the market band's colours: teal above zero, red below */
+  .spread-history-band{ fill:var(--border); opacity:0.7; }
+  .spread-history-zero{ stroke:var(--grid); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; }
+  .spread-history-area-pos{ fill:var(--ovulate); opacity:0.16; }
   .spread-history-area-neg{ fill:var(--bleed-mid); opacity:0.16; }
   .spread-history-line{ fill:none; stroke:var(--text-primary); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
 
-  /* ---------- yield-by-maturity comparison chart: pill toggles; the marks reuse .gdp-line/.gdp-dot/.gdp-tooltip,
-     which are series-colour-agnostic. ---------- */
-  /* `.gdp-line` and `.gdp-dot` must stay defined: an SVG <path> with no fill fills BLACK, so without them every line
-     on the maturities chart draws as a solid black shape. The delicate line spec, and an end dot ringed in the surface. */
+  /* ---- yield-by-maturity comparison chart: pill toggles; the marks reuse .gdp-line/.gdp-dot/.gdp-tooltip, ---- */
   .gdp-line{ fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
   .gdp-dot{ stroke:none; }
   .gdp-dot.end{ stroke:var(--surface); stroke-width:2; }
@@ -2160,31 +1472,22 @@
   .ylm-chip.on{ border-color:var(--chip-color); color:var(--text-primary); }
   .ylm-chip .expand-btn{ margin-left:1px; }
 
-  /* ---------- un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/
-     .spread-history-caption's type, so this needs almost no new CSS of its own. ---------- */
-  /* the policy tile does not open the card, so it takes a gap like any other container; so does the un-inversion
-     tile */
+  /* ---- un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ ---- */
   .hero .spread-tile{ margin-top:var(--gap); }
   .uninv-lag{ margin-top:var(--gap); }
   .uninv-lag .value-row{ margin:12px 0 10px; }
-  /* Compact cycle-by-cycle rows inside the (i) modal — deliberately not table.labtable, which sets a 560px
-     min-width that would overflow the 520px-max-width detail modal. */
   .lag-rows{ margin:10px 0 14px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
   .lag-row{ display:grid; grid-template-columns: 1.05fr 1.15fr 1.05fr 0.75fr; gap:6px; padding:8px 10px; font-size:12.5px; line-height:1.35; border-bottom:1px solid var(--border); color:var(--text-primary); }
   .lag-row:last-child{ border-bottom:none; }
   .lag-row.lag-row-head{ background:var(--surface-2); font-weight:600; color:var(--text-secondary); font-size:11px; text-transform:uppercase; letter-spacing:0.04em; }
   .lag-row span:last-child{ text-align:right; font-family:"IBM Plex Mono",monospace; }
 
-  /* ---------- long cycle (structural layer) ---------- */
+  /* ---- long cycle (structural layer) ---- */
   .longcycle{ padding: 22px 24px 24px; border-radius:var(--radius); background: var(--surface-2); border:1px dashed var(--border-strong); }
-  /* On an inner page the section IS the page, so it stops being a box (Keren, Sep 20, 2026): a dashed container round
-     cards with their own edges is a container in a container. It keeps its box inside a longer page. */
   .metric-sheet .longcycle{ padding:0; border:0; background:transparent; border-radius:0; }
-  /* and the same for the yield page's .hero — a container around three containers */
   .metric-sheet .hero{ padding:0; border:0; background:transparent; border-radius:0; box-shadow:none; }
   .metric-sheet .hero > .spread-history:first-child{ margin-top:0; }
-  /* the markers are a block of their own, not a continuation of the chart above them (Keren, V291) */
-  .metric-sheet > .subject{ margin-top:var(--page-gap); }   /* one token decides it */
+  .metric-sheet > .subject{ margin-top:var(--page-gap); }
   .longcycle-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:var(--gap); flex-wrap:wrap; }
   .longcycle-head .kicker{ font-family:"Public Sans",sans-serif; font-size:12.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; }
   .longcycle-head h2{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:20px; margin:4px 0 2px; color:var(--text-primary); }
@@ -2195,8 +1498,6 @@
   .callout p{ font-size:14px; color:var(--text-secondary); line-height:1.62; margin:6px 0 0; }
   .callout .callout-src{ font-size:11px; color:var(--text-muted); margin-top:10px; }
   .callout .callout-src a{ color:var(--text-muted); }
-  /* on phones the lab tables stack (Keren, V207: "make the title, then below it the marker, like the Season Model"):
-     name and flag, the sub-line, then the range full width, instead of a 560px table scrolled sideways */
   @media (max-width:640px){
     .labtable-scroll{ overflow:visible; }
     table.labtable, table.labtable tbody{ display:block; width:100%; min-width:0; }
@@ -2211,10 +1512,10 @@
     table.labtable .rbar-labels{ margin:12px 0 7px; }
     table.labtable .rbar-track{ margin-bottom:0; }
     table.labtable tr.stress-row{ padding-top:16px; padding-bottom:17px; border-bottom:2px solid var(--border-strong); }
-    table.labtable tbody tr.stress-row td{ padding-top:0; padding-bottom:0; border-bottom:0; } /* outweighs the desktop stress-row rule below */
+    table.labtable tbody tr.stress-row td{ padding-top:0; padding-bottom:0; border-bottom:0; }
   }
 
-  /* ---------- indicator grid ---------- */
+  /* ---- indicator grid ---- */
   .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap:16px; }
   .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:var(--pad); display:flex; flex-direction:column; box-shadow: var(--shadow); }
   .card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:10px;}
@@ -2225,33 +1526,22 @@
   .tag.warning{ background:var(--warning-wash); color:var(--warning-ink); }
   .tag.serious{ background:var(--serious-wash); color:var(--serious-ink); }
   .tag.critical{ background:var(--critical-wash); color:var(--critical-ink); }
-  .tag.norm{ background:var(--track); color:var(--text-secondary); } /* a neutral verdict, e.g. a flat growth trend */
-  /* A category row strips the pill off whatever it was built from, so every member is one object. HERE, after the
-     state rules: `.cat-item .tag` and `.tag.good` tie on specificity, so placed earlier it would lose silently. */
+  .tag.norm{ background:var(--track); color:var(--text-secondary); }
   .cat-item .tag{ background:none; border:0; padding:0; border-radius:0; color:inherit;
     letter-spacing:inherit; text-transform:none; }
-  /* and the verdict's own type sits with it, for the same tie: a word lifted out of a tag is still a `.tag`,
-     and `.tag`'s 11px would beat a bare `.ci-word` on source order. Declared once, here, where it can win. */
   .cat-item .ci-word{ margin:3px 0 0; font-size:12.5px; font-weight:600; color:var(--text-secondary); }
-  /* the phase, wherever it is said in colour: the tag on the GDP page, the word on its peek card, the
-     name on its Highlights. One fact, one palette. */
   .tag.phase-up{ background:var(--phase-up-wash); color:var(--phase-up-ink); }
   .tag.phase-down{ background:var(--phase-down-wash); color:var(--phase-down-ink); }
-  /* Temperature's word wears its reading's ramp step, not a severity (Keren, Sep 20, 2026: "the hot-heating text on
-     the temperature preview should be the same colour as the graph…"): a card's word and picture are one reading. */
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
-  /* On a subject's face the mark carries the state, so the word just wears its ink (Keren, V251: "I want the look and
-     feel to be like a health app"). Elsewhere the filled pill stays: in a drawer a flag should look like a flag. */
   .subject-summary .tag{ background:transparent; padding:3px 0 3px 2px; font-weight:700; letter-spacing:0.01em; }
   .subject-summary .tag.norm{ color:var(--text-muted); }
 
   .card .metric-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:2px;}
-  /* with no title block above it, the verdict rides at the end of the figure's own line */
   .metric-row > .tag{ margin-left:auto; }
   .card .metric{ font-size:30px; font-weight:700; letter-spacing:-0.01em; }
   .card .metric-sub{ font-size:14px; color:var(--text-muted); }
 
-  /* ---------- indicator range bar: clean "lab result" style (track + optimal zone + one dot) ---------- */
+  /* ---- indicator range bar: clean "lab result" style (track + optimal zone + one dot) ---- */
   .rbar-labels{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-secondary); margin:14px 0 8px; }
   .rbar-labels.three{ display:grid; grid-template-columns:1fr auto 1fr; align-items:start; gap:8px; font-size:11.5px; }
   .rbar-labels.three > span:first-child{ justify-self:start; }
@@ -2264,13 +1554,8 @@
     background:var(--text-primary); box-shadow:0 0 0 3px var(--surface), var(--shadow); z-index:2;
   }
   .rbar-dot.flagged{ background:var(--warning); }
-  /* invisible hover zones over a track whose positions have names — the bar looks exactly like every other
-     bar; the meaning is in the title, for the reader who goes looking */
 
-  /* ---------- info icon + popover (progressive disclosure for longer notes) ---------- */
-  /* The mark is 16-18px and the floor is 44: an invisible 44×44 disc is centred on it rather than growing a quiet
-     affordance. Absolute, so not a flex item and the "i" stays centred; no (i) sits inside a clickable row, so it
-     steals no tap. `flex:none`, or a flex parent squeezes the circle into an ellipse. */
+  /* ---- info icon + popover (progressive disclosure for longer notes) ---- */
   .info-btn, .expand-btn{ position:relative; flex:none; }
   .info-btn::before, .expand-btn::before{
     content:""; position:absolute; top:50%; left:50%; width:44px; height:44px;
@@ -2284,7 +1569,7 @@
   }
   .info-btn:hover, .info-btn[aria-expanded="true"]{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
 
-  /* ---------- detail modal: every indicator defaults to a minimal view; this is its "expand" ---------- */
+  /* ---- detail modal: every indicator defaults to a minimal view; this is its "expand" ---- */
   .detail-backdrop{
     position:fixed; inset:0; background:var(--overlay); z-index:80; display:flex;
     align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none;
@@ -2298,14 +1583,12 @@
   }
   .detail-backdrop.show .detail-modal{ transform:translateY(0); }
   .detail-modal-close{
-    position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%; /* the menu button's size (Keren, Sep 19, 2026) */
+    position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%;
     border:1px solid var(--border-strong); background:var(--surface-2); color:var(--accent-ink);
     cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;
   }
   .detail-modal-close svg{ width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; }
   .detail-modal-close:hover{ background:var(--accent-wash); border-color:var(--accent); }
-  /* Phones (Keren, Sep 19, 2026, with Clue's article sheet): the popup rises from the bottom as a near-full-screen sheet —
-     rounded top corners, a strip of the dimmed page left above it, a big round X in its top-right, larger type. */
   @media (max-width:640px){
     .detail-backdrop{ padding:0; align-items:flex-end; }
     .detail-modal{
@@ -2323,13 +1606,10 @@
     .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:12.5px; }
   }
   .detail-modal .card-head{ margin-bottom:14px; padding-right:26px; }
-  /* .metric-row/.metric/.metric-sub/.caption/.aux-stat/.src are ".card …"-scoped in the base stylesheet, which
-     doesn't reach content injected into this modal — restated here so the same markup styles correctly here too. */
   .detail-modal .metric-row, .metric-sheet .metric-row, .sign-detail .metric-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
   .detail-modal .metric, .metric-sheet .metric, .sign-detail .metric{ font-size:30px; font-weight:600; letter-spacing:-0.01em; }
   .detail-modal .metric-sub, .metric-sheet .metric-sub, .sign-detail .metric-sub{ font-size:14px; color:var(--text-muted); }
   .detail-modal .caption, .metric-sheet .caption, .sign-detail .caption{ font-size:14px; color:var(--text-secondary); line-height:1.55; margin:16px 0 0; }
-  /* a popup is a lede and a list, never a page of prose */
   .detail-modal .facts, .metric-sheet .facts, .sign-detail .facts{ margin:12px 0 0; padding:0; list-style:none; }
   .detail-modal .facts li, .metric-sheet .facts li, .sign-detail .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:15px; line-height:1.55; color:var(--text-secondary); }
   .detail-modal .facts li:last-child, .metric-sheet .facts li:last-child, .sign-detail .facts li:last-child{ margin-bottom:0; }
@@ -2341,16 +1621,12 @@
     padding-top:10px; border-top:1px solid var(--border); margin-top:14px;
   }
   .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
-  /* a fact whose value is a phrase rather than a figure is set in the text face: mono is for numbers, and a
-     sentence in mono reads as code */
   .aux-stat.wordy b{ font-family:"Public Sans",sans-serif !important; font-weight:600; }
   .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:11px; color:var(--text-muted); margin-top:12px; }
   .detail-modal .src a, .metric-sheet .src a, .sign-detail .src a{ color:var(--text-muted); }
   .detail-modal .marker-sub, .metric-sheet .marker-sub, .sign-detail .marker-sub{ display:block; font-size:12.5px; color:var(--text-muted); margin-top:2px; }
   .detail-modal h4{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:26px; margin:0 0 2px; color:var(--text-primary); padding-right:26px; }
 
-  /* small circular "expand" affordance — visually identical to .info-btn, kept separate so its clicks open the
-     detail modal instead of the small popover */
   .expand-btn{
     display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; margin-left:5px;
     border-radius:50%; border:1px solid var(--border-strong); background:var(--surface-2); color:var(--text-muted);
@@ -2360,7 +1636,6 @@
   }
   .expand-btn:hover{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
 
-  /* the minimal card's own expand affordance — a full-width footer link rather than a small dot */
   .card .details-link{
     margin-top:10px; padding-top:10px; border-top:1px solid var(--border); width:100%; text-align:left;
     background:none; border-left:none; border-right:none; border-bottom:none; border-radius:0;
@@ -2379,7 +1654,7 @@
   .hero .src-line{ font-size:11px; color:var(--text-muted); margin-top:8px; }
   .hero .src-line a{ color:var(--text-muted); }
 
-  /* ---------- footer ---------- */
+  /* ---- footer ---- */
 
   a{ text-decoration: none; }
   a:hover{ text-decoration: underline; }
@@ -2388,11 +1663,5 @@
     .hero{ padding:20px 16px; }
     .hero-top{ flex-direction:column; }
     .season-card{ flex-direction:column; align-items:stretch; padding:13px 13px 15px; gap:11px; }
-    /* Keren, V414: "make sure the padding from the left and the right of the cycle inside the container are equal…"
-       Each side's chrome is the wrap's 20px + the card's 1px border + 13px padding − the 11px taken back here = 23px,
-       so the span is 100vw − 46px: exactly the card's content width, nothing overflows (overflow would all land on
-       the right), and the paddings are equal by construction. No optical nudge. */
-    /* No `align-self:center`: the wrap stretches as on desktop, and its negative margins give it a real,
-       scrollbar-free width to centre the wheel in. */
     .season-wheel-wrap{ --dial:min(calc(100vw - 46px), calc(100vh - 220px)); order:-1; width:calc(100% + 22px); margin:3px -11px 1px; }
   }

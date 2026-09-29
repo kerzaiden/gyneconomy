@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `10f9c34` on 2026-09-29. **72 components**, **61 shared patterns**.
+Generated from commit `8479d85` on 2026-09-29. **72 components**, **61 shared patterns**.
 
 ## components.js
 
@@ -33,7 +33,7 @@ Generated from commit `10f9c34` on 2026-09-29. **72 components**, **61 shared pa
 | **`householdsChart`** | `.bill` `.hh-col` `.kept` | `pages-nav.js:renderMetricPages` |
 | **`m2GrowthChart`** | `.m2-col` | `render-core.js:renderPressurePage` |
 | **`nameWithMark`** | `.pbr-last` | `history.js:panelRow` |
-| **`panelRow`** | `.lab-door` `.panel-row` `.pbr-name` | `history.js:(top level)`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:renderSignsList`, `render-core.js:growthPanelHtml`, `render-core.js:householdsPanelHtml`, `render-pages.js:renderLongCycleTag`, `render-pages.js:renderValuationTag` |
+| **`panelRow`** | `.lab-door` `.panel-row` `.pbr-name` | `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:renderSignsList`, `render-core.js:growthPanelHtml`, `render-core.js:householdsPanelHtml`, `render-pages.js:renderLongCycleTag`, `render-pages.js:renderValuationTag` |
 | **`unempHistoryChart`** | `.unemp-col` | `pages-nav.js:renderMetricPages` |
 
 ## charts.js

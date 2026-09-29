@@ -1,24 +1,13 @@
 </script>
 <script>
-/* Installability. This runs OUTSIDE the app's IIFE on purpose: it is a hosting concern, not an app
-   concern, and nothing in the app may depend on it. It must be silent wherever it cannot work — the
-   same file is published as a Claude Artifact, served inside a sandboxed cross-origin iframe where
-   registration is not permitted and throws. Framed, insecure, or unsupported: do nothing at all.
-
-   Note for the test suite: this is a SECOND <script> block. A greedy /<script>([\s\S]*)<\/script>/
-   spans both and chokes on the boundary — match non-greedily, per block. */
 (function () {
   try {
     if (!("serviceWorker" in navigator)) return;
-    if (window.top !== window.self) return;                        // the artifact's iframe
+    if (window.top !== window.self) return;
     if (location.protocol !== "https:" && location.hostname !== "localhost") return;
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").then(function (reg) {
         if (!reg) return;
-        /* An INSTALLED app is never "closed", so nothing prompts it to look for a new worker
-           (Keren, Sep 27, 2026: "I don't want to delete the app every time I make an update").
-           Two halves. ASK — check for a new worker whenever the app comes back to the foreground,
-           throttled to once a minute so switching between apps does not hammer the host; */
         var last = 0;
         var check = function () {
           if (document.visibilityState !== "visible") return;
@@ -30,18 +19,15 @@
         document.addEventListener("visibilitychange", check);
         window.addEventListener("focus", check);
 
-        /* and TAKE IT — when a new worker takes control, reload once, so the reader sees the new
-           page. The guard: a worker claiming a client on FIRST install would otherwise reload a page
-           that is already current, which looks like a flicker and at worst loops. */
         var reloading = false;
         navigator.serviceWorker.addEventListener("controllerchange", function () {
           if (reloading) return;
           reloading = true;
           if (navigator.serviceWorker.controller) location.reload();
         });
-      }).catch(function () { /* nothing to do */ });
+      }).catch(function () {  });
     });
-  } catch (e) { /* a browser that objects to any of the above keeps the plain page */ }
+  } catch (e) {  }
 })();
 </script>
 

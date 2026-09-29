@@ -6,15 +6,15 @@ request the history then left the comments, and this register kept the decisions
 
 Part 1 is every comment in the source at v648-treasury-quarters that names Keren, copied word for word by
 `tools/decisions.js`, with the file and line where it stood. It is an archive: a later decision can supersede
-an earlier one, and the code comments say which decision is in force today. The full annotated source is
+an earlier one; the latest on a subject is the one in force. The full annotated source is
 still in git:
 
 ```sh
 git show v648-treasury-quarters:src/js/07-forms.js
 ```
 
-Part 2 is for decisions made after v648-treasury-quarters. Add each one there, with the version and her words, and cite
-it in the code as `Keren, V6NN`.
+Part 2 is for decisions made after v648-treasury-quarters. Add each one there, with the version and her
+words. Since V650 the source has no comments, so this register is the only place a decision is written down.
 
 ## Part 1 · the register at v648-treasury-quarters
 
@@ -6727,4 +6727,20 @@ once a minute so switching between apps does not hammer the host;
 
 ## Part 2 · after v648-treasury-quarters
 
-_None yet._
+### V649
+
+~~~text
+Keren: "Moving version history out of code comments — do it."
+The code comments lost their history; the history is in git, the decisions in part 1 of this register.
+~~~
+
+### V650
+
+~~~text
+Keren: "I'm looking at the code and I'm seeing a lot of notes. A lot of comments. I think you can just
+remove all the comments It's fine. And just take the basic decision rules the most important one and even
+that you can maybe cancel you know because nobody can follow up on so many comments and not all of them
+are so important"
+The source keeps no comments but one-line section titles, and `npm run check` enforces it. The most
+important rules are in CLAUDE.md; the reasons behind the live-data layer moved to docs/ARCHITECTURE.md.
+~~~

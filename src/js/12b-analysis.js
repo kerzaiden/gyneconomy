@@ -1,35 +1,17 @@
-  /* ================= THE ANALYSIS TAB =================
-     Keren, V624: "explain to me what the 12 pages nav is — maybe we need to work on it now before we will have to
-     refactor the entire app 200 versions from now."
-     The Analysis tab's four parts — the cycle list, a closed cycle's categories, the roster the categories and
-     Rhymes share, and Rhymes itself — reference NOTHING inside the Cycle tab's one closure in 12-pages-nav.js, so
-     they live here, apart from it.
-     ORDERING: everything in this file registers after renderPagesAndNav, which carries capeHistory's last point
-     to today; the readings belong on that side of the carry. Nothing here reads the roster at load — a cycle's
-     categories are built when a cycle is opened. */
 
-  // ---------------- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----------------
+  // ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
   function renderCycleList(){
     var list = byId("cycle-list");
-    // One pass: each row's scale is a typical cycle, which every row can work out for itself.
     var strips = {};
     marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
     list.innerHTML = marketCycles.slice().reverse().map(function(cyc){
       var total = eraMarketTotal(cyc), strip = strips[cyc.from];
       return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' +
             '<div class="era-head"><span class="era-name">' + cyc.name + '</span>' +
-              /* the span reads off `cycLabel`, which the picker and its menu already use, so the control and
-                 this list cannot spell a cycle's years two ways ("2023–Today" beside "2023–today"). */
               '<span class="era-years">' + cycLabel(cyc).years +
                 ' <b>(' + strip.years + 'Y)</b></span>' +
               CHEV + '</div>' +
-            // the seasons of this cycle
             '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + '</div>' +
-            // What the cycle did to output and to prices, side by side (Keren, V276, on seeing the pair: "this is
-            // so interesting — put it in the analysis tab per cycle"). Two totals computed the same way over the
-            // same closed years, so the comparison is real.
-            // one line, not three: what the cycle was, then what it did. They wrap together at phone width
-            // rather than each taking a row of its own.
             '<div class="era-foot">' +
               '<span class="era-econ">' +
                 '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span>' +
@@ -39,9 +21,6 @@
             '</div>' +
       '</div>';
     }).join('');
-    // Every cycle shows: the tab IS the cycle history, and a history that hides entries behind a button is a
-    // preview of itself. PREVIEW_CYCLES is the only number here — the rows are already built, so a smaller value
-    // hides the tail rather than rendering a different list, and expanded and collapsed are the same DOM.
     var PREVIEW_CYCLES = 99;
     (function(){
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -61,24 +40,15 @@
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
-      /* Keren, V616: "when I click on AI Cycle, which is the current cycle, I just want to go to the current
-         cycle page, because the cycle is not ended yet."
-         A CLOSED cycle has no live page, so it gets a view of its own here. The open cycle has one: the Cycle tab
-         IS this view, still moving, with its charts and its doors, and a frozen copy would tell the reader the
-         AI Cycle is over. So the row is still a door; it opens the tab rather than a page.
-         It leaves through the tab button rather than by assembling the tab here, so the Cycle tab does its own
-         setup — placeCharts, the live cycle, the top bar — in the one place that knows how. */
       if (era.ongoing){
         var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
         if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       }
-      showCycle(era, true);   // the dial only — the two cards stay in their drawers
+      showCycle(era, true);
       slot.appendChild(cycleViewEl);
       renderCycleCats(era);
       listWrap.hidden = true; detail.hidden = false;
-      // the top bar becomes the cycle's: its name as the title, the back arrow on the left (Keren, Sep 19, 2026: in the
-      // top menu, not a link under it)
-      setTopbar(era.name, back);   // only closed cycles reach here, and each has a name
+      setTopbar(era.name, back);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function back(){
@@ -88,33 +58,19 @@
     }
     list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
     list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
-    // Leaving for another tab and coming back always lands on the list; the Cycle tab always takes the view back
-    // for the current cycle (see the tab wiring below).
     calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; byId("topbar-back").hidden = true; };
     addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
   }
   GYN.step("renderCycleList", renderCycleList, "wire"); renderCycleList();
 
-  // First paint: the current cycle on the Cycle tab.
   renderCycleView(nowModel);
 
-  /* ---------------- RENDER: a closed cycle's four categories ----------------
-     Keren, V613: "I want the view to be exactly like the current cycle page — four categories of Weather, Mood,
-     Circulation, Energy. But instead of going to another inner page, just show the data very briefly."
-     Same four categories, same row anatomy, one difference: on the Cycle tab a category is a DOOR, because
-     behind it is a live page that keeps moving. A cycle that ended has no live page, so the row shows what the
-     reading FINISHED at and how far it travelled getting there, and there is nothing to open.
-     WHERE IT ENDED AND ITS RANGE — Keren's choice over the peak reading and over first-against-last. It answers
-     both questions a closed cycle raises: how did this end, and how far did this reading move. The extreme is
-     usually the story and first-against-last would hide it; the peak reading would leave the Big Tech Cycle
-     empty, since it never had a bear market to have a peak at.
-     A reading with nothing inside the cycle says so. Nothing is carried in from outside the years. */
+  /* ---- RENDER: a closed cycle's four categories ---- */
   function renderCycleCats(era){
     var host = byId("cycle-cats"); if (!host) return;
     var from = era.from, to = era.to || calendarTodayY;
     host.innerHTML = readingRoster().map(function(g){
       var rows = g.rows.map(function(r){
-        // the period key always opens with its year, whatever shape it is: "2007-10", "2007 Q4", "2007"
         var span = r.seen.filter(function(d){
           var y = +d.k.slice(0, 4); return y >= from && y <= to;
         });
@@ -128,14 +84,8 @@
         var end = span[span.length - 1];
         var vs = span.map(function(d){ return d.v; });
         var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-        /* The SHAPE, in the row: where a reading finished and how far it ran does not say how it got there. A
-           sparkline answers that inside the row, with no page to open and no component to invent: `sparkHtml`
-           is what peek cards draw, and `.ci-mini` is the slot a member's small picture goes in.
-           It is drawn in the accent rather than in a state colour, because `.ci-mini` already neutralises
-           every other mini it holds — a closed cycle is not being graded, it is being read. */
         var art = span.length >= 3
           ? '<div class="ci-mini">' + sparkHtml(vs, "") + '</div>' : "";
-        // A cycle in which a reading never moved has no range to state, and "5.2 to 5.2" is furniture.
         var travel = lo === hi ? "Flat all cycle"
           : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
         return '<div class="cat-item flat"><div class="ci-head">' + mark +
@@ -149,18 +99,10 @@
     }).join("");
   }
 
-  /* ---------------- THE ROSTER AS SERIES ----------------
-     The thirteen readings, in the app’s own four categories, each as one {k,v} list keyed by the period it was
-     measured in. Rhymes and a past cycle’s categories both read this one copy: two copies of a list like this is
-     how two components quietly start disagreeing about what the roster is. Memoised, because turning eight
-     hundred months of federal funds into places in a record is work worth doing once.
-     Built LAZILY on first call rather than at load, because capeHistory’s last point is carried to today by
-     renderPagesAndNav and a roster built before that would hold January where every page shows September. */
+  /* ---- THE ROSTER AS SERIES ---- */
   var __roster = null;
   function readingRoster(){
     if (__roster) return __roster;
-    // Every series in this app is one of three shapes. Five makers turn all of them into the same list, so a
-    // row is a line and nothing downstream has to know which shape it came from.
     var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
     var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
     var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
@@ -191,9 +133,6 @@
         { name:"Households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" }
       ]}
     ];
-    /* One pass per row. `place` is where a value sits in the whole of its own record, which is the only
-       comparison that means the same thing on thirteen rows measured in six different units; `now` is the last
-       reading, which every peak is measured against. */
     GRPS.forEach(function(g){ g.rows.forEach(function(r){
       var seen = r.list.filter(function(d){ return d.v != null; });
       var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
@@ -205,18 +144,11 @@
     }); });
     return (__roster = GRPS);
   }
-  /* A reading printed the way its own page prints it. Both components print from it, so a figure cannot be
-     formatted two ways. The sign is decided AFTER rounding: December 2008 CPI is a hair under nought, and
-     `(-0.02).toFixed(1)` is "-0.0", a minus in front of a zero. A value that rounds to nought prints without a
-     sign, on signed and unsigned rows alike; a negative one wears the real minus every other figure here wears. */
   function readFig(r, v){
     var a = Math.abs(v).toFixed(r.dp);
     var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
     return sign + a + (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
   }
-  /* A period key said the way the rest of the app says one. The keys are exact by design — "2008-12",
-     "2008 Q4" — and Rhymes prints them raw, in mono, because there they are provenance under a figure. Here
-     the slot is `.ci-when`, which on the Cycle tab has always read "Aug 2026", so the key is spelled out. */
   function prettyK(r, k){
     if (r.pre) return r.pre + k;
     if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
@@ -224,31 +156,11 @@
     return k;
   }
 
-  /* ---------------- RENDER: Rhymes — today beside a past top ----------
-     Keren, V610: "history doesn't repeat, but it rhymes. I want the app to help me see how history repeats
-     itself." Then, on the first pair of columns: "Schiller Cape peak was 43.8 in the dot com peak, and now we
-     are in with 41.3. I think this is the good comparison."
-     ONE CARD. A mark saying two readings are alike, with neither reading on the screen, asks to be believed; so
-     "alike" is a mark on a row that HAS both numbers on it, and the reader can always verify it by eye.
-     THE PAIR RULE. Both columns come out of the SAME series, so "at the peak" and "now" are one gauge read
-     twice, and each figure carries the period it was taken in beneath it — which is how the reader can see the
-     CAPE column reads January 2000 and not the March the market turned in.
-     A series that does not reach the top leaves an em dash and says from when it IS measured. Nothing is
-     interpolated: the record either covers the date or it does not.
-     WHAT THE MARK MEANS. A reading is turned into its place in its OWN record — today's CAPE sits above 96% of
-     that record — and the row is marked when the peak's place and today's are within five points of each
-     other. A place carries no units, so one rule works on all thirteen rows: five per cent of the federal
-     funds rate and five per cent of a spread that lives near nought are not comparable quantities. A rank also
-     survives an outlier, where a share of the range does not — 1981's 19% would otherwise set the width of the
-     federal funds band for ever.
-     There is no count of marks and no score. Thirteen rows agreeing is not a prediction, and a number claiming
-     it was would be invented.
-     The categories are labelled because thirteen rows without them is a list rather than a body. Like everything
-     that reads capeHistory this runs after renderPagesAndNav (see the top of this file). */
+  /* ---- RENDER: Rhymes — today beside a past top ---- */
   function renderRhymes(){
     var pick = byId("rhy-pick"), body = byId("rhy-body");
     if (!pick || !body) return;
-    var ALIKE = 5;                       // points of the record, out of a hundred
+    var ALIKE = 5;
     var GRPS = readingRoster();
     function stamp(r, k){ return (r.pre || "") + k; }
     function cell(r, v, when, na){

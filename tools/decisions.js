@@ -104,10 +104,10 @@ out.push('Every design and editorial decision in Gyneconomy is Keren\'s. Until '
   'request the history then left the comments, and this register kept the decisions.', '',
   'Part 1 is every comment in the source at ' + tag + ' that names Keren, copied word for word by',
   '`tools/decisions.js`, with the file and line where it stood. It is an archive: a later decision can supersede',
-  'an earlier one, and the code comments say which decision is in force today. The full annotated source is',
+  'an earlier one; the latest on a subject is the one in force. The full annotated source is',
   'still in git:', '', '```sh', 'git show ' + tag + ':src/js/07-forms.js', '```', '',
-  'Part 2 is for decisions made after ' + tag + '. Add each one there, with the version and her words, and cite',
-  'it in the code as `Keren, V6NN`.', '');
+  'Part 2 is for decisions made after ' + tag + '. Add each one there, with the version and her',
+  'words. Since V650 the source has no comments, so this register is the only place a decision is written down.', '');
 out.push('## Part 1 · the register at ' + tag, '', entries.length + ' comments, by version, then by file and line.', '');
 let last;
 for (const e of entries) {

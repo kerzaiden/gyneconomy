@@ -311,7 +311,7 @@ for a, b in [
     ("what a history page draws", "`HIST_HEAD` for its head, then `sheetRenderers[\"<id>\"]` for its renderer"),
     ("where a band comes from", "the constant name, then read its `(i)` text — every band states its provenance"),
     ("a season decision", "`readSeason(`, `seasonTrackAll`, `cycleModel(`"),
-    ("why something looks the way it does", "`Keren, V` — a comment citing her is a decision; `docs/DECISIONS.md` has her words, and git the history"),
+    ("why something looks the way it does", "`docs/DECISIONS.md` for Keren's decisions, `docs/ARCHITECTURE.md` for the reasons, `git log -S` for the history"),
     ("a live-data wiring", "`LIVE(\"` — one line per document, each directly under its literal"),
     ("a CSS rule's only home", "the class name; rules under `.detail-modal`, `.metric-sheet`, `.sign-detail` are scoped and must be restated for a new host"),
 ]:

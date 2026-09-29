@@ -1,9 +1,7 @@
-  // ---------------- RENDER: Content tab — reading companion (season reading · flagged now · framework) ----------------
+  // ---- RENDER: Content tab — reading companion (season reading · flagged now · framework) ----
   function renderSeasonRows(){
     var meta = wheelMeta[currentSeason];
 
-    // The seasons table — Keren's six-cell rule, the same one readSeason() runs; today's row is marked.
-    // In colour order (Keren, V193): the blues first — Winter, then the two Springs — then the oranges — Summer, then the two Autumns
     var seasonRules = [
       {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
       {key:"springdeflation", growth:"Expansion",   temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
@@ -12,13 +10,11 @@
       {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
       {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
     ];
-    // Where a CPI reading sits on the three-part track: 28% for below the range, 40% for the 1–3% range, 28% above.
     function rangePos(v){
       if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
       if (v <= 3) return 0.28 + 0.40 * (v - 1) / 2;
       return 0.68 + 0.32 * Math.min(1, (v - 3) / 4);
     }
-    // Cold on the left of the track, hot on the right — a snowflake and a flame instead of words.
     var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
     var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
     function rangeBarHtml(zones, dotValue){
@@ -33,16 +29,12 @@
     put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
       seasonRules.map(function(r){
         var m = wheelMeta[r.key], now = r.key === currentSeason;
-        // the row carries its season's class, so its target-range bar lights in the season's colour — the dial's own
-        // token: one variable serves the ring, the legend and this table
-        // growth and temperature are separate cells on desktop and one "Expansion · Cooling" line (.meta) on phones
         return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
           '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
       }).join(""));
     put("seasons-kicker", "The Season Model" + expandBtn(
       '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
 
-    // The framework table
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
       frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
     put("framework-kicker", "The framework" + expandBtn(
@@ -56,15 +48,15 @@
   }
   GYN.step("renderSeasonRows", renderSeasonRows, "render"); renderSeasonRows();
 
-  // ---------------- TAB NAVIGATION (Cycle / Calendar / Analysis / Content) ----------------
+  // ---- TAB NAVIGATION (Cycle / Calendar / Analysis / Content) ----
   function renderTopbar(){
     var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
     var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
-    var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", portfolio:"Portfolio", content:"Content" }; // the top bar's title per tab (Keren's names)
+    var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", portfolio:"Portfolio", content:"Content" };
     var topTitle = byId("topbar-title");
     btns.forEach(function(btn){
       btn.addEventListener("click", function(){
-        if (btn.classList.contains("active")){ // a second tap on the open tab steps back out of whatever it has open
+        if (btn.classList.contains("active")){
           if (btn.getAttribute("data-tab") === "analysis"){ if (metricPageReset) metricPageReset(); if (calendarReset) calendarReset(); }
           if (btn.getAttribute("data-tab") === "cycle" && metricPageReset) metricPageReset();
           return;
@@ -75,63 +67,50 @@
         btn.setAttribute("aria-selected", "true");
         var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
         if (target) target.hidden = false;
-        if (metricPageReset) metricPageReset(); // a metric page never survives a tab change — and it must close BEFORE
-                                                // the new tab names itself, or its own "Current Cycle" lands on top
+        if (metricPageReset) metricPageReset();
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
         topbarBack = null;
         byId("topbar-back").hidden = true;
-        // The cycle view is one element: the Cycle tab takes it back for the current cycle; the Calendar lands on its list.
-        if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); placeCharts(); showCycle(currentEra); } // the dial first, then today's readings
+        if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); placeCharts(); showCycle(currentEra); }
         if (tab === "analysis" && calendarReset) calendarReset();
-        if (tab === "analysis") settleStrips();   // the strips have a width only now that the tab is on screen
+        if (tab === "analysis") settleStrips();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
   }
   GYN.step("renderTopbar", renderTopbar, "wire"); renderTopbar();
 
-  // ---------------- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----------------
+  // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
   function wireContactForm(){
     var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
     var prevOverflow = "";
-    // Sliding a thing that is display:none takes two steps: un-hide it, let the browser lay it out at its start
-    // position, and only then add the class that moves it. Reading offsetWidth is what forces that layout — without
-    // it both style changes land in one frame and the browser has nothing to animate FROM.
     function slideIn(el){ el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
     function slideOut(el, done){
       el.classList.remove("in");
       var fired = false;
       function finish(e){
-        // only the transform's end means the screen has actually left: any shorter property finishing first would
-        // otherwise close it mid-travel
         if (e && e.propertyName && e.propertyName !== "transform") return;
         if (fired) return; fired = true;
         el.removeEventListener("transitionend", finish); el.hidden = true; if (done) done();
       }
       el.addEventListener("transitionend", finish);
-      setTimeout(finish, 420);   // if the transition never fires — reduced motion, a background tab — close anyway
+      setTimeout(finish, 420);
     }
     function show(){ slideIn(menu); open.setAttribute("aria-expanded", "true"); prevOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; back.focus(); }
     function hide(){
       if (menu.hidden) return;
       open.setAttribute("aria-expanded", "false");
-      open.focus();                                   // focus moves at once; the picture catches up
+      open.focus();
       slideOut(menu, function(){ document.body.style.overflow = prevOverflow; });
     }
     open.addEventListener("click", show);
     back.addEventListener("click", hide);
-    // A link that still arrives as index.html#menu (the standalone sources page's back arrow) lands with the menu open.
     function fromHash(){ if (location.hash === "#menu"){ show(); if (history.replaceState) history.replaceState(null, "", location.pathname + location.search); } }
     fromHash(); window.addEventListener("hashchange", fromHash);
 
     // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
     var built = false;
     var groups = [
-      // ftportfolios and fisherinvestments carry the typical-cycle-length figure the dial's ring is scaled to;
-      // they are grouped here because "Other" is a group the Sources screen should never show. Grouping them is
-      // NOT an endorsement: they are the only citations in the app that are neither a primary source nor a
-      // labelled compilation, and whether they belong at all is Keren's to settle — see the open question in
-      // ARCHITECTURE.md. yardeni is the bull/bear market record the rhymes table cites, which is cycle history.
       ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/],
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
@@ -156,8 +135,6 @@
       }).join(""));
       built = true;
     }
-    // Every menu row with data-sheet opens the sheet of that name (#sheet-<name>) over the menu; the sheet's back arrow,
-    // or Escape, returns to the menu exactly as it was. The Sources sheet builds its list the first time it opens.
     var openSheet = null, openRow = null;
     function showSheet(name, row){
       var el = byId("sheet-" + name); if (!el) return;
@@ -175,8 +152,7 @@
     document.addEventListener("click", function(e){ if (e.target.closest && e.target.closest("[data-sheet-back]")) hideSheet(); });
     document.addEventListener("keydown", function(e){ if (e.key !== "Escape") return; if (openSheet) hideSheet(); else hide(); });
 
-    // ---- Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its
-    // parts, so it never sits in the markup as a whole string. ----
+    // ---- Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its ----
     (function(){
       var form = byId("contact-form"), hint = byId("contact-hint");
       var parts = ["kerzaiden", "gmail", "com"];
