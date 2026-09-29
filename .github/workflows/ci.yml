@@ -64,6 +64,11 @@ jobs:
       - name: Components are not more duplicated
         run: npm run comp:check   # V617: this also fails on an id reached in code that nothing creates
 
+      # V622: the model's own rule. readSeason decides which season the economy is in, and until now nothing
+      # anywhere tested it — it could have returned Autumn for a Spring quarter and every browser check would
+      # have passed. It is a pure function of two number series, so it is tested in milliseconds here rather
+      # than in the 135-second browser suite. (test:tools runs it; named for the reader.)
+
       # Accessibility was designed with care and documented in detail, and until V539 none of it had
       # been measured. This fails on serious or critical only; moderate findings are reported.
       - name: Accessibility

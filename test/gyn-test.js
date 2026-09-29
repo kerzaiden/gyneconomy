@@ -151,12 +151,17 @@ async function openPage(p, url, sheet) {
     const tag = w + 'px/' + scheme;
     errs.length ? bad('no page errors ' + tag, errs.join(' | ')) : ok('no page errors ' + tag);
     if (w === 390 && scheme === 'light') {
-      fresh.cssRules = css.total; fresh.cssLast = css.last;
+      fresh.cssLast = css.last;
+      /* V622: the RULE COUNT went and `stylesheet intact` stayed, which is the pair worth keeping apart.
+         Keren: "are we over tested?" The count was the one honest yes. It fired on any stylesheet change at
+         all, so test/baseline.json was re-blessed in 32 of this app's 118 commits — more than a quarter of
+         the history is somebody confirming a change they had just made on purpose — and not once did it
+         report something unintended. It was a ritual, not a test.
+         This line is the one that earns the visit. The build concatenates the stylesheet, so an unclosed
+         brace swallows everything after it and the page still renders, just wrong from that point down.
+         Checking the LAST selector is still the last selector catches exactly that, and nothing else. */
       css.last === 'a:hover' ? ok('stylesheet intact', css.total + ' rules')
         : bad('stylesheet intact', 'last selector is ' + css.last + ' — an unclosed brace killed the rest');
-      if (base && base.cssRules !== css.total)
-        bad('CSS rule count', 'baseline ' + base.cssRules + ', now ' + css.total + ' — bless if intended');
-      else if (base) ok('CSS rule count', css.total);
       // design tokens
       const tok = await p.evaluate(ts => { const cs = getComputedStyle(document.documentElement);
         const o = {}; for (const t of ts) o[t] = cs.getPropertyValue(t).trim(); return o; }, Object.keys(TOKENS));
