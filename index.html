@@ -7048,24 +7048,24 @@
   var longCycleImpressionShort = "Interest costs are at their historical record and debt is near its own, moving together mid-expansion, with no recession present.";
   var labPanel = [ {
     marker: "Debt burden",
-    sub: "federal debt held by the public ÷ GDP",
+    sub: "gross federal debt ÷ GDP",
     meter: {
       min: 0,
-      max: 106.3,
-      value: 101,
+      max: 125.9,
+      value: 122.6,
       optimal: {
-        lte: 51,
-        label: "≤ 51%"
+        lte: 70,
+        label: "≤ 70%"
       },
       ends: {
         zone: "50-year average",
         high: "Elevated"
       }
     },
-    shortNote: "FY2026 — on pace to break the 80-year-old WWII record within the decade.",
-    note: "FY2026, CBO's February 2026 projection (FY2025 actual: 98%). On pace to break the 80-year-old WWII record — CBO has it at 108% by 2030. Bar runs from the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own historical ledger shows just $33,733 outstanding) to the WWII peak (106% in FY1946, per the OMB series on FRED). The green band ends at 51% of GDP, which is CBO's stated 50-year average for debt held by the public — today's 101% is roughly twice it. Why this reads lower than the 120-odd percent in the headlines: that figure is GROSS federal debt, which adds the roughly $7 trillion the government owes to itself, mostly to the Social Security trust funds. Debt held by the public is what was actually borrowed from outside, which is CBO's measure of the burden and the basis of this bar's whole scale, including the 1946 record (V641, Keren's question).",
+    shortNote: "Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
+    note: "Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
     direction: "up",
-    flagValue: "101%",
+    flagValue: "122.6%",
     flagState: "serious"
   }, {
     marker: "Interest burden",
@@ -7152,10 +7152,10 @@
   var powerScore = powerOf(stressScore), powerWord = energyFromReserve(powerScore);
   var stressHistory = [ {
     label: "'07 pre-crisis",
-    values: [ 34.8, 1.6, 1.1 ]
+    values: [ 61.84, 1.64, 1.11 ]
   }, {
     label: "'20 COVID",
-    values: [ 98.3, 1.6, 14.5 ]
+    values: [ 125.86, 1.62, 14.48 ]
   } ];
   stressHistory.forEach(function(h) {
     h.score = stressScoreFor(h.values);
@@ -7176,7 +7176,7 @@
   var stressNoteFull = "Each of the three markers is normalized 0–100 against its own actual historical U.S. high and low — a real benchmark, not a padded scale — then averaged equally, and the average subtracted from 100: what the three pressures leave in reserve. It is a quick read on total power, not a substitute for reading each marker. A full charge — 100% — is every one of the three at the best value the United States has actually recorded, so this is a percentage of her own best, not a share of anything measured out in the economy. For comparison, the same formula leaves the actual 2007 pre-crisis reading " + powerOf(stressHistory[0].score) + "% and the actual 2020 COVID reading " + powerOf(stressHistory[1].score) + "% — today's " + powerScore + "% sits below both.";
   var powerHistory = [ {
     y: 1948,
-    v: 63
+    v: 64
   }, {
     y: 1949,
     v: 60
@@ -7197,10 +7197,10 @@
     v: 71
   }, {
     y: 1955,
-    v: 74
+    v: 73
   }, {
     y: 1956,
-    v: 77
+    v: 76
   }, {
     y: 1957,
     v: 77
@@ -7209,25 +7209,25 @@
     v: 75
   }, {
     y: 1959,
-    v: 75
+    v: 74
   }, {
     y: 1960,
-    v: 76
+    v: 75
   }, {
     y: 1961,
     v: 76
   }, {
     y: 1962,
-    v: 77
+    v: 76
   }, {
     y: 1963,
-    v: 77
+    v: 76
   }, {
     y: 1964,
-    v: 78
+    v: 77
   }, {
     y: 1965,
-    v: 80
+    v: 79
   }, {
     y: 1966,
     v: 80
@@ -7236,46 +7236,46 @@
     v: 79
   }, {
     y: 1968,
-    v: 78
+    v: 77
   }, {
     y: 1969,
     v: 81
   }, {
     y: 1970,
-    v: 80
-  }, {
-    y: 1971,
     v: 79
   }, {
+    y: 1971,
+    v: 78
+  }, {
     y: 1972,
-    v: 80
+    v: 79
   }, {
     y: 1973,
-    v: 81
-  }, {
-    y: 1974,
     v: 80
   }, {
+    y: 1974,
+    v: 79
+  }, {
     y: 1975,
-    v: 77
+    v: 76
   }, {
     y: 1976,
-    v: 75
+    v: 74
   }, {
     y: 1977,
-    v: 76
+    v: 75
   }, {
     y: 1978,
     v: 75
   }, {
     y: 1979,
-    v: 76
+    v: 75
   }, {
     y: 1980,
-    v: 72
+    v: 71
   }, {
     y: 1981,
-    v: 68
+    v: 67
   }, {
     y: 1982,
     v: 60
@@ -7287,127 +7287,127 @@
     v: 55
   }, {
     y: 1985,
-    v: 52
-  }, {
-    y: 1986,
     v: 51
   }, {
+    y: 1986,
+    v: 50
+  }, {
     y: 1987,
-    v: 54
+    v: 53
   }, {
     y: 1988,
     v: 53
   }, {
     y: 1989,
-    v: 53
+    v: 51
   }, {
     y: 1990,
-    v: 50
-  }, {
-    y: 1991,
-    v: 47
-  }, {
-    y: 1992,
     v: 48
   }, {
+    y: 1991,
+    v: 45
+  }, {
+    y: 1992,
+    v: 46
+  }, {
     y: 1993,
-    v: 50
+    v: 48
   }, {
     y: 1994,
-    v: 53
-  }, {
-    y: 1995,
     v: 50
   }, {
+    y: 1995,
+    v: 48
+  }, {
     y: 1996,
-    v: 52
+    v: 49
   }, {
     y: 1997,
-    v: 56
+    v: 53
   }, {
     y: 1998,
-    v: 60
+    v: 57
   }, {
     y: 1999,
-    v: 65
+    v: 62
   }, {
     y: 2e3,
-    v: 70
+    v: 66
   }, {
     y: 2001,
-    v: 72
-  }, {
-    y: 2002,
-    v: 74
-  }, {
-    y: 2003,
-    v: 74
-  }, {
-    y: 2004,
-    v: 74
-  }, {
-    y: 2005,
-    v: 74
-  }, {
-    y: 2006,
-    v: 72
-  }, {
-    y: 2007,
-    v: 73
-  }, {
-    y: 2008,
     v: 68
   }, {
-    y: 2009,
+    y: 2002,
+    v: 69
+  }, {
+    y: 2003,
+    v: 69
+  }, {
+    y: 2004,
+    v: 69
+  }, {
+    y: 2005,
+    v: 69
+  }, {
+    y: 2006,
+    v: 67
+  }, {
+    y: 2007,
+    v: 67
+  }, {
+    y: 2008,
     v: 62
+  }, {
+    y: 2009,
+    v: 56
   }, {
     y: 2010,
-    v: 60
+    v: 55
   }, {
     y: 2011,
-    v: 57
+    v: 52
   }, {
     y: 2012,
-    v: 59
+    v: 55
   }, {
     y: 2013,
-    v: 62
+    v: 58
   }, {
     y: 2014,
-    v: 63
+    v: 59
   }, {
     y: 2015,
-    v: 65
-  }, {
-    y: 2016,
-    v: 62
-  }, {
-    y: 2017,
     v: 61
   }, {
-    y: 2018,
+    y: 2016,
+    v: 58
+  }, {
+    y: 2017,
     v: 57
   }, {
-    y: 2019,
+    y: 2018,
     v: 54
   }, {
+    y: 2019,
+    v: 50
+  }, {
     y: 2020,
-    v: 38
+    v: 35
   }, {
     y: 2021,
-    v: 44
+    v: 42
   }, {
     y: 2022,
-    v: 47
+    v: 45
   }, {
     y: 2023,
-    v: 39
+    v: 37
   }, {
     y: 2024,
-    v: 30
+    v: 29
   }, {
     y: 2025,
-    v: 29
+    v: 27
   } ];
   var DEF_FROM_YEAR = 1946;
   var deficitHistory = "-7.00 1.61 4.30 0.21 -1.04 1.76 -0.41 -1.67 -0.30 -0.70 0.88 0.72 -0.58 -2.46 0.06 -0.59 -1.18 -0.75 -0.86 -0.19 -0.45 -1.01 -2.67 0.32 -0.26 -1.98 -1.83 -1.05 -0.40 -3.16 -3.94 -2.58 -2.52 -1.55 -2.58 -2.46 -3.83 -5.72 -4.59 -4.89 -4.83 -3.08 -2.96 -2.71 -3.71 -4.37 -4.45 -3.72 -2.79 -2.15 -1.33 -0.26 0.76 1.30 2.30 1.21 -1.44 -3.30 -3.38 -2.44 -1.80 -1.11 -3.10 -9.76 -8.60 -8.33 -6.62 -4.03 -2.75 -2.42 -3.11 -3.39 -3.77 -4.57 -14.48 -11.69 -5.27 -6.07 -6.20 -5.77".split(" ").map(Number);
@@ -13934,6 +13934,12 @@
     t: "CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)",
     u: "https://www.cbo.gov/publication/62105"
   }, {
+    t: "Treasury and BEA via FRED — Total public debt, % of GDP, quarterly, 1966– (GFDEGDQ188S; today's reading)",
+    u: "https://fred.stlouisfed.org/series/GFDEGDQ188S"
+  }, {
+    t: "OMB via FRED — Gross federal debt, % of GDP, FY1939– (GFDGDPA188S; the record and the band)",
+    u: "https://fred.stlouisfed.org/series/GFDGDPA188S"
+  }, {
     t: "OMB via FRED — Federal debt held by the public, % of GDP, FY1939– (FYPUGDA188S)",
     u: "https://fred.stlouisfed.org/series/FYPUGDA188S"
   }, {
@@ -13964,6 +13970,40 @@
     t: "BLS via FRED — Nonfarm business output per hour, index (OPHNFB) and quarterly % change (PRS85006092), 1947–",
     u: "https://fred.stlouisfed.org/series/PRS85006092"
   } ];
+  function checkGrossDebt() {
+    if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
+    var row = labPanel[0], by = function(a) {
+      var o = {};
+      a.forEach(function(d) {
+        o[d.y] = d.v;
+      });
+      return o;
+    };
+    var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
+    var top = fiscalHistory.gross.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    });
+    if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
+    var last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
+    if (Math.abs(row.meter.value - last.v) > .05) bad.push("value " + row.meter.value + " vs " + last.q + " " + last.v);
+    var sum = 0, n = 0;
+    for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
+      sum += g[y];
+      n++;
+    }
+    if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
+    powerHistory.forEach(function(p) {
+      if (g[p.y] == null || it[p.y] == null || bu[p.y] == null) {
+        bad.push("FY" + p.y + " missing");
+        return;
+      }
+      var v = powerOf(stressScoreFor([ g[p.y], it[p.y], -bu[p.y] ]));
+      if (v !== p.v) bad.push("power FY" + p.y + " " + p.v + " vs " + v);
+    });
+    if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
+  }
+  GYN.step("checkGrossDebt", checkGrossDebt, "check");
+  checkGrossDebt();
   var sentiment = {
     kicker: "How she feels right now",
     hint: "Her mood, fast and contrarian: what the option market is paying for protection, what lenders demand to take risk, and how much she is borrowing to bet on herself.",
@@ -21781,7 +21821,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl/ ], [ "Financial resilience", /cbo\.gov|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/ ] ];
     function buildSources() {
       var src = window.__sources, seen = {}, items = [];
       function add(x) {

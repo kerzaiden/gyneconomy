@@ -150,7 +150,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 
 | Marker | Range (primary series) | Band |
 |---|---|---|
-| Debt burden (debt ÷ GDP) | 0% 1835 (Treasury Fiscal Data) – 106.3% FY1946 (OMB via FRED FYPUGDA188S) | ≤ 51%, CBO 50-yr average |
+| Debt burden (gross debt ÷ GDP, V643) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
 | Interest burden (÷ GDP) | 0.63% FY1942 (FRED FYOIGDA188S) – 3.3% FY2026 CBO projection | ≤ 2.0% |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
