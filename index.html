@@ -11611,7 +11611,7 @@
         };
       })
     });
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(dfAvg)) + "H" + R + '"/>');
+    out.push(avgRule(L, R, f(Y(dfAvg))));
     if (defFit && defFit.n > 1) out.push(fitGroup({
       fit: defFit,
       fmt: function(v) {
@@ -11638,7 +11638,7 @@
     })[0];
     var note = "<h4>Federal budget deficit or surplus</h4>" + (defRow ? '<p class="lede">' + defRow.note + "</p>" : "") + facts([ "Every fiscal year since " + DEF_FROM_YEAR + " as a share of GDP — <b>a surplus above the line, a " + "deficit below</b>.", "The <b>shaded stretches</b> are fiscal years that contained at least one month of an NBER-dated recession. " + "A fiscal year is not a calendar year, so the rule is stated rather than assumed: the federal year ran " + "July–June through FY1976 and October–September since FY1977.", "They carry the whole of what this picture has to say: <b>a deficit this deep has almost always sat inside " + "a recession, in the few years just after one, or at the end of a war.</b>", "<b>FY1983</b> — the year usually named beside today — is shaded, because the recession it came out of " + "ended two months into it. The dashed line is its level, drawn at every range so the comparison stays on " + "screen even when 1983 is off the left edge. Today’s is five years past the last recession and has not closed.", "There have been <b>" + surCount + " surplus years</b> since " + DEF_FROM_YEAR + ", none since FY" + (DEF_FROM_YEAR + iSur) + ". The average across the whole series is " + DEF_MEAN.toFixed(1) + "%.", "The wartime record is left off the chart on purpose: at -26.9% (FY1943) it would flatten eighty years into " + "a band, so it is stated in the rows below instead.", "The chart ends at FY" + lastY + ", the last actual — the Deficit rate row this page opens from carries " + "CBO’s projection for the year in progress, which is why the two figures differ.", "The rows below read the whole series, not the window on screen.", "The chart starts at <b>FY" + DEF_FROM_YEAR + "</b> because peacetime is the only frame in which 1983 and " + "today are comparable at all. The wartime record sits outside it and is stated rather than drawn: " + "<b>−26.9% of GDP in FY1943</b>, which inside the plot would flatten eighty years into a band." ]);
     HIST_NOTE["deficit-range"] = note;
-    return '<div class="hist-bar" id="deficit-rangebar"></div>' + '<div class="page-chart pulsebox">' + histHead("deficit-range") + '<div id="deficit-record" class="vh-host"></div>' + '<div class="gdp-tooltip mono hist-tip" id="deficit-hist-tooltip" hidden></div>' + '<div id="deficit-records"></div>' + '<div id="deficit-trend"></div></div>';
+    return histBar("", "deficit-rangebar") + '<div class="page-chart pulsebox">' + histHead("deficit-range") + '<div id="deficit-record" class="vh-host"></div>' + histTip("deficit-hist-tooltip") + '<div id="deficit-records"></div>' + '<div id="deficit-trend"></div></div>';
   }
   var buffettHistory = [ {
     q: "1970 Q1",
@@ -12939,7 +12939,7 @@
         };
       })
     });
-    out.push('<path class="temp-avg" d="M' + f(X(0)) + "," + f(Y(pAvg)) + "H" + f(X(n - 1)) + '"/>');
+    out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
     var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
     var pMidY = Y(PULSE_PRE2008);
     ser.forEach(function(v, i) {
@@ -13330,7 +13330,7 @@
     } ]);
   }
   function desireBlock(ind) {
-    return '<div class="hist-bar" id="desire-timeline"></div>' + '<div class="page-chart pulsebox">' + histHead("desire-range") + '<div id="desire-record" class="vh-host"></div>' + '<div class="gdp-tooltip mono hist-tip" id="desire-hist-tooltip" hidden></div>' + '<div id="desire-trend"></div>' + panelRow({
+    return histBar("", "desire-timeline") + '<div class="page-chart pulsebox">' + histHead("desire-range") + '<div id="desire-record" class="vh-host"></div>' + histTip("desire-hist-tooltip") + '<div id="desire-trend"></div>' + panelRow({
       name: "Risk tolerance",
       info: desireInfoHtml(ind),
       head: "desire-range",
@@ -13344,7 +13344,7 @@
       return x != null;
     });
     var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
-    return '<div class="hist-bar" id="volume-timeline"></div>' + '<div class="page-chart pulsebox">' + histHead("volume-range") + '<div id="m2-record" class="vh-host"></div>' + '<div class="gdp-tooltip mono hist-tip" id="m2-hist-tooltip" hidden></div>' + '<div id="volume-trend"></div>' + panelRow({
+    return histBar("", "volume-timeline") + '<div class="page-chart pulsebox">' + histHead("volume-range") + '<div id="m2-record" class="vh-host"></div>' + histTip("m2-hist-tooltip") + '<div id="volume-trend"></div>' + panelRow({
       name: ind.econTerm,
       info: volumeInfoHtml(ind),
       head: "volume-range",
@@ -13355,7 +13355,7 @@
   }
   function velocityRecordBlock(pulseInd) {
     var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
-    return '<div class="hist-bar" id="pulse-timeline"></div>' + '<div class="page-chart pulsebox">' + histHead("pulse-range") + '<div id="pulse-record" class="vh-host"></div>' + '<div class="gdp-tooltip mono hist-tip" id="pulse-hist-tooltip" hidden></div>' + '<div id="pulse-trend"></div>' + panelRow({
+    return histBar("", "pulse-timeline") + '<div class="page-chart pulsebox">' + histHead("pulse-range") + '<div id="pulse-record" class="vh-host"></div>' + histTip("pulse-hist-tooltip") + '<div id="pulse-trend"></div>' + panelRow({
       head: "pulse-range",
       name: pulseInd ? pulseInd.econTerm : "Velocity of money (M2)",
       info: pulseInd ? pulseInfoHtml(pulseInd) : "",
@@ -13486,7 +13486,7 @@
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
     }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     var tfit = trendOf(seen.map(function(d) {
       return d.v;
     }), "points", "month").fit;
@@ -13602,7 +13602,7 @@
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
     }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -13696,7 +13696,7 @@
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
     }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(avgV)) + "L" + R + "," + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     var tfit = trendOf(seen.map(function(d) {
       return d.v;
     }), "points", "month").fit;
@@ -13872,7 +13872,7 @@
       var avgV = vals.reduce(function(a, d) {
         return a + d.v;
       }, 0) / n, avgY = Y(avgV);
-      out.push('<path class="temp-avg" d="M' + L + "," + f(avgY) + "L" + R + "," + f(avgY) + '"/>');
+      out.push(avgRule(L, R, f(avgY)));
       avgShown = avgV;
     }
     var tfit = trendOf(vals.map(function(d) {
@@ -13993,7 +13993,7 @@
     var gAvg = vals.reduce(function(a, d) {
       return a + d.v;
     }, 0) / n;
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(gAvg)) + "L" + R + "," + f(Y(gAvg)) + '"/>');
+    out.push(avgRule(L, R, f(Y(gAvg))));
     var tfit = trendOf(vals.map(function(d) {
       return d.v;
     }), "points", "quarter").fit;
@@ -14081,7 +14081,7 @@
       return v != null;
     }).length || 1);
     out.push(meanRule(L, R, Y(M2_NORM)));
-    out.push('<path class="temp-avg" d="M' + L + "," + f(Y(vAvg)) + "H" + R + '"/>');
+    out.push(avgRule(L, R, f(Y(vAvg))));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     publishGeom("m2GrowthChart", {
@@ -14683,7 +14683,7 @@
     var rAvg = o.vals.reduce(function(a, d) {
       return a + d.v;
     }, 0) / (n || 1);
-    out.push('<path class="temp-avg" d="M' + padL + "," + y(rAvg) + "L" + (W - padR) + "," + y(rAvg) + '"/>');
+    out.push(avgRule(padL, W - padR, y(rAvg)));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * .5, padL + slot * (n - .5), y, W, padL, padR));
     o.vals.forEach(function(d, i) {
       var lab = xLabelOf(o, d, i, o.vals);
@@ -14792,6 +14792,15 @@
     if (tipId) wireHistHover(host, tipId);
     return g;
   }
+  function histBar(inner, id) {
+    return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : "") + ">" + (inner || "") + "</div>";
+  }
+  function histTip(id) {
+    return '<div class="gdp-tooltip mono hist-tip" id="' + id + '" hidden></div>';
+  }
+  function avgRule(x0, x1, y) {
+    return '<path class="temp-avg" d="M' + x0 + "," + y + "H" + x1 + '"/>';
+  }
   function vhOpen(W, H) {
     return '<svg class="vh-svg" viewBox="0 0 ' + W + " " + H + '" role="img" ';
   }
@@ -14855,7 +14864,7 @@
     var dAvg = o.vals.reduce(function(a, d) {
       return a + d.v;
     }, 0) / (n || 1);
-    out.push('<path class="temp-avg" d="M' + padL + "," + y(dAvg) + "L" + (W - padR) + "," + y(dAvg) + '"/>');
+    out.push(avgRule(padL, W - padR, y(dAvg)));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * .5, padL + slot * (n - .5), y, W, padL, padR));
     o.vals.forEach(function(d, i) {
       var lab = xLabelOf(o, d, i, o.vals);
@@ -17059,13 +17068,13 @@
       var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
       var to = span ? span[1] : undefined;
       var win = fedFundsHistory.slice(from, to);
-      bar.innerHTML = '<div class="hist-bar">' + histControls(id, {
+      bar.innerHTML = histBar(histControls(id, {
         series: fedFundsHistory,
         stops: HORM_STOPS
-      }, FF_Y0) + "</div>" + '<div class="page-chart">' + histHead(id) + fedFundsHistoryChart(bar.clientWidth || 340, from, {
+      }, FF_Y0)) + '<div class="page-chart">' + histHead(id) + fedFundsHistoryChart(bar.clientWidth || 340, from, {
         to: to,
         cycle: !!span
-      }) + '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' + '<div id="hormones-trend"></div></div>';
+      }) + histTip("hormones-hist-tooltip") + '<div id="hormones-trend"></div></div>';
       var tr = byId("hormones-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
         return d.v;
@@ -17172,13 +17181,13 @@
       var from = span ? span[0] : qWindowFrom(lendingStandardsHistory.length, pageRange[id]);
       var to = span ? span[1] : undefined;
       var win = lendingStandardsHistory.slice(from, to);
-      bar.innerHTML = '<div class="hist-bar">' + histControls(id, {
+      bar.innerHTML = histBar(histControls(id, {
         series: lendingStandardsHistory,
         stops: PRESS_STOPS
-      }, LS_Y0) + "</div>" + '<div class="page-chart">' + histHead(id) + lendingHistoryChart(bar.clientWidth || 340, from, {
+      }, LS_Y0)) + '<div class="page-chart">' + histHead(id) + lendingHistoryChart(bar.clientWidth || 340, from, {
         to: to,
         cycle: !!span
-      }) + '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' + '<div id="pressure-trend"></div></div>';
+      }) + histTip("pressure-hist-tooltip") + '<div id="pressure-trend"></div></div>';
       var tr = byId("pressure-trend");
       if (tr) tr.innerHTML = trendPill(trendOf(win.map(function(d) {
         return d.v;
@@ -17248,10 +17257,10 @@
           alt: "The VIX curve against flat, monthly. Above 1.00 the near month costs more than the quarter, " + "which is an inverted curve."
         };
       }
-      host.innerHTML = '<div class="hist-bar">' + histControls("fear-range", {
+      host.innerHTML = histBar(histControls("fear-range", {
         series: fearCurveHistory,
         stops: FEAR_STOPS
-      }, FEAR_Y0) + "</div>" + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' + '<div id="fear-trend"></div></div>';
+      }, FEAR_Y0)) + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + histTip("fear-hist-tooltip") + '<div id="fear-trend"></div></div>';
       var ft = byId("fear-trend");
       if (ft) ft.innerHTML = trendPill(fit, null, true, {
         rising: "inverting",
@@ -18739,7 +18748,7 @@
         flagged: meterFlagged(out.meter),
         bar: panelFromMeter(out.meter)
       });
-      return '<div class="hist-bar" id="act-rangebar"></div>' + '<div class="page-chart">' + histHead("sheet-sign-activity") + '<div id="act-history" class="vh-host"></div>' + '<div class="gdp-tooltip mono hist-tip" id="act-hist-tooltip" hidden></div>' + '<div id="act-trend"></div>' + '<div class="panel-stack in-hist">' + rows + "</div>" + "</div>";
+      return histBar("", "act-rangebar") + '<div class="page-chart">' + histHead("sheet-sign-activity") + '<div id="act-history" class="vh-host"></div>' + histTip("act-hist-tooltip") + '<div id="act-trend"></div>' + '<div class="panel-stack in-hist">' + rows + "</div>" + "</div>";
     }
     function foldedBlock(f) {
       var rest = dropWhatIsShown(f.caption, f.lead || f.shortCaption || "");
@@ -19516,10 +19525,10 @@
       var powerTrend = trendOf(vals.map(function(d) {
         return d.v;
       }), "points", "year");
-      byId("power-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-power", {
+      byId("power-chart").innerHTML = histBar(histControls("sheet-metric-power", {
         series: powerHistory,
         stops: POWER_STOPS
-      }) + "</div>" + '<div class="page-chart">' + histHead("sheet-metric-power") + reserveChart({
+      })) + '<div class="page-chart">' + histHead("sheet-metric-power") + reserveChart({
         vals: vals,
         stateOf: reserveState,
         fmt: pct0,
@@ -19527,7 +19536,7 @@
         refLabel: "ample reserve, 70%",
         fit: powerTrend.fit,
         alt: "Power, the three-marker composite, one charge per year" + (r === "max" ? " since " + powerHistory[0].y : " over the last " + timelineSpan(r) + " years") + ", with the fitted trend across the readings in view"
-      }, W) + trendPill(powerTrend, null, true) + '<div class="panel-stack in-hist">' + powerPanelHtml + "</div>" + '<div class="gdp-tooltip mono hist-tip" id="power-hist-tooltip" hidden></div></div>';
+      }, W) + trendPill(powerTrend, null, true) + '<div class="panel-stack in-hist">' + powerPanelHtml + "</div>" + histTip("power-hist-tooltip") + "</div>";
       var pBox = document.querySelector("#power-chart .page-chart");
       refitHistory(pBox, function(w) {
         return reserveChart({
@@ -19580,13 +19589,13 @@
       var to = idx ? idx[1] : dsrHistory.length;
       var host = byId("households-chart");
       if (!host) return;
-      host.innerHTML = '<div class="hist-bar">' + histControls(id, {
+      host.innerHTML = histBar(histControls(id, {
         depth: Math.floor(dsrHistory.length / 4),
         stops: HH_STOPS
-      }, DSR_FROM_YEAR) + "</div>" + '<div class="page-chart">' + histHead(id) + householdsChart(W, from, to) + trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, {
+      }, DSR_FROM_YEAR)) + '<div class="page-chart">' + histHead(id) + householdsChart(W, from, to) + trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, {
         rising: "keeping more",
         falling: "keeping less"
-      }) + '<div class="panel-stack in-hist">' + householdsPanelHtml() + "</div>" + '<div class="gdp-tooltip mono hist-tip" id="households-hist-tooltip" hidden></div></div>';
+      }) + '<div class="panel-stack in-hist">' + householdsPanelHtml() + "</div>" + histTip("households-hist-tooltip") + "</div>";
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w) {
         return householdsChart(w, from, to);
@@ -19624,10 +19633,10 @@
       var capeTrend = trendOf(vals.map(function(d) {
         return d.v;
       }), "×", "year");
-      byId("valuation-chart").innerHTML = '<div class="hist-bar">' + histControls("sheet-metric-valuation", {
+      byId("valuation-chart").innerHTML = histBar(histControls("sheet-metric-valuation", {
         series: capeHistory,
         stops: VAL_STOPS
-      }) + "</div>" + '<div class="page-chart">' + histHead("sheet-metric-valuation") + divergeChart({
+      })) + '<div class="page-chart">' + histHead("sheet-metric-valuation") + divergeChart({
         vals: vals,
         mid: CAPE_FAIR,
         midLabel: "fair value, " + CAPE_FAIR + "×",
@@ -19637,7 +19646,7 @@
         },
         fit: capeTrend.fit,
         alt: "Shiller CAPE against its long-run fair value, each January" + (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") + ", with the fitted trend across the readings in view"
-      }, W) + trendPill(capeTrend, null, true) + '<div class="panel-stack in-hist">' + valuationPanelHtml + "</div>" + '<div class="gdp-tooltip mono hist-tip" id="valuation-hist-tooltip" hidden></div></div>';
+      }, W) + trendPill(capeTrend, null, true) + '<div class="panel-stack in-hist">' + valuationPanelHtml + "</div>" + histTip("valuation-hist-tooltip") + "</div>";
       var vBox = document.querySelector("#valuation-chart .page-chart");
       refitHistory(vBox, function(w) {
         return divergeChart({

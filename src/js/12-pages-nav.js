@@ -135,11 +135,11 @@
       /* Version 498: the aggregate now sits under a chart, which is what Keren asked for in V497 and what the
          page could not have until the series existed. Power's own order, part for part: the control, the
          readout the hover fills, the picture, the trend across the window, then the readings. */
-      return '<div class="hist-bar" id="act-rangebar"></div>' +
+      return histBar("", "act-rangebar") +
         '<div class="page-chart">' +
           histHead("sheet-sign-activity") +
           '<div id="act-history" class="vh-host"></div>' +
-          '<div class="gdp-tooltip mono hist-tip" id="act-hist-tooltip" hidden></div>' +
+          histTip("act-hist-tooltip") +
           '<div id="act-trend"></div>' +
           '<div class="panel-stack in-hist">' + rows + '</div>' +
         '</div>';
@@ -1092,7 +1092,7 @@
       var vals = pwSpan ? powerHistory.slice(pwSpan[0], pwSpan[1]) : timelineWindow(powerHistory, r);
       var powerTrend = trendOf(vals.map(function(d){ return d.v; }), "points", "year");
       byId("power-chart").innerHTML =
-        '<div class="hist-bar">' + histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS }) + '</div>' +
+        histBar(histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS })) +
         '<div class="page-chart">' + histHead("sheet-metric-power") +
         reserveChart({
           vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
@@ -1110,7 +1110,7 @@
         // V491, Keren: the readings come inside, below the trend. Four of them, so hairlines rather than four
         // boxes (the V488 rule); one reading in a history container still gets the box, as Temperature has.
         '<div class="panel-stack in-hist">' + powerPanelHtml + '</div>' +
-        '<div class="gdp-tooltip mono hist-tip" id="power-hist-tooltip" hidden></div></div>';
+        histTip("power-hist-tooltip") + '</div>';
       var pBox = document.querySelector("#power-chart .page-chart");
       refitHistory(pBox, function(w){
         return reserveChart({ vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
@@ -1164,7 +1164,7 @@
       var to = idx ? idx[1] : dsrHistory.length;
       var host = byId("households-chart"); if (!host) return;
       host.innerHTML =
-        '<div class="hist-bar">' + histControls(id, { depth:Math.floor(dsrHistory.length / 4), stops:HH_STOPS }, DSR_FROM_YEAR) + '</div>' +
+        histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4), stops:HH_STOPS }, DSR_FROM_YEAR)) +
         '<div class="page-chart">' + histHead(id) +
         householdsChart(W, from, to) +
         trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
@@ -1172,7 +1172,7 @@
         // V492: two readings, so hairlines rather than two boxes (the V488 rule). The bill first because the
         // chart draws it first, and the cushion second because it is the one that sets the page's word.
         '<div class="panel-stack in-hist">' + householdsPanelHtml() + '</div>' +
-        '<div class="gdp-tooltip mono hist-tip" id="households-hist-tooltip" hidden></div></div>';
+        histTip("households-hist-tooltip") + '</div>';
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return householdsChart(w, from, to); });
       attachHistory(box, "households-hist-tooltip", "householdsChart");
@@ -1207,7 +1207,7 @@
       var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
       var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
       byId("valuation-chart").innerHTML =
-        '<div class="hist-bar">' + histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS }) + '</div>' +
+        histBar(histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS })) +
         '<div class="page-chart">' + histHead("sheet-metric-valuation") +
         divergeChart({
           vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
@@ -1224,7 +1224,7 @@
         trendPill(capeTrend, null, true) +   // V436: likewise \u2014 the reading's own tag is already on the page
         // V491, Keren: Buffett and CAPE come inside, below the trend (see Power's renderer for the note)
         '<div class="panel-stack in-hist">' + valuationPanelHtml + '</div>' +
-        '<div class="gdp-tooltip mono hist-tip" id="valuation-hist-tooltip" hidden></div></div>';
+        histTip("valuation-hist-tooltip") + '</div>';
       var vBox = document.querySelector("#valuation-chart .page-chart");
       refitHistory(vBox, function(w){
         return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7",

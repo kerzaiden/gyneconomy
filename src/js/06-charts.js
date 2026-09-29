@@ -638,7 +638,7 @@
     }
     // Version 433: the window's own average, and the key that names it and the reference together
     var rAvg = o.vals.reduce(function(a, d){ return a + d.v; }, 0) / (n || 1);
-    out.push('<path class="temp-avg" d="M' + padL + ',' + y(rAvg) + 'L' + (W - padR) + ',' + y(rAvg) + '"/>');
+    out.push(avgRule(padL, W - padR, y(rAvg)));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
     // Version 494, Keren: the latest reading no longer sits in the chart's top corner — the panel row below
     // states it, in bigger type, beside the band it is being read against. It was the V477 rule again: a figure
@@ -869,6 +869,21 @@
     if (tipId) wireHistHover(host, tipId);
     return g;
   }
+  /* The frame's SURROUNDINGS (Version 621). One layer out from histFrame: the box a history sits in, the row
+     of controls above it, the tooltip beneath it and the average line across it. Each was typed out ten or
+     eleven times — `class="gdp-tooltip mono hist-tip"` written eleven times is three class names that have to
+     agree eleven times, and the day one of them changes is the day a page keeps the old three.
+     `histBar` takes an id because five of the eleven carry one: those rows are filled later by their page
+     rather than at build, which is a real difference and so it is an argument rather than a second function. */
+  function histBar(inner, id){
+    return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : '') + '>' + (inner || '') + '</div>';
+  }
+  function histTip(id){ return '<div class="gdp-tooltip mono hist-tip" id="' + id + '" hidden></div>'; }
+  // The window's average, drawn across the plot. Not the same line as meanRule: that one is the series' own
+  // long-run reference, this one is what the months IN VIEW come to (V423).
+  function avgRule(x0, x1, y){
+    return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
+  }
   function vhOpen(W, H){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
   function chartAxes(o){
     var out = [], ticks = o.ticks;
@@ -966,7 +981,7 @@
     // because a ten-year CAPE average reports a near-record valuation as merely rich. It still would; the midline
     // is what stops it, by keeping the long reference in the picture next to it.
     var dAvg = o.vals.reduce(function(a, d){ return a + d.v; }, 0) / (n || 1);
-    out.push('<path class="temp-avg" d="M' + padL + ',' + y(dAvg) + 'L' + (W - padR) + ',' + y(dAvg) + '"/>');
+    out.push(avgRule(padL, (W - padR), y(dAvg)));
     if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
     // Version 494, Keren: the latest reading no longer sits in the chart's top corner — the panel row below
     // states it, in bigger type, beside the band it is being read against. It was the V477 rule again: a figure

@@ -405,11 +405,11 @@
        test below it in its own box — which this page had been the exception to for two versions.
        The chart container carries NO head: the control names the window, the trend pill names the movement, and
        the reading below names the number. The head it had was the third statement of a thing already twice said. */
-    return '<div class="hist-bar" id="desire-timeline"></div>' +
+    return histBar("", "desire-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("desire-range") +
       '<div id="desire-record" class="vh-host"></div>' +
-      '<div class="gdp-tooltip mono hist-tip" id="desire-hist-tooltip" hidden></div>' +
+      histTip("desire-hist-tooltip") +
       /* Version 482, Keren: "the trend button above the blood test result, and both inside the history
          container." One box, read top to bottom: what window you are in, the picture, how it has moved, and
          where it stands now. The reading gives up its own border and takes a hairline instead — which is how
@@ -431,11 +431,11 @@
     // and the dashed line, the timeline states the window, and the red columns are visible without being counted
     // out in a sentence. What the paragraph said that the picture cannot \u2014 that those are the only
     // contractions in sixty-seven years \u2014 is in the long form behind More details.
-    return '<div class="hist-bar" id="volume-timeline"></div>' +
+    return histBar("", "volume-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("volume-range") +
       '<div id="m2-record" class="vh-host"></div>' +
-      '<div class="gdp-tooltip mono hist-tip" id="m2-hist-tooltip" hidden></div>' +
+      histTip("m2-hist-tooltip") +
       // Version 434: these four rows were built ONCE, from the whole series, and could not follow a window.
       // They are recordRows now, rendered per draw — which also retires the last hand-written copy of that
       // component. The M2_NORM "Pace" row became a LINE on the chart, where a reading can be compared with it.
@@ -452,11 +452,11 @@
     // The head went in Version 384 (Keren: "I don't need the title 'every reading, 40 quarters from 2016',
     // because I can see it already"). She is right twice over: the timeline directly below states the window,
     // and the record rows beneath state the span. A heading that repeats its own contents is furniture.
-    return '<div class="hist-bar" id="pulse-timeline"></div>' +
+    return histBar("", "pulse-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("pulse-range") +
       '<div id="pulse-record" class="vh-host"></div>' +
-      '<div class="gdp-tooltip mono hist-tip" id="pulse-hist-tooltip" hidden></div>' +
+      histTip("pulse-hist-tooltip") +
       '<div id="pulse-trend"></div>' +
       // Version 485: the blood test joins the history container, on Desire's pattern. Its end words are cut to
       // one syllable for the row — "Slow · hoarding" and "Fast · spending" are the meter's own and too long
@@ -627,7 +627,7 @@
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -734,7 +734,7 @@
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -799,7 +799,7 @@
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(avgV)) + 'L' + R + ',' + f(Y(avgV)) + '"/>');
+    out.push(avgRule(L, R, f(Y(avgV))));
     var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(2) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -966,7 +966,7 @@
     // it can never describe a stretch the picture does not show.
     if (n){
       var avgV = vals.reduce(function(a, d){ return a + d.v; }, 0) / n, avgY = Y(avgV);
-      out.push('<path class="temp-avg" d="M' + L + ',' + f(avgY) + 'L' + R + ',' + f(avgY) + '"/>');
+      out.push(avgRule(L, R, f(avgY)));
       avgShown = avgV;   // Version 427: the value moved to the key under the chart, so no plate is drawn here
     }
     // Version 402: the fit across the months in view, drawn always and shown only while the pill is pressed —
@@ -1069,7 +1069,7 @@
     });
     // Version 431: the window's own average, the same line Temperature draws
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(gAvg)) + 'L' + R + ',' + f(Y(gAvg)) + '"/>');
+    out.push(avgRule(L, R, f(Y(gAvg))));
     var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
     if (tfit && tfit.n > 1)
       out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
@@ -1129,7 +1129,7 @@
     var vAvg = vals.filter(function(v){ return v != null; }).reduce(function(a, v){ return a + v; }, 0) /
                (vals.filter(function(v){ return v != null; }).length || 1);
     out.push(meanRule(L, R, Y(M2_NORM)));
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(vAvg)) + 'H' + R + '"/>');
+    out.push(avgRule(L, R, f(Y(vAvg))));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },

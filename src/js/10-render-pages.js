@@ -423,10 +423,10 @@
       var to = span ? span[1] : undefined;
       var win = fedFundsHistory.slice(from, to);
       bar.innerHTML =
-        '<div class="hist-bar">' + histControls(id, { series:fedFundsHistory, stops:HORM_STOPS }, FF_Y0) + '</div>' +
+        histBar(histControls(id, { series:fedFundsHistory, stops:HORM_STOPS }, FF_Y0)) +
         '<div class="page-chart">' + histHead(id) +
         fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
-        '<div class="gdp-tooltip mono hist-tip" id="hormones-hist-tooltip" hidden></div>' +
+        histTip("hormones-hist-tooltip") +
         '<div id="hormones-trend"></div></div>';
       var tr = byId("hormones-trend");
       // V431's pairing rule: two words of a trend are two ends of ONE pair. A rate tightens and eases.
@@ -563,10 +563,10 @@
       var to = span ? span[1] : undefined;
       var win = lendingStandardsHistory.slice(from, to);
       bar.innerHTML =
-        '<div class="hist-bar">' + histControls(id, { series:lendingStandardsHistory, stops:PRESS_STOPS }, LS_Y0) + '</div>' +
+        histBar(histControls(id, { series:lendingStandardsHistory, stops:PRESS_STOPS }, LS_Y0)) +
         '<div class="page-chart">' + histHead(id) +
         lendingHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
-        '<div class="gdp-tooltip mono hist-tip" id="pressure-hist-tooltip" hidden></div>' +
+        histTip("pressure-hist-tooltip") +
         '<div id="pressure-trend"></div></div>';
       var tr = byId("pressure-trend");
       // V431\u2019s pairing rule: two words of a trend are two ends of ONE pair. A channel narrows and widens.
@@ -683,11 +683,11 @@
         };
       }
       host.innerHTML =
-        '<div class="hist-bar">' + histControls("fear-range",
-          { series:fearCurveHistory, stops:FEAR_STOPS }, FEAR_Y0) + '</div>' +
+        histBar(histControls("fear-range",
+          { series:fearCurveHistory, stops:FEAR_STOPS }, FEAR_Y0)) +
         '<div class="page-chart">' + histHead("fear-range") +
         divergeChart(opts(), host.clientWidth || 340) +
-        '<div class="gdp-tooltip mono hist-tip" id="fear-hist-tooltip" hidden></div>' +
+        histTip("fear-hist-tooltip") +
         '<div id="fear-trend"></div></div>';
       var ft = byId("fear-trend");
       // Version 431's pairing rule: two words of a trend must be two ends of ONE pair. A curve inverts and steepens.

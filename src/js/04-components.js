@@ -609,7 +609,7 @@
                      refs:[{ label:"Average", v:dfAvg },
                            { label:"1983 level", v:DEF_1983, dash:true }],
                      vals:vals.map(function(v){ return { v:v }; }) });
-    out.push('<path class="temp-avg" d="M' + L + ',' + f(Y(dfAvg)) + 'H' + R + '"/>');
+    out.push(avgRule(L, R, f(Y(dfAvg))));
     if (defFit && defFit.n > 1)
       out.push(fitGroup({ fit:defFit, fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; } },
                         X(0), X(n - 1), Y, R, L, 0));
@@ -665,11 +665,11 @@
        the ⋯ menu above the chart is the one door onto it now. (The FY span label went in Version 361, Keren:
        the range bar names the window and the chart's own axis dates it.) */
     HIST_NOTE["deficit-range"] = note;
-    return '<div class="hist-bar" id="deficit-rangebar"></div>' +
+    return histBar("", "deficit-rangebar") +
       '<div class="page-chart pulsebox">' +
       histHead("deficit-range") +
       '<div id="deficit-record" class="vh-host"></div>' +
-      '<div class="gdp-tooltip mono hist-tip" id="deficit-hist-tooltip" hidden></div>' +
+      histTip("deficit-hist-tooltip") +
       // Version 404, Keren: four records, like every other history. This page had five, and the one that went is
       // "Deepest on record, -26.9% FY1943" — but the REASON it was there does not go with it. It was stating that
       // the chart's window is truncated at 1946 and by how much, which is the honesty that lets the 1946 start be
@@ -1005,7 +1005,7 @@
                            { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true }],
                      vals:ser.map(function(v){ return { v:v }; }) });
     // Version 434: the inline plate goes and the key names both lines, as on the other five
-    out.push('<path class="temp-avg" d="M' + f(X(0)) + ',' + f(Y(pAvg)) + 'H' + f(X(n - 1)) + '"/>');
+    out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
 
     /* Version 500, Keren: "make sure all the charts are bars." Velocity lives between 1.1 and 2.2, so columns
        out of zero would spend two thirds of the plot on a region the series never visits and flatten the one
