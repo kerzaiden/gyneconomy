@@ -2,8 +2,10 @@
 # refresh is a diff you can read, blame or revert — the reason Pages+Actions was chosen over a
 # platform that would hide the same data in a key-value store.
 #
-# Committing to main triggers ci.yml, which tests and then deploys. So a data commit cannot reach
-# the site without passing the suite.
+# A push made with the repository's own token never starts another workflow, so the commit alone
+# does not reach the site. After a push this run starts ci.yml itself (workflow_dispatch is the one
+# event that token may raise), which tests and then deploys, so a data commit still cannot reach the
+# site without passing the suite (V651, Keren: "set it up").
 name: Data
 
 on:
@@ -15,7 +17,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write     # to commit data/live.json
+  actions: write      # to start ci.yml, which deploys the site with the new figures
 
 concurrency:
   group: data
@@ -66,6 +69,7 @@ jobs:
           "
 
       - name: Commit if anything moved
+        id: commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -101,8 +105,14 @@ jobs:
           # Rebasing is safe here because this job only ever touches data/live.json and a run
           # that changed nothing has already exited above.
           for attempt in 1 2 3; do
-            if git push; then echo "pushed on attempt $attempt"; exit 0; fi
+            if git push; then echo "pushed on attempt $attempt"; echo "pushed=yes" >> "$GITHUB_OUTPUT"; exit 0; fi
             echo "push rejected — rebasing onto the remote and retrying"
             git pull --rebase --autostash origin main || exit 1
           done
           echo "::error::could not push after 3 attempts"; exit 1
+
+      - name: Deploy the site with the new figures
+        if: steps.commit.outputs.pushed == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref main --repo "$GITHUB_REPOSITORY"

@@ -173,7 +173,7 @@ with no handler is recorded, which makes the suite able to see it.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json` | weekdays 22:40 UTC, after the NY close | the site |
+| **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 | **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/03b-history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site; the artifact only at its next publish |

@@ -6744,3 +6744,12 @@ are so important"
 The source keeps no comments but one-line section titles, and `npm run check` enforces it. The most
 important rules are in CLAUDE.md; the reasons behind the live-data layer moved to docs/ARCHITECTURE.md.
 ~~~
+
+### V651
+
+~~~text
+Keren: "set it up" — the daily data reaches the website every weekday. She also removed the rule that
+required a pull request on main ("I'm not sure we need that kind of security for the moment in the app"),
+keeping only Restrict deletions and Block force pushes.
+The Data workflow now starts the site deploy after it commits the figures.
+~~~
