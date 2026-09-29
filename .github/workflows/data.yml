@@ -1,24 +1,13 @@
-# The data pipeline. Fetches the figures that move every trading day and COMMITS them, so each
-# refresh is a diff you can read, blame or revert — the reason Pages+Actions was chosen over a
-# platform that would hide the same data in a key-value store.
-#
-# A push made with the repository's own token never starts another workflow, so the commit alone
-# does not reach the site. After a push this run starts ci.yml itself (workflow_dispatch is the one
-# event that token may raise), which tests and then deploys, so a data commit still cannot reach the
-# site without passing the suite (V651, Keren: "set it up").
 name: Data
 
 on:
   schedule:
-    # 22:40 UTC on weekdays — after the US close, ten minutes behind the nightly Artifact task so
-    # the two never race for the same figures. Cron here is best-effort; a late run is fine,
-    # because the script publishes observation DATES and the page shows them.
     - cron: '40 22 * * 1-5'
   workflow_dispatch:
 
 permissions:
-  contents: write     # to commit data/live.json
-  actions: write      # to start ci.yml, which deploys the site with the new figures
+  contents: write
+  actions: write
 
 concurrency:
   group: data
@@ -34,10 +23,6 @@ jobs:
         with:
           node-version: 22
 
-      # Until V541 this workflow installed nothing, because the fetcher used only Node's built-in
-      # fetch. CAPE needs a spreadsheet reader, so it needs an install — and the first run after
-      # V541 failed on exactly that, correctly and loudly. `npm ci` installs optionalDependencies,
-      # which is where xlsx lives (see package.json's //xlsx note).
       - name: Install
         run: npm ci
 
@@ -46,10 +31,6 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: node tools/fetch-live.js
 
-      # A figure that fails leaves the previous value standing — correct for the DATA, but it also
-      # meant a figure failing on EVERY run showed a green tick and said so only deep in a log.
-      # The outcome goes on the run's front page now, and each failure raises a warning annotation,
-      # so "which figures are actually arriving?" is answerable at a glance instead of by digging.
       - name: Sanity — the file must be valid JSON with at least one document
         run: |
           node -e "
@@ -73,9 +54,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # _meta.fetchedAt changes on every run, so compare only the DOCUMENTS. A run that found
-          # nothing new must leave no commit behind, or the history fills with noise and stops
-          # being the audit trail it exists to be.
           if git diff --quiet -- data/live.json; then
             echo "no change at all"; exit 0
           fi
@@ -98,12 +76,6 @@ jobs:
           Fetched by tools/fetch-live.js from its sources. Values that failed their sanity
           band or could not be fetched are left out, and the previous ones stand."
 
-          # PULL BEFORE PUSHING — the same rule CLAUDE.md gives a person, and this workflow was
-          # the one writer not following it. The remote moves under a run: a commit pushed from
-          # Keren's machine, or the previous data run, lands between this job's checkout and its
-          # push, and the push is rejected with "fetch first". That happened on Data #2.
-          # Rebasing is safe here because this job only ever touches data/live.json and a run
-          # that changed nothing has already exited above.
           for attempt in 1 2 3; do
             if git push; then echo "pushed on attempt $attempt"; echo "pushed=yes" >> "$GITHUB_OUTPUT"; exit 0; fi
             echo "push rejected — rebasing onto the remote and retrying"

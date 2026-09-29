@@ -1,6 +1,3 @@
-# Tag each version when it lands on main (V647). A version is a commit titled "V6NN — Name"; the tag is
-# v6NN-name. Sessions in the cloud cannot push tags, so the tag is made here, where the repository's own
-# token can. It only adds tags for versions newer than the newest tag, and never moves one.
 name: Tag
 
 on:

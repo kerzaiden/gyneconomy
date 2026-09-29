@@ -1,15 +1,4 @@
 #!/usr/bin/env node
-/* THE DECISIONS REGISTER, extracted verbatim from the source of one revision.
-
-   Keren, Sep 29 2026: move the version history out of the code comments. Her decisions were written
-   into those comments ("a code comment that names a Version and quotes her is a decision"), so before
-   any history left the source, every comment that names her was copied here word for word, with the
-   file and line it stood at. Nothing in the register is paraphrased; it is the text as it was.
-
-   Usage: node tools/decisions.js [REV]        REV defaults to HEAD; writes docs/DECISIONS.md, and refuses
-                                               to if part 2 already holds a decision added by hand.
-   The JavaScript is read with acorn, the parser terser itself depends on (so it is always installed
-   with the build), because a comment cannot be found by pattern in JavaScript: see tools/strip.js. */
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const acorn = require('acorn');
 
@@ -20,7 +9,6 @@ const manifest = JSON.parse(git('show', rev + ':src/manifest.json'));
 const text = manifest.map(p => git('show', rev + ':src/' + p));
 const tag = git('tag', '--points-at', rev).split('\n').filter(t => /^v\d{3}/.test(t))[0] || git('rev-parse', '--short', rev).trim();
 
-/* Offsets in the joined text map back to a part and a line within it. */
 const starts = []; let off = 0;
 text.forEach(t => { starts.push(off); off += t.length + 1; });
 const joined = text.join('\n');
@@ -29,7 +17,7 @@ function locate(pos) {
   return { part: manifest[i], line: text[i].slice(0, pos - starts[i]).split('\n').length };
 }
 
-const found = [];   // { start, end, kind, value }
+const found = [];
 const re = /(<(script|style)\b[^>]*>)([\s\S]*?)(<\/\2>)/gi;
 let m, at = 0;
 const markup = (s, from) => { let c; const r = /<!--([\s\S]*?)-->/g; while ((c = r.exec(s))) found.push({ start: from + c.index, end: from + r.lastIndex, kind: 'html', value: c[1] }); };
@@ -48,7 +36,6 @@ while ((m = re.exec(joined))) {
 markup(joined.slice(at), at);
 found.sort((a, b) => a.start - b.start);
 
-/* Consecutive // lines are one comment. */
 const blocks = [];
 for (const c of found) {
   const prev = blocks[blocks.length - 1];
@@ -60,14 +47,10 @@ for (const c of found) {
 function clean(b) {
   const ls = b.value.split('\n').map(l => (b.kind === 'block' || b.kind === 'css') ? l.replace(/^[ \t]*\*(?!\/)[ \t]?/, '') : l);
   const body = ls.map(l => l.replace(/\s+$/, ''));
-  // the first line of a block comment starts right after its opening mark, so it sets no indent
   const rest = body.slice(1).filter(l => l.trim());
   const ind = rest.length ? Math.min(...rest.map(l => l.match(/^ */)[0].length)) : 0;
   return body.map((l, i) => i ? l.slice(ind) : l.trim()).join('\n').replace(/^\n+|\n+$/g, '');
 }
-/* The decision's own version is the one written against her name: "Version 510, Keren", "(Version 301,
-   Keren)", "Keren (V510)". A version merely mentioned in passing ("the Version 510 lesson") is not it, so
-   without one of those forms the comment's first version stands. */
 function version(v) {
   const own = v.match(/(?:Version\s+|\bV)(\d{3})\b[\s,;:(—-]*Keren|Keren[\s,;:(—-]*(?:Version\s+|\bV)(\d{3})\b/);
   if (own) return Number(own[1] || own[2]);
@@ -116,7 +99,6 @@ for (const e of entries) {
   out.push('`' + e.part + '` line ' + e.line + (e.near ? ', ' + e.near : ''), '', '~~~text', e.text, '~~~', '');
 }
 out.push('## Part 2 · after ' + tag, '', '_None yet._', '');
-/* Part 2 is written by hand after the extraction, so a rerun must never erase it. */
 const OUT = path.join(ROOT, 'docs/DECISIONS.md');
 if (fs.existsSync(OUT) && !process.argv.includes('--force')) {
   const kept = fs.readFileSync(OUT, 'utf8').split(/^## Part 2 .*$/m)[1] || '';

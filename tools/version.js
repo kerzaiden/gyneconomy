@@ -1,13 +1,3 @@
-/* One version, stamped by the build (V636).
-
-   `package.json` said 609 and `sw.js` said gyn-609 at V634, because each was a number somebody had to
-   remember to change and nobody did for twenty-five versions. The service worker's VERSION is the name of
-   its cache, and a cache that keeps its name across a release keeps its old shell too — so a reader who
-   installed the app was served a stale sources.html and icons for as long as the number stood still.
-
-   Now there is ONE number, the major of `package.json`'s version, and the build writes it into sw.js
-   the way it writes index.html: `npm run build` stamps it, `npm run build:check` fails if it drifted.
-   `npm run bump` moves the number — to the next version after the newest tag, or to the one you name. */
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
@@ -24,7 +14,6 @@ function major() {
   return Number(m[1]);
 }
 
-/* The newest `v6NN-name` tag, or null where there are none — a fresh CI checkout fetches no tags. */
 function newestTag() {
   try {
     const tags = execSync('git tag --list "v[0-9]*"', { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] })
@@ -40,7 +29,6 @@ function swMajor() {
   return m ? Number(m[1]) : null;
 }
 
-/* Write sw.js at the package's version. Returns true if it changed. */
 function stamp() {
   const n = major(), cur = fs.readFileSync(SW, 'utf8'), next = stampSw(cur, n);
   if (!LINE.test(cur)) throw new Error('sw.js has no `var VERSION = ...` line to stamp');

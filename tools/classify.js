@@ -1,14 +1,3 @@
-/* Measure what each registered step actually DOES, by running it.
-
-     node tools/classify.js index.html
-
-   Reading kinds off the source does not work: counting DOM writes in a step's body counts the
-   writes inside its event HANDLERS, which fire later and say nothing about the step. That
-   mislabelled six pure wirers as "mixed" in Version 531 and hid that the 1,228-line
-   renderPagesAndNav binds nothing at all.
-
-   So: patch addEventListener, run the step, watch. Listeners bound means it must run once. DOM
-   settled with no listeners means it may run again. The kinds in index.html are set from this. */
 const { chromium } = require('playwright');
 const fs = require('fs');
 const CHROME = process.env.GYN_CHROME

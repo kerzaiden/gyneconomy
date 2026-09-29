@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/* COMMENT-ONLY PROOF. An edit that changes nothing but comments must leave the built page unchanged,
-   because the build strips every comment (tools/strip.js). This proves it one part at a time.
-
-   For each part named, the page is joined twice from a base revision: once exactly as the base had it,
-   and once with that one part taken from the working tree instead. Both are stripped exactly as the
-   build strips them. JavaScript must come out byte-identical. CSS and markup may differ only in the
-   blank lines a removed comment leaves behind, never in whether whitespace is there at all.
-
-   Because every other part comes from the base, parts being edited at the same time do not interfere,
-   and a failure names the part that caused it.
-
-   Usage: node tools/comment-proof.js [part ...] [--base=REV]
-          With no parts, every part changed against the base is checked, then all of them together.
-          The base defaults to HEAD. Exit 0 = the edit touched comments only. */
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const { strip } = require('./strip');
 
