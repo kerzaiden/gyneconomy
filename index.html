@@ -4550,13 +4550,29 @@
   }
   var REPAINT = {
     fedFunds: [ repaintPolicy ],
-    vix3mClose: [ repaintFearCurve ],
     yieldCurve: [ repaintHorizonRow ],
     valuation: [ repaintValuationRow ],
     capeValue: [ repaintValuationRow ],
-    sentiment: [],
-    coincident: []
+    vixClose: [ repaintFearCurve ],
+    vix3mClose: [ repaintFearCurve ]
   };
+  var ON_OPEN = [ "sentiment", "coincident", "hyOasNow" ];
+  function checkLiveCoverage() {
+    var all = LIVE_DOCS.concat(LIVE_SCALARS), seen = {}, bad = [];
+    Object.keys(REPAINT).forEach(function(k) {
+      seen[k] = (seen[k] || 0) + 1;
+    });
+    ON_OPEN.forEach(function(k) {
+      seen[k] = (seen[k] || 0) + 1;
+    });
+    all.forEach(function(k) {
+      if (seen[k] !== 1) bad.push(k + " in " + (seen[k] || 0));
+    });
+    Object.keys(seen).forEach(function(k) {
+      if (all.indexOf(k) < 0) bad.push(k + " is not a live name");
+    });
+    if (bad.length && window.console) console.warn("live coverage: " + bad.join(", "));
+  }
   var liveAsOf = {};
   function fmtAsOf(iso) {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
@@ -4613,7 +4629,6 @@
           vrow.meter.value = value;
           vrow.flagValue = value.toFixed(1);
           if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
-          repaintFearCurve();
           break;
         }
 
@@ -4712,6 +4727,8 @@
     window.__GYN = GYN;
     GYN.applyLive = applyLive;
   } catch (e) {}
+  GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
+  checkLiveCoverage();
   function refreshLiveData() {
     if (!window.claude || typeof window.claude.use !== "function") return;
     window.claude.use("db").then(function(db) {

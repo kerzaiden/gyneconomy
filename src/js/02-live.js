@@ -167,17 +167,32 @@
     if (!row) return;
     paintReading("sheet-metric-valuation", row.flagValue, valuation.tag || null);
   }
-  /* Which repaints each document owes. An empty list is a statement, not an omission: the VIX row
-     and the Desire/Volume/Pulse rows live on inner pages that redraw on open. */
+  /* Which repaints each live name owes. Version 628: seven keys stood against nine live names. `vixClose`
+     repainted the curve from inside its own case in `applyLive` rather than from here, and `hyOasNow` was
+     not mentioned anywhere — and a MISSING key looked exactly like an EMPTY one, so "this reading draws on
+     its own page" and "nobody has written this yet" were the same shape. They are two statements now. A name
+     in REPAINT has a painter; a name in ON_OPEN declares that its only display is an inner page, which
+     redraws in full when it opens. `checkLiveCoverage` asserts every live name sits in exactly one, so a
+     tenth document cannot arrive without saying where it shows. */
   var REPAINT = {
     fedFunds:   [repaintPolicy],
-    vix3mClose: [repaintFearCurve],
     yieldCurve: [repaintHorizonRow],
     valuation:  [repaintValuationRow],
     capeValue:  [repaintValuationRow],
-    sentiment:  [],
-    coincident: []
+    vixClose:   [repaintFearCurve],   // the near leg: a new VIX moves the curve's shape, not just its own row
+    vix3mClose: [repaintFearCurve]    // and the far leg does the same
   };
+  /* The VIX row, and the Desire, Volume and Pulse rows, are drawn by the page that holds them and by nothing
+     else. Naming them here is what turns a missing repaint from an oversight into a decision. */
+  var ON_OPEN = ["sentiment", "coincident", "hyOasNow"];
+  function checkLiveCoverage(){
+    var all = LIVE_DOCS.concat(LIVE_SCALARS), seen = {}, bad = [];
+    Object.keys(REPAINT).forEach(function(k){ seen[k] = (seen[k] || 0) + 1; });
+    ON_OPEN.forEach(function(k){ seen[k] = (seen[k] || 0) + 1; });
+    all.forEach(function(k){ if (seen[k] !== 1) bad.push(k + " in " + (seen[k] || 0)); });
+    Object.keys(seen).forEach(function(k){ if (all.indexOf(k) < 0) bad.push(k + " is not a live name"); });
+    if (bad.length && window.console) console.warn("live coverage: " + bad.join(", "));
+  }
   /* Assign a freshly-arrived document to the module var it belongs to, re-derive whatever was
      computed FROM it at load, then repaint. The re-derivation is the subtle part: `valuation.tag`
      and the Volume/Pulse tags are computed once at load from these objects, so a new object without
@@ -231,8 +246,8 @@
           vrow.meter.value = value;
           vrow.flagValue = value.toFixed(1);
           if (liveAsOf.vixClose) vrow.sub = liveAsOf.vixClose;
-          repaintFearCurve();   // the VIX is the curve's near leg, so the shape moved as well
-          break;
+          break;   // V628: the curve's repaint is declared in REPAINT now, with the far leg's, not called here
+
         }
         /* V541: CAPE arrives from Shiller's own dataset, monthly. It lands in the valuation row and
            the VERDICT is recomputed from it — `valuation.tag` is derived at load, so a fresh number
@@ -355,6 +370,9 @@
     }
   };
   try { window.__GYN = GYN; GYN.applyLive = applyLive; } catch (e) {}   // a test seam, not an API
+
+  // V628: registered here rather than beside REPAINT, because `GYN` is declared below it
+  GYN.step("checkLiveCoverage", checkLiveCoverage, "check"); checkLiveCoverage();
 
   function refreshLiveData(){
     if (!window.claude || typeof window.claude.use !== "function") return;
