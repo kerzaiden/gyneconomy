@@ -315,7 +315,7 @@
       meter:{min:0, max:106.3, value:101, optimal:{lte:51, label:"\u2264 51%"},
              ends:{ zone:"50-year average", high:"Elevated" }},
       shortNote:"FY2026 — on pace to break the 80-year-old WWII record within the decade.",
-      note:"FY2026, CBO's February 2026 projection (FY2025 actual: 98%). On pace to break the 80-year-old WWII record — CBO has it at 108% by 2030. Bar runs from the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own historical ledger shows just $33,733 outstanding) to the WWII peak (106% in FY1946, per the OMB series on FRED). The green band ends at 51% of GDP, which is CBO's stated 50-year average for debt held by the public — today's 101% is roughly twice it.",
+      note:"FY2026, CBO's February 2026 projection (FY2025 actual: 98%). On pace to break the 80-year-old WWII record — CBO has it at 108% by 2030. Bar runs from the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own historical ledger shows just $33,733 outstanding) to the WWII peak (106% in FY1946, per the OMB series on FRED). The green band ends at 51% of GDP, which is CBO's stated 50-year average for debt held by the public — today's 101% is roughly twice it. Why this reads lower than the 120-odd percent in the headlines: that figure is GROSS federal debt, which adds the roughly $7 trillion the government owes to itself, mostly to the Social Security trust funds. Debt held by the public is what was actually borrowed from outside, which is CBO's measure of the burden and the basis of this bar's whole scale, including the 1946 record (V641, Keren's question).",
       direction:"up", flagValue:"101%", flagState:"serious"
     },
     {
