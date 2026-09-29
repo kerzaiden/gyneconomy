@@ -9,7 +9,7 @@
    shape that never traded — and it would look entirely plausible on the chart.
 
    Usage: node test/fetch-fred-history.test.js        Exit 0 = every case passed. */
-const { monthEnd, curveMonthly, monthlyLevels, quarterly, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -76,6 +76,20 @@ ok('a level outside the band is left out, not clamped',
    [{ m: '1954-07', v: 0.8 }]);
 ok('zero is a real policy rate and survives the band',
    monthlyLevels([d('2015-01-01', 0)], 0, 25), [{ m: '2015-01', v: 0 }]);
+
+/* ---- quarterlyMean: the calendar quarter's average, two decimals ---- */
+ok('three months average into their quarter',
+   quarterlyMean([d('2026-07-01', 4.5), d('2026-08-01', 4.7), d('2026-09-01', 4.9)], 0, 25).map(x => [x.q, x.v, x.n]),
+   [['2026 Q3', 4.7, 3]]);
+ok('months split at the quarter boundary',
+   quarterlyMean([d('2026-06-01', 1), d('2026-07-01', 2)], 0, 25).map(x => x.q), ['2026 Q2', '2026 Q3']);
+ok('a negative spread averages as a negative',
+   quarterlyMean([d('2023-04-03', -1.5), d('2023-04-04', -1.3)], -10, 25).map(x => x.v), [-1.4]);
+ok('a value outside the band is left out of the mean, not clamped',
+   quarterlyMean([d('2026-07-01', 4), d('2026-07-02', 99)], 0, 25).map(x => [x.v, x.n]), [[4, 1]]);
+ok('the treasury block is written with its partial mark',
+   /treasuryQuarterly = \{\s*y10:\[\{q:"2026 Q3",v:4\.7,partial:true\}\]/.test(emit([], [], 'x', null,
+     { y10: [{ q: '2026 Q3', v: 4.7, partial: true }] })), true);
 
 /* ---- fiscalYears: OMB's fiscal year N is dated N-01-01 on FRED, and nothing else is one ---- */
 ok('a fiscal-year series keeps its years',
