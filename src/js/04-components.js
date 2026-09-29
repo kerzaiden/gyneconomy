@@ -522,7 +522,6 @@
       meter:{min:2.41,max:21.82,value:2.80,optimal:{from:3.5,to:6, label:"3.5–6%"},
              ends:{ low:"Tight", zone:"Normal", high:"Wide" }},
       shortCaption:"A touch off its tightest levels, but still near the tightest spread on record — she's in the mood to take risk.",
-      caption:"Libido peaks at the fertile window itself — a real-time reading, not a forecast. The extra yield investors demand for junk bonds sits close to the tightest it's ever been (the record low is 2.41%, June 2007; the record high 21.82%, December 2008 — the ICE BofA index's own history, which FRED has carried since 1996 but now trims to a rolling three-year window): she's in the mood to take risk, for better or worse. That's also why the dot below flags as outside its normal " + HY_NORM_LO + "–" + HY_NORM_HI + "% band even though the tag above stays \"good\" — abnormally tight spreads are read as bullish risk appetite by the market, but they're a historically unusual place for compensation to sit, not a healthy resting state.",
       aux:{label:"Long-run median, since 1996", value:"~4.5%"},
       get peek(){ return colPeek(hyQuarterEnds(), function(){ return "hy-col"; }); },
       src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]
