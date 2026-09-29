@@ -52,10 +52,10 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/js/03b-history-fred.js index.html docs/MAP.md
-          git commit -m "Backfill: Fed funds, the fear curve and lending standards, from FRED"
+          git commit -m "Backfill: Fed funds, the fear curve and the OMB fiscal series, from FRED"
           git push
           {
             echo "### Backfill committed"
             echo ""
-            grep -oE '^   (fedFundsHistory|fearCurveHistory|lendingStandardsHistory).*' src/js/03b-history-fred.js || true
+            grep -E '^  var ' src/js/03b-history-fred.js | cut -c1-160 || true
           } >> "$GITHUB_STEP_SUMMARY"
