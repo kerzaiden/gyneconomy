@@ -764,6 +764,72 @@ async function openPage(p, url, sheet) {
     await c.close();
   }
 
+  // ---- 2f. the site feed (V635)
+  /* Every live-data check above either seeds the cache by hand or hands a document to `applyLive` through the
+     seam. Neither is the path a reader takes. On the hosted site the figures arrive as `data/live.json`,
+     fetched by `fetchSiteData` over http after the page has rendered, and until now nothing had ever loaded
+     the page that way: the suite opens `file://`, where that step is inert by design. So the one path the
+     site actually runs was the one path nothing proved.
+     This serves the built file and a FIXTURE over a local http server and asserts the whole route: the file
+     is asked for, a scalar and an object document each reach every door, the verdict computed from the
+     object moves with it, and the cache the next load renders from carries what arrived. The fixture is the
+     file's own shape — `kind` on every document, `_meta` beside them — and `_meta` must NOT reach the cache. */
+  {
+    const http = require('http');
+    const FIXTURE = {
+      capeValue: { kind: 'scalar', value: 50.5, asOf: '2026-09-28' },
+      fedFunds:  { kind: 'object', lo: 1.25, hi: 1.50, lastMove: '-0.25' },
+      _meta: { ok: ['capeValue', 'fedFunds'], failed: [], fetchedAt: '2026-09-28T22:40:00Z' }
+    };
+    const asked = [];
+    const srv = http.createServer((req, res) => {
+      asked.push(req.url);
+      if (req.url === '/' || req.url === '/index.html') {
+        res.setHeader('content-type', 'text/html; charset=utf-8'); res.end(src); return;
+      }
+      if (req.url === '/data/live.json') {
+        res.setHeader('content-type', 'application/json'); res.end(JSON.stringify(FIXTURE)); return;
+      }
+      res.statusCode = 404; res.end();
+    });
+    await new Promise(r => srv.listen(0, '127.0.0.1', r));
+    const origin = 'http://127.0.0.1:' + srv.address().port;
+    /* 127.0.0.1 is a secure context, so the service worker WOULD register here and answer the next fetch
+       from its cache; blocked, so this is the page and the file and nothing between them. */
+    const c = await b.newContext({ viewport: { width: 414, height: 1000 }, serviceWorkers: 'block' });
+    const g = await c.newPage();
+    const perr = [];
+    g.on('pageerror', e => perr.push(String(e).slice(0, 140)));
+    await g.goto(origin + '/'); await g.waitForTimeout(1600);
+
+    const doors = sheet => g.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].map(d => {
+      const v = d.querySelector('.ci-value, .subject-value');
+      const w = d.querySelector('.tag, .member-word');
+      return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
+    }), sheet);
+    const cape = await doors('sheet-metric-valuation');
+    const ff = await doors('sheet-sign-hormones');
+    const cache = await g.evaluate(() => {
+      try { return JSON.parse(localStorage.getItem('gyn.live') || '{}') || {}; } catch (e) { return {}; }
+    });
+    await c.close();
+    await new Promise(r => srv.close(r));
+
+    asked.includes('/data/live.json')
+      ? ok('site feed is asked for over http')
+      : bad('site feed is asked for over http', 'requests: ' + asked.join(' '));
+    (cape.length >= 2 && cape.every(t => /^50\.5/.test(t)))
+      ? ok('site feed moves a scalar on every door', cape.length + ' doors')
+      : bad('site feed moves a scalar on every door', JSON.stringify(cape));
+    (ff.length >= 2 && ff.every(t => /^1\.25/.test(t)) && ff.some(t => /Easing/.test(t)) && ff.every(t => !/Tightening/.test(t)))
+      ? ok('site feed moves an object doc, word and all', ff.join(' · '))
+      : bad('site feed moves an object doc, word and all', JSON.stringify(ff));
+    (cache.capeValue && cache.capeValue.value === 50.5 && cache.fedFunds && cache.fedFunds.lo === 1.25 && !('_meta' in cache))
+      ? ok('site feed writes the cache, without _meta')
+      : bad('site feed writes the cache, without _meta', JSON.stringify(cache).slice(0, 200));
+    perr.length ? bad('no errors on the site path', perr.join(' | ')) : ok('no errors on the site path');
+  }
+
   // ---- 3. the slow one
   if (FULL) {
     const q = await b.newPage({ viewport: { width: 414, height: 1000 } });
