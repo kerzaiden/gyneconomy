@@ -69,6 +69,7 @@ const SRC_MUST = [
      groups and headMenuHtml drills them. This pins the sentence that says so, because the way a component
      quietly becomes two is somebody adding back a shorter path for one page. */
   ['one menu shape', /THE HEAD MENU IS ONE COMPONENT/],
+    ['one chart frame', /THE HISTORY FRAME IS ONE COMPONENT/],
 ];
 
 const results = [];

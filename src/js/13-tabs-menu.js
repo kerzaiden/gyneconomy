@@ -86,7 +86,7 @@
         topbarBack = null;
         document.getElementById("topbar-back").hidden = true;
         // The cycle view is one element: the Cycle tab takes it back for the current cycle; the Calendar lands on its list.
-        if (tab === "cycle"){ target.insertBefore(cycleViewEl, document.getElementById("today-analysis")); placeCharts("drawers"); showCycle(currentEra); } // the dial first, then today's readings
+        if (tab === "cycle"){ target.insertBefore(cycleViewEl, document.getElementById("today-analysis")); placeCharts(); showCycle(currentEra); } // the dial first, then today's readings
         if (tab === "analysis" && calendarReset) calendarReset();
         if (tab === "analysis") settleStrips();   // the strips have a width only now that the tab is on screen
         window.scrollTo({ top: 0, behavior: "smooth" });

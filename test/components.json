@@ -68,6 +68,7 @@
   "ci-body": 2,
   "ci-read": 2,
   "ci-value": 2,
+  "ci-mini": 2,
   "ci-when": 2,
   "cat-list": 2
 }

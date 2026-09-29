@@ -761,9 +761,18 @@
     '<div class="src">' + srcHtml(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc)) + '</div>';
 
   // ---- the whole view, for one cycle ----
-  function renderCycleView(m){
+  function renderCycleView(m, dialOnly){
     var era = m.era, meta = wheelMeta[m.season], r = m.reading;
     drawDial(m);
+    /* Version 615, Keren, of a closed cycle opened from Analysis: "I see temperature and growth charts that
+       are not matching the history component that we built. And we basically don't need them because the cycle
+       is closed." Three things were wrong with them there and she felt all three. They spoke a different
+       visual language from every history in the app \u2014 no head, no mark, no \u22ef, no ruler. They repeated the
+       Weather rows immediately beneath them, which say the same reading with its range. And they printed
+       "CURRENT CYCLE" over a cycle that ended in 2018, which is not a style problem but a false statement.
+       So a closed cycle gets the DIAL and nothing else from this function, and the two cards stay in the
+       metric-page drawers where they belong, still showing the cycle that is actually current. */
+    if (dialOnly){ shownEraModel = m; shownEra = era; return; }
 
     // temperature
     drawTemperature(m);
@@ -865,7 +874,7 @@
   };
 
   var shownEraModel = null;
-  function showCycle(era){ if (shownEra !== era) renderCycleView(cycleModel(era)); }
+  function showCycle(era, dialOnly){ if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly); }
 
   // ---------------- A cycle's season strip (Version 205, lifted out of the old Analysis tab in Version 259 so the
   // one cycle row can carry it) ----------------

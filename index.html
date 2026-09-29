@@ -1598,6 +1598,11 @@
   .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
   .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
     font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
+
+  .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
+  .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
+  .cat-item.flat .ci-mini .spark-line, .cat-item.flat .ci-mini .spark-end{ stroke:var(--accent-ink); }
+  .cat-item.flat .ci-mini .spark-fill, .cat-item.flat .ci-mini .spark-end{ fill:var(--accent-ink); }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }
@@ -17464,16 +17469,11 @@
   }
   var cycleViewEl = document.getElementById("cycle-view");
   var tempCard = document.getElementById("temp-card"), growthCard = document.getElementById("growth-card");
-  function placeCharts(where) {
-    if (where === "drawers") {
-      document.getElementById("slot-temp").appendChild(tempCard);
-      document.getElementById("slot-growth").appendChild(growthCard);
-    } else {
-      cycleViewEl.appendChild(tempCard);
-      cycleViewEl.appendChild(growthCard);
-    }
+  function placeCharts() {
+    document.getElementById("slot-temp").appendChild(tempCard);
+    document.getElementById("slot-growth").appendChild(growthCard);
   }
-  placeCharts("drawers");
+  placeCharts();
   var shownEra = null;
   var calendarReset = null;
   var metricPageReset = null;
@@ -18412,9 +18412,14 @@
     t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
     u: "https://fred.stlouisfed.org/series/GDPC1"
   } ]).concat(gdpPeerSrc)) + "</div>";
-  function renderCycleView(m) {
+  function renderCycleView(m, dialOnly) {
     var era = m.era, meta = wheelMeta[m.season], r = m.reading;
     drawDial(m);
+    if (dialOnly) {
+      shownEraModel = m;
+      shownEra = era;
+      return;
+    }
     drawTemperature(m);
     document.getElementById("temp-kicker").textContent = "Temperature";
     document.getElementById("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
@@ -18491,8 +18496,8 @@
     if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
   };
   var shownEraModel = null;
-  function showCycle(era) {
-    if (shownEra !== era) renderCycleView(cycleModel(era));
+  function showCycle(era, dialOnly) {
+    if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly);
   }
   var stripGroupName = {
     winter: "Winter",
@@ -18655,8 +18660,7 @@
         return c.from === from;
       })[0];
       if (!era) return;
-      showCycle(era);
-      placeCharts("view");
+      showCycle(era, true);
       slot.appendChild(cycleViewEl);
       renderCycleCats(era);
       listWrap.hidden = true;
@@ -20071,8 +20075,9 @@
           return d.v;
         });
         var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+        var art = span.length >= 3 ? '<div class="ci-mini">' + sparkHtml(vs, "") + "</div>" : "";
         var travel = lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
-        return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span>" + '<span class="ci-when">' + prettyK(r, end.k) + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + "</div>" + '<div class="ci-word">' + travel + "</div></div></div></div>";
+        return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span>" + '<span class="ci-when">' + prettyK(r, end.k) + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + "</div>" + '<div class="ci-word">' + travel + "</div></div>" + art + "</div></div>";
       }).join("");
       return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' + g.mark() + "</span>" + g.label + '</div><div class="cat-list">' + rows + "</div></div>";
     }).join("");
@@ -20447,7 +20452,7 @@
         document.getElementById("topbar-back").hidden = true;
         if (tab === "cycle") {
           target.insertBefore(cycleViewEl, document.getElementById("today-analysis"));
-          placeCharts("drawers");
+          placeCharts();
           showCycle(currentEra);
         }
         if (tab === "analysis" && calendarReset) calendarReset();

@@ -946,15 +946,17 @@
   // reads the model only, so a change here applies to every cycle.
   // ================================================================================================
   var cycleViewEl = document.getElementById("cycle-view");
-  // The Temperature and Growth charts (Version 206): on the Cycle tab they sit in today's drawers — Temperature in Lagging, Growth
-  // in GDP growth — each standing alone; a cycle opened from the Calendar takes the two cards back into the cycle view, where
-  // they follow the dial as before.
+  /* The Temperature and Growth charts (Version 206) live in today's drawers — Temperature in Lagging, Growth
+     in GDP growth — each standing alone. Version 615 took away the other half of this: a cycle opened from
+     Analysis used to pull both cards into its view, and they were wrong there (see renderCycleView). With
+     nothing left to move them to, the `where` argument had one value and the else branch was unreachable, so
+     both are gone rather than kept for a caller that no longer exists. */
   var tempCard = document.getElementById("temp-card"), growthCard = document.getElementById("growth-card");
-  function placeCharts(where){
-    if (where === "drawers"){ document.getElementById("slot-temp").appendChild(tempCard); document.getElementById("slot-growth").appendChild(growthCard); }
-    else { cycleViewEl.appendChild(tempCard); cycleViewEl.appendChild(growthCard); } // the strip they used to sit above left in Version 240
+  function placeCharts(){
+    document.getElementById("slot-temp").appendChild(tempCard);
+    document.getElementById("slot-growth").appendChild(growthCard);
   }
-  placeCharts("drawers");
+  placeCharts();
   var shownEra = null; // which cycle the view currently shows
   var calendarReset = null;   // set by the Calendar block below
   var metricPageReset = null; // set by the peek block below — closes an open metric page

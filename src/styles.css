@@ -2583,6 +2583,13 @@
   .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
   .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
     font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
+  /* The cycle's shape, in the slot a member's small picture has always used. Two rules only: the spark fills
+     the slot rather than keeping its own 108px, and it wears the accent \u2014 which is what `.ci-mini` already
+     does to every other mini it holds, because a row inside a category is a reading, not a verdict. */
+  .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
+  .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
+  .cat-item.flat .ci-mini .spark-line, .cat-item.flat .ci-mini .spark-end{ stroke:var(--accent-ink); }
+  .cat-item.flat .ci-mini .spark-fill, .cat-item.flat .ci-mini .spark-end{ fill:var(--accent-ink); }
   .era-row[hidden]{ display:none; }
   .cyc-say{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700; line-height:1.2;
     margin:6px 0 0; color:var(--text-secondary); letter-spacing:0.01em; }

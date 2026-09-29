@@ -59,8 +59,7 @@
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
-      showCycle(era);
-      placeCharts("view");
+      showCycle(era, true);   // V615: the dial only — the two cards stay in their drawers
       slot.appendChild(cycleViewEl);
       renderCycleCats(era);
       listWrap.hidden = true; detail.hidden = false;
@@ -1683,6 +1682,16 @@
         var end = span[span.length - 1];
         var vs = span.map(function(d){ return d.v; });
         var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+        /* Version 615: the SHAPE, in the row. Taking the two charts off this view (see renderCycleView) left
+           it able to say where a reading finished and how far it ran, and not how it got there \u2014 which is the
+           part Keren is still turning over ("I'm still thinking how can we see the past data"). A sparkline
+           answers it inside the row she already has, with no page to open and no component to invent:
+           `sparkHtml` has drawn exactly this on peek cards since Version 253, and `.ci-mini` is the slot a
+           member's small picture has always gone in.
+           It is drawn in the accent rather than in a state colour, because `.ci-mini` already neutralises
+           every other mini it holds \u2014 a closed cycle is not being graded, it is being read. */
+        var art = span.length >= 3
+          ? '<div class="ci-mini">' + sparkHtml(vs, "") + '</div>' : "";
         // A cycle in which a reading never moved has no range to state, and "5.2 to 5.2" is furniture.
         var travel = lo === hi ? "Flat all cycle"
           : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
@@ -1690,7 +1699,7 @@
           '<span class="ci-name">' + r.name + '</span>' +
           '<span class="ci-when">' + prettyK(r, end.k) + '</span></div>' +
           '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + '</div>' +
-          '<div class="ci-word">' + travel + '</div></div></div></div>';
+          '<div class="ci-word">' + travel + '</div></div>' + art + '</div></div>';
       }).join("");
       return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' +
         g.mark() + '</span>' + g.label + '</div><div class="cat-list">' + rows + '</div></div>';
