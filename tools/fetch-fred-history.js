@@ -155,7 +155,7 @@ function fiscalBlock(f) {
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `
   /* fiscalHistory — OMB Historical Tables via FRED, % of GDP, by fiscal year:
-       gross     FYGFGDA188S  gross federal debt (held by the public + held by government accounts)
+       gross     GFDGDPA188S  gross federal debt (held by the public + held by government accounts)
        held      FYPUGDA188S  debt held by the public
        interest  FYOIGDA188S  federal outlays: interest
        budget    FYFSGDA188S  surplus (+) or deficit (−)
@@ -186,7 +186,7 @@ async function main() {
   /* V639: DRTSCILM (the loan survey, V597) is no longer fetched — Pressure reads the Treasury yields again.
      `quarterly` stays: it is tested, and the next quarterly series will want it. */
   const fiscal = {
-    gross:    fiscalYears(await fredSeries('FYGFGDA188S', '1929-01-01'), 0, 300),
+    gross:    fiscalYears(await fredSeries('GFDGDPA188S', '1929-01-01'), 0, 300),
     held:     fiscalYears(await fredSeries('FYPUGDA188S', '1929-01-01'), 0, 300),
     interest: fiscalYears(await fredSeries('FYOIGDA188S', '1929-01-01'), 0, 30),
     budget:   fiscalYears(await fredSeries('FYFSGDA188S', '1929-01-01'), -50, 50),
@@ -198,6 +198,12 @@ async function main() {
   const heldAt = y => (fiscal.held.find(d => d.y === y) || {}).v;
   if (!(Math.abs(heldAt(1946) - 106.3) < 0.6 && Math.abs(heldAt(2007) - 34.79) < 0.05))
     throw new Error('fiscal years misaligned: held FY1946 ' + heldAt(1946) + ', FY2007 ' + heldAt(2007));
+  /* Gross debt is held debt PLUS what government accounts hold, so in every year both series carry it must
+     be the larger. A year where it is not means the two are not the same kind of series, and nothing is written. */
+  const grossAt = new Map(fiscal.gross.map(d => [d.y, d.v]));
+  const under = fiscal.held.filter(d => grossAt.has(d.y) && grossAt.get(d.y) < d.v - 0.05);
+  if (under.length) throw new Error('gross below held in FY' + under.map(d => d.y).join(', FY'));
+  if (!fiscal.gross.some(d => d.y === 1946)) throw new Error('gross series does not reach FY1946');
   for (const k of ['gross', 'held', 'interest', 'budget']) {
     const a = fiscal[k];
     say(k.padEnd(13) + ' ' + a.length + ' fiscal years, FY' + a[0].y + ' → FY' + a[a.length - 1].y);
