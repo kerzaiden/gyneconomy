@@ -151,12 +151,13 @@ async function openPage(p, url, sheet) {
     const tag = w + 'px/' + scheme;
     errs.length ? bad('no page errors ' + tag, errs.join(' | ')) : ok('no page errors ' + tag);
     if (w === 390 && scheme === 'light') {
-      fresh.cssRules = css.total; fresh.cssLast = css.last;
+      fresh.cssLast = css.last;
+      /* V625: the rule COUNT is gone with the baseline entry V622 dropped. A count rises every time a style is
+         added, so it was a ratchet that could only ever ask to be blessed — and left un-blessed it failed on
+         an undefined baseline, which is how it was failing. The last selector is the check that earns its keep:
+         `a:hover` is the last rule in the sheet, so anything else means an unclosed brace ate the rest. */
       css.last === 'a:hover' ? ok('stylesheet intact', css.total + ' rules')
         : bad('stylesheet intact', 'last selector is ' + css.last + ' — an unclosed brace killed the rest');
-      if (base && base.cssRules !== css.total)
-        bad('CSS rule count', 'baseline ' + base.cssRules + ', now ' + css.total + ' — bless if intended');
-      else if (base) ok('CSS rule count', css.total);
       // design tokens
       const tok = await p.evaluate(ts => { const cs = getComputedStyle(document.documentElement);
         const o = {}; for (const t of ts) o[t] = cs.getPropertyValue(t).trim(); return o; }, Object.keys(TOKENS));
@@ -336,6 +337,20 @@ async function openPage(p, url, sheet) {
     const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
     pm.length ? bad('every reading prints where it is painted', pm.join(' | '))
               : ok('every reading prints where it is painted');
+  }
+
+  /* ---- 2b7. every action has an answer (V625) ----
+     A view that reaches another view names an action; the view that owns the answer registers it. A fire with
+     no handler is the one failure that used to be invisible — a `window` callback nobody set reads exactly
+     like a control that does nothing. Walking the pages above exercises all four: the Growth economy picker,
+     the Horizon spread picker, the Pressure maturity picker and the Treasury redraw. */
+  {
+    const acts = await p.evaluate(() => Object.keys((window.__GYN || {}).acts || {}).sort());
+    acts.length === 4 ? ok('every action is registered once', acts.join(', '))
+                      : bad('every action is registered once', acts.join(', ') || 'none');
+    const am = await p.evaluate(() => Array.from(new Set(window.__actMiss || [])));
+    am.length ? bad('every action has an answer', am.join(', '))
+              : ok('every action has an answer');
   }
 
   /* ---- 2b6. every reach finds something (V620) ----

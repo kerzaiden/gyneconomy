@@ -154,12 +154,12 @@
       headMenuFor = null; headSubFor = null; paintHeadMenus();
       // V588: two pages put a which-series choice in this menu now, so the row says which one it belongs to
       var mat = pick.getAttribute("data-ylm-mat");
-      if (mat){ if (window.__pickSeries) window.__pickSeries(null, mat); return; }
+      if (mat){ GYN.fire("pickSeries", null, mat); return; }
       // V613: Growth's economy. The empty string is the United States and is a real choice, so this tests for
       // the ATTRIBUTE rather than its value \u2014 a falsy check here would make the default unselectable.
       var peer = pick.getAttribute("data-gdp-peer");
-      if (peer != null){ if (window.__pickPeer) window.__pickPeer(peer); return; }
-      if (window.__pickSpread) window.__pickSpread(pick.getAttribute("data-hzn-spread"));
+      if (peer != null){ GYN.fire("pickPeer", peer); return; }
+      GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
       return;
     }
     var btn = e.target.closest && e.target.closest("[data-head-more]");

@@ -336,6 +336,19 @@
         return s.kind === "check" || s.kind === "derive" || s.kind === "render";
       });
     },
+    /* Version 625, Keren: "one dispatch." Four views used to hang a callback on `window` so another view could
+       reach it: the Growth economy picker, the Horizon spread picker, the Pressure maturity picker and the
+       Treasury redraw. A handler on `window` is invisible — nothing can tell a name nobody answers from a
+       name spelled wrong, so a broken control reads as a control that does nothing. An ACTION is named here
+       instead: the view that owns the answer registers it, the view that needs it fires it, and neither holds
+       a reference to the other. A fire with no handler is recorded, which makes the suite able to see it. */
+    acts: {},
+    on: function(name, fn){ this.acts[name] = fn; return fn; },
+    has: function(name){ return typeof this.acts[name] === "function"; },
+    fire: function(name, a, b){
+      if (this.has(name)) return this.acts[name](a, b);
+      (window.__actMiss = window.__actMiss || []).push(name);
+    },
     render: function(){
       this.repeatable().forEach(function(s){
         try { s.fn(); } catch (e) { if (window.console) console.warn("GYN.render: " + s.name, e); }

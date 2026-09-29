@@ -865,13 +865,13 @@
   };
   /* The pick itself. One economy at a time (Version 225), and drawTemperature redraws BOTH charts \u2014 clearing
      the key first, because an unchanged key is how that function skips a redraw. */
-  window.__pickPeer = function(code){
+  GYN.on("pickPeer", function(code){
     gdpPeers.forEach(function(c){ c.on = c.code === code; });
     if (shownEraModel) renderGrowthPhase(shownEraModel);
     if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); }
     var hd = byId("gdp-head");
     if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
-  };
+  });
 
   var shownEraModel = null;
   function showCycle(era, dialOnly){ if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly); }

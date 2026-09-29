@@ -292,10 +292,10 @@
     }
     /* V598: both pickers go through the page's one renderer, which lives in 09-render-core beside the levels
        chart. This half is published under its own key and looked up there at call time — the V596 seam. */
-    window.__pickSpread = function(code){
+    GYN.on("pickSpread", function(code){
       spreadPick = code; tsyView = "spread";
-      if (window.__treasuryView) window.__treasuryView(); else drawHzn();
-    };
+      if (GYN.has("treasuryView")) GYN.fire("treasuryView"); else drawHzn();
+    });
     sheetRenderers["hzn-spread"] = drawHzn;
     drawHzn();
 

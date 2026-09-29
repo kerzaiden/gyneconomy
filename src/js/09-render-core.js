@@ -590,11 +590,11 @@
     /* V598: `renderLegend` and YLM_STOPS went with this page's own control row. The levels and the spread are
        two readings of ONE series of quarters, so they share one ruler — the Horizon page's — and the choice
        between them lives in the ⋯ menu, which is where V522 put a which-series choice in the first place. */
-    window.__pickSeries = function(bar, code){
+    GYN.on("pickSeries", function(bar, code){
       matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
       tsyView = "level";
       drawTreasury();
-    };
+    });
     /* V598: the Hormones page is one chart again, so its opener is registered by renderHormones itself — the
        pair V596 composed here existed only because that page held the Treasury chart too. */
     // the record is drawn at the box's own width (Version 303) — a hidden element has no width, so this has to
@@ -773,7 +773,7 @@
       else { var f = sheetRenderers["hzn-spread"]; if (f) f(); }
       drawTreasuryHead();
     }
-    window.__treasuryView = drawTreasury;
+    GYN.on("treasuryView", drawTreasury);
     /* V598: the page's key is `hzn-range` now — one control row, one menu, one renderer for both readings.
        `sheet-sign-horizon` opens it, which is what makes the chart draw at its box's real width (V303). */
     sheetRenderers["hzn-range"] = drawTreasury;

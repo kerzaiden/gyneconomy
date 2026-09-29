@@ -4682,6 +4682,18 @@
         return s.kind === "check" || s.kind === "derive" || s.kind === "render";
       });
     },
+    acts: {},
+    on: function(name, fn) {
+      this.acts[name] = fn;
+      return fn;
+    },
+    has: function(name) {
+      return typeof this.acts[name] === "function";
+    },
+    fire: function(name, a, b) {
+      if (this.has(name)) return this.acts[name](a, b);
+      (window.__actMiss = window.__actMiss || []).push(name);
+    },
     render: function() {
       this.repeatable().forEach(function(s) {
         try {
@@ -13211,15 +13223,15 @@
       paintHeadMenus();
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat) {
-        if (window.__pickSeries) window.__pickSeries(null, mat);
+        GYN.fire("pickSeries", null, mat);
         return;
       }
       var peer = pick.getAttribute("data-gdp-peer");
       if (peer != null) {
-        if (window.__pickPeer) window.__pickPeer(peer);
+        GYN.fire("pickPeer", peer);
         return;
       }
-      if (window.__pickSpread) window.__pickSpread(pick.getAttribute("data-hzn-spread"));
+      GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
       return;
     }
     var btn = e.target.closest && e.target.closest("[data-head-more]");
@@ -16485,14 +16497,14 @@
         label: m.name.replace("-Month", "M").replace("-Year", "Y")
       };
     });
-    window.__pickSeries = function(bar, code) {
+    GYN.on("pickSeries", function(bar, code) {
       matPick = code;
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
       tsyView = "level";
       drawTreasury();
-    };
+    });
     function drawVelocityRecord() {
       var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
@@ -16646,7 +16658,7 @@
       }
       drawTreasuryHead();
     }
-    window.__treasuryView = drawTreasury;
+    GYN.on("treasuryView", drawTreasury);
     sheetRenderers["hzn-range"] = drawTreasury;
     sheetRenderers["sheet-sign-horizon"] = drawTreasury;
     maturities.forEach(function(m) {
@@ -16965,11 +16977,11 @@
         });
       }
     }
-    window.__pickSpread = function(code) {
+    GYN.on("pickSpread", function(code) {
       spreadPick = code;
       tsyView = "spread";
-      if (window.__treasuryView) window.__treasuryView(); else drawHzn();
-    };
+      if (GYN.has("treasuryView")) GYN.fire("treasuryView"); else drawHzn();
+    });
     sheetRenderers["hzn-spread"] = drawHzn;
     drawHzn();
     var r = horizonRead;
@@ -18477,7 +18489,7 @@
       }).join("")
     } ];
   };
-  window.__pickPeer = function(code) {
+  GYN.on("pickPeer", function(code) {
     gdpPeers.forEach(function(c) {
       c.on = c.code === code;
     });
@@ -18488,7 +18500,7 @@
     }
     var hd = byId("gdp-head");
     if (hd) hd.innerHTML = histHead("sheet-metric-gdp");
-  };
+  });
   var shownEraModel = null;
   function showCycle(era, dialOnly) {
     if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly);
