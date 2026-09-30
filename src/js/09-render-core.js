@@ -18,7 +18,7 @@
     }
     return idx;
   }
-  var powerPanelHtml = "", valuationPanelHtml = "";
+  var valuationPanelHtml = "";
   var _growthPanel = null, _householdsPanel = null;
   function growthPanelHtml(){
     return _growthPanel || (_growthPanel = panelRow({
@@ -45,16 +45,16 @@
   }
   var sheetRenderers = {};
   var pageMode = { "sheet-metric-temp":"cycles", "sheet-metric-gdp":"cycles",
-                   "sheet-metric-power":"cycles", "sheet-metric-valuation":"cycles",
+                   "sheet-metric-valuation":"cycles",
                    "volume-range":"cycles", "pulse-range":"cycles",
                    "deficit-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles", "pressure-range":"cycles",
                    "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };
   var pageCycles = { "sheet-metric-temp":null, "sheet-metric-gdp":null,
-                     "sheet-metric-power":null, "sheet-metric-valuation":null,
+                     "sheet-metric-valuation":null,
                      "volume-range":null, "pulse-range":null,
                      "deficit-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null, "pressure-range":null,
                      "sheet-metric-households":null, "sheet-sign-activity":null };
-  var pageRange = { "sheet-metric-power":"10y", "sheet-metric-valuation":"10y",
+  var pageRange = { "sheet-metric-valuation":"10y",
                     "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y",
                     "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",
                     "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y", "pressure-range":"10y",
@@ -540,8 +540,8 @@
       (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
     cards.push(hiCard("Pressure on the borrower", "",
       "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " +
-      "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the marker " +
-      "on Power. " +
+      "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " +
+      "payments card, on the Energy page. " +
       (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") +
       "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
       " to " + pct(hi.v) + " in " + hi.q + "."));

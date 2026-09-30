@@ -7,10 +7,10 @@
   ];
   var INDICATOR_GROUP = {
     "sheet-metric-valuation":"Valuations", "sheet-metric-buffett":"Valuations",
-    "sheet-metric-power":"Economic power", "sheet-metric-debt":"Economic power",
+    "sheet-metric-debt":"Economic power",
     "sheet-metric-interest":"Economic power", "sheet-marker-deficit":"Economic power"
   };
-  var SPLIT_PERIOD = {}, SPLIT_STOPS = ["5y", "10y", "25y", "max"];
+  var SPLIT_PERIOD = {}, SPLIT_STOPS = ["5y", "10y", "25y", "max"], DEF_PEEK_BASE = 3.8;
   function debtSvg(){ return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>'); }
   function interestSvg(){ return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/>' +
     '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>'); }
@@ -30,16 +30,17 @@
         band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
              "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
         insight:buffettInsight },
-      { id:"sheet-metric-debt", after:"sheet-metric-power", title:"Debt burden", mark:debtSvg,
+      { id:"sheet-metric-debt", after:"sheet-metric-buffett", title:"Federal debt", mark:debtSvg,
         head:"Gross Federal Debt, Share of GDP", row:labPanel[0], series:grossDebtQuarterly, when:periodOf(labPanel[0]),
         mid:70, midLabel:"50-year average, 70%", unit:"of GDP",
         fmt:function(v){ return v.toFixed(1) + "%"; }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
-      { id:"sheet-metric-interest", after:"sheet-metric-debt", title:"Interest burden", mark:interestSvg,
+      { id:"sheet-metric-interest", after:"sheet-metric-debt", title:"Interest payments", mark:interestSvg,
         head:"Net Interest, Share of GDP", row:labPanel[1], series:fiscalHistory.interest, when:periodOf(labPanel[1]),
         mid:2, midLabel:"50-year average, 2.0%", unit:"of GDP",
         fmt:function(v){ return v.toFixed(1) + "%"; }, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight }
     ];
   }
+  function splitMid(id){ return splitSpecs().filter(function(s){ return s.id === id; })[0].mid; }
   function splitInfo(s){
     return '<h4>' + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
@@ -98,17 +99,40 @@
       return splitPeek({ title:s.title, mark:s.mark, row:s.row, unit:s.unit, target:s.id,
                          cols:s.series.map(function(d){ return d.v; }), base:s.mid });
     }).join("");
-    SPLIT_PERIOD["sheet-marker-deficit"] = periodOf(labPanel[2]);
-    return html + splitPeek({ title:"Federal budget", mark:budgetSvg, row:labPanel[2], unit:"deficit, of GDP",
-      target:"sheet-marker-deficit", cols:deficitHistory.map(function(v){ return -v; }), base:3.8 });
+    return html + deficitPeek();
   }
-  function appendPicks(items, picks, PERIOD){
+  function deficitPeek(){
+    SPLIT_PERIOD["sheet-marker-deficit"] = periodOf(labPanel[2]);
+    addSources(longCycleSrc);
+    return splitPeek({ title:"Federal budget", mark:budgetSvg, row:labPanel[2], unit:"deficit, of GDP",
+      target:"sheet-marker-deficit", cols:deficitHistory.map(function(v){ return -v; }), base:DEF_PEEK_BASE });
+  }
+  function catSheet(id, key){
+    var sheet = document.createElement("div");
+    sheet.className = "metric-sheet cat-sheet cat-" + key; sheet.id = id; sheet.hidden = true;
+    return sheet;
+  }
+  function groupId(name){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }
+  var GROUP_SEATS = {};
+  function seatGroups(key){
+    (GROUP_SEATS[key] || []).forEach(function(g){ g.seat.parentNode.insertBefore(g.grp, g.seat); });
+  }
+  function groupSheet(grp, name, key, items){
+    var seat = document.createElement("i"); seat.className = "cat-seat"; seat.hidden = true;
+    items.appendChild(grp); items.appendChild(seat);
+    var sheet = catSheet(groupId(name), key);
+    sheet.innerHTML = '<div class="cat-list"></div>';
+    byId("today-analysis").appendChild(sheet);
+    (GROUP_SEATS[key] = GROUP_SEATS[key] || []).push({ grp:grp, seat:seat });
+    sheetRenderers[sheet.id] = function(){ sheet.firstChild.appendChild(grp); };
+    sheetRenderers["sheet-cat-" + key] = function(){ seatGroups(key); };
+  }
+  function appendPicks(items, picks, PERIOD, key){
     picks.forEach(function(p){
       if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, PERIOD)); return; }
-      var grp = document.createElement("div"); grp.className = "cat-group";
-      grp.innerHTML = '<h3 class="cat-group-head">' + p.group + '</h3>';
+      var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group); grp.__mark = p.mark;
       p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, PERIOD)); });
-      if (grp.children.length > 1) items.appendChild(grp);
+      if (grp.children.length) groupSheet(grp, p.group, key, items);
     });
   }
   function categoryCats(){
@@ -122,8 +146,8 @@
         picks:[{ group:"Valuations", picks:['.peek[data-open="sheet-metric-valuation"]', '.peek[data-open="sheet-metric-buffett"]'] },
                '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]',
                '.sign-row[data-open="sheet-sign-horizon"]'] },
-      { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
-        picks:[{ group:"Economic power", picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-debt"]',
+      { key:"energy", title:"Energy", mark:boltSvg(), sub:"Economic power · Households · Activity",
+        picks:[{ group:"Economic power", mark:boltSvg, picks:['.peek[data-open="sheet-metric-debt"]',
                                                 '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
                '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]'] }
     ];

@@ -459,11 +459,6 @@
     if (Math.abs(row.meter.value - last.v) > 0.05) bad.push("value " + row.meter.value + " vs " + last.q + " " + last.v);
     var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
     if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
-    powerHistory.forEach(function(p){
-      if (g[p.y] == null || it[p.y] == null || bu[p.y] == null){ bad.push("FY" + p.y + " missing"); return; }
-      var v = powerOf(stressScoreFor([g[p.y], it[p.y], -bu[p.y]]));
-      if (v !== p.v) bad.push("power FY" + p.y + " " + p.v + " vs " + v);
-    });
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   GYN.step("checkGrossDebt", checkGrossDebt, "check"); checkGrossDebt();

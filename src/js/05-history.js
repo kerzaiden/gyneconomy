@@ -6,8 +6,6 @@
     "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI" },
     "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP" },
     "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment Rate" },
-    "sheet-metric-power":      { mark:boltSvg,
-                                 title:"Power Supply" },
     "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, Against Fair Value" },
     "sheet-metric-households": { mark:houseSvg,   title:"Debt Service, Share of Income" },
     "deficit-range":           { mark:null,       title:"Federal Deficit or Surplus, Share of GDP" },

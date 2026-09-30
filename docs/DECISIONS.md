@@ -6838,3 +6838,19 @@ same components and not building new ones that are doing the exact same job".
 So V659: a past cycle opens as the Cycle page itself (its dial, the four tiles, the category cards and every
 reading's page), showing that cycle; the separate list of cycle readings is gone.
 ~~~
+
+### V660
+
+~~~text
+Keren: "1. in the past cycles the categories should be identical in design to the current cycle categories.
+2. each category page should have the shade of the color of the category (see reference from apple health)
+3. remove the power score 4. drop the titles from the inner pages for example i don't need valuations in the
+mood page. 5. in the search page consolidate categories that are from the same category for example under mood
+write valuations, when i click on it i see two category items: shiller and buffet". And: "change the names:
+debt burden --> debt service, interest burden --> interest payments"; asked whether "Debt service" fits a card
+that shows the debt itself (and is already the Households bill), she chose "Federal debt".
+So V660: a past cycle's cards keep today's unit and mini, with the cycle's figure and range; each category page
+is washed in its colour; the Power score is removed; category pages have no group headings; Search shows
+Valuations and Economic power as one row each, opening a page with their cards; Federal debt and Interest
+payments are the new names.
+~~~

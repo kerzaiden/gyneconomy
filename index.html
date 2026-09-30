@@ -959,7 +959,7 @@
   .fit-lab{ font-size:12px; font-weight:700; fill:var(--accent-ink); }
   .fit{ display:none; }
   .trend-on .fit{ display:block; }
-  .trend-on .bt-bar, .trend-on .dv-bar,
+  .trend-on .dv-bar,
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
@@ -967,8 +967,7 @@
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .temp-avg-label, .trend-on .avg-label,
   .trend-on .temp-range, .trend-on .temp-target-label{ opacity:0.3; }
-  .trend-on .bt-track{ opacity:0.35; }
-  .trend-on .bt-ref, .trend-on .dv-mid{ opacity:0.4; }
+  .trend-on .dv-mid{ opacity:0.4; }
 
   .trendpill{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
     border:0; background:var(--accent-wash); border-radius:999px; padding:12px 22px; margin:15px 0 0;
@@ -1085,8 +1084,7 @@
   .pc-key-now.phase-up{ box-shadow:inset 0 0 0 2px var(--phase-up); }
   .pc-key-now.mixed{ box-shadow:inset 0 0 0 2px var(--phase-up); background:var(--phase-down-wash); }
   .pc-legend .pc-unit{ margin-left:auto; }
-  .bt-track{ stroke:var(--border); opacity:0.6; stroke-linecap:round; fill:none; }
-  .bt-bar, .dv-bar{ stroke-linecap:round; fill:none; }
+  .dv-bar{ stroke-linecap:round; fill:none; }
   .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
   .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }
   .ff-col.f1{ stroke:color-mix(in srgb, var(--ff-blue) 42%, var(--surface)); }
@@ -1094,16 +1092,10 @@
   .ff-col.f3{ stroke:color-mix(in srgb, var(--ff-blue) 74%, var(--surface)); }
   .ff-col.f4{ stroke:var(--ff-blue); }
   .ff-col.f5{ stroke:color-mix(in srgb, var(--ff-blue) 70%, var(--ff-deep)); }
-  .bt-bar.good{ stroke:var(--good); } .bt-bar.warning{ stroke:var(--warning); }
-  .bt-bar.serious{ stroke:var(--serious); } .bt-bar.critical{ stroke:var(--critical); }
-  #power-chart .bt-bar.critical{ stroke:var(--batt-1); }
-  #power-chart .bt-bar.serious{ stroke:var(--batt-2); }
-  #power-chart .bt-bar.warning{ stroke:var(--batt-3); }
-  #power-chart .bt-bar.good{ stroke:var(--batt-4); }
   .dv-bar.over{ stroke:var(--serious); } .dv-bar.under{ stroke:var(--good); }
   .hh-col{ stroke:var(--text-muted); stroke-linecap:round; fill:none; }
   .hh-col.now{ stroke:var(--accent); }
-  .bt-ref, .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
+  .dv-mid{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:2 4; stroke-linecap:round; fill:none; opacity:0.8; }
   .bt-xl, .bt-yl{ font-family:"IBM Plex Mono",monospace; font-size:10.5px; fill:var(--text-muted); }
 
   .bt-grid{ stroke:var(--grid); stroke-width:1; fill:none; }
@@ -1275,8 +1267,9 @@
   .sx-foot{ margin:8px 0 0; font-size:12px; line-height:1.45; color:var(--text-muted); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
-  .cat-sheet .cat-group + .cat-item, .cat-sheet .cat-item + .cat-group, .cat-sheet .cat-group + .cat-group{ margin-top:10px; }
-  .cat-group-head{ margin:0 4px -4px; font-family:"Public Sans",sans-serif; font-size:20px; font-weight:700; color:var(--text-primary); }
+  .cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
+    background:linear-gradient(to bottom, color-mix(in srgb, var(--cat) 26%, var(--page)), color-mix(in srgb, var(--cat) 8%, var(--page)) 55%, var(--page)); }
+  body:has(#metric-page .cat-sheet:not([hidden])) .wrap > .topbar{ background:transparent; border-bottom-color:transparent; }
   .cat-sheet .cat-item{ margin:0; padding:18px 20px 20px; border:0; border-radius:24px; }
   .cat-sheet .cat-item:hover{ background:var(--surface-2); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -1294,10 +1287,6 @@
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
   .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
   .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
-  .cat-sheet .ci-mini .spark{ margin:0; width:100%; }
-  .cat-sheet .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
-  .cat-sheet .ci-mini .spark-line, .cat-sheet .ci-mini .spark-end{ stroke:var(--cat); }
-  .cat-sheet .ci-mini .spark-fill, .cat-sheet .ci-mini .spark-end{ fill:var(--cat); }
   .tab-panel[data-tab="analysis"] .cat-sheet .highlights{ display:none; }
   .era-row[hidden]{ display:none; }
 
@@ -1645,35 +1634,6 @@
     <div id="gdp-highlights"></div>
     </div>
 
-    <div class="metric-sheet" id="sheet-metric-power" hidden>
-    <div id="power-timing"></div>
-    <div id="power-head"></div>
-    <div id="power-chart"></div>
-<details class="subject" data-subject="resilience" open>
-    <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-resilience"></div>
-      <div class="subject-text">
-        <div class="subject-label">Power</div>
-        <div class="subject-value" id="subj-value-resilience"></div>
-        <p class="subject-say" id="subj-say-resilience"></p>
-      </div>
-      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
-    </summary>
-    <div class="subject-body">
-    <p class="subject-context" id="subj-ctx-resilience"></p>
-    <section class="longcycle" aria-labelledby="longcycle-title">
-      <div class="longcycle-head">
-        <div>
-          <h2 id="longcycle-title">Power</h2>
-        </div>
-        <span class="tag serious longcycle-tag" id="longcycle-tag">4 markers flagged</span>
-      </div>
-
-    </section>
-    </div>
-    </details>
-    <div id="power-highlights"></div>
-    </div>
 
     <div class="metric-sheet" id="sheet-marker-deficit" hidden></div>
 
@@ -1917,7 +1877,7 @@
       <h3 class="menu-section">Sentiment and rates</h3>
       <div class="menu-card menu-prose">
         <p>Market sentiment has a drawer of its own, <b>Sentiment</b>, carrying the fear curve — the shape of expected volatility — and the two markets it is read beside: the VIX and the high-yield spread. The <b>Fed funds rate</b> sits where it belongs, inside <b>Temperature</b> under the Lagging signs: that card is inflation and monetary policy together, and the rate is the lever pulled after her temperature, not ahead of it.</p>
-        <p>Her energy is a drawer of its own, <b>Power</b>: a battery charged to what the three structural markers leave in reserve, read exhausted to energetic. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those five markers are structural, so the charge moves slowly, by design; the fast reads are Feeling and Pulse. Industrial activity is still here, under <b>Industrial output</b> — folded into the <b>Activity</b> page, beside the labour market, because industrial output and employment are the same question asked of two parts of the body.</p>
+        <p>Her energy is a category of its own, <b>Energy</b>: the federal debt, the interest payments and the federal budget, each read on its own page, beside the households and the labour market. In the body, stress and energy are the same system — a shock diverts energy from digestion, growth and repair to the muscles and the brain, and stress that never lifts spends the reserve until fatigue is what remains. Those markers are structural, so they move slowly, by design; the fast reads are Feeling and Pulse. Industrial activity is still here, under <b>Industrial output</b> — folded into the <b>Activity</b> page, beside the labour market, because industrial output and employment are the same question asked of two parts of the body.</p>
       </div>
 
       <h3 class="menu-section">The tabs</h3>
@@ -11691,9 +11651,8 @@
     t: "Eurostat — GDP and main aggregates, quarterly (namq_10_gdp), European Union",
     u: "https://ec.europa.eu/eurostat/databrowser/view/namq_10_gdp/default/table"
   } ];
-  var longCycleImpressionShort = "Interest costs are at their historical record and debt is near its own, moving together mid-expansion, with no recession present.";
   var labPanel = [ {
-    marker: "Debt burden",
+    marker: "Federal debt",
     sub: "gross federal debt ÷ GDP",
     meter: {
       min: 0,
@@ -11715,10 +11674,10 @@
     flagState: "serious",
     opens: {
       id: "sheet-metric-debt",
-      title: "Debt burden"
+      title: "Federal debt"
     }
   }, {
-    marker: "Interest burden",
+    marker: "Interest payments",
     sub: "net interest costs ÷ GDP",
     meter: {
       min: .63,
@@ -11740,7 +11699,7 @@
     flagState: "critical",
     opens: {
       id: "sheet-metric-interest",
-      title: "Interest burden"
+      title: "Interest payments"
     }
   }, {
     marker: "Federal budget",
@@ -11791,278 +11750,6 @@
     shortCaption: "Q2 2026 — running above the post-2010 slowdown average and roughly at the 70-year trend.",
     caption: "Q2 2026, BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. Range is the true annual span since 1948: −1.7% in 1974 to +6.7% in 1950."
   };
-  function stressScoreFor(values) {
-    return Math.round(labPanel.reduce(function(sum, row, i) {
-      var pct = clampPct(values[i], row.meter.min, row.meter.max);
-      return sum + (row.invert ? 100 - pct : pct);
-    }, 0) / labPanel.length);
-  }
-  var stressScore = stressScoreFor(labPanel.map(function(row) {
-    return row.meter.value;
-  }));
-  var powerOf = function(stress) {
-    return 100 - stress;
-  };
-  var powerScore = powerOf(stressScore), powerWord = energyFromReserve(powerScore);
-  var stressHistory = [ {
-    label: "'07 pre-crisis",
-    values: [ 61.84, 1.64, 1.11 ]
-  }, {
-    label: "'20 COVID",
-    values: [ 125.86, 1.62, 14.48 ]
-  } ];
-  stressHistory.forEach(function(h) {
-    h.score = stressScoreFor(h.values);
-  });
-  var powerMeter = {
-    min: 0,
-    max: 100,
-    value: powerScore,
-    optimal: {
-      gte: 70,
-      label: "≥ 70%"
-    },
-    ends: {
-      low: "Exhausted",
-      zone: "Energetic"
-    }
-  };
-  var stressNoteFull = "Each of the three markers is normalized 0–100 against its own actual historical U.S. high and low — a real benchmark, not a padded scale — then averaged equally, and the average subtracted from 100: what the three pressures leave in reserve. It is a quick read on total power, not a substitute for reading each marker. A full charge — 100% — is every one of the three at the best value the United States has actually recorded, so this is a percentage of her own best, not a share of anything measured out in the economy. For comparison, the same formula leaves the actual 2007 pre-crisis reading " + powerOf(stressHistory[0].score) + "% and the actual 2020 COVID reading " + powerOf(stressHistory[1].score) + "% — today's " + powerScore + "% sits below both.";
-  var powerHistory = [ {
-    y: 1948,
-    v: 64
-  }, {
-    y: 1949,
-    v: 60
-  }, {
-    y: 1950,
-    v: 61
-  }, {
-    y: 1951,
-    v: 71
-  }, {
-    y: 1952,
-    v: 70
-  }, {
-    y: 1953,
-    v: 69
-  }, {
-    y: 1954,
-    v: 71
-  }, {
-    y: 1955,
-    v: 73
-  }, {
-    y: 1956,
-    v: 76
-  }, {
-    y: 1957,
-    v: 77
-  }, {
-    y: 1958,
-    v: 75
-  }, {
-    y: 1959,
-    v: 74
-  }, {
-    y: 1960,
-    v: 75
-  }, {
-    y: 1961,
-    v: 76
-  }, {
-    y: 1962,
-    v: 76
-  }, {
-    y: 1963,
-    v: 76
-  }, {
-    y: 1964,
-    v: 77
-  }, {
-    y: 1965,
-    v: 79
-  }, {
-    y: 1966,
-    v: 80
-  }, {
-    y: 1967,
-    v: 79
-  }, {
-    y: 1968,
-    v: 77
-  }, {
-    y: 1969,
-    v: 81
-  }, {
-    y: 1970,
-    v: 79
-  }, {
-    y: 1971,
-    v: 78
-  }, {
-    y: 1972,
-    v: 79
-  }, {
-    y: 1973,
-    v: 80
-  }, {
-    y: 1974,
-    v: 79
-  }, {
-    y: 1975,
-    v: 76
-  }, {
-    y: 1976,
-    v: 74
-  }, {
-    y: 1977,
-    v: 75
-  }, {
-    y: 1978,
-    v: 75
-  }, {
-    y: 1979,
-    v: 75
-  }, {
-    y: 1980,
-    v: 71
-  }, {
-    y: 1981,
-    v: 67
-  }, {
-    y: 1982,
-    v: 60
-  }, {
-    y: 1983,
-    v: 58
-  }, {
-    y: 1984,
-    v: 55
-  }, {
-    y: 1985,
-    v: 51
-  }, {
-    y: 1986,
-    v: 50
-  }, {
-    y: 1987,
-    v: 53
-  }, {
-    y: 1988,
-    v: 53
-  }, {
-    y: 1989,
-    v: 51
-  }, {
-    y: 1990,
-    v: 48
-  }, {
-    y: 1991,
-    v: 45
-  }, {
-    y: 1992,
-    v: 46
-  }, {
-    y: 1993,
-    v: 48
-  }, {
-    y: 1994,
-    v: 50
-  }, {
-    y: 1995,
-    v: 48
-  }, {
-    y: 1996,
-    v: 49
-  }, {
-    y: 1997,
-    v: 53
-  }, {
-    y: 1998,
-    v: 57
-  }, {
-    y: 1999,
-    v: 62
-  }, {
-    y: 2e3,
-    v: 66
-  }, {
-    y: 2001,
-    v: 68
-  }, {
-    y: 2002,
-    v: 69
-  }, {
-    y: 2003,
-    v: 69
-  }, {
-    y: 2004,
-    v: 69
-  }, {
-    y: 2005,
-    v: 69
-  }, {
-    y: 2006,
-    v: 67
-  }, {
-    y: 2007,
-    v: 67
-  }, {
-    y: 2008,
-    v: 62
-  }, {
-    y: 2009,
-    v: 56
-  }, {
-    y: 2010,
-    v: 55
-  }, {
-    y: 2011,
-    v: 52
-  }, {
-    y: 2012,
-    v: 55
-  }, {
-    y: 2013,
-    v: 58
-  }, {
-    y: 2014,
-    v: 59
-  }, {
-    y: 2015,
-    v: 61
-  }, {
-    y: 2016,
-    v: 58
-  }, {
-    y: 2017,
-    v: 57
-  }, {
-    y: 2018,
-    v: 54
-  }, {
-    y: 2019,
-    v: 50
-  }, {
-    y: 2020,
-    v: 35
-  }, {
-    y: 2021,
-    v: 42
-  }, {
-    y: 2022,
-    v: 45
-  }, {
-    y: 2023,
-    v: 37
-  }, {
-    y: 2024,
-    v: 29
-  }, {
-    y: 2025,
-    v: 27
-  } ];
   var DEF_FROM_YEAR = 1946;
   var deficitHistory = "-7.00 1.61 4.30 0.21 -1.04 1.76 -0.41 -1.67 -0.30 -0.70 0.88 0.72 -0.58 -2.46 0.06 -0.59 -1.18 -0.75 -0.86 -0.19 -0.45 -1.01 -2.67 0.32 -0.26 -1.98 -1.83 -1.05 -0.40 -3.16 -3.94 -2.58 -2.52 -1.55 -2.58 -2.46 -3.83 -5.72 -4.59 -4.89 -4.83 -3.08 -2.96 -2.71 -3.71 -4.37 -4.45 -3.72 -2.79 -2.15 -1.33 -0.26 0.76 1.30 2.30 1.21 -1.44 -3.30 -3.38 -2.44 -1.80 -1.11 -3.10 -9.76 -8.60 -8.33 -6.62 -4.03 -2.75 -2.42 -3.11 -3.39 -3.77 -4.57 -14.48 -11.69 -5.27 -6.07 -6.20 -5.77".split(" ").map(Number);
   var DEF_MEAN = deficitHistory.reduce(function(a, b) {
@@ -13567,14 +13254,6 @@
       n++;
     }
     if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
-    powerHistory.forEach(function(p) {
-      if (g[p.y] == null || it[p.y] == null || bu[p.y] == null) {
-        bad.push("FY" + p.y + " missing");
-        return;
-      }
-      var v = powerOf(stressScoreFor([ g[p.y], it[p.y], -bu[p.y] ]));
-      if (v !== p.v) bad.push("power FY" + p.y + " " + p.v + " vs " + v);
-    });
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   GYN.step("checkGrossDebt", checkGrossDebt, "check");
@@ -14109,10 +13788,6 @@
     "sheet-sign-activity": {
       mark: trendUpSvg,
       title: "Unemployment Rate"
-    },
-    "sheet-metric-power": {
-      mark: boltSvg,
-      title: "Power Supply"
     },
     "sheet-metric-valuation": {
       mark: diamondSvg,
@@ -15533,7 +15208,7 @@
     var idx = detailSlot(fullHtml);
     return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' + "<span>" + (label || "More details") + "</span>" + CHEV + "</button>";
   }
-  var powerPageNote = "", tempCaptionFull = "", tempLeadShown = "";
+  var tempCaptionFull = "", tempLeadShown = "";
   function highlightsHtml(cards, cyclesHtml, moreHtml) {
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
     return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + (cyclesHtml || "") + (moreHtml || "") + "</section>";
@@ -15557,77 +15232,6 @@
       return '<rect class="chart-label-plate" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" width="' + w.toFixed(1) + '" height="15" rx="3"/>' + '<text class="fit-lab mono" x="' + (lx + w / 2).toFixed(1) + '" y="' + (ly + 11.4).toFixed(1) + '" text-anchor="middle">' + txt + "</text>";
     }
     return '<g class="fit">' + '<path class="fit-line" d="M' + x0.toFixed(1) + "," + y0.toFixed(1) + "L" + x1.toFixed(1) + "," + y1.toFixed(1) + '"/>' + lab(v0, padL + 1, y0, !down, "start") + lab(v1, W - padR - 1, y1, down, "end") + "</g>";
-  }
-  function reserveChart(o, W) {
-    W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? .58 : .3))));
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
-    var n = o.vals.length, slot = iw / n;
-    var sw = colWidth(slot), tw = sw + 3.4;
-    function y(v) {
-      return (padT + ih - v / 100 * ih).toFixed(1);
-    }
-    var out = [];
-    out.push(chartAxes({
-      lo: 0,
-      hi: 100,
-      step: 50,
-      y: y,
-      x0: padL,
-      x1: W - padR,
-      base: y(0),
-      top: padT - AXIS.LEG - AXIS.READ,
-      bot: padT + ih,
-      fmt: function(v) {
-        return v + "%";
-      }
-    }));
-    o.vals.forEach(function(d, i) {
-      var cx = (padL + slot * (i + .5)).toFixed(1);
-      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="' + colPath(cx, padT + ih, padT, tw) + '"/>');
-      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, padT + ih, y(d.v), sw) + '"/>');
-    });
-    if (o.ref != null) {
-      out.push('<path class="bt-ref" d="M' + padL + "," + y(o.ref) + "L" + (W - padR) + "," + y(o.ref) + '"/>');
-    }
-    var rAvg = o.vals.reduce(function(a, d) {
-      return a + d.v;
-    }, 0) / (n || 1);
-    out.push(avgRule(padL, W - padR, y(rAvg)));
-    if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * .5, padL + slot * (n - .5), y, W, padL, padR));
-    o.vals.forEach(function(d, i) {
-      var lab = xLabelOf(o, d, i, o.vals);
-      if (!lab) return;
-      out.unshift(vGrid(padL + slot * (i + .5), padT, padT + ih));
-      out.push(xLabel((padL + slot * (i + .5)).toFixed(1), lab, H - AXIS.FOOT));
-    });
-    out.push(crossLine(padT, padT + ih));
-    publishGeom("reserveChart", {
-      L: padL + slot * .5,
-      R: padL + slot * (n - .5),
-      T: padT,
-      B: padT + ih,
-      W: W,
-      n: n,
-      refs: o.ref != null ? [ {
-        label: "Average",
-        v: rAvg
-      }, {
-        label: refName(o.refLabel),
-        v: o.ref,
-        dash: true,
-        cls: "bt-ref"
-      } ] : [ {
-        label: "Average",
-        v: rAvg
-      } ],
-      vals: o.vals,
-      at: function(d) {
-        return String(d.y);
-      },
-      fmt: o.fmt
-    });
-    return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + "</svg></div>";
   }
   function appendSvgMarkup(svg, markup) {
     if (!markup) return;
@@ -16136,32 +15740,6 @@
   }
   function diamondSvg() {
     return markSvg('<path d="M6.2 3.9h11.6l3.9 5.3L12 20.4 2.3 9.2z" stroke-width="1.7"/>' + '<path d="M2.3 9.2h19.4" stroke-width="1.5"/>' + '<path d="M6.2 3.9 8.9 9.2M17.8 3.9 15.1 9.2" stroke-width="1.35" opacity="0.75"/>');
-  }
-  function energyFromReserve(reserve) {
-    if (reserve == null) return {
-      word: "No reading",
-      state: "norm"
-    };
-    if (reserve <= 30) return {
-      word: "Exhausted",
-      state: "critical"
-    };
-    if (reserve <= 50) return {
-      word: "Tired",
-      state: "serious"
-    };
-    if (reserve <= 70) return {
-      word: "Steady",
-      state: "warning"
-    };
-    if (reserve <= 85) return {
-      word: "Energetic",
-      state: "good"
-    };
-    return {
-      word: "Energetic",
-      state: "good"
-    };
   }
   function sproutSvg() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + '<path d="M4.6 19.7 C7.6 18.8 16.4 18.8 19.4 19.7"/>' + '<path d="M12 19 V12.3"/>' + '<path d="M12 12.3 C12.1 8 15 5 19.6 4.9 C19.7 9.3 16.7 12.2 12 12.3"/>' + '<path d="M12 14.3 C11.9 11.4 9.9 9.5 6.3 9.4 C6.2 12.9 8.7 14.3 12 14.3"/>' + "</svg>";
@@ -16831,7 +16409,7 @@
     }
     return idx;
   }
-  var powerPanelHtml = "", valuationPanelHtml = "";
+  var valuationPanelHtml = "";
   var _growthPanel = null, _householdsPanel = null;
   function growthPanelHtml() {
     return _growthPanel || (_growthPanel = panelRow({
@@ -16877,7 +16455,6 @@
   var pageMode = {
     "sheet-metric-temp": "cycles",
     "sheet-metric-gdp": "cycles",
-    "sheet-metric-power": "cycles",
     "sheet-metric-valuation": "cycles",
     "volume-range": "cycles",
     "pulse-range": "cycles",
@@ -16892,7 +16469,6 @@
   var pageCycles = {
     "sheet-metric-temp": null,
     "sheet-metric-gdp": null,
-    "sheet-metric-power": null,
     "sheet-metric-valuation": null,
     "volume-range": null,
     "pulse-range": null,
@@ -16905,7 +16481,6 @@
     "sheet-sign-activity": null
   };
   var pageRange = {
-    "sheet-metric-power": "10y",
     "sheet-metric-valuation": "10y",
     "sheet-metric-gdp": "10y",
     "sheet-metric-temp": "10y",
@@ -17579,7 +17154,7 @@
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' + "downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one " + "risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>");
     cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " + "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " + "a stock’s future earnings are measured against. Hormones is the overnight rate the Fed sets" + (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " + "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the marker " + "on Power. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " + "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " + "payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page reads the LEVEL. The gap between this yield and the three-month bill is Horizon, in Mood, " + "because that gap is the market’s forecast of the next few years rather than a pressure it is under " + "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " + "relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -17967,38 +17542,6 @@
   }
   GYN.step("renderValuationTag", renderValuationTag, "render");
   renderValuationTag();
-  function renderLongCycleTag() {
-    var powerSub = "what the 3 markers below leave in reserve";
-    var stressDetail = '<h4>Power supply</h4><div class="marker-sub">' + powerSub + "</div>" + factsFrom(stressNoteFull);
-    powerPageNote = stressDetail;
-    var stressRowHtml = panelRow({
-      name: "Power supply",
-      head: "sheet-metric-power",
-      info: '<h4>Power supply</h4><div class="marker-sub">' + powerSub + "</div>" + stressDetail,
-      metric: powerScore + "%",
-      flagged: meterFlagged(powerMeter),
-      bar: panelFromMeter(powerMeter)
-    });
-    var rowsHtml = labPanel.map(function(row) {
-      var detail = "<h4>" + row.marker + '</h4><div class="marker-sub">' + row.sub + "</div>" + factsFrom(row.note);
-      return panelRow({
-        name: row.marker,
-        info: row.opens ? null : detail,
-        open: row.opens || null,
-        metric: row.flagValue,
-        flagged: meterFlagged(row.meter),
-        bar: panelFromMeter(row.meter)
-      });
-    }).join("");
-    powerPanelHtml = stressRowHtml + rowsHtml;
-    var flaggedCount = labPanel.filter(function(r) {
-      return !!r.flagState;
-    }).length;
-    byId("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
-    addSources(longCycleSrc);
-  }
-  GYN.step("renderLongCycleTag", renderLongCycleTag, "render");
-  renderLongCycleTag();
   function renderHormones() {
     var host = byId("hormones-history");
     if (!host || !fedFundsHistory.length) return;
@@ -18193,9 +17736,6 @@
         return order.indexOf(st) > order.indexOf(w) ? st : w;
       }, "good");
     }
-    iconMark("resilience", powerWord.state, boltSvg());
-    set("resilience", powerScore + '<span class="unit">%</span><span class="tag ' + powerWord.state + '">' + powerWord.word + "</span>", "");
-    say("resilience", longCycleImpressionShort);
     var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
     iconMark("gdp", regimeState(nowModel.reading.regime), sproutSvg());
     set("gdp", fmtSigned(cycGrowth.total, 0) + '<span class="unit">% · cycle total growth</span>', "");
@@ -19501,12 +19041,11 @@
   var INDICATOR_GROUP = {
     "sheet-metric-valuation": "Valuations",
     "sheet-metric-buffett": "Valuations",
-    "sheet-metric-power": "Economic power",
     "sheet-metric-debt": "Economic power",
     "sheet-metric-interest": "Economic power",
     "sheet-marker-deficit": "Economic power"
   };
-  var SPLIT_PERIOD = {}, SPLIT_STOPS = [ "5y", "10y", "25y", "max" ];
+  var SPLIT_PERIOD = {}, SPLIT_STOPS = [ "5y", "10y", "25y", "max" ], DEF_PEEK_BASE = 3.8;
   function debtSvg() {
     return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>');
   }
@@ -19550,8 +19089,8 @@
       insight: buffettInsight
     }, {
       id: "sheet-metric-debt",
-      after: "sheet-metric-power",
-      title: "Debt burden",
+      after: "sheet-metric-buffett",
+      title: "Federal debt",
       mark: debtSvg,
       head: "Gross Federal Debt, Share of GDP",
       row: labPanel[0],
@@ -19571,7 +19110,7 @@
     }, {
       id: "sheet-metric-interest",
       after: "sheet-metric-debt",
-      title: "Interest burden",
+      title: "Interest payments",
       mark: interestSvg,
       head: "Net Interest, Share of GDP",
       row: labPanel[1],
@@ -19586,6 +19125,11 @@
       src: [ longCycleSrc[0], longCycleSrc[4] ],
       insight: interestInsight
     } ];
+  }
+  function splitMid(id) {
+    return splitSpecs().filter(function(s) {
+      return s.id === id;
+    })[0].mid;
   }
   function splitInfo(s) {
     return "<h4>" + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
@@ -19702,8 +19246,12 @@
         base: s.mid
       });
     }).join("");
+    return html + deficitPeek();
+  }
+  function deficitPeek() {
     SPLIT_PERIOD["sheet-marker-deficit"] = periodOf(labPanel[2]);
-    return html + splitPeek({
+    addSources(longCycleSrc);
+    return splitPeek({
       title: "Federal budget",
       mark: budgetSvg,
       row: labPanel[2],
@@ -19712,10 +19260,46 @@
       cols: deficitHistory.map(function(v) {
         return -v;
       }),
-      base: 3.8
+      base: DEF_PEEK_BASE
     });
   }
-  function appendPicks(items, picks, PERIOD) {
+  function catSheet(id, key) {
+    var sheet = document.createElement("div");
+    sheet.className = "metric-sheet cat-sheet cat-" + key;
+    sheet.id = id;
+    sheet.hidden = true;
+    return sheet;
+  }
+  function groupId(name) {
+    return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-");
+  }
+  var GROUP_SEATS = {};
+  function seatGroups(key) {
+    (GROUP_SEATS[key] || []).forEach(function(g) {
+      g.seat.parentNode.insertBefore(g.grp, g.seat);
+    });
+  }
+  function groupSheet(grp, name, key, items) {
+    var seat = document.createElement("i");
+    seat.className = "cat-seat";
+    seat.hidden = true;
+    items.appendChild(grp);
+    items.appendChild(seat);
+    var sheet = catSheet(groupId(name), key);
+    sheet.innerHTML = '<div class="cat-list"></div>';
+    byId("today-analysis").appendChild(sheet);
+    (GROUP_SEATS[key] = GROUP_SEATS[key] || []).push({
+      grp: grp,
+      seat: seat
+    });
+    sheetRenderers[sheet.id] = function() {
+      sheet.firstChild.appendChild(grp);
+    };
+    sheetRenderers["sheet-cat-" + key] = function() {
+      seatGroups(key);
+    };
+  }
+  function appendPicks(items, picks, PERIOD, key) {
     picks.forEach(function(p) {
       if (typeof p === "string") {
         var el = document.querySelector(p);
@@ -19724,12 +19308,13 @@
       }
       var grp = document.createElement("div");
       grp.className = "cat-group";
-      grp.innerHTML = '<h3 class="cat-group-head">' + p.group + "</h3>";
+      grp.setAttribute("data-group", p.group);
+      grp.__mark = p.mark;
       p.picks.forEach(function(sel) {
         var el = document.querySelector(sel);
         if (el) grp.appendChild(catItem(el, PERIOD));
       });
-      if (grp.children.length > 1) items.appendChild(grp);
+      if (grp.children.length) groupSheet(grp, p.group, key, items);
     });
   }
   function categoryCats() {
@@ -19758,10 +19343,11 @@
       key: "energy",
       title: "Energy",
       mark: boltSvg(),
-      sub: "Power · Households · Activity",
+      sub: "Economic power · Households · Activity",
       picks: [ {
         group: "Economic power",
-        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]' ]
+        mark: boltSvg,
+        picks: [ '.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]' ]
       }, '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]' ]
     } ];
   }
@@ -19857,10 +19443,10 @@
     });
   }
   function orderMetricSheets() {
-    [ [ "temp-timing", "lagging" ], [ "gdp-timing", "coincident" ], [ "power-timing", "structural" ], [ "valuation-timing", "structural" ], [ "households-timing", "structural" ] ].forEach(function(p) {
+    [ [ "temp-timing", "lagging" ], [ "gdp-timing", "coincident" ], [ "valuation-timing", "structural" ], [ "households-timing", "structural" ] ].forEach(function(p) {
       put(p[0], timingPill(p[1]));
     });
-    [ "sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation", "sheet-metric-households" ].forEach(function(id) {
+    [ "sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-valuation", "sheet-metric-households" ].forEach(function(id) {
       var sheet = byId(id);
       if (!sheet) return;
       function rank(el) {
@@ -20047,7 +19633,7 @@
     return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null;
   }
   function registerRoster() {
-    [ [ "gdp", "coincident" ], [ "power", "structural" ], [ "valuation", "structural" ], [ "households", "structural" ] ].forEach(function(p) {
+    [ [ "gdp", "coincident" ], [ "valuation", "structural" ], [ "households", "structural" ] ].forEach(function(p) {
       var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]);
       if (!card) return;
       var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
@@ -20094,19 +19680,47 @@
     });
   }
   var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ], IND_CATS = [ "weather", "mood", "circulation", "energy" ];
-  function indCategoryHtml(key) {
-    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
-    if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span");
-    var rows = [];
+  function indGroupRow(groups, rows, item, e, kind, find) {
+    var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
+    if (!groups[grp]) {
+      groups[grp] = {
+        title: grp,
+        icon: gm ? discOf({
+          innerHTML: gm()
+        }, "") : e.icon,
+        kinds: {},
+        terms: [ grp ]
+      };
+      rows.push(groups[grp]);
+    }
+    groups[grp].kinds[kind] = 1;
+    groups[grp].terms.push(find[e.title]);
+  }
+  function indRows(sheet, find) {
+    var rows = [], groups = {};
     Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item) {
-      var target = item.getAttribute("data-open");
+      var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
       IND_ORDER.forEach(function(kind) {
         timingMembers[kind].forEach(function(e) {
-          if (e.target === target) rows.push(indRow(e, kind));
+          if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));
         });
       });
     });
+    return rows.map(function(r) {
+      if (typeof r === "string") return r;
+      find[r.title] = r.terms.join(" ").toLowerCase();
+      return indRow({
+        target: groupId(r.title),
+        title: r.title,
+        icon: r.icon,
+        metric: ""
+      }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
+    });
+  }
+  function indCategoryHtml(key, find) {
+    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
+    if (!door || !sheet) return "";
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key + '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + "</span>" + '<span class="ind-cat-name">' + title + "</span>" + CHEV + '</button><div class="ind-card">' + rows.join("") + "</div></section>";
   }
   var NAV = {
@@ -20292,7 +19906,9 @@
     });
     host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + IND_TABS.map(function(t, i) {
       return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' + 'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + "</button>";
-    }).join("") + '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(indCategoryHtml).join("") + '<p class="search-none" hidden>No reading matches.</p>';
+    }).join("") + '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(function(k) {
+      return indCategoryHtml(k, find);
+    }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
       var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
       Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b) {
@@ -20580,7 +20196,6 @@
       "sheet-sign-horizon": fmtDay(DATA_COMPILED),
       "sheet-sign-pulse": qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
       "sheet-sign-volume": indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
-      "sheet-metric-power": String(powerHistory[powerHistory.length - 1].y),
       "sheet-sign-sentiment": fmtDay(DATA_COMPILED),
       "sheet-sign-hormones": fedFunds.asOf,
       "sheet-sign-pressure": fmtDay(DATA_COMPILED),
@@ -20592,13 +20207,10 @@
     list.className = "browse-list";
     CATS.forEach(function(c) {
       if (c.picks) {
-        var sheet = document.createElement("div");
-        sheet.className = "metric-sheet cat-sheet cat-" + c.key;
-        sheet.id = "sheet-cat-" + c.key;
-        sheet.hidden = true;
+        var sheet = catSheet("sheet-cat-" + c.key, c.key);
         var items = document.createElement("div");
         items.className = "cat-list";
-        appendPicks(items, c.picks, PERIOD);
+        appendPicks(items, c.picks, PERIOD, c.key);
         sheet.appendChild(items);
         if (c.key === "circulation" || c.key === "weather") {
           var tog = c.key === "weather" ? insightWeather() : insightCirculation();
@@ -20637,10 +20249,6 @@
       return parseInt(d.q.slice(0, 4), 10) >= era.from;
     });
     var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
-    if (powerHistory[powerHistory.length - 1].y < calendarTodayY) powerHistory.push({
-      y: calendarTodayY,
-      v: powerScore
-    });
     var capeLast = capeHistory[capeHistory.length - 1];
     if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({
       y: calendarTodayY,
@@ -20674,16 +20282,6 @@
       colClass: function(v, i) {
         return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
       }
-    }) + peekCard({
-      kicker: "Power score",
-      title: "Power score",
-      mark: boltSvg(),
-      value: powerScore + "%",
-      unit: "reserve",
-      word: powerWord.word,
-      state: powerWord.state,
-      target: "sheet-metric-power",
-      ring: powerScore
     }) + peekCard({
       kicker: "Shiller CAPE",
       mark: diamondSvg(),
@@ -20725,18 +20323,11 @@
       buffNow: buffNow
     };
   }
-  function pct0(v) {
-    return Math.round(v) + "%";
-  }
   function capeFmt1(v) {
     return v.toFixed(1) + "×";
   }
-  function reserveState(v) {
-    return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical";
-  }
   var TEMP_STOPS = [ "5y", "10y", "25y", "max" ];
   var GDP_STOPS = [ "5y", "10y", "25y", "max" ];
-  var POWER_STOPS = [ "5y", "10y", "25y", "max" ];
   var VAL_STOPS = [ "5y", "10y", "25y", "max" ];
   var DEF_STOPS = [ "5y", "10y", "25y", "max" ];
   function qShort(q) {
@@ -20925,40 +20516,6 @@
         falling: "tightening"
       }));
     };
-    sheetRenderers["sheet-metric-power"] = function(W) {
-      var r = pageRange["sheet-metric-power"], pwCycles = pageMode["sheet-metric-power"] === "cycles";
-      var pwCyc = pwCycles ? cycleByName(pageCycles["sheet-metric-power"]) || openCycle() : null;
-      var pwSpan = pwCyc ? cycleSlice(powerHistory, pwCyc) : null;
-      var vals = pwSpan ? powerHistory.slice(pwSpan[0], pwSpan[1]) : timelineWindow(powerHistory, r);
-      var powerTrend = trendOf(vals.map(function(d) {
-        return d.v;
-      }), "points", "year");
-      put("power-chart", histBar(histControls("sheet-metric-power", {
-        series: powerHistory,
-        stops: POWER_STOPS
-      })) + '<div class="page-chart">' + histHead("sheet-metric-power") + reserveChart({
-        vals: vals,
-        stateOf: reserveState,
-        fmt: pct0,
-        ref: 70,
-        refLabel: "ample reserve, 70%",
-        fit: powerTrend.fit,
-        alt: "Power, the three-marker composite, one charge per year" + (r === "max" ? " since " + powerHistory[0].y : " over the last " + timelineSpan(r) + " years") + ", with the fitted trend across the readings in view"
-      }, W) + trendPill(powerTrend, null, true) + '<div class="panel-stack in-hist">' + powerPanelHtml + "</div>" + histTip("power-hist-tooltip") + "</div>");
-      var pBox = document.querySelector("#power-chart .page-chart");
-      refitHistory(pBox, function(w) {
-        return reserveChart({
-          vals: vals,
-          stateOf: reserveState,
-          fmt: pct0,
-          ref: 70,
-          refLabel: "ample reserve, 70%",
-          fit: powerTrend.fit,
-          alt: "Power supply, one charge per year"
-        }, w);
-      });
-      attachHistory(pBox, "power-hist-tooltip", "reserveChart");
-    };
     sheetRenderers["sheet-marker-deficit"] = function(W) {
       var sheet = byId("sheet-marker-deficit");
       if (!sheet) return;
@@ -21088,24 +20645,6 @@
       if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
     });
   }
-  function powerHighlights() {
-    var vs = powerHistory.map(function(d) {
-      return d.v;
-    });
-    var lowest = Math.min.apply(null, vs), first = powerHistory[0], last = powerHistory[powerHistory.length - 1];
-    var below = vs.filter(function(v) {
-      return v < powerScore;
-    }).length;
-    var eraStart = powerHistory.filter(function(d) {
-      return d.y >= currentEra.from;
-    })[0];
-    var cards = [];
-    cards.unshift('<p class="hi-lede">Power is what the state has left to spend when something goes wrong ' + "— what it owes, what the debt costs to carry and what it produces, read as one charge. A body with " + "reserves can afford a shock; one that has already spent them has to borrow the energy.</p>");
-    cards.push(hiCard("Power", powerWord.state, powerScore <= lowest ? "Today’s " + powerScore + "% is the lowest reading in the whole series — " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%." : "Today’s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
-    cards.push(hiCard("Against the last two shocks", "warning", "The same three markers, scored the same way, leave " + powerOf(stressHistory[0].score) + "% at the " + stressHistory[0].label.replace("'07 ", "2007 ") + " and " + powerOf(stressHistory[1].score) + "% at the " + stressHistory[1].label.replace("'20 ", "2020 ") + " reading. Both were higher than now."));
-    if (eraStart) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " + (eraStart.v - powerScore) + " points since."));
-    put("power-highlights", highlightsHtml(cards, "", moreRow(powerPageNote)));
-  }
   function valuationHighlights(capeNow, buffNow) {
     var vs = capeHistory.map(function(d) {
       return d.v;
@@ -21150,13 +20689,11 @@
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function renderMetricPages(ctx) {
-    put("power-head", "");
     put("valuation-head", "");
     registerTempGdpPages();
     registerActivityPowerDeficitPages();
     registerHouseholdsValuationPages();
     wireMetricPageControls();
-    powerHighlights();
     valuationHighlights(ctx.capeNow, ctx.buffNow);
     tempHighlights(ctx.tempInd, ctx.r);
     gdpHighlights(ctx.r, ctx.gq);
@@ -21308,6 +20845,10 @@
   renderCycleList();
   renderCycleView(nowModel);
   var eraOpen = null, taHome = null, modeHome = null;
+  function kT(k) {
+    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
+    return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+  }
   function eraReading(r, era) {
     var from = era.from, to = era.to || calendarTodayY;
     var span = r.seen.filter(function(d) {
@@ -21318,25 +20859,65 @@
       none: true,
       word: "Not measured before " + prettyK(r, r.first.k)
     };
+    var end = span[span.length - 1], sign = r.flip ? -1 : 1, endT = kT(end.k) + 1e-6;
     var vs = span.map(function(d) {
-      return d.v;
-    }), end = span[span.length - 1];
-    var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-    return {
-      value: readFig(r, end.v),
-      when: prettyK(r, end.k),
-      vs: vs,
-      word: lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle"
+      return sign * d.v;
+    });
+    var upTo = function(list) {
+      return list.filter(function(d) {
+        return d.v != null && kT(d.k) <= endT;
+      });
     };
+    var second = r.pair ? upTo(r.pair).pop() : null;
+    return {
+      v: sign * end.v,
+      lo: Math.min.apply(null, vs),
+      hi: Math.max.apply(null, vs),
+      when: prettyK(r, end.k),
+      second: second && kT(second.k) >= from ? second.v : null,
+      peek: upTo(r.peek || r.seen).map(function(d) {
+        return sign * d.v;
+      })
+    };
+  }
+  function eraFig(today) {
+    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
+    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
+    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
+    function one(x) {
+      return (x < 0 ? "−" : signed ? "+" : "") + Math.abs(x).toFixed(dp);
+    }
+    return function(x, y) {
+      return pre + one(x) + (y != null ? "/" + one(y) : suf);
+    };
+  }
+  function eraValue(val, t, r, e) {
+    val.innerHTML = t.value;
+    var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
+    val.firstChild.nodeValue = eraFig(t.text)(surplus ? -e.v : e.v, r.pair ? e.second : null);
+    if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
+  }
+  function eraRange(t, r, e) {
+    if (e.lo === e.hi) return "Flat all cycle";
+    var f = eraFig(t.text), pc = r.pair ? "%" : "";
+    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
+  }
+  function eraMini(t, r, e) {
+    if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
+    if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
+    return colPeek(e.peek, function() {
+      return "era-col";
+    }, r.base, r.rule);
   }
   function eraCard(item, r, era) {
     var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
     var word = item.querySelector(".ci-word");
     if (!item.__today) item.__today = {
       value: val.innerHTML,
+      text: val.firstChild.nodeValue,
       word: word ? word.innerHTML : null,
       when: when.textContent,
-      mini: mini ? mini.innerHTML : null
+      mini: mini ? mini.innerHTML : ""
     };
     var t = item.__today;
     if (!era) {
@@ -21355,10 +20936,15 @@
       word.className = "ci-word";
       val.parentNode.appendChild(word);
     }
-    val.innerHTML = e.none ? "—" : e.value;
-    word.innerHTML = e.word;
     when.textContent = e.none ? "" : e.when;
-    if (mini) mini.innerHTML = e.vs && e.vs.length >= 3 ? sparkHtml(e.vs, "") : "";
+    if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r, e);
+    if (e.none) {
+      val.innerHTML = "—";
+      word.textContent = e.word;
+      return;
+    }
+    eraValue(val, t, r, e);
+    word.textContent = eraRange(t, r, e);
   }
   function eraShow(era) {
     var rows = {};
@@ -21434,7 +21020,9 @@
         mark: hormoneSvg,
         list: byM(fedFundsHistory),
         dp: 2,
-        unit: "%"
+        unit: "%",
+        rule: true,
+        eraUnit: "Fed funds rate"
       }, {
         name: "Pressure",
         open: "sheet-sign-pressure",
@@ -21442,14 +21030,16 @@
         mark: gaugeSvg,
         list: byQ(t10yYieldHistory),
         dp: 2,
-        unit: "%"
+        unit: "%",
+        rule: true
       }, {
         name: "Pulse",
         open: "sheet-sign-pulse",
         on: "q",
         mark: ecgSvg,
         list: qFrom(m2vHistory, M2V_FROM_YEAR),
-        dp: 2
+        dp: 2,
+        pulse: PULSE_PRE2008
       }, {
         name: "Volume",
         open: "sheet-sign-volume",
@@ -21457,7 +21047,8 @@
         mark: volumeSvg,
         list: qFrom(m2Yoy, M2_FROM_YEAR),
         dp: 1,
-        unit: "%"
+        unit: "%",
+        rule: true
       } ]
     }, {
       key: "mood",
@@ -21471,7 +21062,8 @@
         list: byY(capeHistory),
         dp: 1,
         pre: "Jan ",
-        last: "today"
+        last: "today",
+        base: CAPE_FAIR
       }, {
         name: "Buffett indicator",
         open: "sheet-metric-buffett",
@@ -21479,14 +21071,16 @@
         mark: diamondSvg,
         list: byQ(buffettHistory),
         dp: 0,
-        unit: "%"
+        unit: "%",
+        base: splitMid("sheet-metric-buffett")
       }, {
         name: "Fear",
         open: "sheet-sign-sentiment",
         on: "m",
         mark: umbrellaSvg,
         list: byM(fearCurveHistory),
-        dp: 2
+        dp: 2,
+        ring: curvePct
       }, {
         name: "Desire",
         open: "sheet-sign-desire",
@@ -21494,7 +21088,8 @@
         mark: flameSvg,
         list: hyList,
         dp: 2,
-        unit: "%"
+        unit: "%",
+        peek: hyQuarterEnds()
       }, {
         name: "Horizon",
         open: "sheet-sign-horizon",
@@ -21502,35 +21097,31 @@
         mark: sunriseSvg,
         list: byQ(t10y3mHistory),
         dp: 2,
-        signed: true
+        signed: true,
+        rule: true
       } ]
     }, {
       key: "energy",
       label: "Energy",
       mark: boltSvg,
       rows: [ {
-        name: "Power score",
-        open: "sheet-metric-power",
-        on: "y",
-        mark: boltSvg,
-        list: byY(powerHistory),
-        dp: 0
-      }, {
-        name: "Debt burden",
+        name: "Federal debt",
         open: "sheet-metric-debt",
         on: "q",
         mark: debtSvg,
         list: byQ(grossDebtQuarterly),
         dp: 0,
-        unit: "%"
+        unit: "%",
+        base: splitMid("sheet-metric-debt")
       }, {
-        name: "Interest burden",
+        name: "Interest payments",
         open: "sheet-metric-interest",
         on: "y",
         mark: interestSvg,
         list: byY(fiscalHistory.interest),
         dp: 1,
-        unit: "%"
+        unit: "%",
+        base: splitMid("sheet-metric-interest")
       }, {
         name: "Federal budget",
         open: "sheet-marker-deficit",
@@ -21544,7 +21135,9 @@
         }),
         dp: 1,
         unit: "%",
-        signed: true
+        signed: true,
+        flip: true,
+        base: DEF_PEEK_BASE
       }, {
         name: "Households",
         open: "sheet-metric-households",
@@ -21552,7 +21145,9 @@
         mark: houseSvg,
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
         dp: 1,
-        unit: "%"
+        unit: "%",
+        pair: qFrom(savHistory, SAV_FROM_YEAR),
+        peek: qFrom(savHistory, SAV_FROM_YEAR)
       }, {
         name: "Activity",
         open: "sheet-sign-activity",

@@ -239,7 +239,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Search · Portfolio (V657; the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
-(Valuations · Fear · Desire · Horizon) · Energy (Power · Households · Activity). Named Weather, never
+(Valuations · Fear · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
 Season; Fear, never Sentiment; Households, never Debt service.
 
 Rules that shape the pages:
@@ -252,11 +252,21 @@ Rules that shape the pages:
 - **Home is `grid-area`, never DOM reorder**: source order is the taxonomy, read by the roster, the
   category sheets and Search.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
-  card, under a heading named for the reading when it has two or more (Valuations: Shiller CAPE · Buffett
-  indicator; Economic power: Power score · Debt burden · Interest burden · Federal budget). The split pages are
+  card (Valuations: Shiller CAPE · Buffett indicator; Economic power: Federal debt · Interest payments · Federal
+  budget). The split pages are
   built by one builder, `src/js/12a-indicators.js` (`splitSpecs` → `mountSplit` → `drawSplit`), on the history
   component (`divergeChart` hung from the reading's sourced line, `histControls`, `histHead`, `panelRow`), so
   a new split is a spec, not a page. The parent keeps its breakdown panel, each part a door to its page.
+  **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
+  the cards run as one list. **The group lives in Search instead**: one row named for the group (no figure),
+  opening a group page (`#sheet-grp-valuations`, `#sheet-grp-economic-power`) built by the same
+  `catSheet` as the category pages. Its cards are the category's own, never copies: the group's
+  `.cat-group` element moves into the group page when that page opens (its `sheetRenderers` entry) and back
+  to its seat (`.cat-seat`) when the category page opens, so the live repaint, the era mode and the one-card
+  rule all still see one element per reading. **A category page wears its colour** (V660, after Apple Health):
+  a fixed `::before` wash from `--cat` down to the page, and the top bar turns clear over it.
+  The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
+  the three fiscal markers it summed each keep their own page.
   Horizon's two spreads and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.
@@ -276,13 +286,20 @@ Rules that shape the pages:
   tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the four tiles and their category and
   reading pages) into the cycle's slot (`enterEra`), and `leaveEra` puts it back; the tab switch and the back
   arrow both call it. In between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the
-  figure at the cycle's last reading, the range over the cycle as the label, a sparkline of the cycle) and
+  figure at the cycle's last reading, the range over the cycle as the label, the cycle's own mini) and
   sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored
   on leaving). Today's cards are kept on the element (`__today`) and restored as they were, so the live
   repaint still finds its first text node. The reading pages' panels and insights stay today's: they are
   the page, and the picker says which cycle the chart shows. A reading without history in the cycle shows a
   dash and says since when it is measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of
   cards that led nowhere (Keren, V659: one view to maintain).
+  **Since V660 the cycle's card is built like today's** (Keren: "identical in design to the current cycle
+  categories"): the figure is today's first text node with only the number replaced (`eraFig` keeps its
+  decimals, sign, prefix and suffix, drops the ≈ of an estimate), the unit stays (a roster row's `eraUnit`
+  names a different measure: the effective rate, not the target range; a surplus year says surplus), and the
+  mini is today's kind drawn with the cycle's data (`colPeek` with the row's `base`/`rule`, the Fear ring
+  through `curvePct`, the Pulse trace through `pulsePeek`). The label is the range over the cycle, not a
+  verdict: several verdicts are Keren's words for today, not bands a past value can be read against.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
   the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot
@@ -349,8 +366,8 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 
 | Marker | Range (primary series) | Band |
 |---|---|---|
-| Debt burden (gross debt ÷ GDP, V643) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
-| Interest burden (÷ GDP) | 0.63% FY1942 (FRED FYOIGDA188S) – 3.3% FY2026 CBO projection | ≤ 2.0% |
+| Federal debt (gross debt ÷ GDP, V643; "Debt burden" until V660) | 0% 1835 (Treasury Fiscal Data) – 125.9% FY2020 (OMB via FRED GFDGDPA188S); today GFDEGDQ188S, latest quarter | ≤ 70%, the series' own FY1976–2025 mean — CBO's 50-year rule applied to gross, since CBO states it only for held (51%); `checkGrossDebt` re-derives all of it |
+| Interest payments (÷ GDP; "Interest burden" until V660) | 0.63% FY1942 (FRED FYOIGDA188S) – 3.3% FY2026 CBO projection | ≤ 2.0% |
 | Deficit rate (÷ GDP) | −2.3% FY2000 surplus – 26.9% FY1943 (FRED FYFSGDA188S); the low end departs the true-extreme rule (real max surplus FY1948 +4.3%), flagged, Keren's to settle | ≤ 3.8% |
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
@@ -389,10 +406,9 @@ was offered three constructions and chose none. **Do not draw one without asking
 **Desire's tag and figure are allowed to disagree** — `High appetite` in green beside `2.73%` in amber.
 Only the band's floor is forced into the chart's scale, never the ceiling.
 
-**Power** = 100 − the stress composite of the three fiscal markers, written as a percent everywhere; a full
-charge is all three at the best value the US has recorded, so **Power can only fall**. The three markers
-are one balance sheet asked three questions — stock, flow, carrying cost — and the page must say so.
-`stressScoreFor` normalises on `meter.min`/`max` and never reads the band. **Mood's fast members (Fear,
+The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Until
+V660 they were also summed into Power (100 − their stress composite); Keren removed it, and
+`git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast members (Fear,
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
@@ -551,7 +567,7 @@ Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook
   function.
 - Whether Spring–Deflation's action is "Growing" is not the manuscript's; it has no Content-tab narrative.
 - The other segmented controls (indicators tabs, spread toggle, tab bar) were to be revisited together.
-- Backfilling Power's markers at each closed cycle's close; stacking panels to compare Temperature and
+- Stacking panels to compare Temperature and
   Growth; older fixed-viewBox charts should move to render-width drawing when touched.
 
 - **The `xlsx` advisory** (moved from `package.json` at V652). SheetJS, and it carries a known high-severity advisory with 'No fix available'. Read this before acting on the audit. Shiller publishes his dataset ONLY as a spreadsheet — no CSV, no plain text, and no FRED series — so reading a .xls is the price of taking CAPE from the originator instead of from a site quoting him. The registry copy is stranded at 0.18.5, which SheetJS calls a registry bug: the fixes for both advisories shipped in 0.19.3 and 0.20.2 and reach only their own CDN. We are NOT on the CDN, because neither machine that builds this repo is allowed out to cdn.sheetjs.com, and a dependency that cannot be resolved into the lockfile is worse than one with a documented advisory. The exposure is what makes that acceptable: this code parses exactly one file, Shiller's own, inside a job whose only secret is a read-only FRED key, and whose worst failure is a data run that commits nothing. It is OPTIONAL so a resolution failure cannot fail `npm ci` and take the site deploy with it — the suite and the unit tests never load it. Revisit if the registry copy moves, or if this ever parses a file we did not choose.
@@ -573,7 +589,7 @@ lists — is never touched by a refresh. **`currentSeason` is computed — never
 invariants: geometry is owned by the chart that made it, a reading prints where it is painted, every reach
 finds something, every action has an answer, every id is one element, and no data check fired —
 `console.warn` is a failing check because ten data checks had no listener for two hundred versions (V623).
-**Every refactor ships with "46 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
+**Every refactor ships with "45 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If
@@ -656,8 +672,8 @@ by its own picture, by cycle = the average never the total.
 ## Wording
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Fear, never "Fear & Greed"
-or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Power, not
-"Economic power"; Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Economic power is the
+group of Federal debt, Interest payments and Federal budget (V660); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.
