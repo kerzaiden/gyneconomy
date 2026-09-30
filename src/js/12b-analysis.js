@@ -1,26 +1,45 @@
 
   // ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
-  function renderCycleList(){
-    var list = byId("cycle-list");
+  var CYCLE_DATA_KEY = "gyn.cycleData", YEAR_W = 36, ALIKE = 5;
+  function cycleDataOn(){ try { return localStorage.getItem(CYCLE_DATA_KEY) === "1"; } catch (e) { return false; } }
+  function cycleRowsHtml(on){
     var strips = {};
     marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
-    list.innerHTML = marketCycles.slice().reverse().map(function(cyc){
+    return marketCycles.slice().reverse().map(function(cyc){
       var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' +
-            '<div class="era-head"><span class="era-name">' + cyc.name + '</span>' +
-              '<span class="era-years">' + cycLabel(cyc).years +
-                ' <b>(' + strip.years + 'Y)</b></span>' +
-              CHEV + '</div>' +
-            '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + '</div>' +
-            '<div class="era-foot">' +
-              '<span class="era-econ">' +
-                '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span>' +
-                '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + '%</span>' +
-                (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + '%' + (cyc.ongoing ? '<span class="unit"> so far</span>' : '') + '</span>' : '') +
-              '</span>' +
-            '</div>' +
-      '</div>';
+      var head = '<span class="era-name">' + cyc.name + '</span>' +
+        '<span class="era-years">' + cycLabel(cyc).years + ' <b>(' + strip.years + 'Y)</b></span>' + CHEV;
+      var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
+      var foot = '<div class="era-foot"><span class="era-econ">' +
+        '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span>' +
+        '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + '%</span>' +
+        (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + '%' + (cyc.ongoing ? '<span class="unit"> so far</span>' : '') + '</span>' : '') +
+        '</span></div>';
+      return on
+        ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' +
+            cyc.from + '">' + head + '</button>' + cycleTrack(cyc, strip, bands) + foot + '</div>'
+        : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div>' +
+            '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
     }).join('');
+  }
+  function wireCycleData(list){
+    var btn = byId("cycle-data"), legend = byId("cycle-legend");
+    function apply(on){
+      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
+      list.innerHTML = cycleRowsHtml(on);
+      if (legend){ legend.hidden = !on; legend.innerHTML = on ? symptomLegend() : ""; }
+      settleStrips();
+    }
+    if (btn) btn.addEventListener("click", function(){
+      var on = btn.getAttribute("aria-checked") !== "true";
+      try { localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0"); } catch (e) {}
+      apply(on);
+    });
+    apply(!!btn && cycleDataOn());
+  }
+  function renderCycleList(){
+    var list = byId("cycle-list");
+    wireCycleData(list);
     var PREVIEW_CYCLES = 99;
     (function(){
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -56,7 +75,7 @@
       setTopbar("Analysis", null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-    list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
+    list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
     list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
     calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; byId("topbar-back").hidden = true; };
     addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
@@ -156,56 +175,68 @@
     return k;
   }
 
-  /* ---- RENDER: Rhymes — today beside a past top ---- */
-  function renderRhymes(){
-    var pick = byId("rhy-pick"), body = byId("rhy-body");
-    if (!pick || !body) return;
-    var ALIKE = 5;
-    var GRPS = readingRoster();
-    function stamp(r, k){ return (r.pre || "") + k; }
-    function cell(r, v, when, na){
-      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' +
-        '<b>' + (v == null ? "\u2014" : readFig(r, v)) + '</b><i>' + (v == null ? na : when) + '</i></span>';
-    }
-    function dstr(iso){
-      return +iso.slice(8) + " " + MONTHS_SHORT[+iso.slice(5, 7) - 1] + " " + iso.slice(0, 4);
-    }
-    function draw(key){
-      var top = marketTops.filter(function(t){ return t.key === key; })[0] || marketTops[0];
-      var days = Math.round((Date.parse(top.trough) - Date.parse(top.peak)) / 86400000);
-      Array.prototype.forEach.call(pick.querySelectorAll(".range-seg"), function(b){
-        var on = b.getAttribute("data-rhyme") === top.key;
-        b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
+  // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
+  function cycleSymptoms(cyc, years){
+    var rows = [], quiet = [], absent = [];
+    readingRoster().forEach(function(g){ g.rows.forEach(function(r){
+      var now = r.place(r.now.v), measured = false;
+      var cells = years.map(function(y){
+        if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return { y:y, state:y === calendarTodayY && cyc.ongoing ? "now" : "ahead" };
+        var best = null;
+        r.seen.forEach(function(d){
+          if (+d.k.slice(0, 4) !== y) return;
+          var gap = Math.abs(r.place(d.v) - now);
+          if (!best || gap < best.gap) best = { d:d, gap:gap };
+        });
+        if (!best) return { y:y, state:"na" };
+        measured = true;
+        return { y:y, state:best.gap <= ALIKE ? "on" : "off", best:best.d };
       });
-      body.innerHTML =
-        '<p class="rhy-say">The ' + top.cycle + ' peaked <b>' + dstr(top.peak) + '</b>, then fell <b>' +
-          top.fall.toFixed(1) + '%</b> over <b>' + days + ' days</b>.</p>' +
-        GRPS.map(function(g){
-          return '<div class="rhy-grp">' +
-            '<div class="rhy-cols"><span class="rhy-gname">' + g.label + '</span>' +
-              '<span class="rhy-col">At the peak</span><span class="rhy-col">Now</span></div>' +
-            g.rows.map(function(r){
-              var hit = r.list.filter(function(d){ return d.k === top[r.on] && d.v != null; })[0];
-              var alike = hit && Math.abs(r.place(hit.v) - r.place(r.now.v)) <= ALIKE;
-              return '<div class="rhy-row' + (alike ? " alike" : "") + '">' +
-                '<span class="rhy-name">' + r.name +
-                  (alike ? '<i class="rhy-mark" title="Both readings sit about as high in this record">' +
-                           '\u25cf</i>' : "") + '</span>' +
-                cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.first.k)) +
-                cell(r, r.now.v, r.last || stamp(r, r.now.k)) + '</div>';
-            }).join("") +
-          '</div>';
-        }).join("");
-    }
-    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past peak to stand beside">' +
-      marketTops.slice().reverse().map(function(t, i){
-        return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' +
-          (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.key + '</button>';
-      }).join("") + '</div>';
-    pick.addEventListener("click", function(e){
-      var b = e.target.closest && e.target.closest(".range-seg"); if (b) draw(b.getAttribute("data-rhyme"));
-    });
-    draw(marketTops[marketTops.length - 1].key);
-    addSources(marketTopsSrc);
+      var hits = cells.filter(function(c){ return c.state === "on"; });
+      if (hits.length) rows.push({ g:g, r:r, cells:cells, hits:hits });
+      else (measured ? quiet : absent).push(r.name);
+    }); });
+    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") +
+      (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
+    return { rows:rows, foot:foot.trim() };
   }
-  GYN.step("renderRhymes", renderRhymes, "wire"); renderRhymes();
+  function placeWords(r, v){
+    var p = Math.round(r.place(v)), since = " since " + prettyK(r, r.first.k);
+    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
+  }
+  function symptomNote(cyc, row){
+    var r = row.r;
+    return '<h4>' + r.name + ' \u00b7 ' + cyc.name + '</h4>' +
+      '<p>Now ' + readFig(r, r.now.v) + ' (' + (r.last || prettyK(r, r.now.k)) + '), ' + placeWords(r, r.now.v) + '. ' +
+      'A year is marked when a reading taken in it sat within ' + ALIKE + ' points of that place in the same record.</p>' +
+      facts(row.hits.map(function(c){ return prettyK(r, c.best.k) + ': ' + readFig(r, c.best.v) + ', ' + placeWords(r, c.best.v); }));
+  }
+  function symptomRow(cyc, row, cols){
+    var r = row.r;
+    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) +
+      '" aria-label="' + r.name + ': alike in ' + row.hits.map(function(c){ return c.y; }).join(", ") + '">' +
+      row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " sx-" + row.g.key : "") + '"></i>'; }).join("") +
+      '<b>' + r.name + '</b></button>';
+  }
+  function cycleTrack(cyc, strip, bands){
+    var years = [];
+    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
+    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
+    var cols = 'grid-template-columns:repeat(' + years.length + ',' + YEAR_W + 'px) minmax(96px,1fr)';
+    var yrs = years.map(function(y){
+      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
+      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + '</span>';
+    }).join("");
+    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)">' +
+      '<div style="width:' + (strip.span * YEAR_W / 4) + 'px">' + bands + '</div><span></span></div>' +
+      '<div class="sx-yrs" style="' + cols + '">' + yrs + '<span></span></div>' +
+      sx.rows.map(function(row){ return symptomRow(cyc, row, cols); }).join("") + '</div>' +
+      (sx.foot ? '<p class="sx-foot">' + sx.foot + '</p>' : "");
+  }
+  function symptomLegend(){
+    return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>' +
+      '<div class="sx-keys">' + readingRoster().map(function(g){
+        return '<span><i class="sx-' + g.key + '"></i>' + g.label + '</span>';
+      }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' +
+      '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
+  }

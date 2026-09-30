@@ -1215,30 +1215,55 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
-  .rhy-lede{ margin:0; padding:13px 14px 0; font-size:14px; line-height:1.55; color:var(--text-secondary); }
-  .rhy-ctl{ padding:0 14px 12px; }
-  .rhy-ctl .rangebar{ margin:12px 0 0; }
-  .rhy-say{ margin:0; padding:0 14px 13px; font-size:14px; line-height:1.5; color:var(--text-secondary); }
-  .rhy-say b{ color:var(--text-primary); font-weight:700; }
-  .rhy-cols, .rhy-row{ display:grid; grid-template-columns:1fr 84px 84px; gap:8px; align-items:baseline;
-    border-top:1px solid var(--border); padding:10px 14px; }
-  .rhy-cols{ padding-bottom:7px; }
-  .rhy-cols + .rhy-row{ border-top:0; }
-  .rhy-grp:last-child .rhy-row:last-child{ padding-bottom:14px; }
-  .rhy-gname, .rhy-col{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
-    letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
-  .rhy-col{ text-align:right; white-space:nowrap; }
-  .rhy-name{ font-family:"Public Sans",sans-serif; font-size:14px; line-height:1.35; color:var(--text-secondary); }
-  .rhy-cell{ text-align:right; }
-  .rhy-cell b{ display:block; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600;
-    color:var(--text-primary); }
-  .rhy-cell .unit{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
-  .rhy-cell i{ display:block; margin-top:3px; font-family:"IBM Plex Mono",monospace; font-style:normal;
-    font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
-  .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
-  .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
-    vertical-align:1.5px; }
-  .rhy-row.alike .rhy-name{ color:var(--text-primary); }
+  .sx-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .sx-switch{ display:inline-flex; align-items:center; gap:8px; font-family:"Public Sans",sans-serif; font-size:13px;
+    font-weight:600; color:var(--text-secondary); cursor:pointer; }
+  .sx-toggle{ position:relative; flex:none; width:40px; height:24px; padding:0; border:0; border-radius:12px;
+    background:var(--border-strong); cursor:pointer; transition:background 0.15s ease; }
+  .sx-toggle i{ position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:var(--surface);
+    box-shadow:0 1px 2px rgba(0,0,0,0.25); transition:transform 0.15s ease; }
+  .sx-toggle[aria-checked="true"]{ background:var(--accent); }
+  .sx-toggle[aria-checked="true"] i{ transform:translateX(16px); }
+  .sx-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .sx-legend{ padding:11px 14px 12px; border-bottom:1px solid var(--border); }
+  .sx-legend p{ margin:0 0 8px; font-size:13px; line-height:1.5; color:var(--text-secondary); }
+  .sx-keys{ display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--text-secondary); }
+  .sx-keys span{ display:inline-flex; align-items:center; gap:6px; }
+  .sx-keys i{ width:10px; height:10px; border-radius:50%; }
+  .sx-keys i.sx-off{ width:5px; height:5px; background:var(--text-muted); opacity:0.5; }
+  .sx-keys i.sx-now{ border:1.5px solid var(--accent); box-sizing:border-box; }
+  .sx-keys b.sx-down{ font-weight:700; color:var(--bear-ink); }
+  .sx-keys i.sx-weather, .sx-row i.sx-weather{ background:var(--season-summer); }
+  .sx-keys i.sx-circulation, .sx-row i.sx-circulation{ background:var(--ff-blue); }
+  .sx-keys i.sx-mood, .sx-row i.sx-mood{ background:var(--accent); }
+  .sx-keys i.sx-energy, .sx-row i.sx-energy{ background:var(--good); }
+  .era-row.data{ cursor:default; }
+  .era-row.data:hover{ background:none; }
+  .era-open{ display:flex; width:100%; padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+  .era-open:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  .era-open:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .cyc-track{ overflow-x:auto; margin:9px 0 0; padding:0 0 2px; -webkit-overflow-scrolling:touch; direction:rtl; }
+  .cyc-track > *{ direction:ltr; }
+  .cyc-scale .strip{ margin:0; }
+  .cyc-scale .strip + .strip{ margin-top:5px; }
+  .cyc-scale, .sx-yrs, .sx-row{ display:grid; align-items:center; width:max-content; min-width:100%; }
+  .sx-yrs{ height:22px; margin-top:6px; }
+  .sx-yrs span{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:700; text-align:center; color:var(--text-muted); }
+  .sx-yrs span.down{ color:var(--bear-ink); }
+  .sx-yrs span.now{ color:var(--accent-ink); }
+  .sx-yrs span.ahead{ opacity:0.45; }
+  .sx-row{ height:26px; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer; }
+  .sx-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px; }
+  .sx-row i{ justify-self:center; width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
+  .sx-row i.on{ width:13px; height:13px; opacity:1; }
+  .sx-row i.na, .sx-row i.ahead{ opacity:0; }
+  .sx-row i.now{ width:11px; height:11px; background:none; border:1.5px solid var(--accent); box-sizing:border-box; opacity:1; }
+  .sx-row b{ position:sticky; right:0; justify-self:end; padding:3px 0 3px 8px; font-family:"Public Sans",sans-serif;
+    font-size:12.5px; font-weight:600; white-space:nowrap; color:var(--text-primary); background:var(--surface); }
+  .sx-row b::before{ content:""; position:absolute; top:0; bottom:0; left:-10px; width:10px;
+    background:linear-gradient(90deg, transparent, var(--surface)); }
+  .sx-row:hover b{ color:var(--accent-ink); }
+  .sx-foot{ margin:8px 0 0; font-size:12px; line-height:1.45; color:var(--text-muted); }
 
   #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
   .cc-grp .cat-list{ margin-top:var(--gap); }
@@ -1763,24 +1788,15 @@
 
   <div class="tab-panel" data-tab="analysis" hidden>
     <div id="calendar-list">
-      <div class="cyc-card" id="rhymes-card">
-        <div class="cyc-head">
-          <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
-            d="M3 9.6c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/><path d="M3 15.4c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/></svg></span>Rhymes</div>
-        </div>
-        <p class="rhy-lede">A body can be at risk and still feel perfectly well. Valuation says how far there is to
-          fall and never says when — the CAPE passed 30 in 1998, and the top was two years away. A dot marks a
-          reading sitting about as high in its own record as it did at that peak.</p>
-        <div class="rhy-ctl" id="rhy-pick"></div>
-        <div id="rhy-body"></div>
-      </div>
       <div class="cyc-card">
-        <div class="cyc-head">
+        <div class="cyc-head sx-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
+          <label class="sx-switch"><span>Show data</span><button type="button" role="switch" aria-checked="false"
+            class="sx-toggle" id="cycle-data"><i></i></button></label>
         </div>
+        <div class="sx-legend" id="cycle-legend" hidden></div>
         <div id="cycle-list"></div>
         <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
           <span id="cycle-more-label">View more</span>
@@ -16341,47 +16357,6 @@
     name: "AI Cycle",
     blurb: "Out of the 2022 correction, a bull run carried by the build-out of artificial intelligence. Three full years so far and the fourth under way, with no losing year in it yet. Still being written."
   } ];
-  var marketTops = [ {
-    key: "2000",
-    cycle: "Dot-Com Cycle",
-    peak: "2000-03-24",
-    trough: "2002-10-09",
-    fall: 49.1,
-    y: "2000",
-    q: "2000 Q1",
-    m: "2000-03"
-  }, {
-    key: "2007",
-    cycle: "Housing Cycle",
-    peak: "2007-10-09",
-    trough: "2009-03-09",
-    fall: 56.8,
-    y: "2007",
-    q: "2007 Q4",
-    m: "2007-10"
-  }, {
-    key: "2020",
-    cycle: "COVID-19 Cycle",
-    peak: "2020-02-19",
-    trough: "2020-03-23",
-    fall: 33.9,
-    y: "2020",
-    q: "2020 Q1",
-    m: "2020-02"
-  }, {
-    key: "2022",
-    cycle: "COVID-19 Cycle",
-    peak: "2022-01-03",
-    trough: "2022-10-12",
-    fall: 25.4,
-    y: "2022",
-    q: "2022 Q1",
-    m: "2022-01"
-  } ];
-  var marketTopsSrc = [ {
-    t: "Yardeni Research — Stock Market Historical Tables: Bull & Bear Markets",
-    u: "https://yardeni.com/charts/us-stock-market/stock-market-historical-trends/bull-bear-markets-corrections"
-  } ];
   var currentEra = marketCycles.filter(function(c) {
     return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY);
   })[0] || marketCycles[marketCycles.length - 1];
@@ -16929,7 +16904,7 @@
       body.innerHTML = "";
     }
     document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt");
+      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt, .sx-row");
       if (btn) {
         if (btn.closest("summary")) e.preventDefault();
         openFrom(btn.getAttribute("data-detail-idx"), btn);
@@ -19449,7 +19424,7 @@
   var STRIP_MIN_RATIO = 1.5;
   function settleStrips() {
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip) {
-      if (!strip.clientWidth) return;
+      if (!strip.clientWidth || strip.closest(".cyc-scale")) return;
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
       runs.forEach(function(r) {
         r.classList.remove("settled");
@@ -20859,16 +20834,50 @@
     annual: sp500AnnualReturnSource,
     gdp: gdpSrc
   };
-  function renderCycleList() {
-    var list = byId("cycle-list");
+  var CYCLE_DATA_KEY = "gyn.cycleData", YEAR_W = 36, ALIKE = 5;
+  function cycleDataOn() {
+    try {
+      return localStorage.getItem(CYCLE_DATA_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function cycleRowsHtml(on) {
     var strips = {};
     marketCycles.forEach(function(c) {
       strips[c.from] = seasonStripHtml(c);
     });
-    list.innerHTML = marketCycles.slice().reverse().map(function(cyc) {
+    return marketCycles.slice().reverse().map(function(cyc) {
       var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '">' + '<div class="era-head"><span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV + "</div>" + '<div class="era-bands">' + strip.strip + marketStripHtml(cyc, strip.span, strip.done) + "</div>" + '<div class="era-foot">' + '<span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span>" + "</div>" + "</div>";
+      var head = '<span class="era-name">' + cyc.name + "</span>" + '<span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
+      var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
+      var foot = '<div class="era-foot"><span class="era-econ">' + '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + "%</span>" + '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span></div>";
+      return on ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' + cyc.from + '">' + head + "</button>" + cycleTrack(cyc, strip, bands) + foot + "</div>" : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + "</div>" + '<div class="era-bands">' + bands + "</div>" + foot + "</div>";
     }).join("");
+  }
+  function wireCycleData(list) {
+    var btn = byId("cycle-data"), legend = byId("cycle-legend");
+    function apply(on) {
+      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
+      list.innerHTML = cycleRowsHtml(on);
+      if (legend) {
+        legend.hidden = !on;
+        legend.innerHTML = on ? symptomLegend() : "";
+      }
+      settleStrips();
+    }
+    if (btn) btn.addEventListener("click", function() {
+      var on = btn.getAttribute("aria-checked") !== "true";
+      try {
+        localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0");
+      } catch (e) {}
+      apply(on);
+    });
+    apply(!!btn && cycleDataOn());
+  }
+  function renderCycleList() {
+    var list = byId("cycle-list");
+    wireCycleData(list);
     var PREVIEW_CYCLES = 99;
     (function() {
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -20929,7 +20938,7 @@
       });
     }
     list.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".era-row");
+      var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open");
       if (row) open(parseInt(row.getAttribute("data-era"), 10));
     });
     list.addEventListener("keydown", function(e) {
@@ -21163,52 +21172,89 @@
     if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
     return k;
   }
-  function renderRhymes() {
-    var pick = byId("rhy-pick"), body = byId("rhy-body");
-    if (!pick || !body) return;
-    var ALIKE = 5;
-    var GRPS = readingRoster();
-    function stamp(r, k) {
-      return (r.pre || "") + k;
-    }
-    function cell(r, v, when, na) {
-      return '<span class="rhy-cell' + (v == null ? " na" : "") + '">' + "<b>" + (v == null ? "—" : readFig(r, v)) + "</b><i>" + (v == null ? na : when) + "</i></span>";
-    }
-    function dstr(iso) {
-      return +iso.slice(8) + " " + MONTHS_SHORT[+iso.slice(5, 7) - 1] + " " + iso.slice(0, 4);
-    }
-    function draw(key) {
-      var top = marketTops.filter(function(t) {
-        return t.key === key;
-      })[0] || marketTops[0];
-      var days = Math.round((Date.parse(top.trough) - Date.parse(top.peak)) / 864e5);
-      Array.prototype.forEach.call(pick.querySelectorAll(".range-seg"), function(b) {
-        var on = b.getAttribute("data-rhyme") === top.key;
-        b.classList.toggle("on", on);
-        b.setAttribute("aria-selected", on ? "true" : "false");
+  function cycleSymptoms(cyc, years) {
+    var rows = [], quiet = [], absent = [];
+    readingRoster().forEach(function(g) {
+      g.rows.forEach(function(r) {
+        var now = r.place(r.now.v), measured = false;
+        var cells = years.map(function(y) {
+          if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return {
+            y: y,
+            state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
+          };
+          var best = null;
+          r.seen.forEach(function(d) {
+            if (+d.k.slice(0, 4) !== y) return;
+            var gap = Math.abs(r.place(d.v) - now);
+            if (!best || gap < best.gap) best = {
+              d: d,
+              gap: gap
+            };
+          });
+          if (!best) return {
+            y: y,
+            state: "na"
+          };
+          measured = true;
+          return {
+            y: y,
+            state: best.gap <= ALIKE ? "on" : "off",
+            best: best.d
+          };
+        });
+        var hits = cells.filter(function(c) {
+          return c.state === "on";
+        });
+        if (hits.length) rows.push({
+          g: g,
+          r: r,
+          cells: cells,
+          hits: hits
+        }); else (measured ? quiet : absent).push(r.name);
       });
-      body.innerHTML = '<p class="rhy-say">The ' + top.cycle + " peaked <b>" + dstr(top.peak) + "</b>, then fell <b>" + top.fall.toFixed(1) + "%</b> over <b>" + days + " days</b>.</p>" + GRPS.map(function(g) {
-        return '<div class="rhy-grp">' + '<div class="rhy-cols"><span class="rhy-gname">' + g.label + "</span>" + '<span class="rhy-col">At the peak</span><span class="rhy-col">Now</span></div>' + g.rows.map(function(r) {
-          var hit = r.list.filter(function(d) {
-            return d.k === top[r.on] && d.v != null;
-          })[0];
-          var alike = hit && Math.abs(r.place(hit.v) - r.place(r.now.v)) <= ALIKE;
-          return '<div class="rhy-row' + (alike ? " alike" : "") + '">' + '<span class="rhy-name">' + r.name + (alike ? '<i class="rhy-mark" title="Both readings sit about as high in this record">' + "●</i>" : "") + "</span>" + cell(r, hit ? hit.v : null, stamp(r, top[r.on]), "from " + stamp(r, r.first.k)) + cell(r, r.now.v, r.last || stamp(r, r.now.k)) + "</div>";
-        }).join("") + "</div>";
-      }).join("");
-    }
-    pick.innerHTML = '<div class="rangebar" role="tablist" aria-label="Which past peak to stand beside">' + marketTops.slice().reverse().map(function(t, i) {
-      return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' + (i ? "false" : "true") + '" data-rhyme="' + t.key + '">' + t.key + "</button>";
-    }).join("") + "</div>";
-    pick.addEventListener("click", function(e) {
-      var b = e.target.closest && e.target.closest(".range-seg");
-      if (b) draw(b.getAttribute("data-rhyme"));
     });
-    draw(marketTops[marketTops.length - 1].key);
-    addSources(marketTopsSrc);
+    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") + (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
+    return {
+      rows: rows,
+      foot: foot.trim()
+    };
   }
-  GYN.step("renderRhymes", renderRhymes, "wire");
-  renderRhymes();
+  function placeWords(r, v) {
+    var p = Math.round(r.place(v)), since = " since " + prettyK(r, r.first.k);
+    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
+  }
+  function symptomNote(cyc, row) {
+    var r = row.r;
+    return "<h4>" + r.name + " · " + cyc.name + "</h4>" + "<p>Now " + readFig(r, r.now.v) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". " + "A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
+      return prettyK(r, c.best.k) + ": " + readFig(r, c.best.v) + ", " + placeWords(r, c.best.v);
+    }));
+  }
+  function symptomRow(cyc, row, cols) {
+    var r = row.r;
+    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
+      return c.y;
+    }).join(", ") + '">' + row.cells.map(function(c) {
+      return '<i class="' + c.state + (c.state === "on" ? " sx-" + row.g.key : "") + '"></i>';
+    }).join("") + "<b>" + r.name + "</b></button>";
+  }
+  function cycleTrack(cyc, strip, bands) {
+    var years = [];
+    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
+    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
+    var cols = "grid-template-columns:repeat(" + years.length + "," + YEAR_W + "px) minmax(96px,1fr)";
+    var yrs = years.map(function(y) {
+      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
+      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + "</span>";
+    }).join("");
+    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)">' + '<div style="width:' + strip.span * YEAR_W / 4 + 'px">' + bands + "</div><span></span></div>" + '<div class="sx-yrs" style="' + cols + '">' + yrs + "<span></span></div>" + sx.rows.map(function(row) {
+      return symptomRow(cyc, row, cols);
+    }).join("") + "</div>" + (sx.foot ? '<p class="sx-foot">' + sx.foot + "</p>" : "");
+  }
+  function symptomLegend() {
+    return "<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>" + '<div class="sx-keys">' + readingRoster().map(function(g) {
+      return '<span><i class="sx-' + g.key + '"></i>' + g.label + "</span>";
+    }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' + '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
+  }
   function renderSeasonRows() {
     var meta = wheelMeta[currentSeason];
     var seasonRules = [ {

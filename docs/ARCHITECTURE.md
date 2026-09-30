@@ -252,6 +252,18 @@ Rules that shape the pages:
   category sheets and All indicators.
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
+- **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
+  read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
+  the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot
+  sits under its year. The strips are drawn to scale there (`.cyc-scale` is exempt from `settleStrips`,
+  which turns one-quarter runs into dots). The track scrolls from its right end (`direction:rtl`) so the
+  latest years and the pinned labels show first. **The mark is V610's rule, per reading and never
+  averaged**: a year is marked when any reading taken in it sits within `ALIKE` (5) points of today's place
+  in the same record (Keren, V656: an average would hide the CAPE's January 2000). **Every dot can be
+  checked** (the V611 Echoes lesson): a row opens the matching reading of each marked year beside today's,
+  with both places. No count and no score. Rows without a mark fold into one line; a reading not yet
+  measured is named, never drawn. The current year is a ring, not a dot, and years after a cycle's end are
+  empty. The choice is remembered per reader (`gyn.cycleData`). This replaced the Rhymes card (V610–V655).
 - **Portfolio is empty and says so.** No placeholder figures.
 - **Copy density**: fold into what exists; a new section is one kicker, one short visual, detail behind (i).
   No information twice per screen; no card in a card; borders, no shadows; a collapsible row is icon ·
@@ -530,7 +542,7 @@ lists — is never touched by a refresh. **`currentSeason` is computed — never
 invariants: geometry is owned by the chart that made it, a reading prints where it is painted, every reach
 finds something, every action has an answer, every id is one element, and no data check fired —
 `console.warn` is a failing check because ten data checks had no listener for two hundred versions (V623).
-**Every refactor ships with "38 states identical"** (`npm run snap`); it caught three breaks in V630 alone,
+**Every refactor ships with "40 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If

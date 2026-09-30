@@ -299,35 +299,56 @@ async function openPage(p, url, sheet) {
   spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
 
   {
-    const read = () => p.evaluate(() => ({
-      say: document.querySelector('.rhy-say').innerText.replace(/\s+/g, ' ').trim(),
-      first: document.querySelector('.rhy-row .rhy-cell b').textContent.trim(),
-      subs: [...document.querySelectorAll('.rhy-cell')].map(c => c.querySelector('i').textContent.trim()),
-      na: document.querySelectorAll('.rhy-cell.na').length,
-      rows: document.querySelectorAll('.rhy-row').length,
-      grps: document.querySelectorAll('.rhy-grp').length,
-      marks: document.querySelectorAll('.rhy-mark').length,
-      markOnBlank: [...document.querySelectorAll('.rhy-row.alike')].filter(r => r.querySelector('.rhy-cell.na')).length
+    const off = await p.evaluate(() => ({
+      checked: document.getElementById('cycle-data').getAttribute('aria-checked'),
+      tracks: document.querySelectorAll('.cyc-track').length,
+      doors: document.querySelectorAll('.era-row[role="button"]').length,
+      legend: document.getElementById('cycle-legend').hidden
     }));
-    await p.click('[data-rhyme="2000"]'); await p.waitForTimeout(250);
-    const y2000 = await read();
-    await p.click('[data-rhyme="2007"]'); await p.waitForTimeout(250);
-    const y2007 = await read();
-    (/Dot-Com Cycle/.test(y2000.say) && /49\.1%/.test(y2000.say) && /929 days/.test(y2000.say) &&
-     /Housing Cycle/.test(y2007.say) && /56\.8%/.test(y2007.say) && /517 days/.test(y2007.say) &&
-     y2000.first !== y2007.first && y2000.rows === 13 && y2000.grps === 4)
-      ? ok('rhymes picker swaps the comparison', y2000.first + ' -> ' + y2007.first)
-      : bad('rhymes picker swaps the comparison', JSON.stringify({ y2000, y2007 }));
-
-    (y2000.na === 5 && y2007.na === 2 && y2000.subs.some(t => /^from 2005 Q1$/.test(t)) &&
-     y2000.subs.some(t => /^Jan 2000$/.test(t)))
-      ? ok('rhymes leaves the record blank', y2000.na + ' at 2000, ' + y2007.na + ' at 2007')
-      : bad('rhymes leaves the record blank', JSON.stringify({ na2000: y2000.na, na2007: y2007.na, subs: y2000.subs }));
-
-    (y2000.marks > 0 && !y2000.markOnBlank && !y2007.markOnBlank)
-      ? ok('rhymes marks only what it shows', y2000.marks + ' at 2000, ' + y2007.marks + ' at 2007')
-      : bad('rhymes marks only what it shows',
-            JSON.stringify({ marks: y2000.marks, onBlank: [y2000.markOnBlank, y2007.markOnBlank] }));
+    (off.checked === 'false' && !off.tracks && off.doors === 5 && off.legend)
+      ? ok('cycle data starts hidden', off.doors + ' cycles, no grid')
+      : bad('cycle data starts hidden', JSON.stringify(off));
+    await p.click('#cycle-data'); await p.waitForTimeout(300);
+    const on = await p.evaluate(() => {
+      const dot = [...document.querySelectorAll('.era-row.data')].find(r => /Dot-Com/.test(r.textContent));
+      const scale = dot.querySelector('.cyc-scale > div').getBoundingClientRect();
+      const yrs = [...dot.querySelectorAll('.sx-yrs span')].filter(x => x.textContent);
+      const first = yrs[0].getBoundingClientRect(), last = yrs[yrs.length - 1].getBoundingClientRect();
+      const val = [...dot.querySelectorAll('.sx-row')].find(r => /Valuations/.test(r.textContent));
+      const cells = val ? [...val.querySelectorAll('i')] : [];
+      return {
+        tracks: document.querySelectorAll('.era-row.data .cyc-track').length,
+        legend: !document.getElementById('cycle-legend').hidden,
+        span: Math.round(scale.width), cols: Math.round(last.right - first.left), left: Math.round(scale.left - first.left),
+        label: val && val.getAttribute('aria-label'),
+        colored: cells.filter(i => i.classList.contains('on') && getComputedStyle(i).backgroundColor !== getComputedStyle(cells.find(c => c.classList.contains('off'))).backgroundColor).length
+      };
+    });
+    (on.tracks === 5 && on.legend && on.span === on.cols && Math.abs(on.left) <= 1)
+      ? ok('show data draws every cycle on one year scale', on.span + 'px strip = ' + on.cols + 'px of years')
+      : bad('show data draws every cycle on one year scale', JSON.stringify(on));
+    (on.label === 'Valuations: alike in 1999, 2000' && on.colored === 2)
+      ? ok('the CAPE marks the Dot-Com top', on.label)
+      : bad('the CAPE marks the Dot-Com top', JSON.stringify(on));
+    await p.evaluate(() => [...document.querySelectorAll('.era-row.data')].find(r => /Dot-Com/.test(r.textContent))
+      .querySelector('.sx-row[aria-label^="Valuations"]').click());
+    await p.waitForTimeout(250);
+    const note = await p.evaluate(() => ({
+      text: document.getElementById('detail-modal-body').innerText,
+      opened: !document.getElementById('calendar-cycle').hidden
+    }));
+    await p.evaluate(() => document.getElementById('detail-modal-close').click());
+    (/Jan 2000: 43\.8/.test(note.text) && /Jan 1999: 40\.6/.test(note.text) && /^Now /m.test(note.text) && !note.opened)
+      ? ok('a row shows both numbers behind every dot', 'Jan 1999, Jan 2000 and now')
+      : bad('a row shows both numbers behind every dot', JSON.stringify(note));
+    await p.reload(); await p.waitForTimeout(1300);
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await p.waitForTimeout(400);
+    const kept = await p.evaluate(() => document.getElementById('cycle-data').getAttribute('aria-checked') === 'true' &&
+      document.querySelectorAll('.cyc-track').length === 5);
+    await p.click('#cycle-data'); await p.waitForTimeout(250);
+    const back = await p.evaluate(() => !document.querySelectorAll('.cyc-track').length &&
+      document.querySelectorAll('.era-row[role="button"]').length === 5);
+    (kept && back) ? ok('show data is remembered and turns off cleanly') : bad('show data is remembered and turns off cleanly', JSON.stringify({ kept, back }));
   }
 
   {
@@ -592,9 +613,9 @@ async function openPage(p, url, sheet) {
       inv.whole ? ok('GYN.render() leaves the DOM unchanged')
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       const k = inv.kinds;
-      (k.build === 4 && k.mixed === 2 && k.wire === 8)
+      (k.build === 4 && k.mixed === 2 && k.wire === 7)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 8');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 7');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

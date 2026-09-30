@@ -6769,3 +6769,22 @@ Keren: "Desire note: remove"
 The long Desire caption is gone. No page displayed it: the Desire page renders bare and reads only the
 short caption, and the 38-state snapshot is identical without it.
 ~~~
+
+### V656
+
+~~~text
+Keren, on the Analysis tab: "I would rather see where there are similarities between the current cycle and
+past cycles. meaning each cycle in the history will get a detailed view with only the symptoms that are
+relevant marked in the corresponding year. for example dot-com cycle will have a colored dot on valuations
+somewhere in 1999-2000 because the shiller cape is in the same levels more or less." She sent a reference
+image of a cycle tracker's symptom grid for the look and feel.
+On the plan: "i don't want the average because i will miss important correlations for example the shiller
+cape in 2000 before the crash." "the grid should be visible by choice, add a toggle "show data" like in the
+attached reference." "in order to sync the cycle years use horizontal scroll." Then: "build".
+So: Rhymes is retired, and its rule (V610, within five points of today's place in the reading's own record)
+now marks years in Cycle history, reading by reading, any reading in the year counting. The grid shows only
+when "Show data" is on; each cycle's strips and years scroll together on one year width; a row opens both
+numbers for every dot; readings with no mark are named in one line under the grid.
+The weather analysis proposed on the claude/weather-analysis branch was declined ("the weather analysis is
+not very informative - remove it") and never reached main.
+~~~

@@ -1227,31 +1227,56 @@
   .cyc-more:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
-  /* ---- Rhymes: today beside one past top ---- */
-  .rhy-lede{ margin:0; padding:13px 14px 0; font-size:14px; line-height:1.55; color:var(--text-secondary); }
-  .rhy-ctl{ padding:0 14px 12px; }
-  .rhy-ctl .rangebar{ margin:12px 0 0; }
-  .rhy-say{ margin:0; padding:0 14px 13px; font-size:14px; line-height:1.5; color:var(--text-secondary); }
-  .rhy-say b{ color:var(--text-primary); font-weight:700; }
-  .rhy-cols, .rhy-row{ display:grid; grid-template-columns:1fr 84px 84px; gap:8px; align-items:baseline;
-    border-top:1px solid var(--border); padding:10px 14px; }
-  .rhy-cols{ padding-bottom:7px; }
-  .rhy-cols + .rhy-row{ border-top:0; }
-  .rhy-grp:last-child .rhy-row:last-child{ padding-bottom:14px; }
-  .rhy-gname, .rhy-col{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
-    letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
-  .rhy-col{ text-align:right; white-space:nowrap; }
-  .rhy-name{ font-family:"Public Sans",sans-serif; font-size:14px; line-height:1.35; color:var(--text-secondary); }
-  .rhy-cell{ text-align:right; }
-  .rhy-cell b{ display:block; font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600;
-    color:var(--text-primary); }
-  .rhy-cell .unit{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
-  .rhy-cell i{ display:block; margin-top:3px; font-family:"IBM Plex Mono",monospace; font-style:normal;
-    font-size:10.5px; letter-spacing:-0.01em; color:var(--text-muted); }
-  .rhy-cell.na b{ font-weight:400; color:var(--text-muted); }
-  .rhy-mark{ font-style:normal; font-size:8px; line-height:1; color:var(--accent); margin-left:5px;
-    vertical-align:1.5px; }
-  .rhy-row.alike .rhy-name{ color:var(--text-primary); }
+  /* ---- The symptoms: a cycle's years against today ---- */
+  .sx-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .sx-switch{ display:inline-flex; align-items:center; gap:8px; font-family:"Public Sans",sans-serif; font-size:13px;
+    font-weight:600; color:var(--text-secondary); cursor:pointer; }
+  .sx-toggle{ position:relative; flex:none; width:40px; height:24px; padding:0; border:0; border-radius:12px;
+    background:var(--border-strong); cursor:pointer; transition:background 0.15s ease; }
+  .sx-toggle i{ position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:var(--surface);
+    box-shadow:0 1px 2px rgba(0,0,0,0.25); transition:transform 0.15s ease; }
+  .sx-toggle[aria-checked="true"]{ background:var(--accent); }
+  .sx-toggle[aria-checked="true"] i{ transform:translateX(16px); }
+  .sx-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .sx-legend{ padding:11px 14px 12px; border-bottom:1px solid var(--border); }
+  .sx-legend p{ margin:0 0 8px; font-size:13px; line-height:1.5; color:var(--text-secondary); }
+  .sx-keys{ display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--text-secondary); }
+  .sx-keys span{ display:inline-flex; align-items:center; gap:6px; }
+  .sx-keys i{ width:10px; height:10px; border-radius:50%; }
+  .sx-keys i.sx-off{ width:5px; height:5px; background:var(--text-muted); opacity:0.5; }
+  .sx-keys i.sx-now{ border:1.5px solid var(--accent); box-sizing:border-box; }
+  .sx-keys b.sx-down{ font-weight:700; color:var(--bear-ink); }
+  .sx-keys i.sx-weather, .sx-row i.sx-weather{ background:var(--season-summer); }
+  .sx-keys i.sx-circulation, .sx-row i.sx-circulation{ background:var(--ff-blue); }
+  .sx-keys i.sx-mood, .sx-row i.sx-mood{ background:var(--accent); }
+  .sx-keys i.sx-energy, .sx-row i.sx-energy{ background:var(--good); }
+  .era-row.data{ cursor:default; }
+  .era-row.data:hover{ background:none; }
+  .era-open{ display:flex; width:100%; padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+  .era-open:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  .era-open:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .cyc-track{ overflow-x:auto; margin:9px 0 0; padding:0 0 2px; -webkit-overflow-scrolling:touch; direction:rtl; }
+  .cyc-track > *{ direction:ltr; }
+  .cyc-scale .strip{ margin:0; }
+  .cyc-scale .strip + .strip{ margin-top:5px; }
+  .cyc-scale, .sx-yrs, .sx-row{ display:grid; align-items:center; width:max-content; min-width:100%; }
+  .sx-yrs{ height:22px; margin-top:6px; }
+  .sx-yrs span{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:700; text-align:center; color:var(--text-muted); }
+  .sx-yrs span.down{ color:var(--bear-ink); }
+  .sx-yrs span.now{ color:var(--accent-ink); }
+  .sx-yrs span.ahead{ opacity:0.45; }
+  .sx-row{ height:26px; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer; }
+  .sx-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px; }
+  .sx-row i{ justify-self:center; width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
+  .sx-row i.on{ width:13px; height:13px; opacity:1; }
+  .sx-row i.na, .sx-row i.ahead{ opacity:0; }
+  .sx-row i.now{ width:11px; height:11px; background:none; border:1.5px solid var(--accent); box-sizing:border-box; opacity:1; }
+  .sx-row b{ position:sticky; right:0; justify-self:end; padding:3px 0 3px 8px; font-family:"Public Sans",sans-serif;
+    font-size:12.5px; font-weight:600; white-space:nowrap; color:var(--text-primary); background:var(--surface); }
+  .sx-row b::before{ content:""; position:absolute; top:0; bottom:0; left:-10px; width:10px;
+    background:linear-gradient(90deg, transparent, var(--surface)); }
+  .sx-row:hover b{ color:var(--accent-ink); }
+  .sx-foot{ margin:8px 0 0; font-size:12px; line-height:1.45; color:var(--text-muted); }
   /* ---- A closed cycle's categories ---- */
   #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
   .cc-grp .cat-list{ margin-top:var(--gap); }

@@ -73,7 +73,7 @@
 
     function close(){ backdrop.classList.remove('show'); body.innerHTML = ""; }
     document.addEventListener('click', function(e){
-      var btn = e.target.closest && e.target.closest('.expand-btn, .details-link, .more-row, .bh-opt');
+      var btn = e.target.closest && e.target.closest('.expand-btn, .details-link, .more-row, .bh-opt, .sx-row');
       if (btn){ if (btn.closest('summary')) e.preventDefault();
         openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
       if (e.target === backdrop) close();
