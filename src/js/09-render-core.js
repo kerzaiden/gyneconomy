@@ -18,22 +18,6 @@
     }
     return idx;
   }
-  var valuationPanelHtml = "";
-  var _growthPanel = null, _householdsPanel = null;
-  function growthPanelHtml(){
-    return _growthPanel || (_growthPanel = panelRow({
-      name:"Real GDP growth", info:growthInfoHtml(), head:"sheet-metric-gdp",
-      metric:gdpMeter.value.toFixed(1) + "%",
-      flagged:meterFlagged(gdpMeter), bar:panelFromMeter(gdpMeter) }));
-  }
-  function householdsPanelHtml(){
-    return _householdsPanel || (_householdsPanel =
-      panelRow({ name:"Debt service", info:dsrInfoHtml(), head:"sheet-metric-households",
-                 metric:dsrNow.toFixed(1) + "%",
-                 flagged:meterFlagged(dsrMeter), bar:panelFromMeter(dsrMeter) }) +
-      panelRow({ name:"Saving rate", info:savInfoHtml(), metric:savNow.toFixed(1) + "%",
-                 flagged:meterFlagged(savMeter), bar:panelFromMeter(savMeter) }));
-  }
   function facts(list){ return '<ul class="facts">' + list.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>'; }
   function factsFrom(text){
     var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);
@@ -92,30 +76,6 @@
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----
   byId("asof-text").textContent = "Data compiled " + dataCompiledLabel;
 
-  function meterHtml(m){
-    var pct = clampPct(m.value, m.min, m.max);
-    var o = m.optimal, ends = m.ends || {}, flagged = false, zoneHtml = '', labelsHtml = '';
-    if (o){
-      if (o.from != null && o.to != null){
-        var l = clampPct(o.from, m.min, m.max), r = clampPct(o.to, m.min, m.max);
-        zoneHtml = '<div class="rbar-optimal" style="left:' + l.toFixed(1) + '%; width:' + (r - l).toFixed(1) + '%"></div>';
-        flagged = m.value < o.from || m.value > o.to;
-        labelsHtml = '<div class="rbar-labels three"><span>' + (ends.low || "Low") + '</span><span class="mid">' + (ends.zone || "Optimal") + ' ' + o.label + '</span><span>' + (ends.high || "High") + '</span></div>';
-      } else if (o.gte != null){
-        var l2 = clampPct(o.gte, m.min, m.max);
-        zoneHtml = '<div class="rbar-optimal" style="left:' + l2.toFixed(1) + '%; width:' + (100 - l2).toFixed(1) + '%"></div>';
-        flagged = m.value < o.gte;
-        labelsHtml = '<div class="rbar-labels two"><span>' + (ends.low || "Low") + '</span><span>' + (ends.zone || "Optimal") + ' ' + o.label + '</span></div>';
-      } else if (o.lte != null){
-        var r2 = clampPct(o.lte, m.min, m.max);
-        zoneHtml = '<div class="rbar-optimal" style="left:0%; width:' + r2.toFixed(1) + '%"></div>';
-        flagged = m.value > o.lte;
-        labelsHtml = '<div class="rbar-labels two"><span>' + (ends.zone || "Optimal") + ' ' + o.label + '</span><span>' + (ends.high || "High") + '</span></div>';
-      }
-    }
-    var dotHtml = '<div class="rbar-dot' + (flagged ? ' flagged' : '') + '" style="left:' + pct.toFixed(1) + '%"></div>';
-    return labelsHtml + '<div class="rbar-track">' + zoneHtml + dotHtml + '</div>';
-  }
   function srcBlock(list){ return '<div class="src">' + srcHtml(list) + '</div>'; }
   /* ---- THE SUBJECT ROW ---- */
   function subjectRow(o){
@@ -188,11 +148,10 @@
   function cardDetailHtml(ind, opts){
     opts = opts || {};
     var facts = [].concat(ind.facts || [], ind.aux || []);
-    var chartHtml = opts.chart || '';
+    var chartHtml = opts.chart || ind.chart || '';
     var bloodTest = opts.bare ? '' :
       ((opts.noHead ? '' : headHtml(ind, opts.noMark) +
-        '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + '</span></div>') +
-      (opts.noMeter ? '' : meterHtml(ind.meter)));
+        '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + '</span></div>'));
     if (bloodTest && opts.bloodCard) bloodTest = '<div class="page-chart blood-card">' + bloodTest + '</div>';
     return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) +
     (function(){
@@ -207,7 +166,7 @@
       return block;
     })() +
       (function(){
-        if (opts.bare) return "";
+        if (opts.bare || ind.info) return ind.info && !opts.bare ? moreRow(ind.info()) : "";
         var rest = dropWhatIsShown(ind.caption, ind.lead || ind.shortCaption || "");
         return rest ? moreRow('<h4>' + ind.bodyTerm + '</h4><div class="marker-sub">' + ind.econTerm + '</div>' + factsFrom(rest)) : "";
       })();
@@ -285,7 +244,7 @@
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
       var mTrend = put("volume-trend", trendPill(
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
-        null, true, { rising:"accelerating", falling:"decelerating" }));
+        null, true, { rising:"expanding", falling:"contracting" }));
     }
     sheetRenderers["sheet-sign-volume"] = drawM2Record;
     sheetRenderers["volume-range"] = drawM2Record;

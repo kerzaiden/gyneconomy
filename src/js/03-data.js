@@ -124,7 +124,9 @@
   /* ---- Productivity growth is not in this panel ---- */
 
   var productivityReading = {
-    econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY",
+    bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
+    chart:typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>',
+    econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, Q2 2026",
     metric:"2.2%", tag:{ state:"good", text:"Above trend" },
     meter:{ min:-1.7, max:6.7, value:2.2, optimal:{gte:1.3, label:"\u2265 1.3% YoY"},
             ends:{ low:"Falling" } },

@@ -28,7 +28,7 @@
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' +
-      (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
+      '<span class="bh-mark" aria-hidden="true">' + headMark(H) + '</span>' +
       '<h2 class="bh-title">' + t + '</h2>' +
       '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
@@ -103,27 +103,7 @@
     return (i < 0 ? "" : name.slice(0, i + 1)) +
            '<span class="pbr-last">' + (i < 0 ? name : name.slice(i + 1)) + mark + '</span>';
   }
-  function panelRow(o){
-    var door = o.open ? ' class="panel-row lab-door" role="button" tabindex="0" data-open="' + o.open.id +
-      '" data-title="' + o.open.title + '"' : ' class="panel-row"';
-    if (o.head && o.info) HIST_NOTE[o.head] = o.info;
-    var mark = o.open ? CHEV : (o.info && !o.head ? infoIcon(o.info) : "");
-    return '<div' + door.replace('class="', (o.head ? 'data-head="' + o.head + '" class="' : 'class="')) + '>' +
-      '<div class="pbr-name">' +
-        '<h3>' + nameWithMark(o.name, mark) + '</h3>' +
-        (o.head ? "" : '<div class="wb-read' + (o.flagged ? " flagged" : "") + '">' + o.metric + '</div>') +
-      '</div>' +
-      '<div class="pbr-scale">' + panelBar(o.bar) + '</div>' +
-    '</div>';
-  }
-  function panelFromMeter(m, ends){
-    var o = m.optimal || {}, e = ends || m.ends || {};
-    var from = o.from != null ? o.from : (o.gte != null ? o.gte : m.min);
-    var to   = o.to   != null ? o.to   : (o.lte != null ? o.lte : m.max);
-    return { value:m.value, from:from, to:to, floor:m.min, ceil:m.max,
-             lowLabel:e.low || "Low", highLabel:e.high || "High",
-             zoneLabel:o.label || e.zone || "" };
-  }
+  function histNote(head, info){ if (head && info) HIST_NOTE[head] = info; }
   function meterFlagged(m){
     var o = m.optimal || {};
     if (o.from != null) return m.value < o.from || m.value > o.to;
@@ -181,6 +161,11 @@
         'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
         'is a busy economy and, past a point, an inflationary one.</p>';
   }
+  var PRODUCTIVITY_SRC = [
+    {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
+    {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
+    {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
+  ];
   function productivityInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
@@ -194,11 +179,7 @@
       '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' +
         'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
         'each one, and only the second kind compounds.</p>' +
-      srcBlock([
-        {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
-        {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
-        {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
-      ]);
+      srcBlock(PRODUCTIVITY_SRC);
   }
   function outputInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +
@@ -265,43 +246,37 @@
       ]);
   }
   function desireBlock(ind){
+    histNote("desire-range", desireInfoHtml(ind));
     return histBar("", "desire-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("desire-range") +
       '<div id="desire-record" class="vh-host"></div>' +
       histTip("desire-hist-tooltip") +
       '<div id="desire-trend"></div>' +
-      panelRow({ name:"Risk tolerance", info:desireInfoHtml(ind), head:"desire-range", metric:ind.metric,
-                 flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) }) +
     '</div>';
   }
 
   function volumeBlock(ind){
     var g = m2Yoy.filter(function(x){ return x != null; });
     var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
+    histNote("volume-range", volumeInfoHtml(ind));
     return histBar("", "volume-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("volume-range") +
       '<div id="m2-record" class="vh-host"></div>' +
       histTip("m2-hist-tooltip") +
       '<div id="volume-trend"></div>' +
-      panelRow({ name:ind.econTerm, info:volumeInfoHtml(ind), head:"volume-range", metric:ind.metric,
-                 flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) }) +
       '</div>';
   }
   function velocityRecordBlock(pulseInd){
     var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
+    if (pulseInd) histNote("pulse-range", pulseInfoHtml(pulseInd));
     return histBar("", "pulse-timeline") +
       '<div class="page-chart pulsebox">' +
       histHead("pulse-range") +
       '<div id="pulse-record" class="vh-host"></div>' +
       histTip("pulse-hist-tooltip") +
       '<div id="pulse-trend"></div>' +
-      panelRow({ head:"pulse-range", name:pulseInd ? pulseInd.econTerm : "Velocity of money (M2)",
-                 info:pulseInd ? pulseInfoHtml(pulseInd) : "", metric:pulseInd ? pulseInd.metric : "",
-                 flagged:pulseInd ? meterFlagged(pulseInd.meter) : false,
-                 bar:panelFromMeter(pulseInd ? pulseInd.meter : { min:0, max:1, value:0 },
-                                    { low:"Slow", zone:"Pre-2008", high:"Fast" }) }) +
       '</div>';
   }
 
@@ -752,7 +727,7 @@
 
   var lagging = [
     {
-      bodyTerm:"Activity", econTerm:"Labor market",
+      bodyTerm:"Activity", title:"Unemployment rate", econTerm:"Labor market",
       tag:{text:"Solid", state:"good"},
       metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
       meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:"3.5–5%"},

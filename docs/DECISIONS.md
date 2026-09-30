@@ -6854,3 +6854,17 @@ is washed in its colour; the Power score is removed; category pages have no grou
 Valuations and Economic power as one row each, opening a page with their cards; Federal debt and Interest
 payments are the new names.
 ~~~
+
+### V661
+
+~~~text
+Keren: "volume: the terminology is expanding or contracting, not accelerating. unemployment rate, productivity
+growth and industrial output should be their own pages under activity category. all subcategories should
+inherit the icon of the parent category. remove test result components from the app".
+Asked which components, she chose the lab-style range rows under each chart; asked which icons, every reading
+(cards and Search rows); asked how Productivity growth should start, a page now with its history through the
+Backfill (OPHNFB).
+So V661: Volume's trend reads expanding or contracting; Activity holds Unemployment rate, Productivity growth
+and Industrial output, each with its own page; every reading wears its category's icon; the lab-style range
+rows and the meter bar are gone, their notes kept in each chart's (i).
+~~~

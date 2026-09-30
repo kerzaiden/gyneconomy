@@ -145,7 +145,7 @@
     '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' +
     '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>'); }
   var signMarks = { VIX:umbrellaSvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
-                    "Industrial output":gearSvg,
+                    "Industrial output":gearSvg, "Productivity growth":gearSvg,
                     Volume:volumeSvg };
 
   // ---- Market eras & yearly returns (Calendar tab + Cycle tab era headline) ----

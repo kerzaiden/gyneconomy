@@ -104,7 +104,7 @@
     var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || ["", ""];
     var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("\u2248", "");
     var suf = (/[^\d]*$/.exec(today) || [""])[0], signed = /^[+\-\u2212]/.test(tok[0]);
-    function one(x){ return (x < 0 ? "\u2212" : signed ? "+" : "") + Math.abs(x).toFixed(dp); }
+    function one(x){ var a = Math.abs(x).toFixed(dp); return (+a === 0 ? "" : x < 0 ? "\u2212" : signed ? "+" : "") + a; }
     return function(x, y){ return pre + one(x) + (y != null ? "/" + one(y) : suf); };
   }
   function eraValue(val, t, r, e){
@@ -191,7 +191,7 @@
         { name:"Interest payments", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
         { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
         { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
-        { name:"Activity", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
+        { name:"Unemployment rate", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
       ]}
     ];
   }
