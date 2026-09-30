@@ -66,7 +66,7 @@
       if (data.length < 2) data = s.data;
       var shell = svg.parentNode;
       W = Math.max(270, Math.round((shell && shell.clientWidth) || 360));
-      H = W < 430 ? 268 : 300;
+      H = histFrame(W).H;
       innerW = W - padL - padR; innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       svg.innerHTML = "";

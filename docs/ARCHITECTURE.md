@@ -481,7 +481,9 @@ it is the level of the spread that forecasts, not the crossing.
 
 **A history page is three containers**: control on the page's ground, the history container (head,
 readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
-`histControls`; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
+`histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
+the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
+`divergeChart`, `pairChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
 with no reading, by Keren's decision.** Desire has a bare range bar and no mode bar.
 
 - **One affordance per subject.** When the chart draws a reading, its note goes in the head's `⋯` menu

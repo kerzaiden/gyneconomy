@@ -356,7 +356,7 @@
   function histFrame(Wpx){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300;
+    var H = narrow ? 335 : 375;
     return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
              T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
   }
@@ -421,7 +421,7 @@
 
   function divergeChart(o, W){
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? 0.58 : 0.30))));
+    var H = histFrame(W).H;
     var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d){ return d.v; });
     var lo = Math.min.apply(null, vs.concat([o.mid])), hi = Math.max.apply(null, vs.concat([o.mid]));
@@ -455,7 +455,7 @@
 
   function pairChart(o, W){
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(196, Math.min(260, W * (W < 520 ? 0.60 : 0.32))));
+    var H = histFrame(W).H;
     var padL = 14, padR = 14, padT = 38, padB = 40, iw = W - padL - padR, ih = H - padT - padB;
     var all = [];
     o.pairs.forEach(function(p){ all.push(p.was, p.now); });

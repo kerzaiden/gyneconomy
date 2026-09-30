@@ -6872,3 +6872,13 @@ for example, Schiller cape and Buffett indicator should have a diamond icon um, 
 they are in purple. So bring back the icons, but just make them inherit the color of their parent component."
 So each reading keeps its own icon, drawn in its category's colour, on its card, its Search row and its page.
 ~~~
+
+### V662
+
+~~~text
+Keren: "I'm looking at the history component and it looks very cramped. Meaning it's too dense. Can we make it
+higher by about 20 to 30% so it has more air and breathing room? Of course, the bars, everything needs to be
+proportional." And: "make the height universal inside the parent component".
+So V662: every history chart draws at one height, 25% taller (335px on a phone, 375px wide), from one number
+in histFrame; the bars and scales follow the taller plot.
+~~~

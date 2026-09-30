@@ -81,7 +81,7 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
 npm run check            # the gate before every commit: build, email, map, ledger, 120 tool checks
-npm run check:all        # plus the browser suite (105 checks) and axe — what CI runs
+npm run check:all        # plus the browser suite (106 checks) and axe — what CI runs
 npm test                 # the browser suite alone; --bless rewrites the baseline, a deliberate act
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json

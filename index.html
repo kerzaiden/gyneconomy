@@ -15087,7 +15087,7 @@
   function histFrame(Wpx) {
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300;
+    var H = narrow ? 335 : 375;
     return {
       W: W,
       narrow: narrow,
@@ -15162,7 +15162,7 @@
   }
   function divergeChart(o, W) {
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? .58 : .3))));
+    var H = histFrame(W).H;
     var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d) {
       return d.v;
@@ -15234,7 +15234,7 @@
   }
   function pairChart(o, W) {
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(196, Math.min(260, W * (W < 520 ? .6 : .32))));
+    var H = histFrame(W).H;
     var padL = 14, padR = 14, padT = 38, padB = 40, iw = W - padL - padR, ih = H - padT - padB;
     var all = [];
     o.pairs.forEach(function(p) {
@@ -16736,7 +16736,7 @@
     function render() {
       var shell = svg.parentNode;
       W = Math.max(270, Math.round(shell && shell.clientWidth || 360));
-      H = W < 430 ? 268 : 300;
+      H = histFrame(W).H;
       innerW = W - padL - padR;
       innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -17026,7 +17026,7 @@
       if (data.length < 2) data = s.data;
       var shell = svg.parentNode;
       W = Math.max(270, Math.round(shell && shell.clientWidth || 360));
-      H = W < 430 ? 268 : 300;
+      H = histFrame(W).H;
       innerW = W - padL - padR;
       innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);

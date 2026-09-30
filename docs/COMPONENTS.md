@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared patterns**.
+Generated from commit `0424374` on 2026-09-30. **73 components**, **47 shared patterns**.
 
 ## components.js
 
@@ -152,6 +152,7 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`byId`** | refresh-season.js | 47 places |
 | **`put`** | refresh-season.js | 26 places |
+| **`histFrame`** | charts.js | 13 places |
 | **`openCycle`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
@@ -161,7 +162,6 @@ renderer speaks. Listed most-used first.
 | **`factsFrom`** | render-core.js | 10 places |
 | **`addSources`** | model.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
-| **`histFrame`** | charts.js | 9 places |
 | **`yearOf`** | charts.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`fmtSigned`** | render-pages.js | 8 places |
