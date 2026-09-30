@@ -449,15 +449,19 @@ async function openPage(p, url, sheet) {
       : bad('no page carries a lab-style range row', JSON.stringify(doors));
     await p.goto('file://' + url); await p.waitForTimeout(1300);
     const icons = await p.evaluate(() => ['weather', 'circulation', 'mood', 'energy'].map(k => {
-      const tile = (document.querySelector('.browse-list [data-open="sheet-cat-' + k + '"] .subject-icon svg') || {}).outerHTML;
-      const cards = [...document.querySelectorAll('#sheet-cat-' + k + ' .cat-item .ci-head .peek-mark svg')].map(s => s.outerHTML);
-      const rows = [...document.querySelectorAll('#search-list .ind-cat.cat-' + k + ' .ind-row .subject-icon svg')].map(s => s.outerHTML);
-      return { k, cards: cards.length, rows: rows.length, same: !!tile && cards.concat(rows).every(s => s === tile) };
-    }).concat([{ k: 'output-head', same: (document.querySelector('#sheet-sign-industrial-output .head-mark-disc svg') || {}).outerHTML ===
-      (document.querySelector('.browse-list [data-open="sheet-cat-energy"] .subject-icon svg') || {}).outerHTML }]));
-    icons.every(i => i.same) && icons[3].cards === 7
-      ? ok('every reading wears its category icon', icons.slice(0, 4).map(i => i.k + ' ' + i.cards + '+' + i.rows).join(', '))
-      : bad('every reading wears its category icon', JSON.stringify(icons));
+      const col = el => el ? getComputedStyle(el).color : null;
+      const cat = col(document.querySelector('#sheet-cat-' + k + ' .ci-name'));
+      const cards = [...document.querySelectorAll('#sheet-cat-' + k + ' .cat-item .ci-head .peek-mark')];
+      const rows = [...document.querySelectorAll('#search-list .ind-cat.cat-' + k + ' .ind-row .subject-icon span')];
+      return { k, cards: cards.length, rows: rows.length, shapes: new Set(cards.map(m => (m.querySelector('svg') || {}).innerHTML)).size,
+        same: !!cat && cards.concat(rows).every(m => col(m) === cat) && col(document.querySelector('#search-list .ind-cat.cat-' + k + ' .ind-cat-mark')) === cat };
+    }));
+    await openPage(p, url, 'sheet-metric-valuation');
+    const headCol = await p.evaluate(() => getComputedStyle(document.querySelector('#metric-page .bh-mark')).color ===
+      getComputedStyle(document.querySelector('#sheet-cat-mood .ci-name') || document.querySelector('.cat-mood .ind-cat-mark')).color);
+    icons.every(i => i.same && i.shapes > 1) && icons[3].cards === 7 && headCol
+      ? ok('every reading keeps its icon in its category colour', icons.map(i => i.k + ' ' + i.shapes + ' shapes').join(', '))
+      : bad('every reading keeps its icon in its category colour', JSON.stringify({ icons, headCol }));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,

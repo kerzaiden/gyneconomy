@@ -6867,4 +6867,8 @@ Backfill (OPHNFB).
 So V661: Volume's trend reads expanding or contracting; Activity holds Unemployment rate, Productivity growth
 and Industrial output, each with its own page; every reading wears its category's icon; the lab-style range
 rows and the meter bar are gone, their notes kept in each chart's (i).
+Then, on the preview: "I don't want the individual icons to disappear. I just want them to inherit the color. So
+for example, Schiller cape and Buffett indicator should have a diamond icon um, horizon has a horizon icon, but
+they are in purple. So bring back the icons, but just make them inherit the color of their parent component."
+So each reading keeps its own icon, drawn in its category's colour, on its card, its Search row and its page.
 ~~~

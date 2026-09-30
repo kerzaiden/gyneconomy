@@ -279,9 +279,11 @@ Rules that shape the pages:
   Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`; until the first run
   the page has no chart, and when the series exists `productivitySpec` mounts the split chart on the same
   page (the 1.3% slowdown line is the BLS figure; above it is good, so its bars read green).
-- **Every reading wears its category's icon (V661, Keren: "all subcategories should inherit the icon of the
-  parent category"):** the card (`catItem` writes `catMark(key)`), the Search row, the group row, a sign
-  page's head disc and the history head (`headMark`: the open page's category, from `PAGE_CAT`).
+- **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
+  icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
+  the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
+  its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark of
+  their own (Economic power the bolt; the others their first member's).
   Horizon's two spreads and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.

@@ -28,7 +28,7 @@
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' +
-      '<span class="bh-mark" aria-hidden="true">' + headMark(H) + '</span>' +
+      (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
       '<h2 class="bh-title">' + t + '</h2>' +
       '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +

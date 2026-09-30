@@ -946,7 +946,7 @@
     justify-content:center; color:var(--text-secondary);
     background:color-mix(in srgb, var(--text-primary) 8%, var(--surface)); }
   .bh-mark svg{ width:13px; height:13px; }
-  .bh-mark:empty{ display:none; }
+  .metric-sheet[class*=" cat-"] .bh-mark, .metric-sheet[class*=" cat-"] .head-mark-disc{ color:var(--cat); }
   .bh-mark svg path, .bh-mark svg circle, .bh-mark svg rect, .bh-mark svg line{ stroke-width:1.35; }
   .bh-title, .spread-history-head h4{ font-family:"Public Sans",sans-serif; font-size:14.5px;
     font-weight:600; letter-spacing:-0.01em; color:var(--text-primary); }
@@ -13697,7 +13697,7 @@
     var H = HIST_HEAD[id];
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
-    return '<div class="band-head">' + '<span class="bh-mark" aria-hidden="true">' + headMark(H) + "</span>" + '<h2 class="bh-title">' + t + "</h2>" + '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
+    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + "</h2>" + '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
   }
   var headNoteIdx = {};
   function headMenuHtml(id) {
@@ -15571,6 +15571,9 @@
   function flameSvg() {
     return markSvg('<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' + '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>');
   }
+  function clockSvg() {
+    return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>');
+  }
   function gearSvg() {
     var teeth = "", i, a;
     for (i = 0; i < 6; i++) {
@@ -15616,7 +15619,7 @@
     Activity: trendUpSvg,
     Temperature: thermoSvg,
     "Industrial output": gearSvg,
-    "Productivity growth": gearSvg,
+    "Productivity growth": clockSvg,
     Volume: volumeSvg
   };
   var DSR_FROM_YEAR = 2005;
@@ -18890,7 +18893,7 @@
       id: "sheet-sign-productivity-growth",
       noPeek: true,
       title: "Productivity growth",
-      mark: gearSvg,
+      mark: clockSvg,
       head: "Output per Hour, Year over Year",
       series: productivityHistory,
       when: qLast(productivityHistory),
@@ -19043,18 +19046,6 @@
       base: DEF_PEEK_BASE
     });
   }
-  var PAGE_CAT = {};
-  function catMark(key) {
-    return (categoryCats().filter(function(c) {
-      return c.key === key;
-    })[0] || {
-      mark: ""
-    }).mark;
-  }
-  function headMark(H) {
-    var s = document.querySelector("#metric-page > .metric-sheet"), k = s && PAGE_CAT[s.id];
-    return k ? catMark(k) : H.mark ? H.mark() : "";
-  }
   function catSheet(id, key) {
     var sheet = document.createElement("div");
     sheet.className = "metric-sheet cat-sheet cat-" + key;
@@ -19101,6 +19092,7 @@
       var grp = document.createElement("div");
       grp.className = "cat-group";
       grp.setAttribute("data-group", p.group);
+      grp.__mark = p.mark;
       p.picks.forEach(function(sel) {
         var el = document.querySelector(sel);
         if (el) grp.appendChild(catItem(el, PERIOD, key));
@@ -19137,6 +19129,7 @@
       sub: "Economic power · Households · Activity",
       picks: [ {
         group: "Economic power",
+        mark: boltSvg,
         picks: [ '.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]' ]
       }, '.peek[data-open="sheet-metric-households"]', {
         group: "Activity",
@@ -19421,21 +19414,24 @@
       });
     });
   }
-  function indRow(e, kind, icon) {
+  function indRow(e, kind) {
     return subjectRow({
       cls: "ind-row kind-" + kind,
       open: e.target,
       title: e.title,
-      icon: icon || e.icon,
+      icon: e.icon,
       text: '<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + "</span></div>"
     });
   }
   var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ], IND_CATS = [ "weather", "mood", "circulation", "energy" ];
   function indGroupRow(groups, rows, item, e, kind, find) {
-    var grp = item.parentNode.getAttribute("data-group");
+    var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
     if (!groups[grp]) {
       groups[grp] = {
         title: grp,
+        icon: gm ? discOf({
+          innerHTML: gm()
+        }, "") : e.icon,
         kinds: {},
         terms: [ grp ]
       };
@@ -19444,13 +19440,13 @@
     groups[grp].kinds[kind] = 1;
     groups[grp].terms.push(find[e.title]);
   }
-  function indRows(sheet, find, icon) {
+  function indRows(sheet, find) {
     var rows = [], groups = {};
     Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item) {
       var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
       IND_ORDER.forEach(function(kind) {
         timingMembers[kind].forEach(function(e) {
-          if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind, icon));
+          if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));
         });
       });
     });
@@ -19460,7 +19456,7 @@
       return indRow({
         target: groupId(r.title),
         title: r.title,
-        icon: icon,
+        icon: r.icon,
         metric: ""
       }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
     });
@@ -19468,7 +19464,7 @@
   function indCategoryHtml(key, find) {
     var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
     if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find, discOf(mark, "norm"));
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key + '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + "</span>" + '<span class="ind-cat-name">' + title + "</span>" + CHEV + '</button><div class="ind-card">' + rows.join("") + "</div></section>";
   }
   var NAV = {
@@ -19717,9 +19713,8 @@
   }
   function catItem(src, PERIOD, key) {
     var open = src.getAttribute("data-open");
-    PAGE_CAT[open] = key;
-    var headMk = document.querySelector("#" + open + " .head-mark-disc");
-    if (headMk) headMk.innerHTML = catMark(key);
+    var page = document.getElementById(open);
+    if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
     var item = document.createElement("button");
     item.type = "button";
@@ -19728,9 +19723,9 @@
     item.setAttribute("data-title", src.getAttribute("data-title") || "");
     var head = document.createElement("div");
     head.className = "ci-head";
-    var holder = document.createElement("span");
+    var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
     holder.className = "peek-mark";
-    holder.innerHTML = catMark(key);
+    if (glyph) holder.appendChild(glyph);
     head.appendChild(holder);
     var nm = document.createElement("span");
     nm.className = "ci-name";

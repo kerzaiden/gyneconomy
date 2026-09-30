@@ -44,7 +44,7 @@
   function productivitySpec(){
     if (typeof productivityHistory === "undefined" || !productivityHistory.length) return [];
     var r = productivityReading, line = r.meter.optimal.gte;
-    return [{ id:"sheet-sign-productivity-growth", noPeek:true, title:"Productivity growth", mark:gearSvg,
+    return [{ id:"sheet-sign-productivity-growth", noPeek:true, title:"Productivity growth", mark:clockSvg,
       head:"Output per Hour, Year over Year", series:productivityHistory, when:qLast(productivityHistory),
       row:{ marker:r.econTerm, sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state },
       mid:line, midLabel:"slowdown average, " + line.toFixed(1) + "%", unit:"YoY", src:PRODUCTIVITY_SRC,
@@ -115,12 +115,6 @@
     return splitPeek({ title:"Federal budget", mark:budgetSvg, row:labPanel[2], unit:"deficit, of GDP",
       target:"sheet-marker-deficit", cols:deficitHistory.map(function(v){ return -v; }), base:DEF_PEEK_BASE });
   }
-  var PAGE_CAT = {};
-  function catMark(key){ return (categoryCats().filter(function(c){ return c.key === key; })[0] || { mark:"" }).mark; }
-  function headMark(H){
-    var s = document.querySelector("#metric-page > .metric-sheet"), k = s && PAGE_CAT[s.id];
-    return k ? catMark(k) : H.mark ? H.mark() : "";
-  }
   function catSheet(id, key){
     var sheet = document.createElement("div");
     sheet.className = "metric-sheet cat-sheet cat-" + key; sheet.id = id; sheet.hidden = true;
@@ -144,7 +138,7 @@
   function appendPicks(items, picks, PERIOD, key){
     picks.forEach(function(p){
       if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, PERIOD, key)); return; }
-      var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group);
+      var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group); grp.__mark = p.mark;
       p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, PERIOD, key)); });
       if (grp.children.length) groupSheet(grp, p.group, key, items);
     });
@@ -161,7 +155,7 @@
                '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]',
                '.sign-row[data-open="sheet-sign-horizon"]'] },
       { key:"energy", title:"Energy", mark:boltSvg(), sub:"Economic power · Households · Activity",
-        picks:[{ group:"Economic power", picks:['.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
+        picks:[{ group:"Economic power", mark:boltSvg, picks:['.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
                '.peek[data-open="sheet-metric-households"]', { group:"Activity", picks:['.sign-row[data-open="sheet-sign-activity"]',
                  '.sign-row[data-open="sheet-sign-productivity-growth"]', '.sign-row[data-open="sheet-sign-industrial-output"]'] }] }
     ];

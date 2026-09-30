@@ -179,34 +179,34 @@
     });
   }
 
-  function indRow(e, kind, icon){
-    return subjectRow({ cls:"ind-row kind-" + kind, open:e.target, title:e.title, icon:icon || e.icon,
+  function indRow(e, kind){
+    return subjectRow({ cls:"ind-row kind-" + kind, open:e.target, title:e.title, icon:e.icon,
       text:'<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + '</span></div>' });
   }
   var IND_ORDER = ["structural", "leading", "coincident", "lagging"], IND_CATS = ["weather", "mood", "circulation", "energy"];
   function indGroupRow(groups, rows, item, e, kind, find){
-    var grp = item.parentNode.getAttribute("data-group");
-    if (!groups[grp]){ groups[grp] = { title:grp, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
+    var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
+    if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? discOf({ innerHTML:gm() }, "") : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
     groups[grp].kinds[kind] = 1; groups[grp].terms.push(find[e.title]);
   }
-  function indRows(sheet, find, icon){
+  function indRows(sheet, find){
     var rows = [], groups = {};
     Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item){
       var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
       IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
-        if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind, icon));
+        if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));
       }); });
     });
     return rows.map(function(r){
       if (typeof r === "string") return r;
       find[r.title] = r.terms.join(" ").toLowerCase();
-      return indRow({ target:groupId(r.title), title:r.title, icon:icon, metric:"" }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
+      return indRow({ target:groupId(r.title), title:r.title, icon:r.icon, metric:"" }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
     });
   }
   function indCategoryHtml(key, find){
     var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
     if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find, discOf(mark, "norm"));
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
       '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + '</span>' +
       '<span class="ind-cat-name">' + title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
@@ -373,16 +373,15 @@
   }
   function catItem(src, PERIOD, key){
     var open = src.getAttribute("data-open");
-    PAGE_CAT[open] = key;
-    var headMk = document.querySelector("#" + open + " .head-mark-disc"); if (headMk) headMk.innerHTML = catMark(key);
+    var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
     var item = document.createElement("button");
     item.type = "button"; item.className = "cat-item";
     item.setAttribute("data-open", open);
     item.setAttribute("data-title", src.getAttribute("data-title") || "");
     var head = document.createElement("div"); head.className = "ci-head";
-    var holder = document.createElement("span");
-    holder.className = "peek-mark"; holder.innerHTML = catMark(key);
+    var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
+    holder.className = "peek-mark"; if (glyph) holder.appendChild(glyph);
     head.appendChild(holder);
     var nm = document.createElement("span"); nm.className = "ci-name";
     var kick = src.querySelector(".peek-kicker");
