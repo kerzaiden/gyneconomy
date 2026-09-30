@@ -104,6 +104,7 @@
   function flameSvg(){ return markSvg(
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
     '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }
+  function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>'); }
   function gearSvg(){
     var teeth = "", i, a;
     for (i = 0; i < 6; i++){ a = i * Math.PI / 3;
@@ -145,7 +146,7 @@
     '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' +
     '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>'); }
   var signMarks = { VIX:umbrellaSvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
-                    "Industrial output":gearSvg,
+                    "Industrial output":gearSvg, "Productivity growth":clockSvg,
                     Volume:volumeSvg };
 
   // ---- Market eras & yearly returns (Calendar tab + Cycle tab era headline) ----

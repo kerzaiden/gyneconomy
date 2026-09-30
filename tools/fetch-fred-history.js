@@ -65,6 +65,14 @@ function quarterly(rows, lo, hi) {
   });
 }
 
+function yoyQuarterly(qs, lo, hi) {
+  const at = new Map(qs.map(d => [d.q, d.v]));
+  return qs.map(d => {
+    const prev = at.get((Number(d.q.slice(0, 4)) - 1) + d.q.slice(4));
+    return prev > 0 ? { q: d.q, v: Math.round((d.v / prev - 1) * 1000) / 10 } : null;
+  }).filter(d => d && band(d.v, lo, hi));
+}
+
 function quarterlyMean(rows, lo, hi) {
   const acc = new Map();
   for (const r of rows) {
@@ -99,12 +107,13 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, fearCurve, stamp, fiscal, treasury) {
+function emit(fedFunds, fearCurve, stamp, fiscal, treasury, productivity) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
   var fearCurveHistory = [${rows(fearCurve)}];
-` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '');
+` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
+    (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '');
 }
 
 function treasuryBlock(t) {
@@ -177,12 +186,16 @@ async function main() {
   for (const k of Object.keys(full)) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
   if (treasury.y30.slice(0, 4).some(d => d.v != null)) throw new Error('GS30: 2005 should be the no-issuance gap');
 
-  fs.writeFileSync(OUT, emit(fedFunds, fearCurve, new Date().toISOString().slice(0, 10), fiscal, treasury));
+  const productivity = yoyQuarterly(quarterly(await fredSeries('OPHNFB', '1947-01-01'), 1, 1000), -20, 30);
+  if (!productivity.length) throw new Error('OPHNFB: no year-over-year quarter');
+  say('OPHNFB YoY    ' + productivity.length + ' quarters, ' + productivity[0].q + ' → ' + productivity[productivity.length - 1].q);
+
+  fs.writeFileSync(OUT, emit(fedFunds, fearCurve, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { monthEnd, curveMonthly, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

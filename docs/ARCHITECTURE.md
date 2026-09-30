@@ -255,7 +255,7 @@ Rules that shape the pages:
   card (Valuations: Shiller CAPE · Buffett indicator; Economic power: Federal debt · Interest payments · Federal
   budget). The split pages are
   built by one builder, `src/js/12a-indicators.js` (`splitSpecs` → `mountSplit` → `drawSplit`), on the history
-  component (`divergeChart` hung from the reading's sourced line, `histControls`, `histHead`, `panelRow`), so
+  component (`divergeChart` hung from the reading's sourced line, `histControls`, `histHead`, `histNote`), so
   a new split is a spec, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
   the cards run as one list. **The group lives in Search instead**: one row named for the group (no figure),
@@ -267,6 +267,23 @@ Rules that shape the pages:
   a fixed `::before` wash from `--cat` down to the page, and the top bar turns clear over it.
   The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
   the three fiscal markers it summed each keep their own page.
+- **No lab-style range rows (V661, Keren: "remove test result components from the app").** The rows that
+  read like a blood test under each history (name, range bar, verdict: `panelRow`, `panelBar`, the sign
+  page's `meterHtml` bar, `seatBandReading`'s reading box) are gone. What they carried as notes lives on
+  in the chart's (i) menu: `histNote(head, info)` registers it (Households' note is the bill and the cushion
+  together). A reading without a history (Industrial output, and Productivity growth until its series lands)
+  keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
+- **Activity is a group of three (V661):** Unemployment rate (the Activity page; `ind.title` renames it on
+  screen while `bodyTerm` keeps the page id), Productivity growth and Industrial output, each a sign page of
+  its own (`signSubject`; ids drop spaces). Productivity growth is structural (Claude's call, to confirm).
+  Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`; until the first run
+  the page has no chart, and when the series exists `productivitySpec` mounts the split chart on the same
+  page (the 1.3% slowdown line is the BLS figure; above it is good, so its bars read green).
+- **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
+  icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
+  the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
+  its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark of
+  their own (Economic power the bolt; the others their first member's).
   Horizon's two spreads and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.
@@ -479,7 +496,7 @@ with no reading, by Keren's decision.** Desire has a bare range bar and no mode 
 - **One number per shared decision.** `COL_FILL` is every column's share of its slot; `AXIS` is every
   chart's margins; geometry carries the name of the chart that made it (V618) so a hover can never read
   another chart's ruler.
-- **Don't fork `meterHtml`; add an option.** Every (i) is a `.lede` plus `facts([...])`, one fact per
+- Every (i) is a `.lede` plus `facts([...])`, one fact per
   line, five or six max; all open the one shared modal.
 - **Highlights: every sentence is arithmetic on the series above it; none is written by hand.** A
   highlight naming a record excludes the reading it describes.
@@ -589,7 +606,7 @@ lists — is never touched by a refresh. **`currentSeason` is computed — never
 invariants: geometry is owned by the chart that made it, a reading prints where it is painted, every reach
 finds something, every action has an answer, every id is one element, and no data check fired —
 `console.warn` is a failing check because ten data checks had no listener for two hundred versions (V623).
-**Every refactor ships with "45 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
+**Every refactor ships with "48 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If
@@ -660,7 +677,7 @@ mark at 13, 15, 20, 27 and 42px together at real size.
 
 ## Surfaces and controls
 
-Page order on every inner page: history · cycle average · blood test · Highlights · More details. Card:
+Page order on every inner page: history · cycle average · Highlights · More details (no blood test since V661). Card:
 `--surface`, 1px `--border`, `--radius`, no shadow. A list is one container with hairlines between rows.
 Hover moves `--border` to `--border-strong`, never brand. Range controls offer only the ranges the data
 answers, nothing below two stops; "This cycle" never with 5Y. Every (i) opens the shared modal — a bottom

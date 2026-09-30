@@ -82,24 +82,7 @@
     if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate")
       el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
     host.__readEl = el;
-    seatBandReading(cont);
     return el;
-  }
-  function seatBandReading(cont){
-    var box = cont.parentNode;
-    if (!box) return;
-    var kids = cont.querySelectorAll(":scope > .panel-row, :scope > .panel-stack, " +
-                                     ":scope > div:has(> .panel-row), :scope > div:has(> .panel-stack)");
-    var read = box.querySelector(":scope > .reading-box");
-    if (!kids.length && !read) return;
-    if (!read){
-      read = document.createElement("div");
-      read.className = "reading-box";
-      box.insertBefore(read, cont.nextSibling);
-    }
-    for (var i = 0; i < kids.length; i++) read.appendChild(kids[i]);
-    read.classList.toggle("solo", read.querySelectorAll(".panel-row").length === 1 &&
-                                  !!read.querySelector(".panel-row[data-head]"));
   }
   function histReadFill(host, d, i){
     var g = host.__geom, el = host.__readEl;
@@ -522,7 +505,7 @@
       src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]
     },
     {
-      bodyTerm:"Industrial output", econTerm:"Industrial output",
+      bodyTerm:"Industrial output", econTerm:"Industrial output", info:function(){ return outputInfoHtml(this); },
       tag:{text:"Expanding", state:"good"},
       metric:"54.6", metricSub:"ISM Manufacturing PMI, Aug 2026",
       meter:{min:29.4,max:77.5,value:54.6,optimal:{gte:50, label:"≥ 50"}, ends:{ low:"Contracting" }},
@@ -675,35 +658,4 @@
     return vhOpen(W, H) +
       'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
       ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';
-  }
-  var PBAR_GAP = 3;
-  function panelBar(o){
-    var noLow = o.from <= o.floor, noHigh = o.to >= o.ceil;
-    var segs;
-    if (noLow && noHigh) segs = [{ on:true, l:0, w:100 }];
-    else if (noLow)      segs = [{ on:true, l:0, w:57 }, { l:60, w:40 }];
-    else if (noHigh)     segs = [{ l:0, w:40 }, { on:true, l:43, w:57 }];
-    else { var W = (100 - PBAR_GAP * 2) / 3;
-           segs = [{ l:0, w:W }, { on:true, l:W + PBAR_GAP, w:W }, { l:(W + PBAR_GAP) * 2, w:W }]; }
-    var band = segs.filter(function(g){ return g.on; })[0];
-    var lowSeg = noLow ? null : segs[0], highSeg = noHigh ? null : segs[segs.length - 1];
-    var t01 = function(x){ return Math.max(0, Math.min(1, x)); };
-    var v = o.value, g, frac;
-    if (v < o.from && lowSeg){ g = lowSeg; frac = t01((v - o.floor) / ((o.from - o.floor) || 1)); }
-    else if (v > o.to && highSeg){ g = highSeg; frac = t01((v - o.to) / ((o.ceil - o.to) || 1)); }
-    else { g = band; frac = t01((v - o.from) / ((o.to - o.from) || 1)); }
-    var x = g.l + frac * g.w;
-    var flagged = v < o.from || v > o.to;
-    return '<div class="pbar-labels' + (noLow || noHigh ? " two" : "") + '">' +
-        (noLow ? "" : '<span>' + o.lowLabel + '</span>') +
-        '<span>' + o.zoneLabel + '</span>' +
-        (noHigh ? "" : '<span>' + o.highLabel + '</span>') +
-      '</div>' +
-      '<div class="pbar">' +
-        segs.map(function(sg){
-          return '<span class="pbar-seg' + (sg.on ? " on" : "") + '" style="left:' + sg.l.toFixed(2) +
-                 '%; width:' + sg.w.toFixed(2) + '%"></span>';
-        }).join("") +
-        '<span class="pbar-dot' + (flagged ? " flagged" : "") + '" style="left:' + x.toFixed(2) + '%"></span>' +
-      '</div>';
   }

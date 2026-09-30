@@ -59,65 +59,31 @@
   function renderSignsList(){
     var host = byId("signs-list");
     var PEEKED = { Temperature:1, Pulse:1, Volume:1 };
-    var FOLDED = { "Industrial output":"Activity" }, foldedInto = {};
-    foldedInto["Activity"] = [productivityReading];
     function activityStackHtml(ind){
-      var folded = foldedInto["Activity"] || [];
-      var byTerm = function(t){ return folded.filter(function(f){ return f.econTerm === t; })[0]; };
-      var prod = byTerm("Productivity growth"), out = byTerm("Industrial output");
-      var rows = panelRow({ name:ind.econTerm, info:activityInfoHtml(ind), head:"sheet-sign-activity",
-                            metric:ind.metric,
-                            flagged:meterFlagged(ind.meter), bar:panelFromMeter(ind.meter) });
-      if (prod) rows += panelRow({ name:prod.econTerm, info:productivityInfoHtml(prod), metric:prod.metric,
-                                   flagged:meterFlagged(prod.meter), bar:panelFromMeter(prod.meter) });
-      if (out) rows += panelRow({ name:out.econTerm, info:outputInfoHtml(out), metric:out.metric,
-                                  flagged:meterFlagged(out.meter), bar:panelFromMeter(out.meter) });
+      histNote("sheet-sign-activity", activityInfoHtml(ind));
       return histBar("", "act-rangebar") +
         '<div class="page-chart">' +
           histHead("sheet-sign-activity") +
           '<div id="act-history" class="vh-host"></div>' +
           histTip("act-hist-tooltip") +
           '<div id="act-trend"></div>' +
-          '<div class="panel-stack in-hist">' + rows + '</div>' +
         '</div>';
-    }
-    function foldedBlock(f){
-      var rest = dropWhatIsShown(f.caption, f.lead || f.shortCaption || "");
-      var facts = [].concat(f.facts || [], f.aux || []);
-      return '<section class="folded-sign">' +
-        '<div class="spread-history-head">' +
-          '<h4>' + f.econTerm + (rest ? expandBtn('<h4>' + f.econTerm + '</h4>' + factsFrom(rest)) : '') + '</h4>' +
-          '<span class="tag ' + f.tag.state + '">' + f.tag.text + '</span></div>' +
-        '<div class="metric-row"><span class="metric mono">' + f.metric + '</span>' +
-          '<span class="metric-sub">' + f.metricSub + '</span></div>' +
-        meterHtml(f.meter) +
-        '<p class="caption">' + (f.lead || f.shortCaption || f.caption) + '</p>' +
-        facts.map(function(a){ return '<div class="aux-stat"><span>' + a.label + '</span><b>' + a.value + '</b></div>'; }).join("") +
-      '</section>';
     }
     function pageFor(term){
       return term === "Temperature" ? "sheet-metric-temp"
-           : "sheet-sign-" + term.toLowerCase();
+           : "sheet-sign-" + term.toLowerCase().replace(/\s+/g, "-");
     }
     function signSubject(ind, timing){
-      var key = ind.bodyTerm.toLowerCase(), id = "sheet-sign-" + key;
+      var key = ind.bodyTerm.toLowerCase().replace(/\s+/g, "-"), id = "sheet-sign-" + key;
       var svg = signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "";
       var row = elFrom(subjectRow({
-        subject:"sign-" + key, open:id, title:ind.bodyTerm,
+        subject:"sign-" + key, open:id, title:ind.title || ind.bodyTerm,
         icon: subjectIcon(ind.tag.state, svg),
         text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
               '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
               '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
               (ind.peek || "")
       }));
-      if (FOLDED[ind.bodyTerm]){
-        var hostName = FOLDED[ind.bodyTerm];
-        (foldedInto[hostName] = foldedInto[hostName] || []).push(ind);
-        registerTiming(timing, { title:ind.bodyTerm, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
-          tag:ind.tag, icon:'<div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div>',
-          target:pageFor(hostName) });
-        return null;
-      }
       var d = document.createElement("div");
       d.className = "metric-sheet"; d.id = id; d.hidden = true;
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
@@ -128,7 +94,6 @@
                                     ind.bodyTerm === "Activity",
                               noHead: ind.bodyTerm === "Pulse" || ind.bodyTerm === "Volume",
                               noMark: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
-                              noMeter: ind.bodyTerm === "Desire",
                               chartFirst: ind.bodyTerm === "Pulse" || ind.bodyTerm === "Volume",
                               bloodCard: false,
                               deferHighlights: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
@@ -137,10 +102,9 @@
         (ind.bodyTerm === "Desire" ? desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value)
          : ind.bodyTerm === "Activity" ? activityStackHtml(ind)
            : "") +
-        (ind.bodyTerm === "Activity" ? "" : (foldedInto[ind.bodyTerm] || []).map(foldedBlock).join("")) +
         (function(){ var h = heldHighlights; heldHighlights = ""; return h; })();
       registerTiming(timing || (ind.bodyTerm === "Temperature" ? "lagging" : null), {
-        title:ind.bodyTerm, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
+        title:ind.title || ind.bodyTerm, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
         tag:ind.tag, icon:'<div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div>',
         target:pageFor(ind.bodyTerm)
       });
@@ -160,6 +124,7 @@
     }
     coincident.forEach(function(ind){ signSubject(ind, ind.bodyTerm === "Temperature" ? null : (ind.timing || "coincident")); });
     lagging.forEach(function(ind){ signSubject(ind, "lagging"); });
+    signSubject(productivityReading, "structural");
 
     convertLeadingSigns();
     orderMetricSheets();
@@ -406,22 +371,18 @@
     }
     return "";
   }
-  function catItem(src, PERIOD){
+  function catItem(src, PERIOD, key){
     var open = src.getAttribute("data-open");
+    var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
     var item = document.createElement("button");
     item.type = "button"; item.className = "cat-item";
     item.setAttribute("data-open", open);
     item.setAttribute("data-title", src.getAttribute("data-title") || "");
     var head = document.createElement("div"); head.className = "ci-head";
-    var markSrc = src.querySelector(".peek-mark, .subject-icon");
-    if (markSrc){
-      var glyph = markSrc.querySelector("svg");
-      var holder = document.createElement("span");
-      holder.className = "peek-mark";
-      if (glyph) holder.appendChild(glyph);
-      head.appendChild(holder);
-    }
+    var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
+    holder.className = "peek-mark"; if (glyph) holder.appendChild(glyph);
+    head.appendChild(holder);
     var nm = document.createElement("span"); nm.className = "ci-name";
     var kick = src.querySelector(".peek-kicker");
     nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
@@ -752,8 +713,7 @@
       put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
       put("gdp-head", histHead("sheet-metric-gdp"));
       byId("slot-growth").hidden = true;
-      var gp = byId("gdp-panel");
-      if (gp && !gp.firstChild) gp.innerHTML = growthPanelHtml();
+      histNote("sheet-metric-gdp", growthInfoHtml());
       var hist = byId("gdp-history"); hist.hidden = yoy;
       var box = byId("gdp-yoy"); box.hidden = !yoy;
       if (!yoy){
@@ -835,13 +795,13 @@
       var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
       var to = idx ? idx[1] : dsrHistory.length;
       var host = byId("households-chart"); if (!host) return;
+      histNote(id, dsrInfoHtml() + savInfoHtml());
       host.innerHTML =
         histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4), stops:HH_STOPS }, DSR_FROM_YEAR)) +
         '<div class="page-chart">' + histHead(id) +
         householdsChart(W, from, to) +
         trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
                   "Saving", true, { rising:"keeping more", falling:"keeping less" }) +
-        '<div class="panel-stack in-hist">' + householdsPanelHtml() + '</div>' +
         histTip("households-hist-tooltip") + '</div>';
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return householdsChart(w, from, to); });
@@ -865,7 +825,6 @@
               ", with the fitted trend across the readings in view"
         }, W) +
         trendPill(capeTrend, null, true) +
-        '<div class="panel-stack in-hist">' + valuationPanelHtml + '</div>' +
         histTip("valuation-hist-tooltip") + '</div>');
       var vBox = document.querySelector("#valuation-chart .page-chart");
       refitHistory(vBox, function(w){

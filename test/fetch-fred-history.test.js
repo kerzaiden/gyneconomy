@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { monthEnd, curveMonthly, monthlyLevels, quarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -126,6 +126,12 @@ throws('a month that is not a quarter start',
    () => quarterly([d('1990-05-01', 1)], -100, 100), /not a quarter start/);
 
 ok('band rejects a non-number', band('4.2', 0, 25), false);
+ok('year over year compares a quarter with the same quarter a year before',
+   yoyQuarterly([{ q: '2024 Q2', v: 100 }, { q: '2025 Q1', v: 101 }, { q: '2025 Q2', v: 102.2 }], -20, 30), [{ q: '2025 Q2', v: 2.2 }]);
+ok('a quarter without its year-earlier twin is left out',
+   yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
+ok('with productivity, its series is written',
+   /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], 'x', null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

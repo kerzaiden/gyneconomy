@@ -8,7 +8,8 @@
   var INDICATOR_GROUP = {
     "sheet-metric-valuation":"Valuations", "sheet-metric-buffett":"Valuations",
     "sheet-metric-debt":"Economic power",
-    "sheet-metric-interest":"Economic power", "sheet-marker-deficit":"Economic power"
+    "sheet-metric-interest":"Economic power", "sheet-marker-deficit":"Economic power",
+    "sheet-sign-activity":"Activity", "sheet-sign-productivity-growth":"Activity", "sheet-sign-industrial-output":"Activity"
   };
   var SPLIT_PERIOD = {}, SPLIT_STOPS = ["5y", "10y", "25y", "max"], DEF_PEEK_BASE = 3.8;
   function debtSvg(){ return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>'); }
@@ -38,7 +39,16 @@
         head:"Net Interest, Share of GDP", row:labPanel[1], series:fiscalHistory.interest, when:periodOf(labPanel[1]),
         mid:2, midLabel:"50-year average, 2.0%", unit:"of GDP",
         fmt:function(v){ return v.toFixed(1) + "%"; }, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight }
-    ];
+    ].concat(productivitySpec());
+  }
+  function productivitySpec(){
+    if (typeof productivityHistory === "undefined" || !productivityHistory.length) return [];
+    var r = productivityReading, line = r.meter.optimal.gte;
+    return [{ id:"sheet-sign-productivity-growth", noPeek:true, title:"Productivity growth", mark:clockSvg,
+      head:"Output per Hour, Year over Year", series:productivityHistory, when:qLast(productivityHistory),
+      row:{ marker:r.econTerm, sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state },
+      mid:line, midLabel:"slowdown average, " + line.toFixed(1) + "%", unit:"YoY", src:PRODUCTIVITY_SRC,
+      fmt:function(v){ return v.toFixed(1) + "%"; }, insight:productivityInsight }];
   }
   function splitMid(id){ return splitSpecs().filter(function(s){ return s.id === id; })[0].mid; }
   function splitInfo(s){
@@ -62,8 +72,6 @@
     };
     put(id + "-chart", histBar(histControls(id, { series:s.series, stops:SPLIT_STOPS })) +
       '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) +
-      '<div class="panel-stack in-hist">' + panelRow({ name:s.row.marker, head:id, info:splitInfo(s),
-        metric:s.row.flagValue, flagged:meterFlagged(s.row.meter), bar:panelFromMeter(s.row.meter) }) + '</div>' +
       histTip(id + "-tip") + '</div>');
     var box = document.querySelector("#" + id + "-chart .page-chart");
     refitHistory(box, chart);
@@ -78,7 +86,7 @@
       var after = byId(s.after);
       if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
     }
-    HIST_HEAD[s.id] = { mark:s.mark, title:s.head };
+    HIST_HEAD[s.id] = { mark:s.mark, title:s.head }; histNote(s.id, splitInfo(s));
     pageMode[s.id] = "cycles"; pageCycles[s.id] = null; pageRange[s.id] = "10y";
     sheetRenderers[s.id] = function(W){ drawSplit(s, W); };
     put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
@@ -96,7 +104,7 @@
   function indicatorPeeks(){
     var html = splitSpecs().map(function(s){
       mountSplit(s);
-      return splitPeek({ title:s.title, mark:s.mark, row:s.row, unit:s.unit, target:s.id,
+      return s.noPeek ? "" : splitPeek({ title:s.title, mark:s.mark, row:s.row, unit:s.unit, target:s.id,
                          cols:s.series.map(function(d){ return d.v; }), base:s.mid });
     }).join("");
     return html + deficitPeek();
@@ -129,9 +137,9 @@
   }
   function appendPicks(items, picks, PERIOD, key){
     picks.forEach(function(p){
-      if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, PERIOD)); return; }
+      if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, PERIOD, key)); return; }
       var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group); grp.__mark = p.mark;
-      p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, PERIOD)); });
+      p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, PERIOD, key)); });
       if (grp.children.length) groupSheet(grp, p.group, key, items);
     });
   }
@@ -147,9 +155,9 @@
                '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]',
                '.sign-row[data-open="sheet-sign-horizon"]'] },
       { key:"energy", title:"Energy", mark:boltSvg(), sub:"Economic power · Households · Activity",
-        picks:[{ group:"Economic power", mark:boltSvg, picks:['.peek[data-open="sheet-metric-debt"]',
-                                                '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
-               '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]'] }
+        picks:[{ group:"Economic power", mark:boltSvg, picks:['.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
+               '.peek[data-open="sheet-metric-households"]', { group:"Activity", picks:['.sign-row[data-open="sheet-sign-activity"]',
+                 '.sign-row[data-open="sheet-sign-productivity-growth"]', '.sign-row[data-open="sheet-sign-industrial-output"]'] }] }
     ];
   }
 
@@ -183,6 +191,16 @@
     if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) +
       "% (" + era.q + "); the change since is " + fmtSigned(now - era.v, 1) + " points."));
     return cards;
+  }
+  function productivityInsight(s){
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
+    var hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; }), lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; });
+    return [lede('Output per hour worked, against the same quarter a year earlier. An economy can grow by working ' +
+        'more hours or by getting more from each one, and only the second kind compounds.'),
+      hiCard("The latest quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " +
+        (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."),
+      hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
+        fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

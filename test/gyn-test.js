@@ -374,8 +374,8 @@ async function openPage(p, url, sheet) {
         tabs: [...host.querySelectorAll('.ind-tabs .range-seg')].map(b => b.textContent).join(' ')
       };
     });
-    (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === 14 && list.titles === 14 &&
-     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Economic power>sheet-grp-economic-power' && list.tabs === 'All Structural Leading Coincident Lagging')
+    (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === 13 && list.titles === 13 &&
+     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Economic power>sheet-grp-economic-power,Activity>sheet-grp-activity' && list.tabs === 'All Structural Leading Coincident Lagging')
       ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
       : bad('search lists every reading by category', JSON.stringify(list));
     const shown = async (kind, q) => {
@@ -388,13 +388,13 @@ async function openPage(p, url, sheet) {
       }));
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
-    (st.rows.sort().join() === 'Economic power,Households,Valuations' &&
-     st.cats.join() === 'Mood,Energy' && le.rows.length === 5 && le.cats.join() === 'Mood,Circulation' && al.rows.length === 14 && al.cats.length === 4)
+    (st.rows.sort().join() === 'Activity,Economic power,Households,Valuations' &&
+     st.cats.join() === 'Mood,Energy' && le.rows.length === 5 && le.cats.join() === 'Mood,Circulation' && al.rows.length === 13 && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
     const infl = await shown(null, 'inflation'), mood = await shown(null, 'mood'), nil = await shown(null, 'zzzz'), back = await shown(null, '');
     (infl.rows.join() === 'Temperature' && mood.rows.length === 4 && mood.cats.join() === 'Mood' && nil.none && !nil.rows.length &&
-     back.rows.length === 14 && !back.none)
+     back.rows.length === 13 && !back.none)
       ? ok('the search box finds readings by name, meaning and category', 'inflation → Temperature, mood → 4, none → a message')
       : bad('the search box finds readings by name, meaning and category', JSON.stringify({ infl, mood, nil, back }));
     await p.click('#search-list .cat-mood .ind-cat-head'); await p.waitForTimeout(400);
@@ -416,7 +416,7 @@ async function openPage(p, url, sheet) {
       await p.click('#topbar-back'); await p.waitForTimeout(300);
     }
     (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Fear+Desire+Horizon' &&
-     lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Activity')
+     lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
     await p.click('.tab-btn[data-tab="search"]'); await p.waitForTimeout(400);
@@ -432,18 +432,36 @@ async function openPage(p, url, sheet) {
     const home = await p.evaluate(() => [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+'));
     await p.click('#topbar-back'); await p.waitForTimeout(300);
     (grp.bar === 'Economic power' && grp.names === 'Federal debt+Interest payments+Federal budget' && deep === 'Federal debt' && again === 3 &&
-     home === 'Federal debt+Interest payments+Federal budget+Households+Activity')
+     home === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a group in Search opens its cards, and they return home', grp.names)
       : bad('a group in Search opens its cards, and they return home', JSON.stringify({ grp, deep, again, home }));
     const cardDebt = await p.evaluate(() => document.querySelector('.cat-item[data-open="sheet-metric-debt"] .ci-value').firstChild.textContent.trim());
     await openPage(p, url, 'sheet-metric-debt');
     const rowDebt = await p.evaluate(c => document.getElementById('metric-page').textContent.indexOf(c) !== -1 ? c : null, cardDebt);
+    const labs = [];
+    for (const pg of ['sheet-metric-valuation', 'sheet-metric-households', 'sheet-sign-activity', 'sheet-sign-desire', 'sheet-sign-industrial-output']) {
+      await openPage(p, url, pg);
+      labs.push(await p.evaluate(() => document.querySelectorAll('#metric-page .panel-row, #metric-page .pbar, #metric-page .rbar-track, #metric-page .reading-box').length));
+    }
+    const doors = { labs: labs.join(), same: cardDebt === rowDebt, card: cardDebt, row: rowDebt };
+    (!labs.some(Boolean) && doors.same)
+      ? ok('no page carries a lab-style range row', 'debt ' + doors.card + ' on card and page')
+      : bad('no page carries a lab-style range row', JSON.stringify(doors));
+    await p.goto('file://' + url); await p.waitForTimeout(1300);
+    const icons = await p.evaluate(() => ['weather', 'circulation', 'mood', 'energy'].map(k => {
+      const col = el => el ? getComputedStyle(el).color : null;
+      const cat = col(document.querySelector('#sheet-cat-' + k + ' .ci-name'));
+      const cards = [...document.querySelectorAll('#sheet-cat-' + k + ' .cat-item .ci-head .peek-mark')];
+      const rows = [...document.querySelectorAll('#search-list .ind-cat.cat-' + k + ' .ind-row .subject-icon span')];
+      return { k, cards: cards.length, rows: rows.length, shapes: new Set(cards.map(m => (m.querySelector('svg') || {}).innerHTML)).size,
+        same: !!cat && cards.concat(rows).every(m => col(m) === cat) && col(document.querySelector('#search-list .ind-cat.cat-' + k + ' .ind-cat-mark')) === cat };
+    }));
     await openPage(p, url, 'sheet-metric-valuation');
-    const vl = await p.evaluate(() => [...document.querySelectorAll('#metric-page .panel-row.lab-door')].map(r => r.dataset.open).join());
-    const doors = { val: vl, same: cardDebt === rowDebt, card: cardDebt, row: rowDebt };
-    (doors.val === 'sheet-metric-buffett' && doors.same)
-      ? ok('each part of a reading opens its own page', doors.val + ' · debt ' + doors.card)
-      : bad('each part of a reading opens its own page', JSON.stringify(doors));
+    const headCol = await p.evaluate(() => getComputedStyle(document.querySelector('#metric-page .bh-mark')).color ===
+      getComputedStyle(document.querySelector('#sheet-cat-mood .ci-name') || document.querySelector('.cat-mood .ind-cat-mark')).color);
+    icons.every(i => i.same && i.shapes > 1) && icons[3].cards === 7 && headCol
+      ? ok('every reading keeps its icon in its category colour', icons.map(i => i.k + ' ' + i.shapes + ' shapes').join(', '))
+      : bad('every reading keeps its icon in its category colour', JSON.stringify({ icons, headCol }));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
@@ -483,7 +501,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 16 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 18 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -491,12 +509,13 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 16 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
-    (blank.length === 1 && blank[0].name === 'Desire' && /^Not measured before /.test(blank[0].word))
-      ? ok('cycle categories leave a short record blank', blank[0].name + ': ' + blank[0].word)
+    (blank.map(i => i.name).sort().join() === 'Desire,Industrial output,Productivity growth' &&
+     blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)))
+      ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · '))
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
     await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-metric-valuation"]');
