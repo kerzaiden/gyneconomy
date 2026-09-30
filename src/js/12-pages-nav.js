@@ -33,12 +33,12 @@
   }
   function orderMetricSheets(){
     [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
-     ["power-timing", "structural"], ["valuation-timing", "structural"],
+     ["valuation-timing", "structural"],
      ["households-timing", "structural"]].forEach(function(p){
       put(p[0], timingPill(p[1]));
     });
 
-    ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-power", "sheet-metric-valuation",
+    ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-valuation",
      "sheet-metric-households"].forEach(function(id){
       var sheet = byId(id); if (!sheet) return;
       function rank(el){
@@ -181,7 +181,7 @@
   }
   function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
   function registerRoster(){
-    [["gdp", "coincident"], ["power", "structural"], ["valuation", "structural"],
+    [["gdp", "coincident"], ["valuation", "structural"],
      ["households", "structural"]].forEach(function(p){
       var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]); if (!card) return;
       var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
@@ -219,17 +219,29 @@
       text:'<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + '</span></div>' });
   }
   var IND_ORDER = ["structural", "leading", "coincident", "lagging"], IND_CATS = ["weather", "mood", "circulation", "energy"];
-  function indCategoryHtml(key){
+  function indGroupRow(groups, rows, item, e, kind, find){
+    var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
+    if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? discOf({ innerHTML:gm() }, "") : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
+    groups[grp].kinds[kind] = 1; groups[grp].terms.push(find[e.title]);
+  }
+  function indRows(sheet, find){
+    var rows = [], groups = {};
+    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item){
+      var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
+      IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
+        if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));
+      }); });
+    });
+    return rows.map(function(r){
+      if (typeof r === "string") return r;
+      find[r.title] = r.terms.join(" ").toLowerCase();
+      return indRow({ target:groupId(r.title), title:r.title, icon:r.icon, metric:"" }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
+    });
+  }
+  function indCategoryHtml(key, find){
     var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
     if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span");
-    var rows = [];
-    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item){
-      var target = item.getAttribute("data-open");
-      IND_ORDER.forEach(function(kind){
-        timingMembers[kind].forEach(function(e){ if (e.target === target) rows.push(indRow(e, kind)); });
-      });
-    });
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
       '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + '</span>' +
       '<span class="ind-cat-name">' + title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
@@ -346,7 +358,7 @@
           return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
             'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
         }).join("") +
-      '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(indCategoryHtml).join("") +
+      '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(function(k){ return indCategoryHtml(k, find); }).join("") +
       '<p class="search-none" hidden>No reading matches.</p>';
     function apply(){
       var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
@@ -584,7 +596,6 @@
       "sheet-sign-horizon":     fmtDay(DATA_COMPILED),
       "sheet-sign-pulse":       qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
       "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
-      "sheet-metric-power":     String(powerHistory[powerHistory.length - 1].y),
       "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
       "sheet-sign-hormones":    fedFunds.asOf,
       "sheet-sign-pressure":    fmtDay(DATA_COMPILED),
@@ -595,10 +606,9 @@
     var list = document.createElement("div"); list.className = "browse-list";
     CATS.forEach(function(c){
       if (c.picks){
-        var sheet = document.createElement("div");
-        sheet.className = "metric-sheet cat-sheet cat-" + c.key; sheet.id = "sheet-cat-" + c.key; sheet.hidden = true;
+        var sheet = catSheet("sheet-cat-" + c.key, c.key);
         var items = document.createElement("div"); items.className = "cat-list";
-        appendPicks(items, c.picks, PERIOD);
+        appendPicks(items, c.picks, PERIOD, c.key);
         sheet.appendChild(items);
         if (c.key === "circulation" || c.key === "weather"){
           var tog = c.key === "weather" ? insightWeather() : insightCirculation();
@@ -627,7 +637,6 @@
     var cpiDir = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
     var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= era.from; });
     var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
-    if (powerHistory[powerHistory.length - 1].y < calendarTodayY) powerHistory.push({ y:calendarTodayY, v:powerScore });
     var capeLast = capeHistory[capeHistory.length - 1];
     if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
     host.innerHTML =
@@ -641,9 +650,6 @@
                  colClass:function(v, i){
                    return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
                  } }) +
-      peekCard({ kicker:"Power score", title:"Power score", mark:boltSvg(), value:powerScore + "%",
-                 unit:"reserve", word:powerWord.word,
-                 state:powerWord.state, target:"sheet-metric-power", ring:powerScore }) +
       peekCard({ kicker:"Shiller CAPE",
                  mark:diamondSvg(),
                  value:capeNow.toFixed(1) + "\u00d7", unit:"CAPE", word:valuation.tag.text,
@@ -666,12 +672,9 @@
   }
 
   /* ---- THE INNER PAGES ---- */
-  function pct0(v){ return Math.round(v) + "%"; }
   function capeFmt1(v){ return v.toFixed(1) + "\u00d7"; }
-  function reserveState(v){ return v >= 70 ? "good" : v >= 50 ? "warning" : v >= 30 ? "serious" : "critical"; }
   var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
   var GDP_STOPS   = ["5y", "10y", "25y", "max"];
-  var POWER_STOPS = ["5y", "10y", "25y", "max"];
   var VAL_STOPS   = ["5y", "10y", "25y", "max"];
   var DEF_STOPS   = ["5y", "10y", "25y", "max"];
   function qShort(q){ return q.slice(5) + " \u2019" + q.slice(2, 4); }
@@ -800,31 +803,6 @@
       put("act-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                                  { rising:"loosening", falling:"tightening" }));
     };
-    sheetRenderers["sheet-metric-power"] = function(W){
-      var r = pageRange["sheet-metric-power"], pwCycles = pageMode["sheet-metric-power"] === "cycles";
-      var pwCyc = pwCycles ? (cycleByName(pageCycles["sheet-metric-power"]) || openCycle()) : null;
-      var pwSpan = pwCyc ? cycleSlice(powerHistory, pwCyc) : null;
-      var vals = pwSpan ? powerHistory.slice(pwSpan[0], pwSpan[1]) : timelineWindow(powerHistory, r);
-      var powerTrend = trendOf(vals.map(function(d){ return d.v; }), "points", "year");
-      put("power-chart", histBar(histControls("sheet-metric-power", { series:powerHistory, stops:POWER_STOPS })) +
-        '<div class="page-chart">' + histHead("sheet-metric-power") +
-        reserveChart({
-          vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
-          fit:powerTrend.fit,
-          alt:"Power, the three-marker composite, one charge per year" +
-              (r === "max" ? " since " + powerHistory[0].y : " over the last " + timelineSpan(r) + " years") +
-              ", with the fitted trend across the readings in view"
-        }, W) +
-        trendPill(powerTrend, null, true) +
-        '<div class="panel-stack in-hist">' + powerPanelHtml + '</div>' +
-        histTip("power-hist-tooltip") + '</div>');
-      var pBox = document.querySelector("#power-chart .page-chart");
-      refitHistory(pBox, function(w){
-        return reserveChart({ vals:vals, stateOf:reserveState, fmt:pct0, ref:70, refLabel:"ample reserve, 70%",
-                              fit:powerTrend.fit, alt:"Power supply, one charge per year" }, w);
-      });
-      attachHistory(pBox, "power-hist-tooltip", "reserveChart");
-    };
     sheetRenderers["sheet-marker-deficit"] = function(W){
       var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
       if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
@@ -928,26 +906,6 @@
     });
 
   }
-  function powerHighlights(){
-    var vs = powerHistory.map(function(d){ return d.v; });
-    var lowest = Math.min.apply(null, vs), first = powerHistory[0], last = powerHistory[powerHistory.length - 1];
-    var below = vs.filter(function(v){ return v < powerScore; }).length;
-    var eraStart = powerHistory.filter(function(d){ return d.y >= currentEra.from; })[0];
-    var cards = [];
-    cards.unshift('<p class="hi-lede">Power is what the state has left to spend when something goes wrong ' +
-      '— what it owes, what the debt costs to carry and what it produces, read as one charge. A body with ' +
-      'reserves can afford a shock; one that has already spent them has to borrow the energy.</p>');
-    cards.push(hiCard("Power", powerWord.state, powerScore <= lowest
-      ? "Today\u2019s " + powerScore + "% is the lowest reading in the whole series \u2014 " + (last.y - first.y + 1) + " years, back to " + first.y + ", when it stood at " + first.v + "%."
-      : "Today\u2019s " + powerScore + "% is above only " + below + " of the " + vs.length + " years on record, back to " + first.y + "."));
-    cards.push(hiCard("Against the last two shocks", "warning",
-      "The same three markers, scored the same way, leave " + powerOf(stressHistory[0].score) + "% at the " + stressHistory[0].label.replace("'07 ", "2007 ") +
-      " and " + powerOf(stressHistory[1].score) + "% at the " + stressHistory[1].label.replace("'20 ", "2020 ") + " reading. Both were higher than now."));
-    if (eraStart) cards.push(hiCard("Since this cycle opened", "serious",
-      "The " + currentEra.name + " began in " + currentEra.from + " with " + eraStart.v + "% in reserve. It has fallen " +
-      (eraStart.v - powerScore) + " points since."));
-    put("power-highlights", highlightsHtml(cards, "", moreRow(powerPageNote)));
-  }
   function valuationHighlights(capeNow, buffNow){
     var vs = capeHistory.map(function(d){ return d.v; });
     var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
@@ -994,13 +952,11 @@
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function renderMetricPages(ctx){
-    put("power-head", "");
     put("valuation-head", "");
     registerTempGdpPages();
     registerActivityPowerDeficitPages();
     registerHouseholdsValuationPages();
     wireMetricPageControls();
-    powerHighlights();
     valuationHighlights(ctx.capeNow, ctx.buffNow);
     tempHighlights(ctx.tempInd, ctx.r);
     gdpHighlights(ctx.r, ctx.gq);

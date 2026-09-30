@@ -290,27 +290,6 @@
   }
   GYN.step("renderValuationTag", renderValuationTag, "render"); renderValuationTag();
 
-  // ---- RENDER: lab panel (long cycle) — overall stress composite is the table's own lead row ----
-  function renderLongCycleTag(){
-    var powerSub = "what the 3 markers below leave in reserve";
-    var stressDetail = '<h4>Power supply</h4><div class="marker-sub">' + powerSub + '</div>' + factsFrom(stressNoteFull);
-    powerPageNote = stressDetail;
-    var stressRowHtml = panelRow({
-      name:"Power supply", head:"sheet-metric-power",
-      info:'<h4>Power supply</h4><div class="marker-sub">' + powerSub + '</div>' + stressDetail,
-      metric:powerScore + "%", flagged:meterFlagged(powerMeter), bar:panelFromMeter(powerMeter) });
-    var rowsHtml = labPanel.map(function(row){
-      var detail = '<h4>' + row.marker + '</h4><div class="marker-sub">' + row.sub + '</div>' + factsFrom(row.note);
-      return panelRow({ name:row.marker, info:row.opens ? null : detail, open:row.opens || null,
-                        metric:row.flagValue, flagged:meterFlagged(row.meter),
-                        bar:panelFromMeter(row.meter) });
-    }).join("");
-    powerPanelHtml = stressRowHtml + rowsHtml;
-    var flaggedCount = labPanel.filter(function(r){ return !!r.flagState; }).length;
-    byId("longcycle-tag").textContent = flaggedCount + " marker" + (flaggedCount === 1 ? "" : "s") + " flagged";
-    addSources(longCycleSrc);
-  }
-  GYN.step("renderLongCycleTag", renderLongCycleTag, "render"); renderLongCycleTag();
 
   /* ---- RENDER: Hormones ---- */
   function renderHormones(){
@@ -508,9 +487,6 @@
       return states.reduce(function(w, st){ return order.indexOf(st) > order.indexOf(w) ? st : w; }, "good");
     }
 
-    iconMark("resilience", powerWord.state, boltSvg());
-    set("resilience", powerScore + '<span class="unit">%</span><span class="tag ' + powerWord.state + '">' + powerWord.word + '</span>', "");
-    say("resilience", longCycleImpressionShort);
 
     var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
     iconMark("gdp", regimeState(nowModel.reading.regime), sproutSvg());

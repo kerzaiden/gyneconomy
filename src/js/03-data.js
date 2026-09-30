@@ -91,26 +91,25 @@
     {t:"Eurostat — GDP and main aggregates, quarterly (namq_10_gdp), European Union", u:"https://ec.europa.eu/eurostat/databrowser/view/namq_10_gdp/default/table"}
   ];
 
-  var longCycleImpressionShort = "Interest costs are at their historical record and debt is near its own, moving together mid-expansion, with no recession present.";
 
   var labPanel = [
     {
-      marker:"Debt burden", sub:"gross federal debt ÷ GDP",
+      marker:"Federal debt", sub:"gross federal debt ÷ GDP",
       meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
              ends:{ zone:"50-year average", high:"Elevated" }},
       shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
       note:"Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
       direction:"up", flagValue:"122.6%", flagState:"serious",
-      opens:{ id:"sheet-metric-debt", title:"Debt burden" }
+      opens:{ id:"sheet-metric-debt", title:"Federal debt" }
     },
     {
-      marker:"Interest burden", sub:"net interest costs ÷ GDP",
+      marker:"Interest payments", sub:"net interest costs ÷ GDP",
       meter:{min:0.63, max:3.3, value:3.3, optimal:{lte:2, label:"\u2264 2.0%"},
              ends:{ zone:"50-year average", high:"High" }},
       shortNote:"FY2026, $1.0T — already the highest interest burden on record.",
       note:"FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
       direction:"up", flagValue:"3.3%", flagState:"critical",
-      opens:{ id:"sheet-metric-interest", title:"Interest burden" }
+      opens:{ id:"sheet-metric-interest", title:"Interest payments" }
     },
     {
       marker:"Federal budget", sub:"federal deficit or surplus ÷ GDP",
@@ -134,28 +133,6 @@
   };
 
   /* ---- Institutional trust is not in this panel ---- */
-
-  function stressScoreFor(values){
-    return Math.round(labPanel.reduce(function(sum, row, i){
-      var pct = clampPct(values[i], row.meter.min, row.meter.max);
-      return sum + (row.invert ? (100 - pct) : pct);
-    }, 0) / labPanel.length);
-  }
-  var stressScore = stressScoreFor(labPanel.map(function(row){ return row.meter.value; }));
-  var powerOf = function(stress){ return 100 - stress; };
-  var powerScore = powerOf(stressScore), powerWord = energyFromReserve(powerScore);
-
-  var stressHistory = [
-    { label:"'07 pre-crisis", values:[61.84, 1.64, 1.11] },
-    { label:"'20 COVID",      values:[125.86, 1.62, 14.48] }
-  ];
-  stressHistory.forEach(function(h){ h.score = stressScoreFor(h.values); });
-
-  var powerMeter = { min:0, max:100, value:powerScore, optimal:{gte:70, label:"\u2265 70%"},
-    ends:{ low:"Exhausted", zone:"Energetic" } };
-  var stressNoteFull = "Each of the three markers is normalized 0–100 against its own actual historical U.S. high and low — a real benchmark, not a padded scale — then averaged equally, and the average subtracted from 100: what the three pressures leave in reserve. It is a quick read on total power, not a substitute for reading each marker. A full charge — 100% — is every one of the three at the best value the United States has actually recorded, so this is a percentage of her own best, not a share of anything measured out in the economy. For comparison, the same formula leaves the actual 2007 pre-crisis reading " + powerOf(stressHistory[0].score) + "% and the actual 2020 COVID reading " + powerOf(stressHistory[1].score) + "% — today's " + powerScore + "% sits below both.";
-
-  var powerHistory = [{y:1948,v:64},{y:1949,v:60},{y:1950,v:61},{y:1951,v:71},{y:1952,v:70},{y:1953,v:69},{y:1954,v:71},{y:1955,v:73},{y:1956,v:76},{y:1957,v:77},{y:1958,v:75},{y:1959,v:74},{y:1960,v:75},{y:1961,v:76},{y:1962,v:76},{y:1963,v:76},{y:1964,v:77},{y:1965,v:79},{y:1966,v:80},{y:1967,v:79},{y:1968,v:77},{y:1969,v:81},{y:1970,v:79},{y:1971,v:78},{y:1972,v:79},{y:1973,v:80},{y:1974,v:79},{y:1975,v:76},{y:1976,v:74},{y:1977,v:75},{y:1978,v:75},{y:1979,v:75},{y:1980,v:71},{y:1981,v:67},{y:1982,v:60},{y:1983,v:58},{y:1984,v:55},{y:1985,v:51},{y:1986,v:50},{y:1987,v:53},{y:1988,v:53},{y:1989,v:51},{y:1990,v:48},{y:1991,v:45},{y:1992,v:46},{y:1993,v:48},{y:1994,v:50},{y:1995,v:48},{y:1996,v:49},{y:1997,v:53},{y:1998,v:57},{y:1999,v:62},{y:2000,v:66},{y:2001,v:68},{y:2002,v:69},{y:2003,v:69},{y:2004,v:69},{y:2005,v:69},{y:2006,v:67},{y:2007,v:67},{y:2008,v:62},{y:2009,v:56},{y:2010,v:55},{y:2011,v:52},{y:2012,v:55},{y:2013,v:58},{y:2014,v:59},{y:2015,v:61},{y:2016,v:58},{y:2017,v:57},{y:2018,v:54},{y:2019,v:50},{y:2020,v:35},{y:2021,v:42},{y:2022,v:45},{y:2023,v:37},{y:2024,v:29},{y:2025,v:27}];
 
   /* ---- The deficit, year by year ---- */
   var DEF_FROM_YEAR = 1946;

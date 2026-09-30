@@ -292,7 +292,7 @@
     return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' +
       '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
   }
-  var powerPageNote = "", tempCaptionFull = "", tempLeadShown = "";
+  var tempCaptionFull = "", tempLeadShown = "";
   function highlightsHtml(cards, cyclesHtml, moreHtml){
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
     return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") +
@@ -327,39 +327,6 @@
     '</g>';
   }
 
-  function reserveChart(o, W){
-    W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? 0.58 : 0.30))));
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
-    var n = o.vals.length, slot = iw / n;
-    var sw = colWidth(slot), tw = sw + 3.4;
-    function y(v){ return (padT + ih - (v / 100) * ih).toFixed(1); }
-    var out = [];
-    out.push(chartAxes({ lo:0, hi:100, step:50, y:y, x0:padL, x1:(W - padR), base:y(0), top:(padT - AXIS.LEG - AXIS.READ), bot:(padT + ih),
-                         fmt:function(v){ return v + "%"; } }));
-    o.vals.forEach(function(d, i){
-      var cx = (padL + slot * (i + 0.5)).toFixed(1);
-      out.push('<path class="bt-track" stroke-width="' + tw.toFixed(1) + '" d="' + colPath(cx, padT + ih, padT, tw) + '"/>');
-      out.push('<path class="bt-bar hcol ' + o.stateOf(d.v) + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, padT + ih, y(d.v), sw) + '"/>');
-    });
-    if (o.ref != null){
-      out.push('<path class="bt-ref" d="M' + padL + ',' + y(o.ref) + 'L' + (W - padR) + ',' + y(o.ref) + '"/>');
-    }
-    var rAvg = o.vals.reduce(function(a, d){ return a + d.v; }, 0) / (n || 1);
-    out.push(avgRule(padL, W - padR, y(rAvg)));
-    if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
-    o.vals.forEach(function(d, i){
-      var lab = xLabelOf(o, d, i, o.vals); if (!lab) return;
-      out.unshift(vGrid(padL + slot * (i + 0.5), padT, padT + ih));
-      out.push(xLabel((padL + slot * (i + 0.5)).toFixed(1), lab, (H - AXIS.FOOT)));
-    });
-    out.push(crossLine(padT, (padT + ih)));
-    publishGeom("reserveChart", { L:(padL + slot * 0.5), R:(padL + slot * (n - 0.5)), T:padT, B:(padT + ih), W:W, n:n,
-                     refs:(o.ref != null ? [{ label:"Average", v:rAvg }, { label:refName(o.refLabel), v:o.ref, dash:true, cls:"bt-ref" }]
-                                        : [{ label:"Average", v:rAvg }]),
-                     vals:o.vals, at:function(d){ return String(d.y); }, fmt:o.fmt });
-    return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
-  }
 
   /* ---- The history component's axes ---- */
   function appendSvgMarkup(svg, markup){

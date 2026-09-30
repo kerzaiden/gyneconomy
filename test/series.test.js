@@ -40,7 +40,6 @@ const KEYED = [
   ['01-refresh-season.js', 'cpiYoYHistory',           'm', 440],
   ['01-refresh-season.js', 'gdpQuarterlyYoY',         'q', 150],
   ...['m3', 'y2', 'y5', 'y10', 'y30', 's3m', 's2y'].map(k => ['03b-history-fred.js', 'treasuryQuarterly.' + k, 'q', 86]),
-  ['03-data.js',           'powerHistory',            'y',  75],
   ['03b-history-fred.js',  'fedFundsHistory',         'm', 860],
   ['03b-history-fred.js',  'fearCurveHistory',        'm', 220],
   ['04-components.js',     'buffettHistory',          'q', 220],

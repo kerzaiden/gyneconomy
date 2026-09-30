@@ -84,20 +84,50 @@
 
   // ---- A closed cycle, shown on the Cycle tab's own page ----
   var eraOpen = null, taHome = null, modeHome = null;
+  function kT(k){
+    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
+    return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+  }
   function eraReading(r, era){
     var from = era.from, to = era.to || calendarTodayY;
     var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= from && y <= to; });
     if (!span.length) return { none:true, word:"Not measured before " + prettyK(r, r.first.k) };
-    var vs = span.map(function(d){ return d.v; }), end = span[span.length - 1];
-    var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-    return { value:readFig(r, end.v), when:prettyK(r, end.k), vs:vs,
-             word:lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle" };
+    var end = span[span.length - 1], sign = r.flip ? -1 : 1, endT = kT(end.k) + 1e-6;
+    var vs = span.map(function(d){ return sign * d.v; });
+    var upTo = function(list){ return list.filter(function(d){ return d.v != null && kT(d.k) <= endT; }); };
+    var second = r.pair ? upTo(r.pair).pop() : null;
+    return { v:sign * end.v, lo:Math.min.apply(null, vs), hi:Math.max.apply(null, vs), when:prettyK(r, end.k),
+             second:second && kT(second.k) >= from ? second.v : null,
+             peek:upTo(r.peek || r.seen).map(function(d){ return sign * d.v; }) };
+  }
+  function eraFig(today){
+    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || ["", ""];
+    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("\u2248", "");
+    var suf = (/[^\d]*$/.exec(today) || [""])[0], signed = /^[+\-\u2212]/.test(tok[0]);
+    function one(x){ return (x < 0 ? "\u2212" : signed ? "+" : "") + Math.abs(x).toFixed(dp); }
+    return function(x, y){ return pre + one(x) + (y != null ? "/" + one(y) : suf); };
+  }
+  function eraValue(val, t, r, e){
+    val.innerHTML = t.value;
+    var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
+    val.firstChild.nodeValue = eraFig(t.text)(surplus ? -e.v : e.v, r.pair ? e.second : null);
+    if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
+  }
+  function eraRange(t, r, e){
+    if (e.lo === e.hi) return "Flat all cycle";
+    var f = eraFig(t.text), pc = r.pair ? "%" : "";
+    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
+  }
+  function eraMini(t, r, e){
+    if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
+    if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
+    return colPeek(e.peek, function(){ return "era-col"; }, r.base, r.rule);
   }
   function eraCard(item, r, era){
     var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
     var word = item.querySelector(".ci-word");
-    if (!item.__today) item.__today = { value:val.innerHTML, word:word ? word.innerHTML : null,
-                                        when:when.textContent, mini:mini ? mini.innerHTML : null };
+    if (!item.__today) item.__today = { value:val.innerHTML, text:val.firstChild.nodeValue, word:word ? word.innerHTML : null,
+                                        when:when.textContent, mini:mini ? mini.innerHTML : "" };
     var t = item.__today;
     if (!era){
       val.innerHTML = t.value; when.textContent = t.when;
@@ -107,9 +137,10 @@
     }
     var e = r ? eraReading(r, era) : { none:true, word:"No history in the app" };
     if (!word){ word = document.createElement("span"); word.className = "ci-word"; val.parentNode.appendChild(word); }
-    val.innerHTML = e.none ? "\u2014" : e.value;
-    word.innerHTML = e.word; when.textContent = e.none ? "" : e.when;
-    if (mini) mini.innerHTML = e.vs && e.vs.length >= 3 ? sparkHtml(e.vs, "") : "";
+    when.textContent = e.none ? "" : e.when;
+    if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r, e);
+    if (e.none){ val.innerHTML = "\u2014"; word.textContent = e.word; return; }
+    eraValue(val, t, r, e); word.textContent = eraRange(t, r, e);
   }
   function eraShow(era){
     var rows = {};
@@ -143,24 +174,23 @@
         { name:"Growth", open:"sheet-metric-gdp",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
       ]},
       { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
-        { name:"Hormones", open:"sheet-sign-hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%" },
-        { name:"Pressure", open:"sheet-sign-pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%" },
-        { name:"Pulse", open:"sheet-sign-pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2 },
-        { name:"Volume", open:"sheet-sign-volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
+        { name:"Hormones", open:"sheet-sign-hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%", rule:true, eraUnit:"Fed funds rate" },
+        { name:"Pressure", open:"sheet-sign-pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%", rule:true },
+        { name:"Pulse", open:"sheet-sign-pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2, pulse:PULSE_PRE2008 },
+        { name:"Volume", open:"sheet-sign-volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%", rule:true }
       ]},
       { key:"mood", label:"Mood", mark:moodSvg, rows:[
-        { name:"Shiller CAPE", open:"sheet-metric-valuation", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
-        { name:"Buffett indicator", open:"sheet-metric-buffett", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%" },
-        { name:"Fear", open:"sheet-sign-sentiment",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2 },
-        { name:"Desire", open:"sheet-sign-desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%" },
-        { name:"Horizon", open:"sheet-sign-horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true }
+        { name:"Shiller CAPE", open:"sheet-metric-valuation", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today", base:CAPE_FAIR },
+        { name:"Buffett indicator", open:"sheet-metric-buffett", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%", base:splitMid("sheet-metric-buffett") },
+        { name:"Fear", open:"sheet-sign-sentiment",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2, ring:curvePct },
+        { name:"Desire", open:"sheet-sign-desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%", peek:hyQuarterEnds() },
+        { name:"Horizon", open:"sheet-sign-horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true, rule:true }
       ]},
       { key:"energy", label:"Energy", mark:boltSvg, rows:[
-        { name:"Power score", open:"sheet-metric-power", on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
-        { name:"Debt burden", open:"sheet-metric-debt", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%" },
-        { name:"Interest burden", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%" },
-        { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true },
-        { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" },
+        { name:"Federal debt", open:"sheet-metric-debt", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%", base:splitMid("sheet-metric-debt") },
+        { name:"Interest payments", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
+        { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
+        { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
         { name:"Activity", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
       ]}
     ];

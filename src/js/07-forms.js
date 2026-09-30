@@ -85,14 +85,6 @@
     '<path d="M6.2 3.9h11.6l3.9 5.3L12 20.4 2.3 9.2z" stroke-width="1.7"/>' +
     '<path d="M2.3 9.2h19.4" stroke-width="1.5"/>' +
     '<path d="M6.2 3.9 8.9 9.2M17.8 3.9 15.1 9.2" stroke-width="1.35" opacity="0.75"/>'); }
-  function energyFromReserve(reserve){
-    if (reserve == null) return {word:"No reading", state:"norm"};
-    if (reserve <= 30) return {word:"Exhausted", state:"critical"};
-    if (reserve <= 50) return {word:"Tired", state:"serious"};
-    if (reserve <= 70) return {word:"Steady", state:"warning"};
-    if (reserve <= 85) return {word:"Energetic", state:"good"};
-    return {word:"Energetic", state:"good"};
-  }
   function sproutSvg(){
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<path d="M4.6 19.7 C7.6 18.8 16.4 18.8 19.4 19.7"/>' +

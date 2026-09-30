@@ -83,7 +83,7 @@ npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthr
 npm run check            # the gate before every commit: build, email, map, ledger, 120 tool checks
 npm run check:all        # plus the browser suite (104 checks) and axe — what CI runs
 npm test                 # the browser suite alone; --bless rewrites the baseline, a deliberate act
-npm run snap             # 46-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
+npm run snap             # 45-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`
