@@ -6827,3 +6827,14 @@ its card; the Buffett line at 80% is cited to Buffett's Fortune article of Dec 1
 Activity split (new data) come next. Industrial output keeps a card without a history (ISM's history is not
 free); Pressure stays one card with the maturity picker (V639).
 ~~~
+
+### V659
+
+~~~text
+Keren: "also make the history cycle pages for example big tech cycle page to be identical to the current
+cycle page so i can reach it's data in the exact same way. we don't want to maintain too many views. this is
+a house rule - dry coding as much as possible. i think you already wrote it down. make sure you are using the
+same components and not building new ones that are doing the exact same job".
+So V659: a past cycle opens as the Cycle page itself (its dial, the four tiles, the category cards and every
+reading's page), showing that cycle; the separate list of cycle readings is gone.
+~~~

@@ -68,11 +68,11 @@
         var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
         if (target) target.hidden = false;
         if (metricPageReset) metricPageReset();
+        if (calendarReset) calendarReset();
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
         topbarBack = null;
         byId("topbar-back").hidden = true;
         if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); placeCharts(); showCycle(currentEra); }
-        if (tab === "analysis" && calendarReset) calendarReset();
         if (tab === "analysis") settleStrips();
         window.scrollTo({ top: 0, behavior: "smooth" });
       });

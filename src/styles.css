@@ -1286,10 +1286,6 @@
     background:linear-gradient(90deg, transparent, var(--surface)); }
   .sx-row:hover b{ color:var(--accent-ink); }
   .sx-foot{ margin:8px 0 0; font-size:12px; line-height:1.45; color:var(--text-muted); }
-  /* ---- A closed cycle's categories ---- */
-  #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
-  .cc-grp .cat-list{ margin-top:var(--gap); }
-  .cc-grp .cyc-title{ padding:0 2px; }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group + .cat-item, .cat-sheet .cat-item + .cat-group, .cat-sheet .cat-group + .cat-group{ margin-top:10px; }
@@ -1311,18 +1307,11 @@
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
   .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
   .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
-  .cat-item.flat{ cursor:default; }
-  .cat-item.flat:hover{ border-color:var(--border); }
-  .cat-item.flat .ci-value{ font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700;
-    letter-spacing:-0.02em; line-height:1.05; color:var(--text-primary); }
-  .cat-item.flat .ci-value .unit{ font-size:0.55em; font-weight:700; margin-left:2px; color:var(--text-muted); }
-  .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
-  .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
-    font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
-  .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
-  .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
-  .cat-item.flat .ci-mini .spark-line, .cat-item.flat .ci-mini .spark-end{ stroke:var(--accent-ink); }
-  .cat-item.flat .ci-mini .spark-fill, .cat-item.flat .ci-mini .spark-end{ fill:var(--accent-ink); }
+  .cat-sheet .ci-mini .spark{ margin:0; width:100%; }
+  .cat-sheet .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
+  .cat-sheet .ci-mini .spark-line, .cat-sheet .ci-mini .spark-end{ stroke:var(--cat); }
+  .cat-sheet .ci-mini .spark-fill, .cat-sheet .ci-mini .spark-end{ fill:var(--cat); }
+  .tab-panel[data-tab="analysis"] .cat-sheet .highlights{ display:none; }
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }

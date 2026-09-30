@@ -63,88 +63,105 @@
         var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
         if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       }
-      showCycle(era, true);
-      slot.appendChild(cycleViewEl);
-      renderCycleCats(era);
+      enterEra(era, slot);
       listWrap.hidden = true; detail.hidden = false;
       setTopbar(era.name, back);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function back(){
-      detail.hidden = true; listWrap.hidden = false;
+      leaveEra(); detail.hidden = true; listWrap.hidden = false;
       setTopbar("Analysis", null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
     list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
-    calendarReset = function(){ detail.hidden = true; listWrap.hidden = false; topbarBack = null; byId("topbar-back").hidden = true; };
+    calendarReset = function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; topbarBack = null; byId("topbar-back").hidden = true; };
     addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
   }
   GYN.step("renderCycleList", renderCycleList, "wire"); renderCycleList();
 
   renderCycleView(nowModel);
 
-  /* ---- RENDER: a closed cycle's four categories ---- */
-  function renderCycleCats(era){
-    var host = byId("cycle-cats"); if (!host) return;
+  // ---- A closed cycle, shown on the Cycle tab's own page ----
+  var eraOpen = null, taHome = null, modeHome = null;
+  function eraReading(r, era){
     var from = era.from, to = era.to || calendarTodayY;
-    host.innerHTML = readingRoster().map(function(g){
-      var rows = g.rows.map(function(r){
-        var span = r.seen.filter(function(d){
-          var y = +d.k.slice(0, 4); return y >= from && y <= to;
-        });
-        var mark = '<span class="peek-mark" aria-hidden="true">' + r.mark() + '</span>';
-        if (!span.length){
-          return '<div class="cat-item flat"><div class="ci-head">' + mark +
-            '<span class="ci-name">' + r.name + '</span></div>' +
-            '<div class="ci-body"><div class="ci-read"><div class="ci-value cc-none">\u2014</div>' +
-            '<div class="ci-word">Not measured before ' + prettyK(r, r.first.k) + '</div></div></div></div>';
-        }
-        var end = span[span.length - 1];
-        var vs = span.map(function(d){ return d.v; });
-        var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-        var art = span.length >= 3
-          ? '<div class="ci-mini">' + sparkHtml(vs, "") + '</div>' : "";
-        var travel = lo === hi ? "Flat all cycle"
-          : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
-        return '<div class="cat-item flat"><div class="ci-head">' + mark +
-          '<span class="ci-name">' + r.name + '</span>' +
-          '<span class="ci-when">' + prettyK(r, end.k) + '</span></div>' +
-          '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + '</div>' +
-          '<div class="ci-word">' + travel + '</div></div>' + art + '</div></div>';
-      }).join("");
-      return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' +
-        g.mark() + '</span>' + g.label + '</div><div class="cat-list">' + rows + '</div></div>';
-    }).join("");
+    var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= from && y <= to; });
+    if (!span.length) return { none:true, word:"Not measured before " + prettyK(r, r.first.k) };
+    var vs = span.map(function(d){ return d.v; }), end = span[span.length - 1];
+    var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+    return { value:readFig(r, end.v), when:prettyK(r, end.k), vs:vs,
+             word:lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle" };
+  }
+  function eraCard(item, r, era){
+    var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
+    var word = item.querySelector(".ci-word");
+    if (!item.__today) item.__today = { value:val.innerHTML, word:word ? word.innerHTML : null,
+                                        when:when.textContent, mini:mini ? mini.innerHTML : null };
+    var t = item.__today;
+    if (!era){
+      val.innerHTML = t.value; when.textContent = t.when;
+      if (mini) mini.innerHTML = t.mini;
+      if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
+      return;
+    }
+    var e = r ? eraReading(r, era) : { none:true, word:"No history in the app" };
+    if (!word){ word = document.createElement("span"); word.className = "ci-word"; val.parentNode.appendChild(word); }
+    val.innerHTML = e.none ? "\u2014" : e.value;
+    word.innerHTML = e.word; when.textContent = e.none ? "" : e.when;
+    if (mini) mini.innerHTML = e.vs && e.vs.length >= 3 ? sparkHtml(e.vs, "") : "";
+  }
+  function eraShow(era){
+    var rows = {};
+    readingRoster().forEach(function(g){ g.rows.forEach(function(r){ rows[r.open] = r; }); });
+    Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item){
+      eraCard(item, rows[item.getAttribute("data-open")], era);
+    });
+    if (era && !modeHome){ modeHome = {}; for (var k in pageMode) modeHome[k] = pageMode[k]; }
+    for (var id in pageCycles){ pageCycles[id] = era ? era.name : null; pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id]; }
+    if (!era) modeHome = null;
+  }
+  function enterEra(era, slot){
+    var ta = byId("today-analysis");
+    if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
+    eraOpen = era; showCycle(era, true);
+    slot.appendChild(cycleViewEl); slot.appendChild(ta);
+    eraShow(era);
+  }
+  function leaveEra(){
+    if (!eraOpen) return;
+    var ta = byId("today-analysis");
+    taHome.parent.insertBefore(ta, taHome.next); taHome.parent.insertBefore(cycleViewEl, ta);
+    eraOpen = null; eraShow(null); showCycle(currentEra);
   }
 
   /* ---- THE ROSTER AS SERIES ---- */
   function rosterGroups(byM, byQ, byY, qFrom, hyList){
     return [
       { key:"weather", label:"Weather", mark:weatherSvg, rows:[
-        { name:"Temperature", on:"m", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
-        { name:"Growth",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
+        { name:"Temperature", open:"sheet-metric-temp", on:"m", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
+        { name:"Growth", open:"sheet-metric-gdp",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
       ]},
       { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
-        { name:"Hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%" },
-        { name:"Pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%" },
-        { name:"Pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2 },
-        { name:"Volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
+        { name:"Hormones", open:"sheet-sign-hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%" },
+        { name:"Pressure", open:"sheet-sign-pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%" },
+        { name:"Pulse", open:"sheet-sign-pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2 },
+        { name:"Volume", open:"sheet-sign-volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
       ]},
       { key:"mood", label:"Mood", mark:moodSvg, rows:[
-        { name:"Shiller CAPE", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
-        { name:"Buffett indicator", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%" },
-        { name:"Fear",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2 },
-        { name:"Desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%" },
-        { name:"Horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true }
+        { name:"Shiller CAPE", open:"sheet-metric-valuation", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
+        { name:"Buffett indicator", open:"sheet-metric-buffett", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%" },
+        { name:"Fear", open:"sheet-sign-sentiment",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2 },
+        { name:"Desire", open:"sheet-sign-desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%" },
+        { name:"Horizon", open:"sheet-sign-horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true }
       ]},
       { key:"energy", label:"Energy", mark:boltSvg, rows:[
-        { name:"Power score", on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
-        { name:"Debt burden", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%" },
-        { name:"Interest burden", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%" },
-        { name:"Federal budget", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true },
-        { name:"Households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" },
-        { name:"Activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
+        { name:"Power score", open:"sheet-metric-power", on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
+        { name:"Debt burden", open:"sheet-metric-debt", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%" },
+        { name:"Interest burden", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%" },
+        { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true },
+        { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" },
+        { name:"Activity", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
       ]}
     ];
   }

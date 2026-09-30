@@ -442,42 +442,52 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
+    await p.waitForTimeout(400);
     const cc = await p.evaluate(() => {
       const row = [...document.querySelectorAll('.era-row')].find(x => /Housing/.test(x.textContent));
       if (!row) return null; row.click(); return true;
     });
     await p.waitForTimeout(800);
-    const got = cc && await p.evaluate(() => ({
-      grps: [...document.querySelectorAll('.cc-grp .cyc-title')].map(n => n.textContent.trim()),
-      items: [...document.querySelectorAll('#cycle-cats .cat-item')].map(n => ({
-        name: n.querySelector('.ci-name').textContent.trim(),
-        val: n.querySelector('.ci-value').textContent.trim(),
-        word: n.querySelector('.ci-word').textContent.trim(),
-        none: !!n.querySelector('.cc-none')
-      })),
-      doors: document.querySelectorAll('#cycle-cats [data-open]').length
-    }));
-    const live = got && got.items.filter(i => !i.none);
-    (got && got.grps.join('/') === 'Weather/Circulation/Mood/Energy' && got.items.length === 17 &&
-     !got.doors && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
-     live.every(i => i.val && i.val !== '\u2014'))
-      ? ok('cycle categories show the data', got.grps.join(', ') + ' \u00b7 ' + got.items.length + ' readings')
-      : bad('cycle categories show the data', JSON.stringify(got));
+    const view = cc && await p.evaluate(() => {
+      const cal = document.getElementById('calendar-cycle');
+      return { dial: !!cal.querySelector('#cycle-view .season-card'), today: !!cal.querySelector('#today-analysis'),
+        tiles: [...cal.querySelectorAll('#today-analysis [data-open^="sheet-cat-"]')].filter(x => x.offsetParent).length,
+        closed: /Closed/.test(cal.querySelector('#cycle-view').innerText),
+        bar: document.getElementById('topbar-title').textContent.trim() };
+    });
+    await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
+    await p.waitForTimeout(500);
+    const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({
+      name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
+      word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
+    const live = got ? got.filter(i => i.val !== '\u2014') : [];
+    (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
+     got.length === 17 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     live.every(i => /200[3-8]/.test(i.when)))
+      ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
+      : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
 
-    const blank = got ? got.items.filter(i => i.none) : [];
+    const blank = got ? got.filter(i => i.val === '\u2014') : [];
     (blank.length === 1 && blank[0].name === 'Desire' && /^Not measured before /.test(blank[0].word))
       ? ok('cycle categories leave a short record blank', blank[0].name + ': ' + blank[0].word)
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
-    const shape = await p.evaluate(() => ({
-      dragged: !!document.querySelector('#calendar-cycle #temp-card, #calendar-cycle #growth-card'),
-      home: !!document.querySelector('#slot-temp #temp-card') && !!document.querySelector('#slot-growth #growth-card'),
-      sparks: document.querySelectorAll('#cycle-cats .ci-mini .spark').length,
-      stale: /Current cycle/i.test((document.getElementById('calendar-cycle') || {}).innerText || '')
+    await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-metric-valuation"]');
+    await p.waitForTimeout(800);
+    const picked = await p.evaluate(() => (document.querySelector('#metric-page .hist-controls') || {}).textContent || '');
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
+    await p.waitForTimeout(700);
+    const back = await p.evaluate(() => ({
+      home: document.querySelector('.tab-panel[data-tab="cycle"] #today-analysis') !== null &&
+            document.querySelector('.tab-panel[data-tab="cycle"] #cycle-view') !== null,
+      words: [...document.querySelectorAll('.cat-sheet .ci-word')].filter(w => /over the cycle/.test(w.textContent)).length,
+      cape: (document.querySelector('.cat-item[data-open="sheet-metric-valuation"] .ci-value') || {}).textContent,
+      stale: /Closed/.test(document.getElementById('cycle-view').innerText)
     }));
-    (!shape.dragged && shape.home && shape.sparks >= 10 && !shape.stale)
-      ? ok('closed cycle drops the live cards', shape.sparks + ' rows carry their own shape')
-      : bad('closed cycle drops the live cards', JSON.stringify(shape));
+    (/Housing/.test(picked) && back.home && !back.words && !back.stale && back.cape && !/^24\.0/.test(back.cape.trim()))
+      ? ok('the pages follow the cycle, and today comes back', 'picker: Housing \u00b7 CAPE ' + back.cape.trim() + ' again')
+      : bad('the pages follow the cycle, and today comes back', JSON.stringify({ picked, back }));
 
     await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
     await p.waitForTimeout(500);
