@@ -267,6 +267,17 @@ Rules that shape the pages:
   a fixed `::before` wash from `--cat` down to the page, and the top bar turns clear over it.
   The Power score is gone (V660, Keren: "remove the power score"): its card, page, composite and history;
   the three fiscal markers it summed each keep their own page.
+- **A parent owns what its children share (V662, Keren: "i want all parent components to have all the properties of
+  their children so we don't have to change different pages all the time").** `npm run check` runs `tools/hygiene.js`,
+  which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini charts,
+  `colPeek` and `meterPeek`, and `pairChart` own theirs); a `font-size` that is not a `--type-` token; a style aimed
+  at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
+  reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `bare`, `noHead`, `noMark`,
+  `chartFirst`, `deferHighlights`, `peeked`, `chart`, `after`, `id`, `seat` — and `signSubject` only reads it; looking a
+  reading up by name is fine); and anything unused — a function or variable nothing calls, a style class nothing
+  carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
+  Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
+  helpers and 116 dead style rules.
 - **No lab-style range rows (V661, Keren: "remove test result components from the app").** The rows that
   read like a blood test under each history (name, range bar, verdict: `panelRow`, `panelBar`, the sign
   page's `meterHtml` bar, `seatBandReading`'s reading box) are gone. What they carried as notes lives on
@@ -481,7 +492,12 @@ it is the level of the spread that forecasts, not the crossing.
 
 **A history page is three containers**: control on the page's ground, the history container (head,
 readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
-`histControls`; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
+`histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
+the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
+`divergeChart`, `pairChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis
+chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`). **`pairChart` is the one named
+exception for margins**: GDP's year-on-year view has no axis and no hover readout and puts two lines of labels
+under each pair, so it keeps its own inside the shared height; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
 with no reading, by Keren's decision.** Desire has a bare range bar and no mode bar.
 
 - **One affordance per subject.** When the chart draws a reading, its note goes in the head's `⋯` menu
@@ -640,8 +656,13 @@ Validate every three-plus-colour set and prove ramp monotonicity by luminance pe
 
 Cormorant Garamond italic for the season word, cycle names, reading heads and quotes — never below 20px,
 never upright for a title. Public Sans for everything else. IBM Plex Mono for figures only, never a
-word-label or prose; a value that is a phrase takes the text face. Every `font-size` snaps to the scale
-(11 · 12.5 · 14 · 15 · 17 · 20 · 26 · 30 · 40); the few component exceptions are listed in the stylesheet.
+word-label or prose; a value that is a phrase takes the text face. **Every `font-size` is a token** (V662, from the
+Lovable DSM's type scale): `--type-label` 11 · `--type-meta` 12.5 · `--type-interface` 14 · `--type-reading` 15 ·
+`--type-row` 17 · `--type-section` 20 · `--type-reading-head` 26 · `--type-page-title` 30 · `--type-display` 40. The
+DSM's Type page names seven of its nine steps; 12.5 and 17 are the two it leaves unnamed (12.5 is its own meta
+line; 17 is the list row). Change a size in the tokens, never in a rule. The only literals left are the dial's badge,
+drawn in the dial's own SVG units, and sizes in `em` or `calc(var(--dial))`. When V662 moved every size onto the
+scale, each went to the nearest step and a size exactly between two took the smaller.
 600 is interface bold, 700 figures and pills, 400 body. Before using a weight, check it is in the font
 request.
 

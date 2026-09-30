@@ -155,7 +155,7 @@
   function enterEra(era, slot){
     var ta = byId("today-analysis");
     if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
-    eraOpen = era; showCycle(era, true);
+    eraOpen = era; showCycle(era);
     slot.appendChild(cycleViewEl); slot.appendChild(ta);
     eraShow(era);
   }

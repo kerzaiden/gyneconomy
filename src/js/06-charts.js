@@ -100,26 +100,6 @@
          : r < 1.60 ? { text:"Overvalued",         state:"warning" }
                     : { text:"Highly overvalued",  state:"serious" };
   }
-  function sparkHtml(values, window, state){
-    if (!values || values.length < 3) return "";
-    var W = 108, H = 26, pad = 2.5;
-    var lo = Math.min.apply(null, values), hi = Math.max.apply(null, values), span = (hi - lo) || 1;
-    var pts = values.map(function(v, i){
-      return [ (i / (values.length - 1)) * (W - pad * 2) + pad,
-               H - pad - ((v - lo) / span) * (H - pad * 2) ];
-    });
-    var d = "M" + pts.map(function(pt){ return pt[0].toFixed(1) + "," + pt[1].toFixed(1); }).join("L");
-    var last = pts[pts.length - 1];
-    return '<div class="spark ' + (state || "good") + '">' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
-        '<path class="spark-fill" d="' + d + 'L' + last[0].toFixed(1) + ',' + H + 'L' + pts[0][0].toFixed(1) + ',' + H + 'Z"/>' +
-        '<path class="spark-line" d="' + d + '"/>' +
-        '<circle class="spark-end" cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6"/>' +
-      '</svg>' +
-      '<span class="spark-win">' + window + '</span>' +
-    '</div>';
-  }
-  function lastN(arr, n, key){ return arr.slice(-n).map(function(d){ return d[key]; }); }
 
   // ---- The range bar ----
   function modeBar(id, active, extra){
@@ -247,38 +227,11 @@
   }
   function atQuarter(d){ return d.q; }
   function atMonth(d){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }
-  function cycleAverages(series){
-    return marketCycles.map(function(c){
-      var vs = series.filter(function(d){ var y = yearOf(d); return y >= c.from && y <= (c.to || 9999); })
-                     .map(function(d){ return d.v; });
-      return vs.length ? { name:c.name, avg:mean(vs), n:vs.length, ongoing:!!c.ongoing } : null;
-    }).filter(Boolean);
-  }
   function ordinal(n){ var t = n % 100, o = ["th","st","nd","rd"][(t - 20) % 10] || ["th","st","nd","rd"][t] || "th"; return n + o; }
   function hiCard(name, state, text){
     return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span><p>' + text + '</p></div>';
   }
-  function cycleStrip(series, fmt, o){
-    o = o || {};
-    var rows = cycleAverages(series);
-    if (rows.length < 2) return '<p class="chart-unit">too few cycles to compare</p>';
-    var top = Math.max.apply(null, rows.map(function(r){ return Math.abs(r.avg); })) || 1;
-    return '<div class="hi-cycles">' + (o.head ? '<div class="hi-cycles-head">' + o.head + '</div>' : "") +
-      rows.map(function(r){
-        var cls = "hi-cycle" + (r.ongoing ? " now" : "") + (o.stateOf ? " " + o.stateOf(r.avg) : "");
-        return '<div class="' + cls + '">' +
-          '<span class="hi-cycle-name">' + r.name.replace(/ Cycle$/, "") + '</span>' +
-          '<span class="hi-cycle-bar"><i style="width:' + (Math.abs(r.avg) / top * 100).toFixed(1) + '%"></i></span>' +
-          '<b>' + fmt(r.avg) + '</b></div>';
-      }).join("") + '</div>';
-  }
   // ---- The cycle average component ----
-  function cycleAverageBlock(series, fmt, o){
-    o = o || {};
-    if (cycleAverages(series).length < 2) return "";
-    return '<div class="page-chart cyclebox cycle-average">' + cycleStrip(series, fmt, o) +
-      (o.unit ? '<p class="chart-unit">' + o.unit + '</p>' : "") + '</div>';
-  }
   function dropWhatIsShown(full, shown){
     if (!full || !shown) return full || "";
     var norm = function(x){ return x.replace(/\s+/g, " ").trim(); }, seen = norm(shown);
@@ -356,7 +309,7 @@
   function histFrame(Wpx){
     var W = Math.max(270, Math.round(Wpx || 360));
     var narrow = W < 430;
-    var H = narrow ? 268 : 300;
+    var H = narrow ? 335 : 375;
     return { W:W, narrow:narrow, H:H, L:AXIS.L, R:W - AXIS.R,
              T:AXIS.T + AXIS.LEG + AXIS.READ, B:H - 17 - AXIS.FOOT };
   }
@@ -421,8 +374,8 @@
 
   function divergeChart(o, W){
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(170, Math.min(260, W * (W < 520 ? 0.58 : 0.30))));
-    var padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 22, iw = W - padL - padR, ih = H - padT - padB;
+    var F = histFrame(W), H = F.H;
+    var padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B, iw = W - padL - padR, ih = H - padT - padB;
     var vs = o.vals.map(function(d){ return d.v; });
     var lo = Math.min.apply(null, vs.concat([o.mid])), hi = Math.max.apply(null, vs.concat([o.mid]));
     var above = (hi - o.mid) * 1.06, below = (o.mid - lo) * 1.12, unit = ih / ((above + below) || 1);
@@ -435,7 +388,7 @@
     o.vals.forEach(function(d, i){
       var cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(d.v));
       if (Math.abs(y1 - midY) < 0.6) y1 = midY + (d.v >= o.mid ? -0.6 : 0.6);
-      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
+      out.push('<path class="dv-bar hcol ' + (d.v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
     });
     var dAvg = o.vals.reduce(function(a, d){ return a + d.v; }, 0) / (n || 1);
     out.push(avgRule(padL, (W - padR), y(dAvg)));
@@ -455,7 +408,7 @@
 
   function pairChart(o, W){
     W = Math.max(280, W || 340);
-    var H = Math.round(Math.max(196, Math.min(260, W * (W < 520 ? 0.60 : 0.32))));
+    var H = histFrame(W).H;
     var padL = 14, padR = 14, padT = 38, padB = 40, iw = W - padL - padR, ih = H - padT - padB;
     var all = [];
     o.pairs.forEach(function(p){ all.push(p.was, p.now); });
@@ -481,7 +434,7 @@
       '<span class="pc-unit">' + o.unit + '</span></div>';
   }
 
-  // ---- The inner pages' chart (kept for nothing — see above) ----
+  // ---- A series' highest reading within a span ----
 
   function maxIn(series, from, to){
     var vs = series.filter(function(d){ var y = yearOf(d); return y >= from && y <= to; });

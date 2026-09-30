@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared patterns**.
+Generated from commit `15e8fb4` on 2026-09-30. **68 components**, **45 shared patterns**.
 
 ## components.js
 
@@ -27,7 +27,7 @@ Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared pa
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.js:renderHormones` |
 | **`gdpHistoryChart`** | `.growth-col` | `pages-nav.js:registerTempGdpPages` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.js:histHead`, `history.js:paintHeadMenus` |
-| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `components.js:deficitBlock`, `dial-cycle.js:peerReaches`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressurePage`, `render-pages.js:drawHznHead`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
+| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `components.js:deficitBlock`, `dial-cycle.js:peerReaches`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:renderPressurePage`, `render-pages.js:drawHznHead`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
 | **`householdsChart`** | `.bill` `.hh-col` `.kept` | `pages-nav.js:registerHouseholdsValuationPages` |
 | **`m2GrowthChart`** | `.m2-col` | `render-core.js:registerFlowPages` |
 | **`unempHistoryChart`** | `.unemp-col` | `pages-nav.js:registerActivityPowerDeficitPages` |
@@ -40,20 +40,17 @@ Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared pa
 | **`chartAxes`** | `.bt-axis` `.bt-frame` `.bt-grid` `.bt-yl` | `charts.js:divergeChart`, `components.js:deficitChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-core.js:renderPressurePage`, `render-pages.js:renderSpreadHistory` |
 | **`colPeek`** | `.heat` `.peek-base` | `analysis.js:eraMini`, `components.js:valRow`, `forms.js:peekCard`, `history.js:derivePulseTag`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | **`crossLine`** | `.hist-cross` | `charts.js:divergeChart`, `components.js:deficitChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-core.js:renderPressurePage` |
-| **`cycleAverageBlock`** | `.cyclebox` | — |
 | **`cyclePicker`** | `.cycsel-btn` | `charts.js:histControls` |
-| **`cycleStrip`** | `.hi-cycle-bar` `.hi-cycle-name` `.hi-cycles` `.hi-cycles-head` | `charts.js:cycleAverageBlock` |
 | **`divergeChart`** | `.dv-bar` `.dv-mid` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderFearCurve` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.js:divergeChart`, `components.js:deficitChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-core.js:ylmFitLine` |
 | **`hiCard`** | `.hi-name` | `indicators.js:buffettInsight`, `indicators.js:debtInsight`, `indicators.js:interestInsight`, `indicators.js:productivityInsight`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
-| **`histBar`** | `.hist-bar` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:renderSignsList`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
-| **`histTip`** | `.gdp-tooltip` `.hist-tip` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:renderSignsList`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
+| **`histBar`** | `.hist-bar` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
+| **`histTip`** | `.gdp-tooltip` `.hist-tip` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
 | **`meterPeek`** | `.meterpeek` `.mp-band` `.mp-core` `.mp-here` `.mp-track` | `forms.js:peekCard` |
 | **`moreRow`** | `.more-row` | `pages-nav.js:gdpHighlights`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:cardDetailHtml` |
 | **`pairChart`** | `.pc-core` `.pc-key-now` `.pc-key-was` `.pc-legend` `.pc-link` `.pc-now` `.pc-pct` `.pc-unit` `.pc-was` `.pc-was-lab` | `pages-nav.js:registerTempGdpPages` |
-| **`riskMatrixBlock`** | `.riskmx` `.rm-axis` `.rm-axis-x` `.rm-axis-y` `.rm-c` `.rm-cells` `.rm-frame` `.rm-grid` `.rm-mark` `.rm-xlabs` `.rm-ylabs` | `pages-nav.js:renderSignsList` |
-| **`sparkHtml`** | `.spark` `.spark-end` `.spark-fill` `.spark-line` `.spark-win` | `render-pages.js:renderSubjectRows` |
-| **`trendOf`** | `.tp-arrow` | `components.js:deficitChart`, `components.js:velocityHistoryChart`, `dial-cycle.js:drawTemperature`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
+| **`riskMatrixBlock`** | `.riskmx` `.rm-axis` `.rm-axis-x` `.rm-axis-y` `.rm-c` `.rm-cells` `.rm-frame` `.rm-grid` `.rm-mark` `.rm-xlabs` `.rm-ylabs` | `components.js:valRow` |
+| **`trendOf`** | `.tp-arrow` | `components.js:deficitChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | **`vGrid`** | `.bt-vgrid` | `charts.js:divergeChart`, `components.js:deficitChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-pages.js:renderSpreadHistory` |
 | **`xLabel`** | `.bt-xl` | `charts.js:divergeChart`, `charts.js:pairChart`, `components.js:deficitChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-pages.js:renderSpreadHistory` |
@@ -64,14 +61,13 @@ Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`peekCard`** | `.peek` `.peek-kicker` `.peek-text` `.peek-unit` `.peek-value` `.peek-word` | `indicators.js:splitPeek`, `pages-nav.js:placeSignPair`, `pages-nav.js:renderPeekAndCategories` |
-| **`pulseBlock`** | `.past` `.peek-chev` `.pt-head` `.pt-k` `.pt-v` `.pulsetrace` | `pages-nav.js:renderSignsList` |
+| **`pulseBlock`** | `.past` `.peek-chev` `.pt-head` `.pt-k` `.pt-v` `.pulsetrace` | `components.js:valRow` |
 | **`pulseTraceSvg`** | `.pt-svg` | `forms.js:pulseBlock`, `forms.js:pulsePeek` |
 
 ## model.js
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`arcGauge`** | `.gauge-band` `.gauge-core` `.gauge-here` `.gauge-lab` `.gauge-tick` `.gauge-track` | — |
 | **`vitalRingSvg`** | `.vital-ring-fill` `.vital-ring-track` | `analysis.js:eraMini`, `forms.js:peekCard`, `live.js:repaintFearCurve`, `render-pages.js:renderSubjectRows` |
 
 ## render-core.js
@@ -79,10 +75,10 @@ Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.js:renderSignsList` |
-| **`facts`** | `.facts` | `analysis.js:symptomNote`, `charts.js:(top level)`, `components.js:deficitBlock`, `dial-cycle.js:wireResize`, `render-core.js:factsFrom` |
+| **`facts`** | `.facts` | `analysis.js:symptomNote`, `charts.js:(top level)`, `components.js:deficitBlock`, `dial-cycle.js:heatStep`, `render-core.js:factsFrom` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.js:cardDetailHtml` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.js:buildNav` |
-| **`srcBlock`** | `.src` | `dial-cycle.js:renderCycleKicker`, `dial-cycle.js:wireResize`, `forms.js:dsrInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
 | **`subjectRow`** | `.subject-chev` `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.js:buildCategories`, `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.js:timingPill` |
 | **`timingPill`** | `.timing` `.timing-row` | `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:orderMetricSheets`, `pages-nav.js:renderSignsList` |
@@ -103,8 +99,7 @@ Generated from commit `2f099e6` on 2026-09-30. **73 components**, **47 shared pa
 | **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.lbl` `.num` | `dial-cycle.js:renderCycleView` |
 | **`hubSet`** | `.details-link` `.who` `.who-chev` | `dial-cycle.js:hubShowDefault`, `dial-cycle.js:hubShowQuarter` |
 | **`quarterPopup`** | `.reading-block` `.reading-book` `.reading-watch` | `dial-cycle.js:hubShowDefault`, `dial-cycle.js:hubShowQuarter` |
-| **`renderCycleKicker`** | `.bar` `.legend-head` `.legend-rows` `.season-sw` `.ytd` | — |
-| **`renderCycleView`** | `.cv-kicker` `.cv-stat` `.cv-stat-l` `.cv-stat-v` | `analysis.js:renderCycleList` |
+| **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-rows` `.season-sw` `.ytd` | — |
 
 ## pages-nav.js
 
@@ -150,53 +145,48 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | refresh-season.js | 47 places |
-| **`put`** | refresh-season.js | 26 places |
+| **`byId`** | refresh-season.js | 43 places |
+| **`put`** | refresh-season.js | 24 places |
+| **`histFrame`** | charts.js | 13 places |
 | **`openCycle`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`cycleByName`** | charts.js | 10 places |
-| **`factsFrom`** | render-core.js | 10 places |
 | **`addSources`** | model.js | 9 places |
+| **`factsFrom`** | render-core.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
-| **`histFrame`** | charts.js | 9 places |
-| **`yearOf`** | charts.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
-| **`fmtSigned`** | render-pages.js | 8 places |
 | **`histNote`** | history.js | 8 places |
 | **`vhOpen`** | charts.js | 8 places |
 | **`windowScale`** | components.js | 8 places |
+| **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
-| **`qLabel`** | model.js | 7 places |
 | **`highlightsHtml`** | charts.js | 6 places |
 | **`qAtIndex`** | history.js | 6 places |
+| **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
-| **`valRow`** | components.js | 6 places |
-| **`expandBtn`** | render-core.js | 5 places |
+| **`fmtSigned`** | render-pages.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
-| **`mean`** | charts.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
-| **`monthLabel`** | model.js | 5 places |
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
 | **`detailSlot`** | render-core.js | 4 places |
+| **`expandBtn`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
 | **`lede`** | indicators.js | 4 places |
+| **`mean`** | charts.js | 4 places |
+| **`monthLabel`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
-| **`attachHoverTracking`** | model.js | 3 places |
+| **`valRow`** | components.js | 4 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |
 | **`discOf`** | pages-nav.js | 3 places |
-| **`drawTemperature`** | dial-cycle.js | 3 places |
-| **`eraGrowth`** | render-pages.js | 3 places |
-| **`heatStep`** | dial-cycle.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`periodOf`** | indicators.js | 3 places |
-| **`phaseClass`** | render-pages.js | 3 places |
 | **`prettyK`** | analysis.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
 | **`readingRoster`** | analysis.js | 3 places |
@@ -213,28 +203,27 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | Class | Places | Written by |
 |---|---|---|
 | `.caption` | 19 | `charts.js:horizonInfoHtml`, `charts.js:riskMatrixBlock`, `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:pulseInfoHtml`, `history.js:temperatureInfoHtml`, `history.js:volumeInfoHtml`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
-| `.page-chart` | 13 | `charts.js:cycleAverageBlock`, `charts.js:riskMatrixBlock`, `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:renderSignsList`, `render-core.js:cardDetailHtml`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
+| `.page-chart` | 12 | `charts.js:riskMatrixBlock`, `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-core.js:cardDetailHtml`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHormones` |
 | `.hi-lede` | 11 | `indicators.js:lede`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
-| `.tag` | 8 | `dial-cycle.js:renderGrowthPhase`, `forms.js:pulseBlock`, `live.js:paintReading`, `pages-nav.js:renderSignsList`, `render-core.js:headHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows`, `render-pages.js:renderValuationTag` |
 | `.hcol` | 8 | `charts.js:divergeChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart` |
 | `.highlights` | 7 | `charts.js:highlightsHtml`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `render-core.js:cardDetailHtml`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | `.hi-head` | 7 | `charts.js:highlightsHtml`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `render-core.js:cardDetailHtml`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
+| `.tag` | 6 | `forms.js:pulseBlock`, `live.js:paintReading`, `pages-nav.js:renderSignsList`, `render-core.js:headHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.insights` | 6 | `charts.js:highlightsHtml`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | `.marker-sub` | 6 | `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:curveDetailHtml`, `indicators.js:splitInfo`, `render-core.js:cardDetailHtml`, `render-pages.js:renderValuationTag` |
 | `.unit` | 6 | `analysis.js:cycleRowsHtml`, `analysis.js:readFig`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.pulsebox` | 5 | `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock` |
-| `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:renderSignsList` |
+| `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:activityStackHtml` |
 | `.mono` | 5 | `charts.js:fitGroup`, `charts.js:histTip`, `charts.js:pairChart`, `forms.js:pulseBlock`, `render-core.js:cardDetailHtml` |
 | `.cycsel-nm` | 4 | `charts.js:cyclePicker`, `dial-cycle.js:peerReaches`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.peek-mark` | 4 | `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns`, `render-pages.js:renderSubjectRows` |
-| `.subject-icon` | 4 | `pages-nav.js:discOf`, `pages-nav.js:renderSignsList`, `render-core.js:subjectIcon`, `render-pages.js:renderSubjectRows` |
 | `.metric-sheet` | 4 | `indicators.js:catSheet`, `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:renderSignsList` |
-| `.lede` | 3 | `charts.js:(top level)`, `components.js:deficitBlock`, `dial-cycle.js:wireResize` |
+| `.lede` | 3 | `charts.js:(top level)`, `components.js:deficitBlock`, `dial-cycle.js:heatStep` |
 | `.cycsel-opt` | 3 | `dial-cycle.js:peerReaches`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.cycsel-tick` | 3 | `charts.js:cyclePicker`, `dial-cycle.js:peerReaches`, `history.js:headPickRow` |
 | `.rangebar` | 3 | `charts.js:modeBar`, `charts.js:rangeBar`, `pages-nav.js:buildSearch` |
 | `.peek-chart` | 3 | `charts.js:colPeek`, `charts.js:meterPeek`, `forms.js:pulsePeek` |
-| `.expand-btn` | 3 | `dial-cycle.js:renderCycleKicker`, `render-core.js:expandBtn`, `render-core.js:infoIcon` |
+| `.subject-icon` | 3 | `pages-nav.js:discOf`, `pages-nav.js:renderSignsList`, `render-core.js:subjectIcon` |
 | `.legend-row` | 2 | `components.js:deficitBlock`, `dial-cycle.js:renderCycleKicker` |
 | `.vh-mean` | 2 | `charts.js:meanRule`, `components.js:velocityHistoryChart` |
 | `.cycsel-menu` | 2 | `charts.js:cyclePicker`, `history.js:histHead` |
@@ -243,11 +232,10 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.active` | 2 | `charts.js:modeBar`, `charts.js:rangeBar` |
 | `.hist-controls` | 2 | `charts.js:histControls`, `render-core.js:registerFlowPages` |
 | `.hi-card` | 2 | `charts.js:hiCard`, `render-core.js:cardDetailHtml` |
-| `.chart-unit` | 2 | `charts.js:cycleAverageBlock`, `charts.js:cycleStrip` |
 | `.dchart` | 2 | `charts.js:divergeChart`, `charts.js:pairChart` |
 | `.spread-history-head` | 2 | `charts.js:riskMatrixBlock`, `forms.js:pulseBlock` |
 | `.pt-note` | 2 | `charts.js:riskMatrixBlock`, `forms.js:pulseBlock` |
-| `.info-btn` | 2 | `dial-cycle.js:renderCycleKicker`, `render-core.js:infoIcon` |
+| `.expand-btn` | 2 | `dial-cycle.js:renderCycleKicker`, `render-core.js:expandBtn` |
 | `.subject` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.subject-summary` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.lag-row` | 2 | `render-pages.js:deriveUninversionDetail`, `tabs-menu.js:renderSeasonRows` |

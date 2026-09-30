@@ -50,7 +50,7 @@ const grab = (p, label) => p.evaluate(() => {
   return {
     body: document.body.innerHTML.length,
     main: pick('#metric-page, #cycle-view, #today-analysis, .tab-panel:not([hidden])'),
-    values: [...document.querySelectorAll('[id^="subj-value-"], .cv-stat-v, .panel-row, .trendpill, .hist-read')]
+    values: [...document.querySelectorAll('[id^="subj-value-"], .trendpill, .hist-read')]
               .map(e => e.id + '|' + e.textContent).join('\n')
   };
 }).then(r => ({ label, body: r.body, main: r.main, values: r.values }));

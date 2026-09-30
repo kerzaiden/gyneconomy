@@ -46,7 +46,7 @@
   }
   function renderSpreadHistory(){
     var svg = byId("spread-history-svg");
-    var W = 780, H = 220, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
+    var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
@@ -65,8 +65,7 @@
       if (from != null) data = data.slice(from, to == null ? undefined : to);
       if (data.length < 2) data = s.data;
       var shell = svg.parentNode;
-      W = Math.max(270, Math.round((shell && shell.clientWidth) || 360));
-      H = W < 430 ? 268 : 300;
+      F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
       innerW = W - padL - padR; innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       svg.innerHTML = "";
@@ -276,9 +275,6 @@
 
   // ---- RENDER: Valuation (slow) ----
   function renderValuationTag(){
-    var tagEl = byId("valuation-tag");
-    tagEl.className = "tag " + valuation.tag.state + " longcycle-tag";
-    tagEl.textContent = valuation.tag.text;
     var cape = valRow("cape");
     histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
     addSources(valuation.src);
@@ -378,7 +374,7 @@
 
     var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
             : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
-    var rowVal = put("subj-value-hormones", fedFundsRange() +
+    put("subj-value-hormones", fedFundsRange() +
       '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>');
     var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
@@ -425,7 +421,6 @@
         divergeChart(opts(), host.clientWidth || 340) +
         histTip("fear-hist-tooltip") +
         '<div id="fear-trend"></div></div>';
-      var ft = byId("fear-trend");
       put("fear-trend", trendPill(fit, null, true, { rising:"inverting", falling:"steepening" }));
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w){ return divergeChart(opts(), w); });
@@ -468,9 +463,6 @@
     function dot(key, state){
       put("subj-ring-" + key, '<div class="subject-dot"><span class="dot ' + state + '"></span></div>');
     }
-    function iconMark(key, state, svg){
-      put("subj-ring-" + key, '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>');
-    }
     function spark(key, html){ put("subj-spark-" + key, html || ""); }
     function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
     function set(key, valueHtml, contextHtml){
@@ -482,13 +474,6 @@
       return states.reduce(function(w, st){ return order.indexOf(st) > order.indexOf(w) ? st : w; }, "good");
     }
 
-
-    var cycGrowth = eraGrowth(currentEra), cycYears = cycGrowth.years;
-    iconMark("gdp", regimeState(nowModel.reading.regime), sproutSvg());
-    set("gdp", fmtSigned(cycGrowth.total, 0) + '<span class="unit">% · cycle total growth</span>', "");
-    say("gdp", "Compounded over " + cycYears.length + " closed years of the " + currentEra.name + ", and the latest quarter is still " +
-      (nowModel.reading.regime === "expansion" ? "expanding" : "contracting") + ".");
-    spark("gdp", sparkHtml(lastN(gdpQuarterlyYoY, 16, "v"), "yearly rate \u00b7 4 years", regimeState(nowModel.reading.regime)));
 
     var hzLabel = document.querySelector('[data-subject="horizon"] .subject-label');
     put(hzLabel, '<span class="peek-mark">' + sunriseSvg() + '</span>Horizon' + CHEV);
@@ -514,9 +499,6 @@
     say("sentiment", "");
     spark("sentiment", "");
 
-    iconMark("valuation", worst(valuation.rows.map(function(r){ return r.flagState || "good"; })), diamondSvg());
-    set("valuation", valRow("cape").flagValue + '<span class="unit">CAPE</span><span class="tag ' + valuation.tag.state + '">' + valuation.tag.text + '</span>', "");
-    say("valuation", valuation.shortImpression);
 
   }
   GYN.step("renderSubjectRows", renderSubjectRows, "build"); renderSubjectRows();
@@ -560,11 +542,9 @@
     return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
   }
   function fmtSigned(v, dp){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
-  function regimeArrow(regime){ return regime === "contraction" ? "\u2193 " : "\u2191 "; }
   var GROWTH_SHOWN = { expansion:"expanding", contraction:"contracting", steady:"steady" };
   function growthShown(reg){ return GROWTH_SHOWN[reg] || reg; }
   function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
-  function regimeState(regime){ return regime === "contraction" ? "warning" : "good"; }
   function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
   function eraMarketTotal(cyc){
     var endY = cyc.ongoing ? calendarTodayY : cyc.to, level = 1, any = false;
@@ -572,12 +552,6 @@
     return any ? (level - 1) * 100 : null;
   }
   var cycleViewEl = byId("cycle-view");
-  var tempCard = byId("temp-card"), growthCard = byId("growth-card");
-  function placeCharts(){
-    byId("slot-temp").appendChild(tempCard);
-    byId("slot-growth").appendChild(growthCard);
-  }
-  placeCharts();
   var shownEra = null;
   var calendarReset = null;
   var metricPageReset = null;

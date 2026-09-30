@@ -144,7 +144,7 @@
       ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to) + '</span>';
     var reading = seasonReading[seg.season] || {};
     return head +
-      (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:20px;line-height:1.4;color:var(--text-primary)">' + (m.ongoing ? cycleNowNote : era.blurb) + '</p>' : '') +
+      (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + (m.ongoing ? cycleNowNote : era.blurb) + '</p>' : '') +
       (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
       (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
       (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
@@ -263,9 +263,6 @@
   }
   GYN.step("renderCycleDial", renderCycleDial, "wire"); renderCycleDial();
 
-  // ---- the temperature chart: the cycle's months, against the 2% target ----
-  var tempState = { model:null, key:null, trend:null };
-  var chartLink = { show:[], hide:[] };
   function m2Step(v){
     return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
   }
@@ -273,283 +270,6 @@
     if (v < 1) return "s0";
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
-  function drawTempFit(svg, tFit, fx0, fx1, y){
-    var el = svgEl;
-    var fg = el("g", {class:"fit"});
-    var fv0 = tFit.fit.intercept, fv1 = tFit.fit.intercept + tFit.fit.slope * (tFit.fit.n - 1);
-    var fy0 = y(fv0), fy1 = y(fv1), fDown = fy1 > fy0;
-    fg.appendChild(el("line", {x1:fx0.toFixed(1), y1:fy0.toFixed(1), x2:fx1.toFixed(1), y2:fy1.toFixed(1), class:"fit-line"}));
-    [[fx0, fy0, fv0, !fDown, "start"], [fx1, fy1, fv1, fDown, "end"]].forEach(function(L){
-      var txt = L[2].toFixed(1) + "%", w = txt.length * 7.4 + 8;
-      var lx = L[4] === "end" ? L[0] - w : L[0], ly = L[3] ? L[1] - 19 : L[1] + 5;
-      fg.appendChild(el("rect", {x:lx.toFixed(1), y:ly.toFixed(1), width:w.toFixed(1), height:15, rx:3, class:"chart-label-plate"}));
-      var t = el("text", {x:(lx + w / 2).toFixed(1), y:(ly + 11.4).toFixed(1), class:"fit-lab mono", "text-anchor":"middle"});
-      t.textContent = txt; fg.appendChild(t);
-    });
-    svg.appendChild(fg);
-  }
-  function drawTemperature(m){
-    var svg = byId("temp-svg"), el = svgEl;
-    var TARGET = 2.0, RANGE_LO = 1.0, RANGE_HI = 3.0;
-    var FUTURE = m.ongoing ? 8 : 3;
-    var compact = window.innerWidth <= 640, key = m.era.from + "|" + compact;
-    tempState.model = m;
-    if (key === tempState.key) return;
-    tempState.key = key;
-
-    var startYear = m.era.from, data = m.cpi, last = data[data.length - 1], r = m.reading;
-    function slotOf(mo){ return (parseInt(mo.slice(0, 4), 10) - startYear) * 12 + parseInt(mo.slice(5, 7), 10) - 1; }
-    var lastSlot = slotOf(last.m), slots = lastSlot + 1 + FUTURE;
-    var bySlot = {};
-    data.forEach(function(d){ bySlot[slotOf(d.m)] = d; });
-    var vals = data.map(function(d){ return d.v; });
-    var minV = Math.min(0, Math.floor(Math.min.apply(null, vals)));
-    var maxV = Math.max(RANGE_HI + 1, Math.ceil(Math.max.apply(null, vals)));
-    var step = (maxV - minV) > 6 ? 2 : 1;
-    minV = Math.floor(minV / step) * step; maxV = Math.ceil(maxV / step) * step;
-    function stateOf(v){ return v > RANGE_HI ? "hot" : v < RANGE_LO ? "cold" : "within"; }
-    function pct(v){ return v.toFixed(1) + "%"; }
-    var tooltip = byId("temp-tooltip");
-
-    var W = compact ? 400 : 780, H = compact ? 270 : 250, padL = AXIS.L, padR = AXIS.R, padB = 26;
-    var tx0 = padL + ((W - padL - padR) / slots) * (lastSlot + 0.5);
-    var valueRight = (W - padR - tx0) >= 84;
-    var padT = valueRight ? 46 : 62;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
-    var slotW = innerW / slots;
-    function xc(i){ return padL + slotW * (i + 0.5); }
-    function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.innerHTML = "";
-    chartLink.show = []; chartLink.hide = [];
-
-    var tFit = (function(){
-      var t = trendOf(vals, "points", "month");
-      return t && t.fit && t.fit.n > 1 ? t : null;
-    })();
-
-    var bandH = y(RANGE_LO) - y(RANGE_HI);
-    svg.appendChild(el("rect", {x:padL, y:y(RANGE_HI), width:innerW, height:bandH, rx:Math.min(10, bandH / 2), class:"temp-range"}));
-    for (var g = minV; g <= maxV; g += step){
-      if (g !== TARGET) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(g), y2:y(g), class:"bt-grid"}));
-      var gl = el("text", {x:padL - 6, y:y(g) + 3, class:"bt-yl", "text-anchor":"end"});
-      gl.textContent = g + "%";
-      svg.appendChild(gl);
-    }
-    svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(TARGET), y2:y(TARGET), class:"temp-target"}));
-    if (W - padR - tx0 >= 70){
-      var tl = el("text", {x:W - padR, y:y(TARGET) - 4, class:"temp-target-label", "text-anchor":"end"});
-      tl.textContent = "2% target";
-      svg.appendChild(tl);
-    }
-
-    var yT = y(TARGET), yBase = Math.min(padT + innerH, y(0));
-    var colW = Math.max(2.2, Math.min(9, slotW * COL_FILL));
-    data.forEach(function(d){
-      var i = slotOf(d.m), cx = xc(i);
-      svg.appendChild(el("path", {
-        d:"M" + cx.toFixed(1) + "," + yBase.toFixed(1) + "L" + cx.toFixed(1) + "," + y(d.v).toFixed(1),
-        "stroke-width":colW.toFixed(1), class:"temp-col " + heatStep(d.v)
-      }));
-    });
-    var avgV = data.reduce(function(a, d){ return a + d.v; }, 0) / data.length;
-    svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(avgV), y2:y(avgV), class:"temp-avg"}));
-    var avgText = "average " + avgV.toFixed(1) + "%", avgW = avgText.length * 5.6 + 8, avgY = y(avgV);
-    var bestX = padL + 4, bestClear = -Infinity;
-    for (var cx0 = padL + 2; cx0 + avgW <= W - padR - 2; cx0 += 6){
-      var clear = Infinity;
-      data.forEach(function(d){
-        var px = xc(slotOf(d.m));
-        if (px < cx0 - 3 || px > cx0 + avgW + 3) return;
-        clear = Math.min(clear, y(d.v) - avgY);
-      });
-      if (clear === Infinity) clear = 1e6;
-      if (clear > bestClear){ bestClear = clear; bestX = cx0; }
-    }
-    var avgAbove = bestClear > 13;
-    var plateY = avgAbove ? avgY - 15 : avgY + 3;
-    svg.appendChild(el("rect", {x:bestX.toFixed(1), y:plateY.toFixed(1), width:avgW.toFixed(1), height:13, rx:3, class:"chart-label-plate"}));
-    var avgL = el("text", {x:(bestX + 4).toFixed(1), y:(plateY + 9.6).toFixed(1), class:"temp-avg-label mono"});
-    avgL.textContent = avgText;
-    svg.appendChild(avgL);
-
-    if (tFit) drawTempFit(svg, tFit, xc(slotOf(data[0].m)), xc(slotOf(last.m)), y);
-    tempState.trend = tFit;
-
-    var everyOther = (m.endYear - startYear + 1) > 6;
-    for (var ly = startYear; ly <= m.endYear; ly++){
-      var ls = (ly - startYear) * 12 + 5.5;
-      if (ls >= slots) break;
-      if (everyOther && (ly - startYear) % 2) continue;
-      var yl = el("text", {x:xc(ls), y:H - 8, class:"bt-xl", "text-anchor":"middle"});
-      yl.textContent = "'" + String(ly).slice(2);
-      svg.appendChild(yl);
-    }
-
-    var tx = xc(lastSlot);
-    svg.appendChild(el("line", {x1:tx, x2:tx, y1:padT - 8, y2:padT + innerH, class:"temp-today-line"}));
-    var lastY = y(last.v) + (last.v >= TARGET ? 0 : 0);
-    var badge = el("g", {class:"temp-badge", transform:"translate(" + tx.toFixed(1) + " " + lastY.toFixed(1) + ")"});
-    badge.appendChild(el("circle", {r:5, class:"disc"})); badge.appendChild(el("circle", {r:1.75, class:"dot"}));
-    svg.appendChild(badge);
-    var readText = (r.cpiHot ? "hot" : r.cpiCold ? "cold" : "warm") + " · " + r.cpiDirection;
-    var dateEl = el("text", {x:tx - 7, y:12, class:"temp-today-date", "text-anchor":"end"});
-    dateEl.textContent = monthLabel(last.m);
-    svg.appendChild(dateEl);
-    var yearEl = el("text", {x:tx - 7, y:26, class:"temp-today-date", "text-anchor":"end"});
-    yearEl.textContent = (m.ongoing ? "Cycle year " : "Closed · year ") + m.yearIndex;
-    svg.appendChild(yearEl);
-    var valueEl = el("text", {x:valueRight ? tx + 7 : tx - 7, y:valueRight ? 18 : 44, class:"temp-today-value", "text-anchor":valueRight ? "start" : "end"});
-    valueEl.textContent = pct(r.cpiNow);
-    svg.appendChild(valueEl);
-    var readEl = el("text", {x:valueRight ? tx + 7 : tx - 7, y:valueRight ? 32 : 57, class:"temp-today-read", "text-anchor":valueRight ? "start" : "end"});
-    readEl.textContent = readText;
-    svg.appendChild(readEl);
-
-    var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:padT + innerH, class:"crosshair"});
-    svg.appendChild(crosshair);
-    var hoverDot = el("circle", {r:4, class:"chart-hover-dot"});
-    svg.appendChild(hoverDot);
-    var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
-    svg.appendChild(hit);
-    function showAt(i){
-      if (i > lastSlot) i = lastSlot;
-      var d = bySlot[i], px = xc(i);
-      crosshair.setAttribute("x1", px); crosshair.setAttribute("x2", px); crosshair.setAttribute("opacity", 1);
-      if (d){ hoverDot.setAttribute("cx", px); hoverDot.setAttribute("cy", y(d.v)); hoverDot.setAttribute("class", "chart-hover-dot " + stateOf(d.v)); hoverDot.style.opacity = 1; }
-      else hoverDot.style.opacity = 0;
-      var mo = startYear + Math.floor(i / 12) + "-" + ("0" + ((i % 12) + 1)).slice(-2);
-      tooltip.innerHTML = d
-        ? "<b>" + monthLabel(d.m) + "</b>CPI " + pct(d.v) + " · " + (stateOf(d.v) === "within" ? "warm" : stateOf(d.v))
-        : "<b>" + monthLabel(mo) + "</b>no reading";
-      tooltip.style.left = (px / W * 100) + "%";
-      tooltip.style.top = ((d ? Math.min(y(d.v), yT) : yT) / H * 100) + "%";
-      tooltip.style.opacity = 1;
-    }
-    function hide(){ crosshair.setAttribute("opacity", 0); hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
-    attachHoverTracking(hit, svg, W, padL + slotW / 2, innerW - slotW, slots, showAt, hide);
-    drawGrowth(m, { W:W, padL:padL, padR:padR, slots:slots, slotW:slotW, xc:xc, startYear:startYear, compact:compact, everyOther:everyOther });
-  }
-  // ---- the growth chart, on the temperature chart's x-axis (Keren, Sep 19, 2026: the years must align) ----
-  function drawGrowth(m, sc){
-    var svg = byId("growth-svg"), el = svgEl, era = m.era, g = m.growth, r = m.reading;
-    var startYear = sc.startYear, endM = m.endMonth;
-    var endKey = parseInt(endM.slice(0, 4), 10) * 12 + parseInt(endM.slice(5, 7), 10);
-    var shown = gdpPeers.filter(function(c){ return c.on; })[0] || null;
-    function inCycle(q){
-      var yy = parseInt(q.slice(0, 4), 10), qn = parseInt(q.slice(6), 10);
-      return yy >= era.from && (yy * 12 + qn * 3) <= endKey;
-    }
-    var qs = shown
-      ? Object.keys(shown.q).sort().filter(inCycle).map(function(q){ return { q:q, v:shown.q[q] }; })
-      : gdpQuarterlyYoY.filter(function(d){ return inCycle(d.q); });
-    function regimeOf(d){ return shown ? (shown.regime[d.q] || (d.v >= 0 ? "expansion" : "contraction")) : quarterRegime(d); }
-    var W = sc.W, H = sc.compact ? 270 : 250, padL = sc.padL, padR = sc.padR, padB = 26;
-    var last = qs[qs.length - 1];
-    function slotOfQ(q){ var yy = parseInt(q.slice(0, 4), 10), qn = parseInt(q.slice(6), 10); return (yy - startYear) * 12 + (qn - 1) * 3 + 1; }
-    var lastSlot = last ? slotOfQ(last.q) : 0;
-    var tx = sc.xc(lastSlot), valueRight = (W - padR - tx) >= 46, padT = 28;
-    var innerW = W - padL - padR, innerH = H - padT - padB;
-    var vals = qs.map(function(d){ return d.v; });
-    var lo = Math.min(-1, Math.floor(Math.min.apply(null, vals.concat([0])))), hi = Math.max(2, Math.ceil(Math.max.apply(null, vals.concat([1])))) + 1;
-    var step = (hi - lo) > 8 ? 2 : 1; lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
-    function y(v){ return padT + innerH - ((v - lo) / (hi - lo)) * innerH; }
-    var tooltip = byId("growth-tooltip");
-    tooltip.style.opacity = 0;
-    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-    svg.innerHTML = "";
-
-    for (var t = lo; t <= hi; t += step){
-      if (t !== 0) svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y(t), y2:y(t), class:"bt-grid"}));
-      var gl = el("text", {x:padL - 6, y:y(t) + 3, class:"bt-yl", "text-anchor":"end"});
-      gl.textContent = t + "%";
-      svg.appendChild(gl);
-    }
-    var y0 = y(0);
-    svg.appendChild(el("line", {x1:padL, x2:W - padR, y1:y0, y2:y0, class:"temp-target"}));
-    var firstSlot = qs.length ? slotOfQ(qs[0].q) : 0;
-    var shownAvg = shown ? vals.reduce(function(a, b){ return a + b; }, 0) / (vals.length || 1) : g.avg;
-    var avgX2 = sc.xc(lastSlot) + sc.slotW, avgY = y(shownAvg);
-    svg.appendChild(el("line", {x1:sc.xc(firstSlot) - sc.slotW, x2:avgX2, y1:avgY, y2:avgY, class:"gdp-era-avg"}));
-    var avgText = "average " + fmtSigned(shownAvg, 1) + "%", avgW = avgText.length * 6.1, avgH = 10;
-    var avgPts = [];
-    qs.forEach(function(d, i){
-      var px = sc.xc(slotOfQ(d.q)), py = y(d.v); avgPts.push({x:px, y:py});
-      if (i < qs.length - 1){ var nx = sc.xc(slotOfQ(qs[i + 1].q)), ny = y(qs[i + 1].v); for (var k = 1; k < 4; k++) avgPts.push({x:px + (nx - px) * k / 4, y:py + (ny - py) * k / 4}); }
-    });
-    if (last) avgPts.push({x:tx, y:y(last.v)});
-    function hits(x1, y1){
-      if (x1 < padL || x1 + avgW > W - padR) return 99;
-      return avgPts.filter(function(pt){ return pt.x > x1 - 5 && pt.x < x1 + avgW + 5 && pt.y > y1 - 5 && pt.y < y1 + avgH + 5; }).length;
-    }
-    var x0 = sc.xc(firstSlot) - sc.slotW, cands = [
-      {x:avgX2 + 6, y:avgY - avgH / 2 + 1}, {x:x0, y:avgY - avgH - 3}, {x:x0, y:avgY + 3},
-      {x:W - padR - avgW, y:avgY - avgH - 3}, {x:W - padR - avgW, y:avgY + 3}, {x:avgX2 - avgW, y:avgY - avgH - 3}, {x:avgX2 - avgW, y:avgY + 3}
-    ];
-    var spot = null, best = Infinity;
-    cands.forEach(function(c){ var h = hits(c.x, c.y); if (h < best){ best = h; spot = c; } });
-    svg.appendChild(el("rect", {x:(spot.x - 3).toFixed(1), y:(spot.y - 1.5).toFixed(1), width:(avgW + 6).toFixed(1), height:(avgH + 4).toFixed(1), rx:3, class:"chart-label-plate"}));
-    var avgLbl = el("text", {x:spot.x.toFixed(1), y:(spot.y + avgH - 1.5).toFixed(1), class:"temp-target-label avg-label", "text-anchor":"start"});
-    avgLbl.textContent = avgText;
-    svg.appendChild(avgLbl);
-
-    var bySlot = {}, pts = qs.map(function(d){ bySlot[slotOfQ(d.q)] = d; return {x:sc.xc(slotOfQ(d.q)), y:y(d.v)}; });
-    var colW = Math.max(2.4, Math.min(10, sc.slotW * 3 * COL_FILL));
-    qs.forEach(function(d, qi){
-      var cx = sc.xc(slotOfQ(d.q));
-      svg.appendChild(el("path", {
-        d:"M" + cx.toFixed(1) + "," + y0.toFixed(1) + "L" + cx.toFixed(1) + "," + y(d.v).toFixed(1),
-        "stroke-width":colW.toFixed(1),
-        class:"gdp-col " + (d.v < 0 ? "below" : regimeOf(d) === "contraction" ? "neg" : "pos")
-      }));
-    });
-
-    for (var ly = startYear; ly <= m.endYear; ly++){
-      var ls = (ly - startYear) * 12 + 5.5;
-      if (ls >= sc.slots) break;
-      if (sc.everyOther && (ly - startYear) % 2) continue;
-      var yl = el("text", {x:sc.xc(ls), y:H - 8, class:"bt-xl", "text-anchor":"middle"});
-      yl.textContent = "'" + String(ly).slice(2);
-      svg.appendChild(yl);
-    }
-
-    if (last){
-      svg.appendChild(el("line", {x1:tx, x2:tx, y1:padT - 8, y2:padT + innerH, class:"temp-today-line"}));
-      var valueEl = el("text", {x:valueRight ? tx + 7 : tx - 7, y:18, class:"temp-today-value", "text-anchor":valueRight ? "start" : "end"});
-      valueEl.textContent = fmtSigned(last.v, 1) + "%";
-      svg.appendChild(valueEl);
-      var badge = el("g", {class:"temp-badge", transform:"translate(" + tx.toFixed(1) + " " + y(last.v).toFixed(1) + ")"});
-      badge.appendChild(el("circle", {r:5, class:"disc"})); badge.appendChild(el("circle", {r:1.75, class:"dot"}));
-      svg.appendChild(badge);
-    }
-
-    var crosshair = el("line", {x1:0, x2:0, y1:padT, y2:padT + innerH, class:"crosshair"});
-    svg.appendChild(crosshair);
-    var hoverDot = el("circle", {r:4, class:"chart-hover-dot"});
-    svg.appendChild(hoverDot);
-    var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
-    svg.appendChild(hit);
-    function showAt(i){
-      if (i > lastSlot + 1) i = lastSlot;
-      var qi = Math.floor(i / 3) * 3 + 1, d = bySlot[qi]; if (!d){ hide(); return; }
-      var px = sc.xc(Math.min(i, lastSlot + 1)), qx = sc.xc(qi);
-      crosshair.setAttribute("x1", px); crosshair.setAttribute("x2", px); crosshair.setAttribute("opacity", 1);
-      hoverDot.setAttribute("cx", qx); hoverDot.setAttribute("cy", y(d.v)); hoverDot.setAttribute("class", "chart-hover-dot " + (regimeOf(d) === "contraction" ? "neg" : "pos")); hoverDot.style.opacity = 1;
-      tooltip.innerHTML = "<b>" + qLabel(d.q) + " \u00b7 " + regimeOf(d) + "</b>" +
-        (shown ? shown.name + " " : "real GDP ") + fmtSigned(d.v, 1) + "% YoY";
-      tooltip.style.left = (px / W * 100) + "%";
-      tooltip.style.top = (Math.min(y(d.v), y0) / H * 100) + "%";
-      tooltip.style.opacity = 1;
-    }
-    function hide(){ crosshair.setAttribute("opacity", 0); hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
-    attachHoverTracking(hit, svg, W, padL + sc.slotW / 2, innerW - sc.slotW, sc.slots, showAt, hide);
-  }
-  function wireResize(){
-    var resizeTimer = null;
-    window.addEventListener("resize", function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(function(){ if (tempState.model) drawTemperature(tempState.model); }, 150); });
-  }
-  GYN.step("wireResize", wireResize, "wire"); wireResize();
-
   var growthDetail = '<h4>Growth per cycle</h4>' +
     '<p class="lede">Real GDP across this cycle, quarter by quarter, on the Temperature chart\u2019s axis so the years line up.</p>' +
     facts([
@@ -563,47 +283,10 @@
     srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc));
 
   // ---- the whole view, for one cycle ----
-  function renderCycleView(m, dialOnly){
-    var era = m.era, meta = wheelMeta[m.season], r = m.reading;
+  function renderCycleView(m){
     drawDial(m);
-    if (dialOnly){ shownEraModel = m; shownEra = era; return; }
-
-    drawTemperature(m);
-    byId("temp-kicker").textContent = "Temperature";
-    byId("temp-sub").textContent = "CPI, year over year · the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to);
-    var infl = eraInflation(era), iy = infl.years;
-    var tempStats = byId("temp-stats");
-    tempStats.className = iy.length ? "cv-stats cycle-stats" : "cv-stats";
-    var tempStatsHtml = iy.length
-      ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(infl.total, 0) +
-        '%</div><div class="cv-stat-l"><span>total price change, ' +
-        (iy.length === 1 ? String(iy[0]) : iy[0] + "–" + iy[iy.length - 1]) + '</span></div></div>'
-      : "";
-    tempStats.innerHTML = tempStatsHtml;
-
-    var g = m.growth;
-    byId("growth-kicker").textContent = "Growth";
-    var gdpLabel = byId("subj-label-gdp");
-    if (gdpLabel) gdpLabel.textContent = "Growth";
-    byId("growth-sub").textContent = "";
-    var yrs = g.years, span = yrs.length ? (yrs.length === 1 ? String(yrs[0]) : yrs[0] + "–" + yrs[yrs.length - 1]) : "";
-    var statsHtml = yrs.length
-      ? '<div class="cv-kicker">Current cycle</div><div class="cv-stat"><div class="cv-stat-v">' + fmtSigned(g.total, 0) + '%</div><div class="cv-stat-l"><span>total growth, ' + span + '</span></div></div>'
-      : "";
-    var statsEl = byId("growth-stats");
-    statsEl.className = yrs.length ? "cv-stats cycle-stats" : "cv-stats";
-    statsEl.innerHTML = statsHtml;
-    renderGrowthPhase(m);
     shownEraModel = m;
-    shownEra = era;
-  }
-  function renderGrowthPhase(m){
-    var shown = gdpPeers.filter(function(c){ return c.on; })[0], reg = m.reading.regime;
-    if (shown){
-      var qs = Object.keys(shown.regime).sort().filter(function(q){ return parseInt(q, 10) <= m.endYear; });
-      reg = qs.length ? shown.regime[qs[qs.length - 1]] : reg;
-    }
-    put("growth-phase", '<span class="tag ' + phaseClass(reg) + '">' + regimeArrow(reg) + growthShown(reg) + '</span>');
+    shownEra = m.era;
   }
   /* ---- The economy the Growth chart draws ---- */
   function peerChosen(){ return gdpPeers.filter(function(c){ return c.on; })[0] || null; }
@@ -630,13 +313,11 @@
   };
   GYN.on("pickPeer", function(code){
     gdpPeers.forEach(function(c){ c.on = c.code === code; });
-    if (shownEraModel) renderGrowthPhase(shownEraModel);
-    if (tempState.model){ tempState.key = null; drawTemperature(tempState.model); }
-    var hd = put("gdp-head", histHead("sheet-metric-gdp"));
+    put("gdp-head", histHead("sheet-metric-gdp"));
   });
 
   var shownEraModel = null;
-  function showCycle(era, dialOnly){ if (shownEra !== era) renderCycleView(cycleModel(era), dialOnly); }
+  function showCycle(era){ if (shownEra !== era) renderCycleView(cycleModel(era)); }
 
   // ---- A cycle's season strip (carried by the one cycle row) ----
   var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };

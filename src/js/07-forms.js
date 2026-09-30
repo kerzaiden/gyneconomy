@@ -179,13 +179,6 @@
     return                 { word:heavy ? "Covered" : "Well covered",     state:"good" };
   }
   var householdsNow = householdsWord(dsrNow, savNow);
-  var SAV_BAND_LO = 4.5, SAV_BAND_HI = 12.2;
-  var dsrMeter = { min:9.0, max:15.9, value:dsrNow,
-                   optimal:{ lte:Number(DSR_MEAN.toFixed(1)), label:"\u2264 " + DSR_MEAN.toFixed(1) + "%" },
-                   ends:{ zone:"Series average", high:"Heavy" } };
-  var savMeter = { min:1.8, max:24.4, value:savNow,
-                   optimal:{ from:SAV_BAND_LO, to:SAV_BAND_HI, label:SAV_BAND_LO + "\u2013" + SAV_BAND_HI + "%" },
-                   ends:{ low:"Thin", high:"Deep" } };
   function dsrInfoHtml(){
     return '<h4>Debt service</h4>' +
       '<p class="caption">What households pay each quarter in required payments on mortgages and consumer debt, ' +

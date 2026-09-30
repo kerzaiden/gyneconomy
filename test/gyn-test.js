@@ -462,6 +462,19 @@ async function openPage(p, url, sheet) {
     icons.every(i => i.same && i.shapes > 1) && icons[3].cards === 7 && headCol
       ? ok('every reading keeps its icon in its category colour', icons.map(i => i.k + ' ' + i.shapes + ' shapes').join(', '))
       : bad('every reading keeps its icon in its category colour', JSON.stringify({ icons, headCol }));
+    const tall = {};
+    for (const pg of ['sheet-metric-valuation', 'sheet-sign-activity', 'sheet-sign-pressure', 'sheet-sign-horizon', 'sheet-sign-sentiment', 'sheet-metric-households']) {
+      await openPage(p, url, pg);
+      tall[pg] = await p.evaluate(() => {
+        const svg = [...document.querySelectorAll('#metric-page svg.hist-svg, #metric-page svg.vh-svg, #metric-page #spread-history-svg')]
+          .sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
+        return svg ? Math.round(svg.getBoundingClientRect().height) : 0;
+      });
+    }
+    const hs = Object.values(tall);
+    (Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5)
+      ? ok('every history draws at one height', Math.min(...hs) + '–' + Math.max(...hs) + 'px')
+      : bad('every history draws at one height', JSON.stringify(tall));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
@@ -758,9 +771,9 @@ async function openPage(p, url, sheet) {
       inv.whole ? ok('GYN.render() leaves the DOM unchanged')
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       const k = inv.kinds;
-      (k.build === 4 && k.mixed === 2 && k.wire === 7)
+      (k.build === 4 && k.mixed === 2 && k.wire === 6)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 7');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 6');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

@@ -6872,3 +6872,21 @@ for example, Schiller cape and Buffett indicator should have a diamond icon um, 
 they are in purple. So bring back the icons, but just make them inherit the color of their parent component."
 So each reading keeps its own icon, drawn in its category's colour, on its card, its Search row and its page.
 ~~~
+
+### V662
+
+~~~text
+Keren: "I'm looking at the history component and it looks very cramped. Meaning it's too dense. Can we make it
+higher by about 20 to 30% so it has more air and breathing room? Of course, the bars, everything needs to be
+proportional." And: "make the height universal inside the parent component".
+So V662: every history chart draws at one height, 25% taller (335px on a phone, 375px wide), from one number
+in histFrame; the bars and scales follow the taller plot.
+Then: "before we merge i want to make sure we have basic code hygiene. i want all parent components to have all the
+properties of their children so we don't have to change different pages all the time when we touch any component
+like we did with the history component's height. is it possible?" And: "make it one version and for the font sizes
+you can use our lovable dsm we built." And: "remove unused components".
+So V662 also: every axis chart takes its margins from the frame; each reading declares its own page options; the
+one page-scoped style became a chart option; every font size is a token on the DSM scale; the check fails on any of
+these coming back; and every component built but never shown is removed (the Temperature and Growth cycle cards,
+the hidden GDP and Valuation summaries, their code and styles).
+~~~
