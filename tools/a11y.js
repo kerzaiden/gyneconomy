@@ -34,7 +34,7 @@ const run = async (p, label, out) => {
     await p.goto('file://' + FILE); await p.waitForTimeout(1400);
     await run(p, w + '/' + scheme + ' home', out);
 
-    for (const t of ['analysis', 'portfolio', 'content']) {
+    for (const t of ['analysis', 'search', 'portfolio']) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
       await p.waitForTimeout(450);
       await run(p, w + '/' + scheme + ' tab:' + t, out);
@@ -61,6 +61,9 @@ const run = async (p, label, out) => {
     await p.evaluate(() => { const m = document.querySelector('.menu-btn'); if (m) m.click(); });
     await p.waitForTimeout(500);
     await run(p, w + '/' + scheme + ' menu', out);
+    await p.evaluate(() => { const r = document.querySelector('[data-sheet="book"]'); if (r) r.click(); });
+    await p.waitForTimeout(500);
+    await run(p, w + '/' + scheme + ' about', out);
     await ctx.close();
   }
   await b.close();

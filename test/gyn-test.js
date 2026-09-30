@@ -352,6 +352,70 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    await p.goto('file://' + url); await p.waitForTimeout(1300);
+    const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab).join(' '));
+    const gone = await p.evaluate(() => !document.querySelector('.all-row') && !document.getElementById('sheet-indicators'));
+    (tabs === 'cycle analysis search portfolio' && gone)
+      ? ok('the tab bar reads Cycle, Analysis, Search, Portfolio', 'no All indicators row or page')
+      : bad('the tab bar reads Cycle, Analysis, Search, Portfolio', JSON.stringify({ tabs, gone }));
+    await p.click('.tab-btn[data-tab="search"]'); await p.waitForTimeout(400);
+    const list = await p.evaluate(() => {
+      const host = document.getElementById('search-list');
+      const rows = [...host.querySelectorAll('.ind-row')];
+      return {
+        title: document.getElementById('topbar-title').textContent,
+        cats: [...host.querySelectorAll('.ind-cat-name')].map(n => n.textContent),
+        rows: rows.length, titles: new Set(rows.map(r => r.dataset.title)).size,
+        doors: rows.every(r => document.getElementById(r.dataset.open)),
+        figs: rows.every(r => r.querySelector('.subject-value').firstChild.nodeType === 3),
+        tabs: [...host.querySelectorAll('.ind-tabs .range-seg')].map(b => b.textContent).join(' ')
+      };
+    });
+    (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === 14 && list.titles === 14 &&
+     list.doors && list.figs && list.tabs === 'All Structural Leading Coincident Lagging')
+      ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
+      : bad('search lists every reading by category', JSON.stringify(list));
+    const shown = async (kind, q) => {
+      if (kind) { await p.click('#search-list .ind-tabs [data-ind-tab="' + kind + '"]'); }
+      await p.fill('#search-input', q || ''); await p.waitForTimeout(120);
+      return p.evaluate(() => ({
+        rows: [...document.querySelectorAll('#search-list .ind-row:not([hidden])')].map(r => r.dataset.title),
+        cats: [...document.querySelectorAll('#search-list .ind-cat:not([hidden]) .ind-cat-name')].map(n => n.textContent),
+        none: !document.querySelector('#search-list .search-none').hidden
+      }));
+    };
+    const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
+    (st.rows.sort().join() === 'Economic power,Households,Valuations' && st.cats.join() === 'Mood,Energy' &&
+     le.rows.length === 5 && le.cats.join() === 'Mood,Circulation' && al.rows.length === 14 && al.cats.length === 4)
+      ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
+      : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
+    const infl = await shown(null, 'inflation'), mood = await shown(null, 'mood'), nil = await shown(null, 'zzzz'), back = await shown(null, '');
+    (infl.rows.join() === 'Temperature' && mood.rows.length === 4 && mood.cats.join() === 'Mood' && nil.none && !nil.rows.length &&
+     back.rows.length === 14 && !back.none)
+      ? ok('the search box finds readings by name, meaning and category', 'inflation → Temperature, mood → 4, none → a message')
+      : bad('the search box finds readings by name, meaning and category', JSON.stringify({ infl, mood, nil, back }));
+    await p.click('#search-list .cat-mood .ind-cat-head'); await p.waitForTimeout(400);
+    const head = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
+      open: !document.getElementById('sheet-cat-mood').hidden,
+      home: document.querySelector('.tab-panel[data-tab="search"]').contains(document.getElementById('metric-page')) }));
+    await p.click('#topbar-back'); await p.waitForTimeout(400);
+    const after = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
+      list: !document.getElementById('search-home').hidden }));
+    (head.title === 'Mood' && head.open && head.home && after.title === 'Search' && after.list)
+      ? ok('a category heading opens its page and back returns to Search')
+      : bad('a category heading opens its page and back returns to Search', JSON.stringify({ head, after }));
+    const about = await p.evaluate(() => {
+      const sheet = document.getElementById('sheet-book');
+      return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
+        framework: sheet.querySelectorAll('#framework-rows .lag-row').length, cycle: /The Cycle Model/.test(sheet.textContent),
+        row: /About Gyneconomy/.test(document.querySelector('[data-sheet="book"]').textContent) };
+    });
+    (about.title === 'About Gyneconomy' && about.seasons === 7 && about.framework > 1 && about.cycle && about.row)
+      ? ok('About Gyneconomy carries the models the Content tab held', about.seasons - 1 + ' seasons, ' + (about.framework - 1) + ' signs')
+      : bad('About Gyneconomy carries the models the Content tab held', JSON.stringify(about));
+  }
+
+  {
     const cc = await p.evaluate(() => {
       const row = [...document.querySelectorAll('.era-row')].find(x => /Housing/.test(x.textContent));
       if (!row) return null; row.click(); return true;
@@ -684,7 +748,7 @@ async function openPage(p, url, sheet) {
     for (const w of [390, 1280]) {
       await q.setViewportSize({ width: w, height: 1000 });
       await q.goto('file://' + url); await q.waitForTimeout(1400); await sweep();
-      for (const t of ['cycle','analysis','portfolio','content']) {
+      for (const t of ['cycle','analysis','search','portfolio']) {
         await q.evaluate(x => { const b = document.querySelector('.tab-btn[data-tab="'+x+'"]'); if (b) b.click(); }, t);
         await q.waitForTimeout(450); await sweep();
       }

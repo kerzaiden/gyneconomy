@@ -6788,3 +6788,24 @@ numbers for every dot; readings with no mark are named in one line under the gri
 The weather analysis proposed on the claude/weather-analysis branch was declined ("the weather analysis is
 not very informative - remove it") and never reached main.
 ~~~
+
+### V657
+
+~~~text
+Keren, comparing All indicators with Apple Health's search page: "it looks much better then our 'all
+indicators' page. how can we reach this level of design in our app?" Then: "i think the all indicators page
+should be divided to the 4 main categories: weather, mood, circulation, energy. and from there we continue
+to the respective pages. if i choose to filter i can do it by: structural, leading, coincident, lagging.
+default is all."
+Her answers on the open choices: category colours for the icons (this revises V509's single purple wash for
+this list, because the colour now names the category); each row shows today's figure only; each category
+heading opens its category page.
+Then: "merge content into the "about the book" page and change its name to "About Gyneconomy". after you do
+this change the content tab to a search tab with a search icon and put the content of all indicators page
+there. then you can delete the all indicators page and container from the home page." And: "put the search
+icon in the bottom menu between portfolio (the right) and analysis. so the order of the bottom menu is like
+this: cycle --> analysis --> search --> portfolio".
+So: the tab bar is Cycle · Analysis · Search · Portfolio. Search holds every reading by category, the timing
+filter and a search box. The Content tab's cycle model, season model and framework are in About Gyneconomy.
+The All indicators page and its row on the home page are gone.
+~~~

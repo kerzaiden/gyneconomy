@@ -82,8 +82,8 @@ through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT
 
 ```text
 A reading is printed on every list that offers a door to its page — the category item in Weather or Mood
-(.ci-value, its verdict lifted out into a sibling .ci-word) and the row in All indicators (.subject-value,
-verdict still inline) — and `[data-open="<sheet>"]` is what those have in common. Walking the doors is the
+(.ci-value, its verdict lifted out into a sibling .ci-word) and the row in Search (.subject-value,
+the figure alone) — and `[data-open="<sheet>"]` is what those have in common. Walking the doors is the
 only honest way to repaint a reading, and this is the only function that does it. Never paint a reading by
 element id: an id reaches exactly one copy and leaves the others stale, and a stale figure looks exactly
 like a fresh one, so nothing would show it.
@@ -236,7 +236,8 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Analysis · Portfolio · Content. Cycle = the dial, then
+to the manuscript, not part of it. Tabs: Cycle · Analysis · Search · Portfolio (V657; the Content tab's models moved into
+About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
 (Valuations · Fear · Desire · Horizon) · Energy (Power · Households · Activity). Named Weather, never
 Season; Fear, never Sentiment; Households, never Debt service.
@@ -249,7 +250,17 @@ Rules that shape the pages:
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: source order is the taxonomy, read by the roster, the
-  category sheets and All indicators.
+  category sheets and Search.
+- **Search (V657) is every reading, grouped by category** in Keren's order, Weather · Mood · Circulation ·
+  Energy, one inset card per category with hairlines between rows. A row is icon · name · today's figure ·
+  chevron; the verdict and the date stay on the reading's page. **Membership is read from the category
+  pages** (`#sheet-cat-*` items), never listed twice. Each heading opens its category page; each row its
+  reading's page, and back returns to Search. The timing filter (All · Structural · Leading · Coincident ·
+  Lagging, default All) and the search box combine; the box matches a reading's name, its economic term,
+  its source line, or a category name. A reading's timing chip opens Search on its timing. **Icons wear
+  their category's colour** (`--cat`, from `.cat-weather` etc., the same colours as the Show data grid):
+  V509's single purple wash is revised for this list (Keren, V657), because here the colour says the
+  category and nothing else.
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
