@@ -100,7 +100,8 @@
              ends:{ zone:"50-year average", high:"Elevated" }},
       shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
       note:"Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
-      direction:"up", flagValue:"122.6%", flagState:"serious"
+      direction:"up", flagValue:"122.6%", flagState:"serious",
+      opens:{ id:"sheet-metric-debt", title:"Debt burden" }
     },
     {
       marker:"Interest burden", sub:"net interest costs ÷ GDP",
@@ -108,7 +109,8 @@
              ends:{ zone:"50-year average", high:"High" }},
       shortNote:"FY2026, $1.0T — already the highest interest burden on record.",
       note:"FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
-      direction:"up", flagValue:"3.3%", flagState:"critical"
+      direction:"up", flagValue:"3.3%", flagState:"critical",
+      opens:{ id:"sheet-metric-interest", title:"Interest burden" }
     },
     {
       marker:"Federal budget", sub:"federal deficit or surplus ÷ GDP",

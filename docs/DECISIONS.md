@@ -6809,3 +6809,21 @@ So: the tab bar is Cycle · Analysis · Search · Portfolio. Search holds every 
 filter and a search box. The Content tab's cycle model, season model and framework are in About Gyneconomy.
 The All indicators page and its row on the home page are gone.
 ~~~
+
+### V658
+
+~~~text
+Keren: "ok let scontinue with the next pull request which will focus on categorization. ... apple health shows
+multiple indicators from the same category. i want to do the same for our app for example: desire Spreads,
+desire risk-reward. so for example the aggregate power indicators in economic power will live separately on
+the energy page. each one will open its own history page with insights. this applies to the entire app."
+And: "also look at the containers in the apple health vs. our containers - apple is much more spacious and has
+more white space. try to mimic their design style". On the plan: "build" (every recommendation), then "no
+need to split 10Y − 2Y & 10Y − 3M" and "no need to split Debt service and Saving rate split into two - they
+both show housholds".
+So V658: the Buffett indicator and the three fiscal markers (Debt burden, Interest burden, Federal budget)
+each have a card and a page; readings with two or more cards carry a heading; the Economic power score keeps
+its card; the Buffett line at 80% is cited to Buffett's Fortune article of Dec 10, 2001. Desire, VIX and the
+Activity split (new data) come next. Industrial output keeps a card without a history (ISM's history is not
+free); Pressure stays one card with the maturity picker (V639).
+~~~

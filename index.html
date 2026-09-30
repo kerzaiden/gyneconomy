@@ -1277,6 +1277,27 @@
   #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
   .cc-grp .cat-list{ margin-top:var(--gap); }
   .cc-grp .cyc-title{ padding:0 2px; }
+  .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
+  .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
+  .cat-sheet .cat-group + .cat-item, .cat-sheet .cat-item + .cat-group, .cat-sheet .cat-group + .cat-group{ margin-top:10px; }
+  .cat-group-head{ margin:0 4px -4px; font-family:"Public Sans",sans-serif; font-size:20px; font-weight:700; color:var(--text-primary); }
+  .cat-sheet .cat-item{ margin:0; padding:18px 20px 20px; border:0; border-radius:24px; }
+  .cat-sheet .cat-item:hover{ background:var(--surface-2); }
+  .cat-sheet .ci-head{ gap:7px; }
+  .cat-sheet .ci-head .peek-mark{ color:var(--cat); }
+  .cat-sheet .ci-head .peek-mark svg{ width:20px; height:20px; }
+  .cat-sheet .ci-name{ font-size:16px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--cat); }
+  .cat-sheet .ci-when{ font-family:"Public Sans",sans-serif; font-size:14px; }
+  .cat-sheet .ci-body{ margin-top:26px; align-items:flex-end; min-height:0; }
+  .cat-sheet .ci-read{ display:flex; flex-direction:column-reverse; gap:3px; }
+  .cat-sheet .ci-value{ display:flex; flex-wrap:wrap; align-items:baseline; column-gap:6px; font-family:"Public Sans",sans-serif;
+    font-size:34px; font-weight:600; letter-spacing:-0.01em; line-height:1.05; }
+  .cat-sheet .ci-unit{ font-size:14px; font-weight:500; color:var(--text-muted); }
+  .cat-sheet .ci-word{ padding:0; background:none; color:var(--text-muted); font-size:14px; font-weight:500;
+    letter-spacing:0; text-transform:none; }
+  .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
+  .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
+  .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
   .cat-item.flat{ cursor:default; }
   .cat-item.flat:hover{ border-color:var(--border); }
   .cat-item.flat .ci-value{ font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700;
@@ -11703,7 +11724,11 @@
     note: "Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
     direction: "up",
     flagValue: "122.6%",
-    flagState: "serious"
+    flagState: "serious",
+    opens: {
+      id: "sheet-metric-debt",
+      title: "Debt burden"
+    }
   }, {
     marker: "Interest burden",
     sub: "net interest costs ÷ GDP",
@@ -11724,7 +11749,11 @@
     note: "FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
     direction: "up",
     flagValue: "3.3%",
-    flagState: "critical"
+    flagState: "critical",
+    opens: {
+      id: "sheet-metric-interest",
+      title: "Interest burden"
+    }
   }, {
     marker: "Federal budget",
     sub: "federal deficit or surplus ÷ GDP",
@@ -17935,8 +17964,12 @@
       var detail = "<h4>" + row.marker + '</h4><div class="marker-sub">' + row.sub + "</div>" + factsFrom(row.note);
       return panelRow({
         name: row.marker,
-        info: detail,
+        info: row.key === "cape" ? detail : null,
         head: row.key === "cape" ? "sheet-metric-valuation" : null,
+        open: row.key === "buffett" ? {
+          id: "sheet-metric-buffett",
+          title: "Buffett indicator"
+        } : null,
         metric: row.flagValue,
         flagged: meterFlagged(row.meter),
         bar: panelFromMeter(row.meter)
@@ -19470,6 +19503,317 @@
       t = setTimeout(settleStrips, 120);
     };
   }());
+  var BUFFETT_2001 = [ {
+    t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
+    u: "https://fortune.com/2001/12/10/warren-buffett-stock-market/"
+  }, {
+    t: "Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
+    u: "https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf"
+  } ];
+  var INDICATOR_GROUP = {
+    "sheet-metric-valuation": "Valuations",
+    "sheet-metric-buffett": "Valuations",
+    "sheet-metric-power": "Economic power",
+    "sheet-metric-debt": "Economic power",
+    "sheet-metric-interest": "Economic power",
+    "sheet-marker-deficit": "Economic power"
+  };
+  var SPLIT_PERIOD = {}, SPLIT_STOPS = [ "5y", "10y", "25y", "max" ];
+  function debtSvg() {
+    return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>');
+  }
+  function interestSvg() {
+    return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/>' + '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>');
+  }
+  function budgetSvg() {
+    return markSvg('<path d="M12 4v16M8 20h8M4.5 8h15" stroke-width="1.8"/>' + '<path d="M4.5 8 2.5 13.5h4zM19.5 8l-2 5.5h4z" stroke-width="1.6"/>');
+  }
+  function lede(text) {
+    return '<p class="hi-lede">' + text + "</p>";
+  }
+  function periodOf(row) {
+    return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || "";
+  }
+  function qLast(series) {
+    return qPretty(series[series.length - 1].q);
+  }
+  function meterWord(m) {
+    return meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
+  }
+  function splitSpecs() {
+    var buff = valRow("buffett");
+    return [ {
+      id: "sheet-metric-buffett",
+      after: "sheet-metric-valuation",
+      title: "Buffett indicator",
+      mark: diamondSvg,
+      head: "Buffett Indicator, Market Value ÷ GDP",
+      row: buff,
+      series: buffettHistory,
+      when: qLast(buffettHistory),
+      mid: 80,
+      midLabel: "Buffett’s line, 80%",
+      unit: "of GDP",
+      fmt: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: BUFFETT_2001.concat(valuation.src.slice(0, 2)),
+      band: "The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " + "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
+      insight: buffettInsight
+    }, {
+      id: "sheet-metric-debt",
+      after: "sheet-metric-power",
+      title: "Debt burden",
+      mark: debtSvg,
+      head: "Gross Federal Debt, Share of GDP",
+      row: labPanel[0],
+      series: grossDebtQuarterly,
+      when: periodOf(labPanel[0]),
+      mid: 70,
+      midLabel: "50-year average, 70%",
+      unit: "of GDP",
+      fmt: function(v) {
+        return v.toFixed(1) + "%";
+      },
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: longCycleSrc.slice(0, 3),
+      insight: debtInsight
+    }, {
+      id: "sheet-metric-interest",
+      after: "sheet-metric-debt",
+      title: "Interest burden",
+      mark: interestSvg,
+      head: "Net Interest, Share of GDP",
+      row: labPanel[1],
+      series: fiscalHistory.interest,
+      when: periodOf(labPanel[1]),
+      mid: 2,
+      midLabel: "50-year average, 2.0%",
+      unit: "of GDP",
+      fmt: function(v) {
+        return v.toFixed(1) + "%";
+      },
+      src: [ longCycleSrc[0], longCycleSrc[4] ],
+      insight: interestInsight
+    } ];
+  }
+  function splitInfo(s) {
+    return "<h4>" + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
+  }
+  function quarterTicks(vals) {
+    if (!vals.length || !vals[0].q) return null;
+    var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
+    return function(d) {
+      return /Q1$/.test(d.q) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d.q.slice(2, 4) : "";
+    };
+  }
+  function drawSplit(s, W) {
+    var id = s.id, cyc = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
+    var span = cyc ? cycleSlice(s.series, cyc) : null;
+    var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
+    var tr = trendOf(vals.map(function(d) {
+      return d.v;
+    }), "points", s.series[0].q ? "quarter" : "year");
+    var chart = function(w) {
+      return divergeChart({
+        vals: vals,
+        mid: s.mid,
+        midLabel: s.midLabel,
+        fmt: s.fmt,
+        tickFmt: s.tick || s.fmt,
+        fit: tr.fit,
+        xLabel: quarterTicks(vals),
+        at: function(d) {
+          return d.q ? qPretty(d.q) : "FY" + d.y;
+        },
+        alt: s.row.marker + " against " + s.midLabel + ", with the fitted trend across the readings in view"
+      }, w);
+    };
+    put(id + "-chart", histBar(histControls(id, {
+      series: s.series,
+      stops: SPLIT_STOPS
+    })) + '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) + '<div class="panel-stack in-hist">' + panelRow({
+      name: s.row.marker,
+      head: id,
+      info: splitInfo(s),
+      metric: s.row.flagValue,
+      flagged: meterFlagged(s.row.meter),
+      bar: panelFromMeter(s.row.meter)
+    }) + "</div>" + histTip(id + "-tip") + "</div>");
+    var box = document.querySelector("#" + id + "-chart .page-chart");
+    refitHistory(box, chart);
+    attachHistory(box, id + "-tip", "divergeChart");
+  }
+  function mountSplit(s) {
+    if (!document.getElementById(s.id)) {
+      var sheet = document.createElement("div");
+      sheet.className = "metric-sheet";
+      sheet.id = s.id;
+      sheet.hidden = true;
+      sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill("structural") + "</div>" + '<div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
+      var after = byId(s.after);
+      if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
+    }
+    HIST_HEAD[s.id] = {
+      mark: s.mark,
+      title: s.head
+    };
+    pageMode[s.id] = "cycles";
+    pageCycles[s.id] = null;
+    pageRange[s.id] = "10y";
+    sheetRenderers[s.id] = function(W) {
+      drawSplit(s, W);
+    };
+    put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
+    addSources(s.src);
+    SPLIT_PERIOD[s.id] = s.when;
+  }
+  function splitPeek(o) {
+    registerTiming("structural", {
+      title: o.title,
+      sub: INDICATOR_GROUP[o.target],
+      metric: o.row.flagValue,
+      unit: o.unit,
+      word: meterWord(o.row.meter),
+      state: o.row.flagState || "norm",
+      icon: discOf({
+        innerHTML: o.mark()
+      }, o.row.flagState),
+      target: o.target
+    });
+    return peekCard({
+      kicker: o.title,
+      title: o.title,
+      mark: o.mark(),
+      value: o.row.flagValue,
+      unit: o.unit,
+      word: meterWord(o.row.meter),
+      state: o.row.flagState || "norm",
+      target: o.target,
+      cols: o.cols,
+      colBase: o.base,
+      colClass: function(v) {
+        return "dv-bar " + (v > o.base ? "over" : "under");
+      }
+    });
+  }
+  function indicatorPeeks() {
+    var html = splitSpecs().map(function(s) {
+      mountSplit(s);
+      return splitPeek({
+        title: s.title,
+        mark: s.mark,
+        row: s.row,
+        unit: s.unit,
+        target: s.id,
+        cols: s.series.map(function(d) {
+          return d.v;
+        }),
+        base: s.mid
+      });
+    }).join("");
+    SPLIT_PERIOD["sheet-marker-deficit"] = periodOf(labPanel[2]);
+    return html + splitPeek({
+      title: "Federal budget",
+      mark: budgetSvg,
+      row: labPanel[2],
+      unit: "deficit, of GDP",
+      target: "sheet-marker-deficit",
+      cols: deficitHistory.map(function(v) {
+        return -v;
+      }),
+      base: 3.8
+    });
+  }
+  function appendPicks(items, picks, PERIOD) {
+    picks.forEach(function(p) {
+      if (typeof p === "string") {
+        var el = document.querySelector(p);
+        if (el) items.appendChild(catItem(el, PERIOD));
+        return;
+      }
+      var grp = document.createElement("div");
+      grp.className = "cat-group";
+      grp.innerHTML = '<h3 class="cat-group-head">' + p.group + "</h3>";
+      p.picks.forEach(function(sel) {
+        var el = document.querySelector(sel);
+        if (el) grp.appendChild(catItem(el, PERIOD));
+      });
+      if (grp.children.length > 1) items.appendChild(grp);
+    });
+  }
+  function categoryCats() {
+    return [ {
+      key: "weather",
+      title: "Weather",
+      mark: weatherSvg(),
+      sub: "Temperature · Growth",
+      picks: [ '.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]' ]
+    }, {
+      key: "circulation",
+      title: "Circulation",
+      mark: circulationSvg(),
+      sub: "Hormones · Pressure · Pulse · Volume",
+      picks: [ '.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
+    }, {
+      key: "mood",
+      title: "Mood",
+      mark: moodSvg(),
+      sub: "Valuations · Fear · Desire · Horizon",
+      picks: [ {
+        group: "Valuations",
+        picks: [ '.peek[data-open="sheet-metric-valuation"]', '.peek[data-open="sheet-metric-buffett"]' ]
+      }, '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
+    }, {
+      key: "energy",
+      title: "Energy",
+      mark: boltSvg(),
+      sub: "Power · Households · Activity",
+      picks: [ {
+        group: "Economic power",
+        picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]' ]
+      }, '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]' ]
+    } ];
+  }
+  function buffettInsight(s) {
+    var now = s.row.meter.value, bv = buffettHistory.map(function(d) {
+      return d.v;
+    });
+    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1), bDot = maxIn(buffettHistory, 2e3, 2007);
+    var richer = bv.filter(function(v) {
+      return v > now;
+    }).length;
+    var above = buffettHistory.filter(function(d) {
+      return d.v > s.mid;
+    });
+    return [ lede("The price of the whole stock market set against the size of the economy that has to " + "earn it. A reading far above the line is a body valued for more than it produces."), hiCard("Where it sits", s.row.flagState || "serious", richer === 0 ? "At " + Math.round(now) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(now) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."), hiCard("Against Buffett’s line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length + " quarters, the last time below it in " + (buffettHistory.filter(function(d) {
+      return d.v <= s.mid;
+    }).pop() || {}).q + ".") ];
+  }
+  function debtInsight(s) {
+    var now = s.row.meter.value, rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
+    var under = grossDebtQuarterly.filter(function(d) {
+      return d.v <= s.mid;
+    }).pop();
+    var era = grossDebtQuarterly.filter(function(d) {
+      return yearOf(d) === currentEra.from;
+    })[0];
+    var cards = [ lede("What the government owes, measured against what the whole economy makes in a " + "year. The larger the debt, the less room the body has to borrow when something goes wrong."), hiCard("Against the record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " + (now >= rec.v ? "the highest reading since the quarterly series began in 1966." : (rec.v - now).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")), hiCard("Against the 70% line", "warning", under ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.") ];
+    if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) + "% (" + era.q + "); the change since is " + fmtSigned(now - era.v, 1) + " points."));
+    return cards;
+  }
+  function interestInsight(s) {
+    var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
+    var rec = hist.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    });
+    var above = hist.filter(function(d) {
+      return d.v > s.mid;
+    }).length;
+    return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has " + "already used, paid again every year."), hiCard("Against the record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now.toFixed(1) + "% " + (now > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The last actual year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
+  }
   function convertLeadingSigns() {
     [ {
       key: "hormones",
@@ -19955,7 +20299,7 @@
     };
     IND_ORDER.forEach(function(kind) {
       timingMembers[kind].forEach(function(e) {
-        find[e.title] = [ e.title, e.sub, e.metricSub ].join(" ").toLowerCase();
+        find[e.title] = [ e.title, e.sub, e.metricSub, INDICATOR_GROUP[e.target] ].join(" ").toLowerCase();
       });
     });
     host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + IND_TABS.map(function(t, i) {
@@ -20241,31 +20585,7 @@
   function buildCategories() {
     var host = byId("today-analysis");
     if (!host) return;
-    var CATS = [ {
-      key: "weather",
-      title: "Weather",
-      mark: weatherSvg(),
-      sub: "Temperature · Growth",
-      picks: [ '.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]' ]
-    }, {
-      key: "circulation",
-      title: "Circulation",
-      mark: circulationSvg(),
-      sub: "Hormones · Pressure · Pulse · Volume",
-      picks: [ '.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]', '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]' ]
-    }, {
-      key: "mood",
-      title: "Mood",
-      mark: moodSvg(),
-      sub: "Valuations · Fear · Desire · Horizon",
-      picks: [ '.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]' ]
-    }, {
-      key: "energy",
-      title: "Energy",
-      mark: boltSvg(),
-      sub: "Power · Households · Activity",
-      picks: [ '.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]', '.sign-row[data-open="sheet-sign-activity"]' ]
-    } ];
+    var CATS = categoryCats();
     var PERIOD = {
       "sheet-metric-temp": atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
       "sheet-metric-gdp": qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
@@ -20279,21 +20599,18 @@
       "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
       "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
     };
+    for (var sp in SPLIT_PERIOD) PERIOD[sp] = SPLIT_PERIOD[sp];
     var list = document.createElement("div");
     list.className = "browse-list";
     CATS.forEach(function(c) {
       if (c.picks) {
         var sheet = document.createElement("div");
-        sheet.className = "metric-sheet";
+        sheet.className = "metric-sheet cat-sheet cat-" + c.key;
         sheet.id = "sheet-cat-" + c.key;
         sheet.hidden = true;
         var items = document.createElement("div");
         items.className = "cat-list";
-        c.picks.forEach(function(sel) {
-          var el = document.querySelector(sel);
-          if (!el) return;
-          items.appendChild(catItem(el, PERIOD));
-        });
+        appendPicks(items, c.picks, PERIOD);
         sheet.appendChild(items);
         if (c.key === "circulation" || c.key === "weather") {
           var tog = c.key === "weather" ? insightWeather() : insightCirculation();
@@ -20370,8 +20687,8 @@
         return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
       }
     }) + peekCard({
-      kicker: "Power",
-      title: "Economic power",
+      kicker: "Power score",
+      title: "Power score",
       mark: boltSvg(),
       value: powerScore + "%",
       unit: "reserve",
@@ -20380,7 +20697,7 @@
       target: "sheet-metric-power",
       ring: powerScore
     }) + peekCard({
-      kicker: "Valuations",
+      kicker: "Shiller CAPE",
       mark: diamondSvg(),
       value: capeNow.toFixed(1) + "×",
       unit: "CAPE",
@@ -20407,7 +20724,7 @@
       colClass: function() {
         return "hh-col";
       }
-    }) + "";
+    }) + indicatorPeeks();
     placeSignPair();
     swapSentimentActivity();
     buildCategories();
@@ -20808,20 +21125,11 @@
     var richer = capeHistory.filter(function(d) {
       return d.v > capeNow;
     });
-    var bv = buffettHistory.map(function(d) {
-      return d.v;
-    });
-    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1);
-    var bDot = maxIn(buffettHistory, 2e3, 2007);
-    var bRicher = bv.filter(function(v) {
-      return v > buffNow;
-    }).length;
     var cards = [];
     cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' + "ten years. Paying far above the long-run price is appetite running ahead of what the body is actually " + "producing.</p>");
     cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0 ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "." : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y + " — only " + richer.map(function(d) {
       return d.y + " (" + capeFmt1(d.v) + ")";
     }).join(" and ") + " ran higher."));
-    cards.push(hiCard("Buffett indicator", valRow("buffett").flagState || "serious", bRicher === 0 ? "At " + Math.round(buffNow) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
     put("valuation-highlights", highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(valuation.impression))));
   }
   function tempHighlights(tempInd, r) {
@@ -21037,49 +21345,8 @@
       return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' + g.mark() + "</span>" + g.label + '</div><div class="cat-list">' + rows + "</div></div>";
     }).join("");
   }
-  var __roster = null;
-  function readingRoster() {
-    if (__roster) return __roster;
-    var byM = function(a) {
-      return a.map(function(d) {
-        return {
-          k: d.m,
-          v: d.v
-        };
-      });
-    };
-    var byQ = function(a) {
-      return a.map(function(d) {
-        return {
-          k: d.q,
-          v: d.v
-        };
-      });
-    };
-    var byY = function(a) {
-      return a.map(function(d) {
-        return {
-          k: String(d.y),
-          v: d.v
-        };
-      });
-    };
-    var qFrom = function(a, y0) {
-      return a.map(function(v, i) {
-        return {
-          k: y0 + Math.floor(i / 4) + " Q" + (i % 4 + 1),
-          v: v
-        };
-      });
-    };
-    var hyList = hyOas.map(function(v, i) {
-      var a = hyAt(i);
-      return {
-        k: a.y + "-" + ("0" + a.m).slice(-2),
-        v: v
-      };
-    });
-    var GRPS = [ {
+  function rosterGroups(byM, byQ, byY, qFrom, hyList) {
+    return [ {
       key: "weather",
       label: "Weather",
       mark: weatherSvg,
@@ -21135,13 +21402,20 @@
       label: "Mood",
       mark: moodSvg,
       rows: [ {
-        name: "Valuations",
+        name: "Shiller CAPE",
         on: "y",
         mark: diamondSvg,
         list: byY(capeHistory),
         dp: 1,
         pre: "Jan ",
         last: "today"
+      }, {
+        name: "Buffett indicator",
+        on: "q",
+        mark: diamondSvg,
+        list: byQ(buffettHistory),
+        dp: 0,
+        unit: "%"
       }, {
         name: "Fear",
         on: "m",
@@ -21168,18 +21442,38 @@
       label: "Energy",
       mark: boltSvg,
       rows: [ {
-        name: "Power",
+        name: "Power score",
         on: "y",
         mark: boltSvg,
         list: byY(powerHistory),
         dp: 0
       }, {
-        name: "Activity",
-        on: "m",
-        mark: trendUpSvg,
-        list: byM(unempHistory),
+        name: "Debt burden",
+        on: "q",
+        mark: debtSvg,
+        list: byQ(grossDebtQuarterly),
+        dp: 0,
+        unit: "%"
+      }, {
+        name: "Interest burden",
+        on: "y",
+        mark: interestSvg,
+        list: byY(fiscalHistory.interest),
         dp: 1,
         unit: "%"
+      }, {
+        name: "Federal budget",
+        on: "y",
+        mark: budgetSvg,
+        list: deficitHistory.map(function(v, i) {
+          return {
+            k: String(DEF_FROM_YEAR + i),
+            v: v
+          };
+        }),
+        dp: 1,
+        unit: "%",
+        signed: true
       }, {
         name: "Households",
         on: "q",
@@ -21187,8 +21481,59 @@
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
         dp: 1,
         unit: "%"
+      }, {
+        name: "Activity",
+        on: "m",
+        mark: trendUpSvg,
+        list: byM(unempHistory),
+        dp: 1,
+        unit: "%"
       } ]
     } ];
+  }
+  var __roster = null;
+  function readingRoster() {
+    if (__roster) return __roster;
+    var byM = function(a) {
+      return a.map(function(d) {
+        return {
+          k: d.m,
+          v: d.v
+        };
+      });
+    };
+    var byQ = function(a) {
+      return a.map(function(d) {
+        return {
+          k: d.q,
+          v: d.v
+        };
+      });
+    };
+    var byY = function(a) {
+      return a.map(function(d) {
+        return {
+          k: String(d.y),
+          v: d.v
+        };
+      });
+    };
+    var qFrom = function(a, y0) {
+      return a.map(function(v, i) {
+        return {
+          k: y0 + Math.floor(i / 4) + " Q" + (i % 4 + 1),
+          v: v
+        };
+      });
+    };
+    var hyList = hyOas.map(function(v, i) {
+      var a = hyAt(i);
+      return {
+        k: a.y + "-" + ("0" + a.m).slice(-2),
+        v: v
+      };
+    });
+    var GRPS = rosterGroups(byM, byQ, byY, qFrom, hyList);
     GRPS.forEach(function(g) {
       g.rows.forEach(function(r) {
         var seen = r.list.filter(function(d) {
@@ -21495,7 +21840,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/ ] ];
     function buildSources() {
       var src = window.__sources, seen = {}, items = [];
       function add(x) {
