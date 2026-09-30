@@ -1,4 +1,4 @@
-  // ---- RENDER: Content tab — reading companion (season reading · flagged now · framework) ----
+  // ---- RENDER: About Gyneconomy — the season model and the framework ----
   function renderSeasonRows(){
     var meta = wheelMeta[currentSeason];
 
@@ -48,11 +48,11 @@
   }
   GYN.step("renderSeasonRows", renderSeasonRows, "render"); renderSeasonRows();
 
-  // ---- TAB NAVIGATION (Cycle / Calendar / Analysis / Content) ----
+  // ---- TAB NAVIGATION (Cycle / Analysis / Search / Portfolio) ----
   function renderTopbar(){
     var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
     var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
-    var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", portfolio:"Portfolio", content:"Content" };
+    var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", search:"Search", portfolio:"Portfolio" };
     var topTitle = byId("topbar-title");
     btns.forEach(function(btn){
       btn.addEventListener("click", function(){

@@ -214,16 +214,25 @@
     });
   }
 
-  function memberRow(e){
-    var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + '</span>'
-            : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + '</span>' : '';
-    var unit = e.unit ? '<span class="member-unit">' + e.unit + '</span>' : '';
-    return subjectRow({
-      open:e.target, title:e.title, icon:e.icon,
-      text: '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " \u00b7 " + e.sub : "")) + '</div>' +
-            '<div class="subject-value">' + e.metric + unit + tag + '</div>' +
-            (e.metricSub ? '<p class="subject-say">' + e.metricSub + '</p>' : '')
+  function indRow(e, kind){
+    return subjectRow({ cls:"ind-row kind-" + kind, open:e.target, title:e.title, icon:e.icon,
+      text:'<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + '</span></div>' });
+  }
+  var IND_ORDER = ["structural", "leading", "coincident", "lagging"], IND_CATS = ["weather", "mood", "circulation", "energy"];
+  function indCategoryHtml(key){
+    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
+    if (!door || !sheet) return "";
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span");
+    var rows = [];
+    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item){
+      var target = item.getAttribute("data-open");
+      IND_ORDER.forEach(function(kind){
+        timingMembers[kind].forEach(function(e){ if (e.target === target) rows.push(indRow(e, kind)); });
+      });
     });
+    return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
+      '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + '</span>' +
+      '<span class="ind-cat-name">' + title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
   }
 
   /* ---- THE NAVIGATION CONTROLLER ---- */
@@ -239,7 +248,9 @@
       cycle:    { panel:cyclePanel,    title:"Current Cycle",
                   hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
       analysis: { panel:analysisPanel, title:"Analysis",
-                  hide:function(){ return [byId("calendar-list")]; } }
+                  hide:function(){ return [byId("calendar-list")]; } },
+      search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), title:"Search",
+                  hide:function(){ return [byId("search-home")]; } }
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
@@ -291,15 +302,13 @@
       var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
       openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
     });
-    analysisPanel.addEventListener("click", function(e){
-      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
-    });
-    analysisPanel.addEventListener("keydown", function(e){
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest("[data-open]"); if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+    ["analysis", "search"].forEach(function(key){
+      var panel = PAGE_HOME[key].panel, go = function(el){ openMetricPage(byId(el.getAttribute("data-open")), el.getAttribute("data-title"), false, key); };
+      panel.addEventListener("click", function(e){ var btn = e.target.closest && e.target.closest("[data-open]"); if (btn) go(btn); });
+      panel.addEventListener("keydown", function(e){
+        var row = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-open]");
+        if (row){ e.preventDefault(); go(row); }
+      });
     });
     cyclePanel.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
@@ -323,49 +332,52 @@
   }
 
   /* ---- ALL INDICATORS ---- */
-  function buildIndicatorSheet(){
-    var indSheet = document.createElement("div");
-    indSheet.className = "metric-sheet ind-sheet"; indSheet.id = "sheet-indicators"; indSheet.hidden = true;
-    var IND_ORDER = ["structural", "leading", "coincident", "lagging"];
-    var IND_TABS = [{ key:"all", label:"All" }, { key:"leading", label:"Leading" },
+  function buildSearch(){
+    var host = byId("search-list"), input = byId("search-input"); if (!host || !input) return;
+    var IND_TABS = [{ key:"all", label:"All" }, { key:"structural", label:"Structural" }, { key:"leading", label:"Leading" },
                     { key:"coincident", label:"Coincident" }, { key:"lagging", label:"Lagging" }];
-    indSheet.innerHTML =
-      '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' +
+    var find = {}, state = { kind:"all", q:"" };
+    IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
+      find[e.title] = [e.title, e.sub, e.metricSub].join(" ").toLowerCase();
+    }); });
+    host.innerHTML =
+      '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' +
         IND_TABS.map(function(t, i){
           return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
             'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
         }).join("") +
-      '</div>' +
-      IND_ORDER.map(function(kind){
-        var t = TIMING[kind], list = timingMembers[kind];
-        if (!list.length) return "";
-        return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) +
-          '<b>' + t.label + '</b><span>' + t.hint + '</span></div>' +
-          list.map(memberRow).join("") + '</div>';
-      }).join("");
-    (byId("today-analysis") || NAV.panel).appendChild(indSheet);
-
-    function setIndTab(kind){
-      kind = kind || "all";
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b){
+      '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(indCategoryHtml).join("") +
+      '<p class="search-none" hidden>No reading matches.</p>';
+    function apply(){
+      var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
+      Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b){
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
         b.setAttribute("aria-selected", on ? "true" : "false");
       });
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g){
-        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
+      hint.hidden = !TIMING[kind];
+      hint.textContent = TIMING[kind] ? TIMING[kind].label + ": " + TIMING[kind].hint + "." : "";
+      Array.prototype.forEach.call(host.querySelectorAll(".ind-cat"), function(c){
+        var cat = c.querySelector(".ind-cat-name").textContent.toLowerCase().indexOf(q) === 0;
+        Array.prototype.forEach.call(c.querySelectorAll(".ind-row"), function(r){
+          r.hidden = !((kind === "all" || r.classList.contains("kind-" + kind)) &&
+                       (!q || cat || (find[r.getAttribute("data-title")] || "").indexOf(q) !== -1));
+        });
+        c.hidden = !c.querySelector(".ind-row:not([hidden])");
       });
+      host.querySelector(".search-none").hidden = !!host.querySelector(".ind-row:not([hidden])");
     }
-    indSheet.addEventListener("click", function(e){
+    host.addEventListener("click", function(e){
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"); if (!b) return;
-      setIndTab(b.getAttribute("data-ind-tab"));
+      state.kind = b.getAttribute("data-ind-tab"); apply();
     });
+    input.addEventListener("input", function(){ state.q = input.value.trim().toLowerCase(); apply(); });
     openIndicatorsPage = function(tab){
-      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
+      var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
-      setIndTab(tab && tab !== "structural" ? tab : "all");
-      NAV.open(indSheet, "All indicators", false, "cycle");
+      input.value = ""; state.q = ""; state.kind = tab || "all"; apply();
     };
+    apply();
   }
 
   /* ---- THE CYCLE TAB: cards and categories ---- */
@@ -615,14 +627,6 @@
         text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
       })));
     });
-    list.appendChild(elFrom(subjectRow({
-      cls:"all-row", open:"sheet-indicators", title:"All indicators",
-      icon: subjectIcon("norm",
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-        'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' +
-        '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
-      text: '<div class="subject-label">All indicators</div>'
-    })));
     host.insertBefore(list, host.firstChild);
     ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
       var el = byId(id);
@@ -1031,7 +1035,7 @@
     renderMetricPages(ctx);
     buildNav();
     registerRoster();
-    buildIndicatorSheet();
+    buildSearch();
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 

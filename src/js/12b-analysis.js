@@ -215,7 +215,7 @@
     var r = row.r;
     return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) +
       '" aria-label="' + r.name + ': alike in ' + row.hits.map(function(c){ return c.y; }).join(", ") + '">' +
-      row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " sx-" + row.g.key : "") + '"></i>'; }).join("") +
+      row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " cat-" + row.g.key : "") + '"></i>'; }).join("") +
       '<b>' + r.name + '</b></button>';
   }
   function cycleTrack(cyc, strip, bands){
@@ -236,7 +236,7 @@
   function symptomLegend(){
     return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>' +
       '<div class="sx-keys">' + readingRoster().map(function(g){
-        return '<span><i class="sx-' + g.key + '"></i>' + g.label + '</span>';
+        return '<span><i class="cat-' + g.key + '"></i>' + g.label + '</span>';
       }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' +
       '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
   }

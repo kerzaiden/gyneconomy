@@ -35,7 +35,7 @@
       var v = d.querySelector(".ci-value, .subject-value");
       if (v && v.firstChild && v.firstChild.nodeType === 3){ v.firstChild.nodeValue = String(value); painted++; }
       if (!tag) return;
-      var t = d.querySelector(".tag, .member-word");
+      var t = d.querySelector(".tag");
       if (!t) return;
       t.textContent = tag.text;
       if (tag.state != null && /\btag\b/.test(t.className))

@@ -8,7 +8,7 @@ const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity','sh
   'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
   'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire','sheet-sign-sentiment','sheet-sign-pressure',
   'sheet-metric-power>sheet-marker-deficit'];
-const TABS = ['cycle','analysis','portfolio','content'];
+const TABS = ['cycle','analysis','search','portfolio'];
 
 const NORMALISERS = [
   [/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+/g, ''],

@@ -431,22 +431,41 @@
   .cv-stats.cycle-stats{ display:block; border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px 12px; margin:12px 0 2px; }
   .cv-stats.cycle-stats .cv-kicker{ margin-bottom:6px; }
   .cv-stats.cycle-stats .cv-stat + .cv-stat{ margin-top:11px; padding-top:11px; border-top:1px solid var(--border); }
-  .ind-group{ margin-top:var(--gap); }
-  .ind-tabs{ margin:2px 0 0; }
-  .ind-tabs + .ind-group{ margin-top:var(--gap); }
-  .ind-group-head{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 2px 8px; }
-  .ind-group-head svg{ width:20px; height:12px; flex:none; align-self:center; }
-  .ind-group-head b{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:700;
-    letter-spacing:0.08em; text-transform:uppercase; color:var(--text-primary); }
-  .ind-group-head span{ font-family:"Public Sans",sans-serif; font-size:12px; font-weight:400;
-    color:var(--text-muted); }
-  .ind-group .sign-row + .sign-row{ margin-top:10px; }
-  .ind-sheet .subject-icon span{ background:color-mix(in srgb, var(--accent) 18%, var(--surface)); color:var(--accent-ink); }
-  .ind-sheet .subject-icon span:empty{ background:none; }
-  .member-unit{ font-family:"Public Sans",sans-serif; font-size:11px; font-weight:600;
-    letter-spacing:0.01em; color:var(--text-muted); align-self:baseline; }
-  .member-word{ font-family:"Public Sans",sans-serif; font-size:11.5px; font-weight:700;
-    color:var(--text-muted); letter-spacing:0.01em; align-self:baseline; }
+  .search-field{ display:flex; align-items:center; gap:8px; height:44px; margin:0 0 12px; padding:0 14px; border:1px solid var(--border);
+    border-radius:var(--radius); background:var(--surface); color:var(--text-muted); cursor:text; }
+  .search-field svg{ width:19px; height:19px; flex:none; }
+  .search-field input{ flex:1; min-width:0; height:100%; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:17px;
+    color:var(--text-primary); outline:none; }
+  .search-field input::placeholder{ color:var(--text-muted); opacity:1; }
+  .search-field:focus-within{ border-color:var(--accent); }
+  .ind-tabs{ margin:0; flex-wrap:nowrap; }
+  .ind-hint{ margin:10px 4px 0; font-size:13px; line-height:1.45; color:var(--text-muted); }
+  .search-none{ margin:22px 4px; font-size:15px; color:var(--text-muted); }
+  .menu-section .expand-btn{ margin-left:4px; vertical-align:middle; }
+  .ind-tabs .range-seg{ flex:1 1 auto; padding:7px 4px; }
+  .ind-cat{ margin-top:22px; }
+  .ind-cat[hidden], .ind-row[hidden]{ display:none; }
+  .ind-cat-head{ display:flex; align-items:center; gap:8px; width:100%; margin:0 0 9px; padding:0 4px; border:0; background:none;
+    font-family:"Public Sans",sans-serif; font-size:20px; font-weight:700; color:var(--text-primary); text-align:left; cursor:pointer; }
+  .ind-cat-mark{ display:inline-flex; color:var(--cat); }
+  .ind-cat-mark svg{ width:22px; height:22px; }
+  .ind-cat-head .peek-chev{ color:var(--text-muted); }
+  .ind-cat-head:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  .ind-cat-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .ind-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .ind-card .sign-row.ind-row{ position:relative; margin:0; border:0; border-radius:0; box-shadow:none; background:none; }
+  .ind-card .sign-row.ind-row:hover{ background:var(--surface-2); }
+  .ind-card .sign-row.ind-row + .sign-row.ind-row{ margin-top:0; }
+  .ind-card .ind-row + .ind-row::before{ content:""; position:absolute; top:0; left:56px; right:0; border-top:1px solid var(--border); }
+  .ind-card .ind-row .subject-summary{ gap:14px; min-height:52px; padding:0 14px 0 16px; }
+  .ind-card .ind-row .subject-ring{ width:26px; height:26px; }
+  .ind-card .ind-row .subject-icon span{ width:26px; height:26px; background:none; color:var(--cat); }
+  .ind-card .ind-row .subject-icon svg{ width:24px; height:24px; }
+  .ind-line{ display:flex; align-items:center; gap:10px; }
+  .ind-name{ flex:1; min-width:0; font-family:"Public Sans",sans-serif; font-size:17px; color:var(--text-primary);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ind-card .ind-fig{ display:inline; font-family:"Public Sans",sans-serif; font-size:15px; font-weight:400; letter-spacing:0;
+    color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
 
   .cv-stat-v{ font-family:"IBM Plex Mono",monospace; font-size:30px; font-weight:700; letter-spacing:-0.02em; line-height:1.05; color:var(--text-primary); }
 
@@ -655,7 +674,6 @@
   .browse-list > .cat-row:nth-of-type(2){ grid-area:2 / 1; }
   .browse-list > .cat-row:nth-of-type(3){ grid-area:1 / 2; }
   .browse-list > .cat-row:nth-of-type(4){ grid-area:2 / 2; }
-  .browse-list > .all-row{ grid-column:1 / -1; }
   .browse-list > .cat-row .subject-summary{ flex-direction:column; align-items:stretch; gap:10px;
     padding:var(--pad); height:100%; }
   .browse-list > .cat-row .subject-ring{ width:42px; height:42px; }
@@ -670,7 +688,6 @@
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
   .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }
-  .ind-sheet > .rangebar:first-child{ margin-top:var(--gap-top); }
   .cat-item{ display:block; width:100%; text-align:left; box-sizing:border-box; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:12px 14px 13px; font-family:"Public Sans",sans-serif; }
@@ -704,13 +721,6 @@
   .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
   .cat-item .subject-value .unit{ margin-left:4px; }
   .cat-item .subject-say{ margin:3px 0 0; }
-  .all-row .subject-summary{ padding:9px var(--pad); }
-  .all-row .subject-ring{ width:64px; height:32px; }
-  .all-row .subject-icon span{ width:32px; height:32px; background:none; }
-  .all-row .subject-icon svg{ width:20px; height:20px; }
-  .all-row .subject-label{ font-size:14.5px; }
-  @media (max-width:560px){ .all-row .subject-summary{ padding:9px var(--pad); }
-    .all-row .subject-ring{ width:54px; height:30px; } }
   .cat-row .cat-sub{ font-family:"Public Sans",sans-serif; font-size:12.5px; color:var(--text-muted);
     margin-top:3px; }
   @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } }
@@ -1233,10 +1243,9 @@
   .sx-keys i.sx-off{ width:5px; height:5px; background:var(--text-muted); opacity:0.5; }
   .sx-keys i.sx-now{ border:1.5px solid var(--accent); box-sizing:border-box; }
   .sx-keys b.sx-down{ font-weight:700; color:var(--bear-ink); }
-  .sx-keys i.sx-weather, .sx-row i.sx-weather{ background:var(--season-summer); }
-  .sx-keys i.sx-circulation, .sx-row i.sx-circulation{ background:var(--ff-blue); }
-  .sx-keys i.sx-mood, .sx-row i.sx-mood{ background:var(--accent); }
-  .sx-keys i.sx-energy, .sx-row i.sx-energy{ background:var(--good); }
+  .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
+  .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
+  .sx-keys i[class^="cat-"], .sx-row i.on{ background:var(--cat); }
   .era-row.data{ cursor:default; }
   .era-row.data:hover{ background:none; }
   .era-open{ display:flex; width:100%; padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
@@ -1536,8 +1545,8 @@
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
       <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
+      <button type="button" class="tab-btn" data-tab="search" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><span>Search</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
-      <button type="button" class="tab-btn" data-tab="content" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5c-1.6-1.4-3.8-2-6.5-2H4v13h1.5c2.7 0 4.9.6 6.5 2 1.6-1.4 3.8-2 6.5-2H20v-13h-1.5c-2.7 0-4.9.6-6.5 2z"/><path d="M12 6.5v13"/></svg><span>Content</span></button>
     </div>
   </nav>
 
@@ -1826,29 +1835,13 @@
     </div>
   </div>
 
-  <div class="tab-panel" data-tab="content" hidden>
-
-    <section class="journal-about" aria-label="The cycle model">
-      <h2>The Cycle Model</h2>
-      <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
-        it: the recovery, the boom, and the bleed the boom pays for.</p>
-      <div class="legend-rows">
-        <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
-        <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
-      </div>
-    </section>
-
-    <section class="journal-about" aria-label="The season model">
-      <h2 id="seasons-kicker">The Season Model</h2>
-      <div class="lag-rows seasons-rows" id="seasons-rows"></div>
-    </section>
-
-    <section class="journal-about" aria-label="The framework">
-      <h2 id="framework-kicker">The framework</h2>
-      <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
-      <div class="lag-rows framework-rows" id="framework-rows"></div>
-    </section>
-
+  <div class="tab-panel" data-tab="search" hidden>
+    <div id="search-home">
+      <label class="search-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><input type="search" id="search-input"
+        placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false"></label>
+      <div id="search-list"></div>
+    </div>
   </div>
 
   <div class="more-menu" id="more-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
@@ -1863,7 +1856,7 @@
       <div class="menu-card">
         <button type="button" class="menu-row" data-sheet="howto"><span class="menu-label">How to read<small>the wheel, the seasons, the charts</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-        <button type="button" class="menu-row" data-sheet="book"><span class="menu-label">About the book<small>Mrs. Market and the Gyneconomy framework</small></span>
+        <button type="button" class="menu-row" data-sheet="book"><span class="menu-label">About Gyneconomy<small>Mrs. Market and the Gyneconomy framework</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
       <h3 class="menu-section">Resources</h3>
@@ -1920,18 +1913,18 @@
 
       <h3 class="menu-section">The tabs</h3>
       <div class="menu-card menu-prose">
-        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Analysis</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Content</b> is the reading companion for the current season, with the season model and the manuscript's framework table.</p>
+        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Analysis</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Energy — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
       </div>
     </div>
   </div>
 
-  <div class="more-menu sources-view" id="sheet-book" role="dialog" aria-modal="true" aria-label="About the book" hidden>
+  <div class="more-menu sources-view" id="sheet-book" role="dialog" aria-modal="true" aria-label="About Gyneconomy" hidden>
     <div class="menu-wrap">
       <div class="topbar">
         <button type="button" class="menu-btn back-btn" data-sheet-back aria-label="Back to the menu">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
         </button>
-        <h2 class="topbar-title sources-title">About the book</h2>
+        <h2 class="topbar-title sources-title">About Gyneconomy</h2>
       </div>
       <p class="menu-lede"><i class="serif">Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
 
@@ -1945,6 +1938,27 @@
       <div class="menu-card menu-prose">
         <p>The board is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1991 the same way, and keeps the vital signs the book teaches you to watch. Every figure is compiled by hand from primary sources and fixed at publish time — nothing on it updates on its own.</p>
       </div>
+
+      <h3 class="menu-section">The Cycle Model</h3>
+      <div class="menu-card journal-about">
+      <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
+        it: the recovery, the boom, and the bleed the boom pays for.</p>
+      <div class="legend-rows">
+        <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
+        <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
+      </div>
+    </div>
+
+      <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
+      <div class="menu-card journal-about">
+      <div class="lag-rows seasons-rows" id="seasons-rows"></div>
+    </div>
+
+      <h3 class="menu-section" id="framework-kicker">The framework</h3>
+      <div class="menu-card journal-about">
+      <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
+      <div class="lag-rows framework-rows" id="framework-rows"></div>
+    </div>
 
       <h3 class="menu-section">The author</h3>
       <div class="menu-card menu-prose">
@@ -10938,7 +10952,7 @@
         painted++;
       }
       if (!tag) return;
-      var t = d.querySelector(".tag, .member-word");
+      var t = d.querySelector(".tag");
       if (!t) return;
       t.textContent = tag.text;
       if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
@@ -19738,15 +19752,30 @@
       });
     });
   }
-  function memberRow(e) {
-    var tag = e.tag ? '<span class="tag ' + e.tag.state + '">' + e.tag.text + "</span>" : e.word ? '<span class="' + (e.state ? "tag " + e.state : "member-word") + '">' + e.word + "</span>" : "";
-    var unit = e.unit ? '<span class="member-unit">' + e.unit + "</span>" : "";
+  function indRow(e, kind) {
     return subjectRow({
+      cls: "ind-row kind-" + kind,
       open: e.target,
       title: e.title,
       icon: e.icon,
-      text: '<div class="subject-label">' + (e.sub && e.sub.indexOf(e.title) === 0 ? e.sub : e.title + (e.sub ? " · " + e.sub : "")) + "</div>" + '<div class="subject-value">' + e.metric + unit + tag + "</div>" + (e.metricSub ? '<p class="subject-say">' + e.metricSub + "</p>" : "")
+      text: '<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + "</span></div>"
     });
+  }
+  var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ], IND_CATS = [ "weather", "mood", "circulation", "energy" ];
+  function indCategoryHtml(key) {
+    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
+    if (!door || !sheet) return "";
+    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span");
+    var rows = [];
+    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item) {
+      var target = item.getAttribute("data-open");
+      IND_ORDER.forEach(function(kind) {
+        timingMembers[kind].forEach(function(e) {
+          if (e.target === target) rows.push(indRow(e, kind));
+        });
+      });
+    });
+    return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key + '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + "</span>" + '<span class="ind-cat-name">' + title + "</span>" + CHEV + '</button><div class="ind-card">' + rows.join("") + "</div></section>";
   }
   var NAV = {
     open: null,
@@ -19772,6 +19801,13 @@
         title: "Analysis",
         hide: function() {
           return [ byId("calendar-list") ];
+        }
+      },
+      search: {
+        panel: document.querySelector('.tab-panel[data-tab="search"]'),
+        title: "Search",
+        hide: function() {
+          return [ byId("search-home") ];
         }
       }
     };
@@ -19856,17 +19892,21 @@
       if (!btn) return;
       openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
     });
-    analysisPanel.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest("[data-open]");
-      if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, "analysis");
-    });
-    analysisPanel.addEventListener("keydown", function(e) {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest("[data-open]");
-      if (!row) return;
-      e.preventDefault();
-      openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"), false, "analysis");
+    [ "analysis", "search" ].forEach(function(key) {
+      var panel = PAGE_HOME[key].panel, go = function(el) {
+        openMetricPage(byId(el.getAttribute("data-open")), el.getAttribute("data-title"), false, key);
+      };
+      panel.addEventListener("click", function(e) {
+        var btn = e.target.closest && e.target.closest("[data-open]");
+        if (btn) go(btn);
+      });
+      panel.addEventListener("keydown", function(e) {
+        var row = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-open]");
+        if (row) {
+          e.preventDefault();
+          go(row);
+        }
+      });
     });
     cyclePanel.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle");
@@ -19890,15 +19930,15 @@
     NAV.open = openMetricPage;
     NAV.panel = analysisPanel;
   }
-  function buildIndicatorSheet() {
-    var indSheet = document.createElement("div");
-    indSheet.className = "metric-sheet ind-sheet";
-    indSheet.id = "sheet-indicators";
-    indSheet.hidden = true;
-    var IND_ORDER = [ "structural", "leading", "coincident", "lagging" ];
+  function buildSearch() {
+    var host = byId("search-list"), input = byId("search-input");
+    if (!host || !input) return;
     var IND_TABS = [ {
       key: "all",
       label: "All"
+    }, {
+      key: "structural",
+      label: "Structural"
     }, {
       key: "leading",
       label: "Leading"
@@ -19909,36 +19949,55 @@
       key: "lagging",
       label: "Lagging"
     } ];
-    indSheet.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Which readings to show">' + IND_TABS.map(function(t, i) {
+    var find = {}, state = {
+      kind: "all",
+      q: ""
+    };
+    IND_ORDER.forEach(function(kind) {
+      timingMembers[kind].forEach(function(e) {
+        find[e.title] = [ e.title, e.sub, e.metricSub ].join(" ").toLowerCase();
+      });
+    });
+    host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + IND_TABS.map(function(t, i) {
       return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' + 'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + "</button>";
-    }).join("") + "</div>" + IND_ORDER.map(function(kind) {
-      var t = TIMING[kind], list = timingMembers[kind];
-      if (!list.length) return "";
-      return '<div class="ind-group" data-kind="' + kind + '"><div class="ind-group-head">' + timingMark(kind) + "<b>" + t.label + "</b><span>" + t.hint + "</span></div>" + list.map(memberRow).join("") + "</div>";
-    }).join("");
-    (byId("today-analysis") || NAV.panel).appendChild(indSheet);
-    function setIndTab(kind) {
-      kind = kind || "all";
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-tabs .range-seg"), function(b) {
+    }).join("") + '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(indCategoryHtml).join("") + '<p class="search-none" hidden>No reading matches.</p>';
+    function apply() {
+      var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
+      Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b) {
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
         b.setAttribute("aria-selected", on ? "true" : "false");
       });
-      Array.prototype.forEach.call(indSheet.querySelectorAll(".ind-group"), function(g) {
-        g.hidden = !(kind === "all" || g.getAttribute("data-kind") === kind);
+      hint.hidden = !TIMING[kind];
+      hint.textContent = TIMING[kind] ? TIMING[kind].label + ": " + TIMING[kind].hint + "." : "";
+      Array.prototype.forEach.call(host.querySelectorAll(".ind-cat"), function(c) {
+        var cat = c.querySelector(".ind-cat-name").textContent.toLowerCase().indexOf(q) === 0;
+        Array.prototype.forEach.call(c.querySelectorAll(".ind-row"), function(r) {
+          r.hidden = !((kind === "all" || r.classList.contains("kind-" + kind)) && (!q || cat || (find[r.getAttribute("data-title")] || "").indexOf(q) !== -1));
+        });
+        c.hidden = !c.querySelector(".ind-row:not([hidden])");
       });
+      host.querySelector(".search-none").hidden = !!host.querySelector(".ind-row:not([hidden])");
     }
-    indSheet.addEventListener("click", function(e) {
+    host.addEventListener("click", function(e) {
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg");
       if (!b) return;
-      setIndTab(b.getAttribute("data-ind-tab"));
+      state.kind = b.getAttribute("data-ind-tab");
+      apply();
+    });
+    input.addEventListener("input", function() {
+      state.q = input.value.trim().toLowerCase();
+      apply();
     });
     openIndicatorsPage = function(tab) {
-      var btn = document.querySelector('.tab-btn[data-tab="cycle"]');
+      var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
-      setIndTab(tab && tab !== "structural" ? tab : "all");
-      NAV.open(indSheet, "All indicators", false, "cycle");
+      input.value = "";
+      state.q = "";
+      state.kind = tab || "all";
+      apply();
     };
+    apply();
   }
   function fmtDay(d) {
     return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
@@ -20254,13 +20313,6 @@
         text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + "</div>"
       })));
     });
-    list.appendChild(elFrom(subjectRow({
-      cls: "all-row",
-      open: "sheet-indicators",
-      title: "All indicators",
-      icon: subjectIcon("norm", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' + 'stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h0.6"/><path d="M9 6.5h11"/>' + '<path d="M4 12h0.6"/><path d="M9 12h11"/><path d="M4 17.5h0.6"/><path d="M9 17.5h11"/></svg>'),
-      text: '<div class="subject-label">All indicators</div>'
-    })));
     host.insertBefore(list, host.firstChild);
     [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
       var el = byId(id);
@@ -20819,7 +20871,7 @@
     renderMetricPages(ctx);
     buildNav();
     registerRoster();
-    buildIndicatorSheet();
+    buildSearch();
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
@@ -21234,7 +21286,7 @@
     return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
       return c.y;
     }).join(", ") + '">' + row.cells.map(function(c) {
-      return '<i class="' + c.state + (c.state === "on" ? " sx-" + row.g.key : "") + '"></i>';
+      return '<i class="' + c.state + (c.state === "on" ? " cat-" + row.g.key : "") + '"></i>';
     }).join("") + "<b>" + r.name + "</b></button>";
   }
   function cycleTrack(cyc, strip, bands) {
@@ -21252,7 +21304,7 @@
   }
   function symptomLegend() {
     return "<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>" + '<div class="sx-keys">' + readingRoster().map(function(g) {
-      return '<span><i class="sx-' + g.key + '"></i>' + g.label + "</span>";
+      return '<span><i class="cat-' + g.key + '"></i>' + g.label + "</span>";
     }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' + '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
   }
   function renderSeasonRows() {
@@ -21350,8 +21402,8 @@
     var tabTitles = {
       cycle: "Current Cycle",
       analysis: "Analysis",
-      portfolio: "Portfolio",
-      content: "Content"
+      search: "Search",
+      portfolio: "Portfolio"
     };
     var topTitle = byId("topbar-title");
     btns.forEach(function(btn) {
