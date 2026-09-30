@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, enclosing } = require('../tools/hygiene.js');
+
+let pass = 0, fail = 0;
+function ok(label, got, want) {
+  const g = JSON.stringify(got), w = JSON.stringify(want);
+  if (g === w) { pass++; console.log('  ok   ' + label); }
+  else { fail++; console.log('  FAIL ' + label + '\n       got  ' + g + '\n       want ' + w); }
+}
+
+ok('a token font size passes', fontSizes('  .a{ font-size:var(--type-label); }'), []);
+ok('a px font size is caught', fontSizes('  .a{ font-size:13px; }').length, 1);
+ok('the token definitions themselves pass', fontSizes('    --type-label:11px; --type-meta:12.5px;'), []);
+ok('the dial draws in its own units', fontSizes('  .cycle-dial .x{ font-size:4.2px; }'), []);
+ok('calc and em pass', fontSizes('  .a{ font-size:calc(var(--dial) * 0.1); } .b{ font-size:0.8em; }'), []);
+ok('a style aimed at one page is caught', pageScoped('  #sheet-sign-x .dv-bar{ stroke:red; }').length, 1);
+ok('a component class passes', pageScoped('  .dv-bar.good-above{ stroke:red; }'), []);
+ok('a branch on a reading’s name is caught', nameBranches('a.js', 'if (ind.bodyTerm === "Desire") x();').length, 1);
+ok('a lookup by name passes', nameBranches('a.js', 'list.filter(function(c){ return c.bodyTerm === "Desire"; })'), []);
+ok('a px size in a script is caught', nameBranches('a.js', "'font-size:20px'").length, 1);
+ok('the enclosing function is found', enclosing('\n  function histFrame(W){\n    var H = 1;\n  }', 30), 'histFrame');
+ok('a height inside histFrame passes', chartFrames('a.js', '\n  function histFrame(W){\n    var H = narrow ? 335 : 375;\n  }'), []);
+ok('a height anywhere else is caught', chartFrames('a.js', '\n  function drawX(W){\n    var H = 260;\n  }').length, 1);
+ok('a margin in a mini chart passes', chartFrames('a.js', '\n  function colPeek(a){\n    var padT = 6;\n  }'), []);
+ok('a margin in a history chart is caught', chartFrames('a.js', '\n  function drawX(W){\n    var padB = 30;\n  }').length, 1);
+ok('an unused function is caught', unused('function lonely(){}', '', ''), ['function lonely is never used']);
+ok('a used function passes', unused('function a(){} a();', '', ''), []);
+ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
+ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);
+
+console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
+process.exit(fail ? 1 : 0);

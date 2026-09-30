@@ -56,25 +56,28 @@
     });
     Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
   }
+  function activityStackHtml(ind){
+    histNote("sheet-sign-activity", activityInfoHtml(ind));
+    return histBar("", "act-rangebar") +
+      '<div class="page-chart">' +
+        histHead("sheet-sign-activity") +
+        '<div id="act-history" class="vh-host"></div>' +
+        histTip("act-hist-tooltip") +
+        '<div id="act-trend"></div>' +
+      '</div>';
+  }
+  function seatTemperature(ind, d){
+    HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
+    tempCaptionFull = ind.caption;
+    tempLeadShown = ind.lead || ind.shortCaption || "";
+    var sheet = byId("sheet-metric-temp"), fresh = d.querySelector(".sign-detail");
+    var prev = sheet.querySelector(":scope > .sign-detail");
+    if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
+  }
   function renderSignsList(){
     var host = byId("signs-list");
-    var PEEKED = { Temperature:1, Pulse:1, Volume:1 };
-    function activityStackHtml(ind){
-      histNote("sheet-sign-activity", activityInfoHtml(ind));
-      return histBar("", "act-rangebar") +
-        '<div class="page-chart">' +
-          histHead("sheet-sign-activity") +
-          '<div id="act-history" class="vh-host"></div>' +
-          histTip("act-hist-tooltip") +
-          '<div id="act-trend"></div>' +
-        '</div>';
-    }
-    function pageFor(term){
-      return term === "Temperature" ? "sheet-metric-temp"
-           : "sheet-sign-" + term.toLowerCase().replace(/\s+/g, "-");
-    }
     function signSubject(ind, timing){
-      var key = ind.bodyTerm.toLowerCase().replace(/\s+/g, "-"), id = "sheet-sign-" + key;
+      var key = ind.bodyTerm.toLowerCase().replace(/\s+/g, "-"), id = "sheet-sign-" + key, pg = ind.page || {};
       var svg = signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "";
       var row = elFrom(subjectRow({
         subject:"sign-" + key, open:id, title:ind.title || ind.bodyTerm,
@@ -87,42 +90,18 @@
       var d = document.createElement("div");
       d.className = "metric-sheet"; d.id = id; d.hidden = true;
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
-      d.querySelector(".sign-detail").innerHTML =
-        "" +
-        cardDetailHtml(ind, { bare: ind.bodyTerm === "Temperature" || ind.bodyTerm === "Desire" ||
-                                    ind.bodyTerm === "Volume" || ind.bodyTerm === "Pulse" ||
-                                    ind.bodyTerm === "Activity",
-                              noHead: ind.bodyTerm === "Pulse" || ind.bodyTerm === "Volume",
-                              noMark: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
-                              chartFirst: ind.bodyTerm === "Pulse" || ind.bodyTerm === "Volume",
-                              bloodCard: false,
-                              deferHighlights: ind.bodyTerm === "Desire" || ind.bodyTerm === "Activity",
-                              chart: ind.bodyTerm === "Pulse" ? pulseBlock(ind.meter.value, PULSE_PRE2008, ind)
-                                   : ind.bodyTerm === "Volume" ? volumeBlock(ind) : "" }) +
-        (ind.bodyTerm === "Desire" ? desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value)
-         : ind.bodyTerm === "Activity" ? activityStackHtml(ind)
-           : "") +
+      d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
         (function(){ var h = heldHighlights; heldHighlights = ""; return h; })();
-      registerTiming(timing || (ind.bodyTerm === "Temperature" ? "lagging" : null), {
+      registerTiming(timing, {
         title:ind.title || ind.bodyTerm, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
         tag:ind.tag, icon:'<div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div>',
-        target:pageFor(ind.bodyTerm)
+        target:pg.id || id
       });
-      if (PEEKED[ind.bodyTerm] && ind.bodyTerm !== "Temperature"){ host.appendChild(d); return d; }
-      if (ind.bodyTerm === "Temperature"){
-        HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
-        tempCaptionFull = ind.caption;
-        tempLeadShown = ind.lead || ind.shortCaption || "";
-        (function(){
-          var sheet = byId("sheet-metric-temp");
-          var fresh = d.querySelector(".sign-detail");
-          var prev = sheet.querySelector(":scope > .sign-detail");
-          if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
-        })();
-      } else { host.appendChild(row); host.appendChild(d); }
+      if (pg.peeked){ host.appendChild(d); return d; }
+      if (pg.seat) pg.seat(ind, d); else { host.appendChild(row); host.appendChild(d); }
       return d;
     }
-    coincident.forEach(function(ind){ signSubject(ind, ind.bodyTerm === "Temperature" ? null : (ind.timing || "coincident")); });
+    coincident.forEach(function(ind){ signSubject(ind, ind.timing || "coincident"); });
     lagging.forEach(function(ind){ signSubject(ind, "lagging"); });
     signSubject(productivityReading, "structural");
 
@@ -685,7 +664,6 @@
       var r = pageRange["sheet-metric-temp"], cyclesOn = pageMode["sheet-metric-temp"] === "cycles";
       put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS }));
       put("temp-head", histHead("sheet-metric-temp"));
-      byId("slot-temp").hidden = true;
       var hist = byId("temp-history"); hist.hidden = false;
       var win, cyc = null;
       if (cyclesOn){
@@ -712,7 +690,6 @@
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
       put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
       put("gdp-head", histHead("sheet-metric-gdp"));
-      byId("slot-growth").hidden = true;
       histNote("sheet-metric-gdp", growthInfoHtml());
       var hist = byId("gdp-history"); hist.hidden = yoy;
       var box = byId("gdp-yoy"); box.hidden = !yoy;
@@ -778,9 +755,9 @@
       var bar = put("deficit-rangebar", histControls("deficit-range",
         { depth:deficitHistory.length, stops:DEF_STOPS }));
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      var defRows = put("deficit-records", "");
+      put("deficit-records", "");
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-      var dTrend = put("deficit-trend", trendPill(
+      put("deficit-trend", trendPill(
         trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true,
         { rising:"improving", falling:"widening" }));
     };
@@ -911,7 +888,6 @@
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function renderMetricPages(ctx){
-    put("valuation-head", "");
     registerTempGdpPages();
     registerActivityPowerDeficitPages();
     registerHouseholdsValuationPages();

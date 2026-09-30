@@ -1,10 +1,6 @@
   // ---- RENDER: range bars + card helpers ----
   function clampPct(v, lo, hi){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
 
-  function infoIcon(fullHtml, title){
-    var html = /^\s*<h4/.test(fullHtml) ? fullHtml : '<h4>' + (title || "About this reading") + '</h4>' + factsFrom(fullHtml);
-    return expandBtn(html).replace('class="expand-btn"', 'class="info-btn expand-btn"').replace('aria-label="Expand details"', 'aria-label="More detail"');
-  }
 
   var detailTexts = [];
   var detailSlots = Object.create(null);
@@ -148,7 +144,7 @@
   function cardDetailHtml(ind, opts){
     opts = opts || {};
     var facts = [].concat(ind.facts || [], ind.aux || []);
-    var chartHtml = opts.chart || ind.chart || '';
+    var chartHtml = opts.chart ? opts.chart(ind) : '';
     var bloodTest = opts.bare ? '' :
       ((opts.noHead ? '' : headHtml(ind, opts.noMark) +
         '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + '</span></div>'));
@@ -224,7 +220,7 @@
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
-      var vTrend = put("pulse-trend", trendPill(
+      put("pulse-trend", trendPill(
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
         null, true, { rising:"accelerating", falling:"decelerating" }));
     }
@@ -242,7 +238,7 @@
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
-      var mTrend = put("volume-trend", trendPill(
+      put("volume-trend", trendPill(
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
         null, true, { rising:"expanding", falling:"contracting" }));
     }
@@ -331,7 +327,7 @@
   }
   function renderPressurePage(){
     var svg = byId("ylm-svg");
-    var W = 780, H = 260, padL = AXIS.L, padR = AXIS.R, padT = AXIS.T + AXIS.LEG + AXIS.READ, padB = 30;
+    var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
 
@@ -377,8 +373,7 @@
 
     function render(){
       var shell = svg.parentNode;
-      W = Math.max(270, Math.round((shell && shell.clientWidth) || 360));
-      H = histFrame(W).H;
+      F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
       innerW = W - padL - padR; innerH = H - padT - padB;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       computeScale();

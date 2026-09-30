@@ -44,7 +44,7 @@
   function productivitySpec(){
     if (typeof productivityHistory === "undefined" || !productivityHistory.length) return [];
     var r = productivityReading, line = r.meter.optimal.gte;
-    return [{ id:"sheet-sign-productivity-growth", noPeek:true, title:"Productivity growth", mark:clockSvg,
+    return [{ id:"sheet-sign-productivity-growth", noPeek:true, goodAbove:true, title:"Productivity growth", mark:clockSvg,
       head:"Output per Hour, Year over Year", series:productivityHistory, when:qLast(productivityHistory),
       row:{ marker:r.econTerm, sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state },
       mid:line, midLabel:"slowdown average, " + line.toFixed(1) + "%", unit:"YoY", src:PRODUCTIVITY_SRC,
@@ -66,7 +66,7 @@
     var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
     var tr = trendOf(vals.map(function(d){ return d.v; }), "points", s.series[0].q ? "quarter" : "year");
     var chart = function(w){
-      return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit,
+      return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
         xLabel:quarterTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : "FY" + d.y; },
         alt:s.row.marker + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };

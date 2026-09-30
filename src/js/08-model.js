@@ -126,39 +126,6 @@
 
   function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 
-  function arcGauge(value, state, o){
-    o = o || {};
-    var mini = !!o.mini, R = o.r || 112, SW = o.sw || 22;
-    var band = o.band || [45, 55], lab = o.labels || {};
-    var pad = mini ? 4 : 30;
-    var cx = R + SW / 2 + 2, cy = R + SW / 2 + pad;
-    var W = cx * 2, H = cy + (mini ? 6 : 20);
-    function pt(v, rad){
-      var a = Math.PI * (1 - Math.max(0, Math.min(100, v)) / 100);
-      return [(cx + rad * Math.cos(a)).toFixed(2), (cy - rad * Math.sin(a)).toFixed(2)];
-    }
-    function arc(v0, v1, rad){
-      var p0 = pt(v0, rad), p1 = pt(v1, rad);
-      return "M" + p0[0] + "," + p0[1] + "A" + rad + "," + rad + " 0 0 1 " + p1[0] + "," + p1[1];
-    }
-    var out = ['<path class="gauge-track" stroke-width="' + SW + '" d="' + arc(0, 100, R) + '"/>',
-               '<path class="gauge-band" stroke-width="' + SW + '" d="' + arc(band[0], band[1], R) + '"/>'];
-    if (!mini){
-      band.forEach(function(v){
-        if (v <= 0 || v >= 100) return;
-        var a = pt(v, R - SW / 2), b = pt(v, R + SW / 2);
-        out.push('<path class="gauge-tick" d="M' + a[0] + ',' + a[1] + 'L' + b[0] + ',' + b[1] + '"/>');
-      });
-      if (lab.top)   out.push('<text class="gauge-lab" x="' + cx + '" y="' + (cy - R - SW / 2 - 9).toFixed(1) + '" text-anchor="middle">' + lab.top + '</text>');
-      if (lab.left)  out.push('<text class="gauge-lab" x="' + (cx - R - SW / 2 + 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="start">' + lab.left + '</text>');
-      if (lab.right) out.push('<text class="gauge-lab" x="' + (cx + R + SW / 2 - 1).toFixed(1) + '" y="' + (cy + 17) + '" text-anchor="end">' + lab.right + '</text>');
-    }
-    var here = pt(value, R);
-    out.push('<circle class="gauge-here ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 8 : 12) + '"/>');
-    out.push('<circle class="gauge-core ' + state + '" cx="' + here[0] + '" cy="' + here[1] + '" r="' + (mini ? 3.2 : 4.8) + '"/>');
-    return '<svg class="gauge-arc' + (mini ? " mini" : "") + '" viewBox="0 0 ' + W.toFixed(1) + ' ' + H.toFixed(1) + '" role="img" ' +
-      'aria-label="' + (o.aria || "") + '">' + out.join("") + '</svg>';
-  }
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;

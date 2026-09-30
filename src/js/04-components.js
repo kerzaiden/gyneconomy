@@ -495,6 +495,8 @@
   var coincident = [
     {
       bodyTerm:"Desire", econTerm:"Risk tolerance (credit)",
+      page:{ bare:true, noMark:true, deferHighlights:true,
+             after:function(ind){ return desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value); } },
       tag:{text:"High appetite", state:"good"},
       metric:"2.80%", metricSub:"high-yield OAS, Sep 24 2026",
       meter:{min:2.41,max:21.82,value:2.80,optimal:{from:3.5,to:6, label:"3.5–6%"},
@@ -516,6 +518,8 @@
     },
     {
       bodyTerm:"Pulse", econTerm:"Money velocity",
+      page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
+             chart:function(ind){ return pulseBlock(ind.meter.value, PULSE_PRE2008, ind); } },
       tag:{text:"Recovering", state:"warning"},
       metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
       meter:{min:1.126, max:2.192, value:1.415, optimal:{from:1.7, to:2.19, label:"1.7–2.2×"},
@@ -527,6 +531,7 @@
     },
     {
       bodyTerm:"Volume", econTerm:"Money stock (M2)", timing:"leading",
+      page:{ bare:true, noHead:true, chartFirst:true, peeked:true, chart:function(ind){ return volumeBlock(ind); } },
       tag:null,
       metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",
       meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:3.5, to:10, label:"3.5\u201310%"},

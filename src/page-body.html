@@ -40,24 +40,6 @@
       </div>
     </div>
 
-    <div class="card temp-card" id="temp-card">
-      <div class="cv-head">
-        <div class="cv-kicker" id="temp-kicker">Temperature</div>
-        <div class="cv-sub" id="temp-sub"></div>
-      </div>
-      <div class="temp-chart">
-        <svg id="temp-svg" viewBox="0 0 780 250" role="img" aria-label="Monthly CPI, year over year, across the current market cycle, against the 2% target"></svg>
-        <div class="gdp-tooltip mono" id="temp-tooltip"></div>
-      </div>
-      <div class="cv-stats" id="temp-stats"></div>
-    </div>
-
-    <div class="card temp-card" id="growth-card">
-      <div class="cv-head"><div class="cv-kicker" id="growth-kicker">Growth</div><span id="growth-phase"></span><div class="cv-sub" id="growth-sub"></div></div>
-      <div class="temp-chart"><svg id="growth-svg" viewBox="0 0 780 250" role="img" aria-label="Real GDP growth across this cycle, quarter by quarter, for the economy chosen above"></svg><div class="gdp-tooltip mono" id="growth-tooltip"></div></div>
-      <div class="cv-stats" id="growth-stats"></div>
-    </div>
-
   </div>
 
   <div id="today-analysis">
@@ -68,7 +50,6 @@
         <div class="hist-bar" id="temp-rangebar"></div>
         <div class="page-chart">
         <div id="temp-head"></div>
-        <div id="slot-temp"></div>
         <div id="temp-history" class="vh-host" hidden></div>
         <div class="gdp-tooltip mono hist-tip" id="temp-hist-tooltip" hidden></div>
         <div id="temp-trend"></div>
@@ -81,27 +62,11 @@
       <div class="hist-bar" id="gdp-rangebar"></div>
       <div class="page-chart">
       <div id="gdp-head"></div>
-      <div id="slot-growth"></div>
       <div id="gdp-history" class="vh-host" hidden></div>
       <div class="gdp-tooltip mono hist-tip" id="gdp-hist-tooltip" hidden></div>
       <div id="gdp-yoy" hidden></div>
       <div id="gdp-trend"></div>
     </div></div>
-<details class="subject" data-subject="gdp" open>
-    <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-gdp"></div>
-      <div class="subject-text">
-        <div class="subject-label" id="subj-label-gdp">Growth</div>
-        <div class="subject-value" id="subj-value-gdp"></div>
-        <p class="subject-say" id="subj-say-gdp"></p>
-        <div id="subj-spark-gdp"></div>
-      </div>
-      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
-    </summary>
-    <div class="subject-body">
-    <p class="subject-context" id="subj-ctx-gdp"></p>
-    </div>
-    </details>
     <div id="gdp-highlights"></div>
     </div>
 
@@ -116,30 +81,7 @@
 
     <div class="metric-sheet" id="sheet-metric-valuation" hidden>
     <div id="valuation-timing"></div>
-    <div id="valuation-head"></div>
     <div id="valuation-chart"></div>
-<details class="subject" data-subject="valuation" open>
-    <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-valuation"></div>
-      <div class="subject-text">
-        <div class="subject-label">Valuations</div>
-        <div class="subject-value" id="subj-value-valuation"></div>
-        <p class="subject-say" id="subj-say-valuation"></p>
-      </div>
-      <div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>
-    </summary>
-    <div class="subject-body">
-    <p class="subject-context" id="subj-ctx-valuation"></p>
-    <section class="longcycle" aria-labelledby="valuation-title">
-      <div class="longcycle-head">
-        <div>
-          <h2 id="valuation-title">Valuations</h2>
-        </div>
-        <span class="tag serious longcycle-tag" id="valuation-tag"></span>
-      </div>
-    </section>
-    </div>
-    </details>
     <div id="valuation-highlights"></div>
     </div>
 
@@ -176,7 +118,7 @@
       <div class="spread-history">
         <div id="hzn-head"></div>
         <div class="chart-shell" id="spread-history-shell">
-          <svg id="spread-history-svg" viewBox="0 0 780 220" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
+          <svg id="spread-history-svg" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
           <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
         <div id="hzn-trend"></div>
@@ -201,7 +143,7 @@
       <div class="spread-history">
         <div id="pressure-head"></div>
         <div class="chart-shell" id="ylm-shell">
-          <svg id="ylm-svg" viewBox="0 0 780 260" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
+          <svg id="ylm-svg" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
           <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
         </div>
         <div id="ylm-trend"></div>

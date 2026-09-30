@@ -40,6 +40,10 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
 - **The history component is one component.** A change to one history page is a change to all eleven;
   a page that cannot take it is a finding to report, not a page to skip. The same holds for the head menu
   (one menu shape for every history, Keren, V602) and the history frame.
+- **A parent owns what its children share** (Keren, V662). One frame (`histFrame`: height and margins) for
+  every history chart, one type scale (`--type-*`, from the Lovable DSM), options on components instead of
+  page-scoped styles, a reading's page described by `ind.page` instead of branches on its name, and nothing
+  unused. `npm run hygiene` (in `check`) fails on each; `docs/ARCHITECTURE.md` lists the named exceptions.
 - **Band provenance.** Every range on screen is sourced or explicitly Keren's call, and the (i) says
   which. A target is never relabelled "normal".
 - **One figure, one number.** Computed in one place, read everywhere else.
@@ -80,12 +84,13 @@ one; if it seems wrong, say so and ask. The rules below are the ones that matter
 
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
-npm run check            # the gate before every commit: build, email, map, ledger, 120 tool checks
+npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool checks
 npm run check:all        # plus the browser suite (106 checks) and axe — what CI runs
 npm test                 # the browser suite alone; --bless rewrites the baseline, a deliberate act
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
+npm run hygiene          # one frame, one type scale, no page-scoped styles, no name branches, nothing unused
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`
 npm run map              # regenerate docs/MAP.md and docs/COMPONENTS.md
 npm run sources          # regenerate sources.html from the app's own Sources screen

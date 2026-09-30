@@ -771,9 +771,9 @@ async function openPage(p, url, sheet) {
       inv.whole ? ok('GYN.render() leaves the DOM unchanged')
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       const k = inv.kinds;
-      (k.build === 4 && k.mixed === 2 && k.wire === 7)
+      (k.build === 4 && k.mixed === 2 && k.wire === 6)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 7');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 6');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

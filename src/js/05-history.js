@@ -97,12 +97,6 @@
     headSubFor = null;
     paintHeadMenus();
   });
-  function nameWithMark(name, mark){
-    if (!mark) return name;
-    var i = String(name).lastIndexOf(" ");
-    return (i < 0 ? "" : name.slice(0, i + 1)) +
-           '<span class="pbr-last">' + (i < 0 ? name : name.slice(i + 1)) + mark + '</span>';
-  }
   function histNote(head, info){ if (head && info) HIST_NOTE[head] = info; }
   function meterFlagged(m){
     var o = m.optimal || {};
@@ -576,11 +570,7 @@
   }
 
   var GDP_NORM = 2.6;
-  var GDP_BAND_LO = 1.0, GDP_BAND_HI = 4.3;
   var gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
-  var gdpMeter = { min:-7.4, max:12.4, value:gdpNowQ.v,
-                   optimal:{ from:GDP_BAND_LO, to:GDP_BAND_HI, label:GDP_BAND_LO.toFixed(1) + "\u2013" + GDP_BAND_HI.toFixed(1) + "%" },
-                   ends:{ low:"Contracting", high:"Booming" } };
   function growthInfoHtml(){
     return '<h4>Real GDP growth</h4>' +
       '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
@@ -728,6 +718,7 @@
   var lagging = [
     {
       bodyTerm:"Activity", title:"Unemployment rate", econTerm:"Labor market",
+      page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
       tag:{text:"Solid", state:"good"},
       metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
       meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:"3.5–5%"},
@@ -743,6 +734,7 @@
     },
     {
       bodyTerm:"Temperature", econTerm:"Inflation",
+      page:{ bare:true, id:"sheet-metric-temp", seat:seatTemperature },
       tag:{text:"Running hot", state:"warning"},
       metric:"3.4%", metricSub:"CPI, YoY, Aug 2026",
       meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
