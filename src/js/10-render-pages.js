@@ -281,7 +281,8 @@
     tagEl.textContent = valuation.tag.text;
     valuationPanelHtml = valuation.rows.map(function(row){
       var detail = '<h4>' + row.marker + '</h4><div class="marker-sub">' + row.sub + '</div>' + factsFrom(row.note);
-      return panelRow({ name:row.marker, info:detail, head:row.key === "cape" ? "sheet-metric-valuation" : null,
+      return panelRow({ name:row.marker, info:row.key === "cape" ? detail : null, head:row.key === "cape" ? "sheet-metric-valuation" : null,
+                        open:row.key === "buffett" ? { id:"sheet-metric-buffett", title:"Buffett indicator" } : null,
                         metric:row.flagValue,
                         flagged:meterFlagged(row.meter), bar:panelFromMeter(row.meter) });
     }).join("");

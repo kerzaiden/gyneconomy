@@ -251,6 +251,15 @@ Rules that shape the pages:
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: source order is the taxonomy, read by the roster, the
   category sheets and Search.
+- **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
+  card, under a heading named for the reading when it has two or more (Valuations: Shiller CAPE · Buffett
+  indicator; Economic power: Power score · Debt burden · Interest burden · Federal budget). The split pages are
+  built by one builder, `src/js/12a-indicators.js` (`splitSpecs` → `mountSplit` → `drawSplit`), on the history
+  component (`divergeChart` hung from the reading's sourced line, `histControls`, `histHead`, `panelRow`), so
+  a new split is a spec, not a page. The parent keeps its breakdown panel, each part a door to its page.
+  Horizon's two spreads and Households' bill and cushion stay one page each (Keren, V658: they read as one).
+  Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
+  right, one large figure with the verdict as a quiet label above it.
 - **Search (V657) is every reading, grouped by category** in Keren's order, Weather · Mood · Circulation ·
   Energy, one inset card per category with hairlines between rows. A row is icon · name · today's figure ·
   chevron; the verdict and the date stay on the reading's page. **Membership is read from the category
@@ -553,7 +562,7 @@ lists — is never touched by a refresh. **`currentSeason` is computed — never
 invariants: geometry is owned by the chart that made it, a reading prints where it is painted, every reach
 finds something, every action has an answer, every id is one element, and no data check fired —
 `console.warn` is a failing check because ten data checks had no listener for two hundred versions (V623).
-**Every refactor ships with "40 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
+**Every refactor ships with "46 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 
 **Publish.** `Artifact action:"publish"` with the artifact `url`, always in place, with a short `label`. If

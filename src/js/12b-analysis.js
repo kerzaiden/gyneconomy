@@ -119,17 +119,8 @@
   }
 
   /* ---- THE ROSTER AS SERIES ---- */
-  var __roster = null;
-  function readingRoster(){
-    if (__roster) return __roster;
-    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
-    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
-    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
-    var qFrom = function(a, y0){ return a.map(function(v, i){
-      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
-    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
-      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
-    var GRPS = [
+  function rosterGroups(byM, byQ, byY, qFrom, hyList){
+    return [
       { key:"weather", label:"Weather", mark:weatherSvg, rows:[
         { name:"Temperature", on:"m", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
         { name:"Growth",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
@@ -141,17 +132,33 @@
         { name:"Volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%" }
       ]},
       { key:"mood", label:"Mood", mark:moodSvg, rows:[
-        { name:"Valuations",  on:"y", mark:diamondSvg,  list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
+        { name:"Shiller CAPE", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today" },
+        { name:"Buffett indicator", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%" },
         { name:"Fear",        on:"m", mark:umbrellaSvg, list:byM(fearCurveHistory),        dp:2 },
         { name:"Desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%" },
         { name:"Horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true }
       ]},
       { key:"energy", label:"Energy", mark:boltSvg, rows:[
-        { name:"Power",       on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
-        { name:"Activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" },
-        { name:"Households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" }
+        { name:"Power score", on:"y", mark:boltSvg,     list:byY(powerHistory),            dp:0 },
+        { name:"Debt burden", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%" },
+        { name:"Interest burden", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%" },
+        { name:"Federal budget", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true },
+        { name:"Households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%" },
+        { name:"Activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
       ]}
     ];
+  }
+  var __roster = null;
+  function readingRoster(){
+    if (__roster) return __roster;
+    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
+    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
+    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
+    var qFrom = function(a, y0){ return a.map(function(v, i){
+      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
+    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
+      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
+    var GRPS = rosterGroups(byM, byQ, byY, qFrom, hyList);
     GRPS.forEach(function(g){ g.rows.forEach(function(r){
       var seen = r.list.filter(function(d){ return d.v != null; });
       var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });

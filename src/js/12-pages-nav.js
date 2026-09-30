@@ -338,7 +338,7 @@
                     { key:"coincident", label:"Coincident" }, { key:"lagging", label:"Lagging" }];
     var find = {}, state = { kind:"all", q:"" };
     IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
-      find[e.title] = [e.title, e.sub, e.metricSub].join(" ").toLowerCase();
+      find[e.title] = [e.title, e.sub, e.metricSub, INDICATOR_GROUP[e.target]].join(" ").toLowerCase();
     }); });
     host.innerHTML =
       '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' +
@@ -577,19 +577,7 @@
   }
   function buildCategories(){
     var host = byId("today-analysis"); if (!host) return;
-    var CATS = [
-      { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature \u00b7 Growth",
-        picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-      { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
-        picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
-               '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-      { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
-        picks:['.peek[data-open="sheet-metric-valuation"]', '.sign-row[data-open="sheet-sign-sentiment"]',
-               '.sign-row[data-open="sheet-sign-desire"]', '.sign-row[data-open="sheet-sign-horizon"]'] },
-      { key:"energy", title:"Energy", mark:boltSvg(), sub:"Power · Households · Activity",
-        picks:['.peek[data-open="sheet-metric-power"]', '.peek[data-open="sheet-metric-households"]',
-               '.sign-row[data-open="sheet-sign-activity"]'] }
-    ];
+    var CATS = categoryCats();
     var PERIOD = {
       "sheet-metric-temp":      atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
       "sheet-metric-gdp":       qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
@@ -603,16 +591,14 @@
       "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
       "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
     };
+    for (var sp in SPLIT_PERIOD) PERIOD[sp] = SPLIT_PERIOD[sp];
     var list = document.createElement("div"); list.className = "browse-list";
     CATS.forEach(function(c){
       if (c.picks){
         var sheet = document.createElement("div");
-        sheet.className = "metric-sheet"; sheet.id = "sheet-cat-" + c.key; sheet.hidden = true;
+        sheet.className = "metric-sheet cat-sheet cat-" + c.key; sheet.id = "sheet-cat-" + c.key; sheet.hidden = true;
         var items = document.createElement("div"); items.className = "cat-list";
-        c.picks.forEach(function(sel){
-          var el = document.querySelector(sel); if (!el) return;
-          items.appendChild(catItem(el, PERIOD));
-        });
+        appendPicks(items, c.picks, PERIOD);
         sheet.appendChild(items);
         if (c.key === "circulation" || c.key === "weather"){
           var tog = c.key === "weather" ? insightWeather() : insightCirculation();
@@ -655,10 +641,10 @@
                  colClass:function(v, i){
                    return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
                  } }) +
-      peekCard({ kicker:"Power", title:"Economic power", mark:boltSvg(), value:powerScore + "%",
+      peekCard({ kicker:"Power score", title:"Power score", mark:boltSvg(), value:powerScore + "%",
                  unit:"reserve", word:powerWord.word,
                  state:powerWord.state, target:"sheet-metric-power", ring:powerScore }) +
-      peekCard({ kicker:"Valuations",
+      peekCard({ kicker:"Shiller CAPE",
                  mark:diamondSvg(),
                  value:capeNow.toFixed(1) + "\u00d7", unit:"CAPE", word:valuation.tag.text,
                  state:valuation.tag.state, target:"sheet-metric-valuation",
@@ -670,7 +656,7 @@
                  word:householdsNow.word, state:householdsNow.state, target:"sheet-metric-households",
                  cols:savHistory.slice(SAV_OFFSET), colBase:0,
                  colClass:function(){ return "hh-col"; } }) +
-      "";
+      indicatorPeeks();
 
     placeSignPair();
     swapSentimentActivity();
@@ -965,10 +951,6 @@
   function valuationHighlights(capeNow, buffNow){
     var vs = capeHistory.map(function(d){ return d.v; });
     var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
-    var bv = buffettHistory.map(function(d){ return d.v; });
-    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1);
-    var bDot = maxIn(buffettHistory, 2000, 2007);
-    var bRicher = bv.filter(function(v){ return v > buffNow; }).length;
     var cards = [];
     cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
       'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
@@ -977,11 +959,6 @@
       ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
       : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
         " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
-    cards.push(hiCard("Buffett indicator", valRow("buffett").flagState || "serious", bRicher === 0
-      ? "At " + Math.round(buffNow) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) +
-        " \u2014 above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
-        Math.round(bDot.v) + "% (" + bDot.q + ")."
-      : "At " + Math.round(buffNow) + "% of GDP, " + bRicher + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."));
     put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
   }
   function tempHighlights(tempInd, r){

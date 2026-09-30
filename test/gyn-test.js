@@ -27,8 +27,11 @@ const PAGES = [
   ['sheet-metric-temp','sheet-metric-temp','Temperature'],
   ['sheet-metric-gdp','sheet-metric-gdp','Growth'],
   ['sheet-sign-activity','sheet-sign-activity','Activity'],
-  ['sheet-metric-power','sheet-metric-power','Power'],
-  ['sheet-metric-valuation','sheet-metric-valuation','Valuations'],
+  ['sheet-metric-power','sheet-metric-power','Power score'],
+  ['sheet-metric-debt','sheet-metric-debt','Debt burden'],
+  ['sheet-metric-interest','sheet-metric-interest','Interest burden'],
+  ['sheet-metric-valuation','sheet-metric-valuation','Shiller CAPE'],
+  ['sheet-metric-buffett','sheet-metric-buffett','Buffett indicator'],
   ['sheet-metric-households','sheet-metric-households','Households'],
   ['sheet-sign-volume','volume-range','Volume'],
   ['sheet-sign-pulse','pulse-range','Pulse'],
@@ -314,7 +317,7 @@ async function openPage(p, url, sheet) {
       const scale = dot.querySelector('.cyc-scale > div').getBoundingClientRect();
       const yrs = [...dot.querySelectorAll('.sx-yrs span')].filter(x => x.textContent);
       const first = yrs[0].getBoundingClientRect(), last = yrs[yrs.length - 1].getBoundingClientRect();
-      const val = [...dot.querySelectorAll('.sx-row')].find(r => /Valuations/.test(r.textContent));
+      const val = [...dot.querySelectorAll('.sx-row')].find(r => /Shiller CAPE/.test(r.textContent));
       const cells = val ? [...val.querySelectorAll('i')] : [];
       return {
         tracks: document.querySelectorAll('.era-row.data .cyc-track').length,
@@ -327,11 +330,11 @@ async function openPage(p, url, sheet) {
     (on.tracks === 5 && on.legend && on.span === on.cols && Math.abs(on.left) <= 1)
       ? ok('show data draws every cycle on one year scale', on.span + 'px strip = ' + on.cols + 'px of years')
       : bad('show data draws every cycle on one year scale', JSON.stringify(on));
-    (on.label === 'Valuations: alike in 1999, 2000' && on.colored === 2)
+    (on.label === 'Shiller CAPE: alike in 1999, 2000' && on.colored === 2)
       ? ok('the CAPE marks the Dot-Com top', on.label)
       : bad('the CAPE marks the Dot-Com top', JSON.stringify(on));
     await p.evaluate(() => [...document.querySelectorAll('.era-row.data')].find(r => /Dot-Com/.test(r.textContent))
-      .querySelector('.sx-row[aria-label^="Valuations"]').click());
+      .querySelector('.sx-row[aria-label^="Shiller CAPE"]').click());
     await p.waitForTimeout(250);
     const note = await p.evaluate(() => ({
       text: document.getElementById('detail-modal-body').innerText,
@@ -371,7 +374,7 @@ async function openPage(p, url, sheet) {
         tabs: [...host.querySelectorAll('.ind-tabs .range-seg')].map(b => b.textContent).join(' ')
       };
     });
-    (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === 14 && list.titles === 14 &&
+    (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === 18 && list.titles === 18 &&
      list.doors && list.figs && list.tabs === 'All Structural Leading Coincident Lagging')
       ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
       : bad('search lists every reading by category', JSON.stringify(list));
@@ -385,13 +388,13 @@ async function openPage(p, url, sheet) {
       }));
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
-    (st.rows.sort().join() === 'Economic power,Households,Valuations' && st.cats.join() === 'Mood,Energy' &&
-     le.rows.length === 5 && le.cats.join() === 'Mood,Circulation' && al.rows.length === 14 && al.cats.length === 4)
+    (st.rows.sort().join() === 'Buffett indicator,Debt burden,Federal budget,Households,Interest burden,Power score,Shiller CAPE' &&
+     st.cats.join() === 'Mood,Energy' && le.rows.length === 5 && le.cats.join() === 'Mood,Circulation' && al.rows.length === 18 && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
     const infl = await shown(null, 'inflation'), mood = await shown(null, 'mood'), nil = await shown(null, 'zzzz'), back = await shown(null, '');
-    (infl.rows.join() === 'Temperature' && mood.rows.length === 4 && mood.cats.join() === 'Mood' && nil.none && !nil.rows.length &&
-     back.rows.length === 14 && !back.none)
+    (infl.rows.join() === 'Temperature' && mood.rows.length === 5 && mood.cats.join() === 'Mood' && nil.none && !nil.rows.length &&
+     back.rows.length === 18 && !back.none)
       ? ok('the search box finds readings by name, meaning and category', 'inflation → Temperature, mood → 4, none → a message')
       : bad('the search box finds readings by name, meaning and category', JSON.stringify({ infl, mood, nil, back }));
     await p.click('#search-list .cat-mood .ind-cat-head'); await p.waitForTimeout(400);
@@ -404,6 +407,29 @@ async function openPage(p, url, sheet) {
     (head.title === 'Mood' && head.open && head.home && after.title === 'Search' && after.list)
       ? ok('a category heading opens its page and back returns to Search')
       : bad('a category heading opens its page and back returns to Search', JSON.stringify({ head, after }));
+    await p.goto('file://' + url); await p.waitForTimeout(1300);
+    const groups = {};
+    for (const cat of ['mood', 'energy']) {
+      await p.click('.cat-row[data-open="sheet-cat-' + cat + '"]'); await p.waitForTimeout(350);
+      groups[cat] = await p.evaluate(c => [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-group')].map(g =>
+        g.querySelector('.cat-group-head').textContent + ':' + [...g.querySelectorAll('.cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+')).join(' | '), cat);
+      await p.click('#topbar-back'); await p.waitForTimeout(300);
+    }
+    (groups.mood === 'Valuations:Shiller CAPE+Buffett indicator' &&
+     groups.energy === 'Economic power:Power score+Debt burden+Interest burden+Federal budget')
+      ? ok('split indicators sit under their reading', groups.mood + ' · ' + groups.energy)
+      : bad('split indicators sit under their reading', JSON.stringify(groups));
+    const cardDebt = await p.evaluate(() => document.querySelector('.cat-item[data-open="sheet-metric-debt"] .ci-value').firstChild.textContent.trim());
+    await openPage(p, url, 'sheet-metric-power');
+    const pw = await p.evaluate(() => ({
+      power: [...document.querySelectorAll('#metric-page .panel-row.lab-door')].map(r => r.dataset.open).join(),
+      debt: (document.querySelector('#metric-page .panel-row[data-open="sheet-metric-debt"] .wb-read') || {}).textContent }));
+    await openPage(p, url, 'sheet-metric-valuation');
+    const vl = await p.evaluate(() => [...document.querySelectorAll('#metric-page .panel-row.lab-door')].map(r => r.dataset.open).join());
+    const doors = { power: pw.power, val: vl, same: cardDebt === pw.debt, card: cardDebt, row: pw.debt };
+    (doors.power === 'sheet-metric-debt,sheet-metric-interest,sheet-marker-deficit' && doors.val === 'sheet-metric-buffett' && doors.same)
+      ? ok('each part of a reading opens its own page', doors.power + ' · ' + doors.val)
+      : bad('each part of a reading opens its own page', JSON.stringify(doors));
     const about = await p.evaluate(() => {
       const sheet = document.getElementById('sheet-book');
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
@@ -432,8 +458,8 @@ async function openPage(p, url, sheet) {
       doors: document.querySelectorAll('#cycle-cats [data-open]').length
     }));
     const live = got && got.items.filter(i => !i.none);
-    (got && got.grps.join('/') === 'Weather/Circulation/Mood/Energy' && got.items.length === 13 &&
-     !got.doors && live.length >= 11 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+    (got && got.grps.join('/') === 'Weather/Circulation/Mood/Energy' && got.items.length === 17 &&
+     !got.doors && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => i.val && i.val !== '\u2014'))
       ? ok('cycle categories show the data', got.grps.join(', ') + ' \u00b7 ' + got.items.length + ' readings')
       : bad('cycle categories show the data', JSON.stringify(got));

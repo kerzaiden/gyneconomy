@@ -14,6 +14,7 @@
  "js/09-render-core.js",
  "js/10-render-pages.js",
  "js/11-dial-cycle.js",
+ "js/12a-indicators.js",
  "js/12-pages-nav.js",
  "js/12b-analysis.js",
  "js/13-tabs-menu.js",
