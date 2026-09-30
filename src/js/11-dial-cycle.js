@@ -705,7 +705,7 @@
   var STRIP_MIN_RATIO = 1.5;
   function settleStrips(){
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip){
-      if (!strip.clientWidth) return;
+      if (!strip.clientWidth || strip.closest(".cyc-scale")) return;
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
       runs.forEach(function(r){
         r.classList.remove("settled");

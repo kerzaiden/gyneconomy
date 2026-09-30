@@ -25,11 +25,11 @@ const click = (p, sel) => p.evaluate(s => {
   if (!e) return false; e.scrollIntoView(); e.click(); return true;
 }, sel);
 
-const notes = p => p.evaluate(() => {
+const notes = (p, where) => p.evaluate(where => {
   const body = document.getElementById('detail-modal-body'), shut = document.getElementById('detail-modal-close');
   if (!body || !shut) return '';
   const seen = new Set(), out = [];
-  const scope = '#metric-page, .metric-sheet:not([hidden])';
+  const scope = where || '#metric-page, .metric-sheet:not([hidden])';
   document.querySelectorAll('#metric-page .bh-more, .metric-sheet:not([hidden]) .bh-more').forEach(m => {
     m.click();
     const head = m.closest('.band-head'), opt = head && head.querySelector('.bh-opt');
@@ -42,13 +42,13 @@ const notes = p => p.evaluate(() => {
     b.click(); out.push(body.innerHTML); shut.click();
   });
   return out.join('\n----\n');
-});
+}, where);
 
 const grab = (p, label) => p.evaluate(() => {
   const pick = sel => [...document.querySelectorAll(sel)].map(e => e.outerHTML).join('\n');
   return {
     body: document.body.innerHTML.length,
-    main: pick('#metric-page, #cycle-view, #today-analysis, .tabpanel:not([hidden])'),
+    main: pick('#metric-page, #cycle-view, #today-analysis, .tab-panel:not([hidden])'),
     values: [...document.querySelectorAll('[id^="subj-value-"], .cv-stat-v, .panel-row, .trendpill, .hist-read')]
               .map(e => e.id + '|' + e.textContent).join('\n')
   };
@@ -71,7 +71,16 @@ async function capture(file, out) {
     for (const t of TABS) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
       await p.waitForTimeout(500);
-      snaps.push(await grab(p, w + '/tab:' + t));
+      const g = await grab(p, w + '/tab:' + t);
+      g.notes = await notes(p, '.tab-panel:not([hidden])');
+      snaps.push(g);
+      if (t === 'analysis' && await click(p, '#cycle-data')) {
+        await p.waitForTimeout(400);
+        const d = await grab(p, w + '/tab:analysis+data');
+        d.notes = await notes(p, '.tab-panel:not([hidden])');
+        snaps.push(d);
+        await click(p, '#cycle-data'); await p.waitForTimeout(200);
+      }
     }
     for (const entry of SHEETS) {
       const [sheet, via] = entry.split('>');
@@ -106,13 +115,15 @@ async function capture(file, out) {
 function diff(af, bf) {
   const a = JSON.parse(fs.readFileSync(af)), b = JSON.parse(fs.readFileSync(bf));
   let bad = 0;
-  for (let i = 0; i < Math.max(a.snaps.length, b.snaps.length); i++) {
-    const x = a.snaps[i] || {}, y = b.snaps[i] || {};
-    if (x.label !== y.label) { console.log('  LABEL ' + x.label + ' != ' + y.label); bad++; continue; }
+  const byLabel = new Map(b.snaps.map(s => [s.label, s]));
+  b.snaps.filter(s => !a.snaps.some(x => x.label === s.label)).forEach(s => console.log('  NEW ' + s.label));
+  for (const x of a.snaps) {
+    const y = byLabel.get(x.label);
+    if (!y) { console.log('  GONE ' + x.label); bad++; continue; }
     for (const k of ['main', 'values', 'notes']) {
-      if (x[k] !== y[k]) {
+      if ((x[k] || '') !== (y[k] || '')) {
         bad++;
-        const at = [...x[k]].findIndex((c, j) => c !== y[k][j]);
+        const at = [...(x[k] || '')].findIndex((c, j) => c !== (y[k] || '')[j]);
         console.log('  DIFF ' + x.label + ' .' + k + ' at char ' + at);
         console.log('    a: …' + (x[k] || '').slice(Math.max(0, at - 60), at + 90));
         console.log('    b: …' + (y[k] || '').slice(Math.max(0, at - 60), at + 90));

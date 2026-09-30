@@ -268,24 +268,15 @@
 
   <div class="tab-panel" data-tab="analysis" hidden>
     <div id="calendar-list">
-      <div class="cyc-card" id="rhymes-card">
-        <div class="cyc-head">
-          <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
-            d="M3 9.6c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/><path d="M3 15.4c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/></svg></span>Rhymes</div>
-        </div>
-        <p class="rhy-lede">A body can be at risk and still feel perfectly well. Valuation says how far there is to
-          fall and never says when — the CAPE passed 30 in 1998, and the top was two years away. A dot marks a
-          reading sitting about as high in its own record as it did at that peak.</p>
-        <div class="rhy-ctl" id="rhy-pick"></div>
-        <div id="rhy-body"></div>
-      </div>
       <div class="cyc-card">
-        <div class="cyc-head">
+        <div class="cyc-head sx-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
+          <label class="sx-switch"><span>Show data</span><button type="button" role="switch" aria-checked="false"
+            class="sx-toggle" id="cycle-data"><i></i></button></label>
         </div>
+        <div class="sx-legend" id="cycle-legend" hidden></div>
         <div id="cycle-list"></div>
         <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
           <span id="cycle-more-label">View more</span>

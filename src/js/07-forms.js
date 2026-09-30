@@ -292,20 +292,6 @@
     }
   ];
 
-  /* ---- The tops a reader can stand beside ---- */
-  var marketTops = [
-    { key:"2000", cycle:"Dot-Com Cycle",  peak:"2000-03-24", trough:"2002-10-09", fall:49.1,
-      y:"2000", q:"2000 Q1", m:"2000-03" },
-    { key:"2007", cycle:"Housing Cycle",  peak:"2007-10-09", trough:"2009-03-09", fall:56.8,
-      y:"2007", q:"2007 Q4", m:"2007-10" },
-    { key:"2020", cycle:"COVID-19 Cycle", peak:"2020-02-19", trough:"2020-03-23", fall:33.9,
-      y:"2020", q:"2020 Q1", m:"2020-02" },
-    { key:"2022", cycle:"COVID-19 Cycle", peak:"2022-01-03", trough:"2022-10-12", fall:25.4,
-      y:"2022", q:"2022 Q1", m:"2022-01" }
-  ];
-  var marketTopsSrc = [{ t:"Yardeni Research \u2014 Stock Market Historical Tables: Bull & Bear Markets",
-                         u:"https://yardeni.com/charts/us-stock-market/stock-market-historical-trends/bull-bear-markets-corrections" }];
-
   var currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
 
   /* ---- A typical cycle's length (the dial's scale) ---- */
