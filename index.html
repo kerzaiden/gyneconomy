@@ -1273,10 +1273,6 @@
     background:linear-gradient(90deg, transparent, var(--surface)); }
   .sx-row:hover b{ color:var(--accent-ink); }
   .sx-foot{ margin:8px 0 0; font-size:12px; line-height:1.45; color:var(--text-muted); }
-
-  #cycle-cats{ display:flex; flex-direction:column; gap:var(--gap-top); }
-  .cc-grp .cat-list{ margin-top:var(--gap); }
-  .cc-grp .cyc-title{ padding:0 2px; }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group + .cat-item, .cat-sheet .cat-item + .cat-group, .cat-sheet .cat-group + .cat-group{ margin-top:10px; }
@@ -1298,18 +1294,11 @@
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
   .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
   .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
-  .cat-item.flat{ cursor:default; }
-  .cat-item.flat:hover{ border-color:var(--border); }
-  .cat-item.flat .ci-value{ font-family:"IBM Plex Mono",monospace; font-size:28px; font-weight:700;
-    letter-spacing:-0.02em; line-height:1.05; color:var(--text-primary); }
-  .cat-item.flat .ci-value .unit{ font-size:0.55em; font-weight:700; margin-left:2px; color:var(--text-muted); }
-  .cat-item.flat .ci-value.cc-none{ color:var(--text-muted); font-weight:400; }
-  .cat-item.flat .ci-word{ margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12px;
-    font-weight:400; color:var(--text-muted); letter-spacing:-0.01em; }
-  .cat-item.flat .ci-mini .spark{ margin:0; width:100%; }
-  .cat-item.flat .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
-  .cat-item.flat .ci-mini .spark-line, .cat-item.flat .ci-mini .spark-end{ stroke:var(--accent-ink); }
-  .cat-item.flat .ci-mini .spark-fill, .cat-item.flat .ci-mini .spark-end{ fill:var(--accent-ink); }
+  .cat-sheet .ci-mini .spark{ margin:0; width:100%; }
+  .cat-sheet .ci-mini .spark svg{ width:100%; height:var(--mini-h); }
+  .cat-sheet .ci-mini .spark-line, .cat-sheet .ci-mini .spark-end{ stroke:var(--cat); }
+  .cat-sheet .ci-mini .spark-fill, .cat-sheet .ci-mini .spark-end{ fill:var(--cat); }
+  .tab-panel[data-tab="analysis"] .cat-sheet .highlights{ display:none; }
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
@@ -1836,7 +1825,6 @@
     </div>
     <div id="calendar-cycle" hidden>
       <div id="calendar-cycle-slot"></div>
-      <div id="cycle-cats"></div>
     </div>
   </div>
 
@@ -20144,7 +20132,7 @@
         panel: analysisPanel,
         title: "Analysis",
         hide: function() {
-          return [ byId("calendar-list") ];
+          return [ byId(eraOpen ? "calendar-cycle" : "calendar-list") ];
         }
       },
       search: {
@@ -21277,9 +21265,7 @@
           return;
         }
       }
-      showCycle(era, true);
-      slot.appendChild(cycleViewEl);
-      renderCycleCats(era);
+      enterEra(era, slot);
       listWrap.hidden = true;
       detail.hidden = false;
       setTopbar(era.name, back);
@@ -21289,6 +21275,7 @@
       });
     }
     function back() {
+      leaveEra();
       detail.hidden = true;
       listWrap.hidden = false;
       setTopbar("Analysis", null);
@@ -21308,6 +21295,7 @@
       }
     });
     calendarReset = function() {
+      leaveEra();
       detail.hidden = true;
       listWrap.hidden = false;
       topbarBack = null;
@@ -21319,31 +21307,99 @@
   GYN.step("renderCycleList", renderCycleList, "wire");
   renderCycleList();
   renderCycleView(nowModel);
-  function renderCycleCats(era) {
-    var host = byId("cycle-cats");
-    if (!host) return;
+  var eraOpen = null, taHome = null, modeHome = null;
+  function eraReading(r, era) {
     var from = era.from, to = era.to || calendarTodayY;
-    host.innerHTML = readingRoster().map(function(g) {
-      var rows = g.rows.map(function(r) {
-        var span = r.seen.filter(function(d) {
-          var y = +d.k.slice(0, 4);
-          return y >= from && y <= to;
-        });
-        var mark = '<span class="peek-mark" aria-hidden="true">' + r.mark() + "</span>";
-        if (!span.length) {
-          return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value cc-none">—</div>' + '<div class="ci-word">Not measured before ' + prettyK(r, r.first.k) + "</div></div></div></div>";
-        }
-        var end = span[span.length - 1];
-        var vs = span.map(function(d) {
-          return d.v;
-        });
-        var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
-        var art = span.length >= 3 ? '<div class="ci-mini">' + sparkHtml(vs, "") + "</div>" : "";
-        var travel = lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle";
-        return '<div class="cat-item flat"><div class="ci-head">' + mark + '<span class="ci-name">' + r.name + "</span>" + '<span class="ci-when">' + prettyK(r, end.k) + "</span></div>" + '<div class="ci-body"><div class="ci-read"><div class="ci-value">' + readFig(r, end.v) + "</div>" + '<div class="ci-word">' + travel + "</div></div>" + art + "</div></div>";
-      }).join("");
-      return '<div class="cc-grp"><div class="cyc-title"><span class="peek-mark" aria-hidden="true">' + g.mark() + "</span>" + g.label + '</div><div class="cat-list">' + rows + "</div></div>";
-    }).join("");
+    var span = r.seen.filter(function(d) {
+      var y = +d.k.slice(0, 4);
+      return y >= from && y <= to;
+    });
+    if (!span.length) return {
+      none: true,
+      word: "Not measured before " + prettyK(r, r.first.k)
+    };
+    var vs = span.map(function(d) {
+      return d.v;
+    }), end = span[span.length - 1];
+    var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
+    return {
+      value: readFig(r, end.v),
+      when: prettyK(r, end.k),
+      vs: vs,
+      word: lo === hi ? "Flat all cycle" : readFig(r, lo) + " to " + readFig(r, hi) + " over the cycle"
+    };
+  }
+  function eraCard(item, r, era) {
+    var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
+    var word = item.querySelector(".ci-word");
+    if (!item.__today) item.__today = {
+      value: val.innerHTML,
+      word: word ? word.innerHTML : null,
+      when: when.textContent,
+      mini: mini ? mini.innerHTML : null
+    };
+    var t = item.__today;
+    if (!era) {
+      val.innerHTML = t.value;
+      when.textContent = t.when;
+      if (mini) mini.innerHTML = t.mini;
+      if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
+      return;
+    }
+    var e = r ? eraReading(r, era) : {
+      none: true,
+      word: "No history in the app"
+    };
+    if (!word) {
+      word = document.createElement("span");
+      word.className = "ci-word";
+      val.parentNode.appendChild(word);
+    }
+    val.innerHTML = e.none ? "—" : e.value;
+    word.innerHTML = e.word;
+    when.textContent = e.none ? "" : e.when;
+    if (mini) mini.innerHTML = e.vs && e.vs.length >= 3 ? sparkHtml(e.vs, "") : "";
+  }
+  function eraShow(era) {
+    var rows = {};
+    readingRoster().forEach(function(g) {
+      g.rows.forEach(function(r) {
+        rows[r.open] = r;
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item) {
+      eraCard(item, rows[item.getAttribute("data-open")], era);
+    });
+    if (era && !modeHome) {
+      modeHome = {};
+      for (var k in pageMode) modeHome[k] = pageMode[k];
+    }
+    for (var id in pageCycles) {
+      pageCycles[id] = era ? era.name : null;
+      pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id];
+    }
+    if (!era) modeHome = null;
+  }
+  function enterEra(era, slot) {
+    var ta = byId("today-analysis");
+    if (!taHome) taHome = {
+      parent: ta.parentNode,
+      next: ta.nextSibling
+    };
+    eraOpen = era;
+    showCycle(era, true);
+    slot.appendChild(cycleViewEl);
+    slot.appendChild(ta);
+    eraShow(era);
+  }
+  function leaveEra() {
+    if (!eraOpen) return;
+    var ta = byId("today-analysis");
+    taHome.parent.insertBefore(ta, taHome.next);
+    taHome.parent.insertBefore(cycleViewEl, ta);
+    eraOpen = null;
+    eraShow(null);
+    showCycle(currentEra);
   }
   function rosterGroups(byM, byQ, byY, qFrom, hyList) {
     return [ {
@@ -21352,6 +21408,7 @@
       mark: weatherSvg,
       rows: [ {
         name: "Temperature",
+        open: "sheet-metric-temp",
         on: "m",
         mark: thermoSvg,
         list: byM(cpiYoYHistory),
@@ -21359,6 +21416,7 @@
         unit: "%"
       }, {
         name: "Growth",
+        open: "sheet-metric-gdp",
         on: "q",
         mark: sproutSvg,
         list: byQ(gdpQuarterlyYoY),
@@ -21371,6 +21429,7 @@
       mark: circulationSvg,
       rows: [ {
         name: "Hormones",
+        open: "sheet-sign-hormones",
         on: "m",
         mark: hormoneSvg,
         list: byM(fedFundsHistory),
@@ -21378,6 +21437,7 @@
         unit: "%"
       }, {
         name: "Pressure",
+        open: "sheet-sign-pressure",
         on: "q",
         mark: gaugeSvg,
         list: byQ(t10yYieldHistory),
@@ -21385,12 +21445,14 @@
         unit: "%"
       }, {
         name: "Pulse",
+        open: "sheet-sign-pulse",
         on: "q",
         mark: ecgSvg,
         list: qFrom(m2vHistory, M2V_FROM_YEAR),
         dp: 2
       }, {
         name: "Volume",
+        open: "sheet-sign-volume",
         on: "q",
         mark: volumeSvg,
         list: qFrom(m2Yoy, M2_FROM_YEAR),
@@ -21403,6 +21465,7 @@
       mark: moodSvg,
       rows: [ {
         name: "Shiller CAPE",
+        open: "sheet-metric-valuation",
         on: "y",
         mark: diamondSvg,
         list: byY(capeHistory),
@@ -21411,6 +21474,7 @@
         last: "today"
       }, {
         name: "Buffett indicator",
+        open: "sheet-metric-buffett",
         on: "q",
         mark: diamondSvg,
         list: byQ(buffettHistory),
@@ -21418,12 +21482,14 @@
         unit: "%"
       }, {
         name: "Fear",
+        open: "sheet-sign-sentiment",
         on: "m",
         mark: umbrellaSvg,
         list: byM(fearCurveHistory),
         dp: 2
       }, {
         name: "Desire",
+        open: "sheet-sign-desire",
         on: "m",
         mark: flameSvg,
         list: hyList,
@@ -21431,6 +21497,7 @@
         unit: "%"
       }, {
         name: "Horizon",
+        open: "sheet-sign-horizon",
         on: "q",
         mark: sunriseSvg,
         list: byQ(t10y3mHistory),
@@ -21443,12 +21510,14 @@
       mark: boltSvg,
       rows: [ {
         name: "Power score",
+        open: "sheet-metric-power",
         on: "y",
         mark: boltSvg,
         list: byY(powerHistory),
         dp: 0
       }, {
         name: "Debt burden",
+        open: "sheet-metric-debt",
         on: "q",
         mark: debtSvg,
         list: byQ(grossDebtQuarterly),
@@ -21456,6 +21525,7 @@
         unit: "%"
       }, {
         name: "Interest burden",
+        open: "sheet-metric-interest",
         on: "y",
         mark: interestSvg,
         list: byY(fiscalHistory.interest),
@@ -21463,6 +21533,7 @@
         unit: "%"
       }, {
         name: "Federal budget",
+        open: "sheet-marker-deficit",
         on: "y",
         mark: budgetSvg,
         list: deficitHistory.map(function(v, i) {
@@ -21476,6 +21547,7 @@
         signed: true
       }, {
         name: "Households",
+        open: "sheet-metric-households",
         on: "q",
         mark: houseSvg,
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
@@ -21483,6 +21555,7 @@
         unit: "%"
       }, {
         name: "Activity",
+        open: "sheet-sign-activity",
         on: "m",
         mark: trendUpSvg,
         list: byM(unempHistory),
@@ -21773,6 +21846,7 @@
         var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
         if (target) target.hidden = false;
         if (metricPageReset) metricPageReset();
+        if (calendarReset) calendarReset();
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
         topbarBack = null;
         byId("topbar-back").hidden = true;
@@ -21781,7 +21855,6 @@
           placeCharts();
           showCycle(currentEra);
         }
-        if (tab === "analysis" && calendarReset) calendarReset();
         if (tab === "analysis") settleStrips();
         window.scrollTo({
           top: 0,

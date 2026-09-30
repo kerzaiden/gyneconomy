@@ -272,6 +272,17 @@ Rules that shape the pages:
   category and nothing else.
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
+- **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
+  tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the four tiles and their category and
+  reading pages) into the cycle's slot (`enterEra`), and `leaveEra` puts it back; the tab switch and the back
+  arrow both call it. In between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the
+  figure at the cycle's last reading, the range over the cycle as the label, a sparkline of the cycle) and
+  sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored
+  on leaving). Today's cards are kept on the element (`__today`) and restored as they were, so the live
+  repaint still finds its first text node. The reading pages' panels and insights stay today's: they are
+  the page, and the picker says which cycle the chart shows. A reading without history in the cycle shows a
+  dash and says since when it is measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of
+  cards that led nowhere (Keren, V659: one view to maintain).
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
   the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot

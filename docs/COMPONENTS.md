@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c4c92da` on 2026-09-30. **78 components**, **61 shared patterns**.
+Generated from commit `4dfbc57` on 2026-09-30. **78 components**, **52 shared patterns**.
 
 ## components.js
 
@@ -57,7 +57,7 @@ Generated from commit `c4c92da` on 2026-09-30. **78 components**, **61 shared pa
 | **`pairChart`** | `.pc-core` `.pc-key-now` `.pc-key-was` `.pc-legend` `.pc-link` `.pc-now` `.pc-pct` `.pc-unit` `.pc-was` `.pc-was-lab` | `pages-nav.js:registerTempGdpPages` |
 | **`reserveChart`** | `.bt-bar` `.bt-ref` `.bt-track` | `pages-nav.js:registerActivityPowerDeficitPages` |
 | **`riskMatrixBlock`** | `.riskmx` `.rm-axis` `.rm-axis-x` `.rm-axis-y` `.rm-c` `.rm-cells` `.rm-frame` `.rm-grid` `.rm-mark` `.rm-xlabs` `.rm-ylabs` | `pages-nav.js:renderSignsList` |
-| **`sparkHtml`** | `.spark` `.spark-end` `.spark-fill` `.spark-line` `.spark-win` | `analysis.js:renderCycleCats`, `render-pages.js:renderSubjectRows` |
+| **`sparkHtml`** | `.spark` `.spark-end` `.spark-fill` `.spark-line` `.spark-win` | `analysis.js:eraCard`, `render-pages.js:renderSubjectRows` |
 | **`trendOf`** | `.tp-arrow` | `components.js:deficitChart`, `components.js:velocityHistoryChart`, `dial-cycle.js:drawTemperature`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-pages.js:renderFearCurve`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | **`vGrid`** | `.bt-vgrid` | `charts.js:divergeChart`, `charts.js:reserveChart`, `components.js:deficitChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:gdpHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart`, `render-pages.js:renderSpreadHistory` |
@@ -116,9 +116,9 @@ Generated from commit `c4c92da` on 2026-09-30. **78 components**, **61 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`buildCategories`** | `.browse-list` `.cat-sheet` `.cat-sub` | `pages-nav.js:renderPeekAndCategories` |
+| **`buildCategories`** | `.browse-list` `.cat-list` `.cat-sheet` `.cat-sub` | `pages-nav.js:renderPeekAndCategories` |
 | **`buildSearch`** | `.ind-hint` `.ind-tabs` `.search-none` | `pages-nav.js:renderPagesAndNav` |
-| **`catItem`** | `.ci-unit` | `indicators.js:appendPicks` |
+| **`catItem`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `indicators.js:appendPicks` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | — |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indCategoryHtml` |
@@ -137,7 +137,7 @@ Generated from commit `c4c92da` on 2026-09-30. **78 components**, **61 shared pa
 |---|---|---|
 | **`cycleRowsHtml`** | `.chip` `.data` `.era-bands` `.era-econ` `.era-foot` `.era-head` `.era-name` `.era-open` `.era-row` `.era-years` | `analysis.js:wireCycleData` |
 | **`cycleTrack`** | `.cyc-scale` `.cyc-track` `.sx-foot` `.sx-yrs` | `analysis.js:cycleRowsHtml` |
-| **`renderCycleCats`** | `.cc-grp` `.cc-none` `.ci-word` `.cyc-title` `.flat` | `analysis.js:renderCycleList` |
+| **`eraCard`** | `.ci-word` | `analysis.js:eraShow` |
 | **`symptomLegend`** | `.sx-down` `.sx-keys` `.sx-now` `.sx-off` | `analysis.js:wireCycleData` |
 | **`symptomRow`** | `.sx-row` | `analysis.js:cycleTrack` |
 
@@ -155,7 +155,7 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | refresh-season.js | 46 places |
+| **`byId`** | refresh-season.js | 47 places |
 | **`put`** | refresh-season.js | 27 places |
 | **`colPath`** | charts.js | 12 places |
 | **`colWidth`** | charts.js | 12 places |
@@ -210,6 +210,7 @@ renderer speaks. Listed most-used first.
 | **`readingRoster`** | analysis.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |
 | **`seasonGroup`** | model.js | 3 places |
+| **`showCycle`** | dial-cycle.js | 3 places |
 
 ## Shared patterns
 
@@ -231,8 +232,8 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.unit` | 6 | `analysis.js:cycleRowsHtml`, `analysis.js:readFig`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.pulsebox` | 5 | `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock` |
 | `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:renderSignsList` |
-| `.peek-mark` | 5 | `analysis.js:renderCycleCats`, `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns`, `render-pages.js:renderSubjectRows` |
 | `.cycsel-nm` | 4 | `charts.js:cyclePicker`, `dial-cycle.js:peerReaches`, `history.js:headMenuHtml`, `history.js:headPickRow` |
+| `.peek-mark` | 4 | `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns`, `render-pages.js:renderSubjectRows` |
 | `.subject-icon` | 4 | `pages-nav.js:discOf`, `pages-nav.js:renderSignsList`, `render-core.js:subjectIcon`, `render-pages.js:renderSubjectRows` |
 | `.metric-sheet` | 4 | `indicators.js:mountSplit`, `pages-nav.js:buildCategories`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:renderSignsList` |
 | `.panel-stack` | 4 | `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:renderSignsList` |
@@ -270,12 +271,3 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.strip` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
 | `.subject-label` | 2 | `pages-nav.js:buildCategories`, `pages-nav.js:renderSignsList` |
 | `.subject-value` | 2 | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
-| `.cat-item` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-head` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-name` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-body` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-read` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-value` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-mini` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.ci-when` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:catItem` |
-| `.cat-list` | 2 | `analysis.js:renderCycleCats`, `pages-nav.js:buildCategories` |

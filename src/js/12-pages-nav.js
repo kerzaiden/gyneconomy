@@ -248,7 +248,7 @@
       cycle:    { panel:cyclePanel,    title:"Current Cycle",
                   hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
       analysis: { panel:analysisPanel, title:"Analysis",
-                  hide:function(){ return [byId("calendar-list")]; } },
+                  hide:function(){ return [byId(eraOpen ? "calendar-cycle" : "calendar-list")]; } },
       search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), title:"Search",
                   hide:function(){ return [byId("search-home")]; } }
     };
