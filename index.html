@@ -289,6 +289,7 @@
   .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
+  .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
 
   .strip-run.ytd{ opacity:0.55; }
   .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
@@ -622,23 +623,33 @@
   .subject-body{ padding:0 var(--pad) 20px; border-top:1px solid var(--border); }
   .peek-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
   .peek-row > .peek:only-child{ grid-column:1 / -1; }
-  .browse-list{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); align-items:stretch; }
-  .browse-list > .cat-row:nth-of-type(1){ grid-area:1 / 1; }
-  .browse-list > .cat-row:nth-of-type(2){ grid-area:2 / 1; }
-  .browse-list > .cat-row:nth-of-type(3){ grid-area:1 / 2; }
-  .browse-list > .cat-row:nth-of-type(4){ grid-area:2 / 2; }
-  .browse-list > .cat-row.cat-wide{ grid-column:1 / -1; }
-  .browse-list > .cat-row .subject-summary{ flex-direction:column; align-items:stretch; gap:10px;
-    padding:var(--pad); height:100%; }
-  .browse-list > .cat-row .subject-ring{ width:42px; height:42px; }
-  .browse-list > .cat-row .subject-icon span{ width:42px; height:42px;
-    background:none; color:var(--accent-ink); }
-  .browse-list > .cat-row .subject-icon svg{ width:26px; height:26px; }
-  .browse-list > .cat-row .subject-more{ display:none; }
-  .browse-list > .cat-row .subject-text{ display:flex; flex-direction:column; gap:2px; }
-  .browse-list > .cat-row .subject-label{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic;
-    font-weight:600; font-size:var(--type-section); line-height:1.15; letter-spacing:0; color:var(--text-primary); }
-  .browse-list > .cat-row .cat-sub{ margin-top:0; }
+  .dx{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 18px 4px; }
+  .dx-top{ padding-bottom:14px; }
+  .dx-title{ margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
+    font-size:var(--type-reading-head); line-height:1.15; color:var(--text-primary); }
+  .dx-title .good{ color:var(--good-ink); } .dx-title .warning{ color:var(--warning-ink); }
+  .dx-title .serious{ color:var(--serious-ink); } .dx-title .critical{ color:var(--critical-ink); }
+  .dx-sub{ margin:6px 0 0; font-size:var(--type-meta); font-weight:600; letter-spacing:0.02em; color:var(--text-muted); }
+  .dx-body{ margin:10px 0 0; font-size:var(--type-interface); line-height:1.55; font-style:italic; color:var(--text-secondary); }
+  .dx-sys{ padding:14px 0; border-top:1px solid var(--border); }
+  .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
+    font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-primary); text-align:left; }
+  button.dx-sys-head{ cursor:pointer; }
+  button.dx-sys-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
+  button.dx-sys-head:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  button.dx-sys-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .dx-mark{ display:inline-flex; color:var(--cat); }
+  .dx-mark svg{ width:18px; height:18px; }
+  .dx-row{ display:grid; grid-template-columns:76px 1fr; gap:10px; align-items:baseline; margin-top:6px; }
+  .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+  .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
+  .dx-list{ margin:0; padding:0; list-style:none; font-size:var(--type-interface); line-height:1.5; color:var(--text-secondary); }
+  .dx-list li{ padding:1px 0; }
+  .dx-list b{ font-weight:600; color:var(--text-primary); }
+  .dx-word{ font-weight:700; margin-right:2px; }
+  .dx-word.good{ color:var(--good-ink); } .dx-word.warning{ color:var(--warning-ink); }
+  .dx-word.serious{ color:var(--serious-ink); } .dx-word.norm{ color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
   .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }
@@ -675,8 +686,6 @@
   .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
   .cat-item .subject-value .unit{ margin-left:4px; }
   .cat-item .subject-say{ margin:3px 0 0; }
-  .cat-row .cat-sub{ font-family:"Public Sans",sans-serif; font-size:var(--type-meta); color:var(--text-muted);
-    margin-top:3px; }
   @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } }
   .peek{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 14px 13px;
     display:flex; flex-direction:column; align-items:flex-start; text-align:left; width:100%;
@@ -1379,8 +1388,8 @@
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
-      <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="search" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><span>Search</span></button>
+      <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
   </nav>
@@ -20446,6 +20455,30 @@
     };
     return followedCache;
   }
+  function lastFeeling(S, m) {
+    var stage = null;
+    for (var k = S.spAt[m]; k >= 0 && !stage; k--) {
+      var pf = marketFacts(S, S.sp[k].m);
+      stage = pf && readFeeling(pf);
+    }
+    return stage;
+  }
+  function diagnoseClose(m) {
+    var S = marketMonths(), at = m.endMonth, f = marketFacts(S, at), i = S.spAt[at];
+    if (!f) return null;
+    var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
+    return {
+      stage: stage,
+      carried: !named,
+      half: half,
+      season: m.season,
+      facts: f,
+      month: at,
+      posture: readPosture(stage, half, f),
+      bestMom: S.best[i],
+      after: i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null
+    };
+  }
   function diagnoseToday() {
     var S = marketMonths(), lastM = S.sp[S.sp.length - 1].m;
     var vols = S.vol.map(function(d) {
@@ -20459,14 +20492,8 @@
       return v != null;
     }));
     f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
-    var stage = readFeeling(f), carried = false;
-    if (!stage) {
-      for (var k = S.sp.length - 2; k >= 0 && !stage; k--) {
-        var pf = marketFacts(S, S.sp[k].m);
-        stage = pf && readFeeling(pf);
-      }
-      carried = true;
-    }
+    var stage = readFeeling(f), carried = !stage;
+    if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     var half = seasonHalf(currentSeason), rec = whatFollowed();
     return {
       stage: stage,
@@ -22422,6 +22449,7 @@
     drawDial(m);
     shownEraModel = m;
     shownEra = m.era;
+    renderDiagnosis(m);
   }
   function peerChosen() {
     return gdpPeers.filter(function(c) {
@@ -23232,9 +23260,13 @@
     });
   }
   function indCategoryHtml(key, find) {
-    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
-    if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
+    var cat = categoryCats().filter(function(c) {
+      return c.key === key;
+    })[0], sheet = byId("sheet-cat-" + key);
+    if (!cat || !sheet) return "";
+    var title = cat.title, mark = {
+      innerHTML: cat.mark
+    }, rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key + '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + "</span>" + '<span class="ind-cat-name">' + title + "</span>" + CHEV + '</button><div class="ind-card">' + rows.join("") + "</div></section>";
   }
   var NAV = {
@@ -23698,15 +23730,6 @@
     mSent.parentNode.removeChild(mSent);
     mAct.parentNode.removeChild(mAct);
   }
-  function catRow(cls, open, title, mark, sub, subId) {
-    return elFrom(subjectRow({
-      cls: cls,
-      open: open,
-      title: title,
-      icon: subjectIcon("norm", mark),
-      text: '<div class="subject-label">' + title + '</div><div class="cat-sub"' + (subId ? ' id="' + subId + '"' : "") + ">" + sub + "</div>"
-    }));
-  }
   function buildCategories() {
     var host = byId("today-analysis");
     if (!host) return;
@@ -23724,8 +23747,6 @@
       "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
     };
     for (var sp in SPLIT_PERIOD) PERIOD[sp] = SPLIT_PERIOD[sp];
-    var list = document.createElement("div");
-    list.className = "browse-list";
     CATS.forEach(function(c) {
       if (c.picks) {
         var sheet = catSheet("sheet-cat-" + c.key, c.key);
@@ -23743,9 +23764,7 @@
         var old = document.querySelector(c.drop);
         if (old && old.parentNode) old.parentNode.removeChild(old);
       }
-      list.appendChild(catRow("cat-row", c.open || "sheet-cat-" + c.key, c.title, c.mark, c.sub));
     });
-    host.insertBefore(list, host.firstChild);
     [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
       var el = byId(id);
       if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
@@ -24221,17 +24240,17 @@
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
   var DIAG_SYSTEMS = [ {
-    name: "Weather",
+    key: "weather",
     doors: [ "sheet-metric-temp", "sheet-metric-gdp" ]
   }, {
-    name: "Mood",
+    key: "mood",
     doors: [ "sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon" ]
   }, {
-    name: "Circulation",
+    key: "circulation",
     doors: [ "sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume" ]
   }, {
-    name: "Energy",
-    doors: [ "sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households", "sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth" ]
+    key: "energy",
+    doors: [ "sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth", "sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households" ]
   } ];
   var FEELING_RULES = {
     Hope: "momentum has just turned positive after being negative",
@@ -24259,19 +24278,19 @@
     Neutral: "norm"
   };
   var POSTURE_SAYS = {
-    Offense: "Fear has arrived after the body cooled",
-    Patience: "Fear in a warm body, where the falls have gone furthest; wait for her to cool",
-    Prepare: "Near her high, stretched and still warm; slow down before the body asks",
-    Defense: "Momentum has turned negative while the body is still warm",
-    Neutral: "No posture the record singles out"
+    Offense: "Fear has arrived after the body cooled.",
+    Patience: "Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
+    Prepare: "Near her high, stretched and still warm: slow down before the body asks.",
+    Defense: "Momentum has turned negative while the body is still warm.",
+    Neutral: "No posture the record singles out."
   };
   var BODY_SAYS = {
-    summer: "In summer the authors of Wild Power describe a body that can feel like “Superwoman… for about 10 days”; at the crossover that follows, “crucially, you’re asked to slow down.”",
-    autumn: "In autumn, the authors of Wild Power write, the inner critic “has a missive to deliver from your deep self.”",
-    lateautumn: "In autumn, the authors of Wild Power write, the inner critic “has a missive to deliver from your deep self.”",
-    winter: "In winter the task the authors of Wild Power give is to let go and rest.",
-    spring: "In spring, the authors of Wild Power warn, the critic can be “your wilful power of agency taking over too soon.”",
-    springdeflation: "In spring, the authors of Wild Power warn, the critic can be “your wilful power of agency taking over too soon.”"
+    summer: "“Superwoman… for about 10 days”; then, at the crossover, “crucially, you’re asked to slow down.”",
+    autumn: "The inner critic “has a missive to deliver from your deep self.”",
+    lateautumn: "The inner critic “has a missive to deliver from your deep self.”",
+    winter: "The task is to let go and rest.",
+    spring: "The critic can be “your wilful power of agency taking over too soon.”",
+    springdeflation: "The critic can be “your wilful power of agency taking over too soon.”"
   };
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -24283,9 +24302,6 @@
     t: "Alexandra Pope & Sjanie Hugo Wurlitzer — Wild Power (Hay House, 2017); Red School",
     u: "https://www.redschool.net/"
   } ];
-  function stethoscopeSvg() {
-    return markSvg('<path d="M6 3.5v5.5a5 5 0 0 0 10 0V3.5" stroke-width="1.8"/>' + '<path d="M11 14v1.5a4.5 4.5 0 0 0 9 0V13" stroke-width="1.8"/><circle cx="20" cy="11" r="2" stroke-width="1.7"/>');
-  }
   function readDoor(open) {
     var item = document.querySelector('.cat-item[data-open="' + open + '"]');
     if (!item) return null;
@@ -24301,67 +24317,123 @@
       word: word ? word.textContent.trim() : ""
     };
   }
-  function doorLine(open) {
-    var d = readDoor(open);
-    return d ? "<b>" + d.name + "</b> " + d.figure + (d.unit ? " " + d.unit : "") + (d.word ? ", " + d.word : "") : "";
-  }
   function pct(v) {
     return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
   }
-  function feelingFacts(d) {
-    var f = d.facts, at = monthLabel(d.month);
-    var where = f.dd > -.005 ? "at its high" : Math.abs(f.dd * 100).toFixed(0) + "% below its high";
-    var moving = f.mom >= 0 ? "up " + pct(f.mom).slice(1) + " over the year to " + at + ", " + Math.round(f.share * 100) + "% of this bull’s best pace (" + pct(d.bestMom) + ")" : "down " + pct(f.mom).slice(1) + " over the year to " + at;
-    var fear = "fear at the " + ordinal(Math.round(f.fear)) + " percentile of every month since 1986" + (f.fear < CALM ? ", calm" : f.fear >= FRIGHTENED ? ", frightened" : "") + (f.fear3 != null && f.fear - f.fear3 >= RISE ? ", and rising" : "");
-    return "The S&amp;P 500 is " + where + ", " + moving + "; " + fear + ".";
+  function symptom(name, figure, word) {
+    return "<li><b>" + name + "</b> " + figure + (word ? " · " + word : "") + "</li>";
   }
-  function recordLine(d) {
-    var r = d.record, half = d.half + " season";
-    if (!r) return "No month since " + monthLabel(d.recordFrom) + " has read " + d.stage + " in a " + half + ".";
-    return "Since " + monthLabel(d.recordFrom) + ", " + d.stage + " in a " + half + ": " + r.months + " months over " + r.spells + " spells. A year later the market was higher in " + r.higher + " of " + r.months + " (" + Math.round(r.higher / r.months * 100) + "%), median " + pct(r.median) + ", worst " + pct(r.worst) + ".";
+  function momentumSymptom(d) {
+    var f = d.facts;
+    return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull’s best" : "falling");
   }
-  function watchList(d) {
-    var f = d.facts, out = [];
-    if (f.fear < FRIGHTENED) out.push("Fear at the " + ordinal(Math.round(f.fear)) + " percentile: below 20 is calm, and a rise of 20 points from calm reads Anxiety.");
-    if (d.half === "warm") out.push("Momentum turning negative while the body is warm turns the posture to Defense.");
-    out.push(d.half === "warm" ? "Fear arriving after the body cools to Winter or Spring is the record’s opening for Offense." : "Fear arriving now, with the body cool, would read Offense.");
-    return out;
+  function symptomsFor(sys, era) {
+    var rows = era ? rosterRows() : null;
+    return sys.doors.map(function(id) {
+      if (era) {
+        var r = rows[id], e = r && eraReading(r, era);
+        return e && !e.none ? symptom(r.name, closeFigure(r, e), e.when) : "";
+      }
+      var t = readDoor(id);
+      return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
+    }).join("");
+  }
+  function rosterRows() {
+    var rows = {};
+    readingRoster().forEach(function(g) {
+      g.rows.forEach(function(r) {
+        rows[r.open] = r;
+      });
+    });
+    return rows;
+  }
+  function closeFigure(r, e) {
+    if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
+    return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");
+  }
+  function eraMove(id, era) {
+    var r = rosterRows()[id];
+    if (!r) return "";
+    var span = r.seen.filter(function(d) {
+      var y = +d.k.slice(0, 4);
+      return y >= era.from && y <= era.to;
+    });
+    if (span.length < 2) return "";
+    var a = span[0], b = span[span.length - 1];
+    return (r.eraUnit || r.name) + " went from " + readFig(r, a.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, a.k) + ") to " + readFig(r, b.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, b.k) + ") across the cycle.";
+  }
+  function analysisFor(key, d, era) {
+    var w = function(id) {
+      var r = readDoor(id);
+      return r && r.word ? r.word.toLowerCase() : "";
+    };
+    if (key === "weather") return seasonRuleSentence[d.season];
+    if (key === "mood") return "<b>" + d.stage + "</b>: " + FEELING_RULES[d.stage] + ".";
+    if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
+    if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
+    return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
+  }
+  function dxRow(label, html, asList) {
+    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + (asList ? '<ul class="dx-list">' + html + "</ul>" : '<p class="dx-v">' + html + "</p>") + "</div>";
+  }
+  function dxSection(head, body, cls) {
+    return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
+  }
+  function systemHtml(c, analysis, symptoms) {
+    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis) + dxRow("Symptoms", symptoms, true), "cat-" + c.key);
+  }
+  function dxHead(title, c) {
+    var tag = c ? 'button type="button"' : "div";
+    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
+  }
+  function postureLine(d, more) {
+    return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + "</b>" + expandBtn(diagnosisInfo(d)) + " " + POSTURE_SAYS[d.posture] + (more ? " " + more : ""));
   }
   function diagnosisInfo(d) {
-    return "<h4>Diagnosis</h4>" + ledeHtml("How Mrs. Market feels, read from facts knowable this month, and what has followed that feeling in her season.") + facts(FEELINGS.map(function(w) {
+    return "<h4>Diagnosis</h4>" + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") + facts(FEELINGS.map(function(w) {
       return "<b>" + w + "</b>: " + FEELING_RULES[w];
-    }).concat([ "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard.", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(d.recordFrom) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast." ])) + srcBlock(DIAG_SRC);
+    }).concat([ "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard.", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast." ])) + srcBlock(DIAG_SRC);
   }
-  function renderDiagnosisPage() {
-    var host = byId("diagnosis-body"), d = diagnoseToday();
-    if (!host || !d) return;
+  function assessmentFor(d, era) {
+    if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
+    var r = d.record, watch = [];
+    var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " + r.months + " months, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
+    if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
+    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense"); else watch.push("Fear arriving now, with the body cool, reads Offense");
+    return postureLine(d, rec) + dxRow("Watch", watch.map(function(x) {
+      return "<li>" + x + "</li>";
+    }).join(""), true);
+  }
+  function diagnosisHtml(m) {
+    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), era = m.era, closed = open ? null : era;
+    if (!d) return "";
     var prev = marketCycles.filter(function(c) {
-      return c.to != null && c.to < currentEra.from;
+      return c.to != null && c.to < era.from;
     }).pop();
-    var history = "The " + currentEra.name + ", year " + nowModel.yearIndex + " of a typical " + typicalCycleYears + "." + (prev ? " Her last bleed closed the " + prev.name + " in " + prev.to + "." : "");
-    var work = [ hiCard("History", "", history) ].concat(DIAG_SYSTEMS.map(function(s) {
-      var lines = s.doors.map(doorLine).filter(Boolean);
-      if (s.name === "Weather") lines.unshift("<b>" + seasonTitle(wheelMeta[d.season]) + "</b>, the " + d.half + " half of her cycle");
-      return hiCard(s.name, "", lines.join(" · "));
-    }));
-    var assess = [ lede("Mrs. Market is in <b>" + d.stage + "</b>" + (d.carried ? ", the last feeling the record named" : "") + ", in the " + d.half + " half of her cycle."), hiCard("How she feels", FEELING_STATE[d.stage], feelingFacts(d)), hiCard("Posture: " + d.posture + expandBtn(diagnosisInfo(d)), POSTURE_STATE[d.posture], POSTURE_SAYS[d.posture] + ". " + recordLine(d)), hiCard("In the body", "", BODY_SAYS[d.season] || ""), hiCard("What to watch", "", watchList(d).join(" ")) ];
-    host.innerHTML = highlightsHtml(work, "", "", "Work-up") + highlightsHtml(assess, "", "", "Assessment");
+    var history = open ? "The " + era.name + ", year " + m.yearIndex + " of a typical " + typicalCycleYears + "." + (prev ? " Last bleed: the " + prev.name + ", " + prev.to + "." : "") : "The " + era.name + ", closed in " + era.to + " after " + m.yearIndex + " years; a typical cycle runs " + typicalCycleYears + ".";
+    return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She’s in " : "She closed in ") + '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + "</span></h2>" + '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " · the " + d.half + " half · " + d.posture + "</p>" + '<p class="dx-body">' + BODY_SAYS[d.season] + "</p></header>" + dxSection(dxHead("History"), dxRow("Record", history)) + DIAG_SYSTEMS.map(function(sys) {
+      var c = categoryCats().filter(function(x) {
+        return x.key === sys.key;
+      })[0];
+      var symptoms = (sys.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(sys, closed);
+      return systemHtml(c, analysisFor(sys.key, d, closed), symptoms);
+    }).join("") + dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
-  function diagnosisSub() {
-    var d = diagnoseToday();
-    return d ? d.stage + " · " + d.posture : "";
+  function renderDiagnosis(m) {
+    var host = document.getElementById("diagnosis");
+    if (host && m) host.innerHTML = diagnosisHtml(m);
   }
   function repaintDiagnosis() {
-    put("diagnosis-sub", diagnosisSub());
+    if (!eraOpen) renderDiagnosis(nowModel);
   }
   function buildDiagnosis() {
-    var list = document.querySelector(".browse-list"), home = byId("today-analysis");
-    if (!list || !home || document.getElementById("sheet-diagnosis")) return;
-    list.appendChild(catRow("cat-row cat-wide", "sheet-diagnosis", "Diagnosis", stethoscopeSvg(), diagnosisSub(), "diagnosis-sub"));
-    var sheet = metricSheet("sheet-diagnosis");
-    sheet.innerHTML = '<div id="diagnosis-body"></div>';
-    home.appendChild(sheet);
-    sheetRenderers["sheet-diagnosis"] = renderDiagnosisPage;
+    var home = byId("today-analysis");
+    if (!home || document.getElementById("diagnosis")) return;
+    var host = document.createElement("article");
+    host.className = "dx";
+    host.id = "diagnosis";
+    home.insertBefore(host, home.firstChild);
+    renderDiagnosis(nowModel);
     addSources(DIAG_SRC);
   }
   GYN.step("buildDiagnosis", buildDiagnosis, "build");

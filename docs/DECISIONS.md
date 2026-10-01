@@ -6925,3 +6925,23 @@ Then: "give the functions meaningful names like seasonHalf". And: "choose a bett
 Volatility wears three candles of uneven height, the day's range made visible, in place of V467's umbrella, which
 belonged to the fear index the page no longer is.
 ~~~
+
+### V665
+
+~~~text
+Keren: "I want the categories to go away from the cycle page because we already have it in search and in the
+diagnosis. And I want the diagnosis to open below the cycle. Mind you, that the cycle page applies to past cycles as
+well. So if I open, for example, the big tech cycle, I will see the same cycle, which is closed, and below it, the
+analysis of the cycle that was closed." And: "tidy up, make it more designed, more intentional … use clinical
+language, ergo symptoms and analysis. Analysis would be what it tells the doctor. Symptoms is the reading today.
+System is basically the category." With her cycle-tracking app's home page as the reference: the cycle, then its
+analysis below it.
+Asked, she chose the layout shown (headline, History, each System with Analysis and Symptoms, Assessment) and, for a
+closed cycle, the diagnosis at its close: season and feeling at the closing month, each symptom's value at the close
+without a verdict word, the analysis as the movement across the cycle, and what actually followed a year later.
+Then: "Make sure the current cycle page is rendered from the same components … so that we wouldn't have duplicate
+code in our code base" — today and a closed cycle render through one set of functions. "Switch between the analysis
+tab and the search tab locations in the bottom menu." And: "in the analysis tab, the bull bear market line
+disappeared" — V662's unused-style pruning had removed .mkt-up and .mkt-down, whose names are built at run time;
+they are back, the hygiene check knows them, and the suite now checks the runs are drawn in colour.
+~~~

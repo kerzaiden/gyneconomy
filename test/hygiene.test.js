@@ -27,6 +27,7 @@ ok('an unused function is caught', unused('function lonely(){}', '', ''), ['func
 ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);
+ok('the bull and bear colours are built at run time', unused('', '', '.mkt-up{ x:1 } .mkt-down{ x:1 }'), []);
 
 console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

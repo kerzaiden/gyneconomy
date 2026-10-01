@@ -216,6 +216,19 @@
     followedCache = { cells:cells, from:from };
     return followedCache;
   }
+  function lastFeeling(S, m){
+    var stage = null;
+    for (var k = S.spAt[m]; k >= 0 && !stage; k--){ var pf = marketFacts(S, S.sp[k].m); stage = pf && readFeeling(pf); }
+    return stage;
+  }
+  function diagnoseClose(m){
+    var S = marketMonths(), at = m.endMonth, f = marketFacts(S, at), i = S.spAt[at];
+    if (!f) return null;
+    var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
+    return { stage:stage, carried:!named, half:half, season:m.season, facts:f, month:at,
+             posture:readPosture(stage, half, f), bestMom:S.best[i],
+             after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
+  }
   function diagnoseToday(){
     var S = marketMonths(), lastM = S.sp[S.sp.length - 1].m;
     var vols = S.vol.map(function(d){ return d.v; });
@@ -224,11 +237,8 @@
     var j = S.vol.length;
     f.fear3 = S.fearRank[j - 3]; f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v){ return v != null; }));
     f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
-    var stage = readFeeling(f), carried = false;
-    if (!stage){
-      for (var k = S.sp.length - 2; k >= 0 && !stage; k--){ var pf = marketFacts(S, S.sp[k].m); stage = pf && readFeeling(pf); }
-      carried = true;
-    }
+    var stage = readFeeling(f), carried = !stage;
+    if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     var half = seasonHalf(currentSeason), rec = whatFollowed();
     return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
              posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from,

@@ -236,7 +236,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Analysis · Search · Portfolio (V657; the Content tab's models moved into
+to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
 (Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
@@ -440,13 +440,20 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
-## The Diagnosis (V664)
+## The Diagnosis (V664, under the dial since V665)
 
 Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
-Also, I want to have emotional intelligence in this analysis." One card on the Cycle hub (a fifth `cat-row`,
-`cat-wide`, built by the same `catRow` as the four categories) opens `sheet-diagnosis`: a **Work-up**
-(History, Weather, Mood, Circulation, Energy) and an **Assessment** (how she feels, the posture with its record,
-the body in Wild Power's words, what to watch).
+Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
+then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
+cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
+under its cycle view. In clinical order: a headline (the feeling), **History**, then each **System** (a category;
+its heading is the door to the category page) with one **Analysis** line (what the symptoms tell the doctor) and its
+**Symptoms** (the readings, name, figure and word), then the **Assessment** (posture, record, what to watch).
+**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same `symptomsFor`,
+`analysisFor` and `assessmentFor`, which take the closed era or null): the
+season and the feeling at the closing month, each symptom's value at the close from the roster series without a
+verdict word (verdicts are today's words), the Analysis as the movement across the cycle, and what actually
+followed a year later. Search builds its category heads from `categoryCats()` now that the hub cards are gone.
 
 - **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
   (`readDoor` on `.cat-item[data-open]`), so a repaint of a reading is a repaint of the Diagnosis the next time

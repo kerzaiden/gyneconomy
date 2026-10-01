@@ -4,7 +4,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const PAD_OWNERS = ['colPeek', 'meterPeek', 'pairChart'];
-const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|energy)|f[0-9])$/;
+const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|energy)|mkt-(up|down)|f[0-9])$/;
 
 function enclosing(src, at) {
   const i = src.lastIndexOf('\n  function ', at);
