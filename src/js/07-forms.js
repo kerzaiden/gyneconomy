@@ -141,11 +141,12 @@
     '<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' +
     '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' +
     '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>'); }
-  function umbrellaSvg(){ return markSvg(
-    '<path d="M12 2.4v2.3" stroke-width="1.8"/>' +
-    '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' +
-    '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>'); }
-  var signMarks = { VIX:umbrellaSvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
+  function volatilitySvg(){ return markSvg(
+    '<path d="M5.5 7.5v2.5M5.5 15.5v2.5M12 2.5v3M12 18.5v3M18.5 5.5v3.5M18.5 14.5v2" stroke-width="1.8"/>' +
+    '<rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>' +
+    '<rect x="10.4" y="5.5" width="3.2" height="13" rx="0.6" stroke-width="1.8"/>' +
+    '<rect x="16.9" y="9" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>'); }
+  var signMarks = { Volatility:volatilitySvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
                     "Industrial output":gearSvg, "Productivity growth":clockSvg,
                     Volume:volumeSvg };
 

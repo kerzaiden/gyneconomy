@@ -240,6 +240,34 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    await p.goto('file://' + url); await p.waitForTimeout(1200);
+    const card = await p.evaluate(() => {
+      const d = document.querySelector('.browse-list [data-open="sheet-diagnosis"]');
+      return d ? d.textContent.replace(/\s+/g, ' ').trim() : null;
+    });
+    const opened = await click(p, '.browse-list [data-open="sheet-diagnosis"]'); await p.waitForTimeout(700);
+    const page = await p.evaluate(() => {
+      const b = document.getElementById('diagnosis-body');
+      return b ? { visible: !!b.offsetParent, heads: [...b.querySelectorAll('.hi-head')].map(h => h.textContent),
+                   names: [...b.querySelectorAll('.hi-name')].map(h => h.textContent.trim()),
+                   rows: [...b.querySelectorAll('.hi-card p')].map(x => x.textContent.trim().length) } : null;
+    });
+    await click(p, '#diagnosis-body .expand-btn'); await p.waitForTimeout(250);
+    const info = await p.evaluate(() => document.getElementById('detail-modal-body').innerText);
+    await p.evaluate(() => document.getElementById('detail-modal-close').click());
+    const FEEL = /^Diagnosis ?(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) · (Offense|Patience|Prepare|Defense|Neutral)$/;
+    FEEL.test(card || '') ? ok('the Diagnosis card names a feeling and a posture', card)
+                          : bad('the Diagnosis card names a feeling and a posture', JSON.stringify(card));
+    (opened && page && page.visible && page.heads.join() === 'Work-up,Assessment' &&
+     page.names.slice(0, 5).join() === 'History,Weather,Mood,Circulation,Energy' && page.rows.slice(0, 5).every(n => n > 20))
+      ? ok('the Diagnosis opens on its five-system work-up', page.names.slice(0, 5).join(' · '))
+      : bad('the Diagnosis opens on its five-system work-up', JSON.stringify(page));
+    (/Despondency: fear 20 points down/.test(info) && /Robert Shiller/.test(info) && /Wild Power/.test(info))
+      ? ok('the Diagnosis (i) states every rule and its sources')
+      : bad('the Diagnosis (i) states every rule and its sources', info.slice(0, 160));
+  }
+
+  {
     const doors = sheet => p.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].map(d => {
       const v = d.querySelector('.ci-value, .subject-value');
       const w = d.querySelector('.tag, .member-word');
@@ -771,9 +799,9 @@ async function openPage(p, url, sheet) {
       inv.whole ? ok('GYN.render() leaves the DOM unchanged')
                 : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       const k = inv.kinds;
-      (k.build === 4 && k.mixed === 2 && k.wire === 6)
+      (k.build === 5 && k.mixed === 2 && k.wire === 6)
         ? ok('step kinds', JSON.stringify(k))
-        : bad('step kinds', JSON.stringify(k) + ' — expected build 4, mixed 2, wire 6');
+        : bad('step kinds', JSON.stringify(k) + ' — expected build 5, mixed 2, wire 6');
       perr.length ? bad('no errors while re-running steps', perr.join(' | '))
                   : ok('no errors while re-running steps');
     }

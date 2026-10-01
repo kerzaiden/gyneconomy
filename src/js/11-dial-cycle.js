@@ -271,7 +271,7 @@
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
   var growthDetail = '<h4>Growth per cycle</h4>' +
-    '<p class="lede">Real GDP across this cycle, quarter by quarter, on the Temperature chart\u2019s axis so the years line up.</p>' +
+    ledeHtml("Real GDP across this cycle, quarter by quarter, on the Temperature chart\u2019s axis so the years line up.") +
     facts([
       'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.',
       'US news usually quotes a different figure for \u201cgrowth this quarter\u201d: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.',

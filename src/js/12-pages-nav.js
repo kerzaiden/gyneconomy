@@ -16,14 +16,13 @@
       var face = document.createElement("div"); face.className = "subject-summary";
       while (sum.firstChild) face.appendChild(sum.firstChild);
       (function(){
-        var MARK = { horizon:sunriseSvg, sentiment:umbrellaSvg, hormones:hormoneSvg, pressure:gaugeSvg };
+        var MARK = { horizon:sunriseSvg, sentiment:volatilitySvg, hormones:hormoneSvg, pressure:gaugeSvg };
         var lab = face.querySelector(".subject-label");
         if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
           lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
       })();
       row.appendChild(face);
-      var sheet = document.createElement("div");
-      sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
+      var sheet = metricSheet(id);
       sheet.innerHTML = timingPill(cfg.timing);
       while (body.firstChild) sheet.appendChild(body.firstChild);
       det.parentNode.insertBefore(row, det);
@@ -87,8 +86,7 @@
               '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
               (ind.peek || "")
       }));
-      var d = document.createElement("div");
-      d.className = "metric-sheet"; d.id = id; d.hidden = true;
+      var d = metricSheet(id);
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
       d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
         (function(){ var h = heldHighlights; heldHighlights = ""; return h; })();
@@ -527,6 +525,10 @@
     mSent.parentNode.removeChild(mSent);
     mAct.parentNode.removeChild(mAct);
   }
+  function catRow(cls, open, title, mark, sub, subId){
+    return elFrom(subjectRow({ cls:cls, open:open, title:title, icon:subjectIcon("norm", mark),
+      text:'<div class="subject-label">' + title + '</div><div class="cat-sub"' + (subId ? ' id="' + subId + '"' : '') + '>' + sub + '</div>' }));
+  }
   function buildCategories(){
     var host = byId("today-analysis"); if (!host) return;
     var CATS = categoryCats();
@@ -557,11 +559,7 @@
         host.appendChild(sheet);
       }
       if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
-      list.appendChild(elFrom(subjectRow({
-        cls:"cat-row", open:c.open || ("sheet-cat-" + c.key), title:c.title,
-        icon: subjectIcon("norm", c.mark),
-        text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + '</div>'
-      })));
+      list.appendChild(catRow("cat-row", c.open || ("sheet-cat-" + c.key), c.title, c.mark, c.sub));
     });
     host.insertBefore(list, host.firstChild);
     ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
@@ -906,5 +904,128 @@
     buildSearch();
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
+
+  // ---- The Diagnosis: the work-up, how she feels, and the posture ----
+  var DIAG_SYSTEMS = [
+    { name:"Weather", doors:["sheet-metric-temp", "sheet-metric-gdp"] },
+    { name:"Mood", doors:["sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon"] },
+    { name:"Circulation", doors:["sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume"] },
+    { name:"Energy", doors:["sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households",
+                            "sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth"] }
+  ];
+  var FEELING_RULES = {
+    Hope:"momentum has just turned positive after being negative",
+    Optimism:"rising, within 5% of the high, fear not calm",
+    Euphoria:"within 5% of the high, momentum under 65% of this bull\u2019s best, fear calm",
+    Anxiety:"fear up 20 points from calm in three months, within 10% of the high",
+    Fear:"momentum negative, fear in its top 40%",
+    Capitulation:"fear in its top tenth, price 15% or more off its high",
+    Despondency:"fear 20 points down from a frightened peak, price still 10% down"
+  };
+  var FEELING_STATE = { Hope:"good", Optimism:"good", Euphoria:"warning", Anxiety:"warning", Fear:"serious", Capitulation:"critical", Despondency:"serious" };
+  var POSTURE_STATE = { Offense:"good", Patience:"warning", Prepare:"warning", Defense:"serious", Neutral:"norm" };
+  var POSTURE_SAYS = {
+    Offense:"Fear has arrived after the body cooled",
+    Patience:"Fear in a warm body, where the falls have gone furthest; wait for her to cool",
+    Prepare:"Near her high, stretched and still warm; slow down before the body asks",
+    Defense:"Momentum has turned negative while the body is still warm",
+    Neutral:"No posture the record singles out"
+  };
+  var BODY_SAYS = {
+    summer:"In summer the authors of Wild Power describe a body that can feel like \u201cSuperwoman\u2026 for about 10 days\u201d; at the crossover that follows, \u201ccrucially, you\u2019re asked to slow down.\u201d",
+    autumn:"In autumn, the authors of Wild Power write, the inner critic \u201chas a missive to deliver from your deep self.\u201d",
+    lateautumn:"In autumn, the authors of Wild Power write, the inner critic \u201chas a missive to deliver from your deep self.\u201d",
+    winter:"In winter the task the authors of Wild Power give is to let go and rest.",
+    spring:"In spring, the authors of Wild Power warn, the critic can be \u201cyour wilful power of agency taking over too soon.\u201d",
+    springdeflation:"In spring, the authors of Wild Power warn, the critic can be \u201cyour wilful power of agency taking over too soon.\u201d"
+  };
+  var DIAG_SRC = [
+    {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
+    {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
+    {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
+  ];
+  function stethoscopeSvg(){ return markSvg('<path d="M6 3.5v5.5a5 5 0 0 0 10 0V3.5" stroke-width="1.8"/>' +
+    '<path d="M11 14v1.5a4.5 4.5 0 0 0 9 0V13" stroke-width="1.8"/><circle cx="20" cy="11" r="2" stroke-width="1.7"/>'); }
+  function readDoor(open){
+    var item = document.querySelector('.cat-item[data-open="' + open + '"]'); if (!item) return null;
+    var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
+    var figure = val ? val.cloneNode(true) : null;
+    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n){ n.parentNode.removeChild(n); });
+    return { name:item.getAttribute("data-title"), figure:figure ? figure.textContent.trim() : "",
+             unit:unit ? unit.textContent.trim() : "", word:word ? word.textContent.trim() : "" };
+  }
+  function doorLine(open){
+    var d = readDoor(open);
+    return d ? "<b>" + d.name + "</b> " + d.figure + (d.unit ? " " + d.unit : "") + (d.word ? ", " + d.word : "") : "";
+  }
+  function pct(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(0) + "%"; }
+  function feelingFacts(d){
+    var f = d.facts, at = monthLabel(d.month);
+    var where = f.dd > -0.005 ? "at its high" : Math.abs(f.dd * 100).toFixed(0) + "% below its high";
+    var moving = f.mom >= 0
+      ? "up " + pct(f.mom).slice(1) + " over the year to " + at + ", " + Math.round(f.share * 100) + "% of this bull\u2019s best pace (" + pct(d.bestMom) + ")"
+      : "down " + pct(f.mom).slice(1) + " over the year to " + at;
+    var fear = "fear at the " + ordinal(Math.round(f.fear)) + " percentile of every month since 1986" +
+      (f.fear < CALM ? ", calm" : f.fear >= FRIGHTENED ? ", frightened" : "") +
+      (f.fear3 != null && f.fear - f.fear3 >= RISE ? ", and rising" : "");
+    return "The S&amp;P 500 is " + where + ", " + moving + "; " + fear + ".";
+  }
+  function recordLine(d){
+    var r = d.record, half = d.half + " season";
+    if (!r) return "No month since " + monthLabel(d.recordFrom) + " has read " + d.stage + " in a " + half + ".";
+    return "Since " + monthLabel(d.recordFrom) + ", " + d.stage + " in a " + half + ": " + r.months + " months over " + r.spells +
+      " spells. A year later the market was higher in " + r.higher + " of " + r.months + " (" + Math.round(r.higher / r.months * 100) +
+      "%), median " + pct(r.median) + ", worst " + pct(r.worst) + ".";
+  }
+  function watchList(d){
+    var f = d.facts, out = [];
+    if (f.fear < FRIGHTENED) out.push("Fear at the " + ordinal(Math.round(f.fear)) + " percentile: below 20 is calm, and a rise of 20 points from calm reads Anxiety.");
+    if (d.half === "warm") out.push("Momentum turning negative while the body is warm turns the posture to Defense.");
+    out.push(d.half === "warm" ? "Fear arriving after the body cools to Winter or Spring is the record\u2019s opening for Offense."
+                               : "Fear arriving now, with the body cool, would read Offense.");
+    return out;
+  }
+  function diagnosisInfo(d){
+    return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable this month, and what has followed that feeling in her season.") +
+      facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
+        "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
+        "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
+        "The record counts every month since " + monthLabel(d.recordFrom) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast."])) +
+      srcBlock(DIAG_SRC);
+  }
+  function renderDiagnosisPage(){
+    var host = byId("diagnosis-body"), d = diagnoseToday(); if (!host || !d) return;
+    var prev = marketCycles.filter(function(c){ return c.to != null && c.to < currentEra.from; }).pop();
+    var history = "The " + currentEra.name + ", year " + nowModel.yearIndex + " of a typical " + typicalCycleYears + "." +
+      (prev ? " Her last bleed closed the " + prev.name + " in " + prev.to + "." : "");
+    var work = [hiCard("History", "", history)].concat(DIAG_SYSTEMS.map(function(s){
+      var lines = s.doors.map(doorLine).filter(Boolean);
+      if (s.name === "Weather") lines.unshift("<b>" + seasonTitle(wheelMeta[d.season]) + "</b>, the " + d.half + " half of her cycle");
+      return hiCard(s.name, "", lines.join(" \u00b7 "));
+    }));
+    var assess = [
+      lede("Mrs. Market is in <b>" + d.stage + "</b>" + (d.carried ? ", the last feeling the record named" : "") + ", in the " + d.half + " half of her cycle."),
+      hiCard("How she feels", FEELING_STATE[d.stage], feelingFacts(d)),
+      hiCard("Posture: " + d.posture + expandBtn(diagnosisInfo(d)), POSTURE_STATE[d.posture], POSTURE_SAYS[d.posture] + ". " + recordLine(d)),
+      hiCard("In the body", "", BODY_SAYS[d.season] || ""),
+      hiCard("What to watch", "", watchList(d).join(" "))];
+    host.innerHTML = highlightsHtml(work, "", "", "Work-up") + highlightsHtml(assess, "", "", "Assessment");
+  }
+  function diagnosisSub(){
+    var d = diagnoseToday();
+    return d ? d.stage + " \u00b7 " + d.posture : "";
+  }
+  function repaintDiagnosis(){ put("diagnosis-sub", diagnosisSub()); }
+  function buildDiagnosis(){
+    var list = document.querySelector(".browse-list"), home = byId("today-analysis");
+    if (!list || !home || document.getElementById("sheet-diagnosis")) return;
+    list.appendChild(catRow("cat-row cat-wide", "sheet-diagnosis", "Diagnosis", stethoscopeSvg(), diagnosisSub(), "diagnosis-sub"));
+    var sheet = metricSheet("sheet-diagnosis");
+    sheet.innerHTML = '<div id="diagnosis-body"></div>';
+    home.appendChild(sheet);
+    sheetRenderers["sheet-diagnosis"] = renderDiagnosisPage;
+    addSources(DIAG_SRC);
+  }
+  GYN.step("buildDiagnosis", buildDiagnosis, "build"); buildDiagnosis();
 
   window.__sources = { all: allSources, cards: coincident.concat(lagging).map(function(c){ return {name:c.bodyTerm, src:c.src}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };

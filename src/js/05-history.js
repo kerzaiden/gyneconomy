@@ -13,7 +13,7 @@
     "pulse-range":             { mark:ecgSvg,     title:"Velocity of Money (M2)" },
     "hzn-range":               { mark:sunriseSvg, title:"" },
     "desire-range":            { mark:flameSvg,   title:"High-Yield Spread over Treasuries" },
-    "fear-range":              { mark:umbrellaSvg, title:"Cboe Volatility Index (VIX)" },
+    "fear-range":              { mark:volatilitySvg, title:"Cboe Volatility Index (VIX)" },
     "hormones-range":          { mark:hormoneSvg,  title:"Federal Funds Rate" },
     "pressure-range":          { mark:gaugeSvg,   title:"" }
   };

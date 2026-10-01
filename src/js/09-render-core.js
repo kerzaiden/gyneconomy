@@ -14,6 +14,12 @@
     }
     return idx;
   }
+  function metricSheet(id){
+    var sheet = document.createElement("div");
+    sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
+    return sheet;
+  }
+  function ledeHtml(text){ return '<p class="lede">' + text + '</p>'; }
   function facts(list){ return '<ul class="facts">' + list.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>'; }
   function factsFrom(text){
     var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);

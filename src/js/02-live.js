@@ -103,7 +103,7 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [repaintVolatility]
+      paint: [repaintVolatility, repaintDiagnosis]
     },
     vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ vix3mClose = v; }, onOpen: true },
     hyOasNow: {
