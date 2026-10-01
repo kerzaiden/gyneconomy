@@ -1140,7 +1140,6 @@
   }
   .hero-hit{ fill:transparent; }
 
-  .gdp-tooltip .row .sw.peer{ background:var(--peer); }
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
   .hovering .hcol{ opacity:0.38; }
@@ -15544,293 +15543,9 @@
     2024: 2.79,
     2025: 2.16
   };
-  var gdpPeers = [ {
-    code: "isr",
-    name: "Israel",
-    on: false,
-    q: {
-      "2005 Q1": 5.18,
-      "2005 Q2": 4.83,
-      "2005 Q3": 4.57,
-      "2005 Q4": 5.28,
-      "2006 Q1": 5.48,
-      "2006 Q2": 6.54,
-      "2006 Q3": 4.73,
-      "2006 Q4": 4.6,
-      "2007 Q1": 5.26,
-      "2007 Q2": 4.67,
-      "2007 Q3": 7.43,
-      "2007 Q4": 7.34,
-      "2008 Q1": 5.5,
-      "2008 Q2": 4.3,
-      "2008 Q3": 2.54,
-      "2008 Q4": .13,
-      "2009 Q1": .28,
-      "2009 Q2": .97,
-      "2009 Q3": 1.37,
-      "2009 Q4": 3.24,
-      "2010 Q1": 4.49,
-      "2010 Q2": 5.18,
-      "2010 Q3": 5.47,
-      "2010 Q4": 6.07,
-      "2011 Q1": 6.18,
-      "2011 Q2": 5.44,
-      "2011 Q3": 6.52,
-      "2011 Q4": 5.39,
-      "2012 Q1": 2.8,
-      "2012 Q2": 2.78,
-      "2012 Q3": 1.89,
-      "2012 Q4": 1.34,
-      "2013 Q1": 3.56,
-      "2013 Q2": 4.4,
-      "2013 Q3": 4.11,
-      "2013 Q4": 5.07,
-      "2014 Q1": 5.04,
-      "2014 Q2": 3.76,
-      "2014 Q3": 3.56,
-      "2014 Q4": 4.03,
-      "2015 Q1": 2.45,
-      "2015 Q2": 2.46,
-      "2015 Q3": 1.81,
-      "2015 Q4": 1.05,
-      "2016 Q1": 1.33,
-      "2016 Q2": 3.99,
-      "2016 Q3": 4.79,
-      "2016 Q4": 5.55,
-      "2017 Q1": 5.76,
-      "2017 Q2": 3.73,
-      "2017 Q3": 4.63,
-      "2017 Q4": 4.56,
-      "2018 Q1": 5.28,
-      "2018 Q2": 4.71,
-      "2018 Q3": 3.88,
-      "2018 Q4": 3.46,
-      "2019 Q1": 4.3,
-      "2019 Q2": 3.35,
-      "2019 Q3": 3.38,
-      "2019 Q4": 3.22,
-      "2020 Q1": -.73,
-      "2020 Q2": -8.08,
-      "2020 Q3": -.95,
-      "2020 Q4": 1.04,
-      "2021 Q1": 3.52,
-      "2021 Q2": 16.06,
-      "2021 Q3": 8.23,
-      "2021 Q4": 9.96,
-      "2022 Q1": 8.94,
-      "2022 Q2": 7.19,
-      "2022 Q3": 5.25,
-      "2022 Q4": 3.25,
-      "2023 Q1": 4.71,
-      "2023 Q2": 3.5,
-      "2023 Q3": 4.02,
-      "2023 Q4": -3.99,
-      "2024 Q1": -.72,
-      "2024 Q2": -1.42,
-      "2024 Q3": .26,
-      "2024 Q4": 6.19,
-      "2025 Q1": 3.49,
-      "2025 Q2": 2.56,
-      "2025 Q3": 4.11,
-      "2025 Q4": 4.73,
-      "2026 Q1": 2.63,
-      "2026 Q2": 7.34
-    }
-  }, {
-    code: "jpn",
-    name: "Japan",
-    on: false,
-    q: {
-      "2005 Q1": .72,
-      "2005 Q2": 1.76,
-      "2005 Q3": 2.11,
-      "2005 Q4": 2.79,
-      "2006 Q1": 2.24,
-      "2006 Q2": 1.54,
-      "2006 Q3": .62,
-      "2006 Q4": 1.69,
-      "2007 Q1": 2.34,
-      "2007 Q2": 2.22,
-      "2007 Q3": 1.56,
-      "2007 Q4": .78,
-      "2008 Q1": .27,
-      "2008 Q2": -.36,
-      "2008 Q3": -.82,
-      "2008 Q4": -3.72,
-      "2009 Q1": -8.18,
-      "2009 Q2": -6.71,
-      "2009 Q3": -6.27,
-      "2009 Q4": -2.45,
-      "2010 Q1": 3.34,
-      "2010 Q2": 3.61,
-      "2010 Q3": 6.08,
-      "2010 Q4": 3.51,
-      "2011 Q1": .77,
-      "2011 Q2": -1.23,
-      "2011 Q3": -.58,
-      "2011 Q4": .32,
-      "2012 Q1": 3.31,
-      "2012 Q2": 3.03,
-      "2012 Q3": .22,
-      "2012 Q4": .13,
-      "2013 Q1": -.12,
-      "2013 Q2": 1.86,
-      "2013 Q3": 3.23,
-      "2013 Q4": 3.15,
-      "2014 Q1": 2.9,
-      "2014 Q2": .4,
-      "2014 Q3": -.35,
-      "2014 Q4": .36,
-      "2015 Q1": .93,
-      "2015 Q2": 2.46,
-      "2015 Q3": 2.41,
-      "2015 Q4": 1.62,
-      "2016 Q1": .89,
-      "2016 Q2": .47,
-      "2016 Q3": .55,
-      "2016 Q4": .76,
-      "2017 Q1": .63,
-      "2017 Q2": 1.29,
-      "2017 Q3": 2.22,
-      "2017 Q4": 2.37,
-      "2018 Q1": 1.46,
-      "2018 Q2": 1.77,
-      "2018 Q3": .14,
-      "2018 Q4": .06,
-      "2019 Q1": .32,
-      "2019 Q2": .1,
-      "2019 Q3": .65,
-      "2019 Q4": -2.32,
-      "2020 Q1": -2.08,
-      "2020 Q2": -9.51,
-      "2020 Q3": -5.03,
-      "2020 Q4": -.6,
-      "2021 Q1": .25,
-      "2021 Q2": 8.69,
-      "2021 Q3": 3.29,
-      "2021 Q4": 2.81,
-      "2022 Q1": 1.15,
-      "2022 Q2": 1.5,
-      "2022 Q3": 1.42,
-      "2022 Q4": .74,
-      "2023 Q1": 2.07,
-      "2023 Q2": 1.17,
-      "2023 Q3": .17,
-      "2023 Q4": .15,
-      "2024 Q1": -.81,
-      "2024 Q2": -.99,
-      "2024 Q3": 1.1,
-      "2024 Q4": 1.02,
-      "2025 Q1": 1.63,
-      "2025 Q2": 1.87,
-      "2025 Q3": .65,
-      "2025 Q4": .51,
-      "2026 Q1": .49,
-      "2026 Q2": .73
-    }
-  }, {
-    code: "eu",
-    name: "European Union",
-    on: false,
-    q: {
-      "2005 Q1": 1.7,
-      "2005 Q2": 1.7,
-      "2005 Q3": 2.3,
-      "2005 Q4": 2.5,
-      "2006 Q1": 3.3,
-      "2006 Q2": 3.8,
-      "2006 Q3": 3.6,
-      "2006 Q4": 3.9,
-      "2007 Q1": 3.7,
-      "2007 Q2": 3.1,
-      "2007 Q3": 3,
-      "2007 Q4": 2.6,
-      "2008 Q1": 2.4,
-      "2008 Q2": 1.3,
-      "2008 Q3": .4,
-      "2008 Q4": -2,
-      "2009 Q1": -5.5,
-      "2009 Q2": -5.1,
-      "2009 Q3": -4.2,
-      "2009 Q4": -2.1,
-      "2010 Q1": 1.2,
-      "2010 Q2": 2.2,
-      "2010 Q3": 2.3,
-      "2010 Q4": 2.4,
-      "2011 Q1": 3.1,
-      "2011 Q2": 2.2,
-      "2011 Q3": 1.8,
-      "2011 Q4": .8,
-      "2012 Q1": -.3,
-      "2012 Q2": -.7,
-      "2012 Q3": -.9,
-      "2012 Q4": -1,
-      "2013 Q1": -1.1,
-      "2013 Q2": -.1,
-      "2013 Q3": .3,
-      "2013 Q4": 1,
-      "2014 Q1": 1.8,
-      "2014 Q2": 1.4,
-      "2014 Q3": 1.6,
-      "2014 Q4": 1.8,
-      "2015 Q1": 2.1,
-      "2015 Q2": 2.4,
-      "2015 Q3": 2.3,
-      "2015 Q4": 2.4,
-      "2016 Q1": 2,
-      "2016 Q2": 1.7,
-      "2016 Q3": 1.8,
-      "2016 Q4": 2.1,
-      "2017 Q1": 2.5,
-      "2017 Q2": 3,
-      "2017 Q3": 3.2,
-      "2017 Q4": 3.2,
-      "2018 Q1": 2.5,
-      "2018 Q2": 2.3,
-      "2018 Q3": 1.8,
-      "2018 Q4": 1.5,
-      "2019 Q1": 2.1,
-      "2019 Q2": 2,
-      "2019 Q3": 2,
-      "2019 Q4": 1.5,
-      "2020 Q1": -2.1,
-      "2020 Q2": -13.1,
-      "2020 Q3": -3.9,
-      "2020 Q4": -3.6,
-      "2021 Q1": .2,
-      "2021 Q2": 14.7,
-      "2021 Q3": 5.3,
-      "2021 Q4": 5.8,
-      "2022 Q1": 5.5,
-      "2022 Q2": 4.2,
-      "2022 Q3": 3,
-      "2022 Q4": 1.9,
-      "2023 Q1": 1.1,
-      "2023 Q2": .4,
-      "2023 Q3": .2,
-      "2023 Q4": .4,
-      "2024 Q1": 1,
-      "2024 Q2": 1.1,
-      "2024 Q3": 1.3,
-      "2024 Q4": 1.8,
-      "2025 Q1": 1.7,
-      "2025 Q2": 1.6,
-      "2025 Q3": 1.4,
-      "2025 Q4": 1.3,
-      "2026 Q1": .9,
-      "2026 Q2": 1.4
-    }
-  } ];
   var gdpSrc = [ {
     t: "World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)",
     u: "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"
-  } ];
-  var gdpPeerSrc = [ {
-    t: "OECD — Quarterly National Accounts, real GDP, growth on the same quarter a year earlier (Israel, Japan)",
-    u: "https://data-explorer.oecd.org/vis?df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_NAMAIN1%40DF_QNA_EXPENDITURE_GROWTH_OECD"
-  }, {
-    t: "Eurostat — GDP and main aggregates, quarterly (namq_10_gdp), European Union",
-    u: "https://ec.europa.eu/eurostat/databrowser/view/namq_10_gdp/default/table"
   } ];
   var labPanel = [ {
     marker: "Federal debt",
@@ -18090,11 +17805,6 @@
         GYN.fire("pickSeries", null, mat);
         return;
       }
-      var peer = pick.getAttribute("data-gdp-peer");
-      if (peer != null) {
-        GYN.fire("pickPeer", peer);
-        return;
-      }
       GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
       return;
     }
@@ -20091,21 +19801,6 @@
     });
     return out;
   }();
-  function regimeTrack(series) {
-    var qs = Object.keys(series).sort(), out = {}, prev;
-    qs.forEach(function(q, i) {
-      if (i < GROWTH_WINDOW - 1) return;
-      var slope = slopeOf(qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k) {
-        return series[k];
-      }));
-      out[q] = slope < -.025 ? "contraction" : slope > .025 ? "expansion" : prev || "expansion";
-      prev = out[q];
-    });
-    return out;
-  }
-  gdpPeers.forEach(function(c) {
-    c.regime = regimeTrack(c.q);
-  });
   var regimeByQ = function() {
     var out = {};
     seasonTrackAll.forEach(function(e) {
@@ -20591,7 +20286,6 @@
     });
   }
   addSources(gdpSrc);
-  addSources(gdpPeerSrc);
   function clampPct(v, lo, hi) {
     return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
   }
@@ -22354,51 +22048,16 @@
     if (v < 1) return "s0";
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
-  var growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading, the direction of the trend through the last six quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.", "The ⋯ menu switches the economy — the United States, Israel, Japan or the European Union, one at a time." ]) + srcBlock(gdpSrc.concat([ {
+  var growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading, the direction of the trend through the last six quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
     t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
     u: "https://fred.stlouisfed.org/series/GDPC1"
-  } ]).concat(gdpPeerSrc));
+  } ]));
   function renderCycleView(m) {
     drawDial(m);
     shownEraModel = m;
     shownEra = m.era;
     renderDiagnosis(m);
   }
-  function peerChosen() {
-    return gdpPeers.filter(function(c) {
-      return c.on;
-    })[0] || null;
-  }
-  function peerReaches(m) {
-    return !!m && gdpPeers.some(function(c) {
-      return Object.keys(c.q).some(function(k) {
-        var yr = parseInt(k, 10);
-        return yr >= m.era.from && yr <= m.endYear;
-      });
-    });
-  }
-  HIST_HEAD["sheet-metric-gdp"].menu = function() {
-    if (!peerReaches(shownEraModel)) return [];
-    var on = peerChosen();
-    function row(sel, code, label) {
-      return '<button type="button" class="cycsel-opt bh-pick' + (sel ? " on" : "") + '" role="menuitemradio" aria-checked="' + (sel ? "true" : "false") + '" data-gdp-peer="' + code + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
-    }
-    return [ {
-      key: "economy",
-      label: "Economy",
-      on: true,
-      value: on ? on.name : "United States",
-      rows: row(!on, "", "United States") + gdpPeers.map(function(c) {
-        return row(!!c.on, c.code, c.name);
-      }).join("")
-    } ];
-  };
-  GYN.on("pickPeer", function(code) {
-    gdpPeers.forEach(function(c) {
-      c.on = c.code === code;
-    });
-    put("gdp-head", histHead("sheet-metric-gdp"));
-  });
   var shownEraModel = null;
   function showCycle(era) {
     if (shownEra !== era) renderCycleView(cycleModel(era));

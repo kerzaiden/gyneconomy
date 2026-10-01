@@ -85,8 +85,6 @@
       headMenuFor = null; headSubFor = null; paintHeadMenus();
       var mat = pick.getAttribute("data-ylm-mat");
       if (mat){ GYN.fire("pickSeries", null, mat); return; }
-      var peer = pick.getAttribute("data-gdp-peer");
-      if (peer != null){ GYN.fire("pickPeer", peer); return; }
       GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
       return;
     }

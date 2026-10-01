@@ -218,34 +218,6 @@ async function openPage(p, url, sheet) {
     await gp.close();
   }
 
-  {
-    const pp = await b.newPage({ viewport: { width: 414, height: 1000 } });
-    watch(pp, 'economy menu');
-    await pp.goto('file://' + url); await ready(pp);
-    const gone = await pp.evaluate(() => !document.getElementById('growth-peers') &&
-                                         !document.querySelector('.peer-picker'));
-    let root = [], picks = [], after = [];
-    if (await openPage(pp, url, 'sheet-metric-gdp')) {
-      await pp.evaluate(() => document.querySelector('.bh-more[data-head-more="sheet-metric-gdp"]').click());
-      await settle(pp);
-      root = await pp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.textContent.trim()));
-      if (root.length) {
-        await pp.click('[data-head-grp="economy"]'); await settle(pp);
-        picks = await pp.evaluate(() => [...document.querySelectorAll('.bh-pick')].map(n => n.textContent.trim()));
-        await pp.evaluate(() => document.querySelectorAll('.bh-pick')[1].click());
-        await settle(pp);
-        after = await pp.evaluate(() => {
-          document.querySelector('.bh-more[data-head-more="sheet-metric-gdp"]').click();
-          return [...document.querySelectorAll('.bh-grp-row')].map(n => n.textContent.trim());
-        });
-      }
-    }
-    (gone && root.length === 1 && /^Economy/.test(root[0]) && picks.length > 2 &&
-     picks[0] === 'United States' && after.length === 1 && after[0] !== root[0])
-      ? ok('growth economy sits in the head menu', root[0] + ' -> ' + after[0])
-      : bad('growth economy sits in the head menu', JSON.stringify({ gone, root, picks, after }));
-    await pp.close();
-  }
 
   {
     const misses = await p.evaluate(() => (window.__geomMiss || []).slice(0, 6));

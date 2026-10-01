@@ -1147,7 +1147,6 @@
   }
   .hero-hit{ fill:transparent; }
 
-  .gdp-tooltip .row .sw.peer{ background:var(--peer); }
   .hist-tip{ position:fixed; transform:translate(-50%,-100%); z-index:40; }
   .vh-host .temp-col, .vh-host .growth-col{ transition:opacity 0.08s; }
   .hovering .hcol{ opacity:0.38; }
