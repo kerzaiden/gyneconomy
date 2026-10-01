@@ -24756,7 +24756,6 @@
       rows: [ {
         name: "Temperature",
         open: "sheet-metric-temp",
-        on: "m",
         mark: thermoSvg,
         list: byM(cpiYoYHistory),
         dp: 1,
@@ -24764,7 +24763,6 @@
       }, {
         name: "Growth",
         open: "sheet-metric-gdp",
-        on: "q",
         mark: sproutSvg,
         list: byQ(gdpQuarterlyYoY),
         dp: 1,
@@ -24777,7 +24775,6 @@
       rows: [ {
         name: "Hormones",
         open: "sheet-sign-hormones",
-        on: "m",
         mark: hormoneSvg,
         list: byM(fedFundsHistory),
         dp: 2,
@@ -24787,7 +24784,6 @@
       }, {
         name: "Pressure",
         open: "sheet-sign-pressure",
-        on: "q",
         mark: gaugeSvg,
         list: byQ(t10yYieldHistory),
         dp: 2,
@@ -24796,7 +24792,6 @@
       }, {
         name: "Pulse",
         open: "sheet-sign-pulse",
-        on: "q",
         mark: ecgSvg,
         list: qFrom(m2vHistory, M2V_FROM_YEAR),
         dp: 2,
@@ -24804,7 +24799,6 @@
       }, {
         name: "Volume",
         open: "sheet-sign-volume",
-        on: "q",
         mark: volumeSvg,
         list: qFrom(m2Yoy, M2_FROM_YEAR),
         dp: 1,
@@ -24818,7 +24812,6 @@
       rows: [ {
         name: "Shiller CAPE",
         open: "sheet-metric-valuation",
-        on: "y",
         mark: diamondSvg,
         list: byY(capeHistory),
         dp: 1,
@@ -24828,7 +24821,6 @@
       }, {
         name: "Buffett indicator",
         open: "sheet-metric-buffett",
-        on: "q",
         mark: diamondSvg,
         list: byQ(buffettHistory),
         dp: 0,
@@ -24837,7 +24829,6 @@
       }, {
         name: "Volatility",
         open: "sheet-sign-sentiment",
-        on: "m",
         mark: volatilitySvg,
         list: byM(volatilityHistory),
         dp: 1,
@@ -24845,7 +24836,6 @@
       }, {
         name: "Desire",
         open: "sheet-sign-desire",
-        on: "m",
         mark: flameSvg,
         list: hyList,
         dp: 2,
@@ -24854,7 +24844,6 @@
       }, {
         name: "Horizon",
         open: "sheet-sign-horizon",
-        on: "q",
         mark: sunriseSvg,
         list: byQ(t10y3mHistory),
         dp: 2,
@@ -24868,7 +24857,6 @@
       rows: [ {
         name: "Federal debt",
         open: "sheet-metric-debt",
-        on: "q",
         mark: debtSvg,
         list: byQ(grossDebtQuarterly),
         dp: 0,
@@ -24877,7 +24865,6 @@
       }, {
         name: "Interest payments",
         open: "sheet-metric-interest",
-        on: "y",
         mark: interestSvg,
         list: byY(fiscalHistory.interest),
         dp: 1,
@@ -24886,7 +24873,6 @@
       }, {
         name: "Federal budget",
         open: "sheet-marker-deficit",
-        on: "y",
         mark: budgetSvg,
         list: deficitHistory.map(function(v, i) {
           return {
@@ -24902,7 +24888,6 @@
       }, {
         name: "Households",
         open: "sheet-metric-households",
-        on: "q",
         mark: houseSvg,
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
         dp: 1,
@@ -24912,7 +24897,6 @@
       }, {
         name: "Unemployment rate",
         open: "sheet-sign-activity",
-        on: "m",
         mark: trendUpSvg,
         list: byM(unempHistory),
         dp: 1,
@@ -24920,7 +24904,6 @@
       } ].concat(typeof productivityHistory === "undefined" || !productivityHistory.length ? [] : [ {
         name: "Productivity growth",
         open: "sheet-sign-productivity-growth",
-        on: "q",
         mark: clockSvg,
         list: byQ(productivityHistory),
         dp: 1,

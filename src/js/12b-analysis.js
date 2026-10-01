@@ -170,30 +170,30 @@
   function rosterGroups(byM, byQ, byY, qFrom, hyList){
     return [
       { key:"weather", label:"Weather", mark:weatherSvg, rows:[
-        { name:"Temperature", open:"sheet-metric-temp", on:"m", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
-        { name:"Growth", open:"sheet-metric-gdp",      on:"q", mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
+        { name:"Temperature", open:"sheet-metric-temp", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
+        { name:"Growth", open:"sheet-metric-gdp",      mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
       ]},
       { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
-        { name:"Hormones", open:"sheet-sign-hormones",    on:"m", mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%", rule:true, eraUnit:"Fed funds rate" },
-        { name:"Pressure", open:"sheet-sign-pressure",    on:"q", mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%", rule:true },
-        { name:"Pulse", open:"sheet-sign-pulse",       on:"q", mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2, pulse:PULSE_PRE2008 },
-        { name:"Volume", open:"sheet-sign-volume",      on:"q", mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%", rule:true }
+        { name:"Hormones", open:"sheet-sign-hormones",    mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%", rule:true, eraUnit:"Fed funds rate" },
+        { name:"Pressure", open:"sheet-sign-pressure",    mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%", rule:true },
+        { name:"Pulse", open:"sheet-sign-pulse",       mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2, pulse:PULSE_PRE2008 },
+        { name:"Volume", open:"sheet-sign-volume",      mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%", rule:true }
       ]},
       { key:"mood", label:"Mood", mark:moodSvg, rows:[
-        { name:"Shiller CAPE", open:"sheet-metric-valuation", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today", base:CAPE_FAIR },
-        { name:"Buffett indicator", open:"sheet-metric-buffett", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%", base:splitMid("sheet-metric-buffett") },
-        { name:"Volatility", open:"sheet-sign-sentiment",  on:"m", mark:volatilitySvg, list:byM(volatilityHistory),       dp:1, ring:vixPct },
-        { name:"Desire", open:"sheet-sign-desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%", peek:hyQuarterEnds() },
-        { name:"Horizon", open:"sheet-sign-horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true, rule:true }
+        { name:"Shiller CAPE", open:"sheet-metric-valuation", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today", base:CAPE_FAIR },
+        { name:"Buffett indicator", open:"sheet-metric-buffett", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%", base:splitMid("sheet-metric-buffett") },
+        { name:"Volatility", open:"sheet-sign-sentiment",  mark:volatilitySvg, list:byM(volatilityHistory),       dp:1, ring:vixPct },
+        { name:"Desire", open:"sheet-sign-desire",      mark:flameSvg,    list:hyList,                       dp:2, unit:"%", peek:hyQuarterEnds() },
+        { name:"Horizon", open:"sheet-sign-horizon",     mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true, rule:true }
       ]},
       { key:"energy", label:"Energy", mark:boltSvg, rows:[
-        { name:"Federal debt", open:"sheet-metric-debt", on:"q", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%", base:splitMid("sheet-metric-debt") },
-        { name:"Interest payments", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
-        { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
-        { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
-        { name:"Unemployment rate", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
+        { name:"Federal debt", open:"sheet-metric-debt", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%", base:splitMid("sheet-metric-debt") },
+        { name:"Interest payments", open:"sheet-metric-interest", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
+        { name:"Federal budget", open:"sheet-marker-deficit", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
+        { name:"Households", open:"sheet-metric-households",  mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
+        { name:"Unemployment rate", open:"sheet-sign-activity",    mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
       ].concat(typeof productivityHistory === "undefined" || !productivityHistory.length ? [] :
-        [{ name:"Productivity growth", open:"sheet-sign-productivity-growth", on:"q", mark:clockSvg, list:byQ(productivityHistory), dp:1, unit:"%" }])}
+        [{ name:"Productivity growth", open:"sheet-sign-productivity-growth", mark:clockSvg, list:byQ(productivityHistory), dp:1, unit:"%" }])}
     ];
   }
   var __roster = null;
