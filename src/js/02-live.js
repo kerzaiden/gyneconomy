@@ -103,7 +103,7 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [repaintVolatility, repaintDiagnosis]
+      paint: [repaintVolatility]
     },
     vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ vix3mClose = v; }, onOpen: true },
     hyOasNow: {
@@ -174,7 +174,7 @@
       if (!shapeOk(r, value)) return false;
       r.set(value);
     } catch (e) { return false; }
-    (r.paint || []).forEach(function(fn){
+    (r.paint || []).concat(repaintDiagnosis).forEach(function(fn){
       try { fn(); } catch (e) { if (window.console) console.warn("repaint " + name + " failed", e); }
     });
     return true;

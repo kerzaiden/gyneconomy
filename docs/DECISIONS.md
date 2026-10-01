@@ -6949,4 +6949,7 @@ the analysis is not the same as the main current cycle page … in terms of comp
 the same thing because it's supposed to be identical." A past cycle had an extra wrapper (a slot) that took away the
 gap; the cycle and its analysis now sit straight in the past cycle's page, which shares the tab panel's stack rule,
 and the suite compares the two frames.
+And: "make sure our test suite is effective and we're not over-testing the app." The audit found the Diagnosis kept
+the old CAPE and Fed rate when fresh data arrived (only the VIX repainted it); every live reading now repaints it,
+and the door checks read the Diagnosis too. The rest of the audit is a proposal for her.
 ~~~

@@ -15297,7 +15297,7 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [ repaintVolatility, repaintDiagnosis ]
+      paint: [ repaintVolatility ]
     },
     vix3mClose: {
       kind: "scalar",
@@ -15385,7 +15385,7 @@
     } catch (e) {
       return false;
     }
-    (r.paint || []).forEach(function(fn) {
+    (r.paint || []).concat(repaintDiagnosis).forEach(function(fn) {
       try {
         fn();
       } catch (e) {

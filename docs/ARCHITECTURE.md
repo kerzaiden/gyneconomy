@@ -459,8 +459,10 @@ verdict word (verdicts are today's words), the Analysis as the movement across t
 followed a year later. Search builds its category heads from `categoryCats()` now that the hub cards are gone.
 
 - **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
-  (`readDoor` on `.cat-item[data-open]`), so a repaint of a reading is a repaint of the Diagnosis the next time
-  it opens. The page draws on open, through `sheetRenderers`.
+  (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
+  `applyLive` runs `repaintDiagnosis` after the reading's own painters, so no reading needs to list it (V665:
+  it sat on the VIX's list alone, and CAPE, which lands after the VIX, stayed a day behind on every load). A
+  past cycle's Diagnosis is its close and is left as it is.
 - **The feeling is the market chart's seven words** (V664, reversing V236): Hope, Optimism, Euphoria, Anxiety,
   Fear, Capitulation, Despondency. `readFeeling` in 08-model names one from facts knowable that month, in this
   order, first match wins: Capitulation, Fear, Despondency, Anxiety, Hope, Euphoria, Optimism; a month no rule
