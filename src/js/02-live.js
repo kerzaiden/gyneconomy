@@ -46,11 +46,9 @@
     return painted;
   }
 
-  function repaintFearCurve(){
-    var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "\u2014" : r.toFixed(2);
-    var ring = put("subj-ring-sentiment", vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading"
-      : "Fear curve at " + txt + ", where 1.00 is flat"));
-    paintReading("sheet-sign-sentiment", txt, tag);
+  function repaintVolatility(){
+    put("subj-ring-sentiment", volatilityRing());
+    paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintHorizonRow(){
     var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
@@ -105,10 +103,9 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [repaintFearCurve]
+      paint: [repaintVolatility]
     },
-    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ vix3mClose = v; },
-                  paint: [repaintFearCurve] },
+    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ vix3mClose = v; }, onOpen: true },
     hyOasNow: {
       kind: "scalar", band: [1, 30],
       set: function(v){

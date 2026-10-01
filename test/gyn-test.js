@@ -415,7 +415,7 @@ async function openPage(p, url, sheet) {
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.click('#topbar-back'); await p.waitForTimeout(300);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Fear+Desire+Horizon' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
@@ -666,7 +666,7 @@ async function openPage(p, url, sheet) {
       const rv = await g.evaluate(() => {
         const G = window.__GYN;
         return {
-          fg: G.applyLive('vix3mClose', 12),
+          fg: G.applyLive('vixClose', 31),
           yc: G.applyLive('yieldCurve', [{m:'3M',y:5.55},{m:'2Y',y:4.60},{m:'10Y',y:4.05}]),
           nul: G.applyLive('vix3mClose', null),
           bad: G.applyLive('vix3mClose', { nope: 1 }),
@@ -676,11 +676,11 @@ async function openPage(p, url, sheet) {
       await g.waitForTimeout(250);
       const after = await read();
 
-      (rv.fg && /^1\.18/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
-        ? ok('repaint fear curve figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
-        : bad('repaint fear curve figure', JSON.stringify(after.sentiment));
+      (rv.fg && /^31\.0/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
+        ? ok('repaint volatility figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
+        : bad('repaint volatility figure', JSON.stringify(after.sentiment));
 
-      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Inverted')
+      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Fearful')
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 

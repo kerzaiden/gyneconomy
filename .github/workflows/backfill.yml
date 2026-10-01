@@ -45,7 +45,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/js/03b-history-fred.js index.html docs/MAP.md docs/COMPONENTS.md
-          git commit -m "Backfill: Fed funds, the fear curve, the OMB fiscal series and the Treasury quarters, from FRED (fetched $(date -u +%F))"
+          git commit -m "Backfill: Fed funds, the VIX and VXO, the OMB fiscal series, the Treasury quarters and productivity, from FRED (fetched $(date -u +%F))"
           git push
           echo "pushed=yes" >> "$GITHUB_OUTPUT"
           echo "::warning title=Artifact behind::index.html changed on this branch; a Claude session must republish the artifact from it"

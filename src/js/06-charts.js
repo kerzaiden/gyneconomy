@@ -54,19 +54,17 @@
   ];
 
   var vixRow = sentiment.rows[0];
-  var vixWordOf = function(v, m){
-    var e = m.ends || {}, o = m.optimal || {};
-    return v < o.from ? (e.low || "Low") : v > o.to ? (e.high || "High") : (e.zone || "Usual");
-  };
-  var vixInd = {
-    bodyTerm:"VIX", econTerm:"The fear index",
-    tag:{ text:vixWordOf(vixRow.meter.value, vixRow.meter),
-          state:(function(v, m){ var o = m.optimal || {};
-            return v < o.from ? "warning" : v > o.to ? "critical" : "good"; })(vixRow.meter.value, vixRow.meter) },
-    metric:vixRow.flagValue, metricSub:"Cboe VIX, " + vixRow.sub,
-    meter:vixRow.meter, shortCaption:vixRow.shortNote, caption:vixRow.note,
-    src:sentiment.src.filter(function(x){ return /cboe|vix/i.test(x.t); })
-  };
+  var VIX_CALM = 20, VIX_FEAR = 30;
+  var VIX_CONVENTION = [
+    {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
+    {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
+  ];
+  function volatilityTag(){
+    var v = vixRow.meter.value;
+    return v < VIX_CALM ? { text:"Calm", state:"good" }
+         : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
+                         : { text:"Fearful", state:"critical" };
+  }
 
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
   var tempInfo = '<h4>Temperature</h4>' +
