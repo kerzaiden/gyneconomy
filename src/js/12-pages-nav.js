@@ -4,7 +4,7 @@
     [{ key:"hormones", title:"Hormones", timing:"leading" },
      { key:"pressure", title:"Pressure", timing:"leading" },
      { key:"horizon", title:"Horizon", timing:"leading" },
-     { key:"sentiment", title:"Fear", timing:"leading" }].forEach(function(cfg){
+     { key:"sentiment", title:"Volatility", timing:"leading" }].forEach(function(cfg){
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
       var id = "sheet-sign-" + cfg.key;

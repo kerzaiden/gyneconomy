@@ -221,10 +221,11 @@
     2014:13.69, 2015:1.38, 2016:11.96, 2017:21.83, 2018:-4.38, 2019:31.49, 2020:18.40, 2021:28.71,
     2022:-18.11, 2023:26.29, 2024:25.02, 2025:17.88, 2026:14.40
   };
-  var curveNow = fearCurve();
-  var curveTag = curveVerdict(curveNow);
   var curveSub = "Cboe, " + vixRow.sub;
-  function curvePct(r){ return r == null ? 0 : Math.max(0, Math.min(100, (r - 0.8) / 0.4 * 100)); }
+  function vixPct(v){
+    var m = vixRow.meter;
+    return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
+  }
   var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the SHAPE of expected volatility rather " +
     "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " +
     "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " +
@@ -235,13 +236,26 @@
     "braced for something close. Read contrarian, like the rest of this panel \u2014 an inversion is uncomfortable " +
     "and inversions cluster near bottoms, while a very steep curve is the market paying almost nothing to be " +
     "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " +
-    "the same VIX the row below prints." +
-    (curveNow == null ? " No reading today: one of the two legs is missing."
-      : " Today " + curveNow.toFixed(2) + " \u2014 " + (curveNow >= 1
-          ? "inverted, with the near month priced above the three-month."
-          : "the ordinary upward slope, with the near month priced below the three-month."));
-  function curveDetailHtml(){
-    return '<h4>Fear curve</h4><div class="marker-sub">' + curveSub + '</div>' + factsFrom(curveNoteFull);
+    "the same VIX this page prints.";
+  function volatilityRing(){
+    var m = vixRow.meter;
+    return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value.toFixed(2) + ", between its record low of " +
+      m.min + " and its record high of " + m.max);
+  }
+  var VOL_JOIN = "1990-01";
+  function volatilityDetailHtml(){
+    var m = vixRow.meter;
+    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + '</div>' + facts([
+      'The <b>VIX</b> is Cboe\u2019s volatility index: what options traders pay to insure the S&amp;P 500 against a fall ' +
+        'over the next thirty days, as an annual rate.',
+      'It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near ' +
+        'bottoms, complacency near tops.',
+      'The chart is the <b>monthly average of daily closes</b>. Before ' + monthLabel(VOL_JOIN) + ' it is the <b>VXO</b>, ' +
+        'Cboe\u2019s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.',
+      'The line at <b>' + m.optimal.to + '</b> is the top of the usual band, ' + m.optimal.label + ': an editorial line, ' +
+        'not a published one.',
+      'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
+    ]) + srcBlock(sentiment.src);
   }
 
   var sp500AnnualReturnSource = [

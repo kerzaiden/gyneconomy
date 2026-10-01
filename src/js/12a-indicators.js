@@ -150,7 +150,7 @@
       { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
         picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
                '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-      { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Fear · Desire · Horizon",
+      { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Volatility · Desire · Horizon",
         picks:[{ group:"Valuations", picks:['.peek[data-open="sheet-metric-valuation"]', '.peek[data-open="sheet-metric-buffett"]'] },
                '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]',
                '.sign-row[data-open="sheet-sign-horizon"]'] },

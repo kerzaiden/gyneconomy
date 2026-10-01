@@ -58,15 +58,10 @@
     var e = m.ends || {}, o = m.optimal || {};
     return v < o.from ? (e.low || "Low") : v > o.to ? (e.high || "High") : (e.zone || "Usual");
   };
-  var vixInd = {
-    bodyTerm:"VIX", econTerm:"The fear index",
-    tag:{ text:vixWordOf(vixRow.meter.value, vixRow.meter),
-          state:(function(v, m){ var o = m.optimal || {};
-            return v < o.from ? "warning" : v > o.to ? "critical" : "good"; })(vixRow.meter.value, vixRow.meter) },
-    metric:vixRow.flagValue, metricSub:"Cboe VIX, " + vixRow.sub,
-    meter:vixRow.meter, shortCaption:vixRow.shortNote, caption:vixRow.note,
-    src:sentiment.src.filter(function(x){ return /cboe|vix/i.test(x.t); })
-  };
+  function volatilityTag(){
+    var m = vixRow.meter, o = m.optimal || {};
+    return { text:vixWordOf(m.value, m), state:m.value < o.from ? "warning" : m.value > o.to ? "critical" : "good" };
+  }
 
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
   var tempInfo = '<h4>Temperature</h4>' +
