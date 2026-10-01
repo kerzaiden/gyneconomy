@@ -556,7 +556,7 @@ async function openPage(p, url, sheet) {
     await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
     await settle(p);
     const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({
-      name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
+      open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
@@ -572,7 +572,8 @@ async function openPage(p, url, sheet) {
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
-    (blank.map(i => i.name).sort().join() === 'Desire,Industrial output' &&
+    const noHistory = got ? got.filter(i => i.word === 'No history in the app').map(i => i.open) : [];
+    (blank.length && noHistory.every(o => NO_HISTORY.includes(o)) &&
      blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)))
       ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · '))
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));

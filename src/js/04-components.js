@@ -7,8 +7,7 @@
     { key:"10y",    label:"10Y", span:10 },
     { key:"25y",    label:"25Y", span:25 },
     { key:"max",    label:"Max", span:Infinity },
-    { key:"cycles", label:"Cycles" },
-    { key:"yoy",    label:"Year on year" }
+    { key:"cycles", label:"Cycles" }
   ];
   /* ---- Keren, V410: "when we look at the current cycle and click any one of the KPIs, I would assume as ---- */
   function cycleSpanYears(){
@@ -361,7 +360,7 @@
           'screen even when 1983 is off the left edge. Today\u2019s is five years past the last recession and has not closed.',
         'There have been <b>' + surCount + ' surplus years</b> since ' + DEF_FROM_YEAR + ', none since FY' +
           (DEF_FROM_YEAR + iSur) + '. The average across the whole series is ' + DEF_MEAN.toFixed(1) + '%.',
-        'The chart ends at FY' + lastY + ', the last actual \u2014 the Deficit rate row this page opens from carries ' +
+        'The chart ends at FY' + lastY + ', the last actual \u2014 the Federal budget card carries ' +
           'CBO\u2019s projection for the year in progress, which is why the two figures differ.',
         'The chart starts at <b>FY' + DEF_FROM_YEAR + '</b> because peacetime is the only frame in which 1983 and ' +
           'today are comparable at all. The wartime record sits outside it and is stated rather than drawn: ' +

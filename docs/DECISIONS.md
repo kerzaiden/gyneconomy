@@ -17,8 +17,8 @@ git show v648-treasury-quarters:src/js/07-forms.js
 
 To add a decision, state it under its topic in the same form: the rule in bold, the reason in her words, the
 version. When a new decision overturns a rule here, rewrite that rule rather than adding a contradiction, and
-keep its older versions in the citation. Her full words go in the commit message. A rule marked "(check: …)" is
-one whose scope, or the code, is in doubt; it waits for Keren.
+keep its older versions in the citation. Her full words go in the commit message. A rule whose scope, or the
+code, is in doubt is marked "(check: …)" until Keren settles it; none is open after V668.
 
 ## Voice and wording
 
@@ -205,8 +205,8 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   economy and on the reading in the app's terms, then any facts in rows underneath.** Keren asked for
   Pressure's Insights "in accordance to the rules we based about biology, economy, and gyneconomy"; the lede
   carries no figure, so it gets no state tag. Hormones' FOMC facts (target, last move, first hike, next
-  decision) sit under its cards. (check: V429 made the lede a one-sentence definition; V609 and V640 make it
-  the biology in two sentences.) (V429, V609, V640)
+  decision) sit under its cards. The lede is the biology, at whatever length it needs, still with no figure and no
+  verdict tag; Keren confirmed it over V429's one-sentence definition. (V429, V609, V640, V668)
 - **Insights are short: prose first, the facts under it in the same section, and no idea said twice.** Keren:
   "merge that into the insight and make the text short and concise"; Horizon's commentary lost two thirds of
   its length and none of its figures. (V603)
@@ -361,7 +361,8 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   carry the book's fertility names, and none is invented for the others until the manuscript supplies one.
   (undated, Sep 16–19, 2026)
 - **The Season Model table runs in colour order: the blues first (Winter, then the two Springs), then the
-  oranges (Summer, then the two Autumns).** Keren's order. (V193)
+  oranges (Summer, then the two Autumns).** Keren's order; the lists keep the cycle's order above, and she
+  confirmed both at V668. (V193, V668)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
 - **Growth's direction is the trend of real GDP year over year across the last six quarters (±0.025 pp a
@@ -485,8 +486,8 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   been promoted to a "normal range"; the (i) states them and their sources. (V480)
 - **The Risk/Reward grid on Desire puts risk (CAPE) up the side and reward (the high-yield spread) along the
   bottom, inside an L of axis rules; it is a position on two axes, not a computed ratio, and its note says
-  so.** The L is what Keren meant by "borderlines outside the metric". (check: the chart is titled "Risk /
-  Reward Ratio" in the source.) (V343)
+  so; it is titled "Risk / Reward", never "Ratio".** The L is what Keren meant by "borderlines outside the
+  metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
@@ -515,6 +516,10 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 - **A combined reading (such as Volume × Pulse, M×V = P×Y) must hold in economics, not only in anatomy, and
   carries no state colour.** "The body is how an insight is explained, never how it is derived"; whether the
   two moving together is good is a judgement the card does not make. (V452)
+- **Productivity growth's word follows the two BLS lines its note cites: at or above 2.1% (the 1947–2018
+  average) it is Above trend, at or above 1.3% (the slowdown-era average) Above the slowdown, below that Below
+  the slowdown; the captions and the note follow the word.** Keren chose a rule from the BLS lines over setting
+  the word each quarter. (V668)
 
 ## History charts
 
@@ -577,8 +582,8 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   Pulse hangs from the pre-2008 mean, Volatility from the band's top at 20.** Columns out of zero would spend
   most of the plot on a region the series never visits. (V500, V663)
 - **No shaded band behind a history; the columns are coloured by the band instead.** A column coloured by the
-  band says which side and how far, one reading at a time. (check: the Federal budget chart still shades
-  recession years.) (V500)
+  band says which side and how far, one reading at a time. The one named exception is the Federal budget, whose
+  fiscal years with a recession are shaded, because recessions explain deficits (Keren, V668). (V500, V668)
 - **The space above the chart and the space below it to the trend pill are equal, and the gap under whatever
   ends a history card equals the card's own top padding.** Keren: "the same to the trend button, so it's
   symmetrical"; "I want the top padding and the bottom padding to be equal." (V559, V571)
@@ -684,9 +689,9 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   that mean nearly the same thing are worse than one. (V363, V411, V419, V476)
 - **5Y is a standard stop.** Keren: "add five year to the ruler, because that's the standard visual most
   economists use." (V362, V372)
-- **Growth's ruler offers only time windows (5Y, 10Y, 25Y, Max), with no "Year on year" stop; the year-on-year
-  view is kept in the code on purpose, so adding the stop back restores it.** Keren: "drop the this cycle and
-  year on year, add 5Y." (check: this conflicts with "nothing kept in case", V465, V662.) (V372)
+- **Growth's ruler offers only time windows (5Y, 10Y, 25Y, Max), with no "Year on year" stop, and the
+  year-on-year view is gone from the code.** Keren: "drop the this cycle and year on year, add 5Y"; at V668 she
+  chose to remove the view rather than keep it in case. (V372, V668)
 - **Pressure and Horizon offer only 5Y, 10Y and Max, with a window ruler like every other history.** Their
   Treasury series start in 2005, so 25Y is unanswerable; Keren: "have the configuration of all the rest of the
   inner pages history". (V394, V588)
@@ -713,10 +718,10 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 
 ### Each page's picture
 
-- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero: teal for
-  expansion, orange for contraction.** Keren: "change the main container to be yearly history like the rest of
-  the app"; "it needs to be either orange-yellow for contraction or blue-green for expansion". Here the colour
-  shows only which side of zero a quarter fell on. (check: against V156 and V260 under Colour.) (V371, V380)
+- **Growth's history is real GDP year over year, quarterly from 1988, as columns from zero, coloured by the
+  season model's regime like everywhere Growth appears: gold in expansion, periwinkle in contraction.** Keren:
+  "change the main container to be yearly history like the rest of the app"; at V668 she chose regime over
+  sign for the history too, so a column says the phase, not which side of zero it fell on. (V371, V380, V668)
 - **A view of two measurements of one quantity (GDP year on year) is drawn as pairs: a quiet "before" and a
   coloured "after" joined by a connector with a disc at each end, so the mark itself is the difference.** It
   follows Keren's before/after reference; two columns from zero would hide a change of about 2%, and a
@@ -732,9 +737,9 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   flood: height says how much, colour says which way.** Keren: "when you lose a lot of blood it's dark red …
   if you have a lot of blood in the system … it's a faint pink, because it's abundant." (V389, V390)
 - **Pulse draws a pulse: two lanes over the same span, today's tempo against her pre-2008 pace, where only the
-  spacing of the beats varies and each beat has a real trace's heights (P, QRS, T).** Keren: "if we're talking
-  about the pulse, I kinda want to see a pulse"; "I want it to look like a real heartbeat". (check: every
-  history is bars since V496 and V500; the trace survives as Pulse's miniature.) (V297, V298)
+  spacing of the beats varies and each beat has a real trace's heights (P, QRS, T); the trace is Pulse's
+  miniature, and its history is bars like every other.** Keren: "if we're talking about the pulse, I kinda want
+  to see a pulse"; "I want it to look like a real heartbeat"; confirmed at V668. (V297, V298, V496, V668)
 - **Pressure's maturity history is columns, each coloured by what the curve was doing that quarter (inverted,
   normal or steep, from the one `pressureZone()` lookup), in `--critical`, `--season-autumn` and `--good` at
   full weight: colour shows the curve, height the yield.** Keren: "a colour that represents the pressure like
@@ -767,7 +772,9 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   to inherit the color." (V301, V302, V457, V490, V657, V661)
 - **Every reading wears its own mark, the glyph alone with no disc, in its category's colour on its card, its
   Search row and its page.** Keren, with Apple Health: "they have an icon next to each title"; she asked for
-  Desire's icon "grey and refined, without a green background". (V300, V449, V586, V657, V661)
+  Desire's icon "grey and refined, without a green background". Related readings may share a mark (Shiller CAPE
+  and the Buffett indicator wear one diamond); V510's "no glyph twice" is retired. (V300, V449, V586, V657,
+  V661, V668)
 - **A mark says which reading; a preview says how much; the two slots never swap jobs.** A ring in the mark
   slot took the glyph's job and left the preview untouched. (V585)
 - **One glyph, one function, called everywhere the mark appears.** A second declaration of the same function
@@ -849,8 +856,8 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 - **Growth's phase takes the dial's seasons, not the severity palette: expanding in Autumn's gold, contracting
   in Winter's periwinkle, two steps of one blue for the two degrees of contraction; it is coloured by the
   season model's regime, never by the sign of growth.** Keren: "blue for contraction, yellow for expansion";
-  green above zero contradicted the word on the panel, which names the direction, not the level. (check:
-  Growth's history is coloured by sign, V380.) (V156, V260)
+  green above zero contradicted the word on the panel, which names the direction, not the level. Since V668
+  this holds for the history too. (V156, V260, V668)
 - **Temperature's word wears the ramp step its own reading sits on.** Keren: the word "should be the same
   colour as the graph"; a card's word and its picture are one reading. (V260)
 - **The timing glyph is neutral ink: one line for the cycle, a tick for now, a dot before, on or after it, and
@@ -916,9 +923,10 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 - **A hand-carried history is checked on load against the records its source itself states.** A
   mis-transcribed digit cannot then sit in the app unnoticed. (V299, V306, V358, V643)
 - **Provenance lives on each figure: every card names the day its number derives from, and the Sources screen
-  gives the compile date, taken from `DATA_COMPILED`, the one place to edit on each refresh; the footnote
-  never claims an automatic refresh.** This is why the dial can say "today"; Keren merged the menu's footnote
-  and footer into one paragraph. (check: V651's daily Data workflow.) (V356, undated, Sep 19, 2026)
+  gives the compile date, taken from `DATA_COMPILED`, and names the readings that refresh themselves every
+  weekday (the Treasury yields, the Fed funds rate, the VIX and VIX3M, the high-yield spread, Shiller's CAPE);
+  everything else is compiled by hand.** This is why the dial can say "today"; Keren merged the menu's footnote
+  and footer into one paragraph, and at V668 chose to name the weekday refresh. (V356, V651, V668)
 - **Every weekday the Data workflow commits the daily figures and then starts the site deploy, so the hosted
   site gets them the same day.** Keren: "set it up". (V651)
 - **Data that nothing reads is removed, its figures kept in the archive, rather than kept out of sight.**
@@ -987,8 +995,9 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   frame, a font size that is not a token, a style aimed at one page, a branch on a reading's name, or anything
   unused, and unused components are removed.** Keren: "i want all parent components to have all the properties
   of their children"; "remove unused components". (V662)
-- **Nothing that is no longer drawn is kept "in case".** Keren's standing rule: lean, dry, efficient code.
-  (V465, V662)
+- **Nothing that is no longer drawn is kept "in case", and nothing unused stays: functions, styles and design
+  tokens alike (`npm run hygiene` catches each).** Keren's standing rule: lean, dry, efficient code; at V668 she
+  had the unused tokens removed and the check extended to them. (V465, V662, V668)
 - **Class names built at run time, such as `.mkt-up` and `.mkt-down`, are listed in the hygiene tool so the
   unused-style pruning keeps them; the suite checks that Analysis's bull and bear runs are drawn in colour, and
   that every class it sees built at run time is listed.** V662's pruning removed them, and Keren found "the bull

@@ -87,7 +87,7 @@
       '<div class="subject-summary">' +
         '<div class="subject-ring">' + (o.icon || '') + '</div>' +
         '<div class="subject-text">' + o.text + '</div>' +
-        '<div class="subject-more"><span class="subject-chev" aria-hidden="true"></span></div>' +
+        '<div class="subject-more">' + CHEV + '</div>' +
       '</div></div>';
   }
   function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
@@ -162,7 +162,7 @@
         return '<div class="aux-stat' + (a.wordy ? " wordy" : "") + '"><span>' + a.label + '</span><b>' + a.value + '</b></div>';
       }).join("");
       if (!lede && !figs) return "";
-      var block = '<section class="highlights"><div class="hi-head">Highlights</div>' +
+      var block = '<section class="highlights"><div class="hi-head">Insights</div>' +
         (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
       if (opts.deferHighlights){ heldHighlights = block; return ""; }
       return block;

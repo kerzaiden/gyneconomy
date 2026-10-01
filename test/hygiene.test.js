@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, gone, pinned, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -28,6 +28,9 @@ ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);
 ok('the bull and bear colours are built at run time', unused('', '', '.mkt-up{ x:1 } .mkt-down{ x:1 }'), []);
+ok('an unread token is caught', unusedTokens(':root{ --gone:#000; --kept:#fff; } .a{ color:var(--kept); }', ''), ['token --gone is never read']);
+ok('a token set from a script passes', unusedTokens(':root{ --w:11; } .a{ stroke-width:var(--w); }', 'el.style.setProperty("--w", 3);'), []);
+ok('a token read from a script passes', unusedTokens(':root{ --c:#000; }', 'getPropertyValue("--c")'), []);
 ok('a removed class coming back is caught', gone('.vh-line{ x:1 }').length, 1);
 ok('a removed id coming back is caught', gone('<div id="growth-peers"></div>').length, 1);
 ok('a longer name that contains a removed one passes', gone('.pbar-wide .xpbar'), []);

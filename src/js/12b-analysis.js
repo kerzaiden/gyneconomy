@@ -143,8 +143,7 @@
     eraValue(val, t, r, e); word.textContent = eraRange(t, r, e);
   }
   function eraShow(era){
-    var rows = {};
-    readingRoster().forEach(function(g){ g.rows.forEach(function(r){ rows[r.open] = r; }); });
+    var rows = rosterRows();
     Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item){
       eraCard(item, rows[item.getAttribute("data-open")], era);
     });
@@ -211,11 +210,14 @@
       var seen = r.list.filter(function(d){ return d.v != null; });
       var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
       r.place = function(v){
-        var lo = 0; sorted.forEach(function(x){ if (x < v) lo++; });
+        var lo = 0, hi = sorted.length;
+        while (lo < hi){ var mid = (lo + hi) >> 1; if (sorted[mid] < v) lo = mid + 1; else hi = mid; }
         return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
       };
       r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
     }); });
+    GRPS.byOpen = {};
+    GRPS.forEach(function(g){ g.rows.forEach(function(r){ GRPS.byOpen[r.open] = r; }); });
     return (__roster = GRPS);
   }
   function readFig(r, v){

@@ -209,9 +209,9 @@ commercial integration. The parser was written and proved before the terms were 
 **Read the terms first**; "is this licence compatible with a commercial app?" is the first question of any
 new source.
 
-**What replaced Fear & Greed: the Fear Curve**, `VIXCLS ÷ VXVCLS`. No new source or permission, daily, and
-its 1.00 threshold is definitional rather than editorial. The two legs arrive separately and either one
-landing recomputes the ratio; it is never read from a stored copy.
+**What replaced Fear & Greed: Volatility** (V663), the VIX itself, monthly from 1986 (VXO joined to VIX in
+1990), read against the conventional 20 and 30 (Chase, TD). The Fear Curve (`VIXCLS ÷ VXVCLS`) was retired
+then; VIX3M still arrives daily but is no longer charted.
 
 ## Which copy is canonical
 
@@ -270,7 +270,7 @@ Rules that shape the pages:
 - **A parent owns what its children share (V662, Keren: "i want all parent components to have all the properties of
   their children so we don't have to change different pages all the time").** `npm run check` runs `tools/hygiene.js`,
   which fails on: a chart height set outside `histFrame`; a chart margin set outside it (only the mini charts,
-  `colPeek` and `meterPeek`, and `pairChart` own theirs); a `font-size` that is not a `--type-` token; a style aimed
+  `colPeek` and `meterPeek`, own theirs); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
   reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `bare`, `noHead`, `noMark`,
   `chartFirst`, `deferHighlights`, `peeked`, `chart`, `after`, `id`, `seat` — and `signSubject` only reads it; looking a
@@ -539,10 +539,9 @@ it is the level of the spread that forecasts, not the crossing.
 readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
 `histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
 the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
-`divergeChart`, `pairChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis
-chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`). **`pairChart` is the one named
-exception for margins**: GDP's year-on-year view has no axis and no hover readout and puts two lines of labels
-under each pair, so it keeps its own inside the shared height; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
+`divergeChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis
+chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`); GDP's year-on-year view, the
+one exception, was removed in V668; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
 with no reading, by Keren's decision.** Desire has a bare range bar and no mode bar.
 
 - **One affordance per subject.** When the chart draws a reading, its note goes in the head's `⋯` menu
@@ -559,11 +558,10 @@ with no reading, by Keren's decision.** Desire has a bare range bar and no mode 
   another chart's ruler.
 - Every (i) is a `.lede` plus `facts([...])`, one fact per
   line, five or six max; all open the one shared modal.
-- **Highlights: every sentence is arithmetic on the series above it; none is written by hand.** A
-  highlight naming a record excludes the reading it describes.
-- **Cycles · Years** on every history; both modes draw the same chart. Temperature and Growth offer only
-  `This cycle` and `Cycles` because their draws are shared with the cycle view. `TIMELINE_STOPS` is the
-  only vocabulary; **50Y does not exist**.
+- **Insights: every sentence is arithmetic on the series above it; none is written by hand.** An
+  insight naming a record excludes the reading it describes.
+- **Cycles · Years** on every history; both modes draw the same chart. `TIMELINE_STOPS` is the only
+  vocabulary; **50Y does not exist**.
 - **Sparklines only on a row with a real series where the full chart isn't already on screen**; never a
   line from under three points (Volatility's slot is emptied on purpose, Keren V277; it carries a ring).
 - **Peek cards show today's readings only**; the whole card is the button; don't re-add a filled
@@ -666,8 +664,9 @@ its date and say so — never substitute a secondary.** Fixed and editorial cont
 `wheelMeta`, `seasonRules`, `seasonReading`, `cycleEndReadings`, era names and blurbs, the `*_STOPS`
 lists — is never touched by a refresh. **`currentSeason` is computed — never set it.** Productivity growth's figure, quarter and record range are read
 from `productivityHistory` (V667), so the Backfill moves the card, the Diagnosis and the past cycles together;
-its verdict word and captions are editorial, written for the quarter in `wordFor`, and `checkProductivityWord`
-warns (failing the suite) when the data passes that quarter, until Keren sets the word for the new one.
+its word follows the two BLS lines its note cites (`productivityWord`, V668): at or above 2.1% (the
+1947–2018 average) Above trend, at or above 1.3% (the slowdown-era average) Above the slowdown, below it Below
+the slowdown; the captions and the note follow the word.
 
 **Verify.** `npm run check` before every commit; `npm run check:all` is CI, and CI runs every gate in it
 (V667: three gates had run only when a session remembered). The suite's six runtime invariants: geometry is
@@ -711,7 +710,7 @@ market movement, always with a word or arrow. Kickers, labels and names are neut
 three tones: paint (lines, bands, rings; ≥ 3:1), ink (words; ≥ 4.5:1), wash (paint mixed over surface, ink
 on top). **Never text in paint**; a new ink is the same hue darkened and measured. Greys are plum-biased;
 hierarchy comes from borders and surface steps, never shadows. **The dark theme is designed, not
-inverted** — its own inks, washes and ramps. `--ink-on-fill` follows the bar, not the theme.
+inverted** — its own inks, washes and ramps. Every token is read somewhere: `npm run hygiene` fails on one that is not (V668).
 
 Seasons: Winter periwinkle, Spring a quieter step of Winter's hue, Summer orange, Autumn a lighter,
 yellower Summer; declared in `:root` and both dark blocks. No fifth ring colour, no green/red season, no
@@ -765,10 +764,10 @@ mark at 13, 15, 20, 27 and 42px together at real size.
 
 ## Surfaces and controls
 
-Page order on every inner page: history · cycle average · Highlights · More details (no blood test since V661). Card:
+Page order on every inner page: history · Insights, with More details inside it (no blood test since V661). Card:
 `--surface`, 1px `--border`, `--radius`, no shadow. A list is one container with hairlines between rows.
 Hover moves `--border` to `--border-strong`, never brand. Range controls offer only the ranges the data
-answers, nothing below two stops; "This cycle" never with 5Y. Every (i) opens the shared modal — a bottom
+answers, nothing below two stops. Every (i) opens the shared modal — a bottom
 sheet on phones with a 44px round X. Deeper pages push in from the right and arrive decelerating (~340ms),
 leave accelerating (~260ms); `prefers-reduced-motion` gets a plain fade. Nothing on a phone scrolls
 sideways. **Say a thing once**: a name once per screen, one of each reading per page, no figure restated

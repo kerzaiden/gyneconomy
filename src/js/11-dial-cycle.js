@@ -271,14 +271,14 @@
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
   var growthDetail = '<h4>Growth per cycle</h4>' +
-    ledeHtml("Real GDP across this cycle, quarter by quarter, on the Temperature chart\u2019s axis so the years line up.") +
+    ledeHtml("Real GDP across this cycle, quarter by quarter.") +
     facts([
       'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.',
       'US news usually quotes a different figure for \u201cgrowth this quarter\u201d: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.',
-      '<b>Green is expansion, red is contraction</b> \u2014 the season model\u2019s own reading, the direction of the trend through the last six quarters.',
-      'That trend turns about nine months after the line does, so the colour can stay red while a quarter or two rise. A season is a phase, not a print.',
+      '<b>Gold is expansion, periwinkle is contraction</b> \u2014 the season model\u2019s own reading, the direction of the trend through the last six quarters, the same colours as everywhere Growth appears.',
+      'That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.',
       'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.',
-      'The dropdown at the top right switches the economy \u2014 the United States, Israel, Japan or the European Union, one at a time.'
+      'The \u22ef menu switches the economy \u2014 the United States, Israel, Japan or the European Union, one at a time.'
     ]) +
     srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc));
 
