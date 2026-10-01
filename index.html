@@ -1520,7 +1520,7 @@
     <summary class="subject-summary">
       <div class="subject-ring" id="subj-ring-sentiment"></div>
       <div class="subject-text">
-        <div class="subject-label">Fear</div>
+        <div class="subject-label">Volatility</div>
         <div class="subject-value" id="subj-value-sentiment"></div>
         <p class="subject-say" id="subj-say-sentiment"></p>
         <div id="subj-spark-sentiment"></div>
@@ -13116,10 +13116,9 @@
     if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
     return painted;
   }
-  function repaintFearCurve() {
-    var r = fearCurve(), tag = curveVerdict(r), txt = r == null ? "—" : r.toFixed(2);
-    var ring = put("subj-ring-sentiment", vitalRingSvg(curvePct(r), "accent", r == null ? "Fear curve: no reading" : "Fear curve at " + txt + ", where 1.00 is flat"));
-    paintReading("sheet-sign-sentiment", txt, tag);
+  function repaintVolatility() {
+    put("subj-ring-sentiment", volatilityRing());
+    paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintHorizonRow() {
     var pick = function(m) {
@@ -13204,7 +13203,7 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [ repaintFearCurve ]
+      paint: [ repaintVolatility ]
     },
     vix3mClose: {
       kind: "scalar",
@@ -13212,7 +13211,7 @@
       set: function(v) {
         vix3mClose = v;
       },
-      paint: [ repaintFearCurve ]
+      onOpen: true
     },
     hyOasNow: {
       kind: "scalar",
@@ -15476,6 +15475,9 @@
       t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS)",
       u: "https://fred.stlouisfed.org/series/VIXCLS"
     }, {
+      t: "Cboe via FRED — CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986–2021 (VXOCLS)",
+      u: "https://fred.stlouisfed.org/series/VXOCLS"
+    }, {
       t: "Cboe via FRED — CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)",
       u: "https://fred.stlouisfed.org/series/VXVCLS"
     }, {
@@ -15969,7 +15971,7 @@
     },
     "fear-range": {
       mark: umbrellaSvg,
-      title: "VIX ÷ 3-Month VIX"
+      title: "Cboe Volatility Index (VIX)"
     },
     "hormones-range": {
       mark: hormoneSvg,
@@ -17023,25 +17025,13 @@
     var e = m.ends || {}, o = m.optimal || {};
     return v < o.from ? e.low || "Low" : v > o.to ? e.high || "High" : e.zone || "Usual";
   };
-  var vixInd = {
-    bodyTerm: "VIX",
-    econTerm: "The fear index",
-    tag: {
-      text: vixWordOf(vixRow.meter.value, vixRow.meter),
-      state: function(v, m) {
-        var o = m.optimal || {};
-        return v < o.from ? "warning" : v > o.to ? "critical" : "good";
-      }(vixRow.meter.value, vixRow.meter)
-    },
-    metric: vixRow.flagValue,
-    metricSub: "Cboe VIX, " + vixRow.sub,
-    meter: vixRow.meter,
-    shortCaption: vixRow.shortNote,
-    caption: vixRow.note,
-    src: sentiment.src.filter(function(x) {
-      return /cboe|vix/i.test(x.t);
-    })
-  };
+  function volatilityTag() {
+    var m = vixRow.meter, o = m.optimal || {};
+    return {
+      text: vixWordOf(m.value, m),
+      state: m.value < o.from ? "warning" : m.value > o.to ? "critical" : "good"
+    };
+  }
   var tempInfo = "<h4>Temperature</h4>" + '<p class="lede">Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.</p>' + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
   var calendarTodayY = DATA_COMPILED.getFullYear();
   var vix3mClose = LIVE("vix3mClose", 17.61);
@@ -17943,15 +17933,20 @@
     2025: 17.88,
     2026: 14.4
   };
-  var curveNow = fearCurve();
-  var curveTag = curveVerdict(curveNow);
   var curveSub = "Cboe, " + vixRow.sub;
-  function curvePct(r) {
-    return r == null ? 0 : Math.max(0, Math.min(100, (r - .8) / .4 * 100));
+  function vixPct(v) {
+    var m = vixRow.meter;
+    return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
   }
-  var curveNoteFull = "The 30-day VIX divided by the 3-month VIX — the SHAPE of expected volatility rather " + "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " + "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " + "costs more than three-month fear — the options market pricing something immediate. That threshold is the " + "definition of the shape rather than a level anyone chose, which is why this reading carries no band of " + "ours. It says what the VIX beside it cannot: the VIX is how MUCH fear is priced, this is WHERE IN TIME it " + "sits. A calm VIX on a steep curve is ordinary quiet; the same calm VIX on an inverted curve is a market " + "braced for something close. Read contrarian, like the rest of this panel — an inversion is uncomfortable " + "and inversions cluster near bottoms, while a very steep curve is the market paying almost nothing to be " + "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " + "the same VIX the row below prints." + (curveNow == null ? " No reading today: one of the two legs is missing." : " Today " + curveNow.toFixed(2) + " — " + (curveNow >= 1 ? "inverted, with the near month priced above the three-month." : "the ordinary upward slope, with the near month priced below the three-month."));
-  function curveDetailHtml() {
-    return '<h4>Fear curve</h4><div class="marker-sub">' + curveSub + "</div>" + factsFrom(curveNoteFull);
+  var curveNoteFull = "The 30-day VIX divided by the 3-month VIX — the SHAPE of expected volatility rather " + "than its level. Below 1.00 the curve slopes up, which is its ordinary state: insuring three months costs " + "more than insuring one, as it should. At 1.00 it is flat. Above 1.00 it is inverted, and near-term fear " + "costs more than three-month fear — the options market pricing something immediate. That threshold is the " + "definition of the shape rather than a level anyone chose, which is why this reading carries no band of " + "ours. It says what the VIX beside it cannot: the VIX is how MUCH fear is priced, this is WHERE IN TIME it " + "sits. A calm VIX on a steep curve is ordinary quiet; the same calm VIX on an inverted curve is a market " + "braced for something close. Read contrarian, like the rest of this panel — an inversion is uncomfortable " + "and inversions cluster near bottoms, while a very steep curve is the market paying almost nothing to be " + "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " + "the same VIX this page prints.";
+  function volatilityRing() {
+    var m = vixRow.meter;
+    return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value.toFixed(2) + ", between its record low of " + m.min + " and its record high of " + m.max);
+  }
+  var VOL_JOIN = "1990-01";
+  function volatilityDetailHtml() {
+    var m = vixRow.meter;
+    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall " + "over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near " + "bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, " + "Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "The line at <b>" + m.optimal.to + "</b> is the top of the usual band, " + m.optimal.label + ": an editorial line, " + "not a published one.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(sentiment.src);
   }
   var sp500AnnualReturnSource = [ {
     t: "S&P Dow Jones Indices — S&P 500 (index originator; total-return figures)",
@@ -19564,72 +19559,88 @@
   }
   GYN.step("renderHormones", renderHormones, "build");
   renderHormones();
-  function renderFearCurve() {
-    HIST_NOTE["fear-range"] = curveDetailHtml();
-    var FEAR_STOPS = [ "5y", "10y", "max" ];
-    var FEAR_Y0 = fearCurveHistory.length ? parseInt(fearCurveHistory[0].m.slice(0, 4), 10) : 0;
-    function drawFearHistory() {
+  function renderVolatility() {
+    HIST_NOTE["fear-range"] = volatilityDetailHtml();
+    var VOL_STOPS = [ "5y", "10y", "25y", "max" ];
+    var VOL_Y0 = volatilityHistory.length ? parseInt(volatilityHistory[0].m.slice(0, 4), 10) : 0;
+    function drawVolatility() {
       var host = byId("fear-history");
-      if (!host || !fearCurveHistory.length) return;
+      if (!host || !volatilityHistory.length) return;
       var cyc = pageMode["fear-range"] === "cycles" ? cycleByName(pageCycles["fear-range"]) || openCycle() : null;
-      if (cyc && cyc.from < FEAR_Y0) cyc = openCycle();
-      var span = cyc ? cycleSlice(fearCurveHistory, cyc) : null;
-      var vals = span ? fearCurveHistory.slice(span[0], span[1]) : timelineWindow(fearCurveHistory, pageRange["fear-range"]);
-      if (!vals.length) vals = fearCurveHistory.slice(-12);
+      if (cyc && cyc.from < VOL_Y0) cyc = openCycle();
+      var span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
+      var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, pageRange["fear-range"]);
+      if (!vals.length) vals = volatilityHistory.slice(-12);
       var fit = trendOf(vals.map(function(d) {
         return d.v;
       }), "points", "month");
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10), parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
+      var line = vixRow.meter.optimal.to;
       function opts() {
         return {
           vals: vals,
-          mid: 1,
-          midLabel: "flat, 1.00",
+          mid: line,
+          midLabel: "usual ceiling, " + line,
           fmt: function(v) {
-            return v.toFixed(2);
+            return v.toFixed(1);
           },
           tickFmt: function(v) {
-            return v.toFixed(2);
+            return String(Math.round(v));
           },
-          at: atMonth,
+          at: function(d) {
+            return atMonth(d) + (d.m < VOL_JOIN ? " · VXO" : "");
+          },
           xLabel: function(d) {
             var y = parseInt(d.m.slice(0, 4), 10);
             return d.m.slice(5) === "01" && years.indexOf(y) !== -1 ? "’" + String(y).slice(2) : "";
           },
           fit: fit.fit,
-          alt: "The VIX curve against flat, monthly. Above 1.00 the near month costs more than the quarter, " + "which is an inverted curve."
+          alt: "The VIX, monthly average of daily closes, against the top of its usual band at " + line + "; before 1990 the VXO, Cboe’s original VIX."
         };
       }
       host.innerHTML = histBar(histControls("fear-range", {
-        series: fearCurveHistory,
-        stops: FEAR_STOPS
-      }, FEAR_Y0)) + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + histTip("fear-hist-tooltip") + '<div id="fear-trend"></div></div>';
-      put("fear-trend", trendPill(fit, null, true, {
-        rising: "inverting",
-        falling: "steepening"
-      }));
+        series: volatilityHistory,
+        stops: VOL_STOPS
+      }, VOL_Y0)) + '<div class="page-chart">' + histHead("fear-range") + divergeChart(opts(), host.clientWidth || 340) + histTip("fear-hist-tooltip") + '<div id="fear-trend"></div></div>';
+      put("fear-trend", trendPill(fit, null, true));
       var box = host.querySelector(".page-chart");
       refitHistory(box, function(w) {
         return divergeChart(opts(), w);
       });
       attachHistory(box, "fear-hist-tooltip", "divergeChart");
+      volatilityHighlights(VOL_Y0);
     }
-    sheetRenderers["fear-range"] = drawFearHistory;
-    sheetRenderers["sheet-sign-sentiment"] = drawFearHistory;
-    drawFearHistory();
-    var hl = byId("curve-highlights");
-    if (hl) {
-      var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value;
-      var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
-      var fearLede = '<p class="hi-lede">Fear is the flinch, not the injury. The VIX prices the next month ' + "and the 3-month VIX the next quarter, so their ratio says whether the market is bracing for " + "something now or for something later.</p>";
-      var curveTxt = curveNow == null ? "No reading today — one of the two legs is missing, so the shape cannot be computed. The previous reading stands." : "The near month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " + curveNow.toFixed(2) + ". " + (curveNow >= 1 ? "INVERTED: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like in prices — and inversions cluster near bottoms." : "That is the curve’s ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
-      var vixTxt = "At " + v.toFixed(2) + " the VIX sits " + where + " of " + lo + " to " + hiB + ", against a record low of " + m.min + " and a high of " + m.max + ". It is the slower of the two " + "gauges: credit usually cracks before equity volatility does.";
-      hl.innerHTML = highlightsHtml([ fearLede, hiCard("What the shape is saying", curveTag.state, curveTxt), hiCard("What is priced" + expandBtn(factsFrom(vixRow.note)), vixInd.tag.state, vixTxt) ]);
-    }
+    sheetRenderers["fear-range"] = drawVolatility;
+    sheetRenderers["sheet-sign-sentiment"] = drawVolatility;
+    drawVolatility();
     addSources(sentiment.src);
   }
-  GYN.step("renderFearCurve", renderFearCurve, "build");
-  renderFearCurve();
+  function volatilityHighlights(y0) {
+    var hl = byId("curve-highlights");
+    if (!hl || !volatilityHistory.length) return;
+    var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value, tag = volatilityTag();
+    var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+    var top = volatilityHistory.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    });
+    var vixOnly = volatilityHistory.filter(function(d) {
+      return d.m >= VOL_JOIN;
+    });
+    var vixTop = vixOnly.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    }, vixOnly[0]);
+    var higher = volatilityHistory.filter(function(d) {
+      return d.v > v;
+    }).length;
+    var r = fearCurve(), shape = curveVerdict(r);
+    var lede = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty ' + "days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic " + "gathers near bottoms and complacency near tops.</p>";
+    var nowTxt = "At " + v.toFixed(2) + " the VIX sits " + where + " of " + lo + " to " + hiB + ", against a daily record low of " + m.min + " and a high of " + m.max + ".";
+    var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 + " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) + (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
+    var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
+    hl.innerHTML = highlightsHtml([ lede, hiCard("Where it sits" + expandBtn(factsFrom(vixRow.note)), tag.state, nowTxt), hiCard("Against the record", "", recTxt), hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt) ]);
+  }
+  GYN.step("renderVolatility", renderVolatility, "build");
+  renderVolatility();
   function renderSubjectRows() {
     function ring(key, pct, state) {
       put("subj-ring-" + key, vitalRingSvg(pct, state));
@@ -19668,12 +19679,13 @@
         return "hzn-col " + (v < 0 ? "neg" : "pos");
       }, 0, true));
     })();
-    put("subj-ring-sentiment", vitalRingSvg(curvePct(curveNow), "accent", curveNow == null ? "Fear curve: no reading" : "Fear curve at " + curveNow.toFixed(2) + ", where 1.00 is flat"));
+    put("subj-ring-sentiment", volatilityRing());
     (function() {
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() + "</span>Fear");
+      put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() + "</span>Volatility");
     })();
-    set("sentiment", (curveNow == null ? "—" : curveNow.toFixed(2)) + '<span class="unit">VIX ÷ 3M</span><span class="tag ' + curveTag.state + '">' + curveTag.text + "</span>", "");
+    var volTag = volatilityTag();
+    set("sentiment", vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
     say("sentiment", "");
     spark("sentiment", "");
   }
@@ -20625,7 +20637,7 @@
       key: "mood",
       title: "Mood",
       mark: moodSvg(),
-      sub: "Valuations · Fear · Desire · Horizon",
+      sub: "Valuations · Volatility · Desire · Horizon",
       picks: [ {
         group: "Valuations",
         picks: [ '.peek[data-open="sheet-metric-valuation"]', '.peek[data-open="sheet-metric-buffett"]' ]
@@ -20708,7 +20720,7 @@
       timing: "leading"
     }, {
       key: "sentiment",
-      title: "Fear",
+      title: "Volatility",
       timing: "leading"
     } ].forEach(function(cfg) {
       var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]');
@@ -22304,13 +22316,13 @@
         unit: "%",
         base: splitMid("sheet-metric-buffett")
       }, {
-        name: "Fear",
+        name: "Volatility",
         open: "sheet-sign-sentiment",
         on: "m",
         mark: umbrellaSvg,
-        list: byM(fearCurveHistory),
-        dp: 2,
-        ring: curvePct
+        list: byM(volatilityHistory),
+        dp: 1,
+        ring: vixPct
       }, {
         name: "Desire",
         open: "sheet-sign-desire",

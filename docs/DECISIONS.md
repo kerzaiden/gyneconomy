@@ -6890,3 +6890,17 @@ one page-scoped style became a chart option; every font size is a token on the D
 these coming back; and every component built but never shown is removed (the Temperature and Growth cycle cards,
 the hidden GDP and Valuation summaries, their code and styles).
 ~~~
+
+### V663
+
+~~~text
+Keren: "I want you to add a new indicator to mood volatility. And I want the full history of market volatility
+as much as possible." Asked how far back, she chose the VIX with the VXO before it, from 1986 (over a computed
+realized volatility back to 1871, or the VIX alone from 1990). Then: "I just realized that the VIX is the
+volatility index. So instead of fear, call the indicator volatility." And: "I only want one chart here. I don't
+need two charts on volatility."
+So V663: Mood's Fear is Volatility. Its row is today's VIX with the usual band's word, and its page draws one
+chart, the monthly average of the VIX's daily closes since 1990 with the VXO for 1986–89, hanging from the band's
+top at 20. The fear curve is no longer charted; its shape today stays as one Highlights card. The past cycles read
+the same history, so every cycle now has a Volatility card.
+~~~

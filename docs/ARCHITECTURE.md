@@ -149,7 +149,7 @@ so it is named render and classified wire. The two are answering different quest
 `while (sum.firstChild) face.appendChild(...)` — it MOVES the static markup into the category
 rows, consuming its own source, which is the documented "catItem consumes its source"
 behaviour. `renderSubjectRows` writes into hosts that `renderSignsList` then moves, so calling
-it again throws on a host that no longer exists. `renderFearCurve` reads a note a later
+it again throws on a host that no longer exists. `renderVolatility` reads a note a later
 step fills, so a second call renders MORE than the first. None of these is sloppy, and
 calling them builders says so instead of pretending a fix is pending.
 
@@ -239,8 +239,8 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 to the manuscript, not part of it. Tabs: Cycle · Analysis · Search · Portfolio (V657; the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
-(Valuations · Fear · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
-Season; Fear, never Sentiment; Households, never Debt service.
+(Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
+Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
 
@@ -325,8 +325,8 @@ Rules that shape the pages:
   categories"): the figure is today's first text node with only the number replaced (`eraFig` keeps its
   decimals, sign, prefix and suffix, drops the ≈ of an estimate), the unit stays (a roster row's `eraUnit`
   names a different measure: the effective rate, not the target range; a surplus year says surplus), and the
-  mini is today's kind drawn with the cycle's data (`colPeek` with the row's `base`/`rule`, the Fear ring
-  through `curvePct`, the Pulse trace through `pulsePeek`). The label is the range over the cycle, not a
+  mini is today's kind drawn with the cycle's data (`colPeek` with the row's `base`/`rule`, the Volatility ring
+  through `vixPct`, the Pulse trace through `pulsePeek`). The label is the range over the cycle, not a
   verdict: several verdicts are Keren's words for today, not bands a past value can be read against.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
@@ -353,7 +353,8 @@ Rules that shape the pages:
 | Variable | Series | What it is |
 |---|---|---|
 | `fedFundsHistory` | FEDFUNDS | effective federal funds rate, monthly: the policy rate, where the Treasury yields are what the market charges |
-| `fearCurveHistory` | VIXCLS ÷ VXVCLS | the fear curve, sampled on each month's last day both legs printed; 1.00 is flat, above it inverted. VXVCLS starts Dec 2007, so the ratio does too |
+| `fearCurveHistory` | VIXCLS ÷ VXVCLS | the fear curve, sampled on each month's last day both legs printed; 1.00 is flat, above it inverted. VXVCLS starts Dec 2007, so the ratio does too. Since V663 nothing draws it: the curve is today's figure in Volatility's Highlights, from the live legs |
+| `volatilityHistory` | VXOCLS, then VIXCLS | Volatility's history (V663): the monthly average of daily closes, the VXO (Cboe's original VIX, on the S&P 100) for 1986–89 and the VIX from `VOL_JOIN`, January 1990, its first month; the running month is left out until it closes |
 | `fiscalHistory.gross` | GFDGDPA188S | gross federal debt, % of GDP, by fiscal year (OMB) |
 | `fiscalHistory.held` | FYPUGDA188S | debt held by the public, % of GDP (OMB) |
 | `fiscalHistory.interest` | FYOIGDA188S | federal interest outlays, % of GDP (OMB) |
@@ -400,7 +401,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
 | Productivity growth (Activity) | −1.7% 1974 – +6.7% 1950, BLS OPHNFB | ≥ 1.3% YoY, BLS's post-2005 slowdown average; "better than the slowdown", never "at trend" |
-| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | row `≤ 20`, editorial; the Fear page's threshold is the curve's 1.00 |
+| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | 13–20, editorial (the word: Complacent below, Usual inside, Panicked above); the chart hangs from 20, the band's top; the (i) says it is editorial. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
 | Buffett Indicator | 32% Q2 1982 – 256% Q2 2026; Fed Z.1 NCBEILQ027S ÷ FRED GDP | ≤ 80%, his 2001 *Fortune* figure |
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
 | High-yield OAS | 2.41% Jun 2007 – 21.82% Dec 2008, ICE BofA via FRED BAMLH0A0HYM2 | 3.5–6%, `HY_NORM_LO`/`HY_NORM_HI`, four sources in the (i) |
@@ -436,7 +437,7 @@ Only the band's floor is forced into the chart's scale, never the ceiling.
 
 The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Until
 V660 they were also summed into Power (100 − their stress composite); Keren removed it, and
-`git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast members (Fear,
+`git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast members (Volatility,
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
@@ -520,7 +521,7 @@ with no reading, by Keren's decision.** Desire has a bare range bar and no mode 
   `This cycle` and `Cycles` because their draws are shared with the cycle view. `TIMELINE_STOPS` is the
   only vocabulary; **50Y does not exist**.
 - **Sparklines only on a row with a real series where the full chart isn't already on screen**; never a
-  line from under three points (Fear's slot is emptied on purpose, Keren V277).
+  line from under three points (Volatility's slot is emptied on purpose, Keren V277; it carries a ring).
 - **Peek cards show today's readings only**; the whole card is the button; don't re-add a filled
   reference band.
 - Four year spellings mean different things: `FY2020`, `YEAR 5` (the dial), `5Y/10Y/25Y` (windows),
@@ -709,7 +710,7 @@ by its own picture, by cycle = the average never the total.
 
 ## Wording
 
-Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Fear, never "Fear & Greed"
+Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
 or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Economic power is the
 group of Federal debt, Interest payments and Federal budget (V660); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
