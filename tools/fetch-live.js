@@ -81,20 +81,51 @@ function capeFromRows(rows) {
   if (val == null) throw new Error('no CAPE reading below the header');
   if (val < 4 || val > 60) throw new Error('CAPE ' + val + ' out of band');
 
+  return {
+    value: Math.round(val * 100) / 100,
+    date: shillerMonth(when) + '-01',
+    headerRow: hdr + 1
+  };
+}
+
+function shillerMonth(when) {
   const str = String(when).trim();
   const md = /^(\d{4})\.(\d{1,2})$/.exec(str);
   if (!md) throw new Error('unparsable Shiller date ' + JSON.stringify(str));
   const mm = md[2].length === 1 ? Number(md[2]) * 10 : Number(md[2]);
   if (!(mm >= 1 && mm <= 12)) throw new Error('impossible month in ' + JSON.stringify(str));
+  return md[1] + '-' + String(mm).padStart(2, '0');
+}
 
-  return {
-    value: Math.round(val * 100) / 100,
-    date: md[1] + '-' + String(mm).padStart(2, '0') + '-01',
-    headerRow: hdr + 1
-  };
+function priceFromRows(rows, from, running) {
+  let hdr = -1, dateCol = -1, pCol = -1;
+  for (let i = 0; i < Math.min(rows.length, 30); i++) {
+    const r = (rows[i] || []).map(c => String(c == null ? '' : c).trim());
+    const d = r.findIndex(c => /^date$/i.test(c));
+    const p = r.findIndex(x => /^p$/i.test(x));
+    if (d >= 0 && p >= 0) { hdr = i; dateCol = d; pCol = p; }
+  }
+  if (hdr < 0) throw new Error('no header row naming Date and P');
+  const out = [];
+  for (let i = hdr + 1; i < rows.length; i++) {
+    const r = rows[i] || [], v = Number(r[pCol]);
+    if (r[dateCol] == null || r[dateCol] === '' || !isFinite(v) || v <= 0) continue;
+    const m = shillerMonth(r[dateCol]);
+    if (m < from || (running && m >= running)) continue;
+    if (v < 1 || v > 100000) throw new Error('S&P price ' + v + ' out of band in ' + m);
+    if (out.length && m <= out[out.length - 1].m) throw new Error('months out of order at ' + m);
+    out.push({ m, v: Math.round(v * 100) / 100 });
+  }
+  if (!out.length) throw new Error('no S&P price below the header');
+  return out;
 }
 
 async function shillerCape() {
+  const got = await shillerSheet(capeFromRows);
+  return { value: got.value, date: got.date };
+}
+
+async function shillerSheet(parse) {
   let XLSX;
   try { XLSX = require('xlsx'); }
   catch (e) { throw new Error('xlsx is not installed — run npm i; CAPE needs it to read Shiller\'s .xls'); }
@@ -117,15 +148,15 @@ async function shillerCape() {
       const wb = XLSX.read(Buffer.from(await res.arrayBuffer()), { type: 'buffer' });
       const sheet = wb.SheetNames.find(n => /^data$/i.test(n)) || wb.SheetNames[1] || wb.SheetNames[0];
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheet], { header: 1, blankrows: false });
-      const got = capeFromRows(rows);
-      say('  CAPE from ' + name + ', sheet "' + sheet + '", header row ' + got.headerRow);
-      return { value: got.value, date: got.date };
+      const got = parse(rows);
+      say('  Shiller from ' + name + ', sheet "' + sheet + '"');
+      return got;
     } catch (e) { why.push(name + ': ' + e.message); }
   }
-  throw new Error('no workbook on shillerdata.com yielded a CAPE reading — ' + why.join('; '));
+  throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { capeFromRows, shillerCape }; }
+if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape }; }
 else (async () => {
   const out = {};
   const failed = [];

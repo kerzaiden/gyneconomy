@@ -28,6 +28,8 @@ async function fredSeries(series, start) {
 }
 
 const VOL_JOIN = '1990-01';
+const SP500_FROM = '1950-01';
+const { shillerSheet, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
 
 function monthlyMean(rows, lo, hi, before) {
@@ -104,13 +106,14 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity) {
+function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
   var volatilityHistory = [${rows(volatility)}];
 ` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
-    (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '');
+    (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
+    (sp500 ? '\n  var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '');
 }
 
 function treasuryBlock(t) {
@@ -189,7 +192,10 @@ async function main() {
   if (!productivity.length) throw new Error('OPHNFB: no year-over-year quarter');
   say('OPHNFB YoY    ' + productivity.length + ' quarters, ' + productivity[0].q + ' → ' + productivity[productivity.length - 1].q);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity));
+  const sp500 = await shillerSheet(rows => priceFromRows(rows, SP500_FROM, new Date().toISOString().slice(0, 7)));
+  say('S&P 500       ' + sp500.length + ' months, ' + sp500[0].m + ' → ' + sp500[sp500.length - 1].m + ' (Shiller, monthly average of daily closes)');
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

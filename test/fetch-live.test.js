@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { capeFromRows } = require('../tools/fetch-live.js');
+const { capeFromRows, priceFromRows } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -74,6 +74,19 @@ throws('a value below the band',        sheet([['2026.03', 6100, 75, 2]]),      
 throws('a value above the band',        sheet([['2026.03', 6100, 75, 900]]),               /out of band/);
 throws('an unparsable date',            sheet([['March 2026', 6100, 75, 41.3]]),           /unparsable/);
 throws('an impossible month',           sheet([['2026.13', 6100, 75, 41.3]]),              /impossible month/);
+
+console.log('\npriceFromRows — tools/fetch-live.js\n');
+ok("the price is the column headed P on Shiller's lowest heading row", priceFromRows(stacked, '1950-01', '2026-09'),
+   [{ m: '2026-07', v: 7481.34 }, { m: '2026-08', v: 7711.32 }]);
+ok('the running month is left out until it closes', priceFromRows(stacked, '1950-01', '2026-09').length, 2);
+ok('a ONE-digit month is October here too', priceFromRows([['Date', 'P'], [2025.1, 6000], [2025.11, 6100]], '1950-01'),
+   [{ m: '2025-10', v: 6000 }, { m: '2025-11', v: 6100 }]);
+ok('months before the start are left out', priceFromRows([['Date', 'P'], ['1949.12', 16.5], ['1950.01', 16.9]], '1950-01'),
+   [{ m: '1950-01', v: 16.9 }]);
+try { priceFromRows([['Date', 'Price'], ['2026.03', 6100]], '1950-01'); fail++; console.log('  FAIL real Price is not P'); }
+catch (e) { if (/no header row/.test(e.message)) { pass++; console.log('  ok   the real Price column is never taken for P      threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
+try { priceFromRows([['Date', 'P'], ['2026.03', 900000]], '1950-01'); fail++; console.log('  FAIL band'); }
+catch (e) { if (/out of band/.test(e.message)) { pass++; console.log('  ok   a price outside the band is refused             threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);
