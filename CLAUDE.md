@@ -5,9 +5,10 @@ A reading companion to Keren's book *Mrs. Market*, which reads the economy as a 
 `npm run build`. It ships as a hosted site (GitHub Pages, installable) and as a Claude Artifact at
 `https://claude.ai/artifact/2xTPnvFGpfjNxPnjqHVEZF`, from the same file.
 
-Keren owns every design and editorial decision. **Her decisions are in `docs/DECISIONS.md`**, in her
-own words: part 1 is every one recorded up to V648, part 2 is where each new one is added. Don't overrule
-one; if it seems wrong, say so and ask. The rules below are the ones that matter most.
+Keren owns every design and editorial decision. **Her decisions are in `docs/DECISIONS.md`**: every rule in
+force, by topic, with its reason in her words and the versions that set it (V666). A new decision goes under its
+topic; one that overturns a rule rewrites it there. Don't overrule one; if it seems wrong, say so and ask. The
+rules below are the ones that matter most.
 
 ## Read first
 
