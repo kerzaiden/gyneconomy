@@ -68,7 +68,7 @@
 
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
   var tempInfo = '<h4>Temperature</h4>' +
-    '<p class="lede">Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.</p>' +
+    ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") +
     facts([
       '<b>Hot above the band, warm inside it, cold below</b> \u2014 red, teal, blue.',
       'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> is this board\u2019s own tolerance around it, drawn on CPI because that is the series most readers know.',
@@ -244,9 +244,9 @@
       '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
   }
   var tempCaptionFull = "", tempLeadShown = "";
-  function highlightsHtml(cards, cyclesHtml, moreHtml){
+  function highlightsHtml(cards, cyclesHtml, moreHtml, head){
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") +
+    return '<section class="highlights insights"><div class="hi-head">' + (head || "Insights") + '</div>' + cards.join("") +
       (cyclesHtml || "") + (moreHtml || "") + '</section>';
   }
 

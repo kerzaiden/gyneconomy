@@ -79,8 +79,7 @@
   }
   function mountSplit(s){
     if (!document.getElementById(s.id)){
-      var sheet = document.createElement("div");
-      sheet.className = "metric-sheet"; sheet.id = s.id; sheet.hidden = true;
+      var sheet = metricSheet(s.id);
       sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill("structural") + '</div>' +
         '<div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
       var after = byId(s.after);
@@ -116,8 +115,8 @@
       target:"sheet-marker-deficit", cols:deficitHistory.map(function(v){ return -v; }), base:DEF_PEEK_BASE });
   }
   function catSheet(id, key){
-    var sheet = document.createElement("div");
-    sheet.className = "metric-sheet cat-sheet cat-" + key; sheet.id = id; sheet.hidden = true;
+    var sheet = metricSheet(id);
+    sheet.className += " cat-sheet cat-" + key;
     return sheet;
   }
   function groupId(name){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }

@@ -497,7 +497,7 @@
     put("subj-ring-sentiment", volatilityRing());
     (function(){
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() +
+      put(lab, '<span class="peek-mark mood-mark">' + volatilitySvg() +
         '</span>Volatility');
     })();
     var volTag = volatilityTag();

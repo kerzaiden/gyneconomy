@@ -126,6 +126,115 @@
 
   function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 
+  // ---- The diagnosis: how she feels, and what has followed ----
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05, STRETCHED = 80;
+  var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
+  function seasonHalf(season){ return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool"; }
+  function rankToDate(prior, v){
+    if (v == null || prior.length < 12) return null;
+    return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
+  }
+  function readFeeling(f){
+    if (f.fear == null || f.mom == null) return null;
+    if (f.fear >= 90 && f.dd <= -0.15) return "Capitulation";
+    if (f.mom < 0 && f.fear >= 60) return "Fear";
+    if (f.dd <= -0.10 && f.fearPeak >= FRIGHTENED && f.fear <= f.fearPeak - RISE) return "Despondency";
+    if (f.fear3 != null && f.fear3 < CALM && f.fear - f.fear3 >= RISE && f.dd >= -0.10) return "Anxiety";
+    if (f.mom > 0 && f.wasNegative) return "Hope";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
+    return null;
+  }
+  function readPosture(stage, half, f){
+    var afraid = stage === "Fear" || stage === "Capitulation";
+    if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
+    if (half === "warm" && afraid) return "Patience";
+    if (half === "warm" && f.mom < 0) return "Defense";
+    if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
+    return "Neutral";
+  }
+  var marketCache = null;
+  function marketMonths(){
+    if (marketCache) return marketCache;
+    var sp = sp500MonthlyHistory, vol = volatilityHistory, spAt = {}, volAt = {};
+    var top = -Infinity, mom = [], best = [], dd = [];
+    sp.forEach(function(d, i){
+      spAt[d.m] = i; top = Math.max(top, d.v); dd.push(d.v / top - 1);
+      mom.push(i >= 12 ? d.v / sp[i - 12].v - 1 : null);
+      var prevPos = i > 0 && mom[i - 1] > 0 && best[i - 1] != null;
+      best.push(mom[i] > 0 ? Math.max(mom[i], prevPos ? best[i - 1] : -Infinity) : null);
+    });
+    var fearRank = vol.map(function(d, j){
+      volAt[d.m] = j;
+      return rankToDate(vol.slice(0, j).map(function(x){ return x.v; }), d.v);
+    });
+    var quarters = {};
+    seasonTrackAll.forEach(function(e){ if (e) quarters[e.y + "-" + QUARTER_END_MONTH[e.qn]] = e.reading.season; });
+    marketCache = { sp:sp, vol:vol, spAt:spAt, volAt:volAt, mom:mom, best:best, dd:dd, fearRank:fearRank,
+                   quarterKeys:Object.keys(quarters).sort(), quarters:quarters };
+    return marketCache;
+  }
+  function seasonInMonth(S, m){
+    var s = null;
+    S.quarterKeys.forEach(function(k){ if (k <= m) s = S.quarters[k]; });
+    return s;
+  }
+  function stretchRank(year, value){
+    return rankToDate(capeHistory.filter(function(d){ return d.y < year; }).map(function(d){ return d.v; }), value);
+  }
+  function marketFacts(S, m, fearNow){
+    var i = S.spAt[m], j = S.volAt[m];
+    if (i == null || j == null || S.mom[i] == null) return null;
+    var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v){ return v != null; });
+    var y = parseInt(m.slice(0, 4), 10), cape = capeHistory.filter(function(d){ return d.y === y; })[0];
+    return { m:m, dd:S.dd[i], mom:S.mom[i], share:S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
+             wasNegative:S.mom.slice(Math.max(0, i - 3), i).some(function(v){ return v != null && v < 0; }),
+             fear:fearNow != null ? fearNow : S.fearRank[j], fear3:S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
+             fearPeak:peak.length ? Math.max.apply(null, peak) : null,
+             stretch:cape ? stretchRank(y, cape.v) : null };
+  }
+  var followedCache = null;
+  function whatFollowed(){
+    if (followedCache) return followedCache;
+    var S = marketMonths(), cells = {}, last = null, prevKey = null, from = null;
+    S.vol.forEach(function(d){
+      var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
+      if (!f || !season || i == null || i + 12 >= S.sp.length) return;
+      var stage = readFeeling(f) || last; last = stage;
+      if (!stage) return;
+      if (!from) from = d.m;
+      var key = stage + "|" + seasonHalf(season), c = cells[key] = cells[key] || { months:0, spells:0, higher:0, gains:[] };
+      var gain = S.sp[i + 12].v / S.sp[i].v - 1;
+      c.months++; if (gain > 0) c.higher++; c.gains.push(gain);
+      if (key !== prevKey) c.spells++;
+      prevKey = key;
+    });
+    Object.keys(cells).forEach(function(k){
+      var g = cells[k].gains.slice().sort(function(a, b){ return a - b; });
+      cells[k].median = g[Math.floor(g.length / 2)]; cells[k].worst = g[0];
+    });
+    followedCache = { cells:cells, from:from };
+    return followedCache;
+  }
+  function diagnoseToday(){
+    var S = marketMonths(), lastM = S.sp[S.sp.length - 1].m;
+    var vols = S.vol.map(function(d){ return d.v; });
+    var f = marketFacts(S, lastM, rankToDate(vols, vixRow.meter.value));
+    if (!f) return null;
+    var j = S.vol.length;
+    f.fear3 = S.fearRank[j - 3]; f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v){ return v != null; }));
+    f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
+    var stage = readFeeling(f), carried = false;
+    if (!stage){
+      for (var k = S.sp.length - 2; k >= 0 && !stage; k--){ var pf = marketFacts(S, S.sp[k].m); stage = pf && readFeeling(pf); }
+      carried = true;
+    }
+    var half = seasonHalf(currentSeason), rec = whatFollowed();
+    return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
+             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from,
+             bestMom:S.best[S.sp.length - 1] };
+  }
+
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;

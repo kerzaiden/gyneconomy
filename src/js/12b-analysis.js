@@ -182,7 +182,7 @@
       { key:"mood", label:"Mood", mark:moodSvg, rows:[
         { name:"Shiller CAPE", open:"sheet-metric-valuation", on:"y", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today", base:CAPE_FAIR },
         { name:"Buffett indicator", open:"sheet-metric-buffett", on:"q", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%", base:splitMid("sheet-metric-buffett") },
-        { name:"Volatility", open:"sheet-sign-sentiment",  on:"m", mark:umbrellaSvg, list:byM(volatilityHistory),       dp:1, ring:vixPct },
+        { name:"Volatility", open:"sheet-sign-sentiment",  on:"m", mark:volatilitySvg, list:byM(volatilityHistory),       dp:1, ring:vixPct },
         { name:"Desire", open:"sheet-sign-desire",      on:"m", mark:flameSvg,    list:hyList,                       dp:2, unit:"%", peek:hyQuarterEnds() },
         { name:"Horizon", open:"sheet-sign-horizon",     on:"q", mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true, rule:true }
       ]},

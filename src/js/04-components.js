@@ -347,7 +347,7 @@
     }
     var defRow = labPanel.filter(function(r){ return r.opens && r.opens.id === "sheet-marker-deficit"; })[0];
     var note = '<h4>Federal budget deficit or surplus</h4>' +
-      (defRow ? '<p class="lede">' + defRow.note + '</p>' : '') +
+      (defRow ? ledeHtml(defRow.note) : '') +
       facts([
         'Every fiscal year since ' + DEF_FROM_YEAR + ' as a share of GDP \u2014 <b>a surplus above the line, a ' +
           'deficit below</b>.',
