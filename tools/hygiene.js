@@ -4,7 +4,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const PAD_OWNERS = ['colPeek', 'meterPeek', 'pairChart'];
-const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|energy)|mkt-(up|down)|f[0-9])$/;
+const DYNAMIC_CLASS = /^(cat-(weather|circulation|mood|energy)|kind-(structural|leading|coincident|lagging)|mkt-(up|down)|f[0-9])$/;
+const GONE = ['vh-line', 'panel-row', 'pbar', 'rbar-track', 'reading-box', 'all-row', 'sheet-indicators', 'growth-peers', 'peer-picker'];
+const PINNED = [['COL_FILL', /var COL_FILL = 0\.68;/], ['AXIS', /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/]];
 
 function enclosing(src, at) {
   const i = src.lastIndexOf('\n  function ', at);
@@ -79,10 +81,19 @@ function unused(js, html, css) {
   return out;
 }
 
+function gone(all) {
+  return GONE.filter(n => new RegExp('(^|[^\\w-])' + n + '(?![\\w-])').test(all)).map(n => n + ' is gone on purpose (docs/ARCHITECTURE.md)');
+}
+
+function pinned(js) {
+  return PINNED.filter(([, re]) => !re.test(js)).map(([n]) => n + ' moved from its pinned value: update the pin with the decision, or put it back');
+}
+
 function audit(files, html, css) {
   let out = fontSizes(css).concat(pageScoped(css));
   Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
-  return out.concat(unused(Object.values(files).join('\n'), html, css));
+  const js = Object.values(files).join('\n');
+  return out.concat(unused(js, html, css), gone(js + html + css), pinned(js));
 }
 
 if (require.main === module) {
@@ -96,7 +107,7 @@ if (require.main === module) {
     console.log('HYGIENE — a child holds what its parent owns, or something is unused:\n\n  ' + out.join('\n  ') + '\n');
     process.exit(1);
   }
-  console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, nothing unused');
+  console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, nothing unused, nothing removed come back, pins held');
 } else {
-  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, enclosing, audit };
+  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
 }

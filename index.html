@@ -16007,38 +16007,74 @@
       title: "Federal budget"
     }
   } ];
-  var productivityReading = {
-    bodyTerm: "Productivity growth",
-    info: function() {
-      return productivityInfoHtml(productivityReading);
-    },
-    page: {
-      chart: function() {
-        return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>';
-      }
-    },
-    econTerm: "Productivity growth",
-    metricSub: "nonfarm business output per hour, YoY, Q2 2026",
-    metric: "2.2%",
-    tag: {
-      state: "good",
-      text: "Above trend"
-    },
-    meter: {
-      min: -1.7,
-      max: 6.7,
-      value: 2.2,
-      optimal: {
-        gte: 1.3,
-        label: "≥ 1.3% YoY"
+  var productivityRecord = function() {
+    var h = typeof productivityHistory !== "undefined" && productivityHistory.length ? productivityHistory : null;
+    if (!h) return {
+      now: {
+        q: "2026 Q2",
+        v: 2.2
       },
-      ends: {
-        low: "Falling"
+      lo: {
+        q: "1974 Q3",
+        v: -2.2
+      },
+      hi: {
+        q: "1950 Q4",
+        v: 7.2
       }
-    },
-    shortCaption: "Q2 2026 — running above the post-2010 slowdown average and roughly at the 70-year trend.",
-    caption: "Q2 2026, BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. Range is the true annual span since 1948: −1.7% in 1974 to +6.7% in 1950."
-  };
+    };
+    return {
+      now: h[h.length - 1],
+      lo: h.reduce(function(a, d) {
+        return d.v < a.v ? d : a;
+      }),
+      hi: h.reduce(function(a, d) {
+        return d.v > a.v ? d : a;
+      })
+    };
+  }();
+  var productivityReading = function(R) {
+    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
+    return {
+      bodyTerm: "Productivity growth",
+      info: function() {
+        return productivityInfoHtml(productivityReading);
+      },
+      page: {
+        chart: function() {
+          return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>';
+        }
+      },
+      econTerm: "Productivity growth",
+      metricSub: "nonfarm business output per hour, YoY, " + at,
+      metric: R.now.v.toFixed(1) + "%",
+      tag: {
+        state: "good",
+        text: "Above trend"
+      },
+      wordFor: "2026 Q2",
+      meter: {
+        min: R.lo.v,
+        max: R.hi.v,
+        value: R.now.v,
+        optimal: {
+          gte: 1.3,
+          label: "≥ 1.3% YoY"
+        },
+        ends: {
+          low: "Falling"
+        }
+      },
+      span: span,
+      shortCaption: at + " — running above the post-2010 slowdown average and roughly at the 70-year trend.",
+      caption: at + ", BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+    };
+  }(productivityRecord);
+  function checkProductivityWord() {
+    if (productivityRecord.now.q !== productivityReading.wordFor) console.warn("Productivity: the word and captions were written for " + productivityReading.wordFor + ", the data now ends " + productivityRecord.now.q + " — Keren sets the word for the new quarter");
+  }
+  GYN.step("checkProductivityWord", checkProductivityWord, "check");
+  checkProductivityWord();
   var DEF_FROM_YEAR = 1946;
   var deficitHistory = "-7.00 1.61 4.30 0.21 -1.04 1.76 -0.41 -1.67 -0.30 -0.70 0.88 0.72 -0.58 -2.46 0.06 -0.59 -1.18 -0.75 -0.86 -0.19 -0.45 -1.01 -2.67 0.32 -0.26 -1.98 -1.83 -1.05 -0.40 -3.16 -3.94 -2.58 -2.52 -1.55 -2.58 -2.46 -3.83 -5.72 -4.59 -4.89 -4.83 -3.08 -2.96 -2.71 -3.71 -4.37 -4.45 -3.72 -2.79 -2.15 -1.33 -0.26 0.76 1.30 2.30 1.21 -1.44 -3.30 -3.38 -2.44 -1.80 -1.11 -3.10 -9.76 -8.60 -8.33 -6.62 -4.03 -2.75 -2.42 -3.11 -3.39 -3.77 -4.57 -14.48 -11.69 -5.27 -6.07 -6.20 -5.77".split(" ").map(Number);
   var DEF_MEAN = deficitHistory.reduce(function(a, b) {
@@ -18203,7 +18239,7 @@
     u: "https://fred.stlouisfed.org/series/OPHNFB"
   } ];
   function productivityInfoHtml(f) {
-    return "<h4>" + f.econTerm + "</h4>" + '<p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm " + "business sector, against the same quarter a year earlier (" + f.metricSub + "). The ends of the track " + "are the record for that series: −1.7% in 1974 and +6.7% in 1950.</p>" + '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS’s own figure for the slowdown ' + "era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year " + "across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than " + "the slowdown</i>, not <i>at trend</i>. Today’s " + f.metric + " clears both, which is why the word is " + "above trend rather than merely adequate.</p>" + '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' + "rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from " + "each one, and only the second kind compounds.</p>" + srcBlock(PRODUCTIVITY_SRC);
+    return "<h4>" + f.econTerm + "</h4>" + '<p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm " + "business sector, against the same quarter a year earlier (" + f.metricSub + "). The ends of the track " + "are the record for that series, quarter by quarter: " + f.span + ".</p>" + '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS’s own figure for the slowdown ' + "era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year " + "across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than " + "the slowdown</i>, not <i>at trend</i>. Today’s " + f.metric + " clears both, which is why the word is " + "above trend rather than merely adequate.</p>" + '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' + "rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from " + "each one, and only the second kind compounds.</p>" + srcBlock(PRODUCTIVITY_SRC);
   }
   function outputInfoHtml(f) {
     return "<h4>" + f.econTerm + "</h4>" + '<p class="caption">The reading is <b>' + f.tag.text + "</b>. The ISM Manufacturing PMI " + "(" + f.metricSub + ") is a diffusion index, not a quantity: it asks purchasing managers whether " + "activity is up, down or flat against last month, so it reports DIRECTION rather than level.</p>" + '<p class="caption" style="margin-top:10px;"><b>50 is definitional, not drawn</b> — it is the point at ' + "which as many firms report improvement as report decline, so above it manufacturing is expanding and " + "below it contracting. That is why this band is one-sided: there is no level a PMI ought to sit at, only " + "a line it is on one side of. The ends of the track are the record, 29.4 in May 1980 and 77.5 in July " + "1950; ISM’s full history is members-only, so those two come from a compilation of it.</p>" + '<p class="caption" style="margin-top:10px;">Read it as the fast reading on this page. The labour market ' + "above lags a turn by two to three quarters; this one is a survey of what is happening now.</p>" + srcBlock(f.src || []);
@@ -20176,17 +20212,9 @@
     var qs = Object.keys(series).sort(), out = {}, prev;
     qs.forEach(function(q, i) {
       if (i < GROWTH_WINDOW - 1) return;
-      var w = qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k) {
+      var slope = slopeOf(qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k) {
         return series[k];
-      });
-      var n = w.length, mx = (n - 1) / 2, my = w.reduce(function(a, b) {
-        return a + b;
-      }, 0) / n, num = 0, den = 0;
-      w.forEach(function(v, k) {
-        num += (k - mx) * (v - my);
-        den += (k - mx) * (k - mx);
-      });
-      var slope = den ? num / den : 0;
+      }));
       out[q] = slope < -.025 ? "contraction" : slope > .025 ? "expansion" : prev || "expansion";
       prev = out[q];
     });
@@ -20211,6 +20239,23 @@
   }
   function monthLabel(m) {
     return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4);
+  }
+  function cycleReturns(from, to) {
+    var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
+    for (var py = from; py <= to; py++) {
+      var pr = sp500AnnualReturns[py];
+      if (pr == null) continue;
+      level *= 1 + pr / 100;
+      cumByYear[py] = (level - 1) * 100;
+      if (pr > peakRet) {
+        peakRet = pr;
+        peakYear = py;
+      }
+    }
+    return {
+      peakYear: peakYear,
+      cumByYear: cumByYear
+    };
   }
   function cycleModel(era) {
     var ongoing = !!era.ongoing;
@@ -20264,17 +20309,7 @@
         last.isNow = true;
       }
     }
-    var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
-    for (var py = era.from; py <= endYear; py++) {
-      var pr = sp500AnnualReturns[py];
-      if (pr == null) continue;
-      level *= 1 + pr / 100;
-      cumByYear[py] = (level - 1) * 100;
-      if (pr > peakRet) {
-        peakRet = pr;
-        peakYear = py;
-      }
-    }
+    var years = cycleReturns(era.from, endYear);
     return {
       era: era,
       ongoing: ongoing,
@@ -20282,8 +20317,8 @@
       elapsedYears: elapsedYears,
       yearIndex: yearIndex,
       dialYears: dialYears,
-      peakYear: peakYear,
-      cumByYear: cumByYear,
+      peakYear: years.peakYear,
+      cumByYear: years.cumByYear,
       endMonth: endMonth,
       cpi: cpi,
       reading: reading,
@@ -22089,12 +22124,8 @@
     return regime === "contraction" ? "phase-down" : "phase-up";
   }
   function eraMarketTotal(cyc) {
-    var endY = cyc.ongoing ? calendarTodayY : cyc.to, level = 1, any = false;
-    for (var y = cyc.from; y <= endY; y++) if (sp500AnnualReturns[y] != null) {
-      level *= 1 + sp500AnnualReturns[y] / 100;
-      any = true;
-    }
-    return any ? (level - 1) * 100 : null;
+    var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
+    return years.length ? cum[years[years.length - 1]] : null;
   }
   var cycleViewEl = byId("cycle-view");
   var shownEra = null;
@@ -24725,7 +24756,6 @@
       rows: [ {
         name: "Temperature",
         open: "sheet-metric-temp",
-        on: "m",
         mark: thermoSvg,
         list: byM(cpiYoYHistory),
         dp: 1,
@@ -24733,7 +24763,6 @@
       }, {
         name: "Growth",
         open: "sheet-metric-gdp",
-        on: "q",
         mark: sproutSvg,
         list: byQ(gdpQuarterlyYoY),
         dp: 1,
@@ -24746,7 +24775,6 @@
       rows: [ {
         name: "Hormones",
         open: "sheet-sign-hormones",
-        on: "m",
         mark: hormoneSvg,
         list: byM(fedFundsHistory),
         dp: 2,
@@ -24756,7 +24784,6 @@
       }, {
         name: "Pressure",
         open: "sheet-sign-pressure",
-        on: "q",
         mark: gaugeSvg,
         list: byQ(t10yYieldHistory),
         dp: 2,
@@ -24765,7 +24792,6 @@
       }, {
         name: "Pulse",
         open: "sheet-sign-pulse",
-        on: "q",
         mark: ecgSvg,
         list: qFrom(m2vHistory, M2V_FROM_YEAR),
         dp: 2,
@@ -24773,7 +24799,6 @@
       }, {
         name: "Volume",
         open: "sheet-sign-volume",
-        on: "q",
         mark: volumeSvg,
         list: qFrom(m2Yoy, M2_FROM_YEAR),
         dp: 1,
@@ -24787,7 +24812,6 @@
       rows: [ {
         name: "Shiller CAPE",
         open: "sheet-metric-valuation",
-        on: "y",
         mark: diamondSvg,
         list: byY(capeHistory),
         dp: 1,
@@ -24797,7 +24821,6 @@
       }, {
         name: "Buffett indicator",
         open: "sheet-metric-buffett",
-        on: "q",
         mark: diamondSvg,
         list: byQ(buffettHistory),
         dp: 0,
@@ -24806,7 +24829,6 @@
       }, {
         name: "Volatility",
         open: "sheet-sign-sentiment",
-        on: "m",
         mark: volatilitySvg,
         list: byM(volatilityHistory),
         dp: 1,
@@ -24814,7 +24836,6 @@
       }, {
         name: "Desire",
         open: "sheet-sign-desire",
-        on: "m",
         mark: flameSvg,
         list: hyList,
         dp: 2,
@@ -24823,7 +24844,6 @@
       }, {
         name: "Horizon",
         open: "sheet-sign-horizon",
-        on: "q",
         mark: sunriseSvg,
         list: byQ(t10y3mHistory),
         dp: 2,
@@ -24837,7 +24857,6 @@
       rows: [ {
         name: "Federal debt",
         open: "sheet-metric-debt",
-        on: "q",
         mark: debtSvg,
         list: byQ(grossDebtQuarterly),
         dp: 0,
@@ -24846,7 +24865,6 @@
       }, {
         name: "Interest payments",
         open: "sheet-metric-interest",
-        on: "y",
         mark: interestSvg,
         list: byY(fiscalHistory.interest),
         dp: 1,
@@ -24855,7 +24873,6 @@
       }, {
         name: "Federal budget",
         open: "sheet-marker-deficit",
-        on: "y",
         mark: budgetSvg,
         list: deficitHistory.map(function(v, i) {
           return {
@@ -24871,7 +24888,6 @@
       }, {
         name: "Households",
         open: "sheet-metric-households",
-        on: "q",
         mark: houseSvg,
         list: qFrom(dsrHistory, DSR_FROM_YEAR),
         dp: 1,
@@ -24881,12 +24897,18 @@
       }, {
         name: "Unemployment rate",
         open: "sheet-sign-activity",
-        on: "m",
         mark: trendUpSvg,
         list: byM(unempHistory),
         dp: 1,
         unit: "%"
-      } ]
+      } ].concat(typeof productivityHistory === "undefined" || !productivityHistory.length ? [] : [ {
+        name: "Productivity growth",
+        open: "sheet-sign-productivity-growth",
+        mark: clockSvg,
+        list: byQ(productivityHistory),
+        dp: 1,
+        unit: "%"
+      } ])
     } ];
   }
   var __roster = null;

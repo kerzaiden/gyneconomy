@@ -123,16 +123,31 @@
   ];
   /* ---- Productivity growth is not in this panel ---- */
 
-  var productivityReading = {
-    bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
-    page:{ chart:function(){ return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
-    econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, Q2 2026",
-    metric:"2.2%", tag:{ state:"good", text:"Above trend" },
-    meter:{ min:-1.7, max:6.7, value:2.2, optimal:{gte:1.3, label:"\u2265 1.3% YoY"},
-            ends:{ low:"Falling" } },
-    shortCaption:"Q2 2026 — running above the post-2010 slowdown average and roughly at the 70-year trend.",
-    caption:"Q2 2026, BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. Range is the true annual span since 1948: −1.7% in 1974 to +6.7% in 1950."
-  };
+  var productivityRecord = (function(){
+    var h = typeof productivityHistory !== "undefined" && productivityHistory.length ? productivityHistory : null;
+    if (!h) return { now:{ q:"2026 Q2", v:2.2 }, lo:{ q:"1974 Q3", v:-2.2 }, hi:{ q:"1950 Q4", v:7.2 } };
+    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
+             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
+  })();
+  var productivityReading = (function(R){
+    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
+    return {
+      bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
+      page:{ chart:function(){ return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
+      econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
+      metric:R.now.v.toFixed(1) + "%", tag:{ state:"good", text:"Above trend" }, wordFor:"2026 Q2",
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:1.3, label:"\u2265 1.3% YoY"},
+              ends:{ low:"Falling" } },
+      span:span,
+      shortCaption:at + " — running above the post-2010 slowdown average and roughly at the 70-year trend.",
+      caption:at + ", BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+    };
+  })(productivityRecord);
+  function checkProductivityWord(){
+    if (productivityRecord.now.q !== productivityReading.wordFor)
+      console.warn("Productivity: the word and captions were written for " + productivityReading.wordFor + ", the data now ends " + productivityRecord.now.q + " — Keren sets the word for the new quarter");
+  }
+  GYN.step("checkProductivityWord", checkProductivityWord, "check"); checkProductivityWord();
 
   /* ---- Institutional trust is not in this panel ---- */
 

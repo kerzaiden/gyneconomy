@@ -31,26 +31,11 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: No email address in the markup
-        run: |
-          n=$(grep -cE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' index.html || true)
-          if [ "$n" != "0" ]; then echo "::error::$n email address(es) in index.html"; exit 1; fi
-          echo "ok: no address in markup"
+      - name: The gate (build, email, comments, load order, hygiene, map, ledger, tool tests)
+        run: npm run check
 
-      - name: index.html matches src/
-        run: npm run build:check
-
-      - name: Test suite
+      - name: Browser suite
         run: npm test
-
-      - name: Fetcher unit tests
-        run: npm run test:tools
-
-      - name: Navigation map is current
-        run: npm run map:check
-
-      - name: Components are not more duplicated
-        run: npm run comp:check
 
       - name: Accessibility
         run: npm run a11y:check
