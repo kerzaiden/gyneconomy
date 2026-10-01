@@ -191,7 +191,8 @@
         { name:"Interest payments", open:"sheet-metric-interest", on:"y", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
         { name:"Federal budget", open:"sheet-marker-deficit", on:"y", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
         { name:"Households", open:"sheet-metric-households",  on:"q", mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
-        { name:"Unemployment rate", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
+        { name:"Unemployment rate", open:"sheet-sign-activity",    on:"m", mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" },
+        { name:"Productivity growth", open:"sheet-sign-productivity-growth", on:"q", mark:clockSvg, list:byQ(productivityHistory), dp:1, unit:"%" }
       ]}
     ];
   }

@@ -86,8 +86,8 @@ rules below are the ones that matter most.
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
 npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool checks
-npm run check:all        # plus the browser suite (106 checks) and axe — what CI runs
-npm test                 # the browser suite alone; --bless rewrites the baseline, a deliberate act
+npm run check:all        # plus the browser suite (about 100 checks, ~40 s) and axe — what CI runs
+npm test                 # the browser suite alone; it waits on the app, never on a clock
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)

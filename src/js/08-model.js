@@ -44,10 +44,7 @@
     var qs = Object.keys(series).sort(), out = {}, prev;
     qs.forEach(function(q, i){
       if (i < GROWTH_WINDOW - 1) return;
-      var w = qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k){ return series[k]; });
-      var n = w.length, mx = (n - 1) / 2, my = w.reduce(function(a, b){ return a + b; }, 0) / n, num = 0, den = 0;
-      w.forEach(function(v, k){ num += (k - mx) * (v - my); den += (k - mx) * (k - mx); });
-      var slope = den ? num / den : 0;
+      var slope = slopeOf(qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k){ return series[k]; }));
       out[q] = slope < -0.025 ? "contraction" : slope > 0.025 ? "expansion" : (prev || "expansion");
       prev = out[q];
     });
@@ -66,6 +63,16 @@
   var cycleYtdFraction = (DATA_COMPILED - new Date(calendarTodayY, 0, 1)) / (new Date(calendarTodayY + 1, 0, 1) - new Date(calendarTodayY, 0, 1));
   function seasonTitle(meta){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
   function monthLabel(m){ return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4); }
+  function cycleReturns(from, to){
+    var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
+    for (var py = from; py <= to; py++){
+      var pr = sp500AnnualReturns[py]; if (pr == null) continue;
+      level *= 1 + pr / 100;
+      cumByYear[py] = (level - 1) * 100;
+      if (pr > peakRet){ peakRet = pr; peakYear = py; }
+    }
+    return { peakYear:peakYear, cumByYear:cumByYear };
+  }
   function cycleModel(era){
     var ongoing = !!era.ongoing;
     var endYear = ongoing ? calendarTodayY : era.to;
@@ -93,14 +100,8 @@
       if (last.to < elapsedYears) track.push({ q:"since " + last.q, season:season, from:last.to, to:elapsedYears, reading:reading, isNow:true });
       else { last.to = Math.min(last.to, elapsedYears); last.season = season; last.isNow = true; }
     }
-    var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
-    for (var py = era.from; py <= endYear; py++){
-      var pr = sp500AnnualReturns[py]; if (pr == null) continue;
-      level *= 1 + pr / 100;
-      cumByYear[py] = (level - 1) * 100;
-      if (pr > peakRet){ peakRet = pr; peakYear = py; }
-    }
-    return { era:era, ongoing:ongoing, endYear:endYear, elapsedYears:elapsedYears, yearIndex:yearIndex, dialYears:dialYears, peakYear:peakYear, cumByYear:cumByYear,
+    var years = cycleReturns(era.from, endYear);
+    return { era:era, ongoing:ongoing, endYear:endYear, elapsedYears:elapsedYears, yearIndex:yearIndex, dialYears:dialYears, peakYear:years.peakYear, cumByYear:years.cumByYear,
              endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
   }
   var seasonRuleSentence = {

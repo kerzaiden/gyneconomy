@@ -320,8 +320,10 @@ one whose scope, or the code, is in doubt; it waits for Keren.
   year and a red Bear year swatch.** A cycle contains the seasons, so the larger frame comes first. (V423)
 - **A cycle's reading is today's while the cycle is open and its closing value once it has closed, with its
   range over the cycle; a reading with nothing inside the cycle's years says so, and nothing is carried in
-  from outside them.** Keren chose this over the peak reading (which would leave the Big Tech Cycle empty) and
-  over first-against-last (which hides the extreme). (V613, undated, Sep 18, 2026)
+  from outside them. Every reading with a history in the app reads this way, Productivity growth included
+  (V667: it had said "No history in the app" with a record from 1948).** Keren chose this over the peak
+  reading (which would leave the Big Tech Cycle empty) and over first-against-last (which hides the extreme).
+  (V613, undated, Sep 18, 2026)
 - **A closed cycle is read, not graded: its small pictures are drawn in the neutral accent, never a state
   colour.** A cycle that ended is not being judged. (V615)
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
@@ -986,8 +988,14 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 - **Nothing that is no longer drawn is kept "in case".** Keren's standing rule: lean, dry, efficient code.
   (V465, V662)
 - **Class names built at run time, such as `.mkt-up` and `.mkt-down`, are listed in the hygiene tool so the
-  unused-style pruning keeps them; the suite checks that Analysis's bull and bear runs are drawn in colour.**
-  V662's pruning removed them, and Keren found "the bull bear market line disappeared". (V665)
+  unused-style pruning keeps them; the suite checks that Analysis's bull and bear runs are drawn in colour, and
+  that every class it sees built at run time is listed.** V662's pruning removed them, and Keren found "the bull
+  bear market line disappeared". (V665, V667)
+- **The tests are effective and lean: a check pins a rule, never an incidental count, date or string; what
+  Keren decided stays pinned exactly; a static fact is checked statically; the model's rules are tested in the
+  tool tests at their edges; the suite waits on the app, never on a clock; and CI runs every gate.** Keren:
+  "make sure our test suite is effective and we're not over-testing the app." She chose the full overhaul and
+  retired the stale `--full` baseline for a check that every run-time class is declared. (V667)
 - **Move, don't rebuild: when a reading, a category or the frame moves, its machinery (svg, functions,
   tooltip, panels, DOM, data ids, open handler) moves with it, byte for byte.** The V314 rule; pages are found
   by id, so their parent does not matter. (V446, V473, V596, V614)

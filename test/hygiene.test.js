@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -28,6 +28,11 @@ ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);
 ok('the bull and bear colours are built at run time', unused('', '', '.mkt-up{ x:1 } .mkt-down{ x:1 }'), []);
+ok('a removed class coming back is caught', gone('.vh-line{ x:1 }').length, 1);
+ok('a removed id coming back is caught', gone('<div id="growth-peers"></div>').length, 1);
+ok('a longer name that contains a removed one passes', gone('.pbar-wide .xpbar'), []);
+ok('the pinned geometry passes', pinned('var COL_FILL = 0.68; var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };'), []);
+ok('a moved pin is caught', pinned('var COL_FILL = 0.7; var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };').length, 1);
 
 console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);
