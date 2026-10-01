@@ -15453,14 +15453,12 @@
         max: 82.69,
         value: 14.21,
         optimal: {
-          from: 13,
-          to: 20,
-          label: "13–20"
+          lte: 20,
+          label: "below 20"
         },
         ends: {
-          low: "Complacent",
-          zone: "Usual",
-          high: "Panicked"
+          zone: "Calm",
+          high: "Elevated"
         }
       },
       shortNote: "Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
@@ -17021,15 +17019,25 @@
     category: "Lagging"
   } ];
   var vixRow = sentiment.rows[0];
-  var vixWordOf = function(v, m) {
-    var e = m.ends || {}, o = m.optimal || {};
-    return v < o.from ? e.low || "Low" : v > o.to ? e.high || "High" : e.zone || "Usual";
-  };
+  var VIX_CALM = 20, VIX_FEAR = 30;
+  var VIX_CONVENTION = [ {
+    t: "Chase — What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)",
+    u: "https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"
+  }, {
+    t: "TD Direct Investing — Understanding VIX or Volatility Index (the same lines at 20 and 30)",
+    u: "https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"
+  } ];
   function volatilityTag() {
-    var m = vixRow.meter, o = m.optimal || {};
-    return {
-      text: vixWordOf(m.value, m),
-      state: m.value < o.from ? "warning" : m.value > o.to ? "critical" : "good"
+    var v = vixRow.meter.value;
+    return v < VIX_CALM ? {
+      text: "Calm",
+      state: "good"
+    } : v <= VIX_FEAR ? {
+      text: "Elevated",
+      state: "warning"
+    } : {
+      text: "Fearful",
+      state: "critical"
     };
   }
   var tempInfo = "<h4>Temperature</h4>" + '<p class="lede">Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.</p>' + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
@@ -17946,7 +17954,7 @@
   var VOL_JOIN = "1990-01";
   function volatilityDetailHtml() {
     var m = vixRow.meter;
-    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall " + "over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near " + "bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, " + "Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "The line at <b>" + m.optimal.to + "</b> is the top of the usual band, " + m.optimal.label + ": an editorial line, " + "not a published one.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(sentiment.src);
+    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall " + "over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near " + "bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, " + "Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, " + "and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(sentiment.src.concat(VIX_CONVENTION));
   }
   var sp500AnnualReturnSource = [ {
     t: "S&P Dow Jones Indices — S&P 500 (index originator; total-return figures)",
@@ -19575,12 +19583,12 @@
         return d.v;
       }), "points", "month");
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10), parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
-      var line = vixRow.meter.optimal.to;
+      var line = VIX_CALM;
       function opts() {
         return {
           vals: vals,
           mid: line,
-          midLabel: "usual ceiling, " + line,
+          midLabel: "calm below " + line,
           fmt: function(v) {
             return v.toFixed(1);
           },
@@ -19595,7 +19603,7 @@
             return d.m.slice(5) === "01" && years.indexOf(y) !== -1 ? "’" + String(y).slice(2) : "";
           },
           fit: fit.fit,
-          alt: "The VIX, monthly average of daily closes, against the top of its usual band at " + line + "; before 1990 the VXO, Cboe’s original VIX."
+          alt: "The VIX, monthly average of daily closes, against the convention’s calm line at " + line + "; before 1990 the VXO, Cboe’s original VIX."
         };
       }
       host.innerHTML = histBar(histControls("fear-range", {
@@ -19613,13 +19621,12 @@
     sheetRenderers["fear-range"] = drawVolatility;
     sheetRenderers["sheet-sign-sentiment"] = drawVolatility;
     drawVolatility();
-    addSources(sentiment.src);
+    addSources(sentiment.src.concat(VIX_CONVENTION));
   }
   function volatilityHighlights(y0) {
     var hl = byId("curve-highlights");
     if (!hl || !volatilityHistory.length) return;
-    var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value, tag = volatilityTag();
-    var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+    var m = vixRow.meter, v = m.value, tag = volatilityTag();
     var top = volatilityHistory.reduce(function(a, d) {
       return d.v > a.v ? d : a;
     });
@@ -19634,7 +19641,7 @@
     }).length;
     var r = fearCurve(), shape = curveVerdict(r);
     var lede = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty ' + "days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic " + "gathers near bottoms and complacency near tops.</p>";
-    var nowTxt = "At " + v.toFixed(2) + " the VIX sits " + where + " of " + lo + " to " + hiB + ", against a daily record low of " + m.min + " and a high of " + m.max + ".";
+    var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM + " is calm, " + VIX_CALM + " to " + VIX_FEAR + " elevated and above " + VIX_FEAR + " fearful. Its daily record low is " + m.min + " and its high " + m.max + ".";
     var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 + " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) + (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
     var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
     hl.innerHTML = highlightsHtml([ lede, hiCard("Where it sits" + expandBtn(factsFrom(vixRow.note)), tag.state, nowTxt), hiCard("Against the record", "", recTxt), hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt) ]);

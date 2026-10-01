@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `b3148bc` on 2026-10-01. **68 components**, **45 shared patterns**.
+Generated from commit `c586038` on 2026-10-01. **68 components**, **45 shared patterns**.
 
 ## components.js
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { monthEnd, curveMonthly, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -16,44 +16,6 @@ function throws(label, fn, re) {
 }
 
 const d = (date, v) => ({ date, v });
-
-ok('takes the last day of the month',
-   [...monthEnd([d('2026-01-02', 1), d('2026-01-30', 9)]).entries()].map(([m, r]) => [m, r.v]),
-   [['2026-01', 9]]);
-ok('keeps one entry per month',
-   [...monthEnd([d('2026-01-30', 1), d('2026-02-02', 2), d('2026-02-27', 3)]).keys()],
-   ['2026-01', '2026-02']);
-ok('a month with no days never appears',
-   [...monthEnd([d('2026-01-30', 1), d('2026-03-02', 3)]).keys()],
-   ['2026-01', '2026-03']);
-throws('an unparsable date', () => monthEnd([d('Jan 2026', 1)]), /unparsable date/);
-
-ok('ratio is computed per day, sampled at month end',
-   curveMonthly([d('2026-01-05', 14), d('2026-01-30', 15)],
-                [d('2026-01-05', 20), d('2026-01-30', 20)], 0.3, 2.5),
-   [{ m: '2026-01', v: 0.75 }]);
-ok('a day the far leg did not print is not a day the ratio existed',
-   curveMonthly([d('2026-01-05', 14), d('2026-01-30', 15)],
-                [d('2026-01-05', 20)], 0.3, 2.5),
-   [{ m: '2026-01', v: 0.7 }]);
-ok('a month where only the near leg printed is left out',
-   curveMonthly([d('2026-02-10', 14)], [d('2026-01-05', 20)], 0.3, 2.5),
-   []);
-ok('rounds to three decimals, as fearCurve() does',
-   curveMonthly([d('2026-01-30', 14.21)], [d('2026-01-30', 17.61)], 0.3, 2.5),
-   [{ m: '2026-01', v: 0.807 }]);
-ok('an inverted curve is kept — it is the reading that matters most',
-   curveMonthly([d('2026-01-30', 30)], [d('2026-01-30', 25)], 0.3, 2.5),
-   [{ m: '2026-01', v: 1.2 }]);
-ok('a zero far leg cannot divide and is dropped',
-   curveMonthly([d('2026-01-30', 14)], [d('2026-01-30', 0)], 0.3, 2.5),
-   []);
-ok('a ratio outside its band is dropped, not clamped',
-   curveMonthly([d('2026-01-30', 14)], [d('2026-01-30', 199)], 0.3, 2.5),
-   []);
-ok('a leg outside its own band is dropped',
-   curveMonthly([d('2026-01-30', 900)], [d('2026-01-30', 900)], 0.3, 2.5),
-   []);
 
 ok('a monthly series keeps its months',
    monthlyLevels([d('1954-07-01', 0.8), d('1954-08-01', 1.22)], 0, 25),
@@ -144,8 +106,9 @@ ok('the VIX starts where the VXO hands over',
                      [d('1990-01-02', 17.24), d('2026-10-01', 18)], VOL_JOIN, '2026-10'),
    [{ m: '1987-10', v: 150.19 }, { m: '1989-12', v: 23 }, { m: '1990-01', v: 17.24 }]);
 ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
-ok('with volatility, its series is written after the fear curve',
-   /var fearCurveHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [], 'x', null, null, null, [{ m: '1990-01', v: 17.24 }])), true);
+ok('volatility is written after the Fed funds rate, and the fear curve no longer is',
+   [/var fedFundsHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }], 'x')),
+    /fearCurve/.test(emit([], [], 'x'))], [true, false]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

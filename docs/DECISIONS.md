@@ -6903,4 +6903,7 @@ So V663: Mood's Fear is Volatility. Its row is today's VIX with the usual band's
 chart, the monthly average of the VIX's daily closes since 1990 with the VXO for 1986–89, hanging from the band's
 top at 20. The fear curve is no longer charted; its shape today stays as one Highlights card. The past cycles read
 the same history, so every cycle now has a Volatility card.
+Then: "remove unused code, set the rules per convention, merge". So the fear curve's monthly history is no longer
+fetched or kept (nothing drew it), and the band is the market's convention rather than ours: below 20 calm, 20 to 30
+elevated, above 30 fearful, cited to Chase and TD.
 ~~~

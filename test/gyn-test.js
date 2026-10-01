@@ -680,7 +680,7 @@ async function openPage(p, url, sheet) {
         ? ok('repaint volatility figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
         : bad('repaint volatility figure', JSON.stringify(after.sentiment));
 
-      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Panicked')
+      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Fearful')
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 

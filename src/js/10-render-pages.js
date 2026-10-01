@@ -399,9 +399,9 @@
       var fit = trendOf(vals.map(function(d){ return d.v; }), "points", "month");
       var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10),
                               parseInt(vals[vals.length - 1].m.slice(0, 4), 10), 5);
-      var line = vixRow.meter.optimal.to;
+      var line = VIX_CALM;
       function opts(){
-        return { vals:vals, mid:line, midLabel:"usual ceiling, " + line,
+        return { vals:vals, mid:line, midLabel:"calm below " + line,
           fmt:function(v){ return v.toFixed(1); },
           tickFmt:function(v){ return String(Math.round(v)); },
           at:function(d){ return atMonth(d) + (d.m < VOL_JOIN ? " \u00b7 VXO" : ""); },
@@ -410,7 +410,7 @@
             return (d.m.slice(5) === "01" && years.indexOf(y) !== -1) ? "\u2019" + String(y).slice(2) : "";
           },
           fit:fit.fit,
-          alt:"The VIX, monthly average of daily closes, against the top of its usual band at " + line +
+          alt:"The VIX, monthly average of daily closes, against the convention\u2019s calm line at " + line +
               "; before 1990 the VXO, Cboe\u2019s original VIX."
         };
       }
@@ -430,12 +430,11 @@
     sheetRenderers["fear-range"] = drawVolatility;
     sheetRenderers["sheet-sign-sentiment"] = drawVolatility;
     drawVolatility();
-    addSources(sentiment.src);
+    addSources(sentiment.src.concat(VIX_CONVENTION));
   }
   function volatilityHighlights(y0){
     var hl = byId("curve-highlights"); if (!hl || !volatilityHistory.length) return;
-    var m = vixRow.meter, lo = m.optimal.from, hiB = m.optimal.to, v = m.value, tag = volatilityTag();
-    var where = v < lo ? "below its usual band" : v > hiB ? "above its usual band" : "inside its usual band";
+    var m = vixRow.meter, v = m.value, tag = volatilityTag();
     var top = volatilityHistory.reduce(function(a, d){ return d.v > a.v ? d : a; });
     var vixOnly = volatilityHistory.filter(function(d){ return d.m >= VOL_JOIN; });
     var vixTop = vixOnly.reduce(function(a, d){ return d.v > a.v ? d : a; }, vixOnly[0]);
@@ -444,8 +443,9 @@
     var lede = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty ' +
       'days of it, so it climbs with fear and sinks with calm \u2014 read it the other way round, because panic ' +
       'gathers near bottoms and complacency near tops.</p>';
-    var nowTxt = "At " + v.toFixed(2) + " the VIX sits " + where + " of " + lo + " to " + hiB +
-      ", against a daily record low of " + m.min + " and a high of " + m.max + ".";
+    var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM +
+      " is calm, " + VIX_CALM + " to " + VIX_FEAR + " elevated and above " + VIX_FEAR + " fearful. Its daily record low is " +
+      m.min + " and its high " + m.max + ".";
     var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 +
       " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) +
       (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";

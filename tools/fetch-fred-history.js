@@ -30,29 +30,6 @@ async function fredSeries(series, start) {
 const VOL_JOIN = '1990-01';
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
 
-function monthEnd(rows) {
-  const out = new Map();
-  for (const r of rows) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(r.date)) throw new Error('unparsable date: ' + r.date);
-    out.set(r.date.slice(0, 7), r);
-  }
-  return out;
-}
-
-function curveMonthly(near, far, lo, hi) {
-  const farByDate = new Map(far.map(r => [r.date, r.v]));
-  const daily = [];
-  for (const n of near) {
-    const f = farByDate.get(n.date);
-    if (f == null || !(f > 0)) continue;
-    if (!band(n.v, 1, 200) || !band(f, 1, 200)) continue;
-    const ratio = Math.round((n.v / f) * 1000) / 1000;
-    if (!band(ratio, lo, hi)) continue;
-    daily.push({ date: n.date, v: ratio });
-  }
-  return [...monthEnd(daily).entries()].map(([m, r]) => ({ m, v: r.v }));
-}
-
 function monthlyMean(rows, lo, hi, before) {
   const acc = new Map();
   for (const r of rows) {
@@ -127,12 +104,12 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, fearCurve, stamp, fiscal, treasury, productivity, volatility) {
+function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
-  var fearCurveHistory = [${rows(fearCurve)}];
-` + (volatility ? '  var volatilityHistory = [' + rows(volatility) + '];\n' : '') + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
+  var volatilityHistory = [${rows(volatility)}];
+` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
     (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '');
 }
 
@@ -165,11 +142,6 @@ async function main() {
   say('FEDFUNDS      ' + fedFunds.length + ' months, ' + fedFunds[0].m + ' → ' + fedFunds[fedFunds.length - 1].m);
 
   const vix = await fredSeries('VIXCLS', '1990-01-01');
-  const near = vix.filter(r => r.date >= '2007-12-01');
-  const far = await fredSeries('VXVCLS', '2007-12-01');
-  const fearCurve = curveMonthly(near, far, 0.3, 2.5);
-  if (!fearCurve.length) throw new Error('fear curve: no month had both legs');
-  say('VIX ÷ VIX3M   ' + fearCurve.length + ' months, ' + fearCurve[0].m + ' → ' + fearCurve[fearCurve.length - 1].m);
 
   const vxo = await fredSeries('VXOCLS', '1986-01-01');
   const volatility = volatilityMonthly(vxo, vix, VOL_JOIN, new Date().toISOString().slice(0, 7));
@@ -217,12 +189,12 @@ async function main() {
   if (!productivity.length) throw new Error('OPHNFB: no year-over-year quarter');
   say('OPHNFB YoY    ' + productivity.length + ' quarters, ' + productivity[0].q + ' → ' + productivity[productivity.length - 1].q);
 
-  fs.writeFileSync(OUT, emit(fedFunds, fearCurve, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, volatility));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { monthEnd, curveMonthly, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

@@ -252,10 +252,10 @@
         'bottoms, complacency near tops.',
       'The chart is the <b>monthly average of daily closes</b>. Before ' + monthLabel(VOL_JOIN) + ' it is the <b>VXO</b>, ' +
         'Cboe\u2019s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.',
-      'The line at <b>' + m.optimal.to + '</b> is the top of the usual band, ' + m.optimal.label + ': an editorial line, ' +
-        'not a published one.',
+      'By market convention a VIX <b>below ' + VIX_CALM + '</b> reads calm, <b>' + VIX_CALM + ' to ' + VIX_FEAR + '</b> elevated, ' +
+        'and <b>above ' + VIX_FEAR + '</b> fearful; the chart hangs from ' + VIX_CALM + '. The lines are the convention\u2019s, not ours.',
       'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
-    ]) + srcBlock(sentiment.src);
+    ]) + srcBlock(sentiment.src.concat(VIX_CONVENTION));
   }
 
   var sp500AnnualReturnSource = [

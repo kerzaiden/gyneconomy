@@ -353,7 +353,6 @@ Rules that shape the pages:
 | Variable | Series | What it is |
 |---|---|---|
 | `fedFundsHistory` | FEDFUNDS | effective federal funds rate, monthly: the policy rate, where the Treasury yields are what the market charges |
-| `fearCurveHistory` | VIXCLS ÷ VXVCLS | the fear curve, sampled on each month's last day both legs printed; 1.00 is flat, above it inverted. VXVCLS starts Dec 2007, so the ratio does too. Since V663 nothing draws it: the curve is today's figure in Volatility's Highlights, from the live legs |
 | `volatilityHistory` | VXOCLS, then VIXCLS | Volatility's history (V663): the monthly average of daily closes, the VXO (Cboe's original VIX, on the S&P 100) for 1986–89 and the VIX from `VOL_JOIN`, January 1990, its first month; the running month is left out until it closes |
 | `fiscalHistory.gross` | GFDGDPA188S | gross federal debt, % of GDP, by fiscal year (OMB) |
 | `fiscalHistory.held` | FYPUGDA188S | debt held by the public, % of GDP (OMB) |
@@ -401,7 +400,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Household debt service | 9.05% 2021 Q1 – 15.85% 2007 Q4; FRED TDSP, begins 2005 Q1, rebuilt 2024 on tradeline data — its 15.85% is not the retired series' 13.2%, never in one sentence | below its own mean, `DSR_MEAN` 12.4% |
 | Personal saving rate | 1.8% 2005 Q3 – 24.4% 2020 Q2; BEA via FRED A072RC1Q156SBEA | 4.5–12.2%, 10th–90th pct of 318 quarters |
 | Productivity growth (Activity) | −1.7% 1974 – +6.7% 1950, BLS OPHNFB | ≥ 1.3% YoY, BLS's post-2005 slowdown average; "better than the slowdown", never "at trend" |
-| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | 13–20, editorial (the word: Complacent below, Usual inside, Panicked above); the chart hangs from 20, the band's top; the (i) says it is editorial. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
+| VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | the market convention (V663, Keren: "set the rules per convention"), `VIX_CALM` 20 and `VIX_FEAR` 30, cited to Chase and TD in `VIX_CONVENTION`: Calm below 20, Elevated 20–30, Fearful above 30; the chart hangs from 20. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
 | Buffett Indicator | 32% Q2 1982 – 256% Q2 2026; Fed Z.1 NCBEILQ027S ÷ FRED GDP | ≤ 80%, his 2001 *Fortune* figure |
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
 | High-yield OAS | 2.41% Jun 2007 – 21.82% Dec 2008, ICE BofA via FRED BAMLH0A0HYM2 | 3.5–6%, `HY_NORM_LO`/`HY_NORM_HI`, four sources in the (i) |

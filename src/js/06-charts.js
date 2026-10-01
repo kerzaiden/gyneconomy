@@ -54,13 +54,16 @@
   ];
 
   var vixRow = sentiment.rows[0];
-  var vixWordOf = function(v, m){
-    var e = m.ends || {}, o = m.optimal || {};
-    return v < o.from ? (e.low || "Low") : v > o.to ? (e.high || "High") : (e.zone || "Usual");
-  };
+  var VIX_CALM = 20, VIX_FEAR = 30;
+  var VIX_CONVENTION = [
+    {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
+    {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
+  ];
   function volatilityTag(){
-    var m = vixRow.meter, o = m.optimal || {};
-    return { text:vixWordOf(m.value, m), state:m.value < o.from ? "warning" : m.value > o.to ? "critical" : "good" };
+    var v = vixRow.meter.value;
+    return v < VIX_CALM ? { text:"Calm", state:"good" }
+         : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
+                         : { text:"Fearful", state:"critical" };
   }
 
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
