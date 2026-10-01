@@ -718,7 +718,7 @@
       bodyTerm:"Temperature", econTerm:"Inflation",
       page:{ bare:true, seat:seatTemperature },
       tag:{text:"Running hot", state:"warning"},
-      metric:"3.4%", metricSub:"CPI, YoY, Aug 2026",
+      get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"CPI, YoY, Aug 2026",
       meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
              ends:{ low:"Cold", high:"Hot" }},
       shortCaption:"",

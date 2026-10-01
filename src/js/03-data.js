@@ -49,7 +49,7 @@
 
   var labPanel = [
     {
-      marker:"Federal debt", sub:"gross federal debt ÷ GDP",
+      sub:"gross federal debt ÷ GDP",
       meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
              ends:{ zone:"50-year average", high:"Elevated" }},
       shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
@@ -58,7 +58,7 @@
       id:"sheet-metric-debt"
     },
     {
-      marker:"Interest payments", sub:"net interest costs ÷ GDP",
+      sub:"net interest costs ÷ GDP",
       meter:{min:0.63, max:3.3, value:3.3, optimal:{lte:2, label:"\u2264 2.0%"},
              ends:{ zone:"50-year average", high:"High" }},
       shortNote:"FY2026, $1.0T — already the highest interest burden on record.",
@@ -67,7 +67,7 @@
       id:"sheet-metric-interest"
     },
     {
-      marker:"Federal budget", sub:"federal deficit or surplus ÷ GDP",
+      sub:"federal deficit or surplus ÷ GDP",
       meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:3.8, label:"\u2264 3.8%"},
              ends:{ zone:"50-year average", high:"Large" }},
       shortNote:"FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",

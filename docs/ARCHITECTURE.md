@@ -110,13 +110,13 @@ group                         consecutive rows with one group are one group (Val
 door                          how the card is built: peek (a peek card), pair (Pulse and Volume's peek pair),
                               split (a split peek), subject (an authored subject row), row (a sign row)
 term                          the bodyTerm of the reading object a sign row or pair is built from
-slot                          the authored page whose timing slot and order orderMetricSheets sets
-dx                            the reading's place in its Diagnosis system, where that differs from card order
+slot                          the authored page whose timing slot and order orderMetricSheets sets (the
+                              deficit's since V670)
 hk, head, range, cycles, stops   the history key (when it is not the page id), its head's title, its default
                               window, false where it has no Cycles mode, and its window stops
-headMark                      false: the history head carries no mark (the deficit's, until Keren picks one)
 hist, pair, peek              the series as written ({s, k, y0} or a function), read by keyed() into {k, v}
-dp, unit, signed, flip, pre, last, eraUnit, rule, ring, pulse, mid   how the past cycles print and draw it
+flip, pre, last, eraUnit, rule, ring, pulse, mid   how the past cycles read and draw it (a figure's format
+                              is never declared: it is the card's, read by pastFigure)
 when, cardUnit, miniSel       the card's date, its unit, the element that is its miniature
 live                          the live registry rows that feed it
 ```
@@ -356,7 +356,8 @@ Rules that shape the pages:
   last reading, the range over the cycle as the label, the cycle's own mini) and sets every history page's
   cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored on leaving). Today's cards
   are kept on the element (`__today`) and restored as they were, so the live repaint still finds its first
-  text node. The reading pages' panels and insights stay today's: they are the page, and the picker says
+  text node; the copy is dropped on restore (V670), so it exists only while a cycle is shown and the next cycle
+  copies the card as it then stands. The reading pages' panels and insights stay today's: they are the page, and the picker says
   which cycle the chart shows. A reading without history in the cycle shows a dash and says since when it is
   measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of cards that led nowhere
   (Keren, V659: one view to maintain). **Since V660 the cycle's card is built like today's** (Keren:
@@ -366,7 +367,11 @@ Rules that shape the pages:
   range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
-  bands a past value can be read against.
+  bands a past value can be read against. **Every other past figure takes the same format** (V670, Keren: one
+  format per reading): the Diagnosis at a close and Show data's notes print through `pastFigure`, which applies
+  `eraFig` to today's card (`readDoor`, which reads the card as it stood today even while a cycle is shown) and
+  adds the card's unit where the figure carries no % or ×, as today's Diagnosis does. The Federal budget is the
+  one reading printed with a word (deficit or surplus), and its rank in the notes is read the same way.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
   the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot
@@ -493,7 +498,7 @@ its heading is the door to the category page) with one **Analysis** line (what t
 season and the feeling at the closing month, each symptom's value at the close from the roster series without a
 verdict word (verdicts are today's words), the Analysis as the movement across the cycle, and what actually
 followed a year later. The systems are `CATEGORIES` in `shown` order, and each system's symptoms are its
-roster rows.
+roster rows in card order (V670).
 
 - **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
   (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
@@ -664,7 +669,7 @@ fix is a pattern in the app, not a bucket in the generator.
 
 Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook` (all empty),
 `seasonReading.springdeflation` (empty by her choice), the five era blurbs (an AI first draft),
-`cycleNowNote` (revisit each refresh), the deficit page's mark.
+`cycleNowNote` (revisit each refresh).
 
 ## Open questions
 

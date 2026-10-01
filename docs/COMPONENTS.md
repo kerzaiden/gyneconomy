@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d465db3` on 2026-10-01. **72 components**, **39 shared patterns**.
+Generated from commit `da0c79d` on 2026-10-01. **72 components**, **39 shared patterns**.
 
 ## components.js
 
@@ -192,16 +192,19 @@ renderer speaks. Listed most-used first.
 | **`readFeeling`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
 | **`atMonth`** | charts.js | 3 places |
+| **`byIdMaybe`** | refresh-season.js | 3 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |
+| **`eraFig`** | analysis.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`marketMonths`** | model.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
+| **`pastFigure`** | analysis.js | 3 places |
 | **`pct`** | pages-nav.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
 | **`rankToDate`** | model.js | 3 places |
-| **`readFig`** | analysis.js | 3 places |
+| **`readDoor`** | pages-nav.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |
 | **`rosterRows`** | pages-nav.js | 3 places |
 | **`seasonGroup`** | model.js | 3 places |
@@ -227,9 +230,9 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.tag` | 6 | `forms.js:pulseBlock`, `live.js:paintReading`, `pages-nav.js:renderSignsList`, `render-core.js:headHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.insights` | 6 | `charts.js:highlightsHtml`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | `.marker-sub` | 6 | `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:volatilityDetailHtml`, `indicators.js:splitInfo`, `render-core.js:cardDetailHtml`, `render-pages.js:renderValuationTag` |
-| `.unit` | 6 | `analysis.js:cycleRowsHtml`, `analysis.js:readFig`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.pulsebox` | 5 | `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock` |
 | `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:activityStackHtml` |
+| `.unit` | 5 | `analysis.js:cycleRowsHtml`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.mono` | 4 | `charts.js:fitGroup`, `charts.js:histTip`, `forms.js:pulseBlock`, `render-core.js:cardDetailHtml` |
 | `.cycsel-nm` | 3 | `charts.js:cyclePicker`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.rangebar` | 3 | `charts.js:modeBar`, `charts.js:rangeBar`, `pages-nav.js:buildSearch` |

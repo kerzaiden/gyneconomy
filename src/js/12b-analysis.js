@@ -88,17 +88,17 @@
     var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
     return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
   }
+  function upTo(list, k){ var t = kT(k) + 1e-6; return list.filter(function(d){ return d.v != null && kT(d.k) <= t; }); }
+  function pairAt(r, k){ var p = r.pair ? upTo(r.pair, k).pop() : null; return p ? p.v : null; }
   function eraReading(r, era){
     var from = era.from, to = era.to || calendarTodayY;
     var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= from && y <= to; });
     if (!span.length) return { none:true, word:"Not measured before " + prettyK(r, r.first.k) };
-    var end = span[span.length - 1], sign = r.flip ? -1 : 1, endT = kT(end.k) + 1e-6;
-    var vs = span.map(function(d){ return sign * d.v; });
-    var upTo = function(list){ return list.filter(function(d){ return d.v != null && kT(d.k) <= endT; }); };
-    var second = r.pair ? upTo(r.pair).pop() : null;
-    return { v:sign * end.v, lo:Math.min.apply(null, vs), hi:Math.max.apply(null, vs), when:prettyK(r, end.k),
+    var end = span[span.length - 1], sign = r.flip ? -1 : 1, vs = span.map(function(d){ return sign * d.v; });
+    var second = r.pair ? upTo(r.pair, end.k).pop() : null;
+    return { v:sign * end.v, raw:end.v, lo:Math.min.apply(null, vs), hi:Math.max.apply(null, vs), when:prettyK(r, end.k),
              second:second && kT(second.k) >= from ? second.v : null,
-             peek:upTo(r.peek || r.seen).map(function(d){ return sign * d.v; }) };
+             peek:upTo(r.peek || r.seen, end.k).map(function(d){ return sign * d.v; }) };
   }
   function eraFig(today){
     var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || ["", ""];
@@ -130,7 +130,7 @@
                                         when:when.textContent, mini:mini ? mini.innerHTML : "" };
     var t = item.__today;
     if (!era){
-      val.innerHTML = t.value; when.textContent = t.when;
+      val.innerHTML = t.value; when.textContent = t.when; item.__today = null;
       if (mini) mini.innerHTML = t.mini;
       if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
       return;
@@ -187,10 +187,10 @@
     __roster.forEach(function(r){ __roster.byId[r.id] = r; });
     return __roster;
   }
-  function readFig(r, v){
-    var a = Math.abs(v).toFixed(r.dp);
-    var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
-    return sign + a + (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
+  function withUnit(fig, unit){ return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : ""); }
+  function pastFigure(r, v, second){
+    var card = readDoor(r.id), fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
+    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
   }
   function prettyK(r, k){ return r.pre ? r.pre + k : prettyKey(k); }
 
@@ -220,15 +220,15 @@
     return { rows:rows, foot:foot.trim() };
   }
   function placeWords(r, v){
-    var p = Math.round(r.place(v)), since = " since " + prettyK(r, r.first.k);
+    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
     return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
   }
   function symptomNote(cyc, row){
     var r = row.r;
     return '<h4>' + r.name + ' \u00b7 ' + cyc.name + '</h4>' +
-      '<p>Now ' + readFig(r, r.now.v) + ' (' + (r.last || prettyK(r, r.now.k)) + '), ' + placeWords(r, r.now.v) + '. ' +
+      '<p>Now ' + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + ' (' + (r.last || prettyK(r, r.now.k)) + '), ' + placeWords(r, r.now.v) + '. ' +
       'A year is marked when a reading taken in it sat within ' + ALIKE + ' points of that place in the same record.</p>' +
-      facts(row.hits.map(function(c){ return prettyK(r, c.best.k) + ': ' + readFig(r, c.best.v) + ', ' + placeWords(r, c.best.v); }));
+      facts(row.hits.map(function(c){ return prettyK(r, c.best.k) + ': ' + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ', ' + placeWords(r, c.best.v); }));
   }
   function symptomRow(cyc, row, cols){
     var r = row.r;

@@ -1407,7 +1407,7 @@
     </div>
 
 
-    <div class="metric-sheet" id="sheet-marker-deficit" hidden></div>
+    <div class="metric-sheet" id="sheet-marker-deficit" hidden><div id="deficit-timing"></div></div>
 
     <div class="metric-sheet" id="sheet-metric-households" hidden>
     <div id="households-timing"></div>
@@ -15543,7 +15543,6 @@
     u: "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"
   } ];
   var labPanel = [ {
-    marker: "Federal debt",
     sub: "gross federal debt ÷ GDP",
     meter: {
       min: 0,
@@ -15565,7 +15564,6 @@
     flagState: "serious",
     id: "sheet-metric-debt"
   }, {
-    marker: "Interest payments",
     sub: "net interest costs ÷ GDP",
     meter: {
       min: .63,
@@ -15587,7 +15585,6 @@
     flagState: "critical",
     id: "sheet-metric-interest"
   }, {
-    marker: "Federal budget",
     sub: "federal deficit or surplus ÷ GDP",
     meter: {
       min: -2.3,
@@ -16916,19 +16913,19 @@
     for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
     return 0;
   }
-  function hyQuarterEnds() {
-    var out = [], key = null;
+  function hyQuarters() {
+    var out = [];
     hyDates.forEach(function(t, i) {
-      var a = hyAt(i), k = a.y + "Q" + Math.ceil(a.m / 3);
-      if (k !== key) {
-        key = k;
-        out.push({
-          k: k,
-          v: hyOas[i]
-        });
-      } else out[out.length - 1].v = hyOas[i];
+      var a = hyAt(i), k = a.y + " Q" + Math.ceil(a.m / 3), last = out[out.length - 1];
+      if (last && last.k === k) last.v = hyOas[i]; else out.push({
+        k: k,
+        v: hyOas[i]
+      });
     });
-    return out.map(function(o) {
+    return out;
+  }
+  function hyQuarterEnds() {
+    return hyQuarters().map(function(o) {
       return o.v;
     });
   }
@@ -17237,7 +17234,7 @@
     tag: null,
     rows: [ {
       key: "buffett",
-      marker: "Buffett Indicator",
+      marker: "Buffett indicator",
       sub: "market cap ÷ GDP, Q2 2026",
       meter: {
         min: 32,
@@ -18574,7 +18571,9 @@
       text: "Running hot",
       state: "warning"
     },
-    metric: "3.4%",
+    get metric() {
+      return cpiNow.toFixed(1) + "%";
+    },
     metricSub: "CPI, YoY, Aug 2026",
     meter: {
       min: -15.8,
@@ -19695,8 +19694,6 @@
       s: cpiYoYHistory,
       k: "m"
     },
-    dp: 1,
-    unit: "%",
     when: lastDate,
     cardUnit: "CPI, YoY"
   }, {
@@ -19712,8 +19709,6 @@
       s: gdpQuarterlyYoY,
       k: "q"
     },
-    dp: 1,
-    unit: "%",
     when: lastDate,
     cardUnit: "YoY"
   }, {
@@ -19729,8 +19724,6 @@
       s: fedFundsHistory,
       k: "m"
     },
-    dp: 2,
-    unit: "%",
     rule: true,
     eraUnit: "Fed funds rate",
     when: function() {
@@ -19751,8 +19744,6 @@
       s: t10yYieldHistory,
       k: "q"
     },
-    dp: 2,
-    unit: "%",
     rule: true,
     when: compiledDay,
     live: [ "yieldCurve" ]
@@ -19771,7 +19762,6 @@
       k: "qi",
       y0: M2V_FROM_YEAR
     },
-    dp: 2,
     pulse: PULSE_PRE2008,
     when: lastDate,
     cardUnit: "M2 velocity",
@@ -19791,8 +19781,6 @@
       k: "qi",
       y0: M2_FROM_YEAR
     },
-    dp: 1,
-    unit: "%",
     rule: true,
     when: function(R) {
       return indPeriod(R) || lastDate(R);
@@ -19801,7 +19789,6 @@
     live: [ "coincident" ]
   }, {
     id: "sheet-metric-valuation",
-    dx: 1,
     name: "Shiller CAPE",
     cat: "mood",
     group: "Valuations",
@@ -19814,7 +19801,6 @@
       s: capeHistory,
       k: "y"
     },
-    dp: 1,
     pre: "Jan ",
     last: "today",
     mid: CAPE_FAIR,
@@ -19823,7 +19809,6 @@
     live: [ "valuation", "capeValue" ]
   }, {
     id: "sheet-metric-buffett",
-    dx: 2,
     name: "Buffett indicator",
     cat: "mood",
     group: "Valuations",
@@ -19835,15 +19820,12 @@
       s: buffettHistory,
       k: "q"
     },
-    dp: 0,
-    unit: "%",
     mid: 80,
     when: lastDate,
     cardUnit: "of GDP",
     live: [ "valuation" ]
   }, {
     id: "sheet-sign-sentiment",
-    dx: 0,
     name: "Volatility",
     cat: "mood",
     timing: "leading",
@@ -19855,14 +19837,12 @@
       s: volatilityHistory,
       k: "m"
     },
-    dp: 1,
     ring: vixPct,
     miniSel: ".subject-ring > svg",
     when: compiledDay,
     live: [ "sentiment", "vixClose", "vix3mClose" ]
   }, {
     id: "sheet-sign-desire",
-    dx: 3,
     name: "Desire",
     cat: "mood",
     timing: "coincident",
@@ -19875,13 +19855,10 @@
     cycles: false,
     stops: [ "1y", "max" ],
     hist: hyMonths,
-    dp: 2,
-    unit: "%",
-    peek: hyQuarterEnds,
+    peek: hyQuarters,
     live: [ "coincident", "hyOasNow" ]
   }, {
     id: "sheet-sign-horizon",
-    dx: 4,
     name: "Horizon",
     cat: "mood",
     timing: "leading",
@@ -19894,14 +19871,11 @@
       s: t10y3mHistory,
       k: "q"
     },
-    dp: 2,
-    signed: true,
     rule: true,
     when: compiledDay,
     live: [ "yieldCurve" ]
   }, {
     id: "sheet-metric-debt",
-    dx: 3,
     name: "Federal debt",
     cat: "energy",
     group: "Economic power",
@@ -19913,14 +19887,11 @@
       s: grossDebtQuarterly,
       k: "q"
     },
-    dp: 0,
-    unit: "%",
     mid: 70,
     when: labPeriod,
     cardUnit: "of GDP"
   }, {
     id: "sheet-metric-interest",
-    dx: 4,
     name: "Interest payments",
     cat: "energy",
     group: "Economic power",
@@ -19932,14 +19903,11 @@
       s: fiscalHistory.interest,
       k: "y"
     },
-    dp: 1,
-    unit: "%",
     mid: 2,
     when: labPeriod,
     cardUnit: "of GDP"
   }, {
     id: "sheet-marker-deficit",
-    dx: 5,
     name: "Federal budget",
     cat: "energy",
     group: "Economic power",
@@ -19947,23 +19915,19 @@
     mark: budgetSvg,
     door: "split",
     hk: "deficit-range",
+    slot: "deficit",
     head: "Federal Deficit or Surplus, Share of GDP",
-    headMark: false,
     hist: {
       s: deficitHistory,
       k: "yi",
       y0: DEF_FROM_YEAR
     },
-    dp: 1,
-    unit: "%",
-    signed: true,
     flip: true,
     mid: 3.8,
     when: labPeriod,
     cardUnit: "deficit, of GDP"
   }, {
     id: "sheet-metric-households",
-    dx: 6,
     name: "Households",
     cat: "energy",
     timing: "structural",
@@ -19977,8 +19941,6 @@
       k: "qi",
       y0: DSR_FROM_YEAR
     },
-    dp: 1,
-    unit: "%",
     pair: {
       s: savHistory,
       k: "qi",
@@ -19989,7 +19951,6 @@
     cardUnit: "% paid / kept"
   }, {
     id: "sheet-sign-activity",
-    dx: 0,
     name: "Unemployment rate",
     cat: "energy",
     group: "Activity",
@@ -20001,12 +19962,9 @@
     hist: {
       s: unempHistory,
       k: "m"
-    },
-    dp: 1,
-    unit: "%"
+    }
   }, {
     id: "sheet-sign-productivity-growth",
-    dx: 2,
     name: "Productivity growth",
     cat: "energy",
     group: "Activity",
@@ -20019,13 +19977,10 @@
       s: productivityHistory,
       k: "q"
     },
-    dp: 1,
-    unit: "%",
     mid: PRODUCTIVITY_SLOWDOWN,
     when: lastDate
   }, {
     id: "sheet-sign-industrial-output",
-    dx: 1,
     name: "Industrial output",
     cat: "energy",
     group: "Activity",
@@ -20064,7 +20019,7 @@
   });
   var HIST_HEAD = pageState(function(R) {
     return {
-      mark: R.headMark === false ? null : R.mark,
+      mark: R.mark,
       title: R.head
     };
   });
@@ -22578,7 +22533,6 @@
         src: PRODUCTIVITY_SRC,
         insight: productivityInsight,
         row: {
-          marker: r.econTerm,
           sub: r.metricSub,
           note: r.caption,
           meter: r.meter,
@@ -22596,7 +22550,7 @@
     return s;
   }
   function splitInfo(s) {
-    return "<h4>" + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
+    return "<h4>" + s.name + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
   }
   function quarterTicks(vals) {
     if (!vals.length || !vals[0].q) return null;
@@ -22625,7 +22579,7 @@
         at: function(d) {
           return d.q ? qPretty(d.q) : "FY" + d.y;
         },
-        alt: s.row.marker + " against " + s.midLabel + ", with the fitted trend across the readings in view"
+        alt: s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view"
       }, w);
     };
     put(id + "-chart", histBar(histControls(id, {
@@ -23512,7 +23466,7 @@
       v: capeNow
     });
     host.innerHTML = peekOf("sheet-metric-temp", {
-      value: r.cpiNow.toFixed(1) + "%",
+      value: tempInd.metric,
       word: cpiWord + " · " + cpiDir,
       state: heatStep(r.cpiNow),
       cols: nowModel.cpi.map(function(d) {
@@ -23702,7 +23656,7 @@
     sheetRenderers["sheet-marker-deficit"] = function(W) {
       var sheet = byId("sheet-marker-deficit");
       if (!sheet) return;
-      if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
+      if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
       sheetRenderers["deficit-range"](W);
     };
     sheetRenderers["deficit-range"] = function(W) {
@@ -23934,10 +23888,22 @@
     t: "Alexandra Pope & Sjanie Hugo Wurlitzer — Wild Power (Hay House, 2017); Red School",
     u: "https://www.redschool.net/"
   } ];
+  function todayFace(item) {
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return {
+      val: item.querySelector(".ci-value"),
+      word: item.querySelector(".ci-word")
+    };
+    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
+    return {
+      val: box.firstChild,
+      word: t.word == null ? null : box.lastChild
+    };
+  }
   function readDoor(open) {
     var item = document.querySelector('.cat-item[data-open="' + open + '"]');
     if (!item) return null;
-    var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
     var figure = val ? val.cloneNode(true) : null;
     if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
       n.parentNode.removeChild(n);
@@ -23959,37 +23925,21 @@
     var f = d.facts;
     return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull’s best" : "falling");
   }
-  function dxDoors(c) {
-    return ROSTER.filter(function(R) {
-      return R.cat === c.key;
-    }).map(function(R, i) {
-      return {
-        id: R.id,
-        at: R.dx != null ? R.dx : i
-      };
-    }).sort(function(a, b) {
-      return a.at - b.at;
-    }).map(function(x) {
-      return x.id;
-    });
-  }
   function symptomsFor(c, era) {
     var rows = era ? rosterRows() : null;
-    return dxDoors(c).map(function(id) {
+    return ROSTER.filter(function(R) {
+      return R.cat === c.key;
+    }).map(function(R) {
       if (era) {
-        var r = rows[id], e = r && eraReading(r, era);
-        return e && !e.none ? symptom(r.name, closeFigure(r, e), e.when) : "";
+        var r = rows[R.id], e = r && eraReading(r, era);
+        return e && !e.none ? symptom(r.name, pastFigure(r, e.raw, e.second), e.when) : "";
       }
-      var t = readDoor(id);
-      return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
+      var t = readDoor(R.id);
+      return t ? symptom(t.name, withUnit(t.figure, t.unit), t.word) : "";
     }).join("");
   }
   function rosterRows() {
     return readingRoster().byId;
-  }
-  function closeFigure(r, e) {
-    if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
-    return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");
   }
   function eraMove(id, era) {
     var r = rosterRows()[id];
@@ -24000,7 +23950,7 @@
     });
     if (span.length < 2) return "";
     var a = span[0], b = span[span.length - 1];
-    return (r.eraUnit || r.name) + " went from " + readFig(r, a.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, a.k) + ") to " + readFig(r, b.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, b.k) + ") across the cycle.";
+    return (r.eraUnit || r.name) + " went from " + pastFigure(r, a.v, pairAt(r, a.k)) + " (" + prettyK(r, a.k) + ") to " + pastFigure(r, b.v, pairAt(r, b.k)) + " (" + prettyK(r, b.k) + ") across the cycle.";
   }
   function analysisFor(key, d, era) {
     var w = function(id) {
@@ -24216,6 +24166,16 @@
     var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
     return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
   }
+  function upTo(list, k) {
+    var t = kT(k) + 1e-6;
+    return list.filter(function(d) {
+      return d.v != null && kT(d.k) <= t;
+    });
+  }
+  function pairAt(r, k) {
+    var p = r.pair ? upTo(r.pair, k).pop() : null;
+    return p ? p.v : null;
+  }
   function eraReading(r, era) {
     var from = era.from, to = era.to || calendarTodayY;
     var span = r.seen.filter(function(d) {
@@ -24226,23 +24186,18 @@
       none: true,
       word: "Not measured before " + prettyK(r, r.first.k)
     };
-    var end = span[span.length - 1], sign = r.flip ? -1 : 1, endT = kT(end.k) + 1e-6;
-    var vs = span.map(function(d) {
+    var end = span[span.length - 1], sign = r.flip ? -1 : 1, vs = span.map(function(d) {
       return sign * d.v;
     });
-    var upTo = function(list) {
-      return list.filter(function(d) {
-        return d.v != null && kT(d.k) <= endT;
-      });
-    };
-    var second = r.pair ? upTo(r.pair).pop() : null;
+    var second = r.pair ? upTo(r.pair, end.k).pop() : null;
     return {
       v: sign * end.v,
+      raw: end.v,
       lo: Math.min.apply(null, vs),
       hi: Math.max.apply(null, vs),
       when: prettyK(r, end.k),
       second: second && kT(second.k) >= from ? second.v : null,
-      peek: upTo(r.peek || r.seen).map(function(d) {
+      peek: upTo(r.peek || r.seen, end.k).map(function(d) {
         return sign * d.v;
       })
     };
@@ -24291,6 +24246,7 @@
     if (!era) {
       val.innerHTML = t.value;
       when.textContent = t.when;
+      item.__today = null;
       if (mini) mini.innerHTML = t.mini;
       if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
       return;
@@ -24386,10 +24342,12 @@
     });
     return __roster;
   }
-  function readFig(r, v) {
-    var a = Math.abs(v).toFixed(r.dp);
-    var sign = +a === 0 ? "" : v < 0 ? "−" : r.signed ? "+" : "";
-    return sign + a + (r.unit ? '<span class="unit">' + r.unit + "</span>" : "");
+  function withUnit(fig, unit) {
+    return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : "");
+  }
+  function pastFigure(r, v, second) {
+    var card = readDoor(r.id), fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
+    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
   }
   function prettyK(r, k) {
     return r.pre ? r.pre + k : prettyKey(k);
@@ -24439,13 +24397,13 @@
     };
   }
   function placeWords(r, v) {
-    var p = Math.round(r.place(v)), since = " since " + prettyK(r, r.first.k);
+    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
     return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
   }
   function symptomNote(cyc, row) {
     var r = row.r;
-    return "<h4>" + r.name + " · " + cyc.name + "</h4>" + "<p>Now " + readFig(r, r.now.v) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". " + "A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
-      return prettyK(r, c.best.k) + ": " + readFig(r, c.best.v) + ", " + placeWords(r, c.best.v);
+    return "<h4>" + r.name + " · " + cyc.name + "</h4>" + "<p>Now " + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". " + "A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
+      return prettyK(r, c.best.k) + ": " + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ", " + placeWords(r, c.best.v);
     }));
   }
   function symptomRow(cyc, row, cols) {

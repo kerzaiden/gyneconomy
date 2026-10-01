@@ -511,7 +511,7 @@
     var capeLast = capeHistory[capeHistory.length - 1];
     if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
     host.innerHTML =
-      peekOf("sheet-metric-temp", { value:r.cpiNow.toFixed(1) + "%",
+      peekOf("sheet-metric-temp", { value:tempInd.metric,
                  word:cpiWord + " \u00b7 " + cpiDir, state:heatStep(r.cpiNow),
                  cols:nowModel.cpi.map(function(d){ return d.v; }),
                  colClass:function(v){ return "temp-col " + heatStep(v); } }) +
@@ -634,7 +634,7 @@
     };
     sheetRenderers["sheet-marker-deficit"] = function(W){
       var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
-      if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
+      if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
       sheetRenderers["deficit-range"](W);
     };
     sheetRenderers["deficit-range"] = function(W){
@@ -827,9 +827,15 @@
     {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
     {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
   ];
+  function todayFace(item){
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return { val:item.querySelector(".ci-value"), word:item.querySelector(".ci-word") };
+    box.innerHTML = '<span>' + t.value + '</span><span>' + (t.word || "") + '</span>';
+    return { val:box.firstChild, word:t.word == null ? null : box.lastChild };
+  }
   function readDoor(open){
     var item = document.querySelector('.cat-item[data-open="' + open + '"]'); if (!item) return null;
-    var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
     var figure = val ? val.cloneNode(true) : null;
     if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n){ n.parentNode.removeChild(n); });
     return { name:item.getAttribute("data-title"), figure:figure ? figure.textContent.trim() : "",
@@ -841,31 +847,22 @@
     var f = d.facts;
     return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull\u2019s best" : "falling");
   }
-  function dxDoors(c){
-    return ROSTER.filter(function(R){ return R.cat === c.key; })
-      .map(function(R, i){ return { id:R.id, at:R.dx != null ? R.dx : i }; })
-      .sort(function(a, b){ return a.at - b.at; }).map(function(x){ return x.id; });
-  }
   function symptomsFor(c, era){
     var rows = era ? rosterRows() : null;
-    return dxDoors(c).map(function(id){
-      if (era){ var r = rows[id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, closeFigure(r, e), e.when) : ""; }
-      var t = readDoor(id);
-      return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
+    return ROSTER.filter(function(R){ return R.cat === c.key; }).map(function(R){
+      if (era){ var r = rows[R.id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, pastFigure(r, e.raw, e.second), e.when) : ""; }
+      var t = readDoor(R.id);
+      return t ? symptom(t.name, withUnit(t.figure, t.unit), t.word) : "";
     }).join("");
   }
   function rosterRows(){ return readingRoster().byId; }
-  function closeFigure(r, e){
-    if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
-    return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");
-  }
   function eraMove(id, era){
     var r = rosterRows()[id]; if (!r) return "";
     var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= era.from && y <= era.to; });
     if (span.length < 2) return "";
     var a = span[0], b = span[span.length - 1];
-    return (r.eraUnit || r.name) + " went from " + readFig(r, a.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, a.k) + ") to " +
-      readFig(r, b.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, b.k) + ") across the cycle.";
+    return (r.eraUnit || r.name) + " went from " + pastFigure(r, a.v, pairAt(r, a.k)) + " (" + prettyK(r, a.k) + ") to " +
+      pastFigure(r, b.v, pairAt(r, b.k)) + " (" + prettyK(r, b.k) + ") across the cycle.";
   }
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };

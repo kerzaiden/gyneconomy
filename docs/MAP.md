@@ -2,7 +2,7 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,103 lines**, about 618 KB, roughly **175 thousand tokens**. No session can read it
+The source is **8,100 lines**, about 618 KB, roughly **175 thousand tokens**. No session can read it
 whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the
@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `d465db3` on 2026-10-01.
+Generated from commit `da0c79d` on 2026-10-01.
 
 ## The five regions
 
@@ -19,10 +19,10 @@ Generated from commit `d465db3` on 2026-10-01.
 | **Boot** | 1–4 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist — mirrors `--page` on purpose, so hex literals here are deliberate |
 | **Styles** | 5–1,360 | the whole stylesheet, every token and rule |
 | **Markup** | 1,361–1,766 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| **Script** | 1,767–8,070 | one IIFE containing everything: data, model, renderers, wiring |
-| **Close** | 8,071–8,103 | </body></html> |
+| **Script** | 1,767–8,067 | one IIFE containing everything: data, model, renderers, wiring |
+| **Close** | 8,068–8,100 | </body></html> |
 
-Counts: **395** top-level functions, **180** top-level vars, **6** top-level IIFEs in the script.
+Counts: **398** top-level functions, **180** top-level vars, **6** top-level IIFEs in the script.
 
 ## Script, section by section
 
@@ -195,7 +195,7 @@ _line 2,358_ · 4 declarations
 
 ### What a windowed record chart needs, once
 
-_line 2,384_ · 28 declarations
+_line 2,384_ · 29 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -223,7 +223,8 @@ _line 2,384_ · 28 declarations
 | 2,739 | `hyLabel` | `function hyLabel(` |
 | 2,740 | `hyNum` | `function hyNum(` |
 | 2,741 | `hyWindowFrom` | `function hyWindowFrom(` |
-| 2,749 | `hyQuarterEnds` | `function hyQuarterEnds(` |
+| 2,749 | `hyQuarters` | `function hyQuarters(` |
+| 2,757 | `hyQuarterEnds` | `function hyQuarterEnds(` |
 | 2,759 | `capeHistory` | `var capeHistory =` |
 | 2,761 | `longCycleSrc` | `var longCycleSrc =` |
 | 2,777 | `checkGrossDebt` | `function checkGrossDebt(` |
@@ -997,7 +998,7 @@ _line 7,229_ · 13 declarations
 
 ### The Diagnosis: under the dial, today or at a cycle's close
 
-_line 7,486_ · 27 declarations
+_line 7,486_ · 26 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -1007,106 +1008,108 @@ _line 7,486_ · 27 declarations
 | 7,498 | `POSTURE_SAYS` | `var POSTURE_SAYS =` |
 | 7,505 | `BODY_SAYS` | `var BODY_SAYS =` |
 | 7,513 | `DIAG_SRC` | `var DIAG_SRC =` |
-| 7,518 | `readDoor` | `function readDoor(` |
-| 7,526 | `pct` | `function pct(` |
-| 7,527 | `symptom` | `function symptom(` |
-| 7,528 | `momentumSymptom` | `function momentumSymptom(` |
-| 7,532 | `dxDoors` | `function dxDoors(` |
-| 7,537 | `symptomsFor` | `function symptomsFor(` |
-| 7,545 | `rosterRows` | `function rosterRows(` |
-| 7,546 | `closeFigure` | `function closeFigure(` |
-| 7,550 | `eraMove` | `function eraMove(` |
-| 7,558 | `analysisFor` | `function analysisFor(` |
-| 7,566 | `dxRow` | `function dxRow(` |
-| 7,570 | `dxSection` | `function dxSection(` |
-| 7,571 | `systemHtml` | `function systemHtml(` |
-| 7,574 | `dxHead` | `function dxHead(` |
-| 7,579 | `postureLine` | `function postureLine(` |
-| 7,583 | `diagnosisInfo` | `function diagnosisInfo(` |
-| 7,591 | `assessmentFor` | `function assessmentFor(` |
-| 7,601 | `diagnosisHtml` | `function diagnosisHtml(` |
-| 7,619 | `renderDiagnosis` | `function renderDiagnosis(` |
-| 7,623 | `repaintDiagnosis` | `function repaintDiagnosis(` |
-| 7,624 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 7,518 | `todayFace` | `function todayFace(` |
+| 7,524 | `readDoor` | `function readDoor(` |
+| 7,532 | `pct` | `function pct(` |
+| 7,533 | `symptom` | `function symptom(` |
+| 7,534 | `momentumSymptom` | `function momentumSymptom(` |
+| 7,538 | `symptomsFor` | `function symptomsFor(` |
+| 7,546 | `rosterRows` | `function rosterRows(` |
+| 7,547 | `eraMove` | `function eraMove(` |
+| 7,555 | `analysisFor` | `function analysisFor(` |
+| 7,563 | `dxRow` | `function dxRow(` |
+| 7,567 | `dxSection` | `function dxSection(` |
+| 7,568 | `systemHtml` | `function systemHtml(` |
+| 7,571 | `dxHead` | `function dxHead(` |
+| 7,576 | `postureLine` | `function postureLine(` |
+| 7,580 | `diagnosisInfo` | `function diagnosisInfo(` |
+| 7,588 | `assessmentFor` | `function assessmentFor(` |
+| 7,598 | `diagnosisHtml` | `function diagnosisHtml(` |
+| 7,616 | `renderDiagnosis` | `function renderDiagnosis(` |
+| 7,620 | `repaintDiagnosis` | `function repaintDiagnosis(` |
+| 7,621 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it
 
-_line 7,637_ · 5 declarations
+_line 7,634_ · 5 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,638 | `CYCLE_DATA_KEY` | `var CYCLE_DATA_KEY =` |
-| 7,639 | `cycleDataOn` | `function cycleDataOn(` |
-| 7,640 | `cycleRowsHtml` | `function cycleRowsHtml(` |
-| 7,660 | `wireCycleData` | `function wireCycleData(` |
-| 7,675 | `renderCycleList` | `function renderCycleList(` |
+| 7,635 | `CYCLE_DATA_KEY` | `var CYCLE_DATA_KEY =` |
+| 7,636 | `cycleDataOn` | `function cycleDataOn(` |
+| 7,637 | `cycleRowsHtml` | `function cycleRowsHtml(` |
+| 7,657 | `wireCycleData` | `function wireCycleData(` |
+| 7,672 | `renderCycleList` | `function renderCycleList(` |
 
 ### A closed cycle, shown on the Cycle tab's own page
 
-_line 7,720_ · 11 declarations
+_line 7,717_ · 13 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,721 | `eraOpen` | `var eraOpen =` |
-| 7,722 | `kT` | `function kT(` |
-| 7,726 | `eraReading` | `function eraReading(` |
-| 7,738 | `eraFig` | `function eraFig(` |
-| 7,745 | `eraValue` | `function eraValue(` |
-| 7,751 | `eraRange` | `function eraRange(` |
-| 7,756 | `eraMini` | `function eraMini(` |
-| 7,761 | `eraCard` | `function eraCard(` |
-| 7,780 | `eraShow` | `function eraShow(` |
-| 7,789 | `enterEra` | `function enterEra(` |
-| 7,796 | `leaveEra` | `function leaveEra(` |
+| 7,718 | `eraOpen` | `var eraOpen =` |
+| 7,719 | `kT` | `function kT(` |
+| 7,723 | `upTo` | `function upTo(` |
+| 7,724 | `pairAt` | `function pairAt(` |
+| 7,725 | `eraReading` | `function eraReading(` |
+| 7,735 | `eraFig` | `function eraFig(` |
+| 7,742 | `eraValue` | `function eraValue(` |
+| 7,748 | `eraRange` | `function eraRange(` |
+| 7,753 | `eraMini` | `function eraMini(` |
+| 7,758 | `eraCard` | `function eraCard(` |
+| 7,777 | `eraShow` | `function eraShow(` |
+| 7,786 | `enterEra` | `function enterEra(` |
+| 7,793 | `leaveEra` | `function leaveEra(` |
 
 ### THE ROSTER AS SERIES
 
-_line 7,803_ · 5 declarations
+_line 7,800_ · 6 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,804 | `rosterRow` | `function rosterRow(` |
-| 7,817 | `__roster` | `var __roster =` |
-| 7,818 | `readingRoster` | `function readingRoster(` |
-| 7,825 | `readFig` | `function readFig(` |
-| 7,830 | `prettyK` | `function prettyK(` |
+| 7,801 | `rosterRow` | `function rosterRow(` |
+| 7,814 | `__roster` | `var __roster =` |
+| 7,815 | `readingRoster` | `function readingRoster(` |
+| 7,822 | `withUnit` | `function withUnit(` |
+| 7,823 | `pastFigure` | `function pastFigure(` |
+| 7,827 | `prettyK` | `function prettyK(` |
 
 ### RENDER: the symptoms — the years of a cycle a reading sat where it sits today
 
-_line 7,832_ · 6 declarations
+_line 7,829_ · 6 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,833 | `cycleSymptoms` | `function cycleSymptoms(` |
-| 7,857 | `placeWords` | `function placeWords(` |
-| 7,861 | `symptomNote` | `function symptomNote(` |
-| 7,868 | `symptomRow` | `function symptomRow(` |
-| 7,875 | `cycleTrack` | `function cycleTrack(` |
-| 7,890 | `symptomLegend` | `function symptomLegend(` |
+| 7,830 | `cycleSymptoms` | `function cycleSymptoms(` |
+| 7,854 | `placeWords` | `function placeWords(` |
+| 7,858 | `symptomNote` | `function symptomNote(` |
+| 7,865 | `symptomRow` | `function symptomRow(` |
+| 7,872 | `cycleTrack` | `function cycleTrack(` |
+| 7,887 | `symptomLegend` | `function symptomLegend(` |
 
 ### RENDER: About Gyneconomy — the season model and the framework
 
-_line 7,898_ · 1 declaration
+_line 7,895_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,899 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 7,896 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 ### TAB NAVIGATION (Cycle / Analysis / Search / Portfolio)
 
-_line 7,948_ · 1 declaration
+_line 7,945_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,949 | `renderTopbar` | `function renderTopbar(` |
+| 7,946 | `renderTopbar` | `function renderTopbar(` |
 
 ### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
-_line 7,980_ · 1 declaration
+_line 7,977_ · 1 declaration
 
 | Line | Name | Anchor |
 |---|---|---|
-| 7,981 | `wireContactForm` | `function wireContactForm(` |
+| 7,978 | `wireContactForm` | `function wireContactForm(` |
 
 ## The top-level IIFEs
 
@@ -1203,7 +1206,7 @@ Banner comments:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (104), which is what the renderers fill:
+Every `id` in the static DOM (105), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1238,6 +1241,7 @@ Every `id` in the static DOM (104), which is what the renderers fill:
 | 1,426 | `gdp-trend` |
 | 1,428 | `gdp-highlights` |
 | 1,432 | `sheet-marker-deficit` |
+| 1,432 | `deficit-timing` |
 | 1,434 | `sheet-metric-households` |
 | 1,435 | `households-timing` |
 | 1,436 | `households-chart` |

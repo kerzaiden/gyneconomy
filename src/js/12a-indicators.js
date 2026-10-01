@@ -26,7 +26,7 @@
       "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
         fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
       "sheet-sign-productivity-growth": { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight,
-        row:{ marker:r.econTerm, sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } }
+        row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } }
     };
   }
   function splitSpec(R, P){
@@ -36,7 +36,7 @@
     return s;
   }
   function splitInfo(s){
-    return '<h4>' + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
+    return '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
   }
   function quarterTicks(vals){
@@ -52,7 +52,7 @@
     var chart = function(w){
       return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
         xLabel:quarterTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : "FY" + d.y; },
-        alt:s.row.marker + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
+        alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };
     put(id + "-chart", histBar(histControls(id, { series:s.series })) +
       '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) +
