@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5bf8330` on 2026-10-01. **72 components**, **41 shared patterns**.
+Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared patterns**.
 
 ## components.js
 
@@ -27,7 +27,7 @@ Generated from commit `5bf8330` on 2026-10-01. **72 components**, **41 shared pa
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.js:renderHormones` |
 | **`gdpHistoryChart`** | `.growth-col` | `pages-nav.js:registerTempGdpPages` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.js:histHead`, `history.js:paintHeadMenus` |
-| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `components.js:deficitBlock`, `dial-cycle.js:peerReaches`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:renderPressurePage`, `render-pages.js:drawHznHead`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:renderPressurePage`, `render-pages.js:drawHznHead`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`householdsChart`** | `.bill` `.hh-col` `.kept` | `pages-nav.js:registerHouseholdsValuationPages` |
 | **`m2GrowthChart`** | `.m2-col` | `render-core.js:registerFlowPages` |
 | **`unempHistoryChart`** | `.unemp-col` | `pages-nav.js:registerActivityPowerDeficitPages` |
@@ -150,7 +150,7 @@ renderer speaks. Listed most-used first.
 | Function | Lives in | Called from |
 |---|---|---|
 | **`byId`** | refresh-season.js | 45 places |
-| **`put`** | refresh-season.js | 24 places |
+| **`put`** | refresh-season.js | 23 places |
 | **`histFrame`** | charts.js | 12 places |
 | **`openCycle`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
@@ -229,16 +229,16 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.unit` | 6 | `analysis.js:cycleRowsHtml`, `analysis.js:readFig`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.pulsebox` | 5 | `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock` |
 | `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:activityStackHtml` |
-| `.cycsel-nm` | 4 | `charts.js:cyclePicker`, `dial-cycle.js:peerReaches`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.mono` | 4 | `charts.js:fitGroup`, `charts.js:histTip`, `forms.js:pulseBlock`, `render-core.js:cardDetailHtml` |
 | `.peek-mark` | 4 | `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns`, `render-pages.js:renderSubjectRows` |
-| `.cycsel-opt` | 3 | `dial-cycle.js:peerReaches`, `history.js:headMenuHtml`, `history.js:headPickRow` |
-| `.cycsel-tick` | 3 | `charts.js:cyclePicker`, `dial-cycle.js:peerReaches`, `history.js:headPickRow` |
+| `.cycsel-nm` | 3 | `charts.js:cyclePicker`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.rangebar` | 3 | `charts.js:modeBar`, `charts.js:rangeBar`, `pages-nav.js:buildSearch` |
 | `.peek-chart` | 3 | `charts.js:colPeek`, `charts.js:meterPeek`, `forms.js:pulsePeek` |
 | `.subject-icon` | 3 | `pages-nav.js:discOf`, `pages-nav.js:renderSignsList`, `render-core.js:subjectIcon` |
 | `.legend-row` | 2 | `components.js:deficitBlock`, `dial-cycle.js:renderCycleKicker` |
 | `.vh-mean` | 2 | `charts.js:meanRule`, `components.js:velocityHistoryChart` |
+| `.cycsel-opt` | 2 | `history.js:headMenuHtml`, `history.js:headPickRow` |
+| `.cycsel-tick` | 2 | `charts.js:cyclePicker`, `history.js:headPickRow` |
 | `.cycsel-menu` | 2 | `charts.js:cyclePicker`, `history.js:histHead` |
 | `.cycsel-yr` | 2 | `charts.js:cyclePicker`, `history.js:headMenuHtml` |
 | `.vh-svg` | 2 | `charts.js:vhOpen`, `history.js:householdsChart` |

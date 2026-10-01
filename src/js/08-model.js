@@ -40,17 +40,6 @@
     });
     return out;
   })();
-  function regimeTrack(series){
-    var qs = Object.keys(series).sort(), out = {}, prev;
-    qs.forEach(function(q, i){
-      if (i < GROWTH_WINDOW - 1) return;
-      var slope = slopeOf(qs.slice(i - GROWTH_WINDOW + 1, i + 1).map(function(k){ return series[k]; }));
-      out[q] = slope < -0.025 ? "contraction" : slope > 0.025 ? "expansion" : (prev || "expansion");
-      prev = out[q];
-    });
-    return out;
-  }
-  gdpPeers.forEach(function(c){ c.regime = regimeTrack(c.q); });
 
   var regimeByQ = (function(){
     var out = {};
@@ -342,4 +331,4 @@
     window.addEventListener("scroll", function(){ if (viaTouch) hide(); }, {passive:true});
   }
 
-  addSources(gdpSrc); addSources(gdpPeerSrc);
+  addSources(gdpSrc);

@@ -147,21 +147,6 @@ console.log('\ncycleReturns — the peak is the best single year, never compound
   ok('the total compounds year by year', +r.cumByYear[2021].toFixed(2), 91.52);
 }
 
-console.log('\nregimeTrack — the peers read growth exactly as the season does\n');
-{
-  const M = lift(['slopeOf', 'readSeason', 'regimeTrack'], {});
-  const vals = [3, 3, 3, 3, 3, 3, 2, 1, 0, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 2, 1, 0, -1, -2, -2, -1.96, -1.92, -1.88, -1.84, -1.8, -1.76, -1.72];
-  const series = {}; vals.forEach((v, k) => { series[(2000 + Math.floor(k / 4)) + ' Q' + (k % 4 + 1)] = v; });
-  const qs = Object.keys(series).sort(), track = M.regimeTrack(series), cpi12 = Array(12).fill({ v: 2 });
-  let prev, same = true;
-  qs.forEach((q, i) => { if (i < M.GROWTH_WINDOW - 1) return;
-    const r = M.readSeason(cpi12, qs.slice(i - M.GROWTH_WINDOW + 1, i + 1).map(k => ({ q: k, v: series[k] })), prev);
-    prev = r.regime; if (r.regime !== track[q]) same = false; });
-  ok('the same regime as readSeason in every quarter', same, true);
-  ok('a flat stretch keeps the regime before it', track[qs[14]], 'contraction');
-  ok('a rise of 0.04 a quarter is expansion, past the 0.025 cut', track[qs[qs.length - 1]], 'expansion');
-}
-
 console.log('\nThe words say what the rules do\n');
 {
   const NAV = fs.readFileSync(path.join(__dirname, '..', 'src/js/12-pages-nav.js'), 'utf8');

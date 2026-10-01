@@ -610,8 +610,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A history's note opens from its head's ⋯ menu, last in the menu, never from an (i) beside the title.**
   Keren: "put the info in the three dots in the history panel as convention" — one string read from one place.
   (V518, V522, V582, V593)
-- **A control that chooses which series a chart draws (Growth's economy, Pressure's maturity, Horizon's
-  spread) is a row in the head's ⋯ menu; the control row holds only the window, so only one duration ruler is
+- **A control that chooses which series a chart draws (Pressure's maturity, Horizon's spread) is a row in the
+  head's ⋯ menu; the control row holds only the window, so only one duration ruler is
   ever on screen.** Keren: "Put it in the growth page under the three dots in history"; "shouldn't be a new
   ruler — you can put it in the three dots"; a window labelled 5Y beside a maturity labelled 5Y is a collision
   no labelling fixes. (V210, V472, V518, V522, V588)
@@ -920,6 +920,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ## Data and sources
 
+- **For the MVP the app reads the United States only; there is no economy picker.** Keren: "we don't have
+  multinational data across the app … for the MVP, concentrate on the US. So the menu can go." Growth's
+  economy menu and its peer data were removed. (V669)
 - **A hand-carried history is checked on load against the records its source itself states.** A
   mis-transcribed digit cannot then sit in the app unnoticed. (V299, V306, V358, V643)
 - **Provenance lives on each figure: every card names the day its number derives from, and the Sources screen

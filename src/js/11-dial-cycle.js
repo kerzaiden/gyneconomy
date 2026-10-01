@@ -273,14 +273,13 @@
   var growthDetail = '<h4>Growth per cycle</h4>' +
     ledeHtml("Real GDP across this cycle, quarter by quarter.") +
     facts([
-      'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.',
+      'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline.',
       'US news usually quotes a different figure for \u201cgrowth this quarter\u201d: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.',
       '<b>Gold is expansion, periwinkle is contraction</b> \u2014 the season model\u2019s own reading, the direction of the trend through the last six quarters, the same colours as everywhere Growth appears.',
       'That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.',
-      'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.',
-      'The \u22ef menu switches the economy \u2014 the United States, Israel, Japan or the European Union, one at a time.'
+      'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.'
     ]) +
-    srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]).concat(gdpPeerSrc));
+    srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]));
 
   // ---- the whole view, for one cycle ----
   function renderCycleView(m){
@@ -288,33 +287,6 @@
     shownEraModel = m; shownEra = m.era;
     renderDiagnosis(m);
   }
-  /* ---- The economy the Growth chart draws ---- */
-  function peerChosen(){ return gdpPeers.filter(function(c){ return c.on; })[0] || null; }
-  function peerReaches(m){
-    return !!m && gdpPeers.some(function(c){
-      return Object.keys(c.q).some(function(k){
-        var yr = parseInt(k, 10); return yr >= m.era.from && yr <= m.endYear;
-      });
-    });
-  }
-  HIST_HEAD["sheet-metric-gdp"].menu = function(){
-    if (!peerReaches(shownEraModel)) return [];
-    var on = peerChosen();
-    function row(sel, code, label){
-      return '<button type="button" class="cycsel-opt bh-pick' + (sel ? " on" : "") +
-        '" role="menuitemradio" aria-checked="' + (sel ? "true" : "false") + '" data-gdp-peer="' + code + '">' +
-        '<span class="cycsel-tick" aria-hidden="true"></span>' +
-        '<span class="cycsel-nm">' + label + '</span></button>';
-    }
-    return [{ key:"economy", label:"Economy", on:true, value:(on ? on.name : "United States"),
-      rows:row(!on, "", "United States") + gdpPeers.map(function(c){
-        return row(!!c.on, c.code, c.name);
-      }).join("") }];
-  };
-  GYN.on("pickPeer", function(code){
-    gdpPeers.forEach(function(c){ c.on = c.code === code; });
-    put("gdp-head", histHead("sheet-metric-gdp"));
-  });
 
   var shownEraModel = null;
   function showCycle(era){ if (shownEra !== era) renderCycleView(cycleModel(era)); }
