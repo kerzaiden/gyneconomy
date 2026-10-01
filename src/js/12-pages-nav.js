@@ -908,7 +908,7 @@
   ];
   var FEELING_RULES = {
     Hope:"momentum has just turned positive after being negative",
-    Optimism:"rising, within 5% of the high, fear not calm",
+    Optimism:"rising, within 5% of the high, momentum at 65% or more of this bull\u2019s best or fear not calm",
     Euphoria:"within 5% of the high, momentum under 65% of this bull\u2019s best, fear calm",
     Anxiety:"fear up 20 points from calm in three months, within 10% of the high",
     Fear:"momentum negative, fear in its top 40%",
