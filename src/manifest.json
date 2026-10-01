@@ -10,6 +10,7 @@
  "js/05-history.js",
  "js/06-charts.js",
  "js/07-forms.js",
+ "js/07b-roster.js",
  "js/08-model.js",
  "js/09-render-core.js",
  "js/10-render-pages.js",

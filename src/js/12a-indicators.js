@@ -5,13 +5,6 @@
     { t:"Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
       u:"https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf" }
   ];
-  var INDICATOR_GROUP = {
-    "sheet-metric-valuation":"Valuations", "sheet-metric-buffett":"Valuations",
-    "sheet-metric-debt":"Economic power",
-    "sheet-metric-interest":"Economic power", "sheet-marker-deficit":"Economic power",
-    "sheet-sign-activity":"Activity", "sheet-sign-productivity-growth":"Activity", "sheet-sign-industrial-output":"Activity"
-  };
-  var SPLIT_PERIOD = {}, SPLIT_STOPS = ["5y", "10y", "25y", "max"], DEF_PEEK_BASE = 3.8;
   function debtSvg(){ return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>'); }
   function interestSvg(){ return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/>' +
     '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>'); }
@@ -19,40 +12,31 @@
     '<path d="M4.5 8 2.5 13.5h4zM19.5 8l-2 5.5h4z" stroke-width="1.6"/>'); }
   function lede(text){ return '<p class="hi-lede">' + text + '</p>'; }
   function periodOf(row){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
-  function qLast(series){ return qPretty(series[series.length - 1].q); }
   function meterWord(m){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
-  function splitSpecs(){
-    var buff = valRow("buffett");
-    return [
-      { id:"sheet-metric-buffett", after:"sheet-metric-valuation", title:"Buffett indicator", mark:diamondSvg,
-        head:"Buffett Indicator, Market Value ÷ GDP", row:buff, series:buffettHistory, when:qLast(buffettHistory),
-        mid:80, midLabel:"Buffett’s line, 80%", unit:"of GDP",
+  function splitPages(){
+    var r = productivityReading, tenth = function(v){ return v.toFixed(1) + "%"; };
+    return {
+      "sheet-metric-buffett": { after:"sheet-metric-valuation", row:valRow("buffett"), line:"Buffett’s line",
         fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(valuation.src.slice(0, 2)),
         band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
              "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
         insight:buffettInsight },
-      { id:"sheet-metric-debt", after:"sheet-metric-buffett", title:"Federal debt", mark:debtSvg,
-        head:"Gross Federal Debt, Share of GDP", row:labPanel[0], series:grossDebtQuarterly, when:periodOf(labPanel[0]),
-        mid:70, midLabel:"50-year average, 70%", unit:"of GDP",
-        fmt:function(v){ return v.toFixed(1) + "%"; }, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
-      { id:"sheet-metric-interest", after:"sheet-metric-debt", title:"Interest payments", mark:interestSvg,
-        head:"Net Interest, Share of GDP", row:labPanel[1], series:fiscalHistory.interest, when:periodOf(labPanel[1]),
-        mid:2, midLabel:"50-year average, 2.0%", unit:"of GDP",
-        fmt:function(v){ return v.toFixed(1) + "%"; }, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight }
-    ].concat(productivitySpec());
+      "sheet-metric-debt": { after:"sheet-metric-buffett", row:labRow("sheet-metric-debt"), line:"50-year average",
+        fmt:tenth, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
+      "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
+        fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
+      "sheet-sign-productivity-growth": { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight,
+        row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } }
+    };
   }
-  function productivitySpec(){
-    if (typeof productivityHistory === "undefined" || !productivityHistory.length) return [];
-    var r = productivityReading, line = r.meter.optimal.gte;
-    return [{ id:"sheet-sign-productivity-growth", noPeek:true, goodAbove:true, title:"Productivity growth", mark:clockSvg,
-      head:"Output per Hour, Year over Year", series:productivityHistory, when:qLast(productivityHistory),
-      row:{ marker:r.econTerm, sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state },
-      mid:line, midLabel:"slowdown average, " + line.toFixed(1) + "%", unit:"YoY", src:PRODUCTIVITY_SRC,
-      fmt:function(v){ return v.toFixed(1) + "%"; }, insight:productivityInsight }];
+  function splitSpec(R, P){
+    var s = Object.create(R);
+    for (var k in P) s[k] = P[k];
+    s.series = R.hist.s; s.midLabel = P.line + ", " + (P.tick || P.fmt)(R.mid);
+    return s;
   }
-  function splitMid(id){ return splitSpecs().filter(function(s){ return s.id === id; })[0].mid; }
   function splitInfo(s){
-    return '<h4>' + s.row.marker + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
+    return '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
   }
   function quarterTicks(vals){
@@ -61,16 +45,16 @@
     return function(d){ return /Q1$/.test(d.q) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d.q.slice(2, 4) : ""; };
   }
   function drawSplit(s, W){
-    var id = s.id, cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+    var id = s.id, cyc = pageCycle(id);
     var span = cyc ? cycleSlice(s.series, cyc) : null;
     var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
     var tr = trendOf(vals.map(function(d){ return d.v; }), "points", s.series[0].q ? "quarter" : "year");
     var chart = function(w){
       return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
         xLabel:quarterTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : "FY" + d.y; },
-        alt:s.row.marker + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
+        alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };
-    put(id + "-chart", histBar(histControls(id, { series:s.series, stops:SPLIT_STOPS })) +
+    put(id + "-chart", histBar(histControls(id, { series:s.series })) +
       '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) +
       histTip(id + "-tip") + '</div>');
     var box = document.querySelector("#" + id + "-chart .page-chart");
@@ -80,39 +64,34 @@
   function mountSplit(s){
     if (!document.getElementById(s.id)){
       var sheet = metricSheet(s.id);
-      sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill("structural") + '</div>' +
+      sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill(s.timing) + '</div>' +
         '<div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
       var after = byId(s.after);
       if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
     }
-    HIST_HEAD[s.id] = { mark:s.mark, title:s.head }; histNote(s.id, splitInfo(s));
-    pageMode[s.id] = "cycles"; pageCycles[s.id] = null; pageRange[s.id] = "10y";
+    histNote(s.id, splitInfo(s));
     sheetRenderers[s.id] = function(W){ drawSplit(s, W); };
     put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
     addSources(s.src);
-    SPLIT_PERIOD[s.id] = s.when;
   }
-  function splitPeek(o){
-    registerTiming("structural", { title:o.title, sub:INDICATOR_GROUP[o.target], metric:o.row.flagValue, unit:o.unit,
-      word:meterWord(o.row.meter), state:o.row.flagState || "norm", icon:discOf({ innerHTML:o.mark() }, o.row.flagState),
-      target:o.target });
-    return peekCard({ kicker:o.title, title:o.title, mark:o.mark(), value:o.row.flagValue, unit:o.unit,
-      word:meterWord(o.row.meter), state:o.row.flagState || "norm", target:o.target,
-      cols:o.cols, colBase:o.base, colClass:function(v){ return "dv-bar " + (v > o.base ? "over" : "under"); } });
+  function splitPeek(R, row){
+    registerTiming(R.timing, { title:R.name, sub:R.group, metric:row.flagValue, unit:R.cardUnit,
+      word:meterWord(row.meter), state:row.flagState || "norm", icon:subjectIcon(row.flagState || "norm", R.mark()),
+      target:R.id });
+    return peekOf(R.id, { value:row.flagValue, word:meterWord(row.meter), state:row.flagState || "norm", colBase:R.mid,
+      cols:keyed(R.hist).map(function(d){ return R.flip ? -d.v : d.v; }), colClass:function(v){ return "dv-bar " + (v > R.mid ? "over" : "under"); } });
   }
   function indicatorPeeks(){
-    var html = splitSpecs().map(function(s){
-      mountSplit(s);
-      return s.noPeek ? "" : splitPeek({ title:s.title, mark:s.mark, row:s.row, unit:s.unit, target:s.id,
-                         cols:s.series.map(function(d){ return d.v; }), base:s.mid });
-    }).join("");
-    return html + deficitPeek();
+    var pages = splitPages(), alone = ROSTER.filter(function(R){ return R.door === "split" && !pages[R.id]; });
+    return ROSTER.map(function(R){
+      var s = pages[R.id] && splitSpec(R, pages[R.id]);
+      if (s) mountSplit(s);
+      return s && R.door === "split" ? splitPeek(R, s.row) : "";
+    }).join("") + alone.map(deficitPeek).join("");
   }
-  function deficitPeek(){
-    SPLIT_PERIOD["sheet-marker-deficit"] = periodOf(labPanel[2]);
+  function deficitPeek(R){
     addSources(longCycleSrc);
-    return splitPeek({ title:"Federal budget", mark:budgetSvg, row:labPanel[2], unit:"deficit, of GDP",
-      target:"sheet-marker-deficit", cols:deficitHistory.map(function(v){ return -v; }), base:DEF_PEEK_BASE });
+    return splitPeek(R, labRow(R.id));
   }
   function catSheet(id, key){
     var sheet = metricSheet(id);
@@ -134,30 +113,25 @@
     sheetRenderers[sheet.id] = function(){ sheet.firstChild.appendChild(grp); };
     sheetRenderers["sheet-cat-" + key] = function(){ seatGroups(key); };
   }
-  function appendPicks(items, picks, PERIOD, key){
+  function appendPicks(items, picks, key){
     picks.forEach(function(p){
-      if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, PERIOD, key)); return; }
+      if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, key)); return; }
       var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group); grp.__mark = p.mark;
-      p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, PERIOD, key)); });
+      p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, key)); });
       if (grp.children.length) groupSheet(grp, p.group, key, items);
     });
   }
-  function categoryCats(){
-    return [
-      { key:"weather", title:"Weather", mark:weatherSvg(), sub:"Temperature · Growth",
-        picks:['.peek[data-open="sheet-metric-temp"]', '.peek[data-open="sheet-metric-gdp"]'] },
-      { key:"circulation", title:"Circulation", mark:circulationSvg(), sub:"Hormones · Pressure · Pulse · Volume",
-        picks:['.sign-row[data-subject="hormones"]', '.sign-row[data-subject="pressure"]',
-               '.peek[data-open="sheet-sign-pulse"]', '.peek[data-open="sheet-sign-volume"]'] },
-      { key:"mood", title:"Mood", mark:moodSvg(), sub:"Valuations · Volatility · Desire · Horizon",
-        picks:[{ group:"Valuations", picks:['.peek[data-open="sheet-metric-valuation"]', '.peek[data-open="sheet-metric-buffett"]'] },
-               '.sign-row[data-open="sheet-sign-sentiment"]', '.sign-row[data-open="sheet-sign-desire"]',
-               '.sign-row[data-open="sheet-sign-horizon"]'] },
-      { key:"energy", title:"Energy", mark:boltSvg(), sub:"Economic power · Households · Activity",
-        picks:[{ group:"Economic power", mark:boltSvg, picks:['.peek[data-open="sheet-metric-debt"]', '.peek[data-open="sheet-metric-interest"]', '.peek[data-open="sheet-marker-deficit"]'] },
-               '.peek[data-open="sheet-metric-households"]', { group:"Activity", picks:['.sign-row[data-open="sheet-sign-activity"]',
-                 '.sign-row[data-open="sheet-sign-productivity-growth"]', '.sign-row[data-open="sheet-sign-industrial-output"]'] }] }
-    ];
+  function doorSel(R){ return (R.door === "subject" || R.door === "row" ? ".sign-row" : ".peek") + '[data-open="' + R.id + '"]'; }
+  function catPicks(c){
+    var picks = [];
+    ROSTER.forEach(function(R){
+      if (R.cat !== c.key) return;
+      var last = picks[picks.length - 1];
+      if (!R.group) picks.push(doorSel(R));
+      else if (last && last.group === R.group) last.picks.push(doorSel(R));
+      else picks.push({ group:R.group, mark:GROUP_MARK[R.group], picks:[doorSel(R)] });
+    });
+    return picks;
   }
 
   // ---- The split indicators' insights ----

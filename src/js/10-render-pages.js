@@ -198,7 +198,6 @@
   /* ---- RENDER: Horizon — the spread's own page ---- */
   function drawHznHead(){
     var H = HIST_HEAD["hzn-range"];
-    H.mark  = sunriseSvg;
     H.title = spreadLabel(spreadPick) + " Treasury Spread";
     H.menu = function(){
       return [
@@ -213,18 +212,16 @@
   }
   function renderHorizonPage(){
     var host = byId("hzn-timeline"); if (!host) return;
-    var HZN_STOPS = ["5y", "10y", "max"];
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
     function drawHzn(){
       var data = hznData();
-      var cyc = pageMode["hzn-range"] === "cycles" ? (cycleByName(pageCycles["hzn-range"]) || openCycle()) : null;
-      if (cyc && cyc.from < hznY0) cyc = openCycle();
+      var cyc = pageCycle("hzn-range", hznY0);
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
       var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["hzn-range"]);
       var to = idx ? idx[1] : data.length;
       host.innerHTML = histControls("hzn-range",
-        { depth:Math.floor(data.length / 4), stops:HZN_STOPS }, hznY0);
+        { depth:Math.floor(data.length / 4) }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
       var tr = byId("hzn-trend");
       if (tr){
@@ -236,8 +233,7 @@
       drawHznHead();
     }
     GYN.on("pickSpread", function(code){ spreadPick = code; drawHzn(); });
-    sheetRenderers["hzn-range"] = drawHzn;
-    sheetRenderers["sheet-sign-horizon"] = drawHzn;
+    drawsPage("sheet-sign-horizon", drawHzn);
     drawHzn();
 
     var r = horizonRead;
@@ -285,7 +281,6 @@
   /* ---- RENDER: Hormones ---- */
   function renderHormones(){
     var host = byId("hormones-history"); if (!host || !fedFundsHistory.length) return;
-    var HORM_STOPS = ["5y", "10y", "25y", "max"];
     var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
     function ffCycleMonths(c){
       var to = c.to || calendarTodayY, a = -1, b = -1;
@@ -298,13 +293,13 @@
     function draw(){
       var bar = byId("hormones-history"); if (!bar) return;
       var id = "hormones-range";
-      var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+      var cyc = pageCycle(id);
       var span = cyc ? ffCycleMonths(cyc) : null;
       var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
       var to = span ? span[1] : undefined;
       var win = fedFundsHistory.slice(from, to);
       bar.innerHTML =
-        histBar(histControls(id, { series:fedFundsHistory, stops:HORM_STOPS }, FF_Y0)) +
+        histBar(histControls(id, { series:fedFundsHistory }, FF_Y0)) +
         '<div class="page-chart">' + histHead(id) +
         fedFundsHistoryChart(bar.clientWidth || 340, from, { to:to, cycle:!!span }) +
         histTip("hormones-hist-tooltip") +
@@ -315,8 +310,7 @@
       refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
       attachHistory(box, "hormones-hist-tooltip", "fedFundsHistoryChart");
     }
-    sheetRenderers["hormones-range"] = draw;
-    sheetRenderers["sheet-sign-hormones"] = draw;
+    drawsPage("sheet-sign-hormones", draw);
     draw();
 
     HIST_NOTE["hormones-range"] = '<h4>Effective federal funds rate</h4>' + factsFrom(
@@ -385,13 +379,10 @@
   // ---- RENDER: Volatility — the VIX since 1986, and the shape of its curve today ----
   function renderVolatility(){
     HIST_NOTE["fear-range"] = volatilityDetailHtml();
-    var VOL_STOPS = ["5y", "10y", "25y", "max"];
     var VOL_Y0 = volatilityHistory.length ? parseInt(volatilityHistory[0].m.slice(0, 4), 10) : 0;
     function drawVolatility(){
       var host = byId("fear-history"); if (!host || !volatilityHistory.length) return;
-      var cyc = pageMode["fear-range"] === "cycles"
-              ? (cycleByName(pageCycles["fear-range"]) || openCycle()) : null;
-      if (cyc && cyc.from < VOL_Y0) cyc = openCycle();
+      var cyc = pageCycle("fear-range", VOL_Y0);
       var span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
       var vals = span ? volatilityHistory.slice(span[0], span[1])
                       : timelineWindow(volatilityHistory, pageRange["fear-range"]);
@@ -416,7 +407,7 @@
       }
       host.innerHTML =
         histBar(histControls("fear-range",
-          { series:volatilityHistory, stops:VOL_STOPS }, VOL_Y0)) +
+          { series:volatilityHistory }, VOL_Y0)) +
         '<div class="page-chart">' + histHead("fear-range") +
         divergeChart(opts(), host.clientWidth || 340) +
         histTip("fear-hist-tooltip") +
@@ -427,8 +418,7 @@
       attachHistory(box, "fear-hist-tooltip", "divergeChart");
       volatilityHighlights(VOL_Y0);
     }
-    sheetRenderers["fear-range"] = drawVolatility;
-    sheetRenderers["sheet-sign-sentiment"] = drawVolatility;
+    drawsPage("sheet-sign-sentiment", drawVolatility);
     drawVolatility();
     addSources(sentiment.src.concat(VIX_CONVENTION));
   }
@@ -464,26 +454,14 @@
 
   // ---- RENDER: Analysis subjects — one headline figure per collapsible section ----
   function renderSubjectRows(){
-    function ring(key, pct, state){
-      put("subj-ring-" + key, vitalRingSvg(pct, state));
-    }
-    function dot(key, state){
-      put("subj-ring-" + key, '<div class="subject-dot"><span class="dot ' + state + '"></span></div>');
-    }
     function spark(key, html){ put("subj-spark-" + key, html || ""); }
     function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
     function set(key, valueHtml, contextHtml){
       put("subj-value-" + key, valueHtml);
       var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
     }
-    function worst(states){
-      var order = ["good","warning","serious","critical"];
-      return states.reduce(function(w, st){ return order.indexOf(st) > order.indexOf(w) ? st : w; }, "good");
-    }
 
 
-    var hzLabel = document.querySelector('[data-subject="horizon"] .subject-label');
-    put(hzLabel, '<span class="peek-mark">' + sunriseSvg() + '</span>Horizon' + CHEV);
     set("horizon", (horizonRead.spread >= 0 ? "+" : "\u2212") + Math.abs(horizonRead.spread).toFixed(2) +
       '<span class="unit">pts \u00b7 10Y \u2212 3M</span>' +
       '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + '</span>', "");
@@ -495,11 +473,6 @@
     })();
 
     put("subj-ring-sentiment", volatilityRing());
-    (function(){
-      var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      put(lab, '<span class="peek-mark mood-mark">' + volatilitySvg() +
-        '</span>Volatility');
-    })();
     var volTag = volatilityTag();
     set("sentiment", vixRow.flagValue +
       '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + '</span>', "");

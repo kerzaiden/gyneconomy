@@ -2,21 +2,6 @@
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
     '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
-  var HIST_HEAD = {
-    "sheet-metric-temp":       { mark:thermoSvg,  title:"CPI" },
-    "sheet-metric-gdp":        { mark:sproutSvg,  title:"Real GDP" },
-    "sheet-sign-activity":     { mark:trendUpSvg, title:"Unemployment Rate" },
-    "sheet-metric-valuation":  { mark:diamondSvg, title:"Shiller CAPE, Against Fair Value" },
-    "sheet-metric-households": { mark:houseSvg,   title:"Debt Service, Share of Income" },
-    "deficit-range":           { mark:null,       title:"Federal Deficit or Surplus, Share of GDP" },
-    "volume-range":            { mark:volumeSvg,  title:"M2 Money Stock" },
-    "pulse-range":             { mark:ecgSvg,     title:"Velocity of Money (M2)" },
-    "hzn-range":               { mark:sunriseSvg, title:"" },
-    "desire-range":            { mark:flameSvg,   title:"High-Yield Spread over Treasuries" },
-    "fear-range":              { mark:volatilitySvg, title:"Cboe Volatility Index (VIX)" },
-    "hormones-range":          { mark:hormoneSvg,  title:"Federal Funds Rate" },
-    "pressure-range":          { mark:gaugeSvg,   title:"" }
-  };
   function headPickRow(on, attr, key, label){
     return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
       '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
@@ -714,7 +699,7 @@
 
   var lagging = [
     {
-      bodyTerm:"Activity", title:"Unemployment rate", econTerm:"Labor market",
+      bodyTerm:"Activity", econTerm:"Labor market",
       page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
       tag:{text:"Solid", state:"good"},
       metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
@@ -731,9 +716,9 @@
     },
     {
       bodyTerm:"Temperature", econTerm:"Inflation",
-      page:{ bare:true, id:"sheet-metric-temp", seat:seatTemperature },
+      page:{ bare:true, seat:seatTemperature },
       tag:{text:"Running hot", state:"warning"},
-      metric:"3.4%", metricSub:"CPI, YoY, Aug 2026",
+      get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"CPI, YoY, Aug 2026",
       meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
              ends:{ low:"Cold", high:"Hot" }},
       shortCaption:"",

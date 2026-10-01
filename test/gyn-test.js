@@ -116,6 +116,15 @@ async function openPage(p, url, sheet) {
   const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
   const tall = {}, notes = {};
+  const searchFigs = await p.evaluate(() => [...document.querySelectorAll('#search-list .ind-row[data-open]')].map(r => {
+    const fig = ((r.querySelector('.ind-fig') || {}).textContent || '').trim();
+    const card = document.querySelector('.cat-item[data-open="' + r.dataset.open + '"] .ci-value');
+    return fig ? { name: r.dataset.title, fig, card: card ? card.firstChild.nodeValue.trim() : null } : null;
+  }).filter(Boolean));
+  const searchOff = searchFigs.filter(f => f.fig !== f.card);
+  (searchFigs.length > 0 && !searchOff.length)
+    ? ok('every Search row prints its card\u2019s figure', searchFigs.length + ' rows')
+    : bad('every Search row prints its card\u2019s figure', JSON.stringify(searchOff.length ? searchOff : searchFigs.length));
   const onPage = {};
   for (const [sheet, label] of READINGS_ON_SCREEN) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
@@ -140,6 +149,7 @@ async function openPage(p, url, sheet) {
         ctlOutside: (() => { const bar = mp.querySelector('.hist-bar');
           return !!bar && !bar.closest('.page-chart, .spread-history'); })(),
         frame: q('.bt-frame'), grid: q('.bt-grid'), vgrid: q('.bt-vgrid'), yl: q('.bt-yl'), xl: q('.bt-xl'),
+        mark: !!(btn && btn.closest('.band-head').querySelector('.bh-mark svg')), chip: !!mp.querySelector('.timing-row'),
       };
     }, hid);
     const miss = [];
@@ -147,6 +157,7 @@ async function openPage(p, url, sheet) {
     if (!r.headBtn) miss.push('⋯'); if (!r.ctlOutside) miss.push('control outside the band');
     if (!r.frame) miss.push('frame'); if (!r.grid) miss.push('gridlines');
     if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); if (!r.xl) miss.push('x labels');
+    if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
     tall[label] = r.tall;
     notes[label] = await p.evaluate(() => {
@@ -185,6 +196,9 @@ async function openPage(p, url, sheet) {
       .filter(m => !/\b(not a|no official|no)\s*$/i.test(m[1])).map(m => k + ': \u2026' + m[0]));
     !relabelled.length ? ok('no note calls a band a normal range', Object.keys(notes).length + ' notes read')
                        : bad('no note calls a band a normal range', relabelled.join(' | ') + ' \u2014 a target is never relabelled normal; say whose band it is');
+    (/Buffett indicator/.test(notes['Buffett indicator'] || '') && !Object.values(notes).some(n => /Buffett Indicator/.test(n)))
+      ? ok('the Buffett indicator is named so in its notes', 'Keren, V670')
+      : bad('the Buffett indicator is named so in its notes', (notes['Buffett indicator'] || '').slice(0, 80));
     const off = Object.keys(onPage).filter(k => onPage[k] !== null);
     (Object.keys(onPage).length === CARD_ON_PAGE.length && !off.length)
       ? ok('the card\u2019s figure is the page\u2019s figure', Object.keys(onPage).join(', '))
@@ -235,6 +249,14 @@ async function openPage(p, url, sheet) {
                    symptoms: d.querySelectorAll('.dx-list li').length, cards: document.querySelectorAll('.cat-row').length } : null;
     });
     const today = await read();
+    const dxOrder = () => p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-sys[class*="cat-"]')].map(s => {
+      const key = [...s.classList].find(c => c.indexOf('cat-') === 0).slice(4);
+      const cards = [...document.querySelectorAll('#sheet-cat-' + key + ' .cat-item')].map(i => i.dataset.title);
+      const names = [...s.querySelectorAll('.dx-list li b')].map(b => b.textContent).filter(n => cards.indexOf(n) !== -1);
+      const want = cards.filter(n => names.indexOf(n) !== -1);
+      return names.join() === want.join() ? '' : key + ': ' + names.join(',') + ' / cards ' + want.join(',');
+    }).filter(Boolean));
+    const todayOrder = await dxOrder();
     await sweep(p);
     const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
     (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
@@ -257,6 +279,21 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
+    const pastOrder = await dxOrder();
+    (!todayOrder.length && !pastOrder.length)
+      ? ok('each Diagnosis system lists its readings in card order, today and at a close')
+      : bad('each Diagnosis system lists its readings in card order, today and at a close', todayOrder.concat(pastOrder).join(' | '));
+    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-list li')].map(li => {
+      const name = li.querySelector('b').textContent, item = [...document.querySelectorAll('.cat-item')].find(i => i.dataset.title === name);
+      return item && item.__today ? { name, fig: li.textContent.slice(name.length).split(' \u00b7 ')[0].trim(), today: item.__today.text.trim() } : null;
+    }).filter(Boolean));
+    const decimals = t => ((/\d+(?:\.(\d+))?/.exec(t) || [])[1] || '').length;
+    const KEREN = { 'Federal debt': /^\d+\.\d%$/, 'Shiller CAPE': /\u00d7$/, 'Pulse': /\u00d7$/, 'Growth': /^[+\u2212]/,
+                    'Volume': /^[+\u2212]/, 'Volatility': / VIX$/, 'Horizon': / pts/ };
+    const figOff = pastFigs.filter(f => decimals(f.fig) !== decimals(f.today) || (KEREN[f.name] && !KEREN[f.name].test(f.fig)));
+    (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
+      ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
+      : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
     (past && past.visible && /^She closed in /.test(past.title) && past.symptoms > 10 && past.heads.length === 6)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
@@ -766,6 +803,31 @@ async function openPage(p, url, sheet) {
       ((k.mixed || 0) <= 2)
         ? ok('no more than two mixed steps', JSON.stringify(k))
         : bad('no more than two mixed steps', JSON.stringify(k) + ' \u2014 split a mixed step into a derive and a render');
+    }
+
+    const roster = await g.evaluate(() => {
+      const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
+      if (!R || !step) return null;
+      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open);
+      const warned = [], warn = console.warn;
+      console.warn = m => warned.push(String(m));
+      R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
+      try { step.fn(); } finally { R.pop(); console.warn = warn; }
+      const lazy = R.flatMap(r => [r.hist, r.peek]).filter(f => typeof f === 'function');
+      const keyed = lazy.every(f => { const s = f(); return s.length > 0 && s.every(d => d && d.k != null && typeof d.v === 'number'); });
+      return { ids: R.map(r => r.id), cards, warned: warned.join(' '), keyed, lazy: lazy.length };
+    });
+    if (!roster) bad('the roster is every card, in card order', 'no GYN.ROSTER or no checkRoster step');
+    else {
+      JSON.stringify(roster.ids) === JSON.stringify(roster.cards)
+        ? ok('the roster is every card, in card order', roster.ids.length + ' readings')
+        : bad('the roster is every card, in card order', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
+      (roster.lazy > 0 && roster.keyed)
+        ? ok('every series the past cycles read is keyed points', roster.lazy + ' computed series')
+        : bad('every series the past cycles read is keyed points', 'a computed series returns bare numbers');
+      ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)
+        ? ok('checkRoster refuses a reading declared twice, a split group and an unknown live name')
+        : bad('checkRoster refuses a reading declared twice, a split group and an unknown live name', roster.warned || 'no warning');
     }
     await c.close();
   }

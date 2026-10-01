@@ -259,8 +259,6 @@
     var sp = timelineSpan(key);
     return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 4);
   }
-  var VOL_STOPS = ["5y", "10y", "25y", "max"];
-  var PULSE_STOPS = ["5y", "10y", "25y", "max"];
 
   var DEF_1983 = deficitHistory[1983 - DEF_FROM_YEAR];
   function defFrom(key){
@@ -344,7 +342,7 @@
     function row(name, val){
       return '<div class="legend-row"><span>' + name + '</span><small>' + val + '</small></div>';
     }
-    var defRow = labPanel.filter(function(r){ return r.opens && r.opens.id === "sheet-marker-deficit"; })[0];
+    var defRow = labRow("sheet-marker-deficit");
     var note = '<h4>Federal budget deficit or surplus</h4>' +
       (defRow ? ledeHtml(defRow.note) : '') +
       facts([
@@ -393,7 +391,6 @@
     return { y:2000 + +t.slice(0, 2), m:+t.slice(2, 4), d:+t.slice(4, 6) };
   }
   function hyLabel(i){ var t = hyAt(i); return MONTHS_SHORT[t.m - 1] + " " + t.d + " " + t.y; }
-  var DESIRE_STOPS = ["1y", "max"];
   function hyNum(i){ var a = hyAt(i); return a.y * 10000 + a.m * 100 + a.d; }
   function hyWindowFrom(key){
     var sp = timelineSpan(key);
@@ -403,15 +400,15 @@
     for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
     return 0;
   }
-  function hyQuarterEnds(){
-    var out = [], key = null;
+  function hyQuarters(){
+    var out = [];
     hyDates.forEach(function(t, i){
-      var a = hyAt(i), k = a.y + "Q" + Math.ceil(a.m / 3);
-      if (k !== key){ key = k; out.push({ k:k, v:hyOas[i] }); }
-      else out[out.length - 1].v = hyOas[i];
+      var a = hyAt(i), k = a.y + " Q" + Math.ceil(a.m / 3), last = out[out.length - 1];
+      if (last && last.k === k) last.v = hyOas[i]; else out.push({ k:k, v:hyOas[i] });
     });
-    return out.map(function(o){ return o.v; });
+    return out;
   }
+  function hyQuarterEnds(){ return hyQuarters().map(function(o){ return o.v; }); }
 
   var capeHistory = [{y:1970,v:17.09},{y:1971,v:16.46},{y:1972,v:17.26},{y:1973,v:18.71},{y:1974,v:13.53},{y:1975,v:8.92},{y:1976,v:11.19},{y:1977,v:11.44},{y:1978,v:9.24},{y:1979,v:9.26},{y:1980,v:8.85},{y:1981,v:9.26},{y:1982,v:7.39},{y:1983,v:8.76},{y:1984,v:9.89},{y:1985,v:10.0},{y:1986,v:11.72},{y:1987,v:14.92},{y:1988,v:13.9},{y:1989,v:15.09},{y:1990,v:17.05},{y:1991,v:15.61},{y:1992,v:19.77},{y:1993,v:20.32},{y:1994,v:21.41},{y:1995,v:20.22},{y:1996,v:24.76},{y:1997,v:28.33},{y:1998,v:32.86},{y:1999,v:40.57},{y:2000,v:43.77},{y:2001,v:36.98},{y:2002,v:30.28},{y:2003,v:22.9},{y:2004,v:27.66},{y:2005,v:26.59},{y:2006,v:26.47},{y:2007,v:27.21},{y:2008,v:24.02},{y:2009,v:15.17},{y:2010,v:20.53},{y:2011,v:22.98},{y:2012,v:21.21},{y:2013,v:21.9},{y:2014,v:24.86},{y:2015,v:26.49},{y:2016,v:24.21},{y:2017,v:28.06},{y:2018,v:33.31},{y:2019,v:28.38},{y:2020,v:30.99},{y:2021,v:34.51},{y:2022,v:36.94},{y:2023,v:28.34},{y:2024,v:31.97},{y:2025,v:37.14},{y:2026,v:39.65}];
 
@@ -433,7 +430,7 @@
 
   function checkGrossDebt(){
     if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
-    var row = labPanel[0], by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
+    var row = labRow("sheet-metric-debt"), by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
     var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
     var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
     if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
@@ -467,7 +464,7 @@
     hint:"Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months \u2014 CAPE passed 30 in 2017 and the market rose for four more years.",
     tag:null,
     rows:[
-      { key:"buffett", marker:"Buffett Indicator", sub:"market cap \u00f7 GDP, Q2 2026",
+      { key:"buffett", marker:"Buffett indicator", sub:"market cap \u00f7 GDP, Q2 2026",
         meter:{min:32,max:256,value:256,optimal:{lte:80, label:"\u2264 80%"}, ends:{zone:"Buffett\u2019s zone", high:"Rich"}},
         shortNote:"The highest reading in the 80-year record \u2014 above the 2021 and dot-com peaks.",
         note:"Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) \u2014 the same definition the widely quoted charts use. At \u2248256% this is the highest reading in the 80-year record, clear of the 2021 peak (\u2248219%) and the dot-com peak (\u2248163%); the record low is \u224832% (Q2 1982).",
@@ -529,7 +526,7 @@
       src:[{t:"Federal Reserve via FRED — Velocity of M2 Money Stock, quarterly since 1959 (M2V; record low 1.126 in Q2 2020, high 2.192 in Q3 1997)", u:"https://fred.stlouisfed.org/series/M2V"}]
     },
     {
-      bodyTerm:"Volume", econTerm:"Money stock (M2)", timing:"leading",
+      bodyTerm:"Volume", econTerm:"Money stock (M2)",
       page:{ bare:true, noHead:true, chartFirst:true, peeked:true, chart:function(ind){ return volumeBlock(ind); } },
       tag:null,
       metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",

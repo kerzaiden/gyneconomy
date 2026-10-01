@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared patterns**.
+Generated from commit `da0c79d` on 2026-10-01. **72 components**, **39 shared patterns**.
 
 ## components.js
 
@@ -59,7 +59,7 @@ Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`peekCard`** | `.peek` `.peek-kicker` `.peek-text` `.peek-unit` `.peek-value` `.peek-word` | `indicators.js:splitPeek`, `pages-nav.js:placeSignPair`, `pages-nav.js:renderPeekAndCategories` |
+| **`peekCard`** | `.peek` `.peek-kicker` `.peek-text` `.peek-unit` `.peek-value` `.peek-word` | `roster.js:peekOf` |
 | **`pulseBlock`** | `.past` `.peek-chev` `.pt-head` `.pt-k` `.pt-v` `.pulsetrace` | `components.js:valRow` |
 | **`pulseTraceSvg`** | `.pt-svg` | `forms.js:pulseBlock`, `forms.js:pulsePeek` |
 
@@ -67,7 +67,7 @@ Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`vitalRingSvg`** | `.vital-ring-fill` `.vital-ring-track` | `analysis.js:eraMini`, `forms.js:peekCard`, `forms.js:volatilityRing`, `render-pages.js:renderSubjectRows` |
+| **`vitalRingSvg`** | `.vital-ring-fill` `.vital-ring-track` | `analysis.js:eraMini`, `forms.js:peekCard`, `forms.js:volatilityRing` |
 
 ## render-core.js
 
@@ -80,6 +80,7 @@ Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared pa
 | **`metricSheet`** | `.metric-sheet` | `indicators.js:catSheet`, `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:renderSignsList` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.js:buildNav` |
 | **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:savInfoHtml`, `forms.js:volatilityDetailHtml`, `history.js:activityInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `pages-nav.js:diagnosisInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| **`subjectIcon`** | `.subject-icon` | `indicators.js:splitPeek`, `pages-nav.js:indGroupRow`, `pages-nav.js:registerRoster`, `pages-nav.js:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.js:timingPill` |
 | **`timingPill`** | `.timing` `.timing-row` | `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:orderMetricSheets`, `pages-nav.js:renderSignsList` |
@@ -91,13 +92,12 @@ Generated from commit `43d8fac` on 2026-10-01. **72 components**, **41 shared pa
 | **`deriveUninversionDetail`** | `.lag-rows` | — |
 | **`renderHorizonPage`** | `.aux-stat` `.wordy` | — |
 | **`renderHormones`** | `.aux-group` `.norm` | — |
-| **`renderSubjectRows`** | `.mood-mark` `.subject-dot` | — |
 
 ## dial-cycle.js
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.lbl` `.num` | `dial-cycle.js:renderCycleView` |
+| **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.dot` `.lbl` `.num` | `dial-cycle.js:renderCycleView` |
 | **`hubSet`** | `.details-link` `.who` `.who-chev` | `dial-cycle.js:hubShowDefault`, `dial-cycle.js:hubShowQuarter` |
 | **`quarterPopup`** | `.reading-block` `.reading-book` `.reading-watch` | `dial-cycle.js:hubShowDefault`, `dial-cycle.js:hubShowQuarter` |
 | **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-rows` `.season-sw` `.ytd` | — |
@@ -152,14 +152,13 @@ renderer speaks. Listed most-used first.
 | **`byId`** | refresh-season.js | 45 places |
 | **`put`** | refresh-season.js | 23 places |
 | **`histFrame`** | charts.js | 12 places |
-| **`openCycle`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
-| **`cycleByName`** | charts.js | 10 places |
 | **`histControls`** | charts.js | 9 places |
+| **`pageCycle`** | charts.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
 | **`histNote`** | history.js | 8 places |
@@ -172,6 +171,7 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
+| **`drawsPage`** | render-core.js | 5 places |
 | **`expandBtn`** | render-core.js | 5 places |
 | **`fmtSigned`** | render-pages.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
@@ -179,28 +179,32 @@ renderer speaks. Listed most-used first.
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
 | **`valRow`** | components.js | 5 places |
-| **`atMonth`** | charts.js | 4 places |
 | **`detailSlot`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
+| **`indOf`** | roster.js | 4 places |
+| **`labRow`** | data.js | 4 places |
 | **`lede`** | indicators.js | 4 places |
 | **`marketFacts`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
+| **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
-| **`qPretty`** | pages-nav.js | 4 places |
 | **`readFeeling`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
-| **`categoryCats`** | indicators.js | 3 places |
+| **`atMonth`** | charts.js | 3 places |
+| **`byIdMaybe`** | refresh-season.js | 3 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |
-| **`discOf`** | pages-nav.js | 3 places |
+| **`eraFig`** | analysis.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`marketMonths`** | model.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
+| **`pastFigure`** | analysis.js | 3 places |
 | **`pct`** | pages-nav.js | 3 places |
-| **`periodOf`** | indicators.js | 3 places |
+| **`peekOf`** | roster.js | 3 places |
+| **`qPretty`** | pages-nav.js | 3 places |
 | **`rankToDate`** | model.js | 3 places |
-| **`readFig`** | analysis.js | 3 places |
+| **`readDoor`** | pages-nav.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |
 | **`rosterRows`** | pages-nav.js | 3 places |
 | **`seasonGroup`** | model.js | 3 places |
@@ -226,15 +230,14 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.tag` | 6 | `forms.js:pulseBlock`, `live.js:paintReading`, `pages-nav.js:renderSignsList`, `render-core.js:headHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.insights` | 6 | `charts.js:highlightsHtml`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones` |
 | `.marker-sub` | 6 | `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:volatilityDetailHtml`, `indicators.js:splitInfo`, `render-core.js:cardDetailHtml`, `render-pages.js:renderValuationTag` |
-| `.unit` | 6 | `analysis.js:cycleRowsHtml`, `analysis.js:readFig`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.pulsebox` | 5 | `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock` |
 | `.vh-host` | 5 | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `pages-nav.js:activityStackHtml` |
+| `.unit` | 5 | `analysis.js:cycleRowsHtml`, `pages-nav.js:renderSignsList`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones`, `render-pages.js:renderSubjectRows` |
 | `.mono` | 4 | `charts.js:fitGroup`, `charts.js:histTip`, `forms.js:pulseBlock`, `render-core.js:cardDetailHtml` |
-| `.peek-mark` | 4 | `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns`, `render-pages.js:renderSubjectRows` |
 | `.cycsel-nm` | 3 | `charts.js:cyclePicker`, `history.js:headMenuHtml`, `history.js:headPickRow` |
 | `.rangebar` | 3 | `charts.js:modeBar`, `charts.js:rangeBar`, `pages-nav.js:buildSearch` |
 | `.peek-chart` | 3 | `charts.js:colPeek`, `charts.js:meterPeek`, `forms.js:pulsePeek` |
-| `.subject-icon` | 3 | `pages-nav.js:discOf`, `pages-nav.js:renderSignsList`, `render-core.js:subjectIcon` |
+| `.peek-mark` | 3 | `forms.js:peekCard`, `pages-nav.js:catItem`, `pages-nav.js:convertLeadingSigns` |
 | `.legend-row` | 2 | `components.js:deficitBlock`, `dial-cycle.js:renderCycleKicker` |
 | `.vh-mean` | 2 | `charts.js:meanRule`, `components.js:velocityHistoryChart` |
 | `.cycsel-opt` | 2 | `history.js:headMenuHtml`, `history.js:headPickRow` |
@@ -252,7 +255,6 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.subject-summary` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.lag-row` | 2 | `render-pages.js:deriveUninversionDetail`, `tabs-menu.js:renderSeasonRows` |
 | `.lag-row-head` | 2 | `render-pages.js:deriveUninversionDetail`, `tabs-menu.js:renderSeasonRows` |
-| `.dot` | 2 | `dial-cycle.js:drawDial`, `render-pages.js:renderSubjectRows` |
 | `.strip-run` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
 | `.strip-dots` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
 | `.strip` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |

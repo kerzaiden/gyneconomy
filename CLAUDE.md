@@ -48,6 +48,10 @@ rules below are the ones that matter most.
 - **Band provenance.** Every range on screen is sourced or explicitly Keren's call, and the (i) says
   which. A target is never relabelled "normal".
 - **One figure, one number.** Computed in one place, read everywhere else.
+- **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/07b-roster.js`): its name, category, card order,
+  timing, mark, group, history and card date. The cards, category pages, Search, the Diagnosis, past cycles and
+  history heads all read it; a new reading is one row there plus its page renderer. `checkRoster` keeps it in
+  step with the live registry.
 - **Edit `src/`, never `index.html`.** The build is a join of the parts in `src/manifest.json` plus a
   comment strip; **the manifest order is the semantics** (module vars are assigned between parts).
   The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part

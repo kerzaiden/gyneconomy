@@ -30,22 +30,7 @@
            '" aria-label="Expand details">i</button>';
   }
   var sheetRenderers = {};
-  var pageMode = { "sheet-metric-temp":"cycles", "sheet-metric-gdp":"cycles",
-                   "sheet-metric-valuation":"cycles",
-                   "volume-range":"cycles", "pulse-range":"cycles",
-                   "deficit-range":"cycles", "hzn-range":"cycles", "fear-range":"cycles", "hormones-range":"cycles", "pressure-range":"cycles",
-                   "sheet-metric-households":"cycles", "sheet-sign-activity":"cycles" };
-  var pageCycles = { "sheet-metric-temp":null, "sheet-metric-gdp":null,
-                     "sheet-metric-valuation":null,
-                     "volume-range":null, "pulse-range":null,
-                     "deficit-range":null, "hzn-range":null, "fear-range":null, "hormones-range":null, "pressure-range":null,
-                     "sheet-metric-households":null, "sheet-sign-activity":null };
-  var pageRange = { "sheet-metric-valuation":"10y",
-                    "sheet-metric-gdp":"10y", "sheet-metric-temp":"10y",
-                    "deficit-range":"10y", "volume-range":"10y", "pulse-range":"10y",
-                    "hzn-range":"10y", "desire-range":"max", "fear-range":"10y", "hormones-range":"10y", "pressure-range":"10y",
-                    "sheet-metric-households":"10y",
-                    "sheet-sign-activity":"10y" };
+  function drawsPage(id, draw){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
   function wireDetailModal(){
     var backdrop = byId('detail-backdrop');
     var body = byId('detail-modal-body');
@@ -92,12 +77,6 @@
   }
   function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
   function srcHtml(list){ return list.map(function(s){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
-  var TIMING = {
-    leading:    { label:"Leading",    hint:"moves before the cycle turns" },
-    coincident: { label:"Coincident", hint:"turns with the cycle" },
-    lagging:    { label:"Lagging",    hint:"confirms a turn after it has happened" },
-    structural: { label:"Structural", hint:"the slow ground a cycle moves on" }
-  };
   function timingMark(kind){
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
     return '<svg viewBox="0 0 20 12" aria-hidden="true">' +
@@ -135,15 +114,13 @@
     if (sheet.lastElementChild !== foot) sheet.appendChild(foot);
   }
 
-  var timingMembers = { leading:[], coincident:[], lagging:[], structural:[] };
+  var timingMembers = {};
+  Object.keys(TIMING).forEach(function(k){ timingMembers[k] = []; });
   function registerTiming(kind, entry){ if (timingMembers[kind]) timingMembers[kind].push(entry); }
 
   function headHtml(ind, noMark){
-    var mk = "";
-    if (signMarks[ind.bodyTerm] && !noMark){
-      mk = '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
-        signMarks[ind.bodyTerm]() + '</span></span>';
-    }
+    var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
+      rosterFor(ind).mark() + '</span></span>';
     return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>';
   }
   var heldHighlights = "";
@@ -218,11 +195,10 @@
       var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
       var key = pageRange["pulse-range"];
-      var pulCycles = pageMode["pulse-range"] === "cycles";
-      var pulCyc = pulCycles ? (cycleByName(pageCycles["pulse-range"]) || openCycle()) : null;
+      var pulCyc = pageCycle("pulse-range");
       var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
       var bar = put("pulse-timeline", histControls("pulse-range",
-        { depth:Math.floor(m2vHistory.length / 4), stops:PULSE_STOPS }));
+        { depth:Math.floor(m2vHistory.length / 4) }));
       var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
       host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
       attachHistory(host, "pulse-hist-tooltip", "velocityHistoryChart");
@@ -230,17 +206,15 @@
         trendOf(m2vHistory.slice(vFrom, vTo), "points", "quarter"),
         null, true, { rising:"accelerating", falling:"decelerating" }));
     }
-    sheetRenderers["sheet-sign-pulse"] = drawVelocityRecord;
-    sheetRenderers["pulse-range"] = drawVelocityRecord;
+    drawsPage("sheet-sign-pulse", drawVelocityRecord);
     function drawM2Record(){
       var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
       var len = m2Yoy.length - 4, key = pageRange["volume-range"];
-      var volCycles = pageMode["volume-range"] === "cycles";
-      var volCyc = volCycles ? (cycleByName(pageCycles["volume-range"]) || openCycle()) : null;
+      var volCyc = pageCycle("volume-range");
       var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
       var bar = put("volume-timeline", histControls("volume-range",
-        { depth:Math.floor(len / 4), stops:VOL_STOPS }));
+        { depth:Math.floor(len / 4) }));
       var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
       host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
       attachHistory(host, "m2-hist-tooltip", "m2GrowthChart");
@@ -248,8 +222,7 @@
         trendOf(m2Yoy.slice(4).slice(mFrom, mTo).filter(function(v){ return v != null; }), "points", "quarter"),
         null, true, { rising:"expanding", falling:"contracting" }));
     }
-    sheetRenderers["sheet-sign-volume"] = drawM2Record;
-    sheetRenderers["volume-range"] = drawM2Record;
+    drawsPage("sheet-sign-volume", drawM2Record);
     function drawDesireRecord(){
       var host = byId("desire-record");
       if (!host || !host.clientWidth) return;
@@ -257,15 +230,14 @@
       var win = hyOas.slice(from);
       var bar = byId("desire-timeline");
       if (bar) bar.innerHTML = '<div class="hist-controls">' +
-        rangeBar("desire-range", timelineFor({ depth:3, stops:DESIRE_STOPS }),
+        rangeBar("desire-range", timelineFor({ depth:3, stops:PAGE_STOPS["desire-range"] }),
                  pageRange["desire-range"]) + '</div>';
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
       attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
       put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
         { rising:"widening", falling:"tightening" }));
     }
-    sheetRenderers["desire-range"] = drawDesireRecord;
-    sheetRenderers["sheet-sign-desire"] = drawDesireRecord;
+    drawsPage("sheet-sign-desire", drawDesireRecord);
     (function(){
       var t; window.addEventListener("resize", function(){
         clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); drawDesireRecord(); }, 150);
@@ -433,14 +405,12 @@
     function drawYlm(){
       withLatest();
       var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
-      var ylmCyc = pageMode["pressure-range"] === "cycles"
-                 ? (cycleByName(pageCycles["pressure-range"]) || openCycle()) : null;
-      if (ylmCyc && ylmCyc.from < ylmY0) ylmCyc = openCycle();
+      var ylmCyc = pageCycle("pressure-range", ylmY0);
       var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
       ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
       ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
       put("pressure-timeline", histControls("pressure-range",
-        { depth:Math.floor(quarters.length / 4), stops:["5y", "10y", "max"] }, ylmY0));
+        { depth:Math.floor(quarters.length / 4) }, ylmY0));
       render();
       var yTrend = byId("ylm-trend");
       if (yTrend){
@@ -453,7 +423,6 @@
     }
     function drawPressureHead(){
       var H = HIST_HEAD["pressure-range"];
-      H.mark  = gaugeSvg;
       H.title = matTitle();
       H.menu = function(){
         return [
@@ -467,8 +436,7 @@
       put("pressure-head", histHead("pressure-range"));
     }
     function drawPressure(){ drawYlm(); renderPressureInsights(); }
-    sheetRenderers["pressure-range"] = drawPressure;
-    sheetRenderers["sheet-sign-pressure"] = drawPressure;
+    drawsPage("sheet-sign-pressure", drawPressure);
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
 

@@ -146,9 +146,6 @@
     '<rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>' +
     '<rect x="10.4" y="5.5" width="3.2" height="13" rx="0.6" stroke-width="1.8"/>' +
     '<rect x="16.9" y="9" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>'); }
-  var signMarks = { Volatility:volatilitySvg, Desire:flameSvg, Pulse:ecgSvg, Activity:trendUpSvg, Temperature:thermoSvg,
-                    "Industrial output":gearSvg, "Productivity growth":clockSvg,
-                    Volume:volumeSvg };
 
   // ---- Market eras & yearly returns (Calendar tab + Cycle tab era headline) ----
 

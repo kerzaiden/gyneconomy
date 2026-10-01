@@ -57,6 +57,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for it since V379. (V453, V604)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
+- **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
+  its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
+  Value ÷ GDP"). (V670)
 
 ### Words for verdicts and trends
 
@@ -168,9 +171,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
   "each category page should have the shade of the color of the category". (V660)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
-  order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster, the
-  category sheets and Search read the source order; the layout rearranges the picture and leaves the meaning
-  where it is. (V502)
+  order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
+  the source order and the category sheets and past cycles read it; Search and the Diagnosis place the four by
+  each category's `shown`; the layout rearranges the picture and leaves the meaning where it is. (V502, V670)
 - **The Cycle page is the dial with the Diagnosis under it; it carries no category cards.** Keren: "I want the
   categories to go away from the cycle page because we already have it in search and in the diagnosis." (V665)
 - **A past cycle opens as the Cycle page itself, through the same components, never as a separate view.**
@@ -516,6 +519,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A combined reading (such as Volume × Pulse, M×V = P×Y) must hold in economics, not only in anatomy, and
   carries no state colour.** "The body is how an insight is explained, never how it is derived"; whether the
   two moving together is good is a judgement the card does not make. (V452)
+- **A past cycle's figure is printed the way today's card prints the reading: the same decimals, sign, suffix
+  and unit, on the cycle's card, in its Diagnosis at the close and in Show data's notes (Federal debt to one
+  decimal, CAPE and Pulse with ×, Growth and Volume signed, Volatility and Horizon with their units); the Federal
+  budget says deficit or surplus, and its rank reads the same way.** Keren: one format per reading, whether today's
+  figure or a cycle's close. (V670)
+- **A reading's Search row prints the figure its card prints, from the same source.** Temperature's row read a
+  typed figure while its card read the model; one figure, one number. (V670)
 - **Productivity growth's word follows the two BLS lines its note cites: at or above 2.1% (the 1947–2018
   average) it is Above trend, at or above 1.3% (the slowdown-era average) Above the slowdown, below that Below
   the slowdown; the captions and the note follow the word.** Keren chose a rule from the BLS lines over setting
@@ -606,7 +616,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the text ink, about the height of the title; the ⋯ is a round button with a hairline border, the same
   size.** Keren: "make the background smaller and brighter"; "the height of the icon, including the
   background, should be more or less the height of the title next to it." (V520, V521)
-- **The federal deficit's head has no mark until Keren picks one.** A blank badge is worse than none. (V518)
+- **The Federal budget page's head wears the budget mark its card wears, and the page carries its timing chip
+  (Structural), like every other page.** Keren's call at V670 ends the wait V518 set ("no mark until Keren picks
+  one"). (V518, V670)
 - **A history's note opens from its head's ⋯ menu, last in the menu, never from an (i) beside the title.**
   Keren: "put the info in the three dots in the history panel as convention" — one string read from one place.
   (V518, V522, V582, V593)
@@ -844,6 +856,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   figure and its range over the cycle as the label.** Keren: "in the past cycles the categories should be
   identical in design to the current cycle categories". Since V665 they live on the category pages that the
   Diagnosis's systems open. (V660, V665)
+- **A past cycle's miniature is drawn from that cycle's own points for every reading; a series the past cycles
+  read is always dated points, never bare numbers.** Desire's quarter-ends were bare numbers, so its past-cycle
+  miniature could never draw. (V670)
 - **There is no Growth ring.** Keren removed it as "not really indicative of the growth itself". (undated, Sep
   19, 2026)
 
@@ -975,6 +990,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, each symptom's
   value at the close with no verdict word, the Analysis as the movement across the cycle, and what actually
   followed a year later.** Keren chose this layout; verdicts are words for today. (V665)
+- **Each system lists its symptoms in the order of the category page's cards (Momentum leads Mood).** Keren
+  chose one order for a category wherever it is read. (V670)
 - **The feeling is named in the market chart's seven words: Hope, Optimism, Euphoria, Anxiety, Fear,
   Capitulation, Despondency.** Keren chose the chart's own words; this reopens V236's "drop the emotions" for
   the Diagnosis only. (V664)
@@ -1037,6 +1054,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/07b-roster.js`): its page, name, category, group,
+  timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
+  heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the
   page.** Reordering by index would silently swap one reading for another. (V494)
 - **No function grows (the V624 ratchet; the cap is 150 lines under CLAUDE.md); new work becomes a separate

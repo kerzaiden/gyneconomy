@@ -49,38 +49,38 @@
 
   var labPanel = [
     {
-      marker:"Federal debt", sub:"gross federal debt ÷ GDP",
+      sub:"gross federal debt ÷ GDP",
       meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
              ends:{ zone:"50-year average", high:"Elevated" }},
       shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
       note:"Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
       direction:"up", flagValue:"122.6%", flagState:"serious",
-      opens:{ id:"sheet-metric-debt", title:"Federal debt" }
+      id:"sheet-metric-debt"
     },
     {
-      marker:"Interest payments", sub:"net interest costs ÷ GDP",
+      sub:"net interest costs ÷ GDP",
       meter:{min:0.63, max:3.3, value:3.3, optimal:{lte:2, label:"\u2264 2.0%"},
              ends:{ zone:"50-year average", high:"High" }},
       shortNote:"FY2026, $1.0T — already the highest interest burden on record.",
       note:"FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
       direction:"up", flagValue:"3.3%", flagState:"critical",
-      opens:{ id:"sheet-metric-interest", title:"Interest payments" }
+      id:"sheet-metric-interest"
     },
     {
-      marker:"Federal budget", sub:"federal deficit or surplus ÷ GDP",
+      sub:"federal deficit or surplus ÷ GDP",
       meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:3.8, label:"\u2264 3.8%"},
              ends:{ zone:"50-year average", high:"Large" }},
       shortNote:"FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",
       note:"FY2026, ~$1.9T, CBO's February 2026 projection (FY2025 actual: 5.8%). Below emergency-level spikes, but deficits this size used to require a recession or a war — neither is present now. Range spans the largest surplus of the modern era (FY2000, +2.3% of GDP; the last one was FY2001, +1.2%) to the WWII deficit peak (FY1943, 26.9%), both from the OMB series on FRED. The green band ends at 3.8% of GDP, CBO's stated average deficit over the last fifty years; this year's 5.8% is half again as large.",
       direction:"up", flagValue:"5.8%", flagState:"serious",
-      opens:{ id:"sheet-marker-deficit", title:"Federal budget" }
+      id:"sheet-marker-deficit"
     }
   ];
+  function labRow(id){ return labPanel.filter(function(r){ return r.id === id; })[0]; }
   /* ---- Productivity growth is not in this panel ---- */
 
   var productivityRecord = (function(){
-    var h = typeof productivityHistory !== "undefined" && productivityHistory.length ? productivityHistory : null;
-    if (!h) return { now:{ q:"2026 Q2", v:2.2 }, lo:{ q:"1974 Q3", v:-2.2 }, hi:{ q:"1950 Q4", v:7.2 } };
+    var h = productivityHistory;
     return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
              hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
   })();
@@ -101,7 +101,7 @@
     var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
-      page:{ chart:function(){ return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
+      page:{ chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
       metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},

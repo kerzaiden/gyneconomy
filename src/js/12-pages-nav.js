@@ -1,29 +1,22 @@
 
 
   function convertLeadingSigns(){
-    [{ key:"hormones", title:"Hormones", timing:"leading" },
-     { key:"pressure", title:"Pressure", timing:"leading" },
-     { key:"horizon", title:"Horizon", timing:"leading" },
-     { key:"sentiment", title:"Volatility", timing:"leading" }].forEach(function(cfg){
-      var det = document.querySelector('.subject[data-subject="' + cfg.key + '"]'); if (!det) return;
+    ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
+      var key = R.id.replace("sheet-sign-", ""), det = document.querySelector('.subject[data-subject="' + key + '"]'); if (!det) return;
       var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
-      var id = "sheet-sign-" + cfg.key;
+      var id = R.id;
       var row = document.createElement("div");
       row.className = "subject sign-row";
-      row.setAttribute("data-subject", cfg.key);
+      row.setAttribute("data-subject", key);
       row.setAttribute("role", "button"); row.tabIndex = 0;
-      row.setAttribute("data-open", id); row.setAttribute("data-title", cfg.title);
+      row.setAttribute("data-open", id); row.setAttribute("data-title", R.name);
       var face = document.createElement("div"); face.className = "subject-summary";
       while (sum.firstChild) face.appendChild(sum.firstChild);
-      (function(){
-        var MARK = { horizon:sunriseSvg, sentiment:volatilitySvg, hormones:hormoneSvg, pressure:gaugeSvg };
-        var lab = face.querySelector(".subject-label");
-        if (lab && MARK[cfg.key] && !lab.querySelector("svg"))
-          lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + '</span>' + lab.innerHTML;
-      })();
+      var lab = face.querySelector(".subject-label");
+      if (lab) lab.innerHTML = '<span class="peek-mark">' + R.mark() + '</span>' + lab.innerHTML;
       row.appendChild(face);
       var sheet = metricSheet(id);
-      sheet.innerHTML = timingPill(cfg.timing);
+      sheet.innerHTML = timingPill(R.timing);
       while (body.firstChild) sheet.appendChild(body.firstChild);
       det.parentNode.insertBefore(row, det);
       det.parentNode.insertBefore(sheet, det);
@@ -31,15 +24,10 @@
     });
   }
   function orderMetricSheets(){
-    [["temp-timing", "lagging"], ["gdp-timing", "coincident"],
-     ["valuation-timing", "structural"],
-     ["households-timing", "structural"]].forEach(function(p){
-      put(p[0], timingPill(p[1]));
-    });
-
-    ["sheet-metric-temp", "sheet-metric-gdp", "sheet-metric-valuation",
-     "sheet-metric-households"].forEach(function(id){
-      var sheet = byId(id); if (!sheet) return;
+    var slotted = ROSTER.filter(function(R){ return R.slot; });
+    slotted.forEach(function(R){ put(R.slot + "-timing", timingPill(R.timing)); });
+    slotted.forEach(function(R){
+      var sheet = byId(R.id); if (!sheet) return;
       function rank(el){
         var k = el.id || "";
         if (/-timing$/.test(k)) return 0;
@@ -75,11 +63,11 @@
   }
   function renderSignsList(){
     var host = byId("signs-list");
-    function signSubject(ind, timing){
-      var key = ind.bodyTerm.toLowerCase().replace(/\s+/g, "-"), id = "sheet-sign-" + key, pg = ind.page || {};
-      var svg = signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "";
+    function signSubject(ind){
+      var R = rosterFor(ind), id = R.id, key = id.replace("sheet-sign-", ""), pg = ind.page || {}, timing = R.timing;
+      var svg = R.mark();
       var row = elFrom(subjectRow({
-        subject:"sign-" + key, open:id, title:ind.title || ind.bodyTerm,
+        subject:"sign-" + key, open:id, title:R.name,
         icon: subjectIcon(ind.tag.state, svg),
         text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
               '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
@@ -91,17 +79,15 @@
       d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
         (function(){ var h = heldHighlights; heldHighlights = ""; return h; })();
       registerTiming(timing, {
-        title:ind.title || ind.bodyTerm, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
-        tag:ind.tag, icon:'<div class="subject-icon"><span class="' + ind.tag.state + '">' + svg + '</span></div>',
-        target:pg.id || id
+        title:R.name, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
+        tag:ind.tag, icon:subjectIcon(ind.tag.state, svg),
+        target:id
       });
       if (pg.peeked){ host.appendChild(d); return d; }
       if (pg.seat) pg.seat(ind, d); else { host.appendChild(row); host.appendChild(d); }
       return d;
     }
-    coincident.forEach(function(ind){ signSubject(ind, ind.timing || "coincident"); });
-    lagging.forEach(function(ind){ signSubject(ind, "lagging"); });
-    signSubject(productivityReading, "structural");
+    coincident.concat(lagging, [productivityReading]).forEach(function(ind){ signSubject(ind); });
 
     convertLeadingSigns();
     orderMetricSheets();
@@ -118,40 +104,25 @@
     if (t) t.parentNode.removeChild(t);
     return { v:c.textContent.trim(), u:unit, w:word, s:st };
   }
-  function discOf(mark, state){
-    return mark ? '<div class="subject-icon"><span class="' + (state || "norm") + '">' + mark.innerHTML + '</span></div>' : "";
-  }
   function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
   function registerRoster(){
-    [["gdp", "coincident"], ["valuation", "structural"],
-     ["households", "structural"]].forEach(function(p){
-      var card = authored('.peek[data-open="sheet-metric-' + p[0] + '"]', "sheet-metric-" + p[0]); if (!card) return;
+    ROSTER.filter(function(R){ return R.door === "peek" && !R.term; }).forEach(function(R){
+      var card = authored('.peek[data-open="' + R.id + '"]', R.id); if (!card) return;
       var pv = partsOf(card.querySelector(".peek-value"), ".peek-unit");
       var st = (card.className.match(/good|warning|serious|critical/) || [""])[0];
-      registerTiming(p[1], {
-        title:card.getAttribute("data-title"),
-        metric:pv.v, unit:pv.u,
+      registerTiming(R.timing, {
+        title:R.name, metric:pv.v, unit:pv.u,
         word:(card.querySelector(".peek-word") || {}).textContent || "",
-        state:st, icon:discOf(card.querySelector(".peek-mark"), st),
-        target:"sheet-metric-" + p[0]
+        state:st, icon:subjectIcon(st || "norm", R.mark()), target:R.id
       });
     });
-    ["hormones", "pressure", "horizon", "sentiment"].forEach(function(key){
-      var row = authored('.sign-row[data-subject="' + key + '"]', "sheet-sign-" + key); if (!row) return;
+    ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
+      var row = authored('.sign-row[data-open="' + R.id + '"]', R.id); if (!row) return;
       var rv = partsOf(row.querySelector(".subject-value"), ".unit");
       var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
-      registerTiming("leading", {
-        title:row.getAttribute("data-title"),
-        sub:(row.querySelector(".subject-label") || {}).textContent || "",
-        metric:rv.v, unit:rv.u,
-        word:rv.w || say, state:rv.s,
-        icon:(function(){
-          var mk = row.querySelector(".subject-label .peek-mark");
-          if (mk) return discOf(mk, rv.s);
-          var rg = row.querySelector(".subject-ring");
-          return rg && rg.firstElementChild ? rg.innerHTML : "";
-        })(),
-        target:row.getAttribute("data-open")
+      registerTiming(R.timing, {
+        title:R.name, sub:R.name, metric:rv.v, unit:rv.u,
+        word:rv.w || say, state:rv.s, icon:subjectIcon(rv.s || "norm", R.mark()), target:R.id
       });
     });
   }
@@ -160,10 +131,10 @@
     return subjectRow({ cls:"ind-row kind-" + kind, open:e.target, title:e.title, icon:e.icon,
       text:'<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + '</span></div>' });
   }
-  var IND_ORDER = ["structural", "leading", "coincident", "lagging"], IND_CATS = ["weather", "mood", "circulation", "energy"];
+  var IND_ORDER = Object.keys(TIMING);
   function indGroupRow(groups, rows, item, e, kind, find){
     var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
-    if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? discOf({ innerHTML:gm() }, "") : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
+    if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? subjectIcon("norm", gm()) : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
     groups[grp].kinds[kind] = 1; groups[grp].terms.push(find[e.title]);
   }
   function indRows(sheet, find){
@@ -180,14 +151,15 @@
       return indRow({ target:groupId(r.title), title:r.title, icon:r.icon, metric:"" }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
     });
   }
-  function indCategoryHtml(key, find){
-    var cat = categoryCats().filter(function(c){ return c.key === key; })[0], sheet = byId("sheet-cat-" + key);
-    if (!cat || !sheet) return "";
-    var title = cat.title, mark = { innerHTML:cat.mark }, rows = indRows(sheet, find);
+  function indCategoryHtml(c, find){
+    var key = c.key, sheet = byId("sheet-cat-" + key);
+    if (!sheet) return "";
+    var rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
-      '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + '</span>' +
-      '<span class="ind-cat-name">' + title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
+      '" data-title="' + c.title + '"><span class="ind-cat-mark" aria-hidden="true">' + c.mark() + '</span>' +
+      '<span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
   }
+  function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
   /* ---- THE NAVIGATION CONTROLLER ---- */
   var NAV = { open: null, panel: null };
@@ -288,11 +260,10 @@
   /* ---- ALL INDICATORS ---- */
   function buildSearch(){
     var host = byId("search-list"), input = byId("search-input"); if (!host || !input) return;
-    var IND_TABS = [{ key:"all", label:"All" }, { key:"structural", label:"Structural" }, { key:"leading", label:"Leading" },
-                    { key:"coincident", label:"Coincident" }, { key:"lagging", label:"Lagging" }];
+    var IND_TABS = [{ key:"all", label:"All" }].concat(IND_ORDER.map(function(k){ return { key:k, label:TIMING[k].label }; }));
     var find = {}, state = { kind:"all", q:"" };
     IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
-      find[e.title] = [e.title, e.sub, e.metricSub, INDICATOR_GROUP[e.target]].join(" ").toLowerCase();
+      find[e.title] = [e.title, e.sub, e.metricSub, ROSTER_BY[e.target].group].join(" ").toLowerCase();
     }); });
     host.innerHTML =
       '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' +
@@ -300,7 +271,7 @@
           return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
             'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
         }).join("") +
-      '</div><p class="ind-hint" hidden></p>' + IND_CATS.map(function(k){ return indCategoryHtml(k, find); }).join("") +
+      '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c){ return indCategoryHtml(c, find); }).join("") +
       '<p class="search-none" hidden>No reading matches.</p>';
     function apply(){
       var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
@@ -335,20 +306,14 @@
   }
 
   /* ---- THE CYCLE TAB: cards and categories ---- */
-  function fmtDay(d){ return MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
   function qPretty(q){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
   var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
   function peekArt(src){ return src.querySelector(".peek-chart"); }
-  function indPeriod(term){
-    var all = coincident.concat(lagging);
-    for (var i = 0; i < all.length; i++){
-      if (all[i].bodyTerm !== term) continue;
-      var m = DATED_UNIT.exec(String(all[i].metricSub || "").trim());
-      return m ? m[2] : "";
-    }
-    return "";
+  function indPeriod(R){
+    var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
+    return m ? m[2] : "";
   }
-  function catItem(src, PERIOD, key){
+  function catItem(src, key){
     var open = src.getAttribute("data-open");
     var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
@@ -368,7 +333,7 @@
     var body = document.createElement("div"); body.className = "ci-body";
     var read = document.createElement("div"); read.className = "ci-read";
     var val = src.querySelector(".peek-value, .subject-value");
-    var when = PERIOD[open] || "";
+    var when = cardDate(ROSTER_BY[open]);
     if (val){
       var unit = val.querySelector(".peek-unit, .unit");
       if (unit){
@@ -386,7 +351,7 @@
     }
     if (word && word.textContent.trim()){ word.classList.add("ci-word"); read.appendChild(word); }
     body.appendChild(read);
-    var mini = CAT_MINI[open] ? src.querySelector(CAT_MINI[open]) : peekArt(src);
+    var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
     if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
                slot.appendChild(mini); body.appendChild(slot); }
     var wh = document.createElement("span"); wh.className = "ci-when"; wh.textContent = when;
@@ -407,7 +372,7 @@
     var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
     var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
     var offLow = (vel[n - 1] / lo - 1) * 100;
-    var volInd = coincident.concat(lagging).filter(function(x){ return x.bodyTerm === "Volume"; })[0];
+    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
     if (!volInd || !volInd.meter) return "";
     var volPct = volInd.meter.value;
     var up = volPct > 0, vup = velChg > 0;
@@ -474,25 +439,19 @@
     return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
            wxLede + hiCard("The barometer", "", txt) + '</section>';
   }
-  var CAT_MINI = {
-    "sheet-sign-sentiment": ".subject-ring > svg"
+  var PAIR_ART = {
+    "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
+    "sheet-sign-volume": function(){
+      return { cols:m2Yoy.filter(function(x){ return x != null; }), colBase:0, colRule:true, colClass:function(v){ return "m2-col " + m2Step(v); } };
+    }
   };
   function placeSignPair(){
-    var pair = [["Pulse", "M2 velocity"], ["Volume", "M2, YoY"]].map(function(p){
-      var ind = coincident.filter(function(x){ return x.bodyTerm === p[0]; })[0];
+    var pair = ROSTER.filter(function(R){ return R.door === "pair"; }).map(function(R){
+      var ind = indOf(R);
       if (!ind) return "";
-      var art = p[0] === "Pulse"
-        ? { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }
-        : p[0] === "Volume"
-        ? { cols:m2Yoy.filter(function(x){ return x != null; }), colBase:0, colRule:true,
-            colClass:function(v){ return "m2-col " + m2Step(v); } }
-        : { meter:ind.meter };
-      var card = { kicker:ind.bodyTerm, value:ind.metric, unit:p[1],
-                   mark: signMarks[ind.bodyTerm] ? signMarks[ind.bodyTerm]() : "",
-                   word:ind.tag.text, state:ind.tag.state,
-                   target:"sheet-sign-" + p[0].toLowerCase() };
-      for (var k in art) card[k] = art[k];
-      return peekCard(card);
+      var card = PAIR_ART[R.id](ind);
+      card.value = ind.metric; card.word = ind.tag.text; card.state = ind.tag.state;
+      return peekOf(R.id, card);
     }).join("");
     if (!pair) return;
     var after = byId("sheet-sign-sentiment");
@@ -527,33 +486,14 @@
   }
   function buildCategories(){
     var host = byId("today-analysis"); if (!host) return;
-    var CATS = categoryCats();
-    var PERIOD = {
-      "sheet-metric-temp":      atMonth(cpiYoYHistory[cpiYoYHistory.length - 1]),
-      "sheet-metric-gdp":       qPretty(gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1].q),
-      "sheet-sign-horizon":     fmtDay(DATA_COMPILED),
-      "sheet-sign-pulse":       qPretty(qAtIndex(M2V_FROM_YEAR, m2vHistory.length - 1)),
-      "sheet-sign-volume":      indPeriod("Volume") || qPretty(qAtIndex(M2_FROM_YEAR, m2Yoy.length - 1)),
-      "sheet-sign-sentiment":   fmtDay(DATA_COMPILED),
-      "sheet-sign-hormones":    fedFunds.asOf,
-      "sheet-sign-pressure":    fmtDay(DATA_COMPILED),
-      "sheet-metric-valuation": String(capeHistory[capeHistory.length - 1].y),
-      "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
-    };
-    for (var sp in SPLIT_PERIOD) PERIOD[sp] = SPLIT_PERIOD[sp];
-    CATS.forEach(function(c){
-      if (c.picks){
-        var sheet = catSheet("sheet-cat-" + c.key, c.key);
-        var items = document.createElement("div"); items.className = "cat-list";
-        appendPicks(items, c.picks, PERIOD, c.key);
-        sheet.appendChild(items);
-        if (c.key === "circulation" || c.key === "weather"){
-          var tog = c.key === "weather" ? insightWeather() : insightCirculation();
-          if (tog) sheet.insertAdjacentHTML("beforeend", tog);
-        }
-        host.appendChild(sheet);
-      }
-      if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
+    CATEGORIES.forEach(function(c){
+      var sheet = catSheet("sheet-cat-" + c.key, c.key);
+      var items = document.createElement("div"); items.className = "cat-list";
+      appendPicks(items, catPicks(c), c.key);
+      sheet.appendChild(items);
+      var tog = c.insight ? c.insight() : "";
+      if (tog) sheet.insertAdjacentHTML("beforeend", tog);
+      host.appendChild(sheet);
     });
     ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
       var el = byId(id);
@@ -562,7 +502,7 @@
   }
   function renderPeekAndCategories(){
     var host = byId("peek-row"); if (!host) return null;
-    var tempInd = lagging.concat(coincident).filter(function(c){ return c.bodyTerm === "Temperature"; })[0];
+    var tempInd = indOf(ROSTER_BY["sheet-metric-temp"]);
     var r = nowModel.reading, era = nowModel.era;
     var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
     var cpiDir = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
@@ -571,26 +511,22 @@
     var capeLast = capeHistory[capeHistory.length - 1];
     if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
     host.innerHTML =
-      peekCard({ kicker:"Temperature", mark:thermoSvg(), value:r.cpiNow.toFixed(1) + "%", unit:"CPI, YoY",
+      peekOf("sheet-metric-temp", { value:tempInd.metric,
                  word:cpiWord + " \u00b7 " + cpiDir, state:heatStep(r.cpiNow),
-                 target:"sheet-metric-temp", cols:nowModel.cpi.map(function(d){ return d.v; }),
+                 cols:nowModel.cpi.map(function(d){ return d.v; }),
                  colClass:function(v){ return "temp-col " + heatStep(v); } }) +
-      peekCard({ kicker:"Growth", mark:sproutSvg(), value:(r.gdpLatest.v >= 0 ? "+" : "") + r.gdpLatest.v.toFixed(1) + "%", unit:"YoY",
+      peekOf("sheet-metric-gdp", { value:(r.gdpLatest.v >= 0 ? "+" : "") + r.gdpLatest.v.toFixed(1) + "%",
                  word:growthShownCap(r.regime), state:phaseClass(r.regime),
-                 target:"sheet-metric-gdp", cols:gq.map(function(d){ return d.v; }),
+                 cols:gq.map(function(d){ return d.v; }),
                  colClass:function(v, i){
                    return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
                  } }) +
-      peekCard({ kicker:"Shiller CAPE",
-                 mark:diamondSvg(),
-                 value:capeNow.toFixed(1) + "\u00d7", unit:"CAPE", word:valuation.tag.text,
-                 state:valuation.tag.state, target:"sheet-metric-valuation",
+      peekOf("sheet-metric-valuation", { value:capeNow.toFixed(1) + "\u00d7", word:valuation.tag.text,
+                 state:valuation.tag.state,
                  cols:capeHistory.map(function(d){ return d.v; }), colBase:CAPE_FAIR,
                  colClass:function(v){ return "dv-bar " + (v > CAPE_FAIR ? "over" : "under"); } }) +
-      peekCard({ kicker:"Households",
-                 mark:houseSvg(),
-                 value:dsrNow.toFixed(1) + "/" + savNow.toFixed(1), unit:"% paid / kept",
-                 word:householdsNow.word, state:householdsNow.state, target:"sheet-metric-households",
+      peekOf("sheet-metric-households", { value:dsrNow.toFixed(1) + "/" + savNow.toFixed(1),
+                 word:householdsNow.word, state:householdsNow.state,
                  cols:savHistory.slice(SAV_OFFSET), colBase:0,
                  colClass:function(){ return "hh-col"; } }) +
       indicatorPeeks();
@@ -604,10 +540,6 @@
 
   /* ---- THE INNER PAGES ---- */
   function capeFmt1(v){ return v.toFixed(1) + "\u00d7"; }
-  var TEMP_STOPS  = ["5y", "10y", "25y", "max"];
-  var GDP_STOPS   = ["5y", "10y", "25y", "max"];
-  var VAL_STOPS   = ["5y", "10y", "25y", "max"];
-  var DEF_STOPS   = ["5y", "10y", "25y", "max"];
   function actCycleMonths(c){
     var to = c.to || calendarTodayY, a = -1, b = -1;
     unempHistory.forEach(function(d, i){
@@ -641,13 +573,12 @@
   }
   function registerTempGdpPages(){
     sheetRenderers["sheet-metric-temp"] = function(W){
-      var r = pageRange["sheet-metric-temp"], cyclesOn = pageMode["sheet-metric-temp"] === "cycles";
-      put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory, stops:TEMP_STOPS }));
+      var r = pageRange["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
+      put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory }));
       put("temp-head", histHead("sheet-metric-temp"));
       var hist = byId("temp-history"); hist.hidden = false;
-      var win, cyc = null;
-      if (cyclesOn){
-        cyc = cycleByName(pageCycles["sheet-metric-temp"]) || openCycle();
+      var win;
+      if (cyc){
         var span = cycleMonths(cyc);
         win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
@@ -667,12 +598,11 @@
     };
     sheetRenderers["sheet-metric-gdp"] = function(W){
       var r = pageRange["sheet-metric-gdp"];
-      var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
-      put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
+      put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY }));
       put("gdp-head", histHead("sheet-metric-gdp"));
       histNote("sheet-metric-gdp", growthInfoHtml());
       var hist = byId("gdp-history"); hist.hidden = false;
-      var gCyc = cyclesOn ? (cycleByName(pageCycles["sheet-metric-gdp"]) || openCycle()) : null;
+      var gCyc = pageCycle("sheet-metric-gdp");
       var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
       var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
       var gTo = gSpan ? gSpan[1] : undefined;
@@ -687,13 +617,12 @@
 
   }
   function registerActivityPowerDeficitPages(){
-    var ACT_STOPS = ["5y", "10y", "25y", "max"];
     sheetRenderers["sheet-sign-activity"] = function(W){
       var id = "sheet-sign-activity", bar = byId("act-rangebar");
       if (!bar) return;
-      bar.innerHTML = histControls(id, { series:unempHistory, stops:ACT_STOPS });
+      bar.innerHTML = histControls(id, { series:unempHistory });
       var hist = byId("act-history"); if (!hist) return;
-      var cyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+      var cyc = pageCycle(id);
       var span = cyc ? actCycleMonths(cyc) : null;
       var from = span ? span[0] : mWindowFrom(unempHistory.length, pageRange[id]);
       var to = span ? span[1] : undefined;
@@ -705,18 +634,17 @@
     };
     sheetRenderers["sheet-marker-deficit"] = function(W){
       var sheet = byId("sheet-marker-deficit"); if (!sheet) return;
-      if (!sheet.firstChild) sheet.innerHTML = deficitBlock();
+      if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
       sheetRenderers["deficit-range"](W);
     };
     sheetRenderers["deficit-range"] = function(W){
       var host = byId("deficit-record"); if (!host) return;
-      var key = pageRange["deficit-range"], defCycles = pageMode["deficit-range"] === "cycles";
-      var defCyc = defCycles ? (cycleByName(pageCycles["deficit-range"]) || openCycle()) : null;
+      var key = pageRange["deficit-range"], defCyc = pageCycle("deficit-range");
       var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
                              Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
       var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
       var bar = put("deficit-rangebar", histControls("deficit-range",
-        { depth:deficitHistory.length, stops:DEF_STOPS }));
+        { depth:deficitHistory.length }));
       host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
       put("deficit-records", "");
       attachHistory(host, "deficit-hist-tooltip", "deficitChart");
@@ -726,18 +654,16 @@
     };
   }
   function registerHouseholdsValuationPages(){
-    var HH_STOPS = ["5y", "10y", "max"];
     sheetRenderers["sheet-metric-households"] = function(W){
       var id = "sheet-metric-households";
-      var hhCyc = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
-      if (hhCyc && hhCyc.from < DSR_FROM_YEAR) hhCyc = openCycle();
+      var hhCyc = pageCycle(id, DSR_FROM_YEAR);
       var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
       var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
       var to = idx ? idx[1] : dsrHistory.length;
       var host = byId("households-chart"); if (!host) return;
       histNote(id, dsrInfoHtml() + savInfoHtml());
       host.innerHTML =
-        histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4), stops:HH_STOPS }, DSR_FROM_YEAR)) +
+        histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR)) +
         '<div class="page-chart">' + histHead(id) +
         householdsChart(W, from, to) +
         trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
@@ -749,12 +675,11 @@
       var hl = put("households-highlights", householdsHighlights());
     };
     sheetRenderers["sheet-metric-valuation"] = function(W){
-      var r = pageRange["sheet-metric-valuation"], vlCycles = pageMode["sheet-metric-valuation"] === "cycles";
-      var vlCyc = vlCycles ? (cycleByName(pageCycles["sheet-metric-valuation"]) || openCycle()) : null;
+      var r = pageRange["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
       var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
       var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
       var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
-      put("valuation-chart", histBar(histControls("sheet-metric-valuation", { series:capeHistory, stops:VAL_STOPS })) +
+      put("valuation-chart", histBar(histControls("sheet-metric-valuation", { series:capeHistory })) +
         '<div class="page-chart">' + histHead("sheet-metric-valuation") +
         divergeChart({
           vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7", fmt:capeFmt1,
@@ -871,13 +796,6 @@
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
   // ---- The Diagnosis: under the dial, today or at a cycle's close ----
-  var DIAG_SYSTEMS = [
-    { key:"weather", doors:["sheet-metric-temp", "sheet-metric-gdp"] },
-    { key:"mood", doors:["sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon"] },
-    { key:"circulation", doors:["sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume"] },
-    { key:"energy", doors:["sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth",
-                           "sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households"] }
-  ];
   var FEELING_RULES = {
     Hope:"momentum has just turned positive after being negative",
     Optimism:"rising, within 5% of the high, momentum at 65% or more of this bull\u2019s best or fear not calm",
@@ -909,9 +827,15 @@
     {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
     {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
   ];
+  function todayFace(item){
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return { val:item.querySelector(".ci-value"), word:item.querySelector(".ci-word") };
+    box.innerHTML = '<span>' + t.value + '</span><span>' + (t.word || "") + '</span>';
+    return { val:box.firstChild, word:t.word == null ? null : box.lastChild };
+  }
   function readDoor(open){
     var item = document.querySelector('.cat-item[data-open="' + open + '"]'); if (!item) return null;
-    var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
     var figure = val ? val.cloneNode(true) : null;
     if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n){ n.parentNode.removeChild(n); });
     return { name:item.getAttribute("data-title"), figure:figure ? figure.textContent.trim() : "",
@@ -923,26 +847,22 @@
     var f = d.facts;
     return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull\u2019s best" : "falling");
   }
-  function symptomsFor(sys, era){
+  function symptomsFor(c, era){
     var rows = era ? rosterRows() : null;
-    return sys.doors.map(function(id){
-      if (era){ var r = rows[id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, closeFigure(r, e), e.when) : ""; }
-      var t = readDoor(id);
-      return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
+    return ROSTER.filter(function(R){ return R.cat === c.key; }).map(function(R){
+      if (era){ var r = rows[R.id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, pastFigure(r, e.raw, e.second), e.when) : ""; }
+      var t = readDoor(R.id);
+      return t ? symptom(t.name, withUnit(t.figure, t.unit), t.word) : "";
     }).join("");
   }
-  function rosterRows(){ return readingRoster().byOpen; }
-  function closeFigure(r, e){
-    if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
-    return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");
-  }
+  function rosterRows(){ return readingRoster().byId; }
   function eraMove(id, era){
     var r = rosterRows()[id]; if (!r) return "";
     var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= era.from && y <= era.to; });
     if (span.length < 2) return "";
     var a = span[0], b = span[span.length - 1];
-    return (r.eraUnit || r.name) + " went from " + readFig(r, a.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, a.k) + ") to " +
-      readFig(r, b.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, b.k) + ") across the cycle.";
+    return (r.eraUnit || r.name) + " went from " + pastFigure(r, a.v, pairAt(r, a.k)) + " (" + prettyK(r, a.k) + ") to " +
+      pastFigure(r, b.v, pairAt(r, b.k)) + " (" + prettyK(r, b.k) + ") across the cycle.";
   }
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
@@ -963,7 +883,7 @@
   function dxHead(title, c){
     var tag = c ? 'button type="button"' : "div";
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
-      (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+      (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark() + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function postureLine(d, more){
     return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + '</b>' + expandBtn(diagnosisInfo(d)) +
@@ -999,10 +919,9 @@
         '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " \u00b7 the " + d.half + " half \u00b7 " + d.posture + '</p>' +
         '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
       dxSection(dxHead("History"), dxRow("Record", history)) +
-      DIAG_SYSTEMS.map(function(sys){
-        var c = categoryCats().filter(function(x){ return x.key === sys.key; })[0];
-        var symptoms = (sys.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(sys, closed);
-        return systemHtml(c, analysisFor(sys.key, d, closed), symptoms);
+      categoriesShown().map(function(c){
+        var symptoms = (c.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(c, closed);
+        return systemHtml(c, analysisFor(c.key, d, closed), symptoms);
       }).join("") +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }

@@ -3,12 +3,6 @@ const fs = require('fs');
 
 const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
-const CATS = ['sheet-cat-weather', 'sheet-cat-circulation', 'sheet-cat-mood', 'sheet-cat-energy'];
-const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity',
-  'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
-  'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire','sheet-sign-sentiment','sheet-sign-pressure',
-  'sheet-marker-deficit', 'sheet-metric-buffett', 'sheet-metric-debt', 'sheet-metric-interest',
-  'sheet-sign-productivity-growth', 'sheet-sign-industrial-output'];
 const TABS = ['cycle','analysis','search','portfolio'];
 
 const NORMALISERS = [
@@ -68,6 +62,8 @@ async function capture(file, out) {
     });
     p.on('pageerror', e => errs.push(w + ': ' + String(e).slice(0, 140)));
     await p.goto('file://' + file); await p.waitForTimeout(1500);
+    const sheets = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open));
+    const cats = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet[id^="sheet-cat-"]')].map(c => c.id));
     snaps.push(await grab(p, w + '/home'));
     for (const t of TABS) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
@@ -83,27 +79,22 @@ async function capture(file, out) {
         await click(p, '#cycle-data'); await p.waitForTimeout(200);
       }
     }
-    for (const entry of SHEETS) {
-      const [sheet, via] = entry.split('>');
+    for (const sheet of sheets) {
       await p.goto('file://' + file); await p.waitForTimeout(1100);
       let opened = false;
-      for (const c of CATS) {
+      for (const c of cats) {
         if (!await click(p, '[data-open="' + c + '"]')) continue;
         await p.waitForTimeout(380);
         if (await click(p, '.cat-item[data-open="' + sheet + '"]')) { opened = true; break; }
         await p.goto('file://' + file); await p.waitForTimeout(900);
       }
-      if (opened && via) {
-        await p.waitForTimeout(600);
-        opened = await click(p, '[data-open="' + via + '"]');
-      }
       if (opened) {
         await p.waitForTimeout(800);
-        const g = await grab(p, w + '/page:' + (via || sheet));
+        const g = await grab(p, w + '/page:' + sheet);
         g.notes = await notes(p);
         snaps.push(g);
       }
-      else snaps.push({ label: w + '/page:' + (via || sheet), body: 0, main: 'NOT REACHED', values: '', notes: '' });
+      else snaps.push({ label: w + '/page:' + sheet, body: 0, main: 'NOT REACHED', values: '', notes: '' });
     }
     await ctx.close();
   }
