@@ -285,8 +285,8 @@
   // ---- the whole view, for one cycle ----
   function renderCycleView(m){
     drawDial(m);
-    shownEraModel = m;
-    shownEra = m.era;
+    shownEraModel = m; shownEra = m.era;
+    renderDiagnosis(m);
   }
   /* ---- The economy the Growth chart draws ---- */
   function peerChosen(){ return gdpPeers.filter(function(c){ return c.on; })[0] || null; }

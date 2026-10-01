@@ -236,7 +236,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Analysis · Search · Portfolio (V657; the Content tab's models moved into
+to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
 (Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
@@ -311,23 +311,26 @@ Rules that shape the pages:
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
-  tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the four tiles and their category and
-  reading pages) into the cycle's slot (`enterEra`), and `leaveEra` puts it back; the tab switch and the back
-  arrow both call it. In between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the
-  figure at the cycle's last reading, the range over the cycle as the label, the cycle's own mini) and
-  sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored
-  on leaving). Today's cards are kept on the element (`__today`) and restored as they were, so the live
-  repaint still finds its first text node. The reading pages' panels and insights stay today's: they are
-  the page, and the picker says which cycle the chart shows. A reading without history in the cycle shows a
-  dash and says since when it is measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of
-  cards that led nowhere (Keren, V659: one view to maintain).
-  **Since V660 the cycle's card is built like today's** (Keren: "identical in design to the current cycle
-  categories"): the figure is today's first text node with only the number replaced (`eraFig` keeps its
-  decimals, sign, prefix and suffix, drops the ≈ of an estimate), the unit stays (a roster row's `eraUnit`
-  names a different measure: the effective rate, not the target range; a surplus year says surplus), and the
-  mini is today's kind drawn with the cycle's data (`colPeek` with the row's `base`/`rule`, the Volatility ring
-  through `vixPct`, the Pulse trace through `pulsePeek`). The label is the range over the cycle, not a
-  verdict: several verdicts are Keren's words for today, not bands a past value can be read against.
+  tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the Diagnosis and the category and
+  reading pages) straight into `#calendar-cycle` (`enterEra`), and `leaveEra`, which the tab switch and the
+  back arrow both call, puts it back. That container shares the tab panel's stack rule (`.tab-panel,
+  #calendar-cycle`: a column at `--gap`) and has no wrapper of its own, so a past cycle stacks exactly like
+  the current one (V665: a slot inside it once took the gap away; the suite now compares the two frames). In
+  between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the figure at the cycle's
+  last reading, the range over the cycle as the label, the cycle's own mini) and sets every history page's
+  cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored on leaving). Today's cards
+  are kept on the element (`__today`) and restored as they were, so the live repaint still finds its first
+  text node. The reading pages' panels and insights stay today's: they are the page, and the picker says
+  which cycle the chart shows. A reading without history in the cycle shows a dash and says since when it is
+  measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of cards that led nowhere
+  (Keren, V659: one view to maintain). **Since V660 the cycle's card is built like today's** (Keren:
+  "identical in design to the current cycle categories"): the figure is today's first text node with only
+  the number replaced (`eraFig` keeps its decimals, sign, prefix and suffix, drops the ≈ of an estimate),
+  the unit stays (a roster row's `eraUnit` names a different measure: the effective rate, not the target
+  range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
+  with the row's `base`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
+  The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
+  bands a past value can be read against.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
   the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot
@@ -440,17 +443,26 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
-## The Diagnosis (V664)
+## The Diagnosis (V664, under the dial since V665)
 
 Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
-Also, I want to have emotional intelligence in this analysis." One card on the Cycle hub (a fifth `cat-row`,
-`cat-wide`, built by the same `catRow` as the four categories) opens `sheet-diagnosis`: a **Work-up**
-(History, Weather, Mood, Circulation, Energy) and an **Assessment** (how she feels, the posture with its record,
-the body in Wild Power's words, what to watch).
+Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
+then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
+cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
+under its cycle view. In clinical order: a headline (the feeling), **History**, then each **System** (a category;
+its heading is the door to the category page) with one **Analysis** line (what the symptoms tell the doctor) and its
+**Symptoms** (the readings, name, figure and word), then the **Assessment** (posture, record, what to watch).
+**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same `symptomsFor`,
+`analysisFor` and `assessmentFor`, which take the closed era or null): the
+season and the feeling at the closing month, each symptom's value at the close from the roster series without a
+verdict word (verdicts are today's words), the Analysis as the movement across the cycle, and what actually
+followed a year later. Search builds its category heads from `categoryCats()` now that the hub cards are gone.
 
 - **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
-  (`readDoor` on `.cat-item[data-open]`), so a repaint of a reading is a repaint of the Diagnosis the next time
-  it opens. The page draws on open, through `sheetRenderers`.
+  (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
+  `applyLive` runs `repaintDiagnosis` after the reading's own painters, so no reading needs to list it (V665:
+  it sat on the VIX's list alone, and CAPE, which lands after the VIX, stayed a day behind on every load). A
+  past cycle's Diagnosis is its close and is left as it is.
 - **The feeling is the market chart's seven words** (V664, reversing V236): Hope, Optimism, Euphoria, Anxiety,
   Fear, Capitulation, Despondency. `readFeeling` in 08-model names one from facts knowable that month, in this
   order, first match wins: Capitulation, Fear, Despondency, Anxiety, Hope, Euphoria, Optimism; a month no rule

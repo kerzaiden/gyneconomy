@@ -15,8 +15,8 @@
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
-      <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="search" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><span>Search</span></button>
+      <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
   </nav>
@@ -196,9 +196,7 @@
         </button>
       </div>
     </div>
-    <div id="calendar-cycle" hidden>
-      <div id="calendar-cycle-slot"></div>
-    </div>
+    <div id="calendar-cycle" hidden></div>
   </div>
 
   <div class="tab-panel" data-tab="portfolio" hidden>
@@ -284,7 +282,7 @@
       <h3 class="menu-section">Temperature and Growth</h3>
       <div class="menu-card menu-prose">
         <p><b>Temperature</b> is a line through the months of the cycle — CPI, year over year — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
-        <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; the read-out at the end gives the latest quarter and whether the trend of the last eight quarters is rising or falling — the reading the season’s growth direction comes from.</p>
+        <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; the read-out at the end gives the latest quarter and whether the trend of the last six quarters is rising or falling — the reading the season’s growth direction comes from.</p>
       </div>
 
       <h3 class="menu-section">Sentiment and rates</h3>

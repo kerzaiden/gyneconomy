@@ -181,9 +181,9 @@
     });
   }
   function indCategoryHtml(key, find){
-    var door = document.querySelector('.browse-list [data-open="sheet-cat-' + key + '"]'), sheet = byId("sheet-cat-" + key);
-    if (!door || !sheet) return "";
-    var title = door.getAttribute("data-title"), mark = door.querySelector(".subject-icon span"), rows = indRows(sheet, find);
+    var cat = categoryCats().filter(function(c){ return c.key === key; })[0], sheet = byId("sheet-cat-" + key);
+    if (!cat || !sheet) return "";
+    var title = cat.title, mark = { innerHTML:cat.mark }, rows = indRows(sheet, find);
     return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
       '" data-title="' + title + '"><span class="ind-cat-mark" aria-hidden="true">' + (mark ? mark.innerHTML : "") + '</span>' +
       '<span class="ind-cat-name">' + title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
@@ -525,10 +525,6 @@
     mSent.parentNode.removeChild(mSent);
     mAct.parentNode.removeChild(mAct);
   }
-  function catRow(cls, open, title, mark, sub, subId){
-    return elFrom(subjectRow({ cls:cls, open:open, title:title, icon:subjectIcon("norm", mark),
-      text:'<div class="subject-label">' + title + '</div><div class="cat-sub"' + (subId ? ' id="' + subId + '"' : '') + '>' + sub + '</div>' }));
-  }
   function buildCategories(){
     var host = byId("today-analysis"); if (!host) return;
     var CATS = categoryCats();
@@ -545,7 +541,6 @@
       "sheet-metric-households": qPretty(qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1))
     };
     for (var sp in SPLIT_PERIOD) PERIOD[sp] = SPLIT_PERIOD[sp];
-    var list = document.createElement("div"); list.className = "browse-list";
     CATS.forEach(function(c){
       if (c.picks){
         var sheet = catSheet("sheet-cat-" + c.key, c.key);
@@ -559,9 +554,7 @@
         host.appendChild(sheet);
       }
       if (c.drop){ var old = document.querySelector(c.drop); if (old && old.parentNode) old.parentNode.removeChild(old); }
-      list.appendChild(catRow("cat-row", c.open || ("sheet-cat-" + c.key), c.title, c.mark, c.sub));
     });
-    host.insertBefore(list, host.firstChild);
     ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){
       var el = byId(id);
       if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
@@ -905,17 +898,17 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
-  // ---- The Diagnosis: the work-up, how she feels, and the posture ----
+  // ---- The Diagnosis: under the dial, today or at a cycle's close ----
   var DIAG_SYSTEMS = [
-    { name:"Weather", doors:["sheet-metric-temp", "sheet-metric-gdp"] },
-    { name:"Mood", doors:["sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon"] },
-    { name:"Circulation", doors:["sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume"] },
-    { name:"Energy", doors:["sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households",
-                            "sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth"] }
+    { key:"weather", doors:["sheet-metric-temp", "sheet-metric-gdp"] },
+    { key:"mood", doors:["sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon"] },
+    { key:"circulation", doors:["sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume"] },
+    { key:"energy", doors:["sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth",
+                           "sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households"] }
   ];
   var FEELING_RULES = {
     Hope:"momentum has just turned positive after being negative",
-    Optimism:"rising, within 5% of the high, fear not calm",
+    Optimism:"rising, within 5% of the high, momentum at 65% or more of this bull\u2019s best or fear not calm",
     Euphoria:"within 5% of the high, momentum under 65% of this bull\u2019s best, fear calm",
     Anxiety:"fear up 20 points from calm in three months, within 10% of the high",
     Fear:"momentum negative, fear in its top 40%",
@@ -925,27 +918,25 @@
   var FEELING_STATE = { Hope:"good", Optimism:"good", Euphoria:"warning", Anxiety:"warning", Fear:"serious", Capitulation:"critical", Despondency:"serious" };
   var POSTURE_STATE = { Offense:"good", Patience:"warning", Prepare:"warning", Defense:"serious", Neutral:"norm" };
   var POSTURE_SAYS = {
-    Offense:"Fear has arrived after the body cooled",
-    Patience:"Fear in a warm body, where the falls have gone furthest; wait for her to cool",
-    Prepare:"Near her high, stretched and still warm; slow down before the body asks",
-    Defense:"Momentum has turned negative while the body is still warm",
-    Neutral:"No posture the record singles out"
+    Offense:"Fear has arrived after the body cooled.",
+    Patience:"Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
+    Prepare:"Near her high, stretched and still warm: slow down before the body asks.",
+    Defense:"Momentum has turned negative while the body is still warm.",
+    Neutral:"No posture the record singles out."
   };
   var BODY_SAYS = {
-    summer:"In summer the authors of Wild Power describe a body that can feel like \u201cSuperwoman\u2026 for about 10 days\u201d; at the crossover that follows, \u201ccrucially, you\u2019re asked to slow down.\u201d",
-    autumn:"In autumn, the authors of Wild Power write, the inner critic \u201chas a missive to deliver from your deep self.\u201d",
-    lateautumn:"In autumn, the authors of Wild Power write, the inner critic \u201chas a missive to deliver from your deep self.\u201d",
-    winter:"In winter the task the authors of Wild Power give is to let go and rest.",
-    spring:"In spring, the authors of Wild Power warn, the critic can be \u201cyour wilful power of agency taking over too soon.\u201d",
-    springdeflation:"In spring, the authors of Wild Power warn, the critic can be \u201cyour wilful power of agency taking over too soon.\u201d"
+    summer:"\u201cSuperwoman\u2026 for about 10 days\u201d; then, at the crossover, \u201ccrucially, you\u2019re asked to slow down.\u201d",
+    autumn:"The inner critic \u201chas a missive to deliver from your deep self.\u201d",
+    lateautumn:"The inner critic \u201chas a missive to deliver from your deep self.\u201d",
+    winter:"The task is to let go and rest.",
+    spring:"The critic can be \u201cyour wilful power of agency taking over too soon.\u201d",
+    springdeflation:"The critic can be \u201cyour wilful power of agency taking over too soon.\u201d"
   };
   var DIAG_SRC = [
     {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
     {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
     {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
   ];
-  function stethoscopeSvg(){ return markSvg('<path d="M6 3.5v5.5a5 5 0 0 0 10 0V3.5" stroke-width="1.8"/>' +
-    '<path d="M11 14v1.5a4.5 4.5 0 0 0 9 0V13" stroke-width="1.8"/><circle cx="20" cy="11" r="2" stroke-width="1.7"/>'); }
   function readDoor(open){
     var item = document.querySelector('.cat-item[data-open="' + open + '"]'); if (!item) return null;
     var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
@@ -954,76 +945,110 @@
     return { name:item.getAttribute("data-title"), figure:figure ? figure.textContent.trim() : "",
              unit:unit ? unit.textContent.trim() : "", word:word ? word.textContent.trim() : "" };
   }
-  function doorLine(open){
-    var d = readDoor(open);
-    return d ? "<b>" + d.name + "</b> " + d.figure + (d.unit ? " " + d.unit : "") + (d.word ? ", " + d.word : "") : "";
-  }
   function pct(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(0) + "%"; }
-  function feelingFacts(d){
-    var f = d.facts, at = monthLabel(d.month);
-    var where = f.dd > -0.005 ? "at its high" : Math.abs(f.dd * 100).toFixed(0) + "% below its high";
-    var moving = f.mom >= 0
-      ? "up " + pct(f.mom).slice(1) + " over the year to " + at + ", " + Math.round(f.share * 100) + "% of this bull\u2019s best pace (" + pct(d.bestMom) + ")"
-      : "down " + pct(f.mom).slice(1) + " over the year to " + at;
-    var fear = "fear at the " + ordinal(Math.round(f.fear)) + " percentile of every month since 1986" +
-      (f.fear < CALM ? ", calm" : f.fear >= FRIGHTENED ? ", frightened" : "") +
-      (f.fear3 != null && f.fear - f.fear3 >= RISE ? ", and rising" : "");
-    return "The S&amp;P 500 is " + where + ", " + moving + "; " + fear + ".";
+  function symptom(name, figure, word){ return "<li><b>" + name + "</b> " + figure + (word ? " \u00b7 " + word : "") + "</li>"; }
+  function momentumSymptom(d){
+    var f = d.facts;
+    return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull\u2019s best" : "falling");
   }
-  function recordLine(d){
-    var r = d.record, half = d.half + " season";
-    if (!r) return "No month since " + monthLabel(d.recordFrom) + " has read " + d.stage + " in a " + half + ".";
-    return "Since " + monthLabel(d.recordFrom) + ", " + d.stage + " in a " + half + ": " + r.months + " months over " + r.spells +
-      " spells. A year later the market was higher in " + r.higher + " of " + r.months + " (" + Math.round(r.higher / r.months * 100) +
-      "%), median " + pct(r.median) + ", worst " + pct(r.worst) + ".";
+  function symptomsFor(sys, era){
+    var rows = era ? rosterRows() : null;
+    return sys.doors.map(function(id){
+      if (era){ var r = rows[id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, closeFigure(r, e), e.when) : ""; }
+      var t = readDoor(id);
+      return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
+    }).join("");
   }
-  function watchList(d){
-    var f = d.facts, out = [];
-    if (f.fear < FRIGHTENED) out.push("Fear at the " + ordinal(Math.round(f.fear)) + " percentile: below 20 is calm, and a rise of 20 points from calm reads Anxiety.");
-    if (d.half === "warm") out.push("Momentum turning negative while the body is warm turns the posture to Defense.");
-    out.push(d.half === "warm" ? "Fear arriving after the body cools to Winter or Spring is the record\u2019s opening for Offense."
-                               : "Fear arriving now, with the body cool, would read Offense.");
-    return out;
+  function rosterRows(){
+    var rows = {};
+    readingRoster().forEach(function(g){ g.rows.forEach(function(r){ rows[r.open] = r; }); });
+    return rows;
+  }
+  function closeFigure(r, e){
+    if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
+    return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");
+  }
+  function eraMove(id, era){
+    var r = rosterRows()[id]; if (!r) return "";
+    var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= era.from && y <= era.to; });
+    if (span.length < 2) return "";
+    var a = span[0], b = span[span.length - 1];
+    return (r.eraUnit || r.name) + " went from " + readFig(r, a.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, a.k) + ") to " +
+      readFig(r, b.v).replace(/<[^>]+>/g, "") + " (" + prettyK(r, b.k) + ") across the cycle.";
+  }
+  function analysisFor(key, d, era){
+    var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
+    if (key === "weather") return seasonRuleSentence[d.season];
+    if (key === "mood") return "<b>" + d.stage + "</b>: " + FEELING_RULES[d.stage] + ".";
+    if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
+    if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
+    return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
+  }
+  function dxRow(label, html, asList){
+    return '<div class="dx-row"><span class="dx-k">' + label + '</span>' +
+      (asList ? '<ul class="dx-list">' + html + '</ul>' : '<p class="dx-v">' + html + '</p>') + '</div>';
+  }
+  function dxSection(head, body, cls){ return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + '</section>'; }
+  function systemHtml(c, analysis, symptoms){
+    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis) + dxRow("Symptoms", symptoms, true), "cat-" + c.key);
+  }
+  function dxHead(title, c){
+    var tag = c ? 'button type="button"' : "div";
+    return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
+      (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+  }
+  function postureLine(d, more){
+    return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + '</b>' + expandBtn(diagnosisInfo(d)) +
+      " " + POSTURE_SAYS[d.posture] + (more ? " " + more : ""));
   }
   function diagnosisInfo(d){
-    return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable this month, and what has followed that feeling in her season.") +
+    return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
         "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
         "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
-        "The record counts every month since " + monthLabel(d.recordFrom) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast."])) +
+        "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast."])) +
       srcBlock(DIAG_SRC);
   }
-  function renderDiagnosisPage(){
-    var host = byId("diagnosis-body"), d = diagnoseToday(); if (!host || !d) return;
-    var prev = marketCycles.filter(function(c){ return c.to != null && c.to < currentEra.from; }).pop();
-    var history = "The " + currentEra.name + ", year " + nowModel.yearIndex + " of a typical " + typicalCycleYears + "." +
-      (prev ? " Her last bleed closed the " + prev.name + " in " + prev.to + "." : "");
-    var work = [hiCard("History", "", history)].concat(DIAG_SYSTEMS.map(function(s){
-      var lines = s.doors.map(doorLine).filter(Boolean);
-      if (s.name === "Weather") lines.unshift("<b>" + seasonTitle(wheelMeta[d.season]) + "</b>, the " + d.half + " half of her cycle");
-      return hiCard(s.name, "", lines.join(" \u00b7 "));
-    }));
-    var assess = [
-      lede("Mrs. Market is in <b>" + d.stage + "</b>" + (d.carried ? ", the last feeling the record named" : "") + ", in the " + d.half + " half of her cycle."),
-      hiCard("How she feels", FEELING_STATE[d.stage], feelingFacts(d)),
-      hiCard("Posture: " + d.posture + expandBtn(diagnosisInfo(d)), POSTURE_STATE[d.posture], POSTURE_SAYS[d.posture] + ". " + recordLine(d)),
-      hiCard("In the body", "", BODY_SAYS[d.season] || ""),
-      hiCard("What to watch", "", watchList(d).join(" "))];
-    host.innerHTML = highlightsHtml(work, "", "", "Work-up") + highlightsHtml(assess, "", "", "Assessment");
+  function assessmentFor(d, era){
+    if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
+    var r = d.record, watch = [];
+    var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " +
+      r.months + " months, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
+    if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
+    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense");
+    else watch.push("Fear arriving now, with the body cool, reads Offense");
+    return postureLine(d, rec) + dxRow("Watch", watch.map(function(x){ return "<li>" + x + "</li>"; }).join(""), true);
   }
-  function diagnosisSub(){
-    var d = diagnoseToday();
-    return d ? d.stage + " \u00b7 " + d.posture : "";
+  function diagnosisHtml(m){
+    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), era = m.era, closed = open ? null : era;
+    if (!d) return "";
+    var prev = marketCycles.filter(function(c){ return c.to != null && c.to < era.from; }).pop();
+    var history = open ? "The " + era.name + ", year " + m.yearIndex + " of a typical " + typicalCycleYears + "." +
+        (prev ? " Last bleed: the " + prev.name + ", " + prev.to + "." : "")
+      : "The " + era.name + ", closed in " + era.to + " after " + m.yearIndex + " years; a typical cycle runs " + typicalCycleYears + ".";
+    return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She\u2019s in " : "She closed in ") +
+        '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + '</span></h2>' +
+        '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " \u00b7 the " + d.half + " half \u00b7 " + d.posture + '</p>' +
+        '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
+      dxSection(dxHead("History"), dxRow("Record", history)) +
+      DIAG_SYSTEMS.map(function(sys){
+        var c = categoryCats().filter(function(x){ return x.key === sys.key; })[0];
+        var symptoms = (sys.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(sys, closed);
+        return systemHtml(c, analysisFor(sys.key, d, closed), symptoms);
+      }).join("") +
+      dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
-  function repaintDiagnosis(){ put("diagnosis-sub", diagnosisSub()); }
+  function renderDiagnosis(m){
+    var host = document.getElementById("diagnosis");
+    if (host && m) host.innerHTML = diagnosisHtml(m);
+  }
+  function repaintDiagnosis(){ if (!eraOpen) renderDiagnosis(nowModel); }
   function buildDiagnosis(){
-    var list = document.querySelector(".browse-list"), home = byId("today-analysis");
-    if (!list || !home || document.getElementById("sheet-diagnosis")) return;
-    list.appendChild(catRow("cat-row cat-wide", "sheet-diagnosis", "Diagnosis", stethoscopeSvg(), diagnosisSub(), "diagnosis-sub"));
-    var sheet = metricSheet("sheet-diagnosis");
-    sheet.innerHTML = '<div id="diagnosis-body"></div>';
-    home.appendChild(sheet);
-    sheetRenderers["sheet-diagnosis"] = renderDiagnosisPage;
+    var home = byId("today-analysis");
+    if (!home || document.getElementById("diagnosis")) return;
+    var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
+    home.insertBefore(host, home.firstChild);
+    renderDiagnosis(nowModel);
     addSources(DIAG_SRC);
   }
   GYN.step("buildDiagnosis", buildDiagnosis, "build"); buildDiagnosis();

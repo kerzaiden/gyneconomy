@@ -241,30 +241,39 @@ async function openPage(p, url, sheet) {
 
   {
     await p.goto('file://' + url); await p.waitForTimeout(1200);
-    const card = await p.evaluate(() => {
-      const d = document.querySelector('.browse-list [data-open="sheet-diagnosis"]');
-      return d ? d.textContent.replace(/\s+/g, ' ').trim() : null;
+    const read = () => p.evaluate(() => {
+      const d = document.getElementById('diagnosis');
+      return d ? { visible: !!d.offsetParent, title: d.querySelector('.dx-title').textContent,
+                   heads: [...d.querySelectorAll('.dx-sys-head')].map(h => h.textContent.trim()),
+                   doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
+                   symptoms: d.querySelectorAll('.dx-list li').length, cards: document.querySelectorAll('.cat-row').length } : null;
     });
-    const opened = await click(p, '.browse-list [data-open="sheet-diagnosis"]'); await p.waitForTimeout(700);
-    const page = await p.evaluate(() => {
-      const b = document.getElementById('diagnosis-body');
-      return b ? { visible: !!b.offsetParent, heads: [...b.querySelectorAll('.hi-head')].map(h => h.textContent),
-                   names: [...b.querySelectorAll('.hi-name')].map(h => h.textContent.trim()),
-                   rows: [...b.querySelectorAll('.hi-card p')].map(x => x.textContent.trim().length) } : null;
-    });
-    await click(p, '#diagnosis-body .expand-btn'); await p.waitForTimeout(250);
+    const today = await read();
+    const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
+    (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
+     today.heads.join() === 'History,Weather,Mood,Circulation,Energy,Assessment' &&
+     today.doors.join() === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy' && today.symptoms > 15)
+      ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
+      : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
+    await click(p, '#diagnosis .expand-btn'); await p.waitForTimeout(250);
     const info = await p.evaluate(() => document.getElementById('detail-modal-body').innerText);
     await p.evaluate(() => document.getElementById('detail-modal-close').click());
-    const FEEL = /^Diagnosis ?(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) · (Offense|Patience|Prepare|Defense|Neutral)$/;
-    FEEL.test(card || '') ? ok('the Diagnosis card names a feeling and a posture', card)
-                          : bad('the Diagnosis card names a feeling and a posture', JSON.stringify(card));
-    (opened && page && page.visible && page.heads.join() === 'Work-up,Assessment' &&
-     page.names.slice(0, 5).join() === 'History,Weather,Mood,Circulation,Energy' && page.rows.slice(0, 5).every(n => n > 20))
-      ? ok('the Diagnosis opens on its five-system work-up', page.names.slice(0, 5).join(' · '))
-      : bad('the Diagnosis opens on its five-system work-up', JSON.stringify(page));
     (/Despondency: fear 20 points down/.test(info) && /Robert Shiller/.test(info) && /Wild Power/.test(info))
       ? ok('the Diagnosis (i) states every rule and its sources')
       : bad('the Diagnosis (i) states every rule and its sources', info.slice(0, 160));
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await p.waitForTimeout(400);
+    const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
+      .map(e => getComputedStyle(e).backgroundColor));
+    (mkt.length >= 10 && mkt.every(c => c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent'))
+      ? ok('every cycle row draws its bull and bear years in colour', mkt.length + ' runs')
+      : bad('every cycle row draws its bull and bear years in colour', JSON.stringify(mkt.slice(0, 4)));
+    await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
+    await p.waitForTimeout(700);
+    const past = await read();
+    (past && past.visible && /^She closed in /.test(past.title) && past.symptoms > 10 && past.heads.length === 6)
+      ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
+      : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await p.waitForTimeout(400);
   }
 
   {
@@ -273,22 +282,23 @@ async function openPage(p, url, sheet) {
       const w = d.querySelector('.tag, .member-word');
       return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
     }), sheet);
+    const says = re => p.evaluate(s => ([...document.querySelectorAll('#diagnosis .dx-list li')].map(li => li.textContent).find(t => new RegExp(s).test(t)) || ''), re);
     const capeBefore = await doors('sheet-metric-valuation');
     await p.evaluate(() => window.__GYN.applyLive('capeValue', 50.5));
     await p.waitForTimeout(200);
-    const capeAfter = await doors('sheet-metric-valuation');
-    (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)))
-      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors')
-      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter }));
+    const capeAfter = await doors('sheet-metric-valuation'), capeDx = await says('CAPE');
+    (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)) && /CAPE 50\.5/.test(capeDx))
+      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors and the Diagnosis')
+      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter, capeDx }));
 
     const ffBefore = await doors('sheet-sign-hormones');
     await p.evaluate(() => window.__GYN.applyLive('fedFunds', { lo: 1.25, hi: 1.50, lastMove: '-0.25' }));
     await p.waitForTimeout(200);
-    const ffAfter = await doors('sheet-sign-hormones');
+    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('Hormones');
     (ffBefore.length >= 2 && ffAfter.every(t => /^1\.25/.test(t)) &&
-     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)))
-      ? ok('a rate cut reaches every door, word and all', ffAfter.join(' \u00b7 '))
-      : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter }));
+     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /1\.25.*Easing/.test(ffDx))
+      ? ok('a rate cut reaches every door, word and all', ffAfter.concat(ffDx).join(' \u00b7 '))
+      : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter, ffDx }));
 
     const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
     pm.length ? bad('every reading prints where it is painted', pm.join(' | '))
@@ -385,9 +395,9 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await p.waitForTimeout(1300);
     const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row') && !document.getElementById('sheet-indicators'));
-    (tabs === 'cycle analysis search portfolio' && gone)
-      ? ok('the tab bar reads Cycle, Analysis, Search, Portfolio', 'no All indicators row or page')
-      : bad('the tab bar reads Cycle, Analysis, Search, Portfolio', JSON.stringify({ tabs, gone }));
+    (tabs === 'cycle search analysis portfolio' && gone)
+      ? ok('the tab bar reads Cycle, Search, Analysis, Portfolio', 'no All indicators row or page')
+      : bad('the tab bar reads Cycle, Search, Analysis, Portfolio', JSON.stringify({ tabs, gone }));
     await p.click('.tab-btn[data-tab="search"]'); await p.waitForTimeout(400);
     const list = await p.evaluate(() => {
       const host = document.getElementById('search-list');
@@ -438,7 +448,7 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await p.waitForTimeout(1300);
     const lists = {};
     for (const cat of ['mood', 'energy']) {
-      await p.click('.cat-row[data-open="sheet-cat-' + cat + '"]'); await p.waitForTimeout(350);
+      await click(p, '[data-open="sheet-cat-' + cat + '"]'); await p.waitForTimeout(350);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.click('#topbar-back'); await p.waitForTimeout(300);
@@ -456,7 +466,7 @@ async function openPage(p, url, sheet) {
     await p.click('#topbar-back'); await p.waitForTimeout(500);
     const again = await p.evaluate(() => document.querySelectorAll('#metric-page .cat-item').length);
     await p.click('.tab-btn[data-tab="cycle"]'); await p.waitForTimeout(400);
-    await p.click('.cat-row[data-open="sheet-cat-energy"]'); await p.waitForTimeout(400);
+    await click(p, '[data-open="sheet-cat-energy"]'); await p.waitForTimeout(400);
     const home = await p.evaluate(() => [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+'));
     await p.click('#topbar-back'); await p.waitForTimeout(300);
     (grp.bar === 'Economic power' && grp.names === 'Federal debt+Interest payments+Federal budget' && deep === 'Federal debt' && again === 3 &&
@@ -515,6 +525,14 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    const frame = () => p.evaluate(() => {
+      const cv = document.getElementById('cycle-view'), page = cv.parentElement, cs = getComputedStyle(page), r = cv.getBoundingClientRect();
+      return { kids: [...page.children].filter(e => e.offsetParent).map(e => e.id).join(), flow: cs.display + ' ' + cs.flexDirection + ' ' + cs.rowGap,
+        gap: Math.round(document.getElementById('diagnosis').getBoundingClientRect().top - r.bottom), x: Math.round(r.left), w: Math.round(r.width) };
+    });
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
+    await p.waitForTimeout(400);
+    const nowFrame = await frame();
     await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
     await p.waitForTimeout(400);
     const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => {
@@ -535,6 +553,10 @@ async function openPage(p, url, sheet) {
         closed: /Closed/.test(cal.querySelector('#cycle-view').innerText),
         bar: document.getElementById('topbar-title').textContent.trim() };
     });
+    const pastFrame = cc && await frame();
+    (pastFrame && JSON.stringify(pastFrame) === JSON.stringify(nowFrame) && nowFrame.kids === 'cycle-view,today-analysis' && nowFrame.gap > 0)
+      ? ok('a past cycle stacks like the current one', nowFrame.kids + ' · ' + nowFrame.flow + ' · dial to diagnosis ' + nowFrame.gap + 'px')
+      : bad('a past cycle stacks like the current one', JSON.stringify({ nowFrame, pastFrame }));
     await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
     await p.waitForTimeout(500);
     const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({
