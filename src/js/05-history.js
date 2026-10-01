@@ -168,8 +168,7 @@
       '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
         'era</b> \u2014 since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year ' +
         'across 1947\u20132018. So the band says something narrower than it looks: above the line is <i>better than ' +
-        'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' clears both, which is why the word is ' +
-        'above trend rather than merely adequate.</p>' +
+        'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' ' + f.wordWhy + '.</p>' +
       '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' +
         'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
         'each one, and only the second kind compounds.</p>' +
@@ -624,7 +623,7 @@
     });
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
-      out.push('<path class="growth-col hcol' + (d.v < 0 ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
+      out.push('<path class="growth-col hcol' + (quarterRegime(d) === "contraction" ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
         '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
@@ -642,7 +641,7 @@
                      fmt:function(v){ return v.toFixed(1) + "%"; } });
     return vhOpen(W, H) +
       'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
-      ', against the long-run average of ' + GDP_NORM + ' per cent; expansion in teal, contraction in orange">' +
+      ', against the long-run average of ' + GDP_NORM + ' per cent; quarters in expansion in gold, in contraction in periwinkle">' +
       out.join("") + '</svg>';
   }
 

@@ -608,17 +608,6 @@
   var GDP_STOPS   = ["5y", "10y", "25y", "max"];
   var VAL_STOPS   = ["5y", "10y", "25y", "max"];
   var DEF_STOPS   = ["5y", "10y", "25y", "max"];
-  function qShort(q){ return q.slice(5) + " \u2019" + q.slice(2, 4); }
-  function yoyPairs(levels, count){
-    var out = [];
-    for (var i = levels.length - count; i < levels.length; i++){
-      if (i < 4) continue;
-      var now = levels[i], was = levels[i - 4];
-      out.push({ label:qShort(now.q), wasLabel:qShort(was.q), was:was.v, now:now.v,
-                 pct:(now.v / was.v - 1) * 100 });
-    }
-    return out;
-  }
   function actCycleMonths(c){
     var to = c.to || calendarTodayY, a = -1, b = -1;
     unempHistory.forEach(function(d, i){
@@ -677,40 +666,23 @@
         headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
     };
     sheetRenderers["sheet-metric-gdp"] = function(W){
-      var r = pageRange["sheet-metric-gdp"], yoy = r === "yoy";
+      var r = pageRange["sheet-metric-gdp"];
       var cyclesOn = pageMode["sheet-metric-gdp"] === "cycles";
       put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY, stops:GDP_STOPS }));
       put("gdp-head", histHead("sheet-metric-gdp"));
       histNote("sheet-metric-gdp", growthInfoHtml());
-      var hist = byId("gdp-history"); hist.hidden = yoy;
-      var box = byId("gdp-yoy"); box.hidden = !yoy;
-      if (!yoy){
-        var gCyc = cyclesOn ? (cycleByName(pageCycles["sheet-metric-gdp"]) || openCycle()) : null;
-        var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
-        var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
-        var gTo = gSpan ? gSpan[1] : undefined;
-        var win = gdpQuarterlyYoY.slice(gFrom, gTo);
-        hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
-        attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
-        var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
-        headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-        put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
-                    { rising:"quickening", falling:"slowing" }));
-        return;
-      }
-      if (yoy){
-        var pairs = yoyPairs(gdpLevels, 4), last = pairs[pairs.length - 1];
-        box.innerHTML = pairChart({
-          pairs:pairs, unit:"real GDP, chained 2017 dollars",
-          alt:"The four latest quarters of real GDP, each joined to the same quarter a year earlier; the gap between the two is that quarter\u2019s year-over-year growth"
-        }, W);
-        put("gdp-trend", trendPill({ word:fmtSigned(last.pct, 1) + "% this quarter",
-                      detail:last.label.replace("\u2019", "20") + " measured against " + last.wasLabel.replace("\u2019", "20") }, "Year on year"));
-      } else {
-        var eraQ = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= currentEra.from; });
-        put("gdp-trend", trendPill(trendOf(eraQ.map(function(d){ return d.v; }), "points", "quarter"), null, false,
-                    { rising:"quickening", falling:"slowing" }));
-      }
+      var hist = byId("gdp-history"); hist.hidden = false;
+      var gCyc = cyclesOn ? (cycleByName(pageCycles["sheet-metric-gdp"]) || openCycle()) : null;
+      var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
+      var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
+      var gTo = gSpan ? gSpan[1] : undefined;
+      var win = gdpQuarterlyYoY.slice(gFrom, gTo);
+      hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
+      attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
+      var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
+      headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
+      put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
+                  { rising:"quickening", falling:"slowing" }));
     };
 
   }
@@ -959,11 +931,7 @@
       return t ? symptom(t.name, t.figure + (t.unit && !/[%\u00d7]/.test(t.figure) ? " " + t.unit : ""), t.word) : "";
     }).join("");
   }
-  function rosterRows(){
-    var rows = {};
-    readingRoster().forEach(function(g){ g.rows.forEach(function(r){ rows[r.open] = r; }); });
-    return rows;
-  }
+  function rosterRows(){ return readingRoster().byOpen; }
   function closeFigure(r, e){
     if (r.flip) return Math.abs(e.v).toFixed(r.dp) + "% " + (e.v >= 0 ? "deficit" : "surplus");
     return readFig(r, e.v).replace(/<[^>]+>/g, "") + (r.pair && e.second != null ? " / " + e.second.toFixed(r.dp) + "% kept" : "");

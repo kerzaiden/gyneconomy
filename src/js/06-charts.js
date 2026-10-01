@@ -214,7 +214,7 @@
       'aria-label="Show the trend on the chart">' + inner + '</button>';
   }
 
-  // ---- Highlights: what the series says about today, computed ----
+  // ---- Insights: what the series says about today, computed ----
   function yearOf(d){ return d.y != null ? d.y : parseInt((d.q || d.m).slice(0, 4), 10); }
   function mean(a){ return a.reduce(function(x, y){ return x + y; }, 0) / a.length; }
   /* ---- The record rows ---- */
@@ -404,33 +404,6 @@
     return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
   }
 
-  function pairChart(o, W){
-    W = Math.max(280, W || 340);
-    var H = histFrame(W).H;
-    var padL = 14, padR = 14, padT = 38, padB = 40, iw = W - padL - padR, ih = H - padT - padB;
-    var all = [];
-    o.pairs.forEach(function(p){ all.push(p.was, p.now); });
-    var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
-    var span = (hi - lo) || 1; lo -= span * 0.30; hi += span * 0.16;
-    function y(v){ return (padT + ih * (1 - (v - lo) / (hi - lo))).toFixed(1); }
-    var n = o.pairs.length, slot = iw / n;
-    var out = [];
-    o.pairs.forEach(function(p, i){
-      var cx = (padL + slot * (i + 0.5)).toFixed(1);
-      var yw = parseFloat(y(p.was)), yn = parseFloat(y(p.now)), cls = p.pct >= 0 ? "phase-up" : "phase-down";
-      out.push('<path class="pc-link ' + cls + '" d="M' + cx + ',' + yw.toFixed(1) + 'L' + cx + ',' + yn.toFixed(1) + '"/>');
-      out.push('<circle class="pc-was" cx="' + cx + '" cy="' + yw.toFixed(1) + '" r="4.4"/>');
-      out.push('<circle class="pc-now ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="4.4"/>');
-      out.push('<circle class="pc-core ' + cls + '" cx="' + cx + '" cy="' + yn.toFixed(1) + '" r="1.8"/>');
-      out.push('<text class="pc-pct mono ' + cls + '" x="' + cx + '" y="' + (Math.min(yw, yn) - 13).toFixed(1) + '" text-anchor="middle">' + fmtSigned(p.pct, 1) + '%</text>');
-      out.push(xLabel(cx, p.label, (H - 21)));
-      out.push('<text class="pc-was-lab" x="' + cx + '" y="' + (H - 7) + '" text-anchor="middle">from ' + p.wasLabel + '</text>');
-    });
-    return '<div class="dchart pairchart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>' +
-      '<div class="pc-legend"><span><i class="pc-key-was"></i>a year earlier</span>' +
-      '<span><i class="pc-key-now ' + (o.pairs.some(function(p){ return p.pct < 0; }) ? "mixed" : "phase-up") + '"></i>that quarter</span>' +
-      '<span class="pc-unit">' + o.unit + '</span></div>';
-  }
 
   // ---- A series' highest reading within a span ----
 
@@ -567,7 +540,7 @@
       return '<span class="rm-x' + (i === wi ? " on" : "") + '">' + b.label + '</span>';
     }).join("");
     return '<div class="page-chart riskmx">' +
-      '<div class="spread-history-head"><h4>Risk / Reward Ratio</h4>' + expandBtn(riskMatrixNote) + '</div>' +
+      '<div class="spread-history-head"><h4>Risk / Reward</h4>' + expandBtn(riskMatrixNote) + '</div>' +
       '<div class="rm-frame"><span class="rm-axis rm-axis-y">Risk</span>' +
         '<div class="rm-grid">' +
           '<div class="rm-ylabs">' + ylabs.join("") + '</div>' +
@@ -582,7 +555,7 @@
     '</div>';
   }
   var riskMatrixNote =
-    '<h4>Risk / Reward Ratio</h4>' +
+    '<h4>Risk / Reward</h4>' +
     '<p class="caption">Two readings already on this board, placed against each other because neither answers the ' +
       'other’s question alone. <b>Risk</b> is CAPE, from the Valuations page — how much price sits on a decade of ' +
       'earnings, and so how much there is to give back. <b>Reward</b> is the extra yield demanded to hold junk ' +

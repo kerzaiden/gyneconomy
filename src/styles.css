@@ -6,8 +6,6 @@
     --border: rgba(30,20,30,0.10);
     --border-strong: rgba(30,20,30,0.18);
     --grid: rgba(30,20,30,0.11);
-    --ink-on-fill: #100d12;
-    --ink-on-fill-inv: #ffffff;
     --text-primary: #1c1620;
     --text-secondary: #55505a;
     --text-muted: #6d666f;
@@ -16,19 +14,17 @@
     --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--surface));
     --on-accent: #ffffff;
     --overlay: rgba(28,22,32,0.38);
-    --rose: var(--accent); --rose-ink: var(--accent-ink); --rose-wash: var(--accent-wash);
+    --rose-ink: var(--accent-ink);
     --track: #ece6dd;
     --mark-wash: #e3dacd;
     --good: #1ea8a3;
     --good-ink: #0f6f6c;
     --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
     --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 8%, var(--surface));
-    --warm: #1ea8a3;
     --cold: var(--season-winter);
     --cold-ink: #3c5cb5;
-    --heat-hot-ink: #8f4921;
-    --phase-up: var(--season-autumn); --phase-up-ink: #7a5709; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 16%, var(--surface));
-    --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 16%, var(--surface));
+    --phase-up-ink: #7a5709; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 16%, var(--surface));
+    --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 16%, var(--surface));
     --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
     --critical: #d63a2e;
     --m2-deep: #4a0f0a;
@@ -41,7 +37,7 @@
     --bull-ink: #0f6f6c; --bull-wash: color-mix(in srgb, var(--ovulate) 18%, var(--surface));
     --bear-ink: #b33d29; --bear-wash: color-mix(in srgb, var(--bleed-mid) 18%, var(--surface));
     --shadow: none;
-    --ylm-3m:#baa8e8; --ylm-2y:#9683d5; --ylm-5y:#7258ba; --ylm-10y:#54329a; --ylm-30y:#3a2a7a;
+    --ylm-3m:#baa8e8; --ylm-2y:#9683d5; --ylm-5y:#7258ba; --ylm-30y:#3a2a7a;
     --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 20%, var(--surface));
     --tm-coin-wash: color-mix(in srgb, var(--ylm-5y) 34%, var(--surface));
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
@@ -63,18 +59,16 @@
       --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
       --on-accent: #100d12;
       --overlay: rgba(0,0,0,0.62);
-      --rose: var(--accent); --rose-ink: var(--accent-ink); --rose-wash: var(--accent-wash);
+      --rose-ink: var(--accent-ink);
       --track: #322c36; --mark-wash: #3f3846;
       --good: #3dc2bb;
       --good-ink: #5fd6cf;
       --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
       --warning: color-mix(in srgb, var(--critical) 55%, var(--surface)); --warning-ink: var(--critical-ink); --warning-wash: color-mix(in srgb, var(--critical) 10%, var(--surface));
-      --warm: #3dc2bb;
       --cold: var(--season-winter);
       --cold-ink: #a6baf0;
-      --heat-hot-ink: #f09a76;
-      --phase-up: var(--season-autumn); --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
-      --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
+      --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
+      --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
       --serious: color-mix(in srgb, var(--critical) 78%, var(--surface)); --serious-ink: var(--critical-ink); --serious-wash: var(--critical-wash);
       --critical: #eb4839; --m2-deep: #ffd2c8;
       --ff-blue: #6fa8e0; --ff-deep: #d7e8fb;
@@ -85,7 +79,7 @@
       --bull-ink: #3dc2bb; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
       --bear-ink: #f28a78; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
       --shadow: none;
-      --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-10y:#9075e0; --ylm-30y:#7458c8;
+      --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
       --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 16%, var(--surface));
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
@@ -106,9 +100,7 @@
     --accent-ink: #e3c6ea;
     --accent-wash: rgba(201,160,214,0.16);
     --on-accent: #100d12;
-    --rose: #e08bae;
     --rose-ink: #f0a9c6;
-    --rose-wash: rgba(224,139,174,0.18);
     --track: #322c36; --mark-wash: #3f3846;
     --good: #3dc2bb;
     --good-ink: #5fd6cf;
@@ -116,12 +108,10 @@
     --warning: #eda100;
     --warning-ink: #f2c24d;
     --warning-wash: rgba(237,161,0,0.16);
-    --warm: #3dc2bb;
     --cold: #7f9ce6;
     --cold-ink: #a6baf0;
-    --heat-hot-ink: #f09a76;
-    --phase-up: var(--season-autumn); --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
-    --phase-down: var(--season-winter); --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
+    --phase-up-ink: #f2c24d; --phase-up-wash: color-mix(in srgb, var(--season-autumn) 20%, var(--surface));
+    --phase-down-ink: var(--cold-ink); --phase-down-wash: color-mix(in srgb, var(--season-winter) 20%, var(--surface));
     --serious: #ec835a;
     --serious-ink: #f5a385;
     --serious-wash: rgba(236,131,90,0.16);
@@ -133,7 +123,7 @@
     --bull-ink: #3dc2bb; --bull-wash: color-mix(in srgb, var(--ovulate) 22%, var(--surface));
     --bear-ink: #f28a78; --bear-wash: color-mix(in srgb, var(--bleed-mid) 22%, var(--surface));
     --shadow: none;
-    --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-10y:#9075e0; --ylm-30y:#7458c8;
+    --ylm-3m:#e0d8f7; --ylm-2y:#c8b8f0; --ylm-5y:#ab90e8; --ylm-30y:#7458c8;
       --tm-lead-wash: color-mix(in srgb, var(--ylm-3m) 16%, var(--surface));
       --tm-coin-wash: color-mix(in srgb, var(--ylm-2y) 34%, var(--surface));
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
@@ -298,10 +288,8 @@
   .detail-modal .legend-head, .metric-sheet .legend-head, .sign-detail .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
   :root{
-    --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(20,18,26,0.6); --dial-accent:#14121a;
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --batt-1:#a32b1c; --batt-2:#e0574a; --batt-3:#dfb63f; --batt-4:#1ea8a3;
     --season-winter:#5b7fd6; --season-spring:#9aa7d4; --season-summer:#d86f32; --season-autumn:#d8a23c;
     /* ---- THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change ---- */
     --mini-w:80px;
@@ -315,8 +303,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-display:40px;
   }
-  :root[data-theme="dark"]{ --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(246,243,247,0.5); --dial-accent:#f6f3f7; --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --batt-1:#c2402f; --batt-2:#f4776a; --batt-3:#f2d264; --batt-4:#3dc2bb; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --moon-lit:var(--page); --moon-dark:var(--text-primary); --moon-edge:rgba(246,243,247,0.5); --dial-accent:#f6f3f7; --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --batt-1:#c2402f; --batt-2:#f4776a; --batt-3:#f2d264; --batt-4:#3dc2bb; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#7f9ce6; --season-spring:#a6baf0; --season-summer:#ec835a; --season-autumn:#f2c24d; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -395,7 +383,6 @@
       -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
       border:0; border-top:1px solid var(--border);
     }
-    .tabbar{ --tabbar-h:72px; }
     .tab-btn{ padding:2px 0 5px; gap:2px; border-radius:var(--radius); font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
     .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
     .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; }
@@ -578,7 +565,6 @@
   .sign-row{ cursor:pointer; }
   .sign-row:hover{ border-color:var(--border-strong); }
   .sign-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .sign-row .subject-chev{ transform:rotate(-45deg); }
   .metric-sheet[hidden]{ display:none; }
 
   .subject{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
@@ -623,9 +609,9 @@
   .subject-value .chip i{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-meta); letter-spacing:0; color:var(--text-muted); margin-right:4px; }
   .subject-value .chip + .chip::before{ content:"\00b7"; color:var(--text-muted); margin:0 8px 0 0; font-weight:400; }
   .subject-more{ flex:none; display:flex; align-items:center; padding:0 4px; color:var(--text-muted); }
-  .subject-chev{ width:9px; height:9px; border-right:1.75px solid currentColor; border-bottom:1.75px solid currentColor; transform:rotate(-45deg); transition:transform 0.15s ease; margin-right:4px; }
-  .subject[open] .subject-chev{ transform:rotate(45deg); }
-  .subject-summary:hover .subject-more{ color:var(--accent-ink); }
+  .subject-more .peek-chev{ margin-right:4px; transition:transform 0.15s ease; }
+  .subject[open] .subject-more .peek-chev{ transform:rotate(90deg); }
+  .subject-summary:hover .subject-more .peek-chev{ color:var(--accent-ink); opacity:1; }
   .subject-body{ padding:0 var(--pad) 20px; border-top:1px solid var(--border); }
   .peek-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
   .peek-row > .peek:only-child{ grid-column:1 / -1; }
@@ -968,23 +954,6 @@
 
   .dchart{ margin:10px 0 2px; }
   .dchart svg{ display:block; width:100%; height:auto; overflow:visible; }
-  .pc-link{ stroke-width:3; stroke-linecap:round; fill:none; opacity:0.9; }
-  .pc-link.phase-up{ stroke:var(--phase-up); } .pc-link.phase-down{ stroke:var(--phase-down); }
-  .pc-was{ fill:var(--surface); stroke:var(--border-strong); stroke-width:1.8; }
-  .pc-now{ fill:var(--surface); stroke-width:2; }
-  .pc-now.phase-up{ stroke:var(--phase-up); } .pc-now.phase-down{ stroke:var(--phase-down); }
-  .pc-core.phase-up{ fill:var(--phase-up); } .pc-core.phase-down{ fill:var(--phase-down); }
-  .pc-pct{ font-size:var(--type-meta); font-weight:700; }
-  .pc-pct.phase-up{ fill:var(--phase-up-ink); } .pc-pct.phase-down{ fill:var(--phase-down-ink); }
-  .pc-was-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); fill:var(--text-muted); }
-  .pc-legend{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:2px 2px 0;
-    font-family:"Public Sans",sans-serif; font-size:var(--type-label); color:var(--text-muted); }
-  .pc-legend span{ display:inline-flex; align-items:center; gap:6px; }
-  .pc-legend i{ width:9px; height:9px; border-radius:50%; background:var(--surface); flex:none; }
-  .pc-key-was{ box-shadow:inset 0 0 0 1.8px var(--border-strong); }
-  .pc-key-now.phase-up{ box-shadow:inset 0 0 0 2px var(--phase-up); }
-  .pc-key-now.mixed{ box-shadow:inset 0 0 0 2px var(--phase-up); background:var(--phase-down-wash); }
-  .pc-legend .pc-unit{ margin-left:auto; }
   .dv-bar{ stroke-linecap:round; fill:none; }
   .ff-col{ stroke:var(--ff-blue); fill:none; stroke-linecap:round; }
   .ff-col.f0{ stroke:color-mix(in srgb, var(--ff-blue) 26%, var(--surface)); }

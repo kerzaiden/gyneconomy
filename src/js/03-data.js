@@ -129,25 +129,33 @@
     return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
              hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
   })();
+  var PRODUCTIVITY_TREND = 2.1, PRODUCTIVITY_SLOWDOWN = 1.3;
+  function productivityWord(v){
+    if (v >= PRODUCTIVITY_TREND) return { state:"good", text:"Above trend",
+      says:"running above the slowdown-era average and at or above the long-run trend",
+      why:"clears both lines, so the word is above trend" };
+    if (v >= PRODUCTIVITY_SLOWDOWN) return { state:"good", text:"Above the slowdown",
+      says:"running above the slowdown-era average but below the long-run trend",
+      why:"clears the slowdown line but not the long-run one, so the word is above the slowdown, not above trend" };
+    return { state:"warning", text:"Below the slowdown",
+      says:"running below even the slowdown-era average",
+      why:"is below both lines, so the word is below the slowdown" };
+  }
   var productivityReading = (function(R){
+    var word = productivityWord(R.now.v);
     var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
       page:{ chart:function(){ return typeof productivityHistory === "undefined" ? "" : '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
-      metric:R.now.v.toFixed(1) + "%", tag:{ state:"good", text:"Above trend" }, wordFor:"2026 Q2",
-      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:1.3, label:"\u2265 1.3% YoY"},
+      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
               ends:{ low:"Falling" } },
       span:span,
-      shortCaption:at + " — running above the post-2010 slowdown average and roughly at the 70-year trend.",
-      caption:at + ", BLS output per hour vs. a year earlier. Running above the post-2010 slowdown average and roughly at the 70-year trend — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+      shortCaption:at + " — " + word.says + ".",
+      caption:at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
     };
   })(productivityRecord);
-  function checkProductivityWord(){
-    if (productivityRecord.now.q !== productivityReading.wordFor)
-      console.warn("Productivity: the word and captions were written for " + productivityReading.wordFor + ", the data now ends " + productivityRecord.now.q + " — Keren sets the word for the new quarter");
-  }
-  GYN.step("checkProductivityWord", checkProductivityWord, "check"); checkProductivityWord();
 
   /* ---- Institutional trust is not in this panel ---- */
 
