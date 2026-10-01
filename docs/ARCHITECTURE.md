@@ -682,7 +682,10 @@ figure that moves with the data is compared, never written in. What is Keren's d
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are
 hygiene's `PINNED`. The model's rules are tool tests (`test/cycle.test.js` lifts the functions from
 08-model with fixture data, so each window is tested at its edge), and the words that state a rule are
-tested against the rule (each feeling's cut-offs, growth's window).
+tested against the rule (each feeling's cut-offs, growth's window). Every note on every reading page (the
+history head's and each More details) is read, and none may call a band a "normal range" unless it says it
+is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,
+the suite and gate catch all thirteen; the old suite caught one of the audit's ten.
 **Every refactor ships with "48 states identical"** (`npm run snap`: every tab and page, their (i) notes, and Cycle history with its data shown; until V656 a selector typo meant no tab panel was captured); it caught three breaks in V630 alone,
 none visible. The fetching itself cannot be tested from a sandbox; its proof is the Data workflow's run.
 

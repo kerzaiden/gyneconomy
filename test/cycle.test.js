@@ -150,7 +150,7 @@ console.log('\ncycleReturns — the peak is the best single year, never compound
 console.log('\nregimeTrack — the peers read growth exactly as the season does\n');
 {
   const M = lift(['slopeOf', 'readSeason', 'regimeTrack'], {});
-  const vals = [3, 3, 3, 3, 3, 3, 2, 1, 0, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3];
+  const vals = [3, 3, 3, 3, 3, 3, 2, 1, 0, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 2, 1, 0, -1, -2, -2, -1.96, -1.92, -1.88, -1.84, -1.8, -1.76, -1.72];
   const series = {}; vals.forEach((v, k) => { series[(2000 + Math.floor(k / 4)) + ' Q' + (k % 4 + 1)] = v; });
   const qs = Object.keys(series).sort(), track = M.regimeTrack(series), cpi12 = Array(12).fill({ v: 2 });
   let prev, same = true;
@@ -159,6 +159,7 @@ console.log('\nregimeTrack — the peers read growth exactly as the season does\
     prev = r.regime; if (r.regime !== track[q]) same = false; });
   ok('the same regime as readSeason in every quarter', same, true);
   ok('a flat stretch keeps the regime before it', track[qs[14]], 'contraction');
+  ok('a rise of 0.04 a quarter is expansion, past the 0.025 cut', track[qs[qs.length - 1]], 'expansion');
 }
 
 console.log('\nThe words say what the rules do\n');
@@ -180,7 +181,7 @@ console.log('\nThe words say what the rules do\n');
   };
   const wrong = [];
   body.split('\n').forEach(line => { const m = /return "(\w+)"/.exec(line); if (!m) return;
-    said(line).forEach(w => { if ((RULES[m[1]] || '').indexOf(w) < 0) wrong.push(m[1] + ' does not say ' + w); }); });
+    said(line).forEach(w => { if (!new RegExp('(^|[^\\d.])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\d])').test(RULES[m[1]] || '')) wrong.push(m[1] + ' does not say ' + w); }); });
   ok('each feeling\u2019s rule text names its cut-offs', wrong, []);
   ok('every feeling has its rule written out', FEELINGS_IN(SRC).filter(n => !RULES[n]), []);
   const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];

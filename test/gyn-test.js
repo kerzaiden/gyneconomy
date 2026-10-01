@@ -36,8 +36,8 @@ const click = (p, sel) => p.evaluate(s => {
 
 const noise = [];
 const watch = (pg, tag) => {
-  const mine = [], note = t => { mine.push(t); noise.push(tag + ': ' + t); };
-  pg.on('pageerror', e => note(String(e).slice(0, 140)));
+  const mine = [], note = t => noise.push(tag + ': ' + t);
+  pg.on('pageerror', e => { const t = String(e).slice(0, 140); mine.push(t); note(t); });
   pg.on('console', m => {
     if ((m.type() === 'warning' || m.type() === 'error') && !/^Failed to load resource/.test(m.text())) note(m.type() + ' ' + m.text().slice(0, 140));
   });
@@ -114,7 +114,7 @@ async function openPage(p, url, sheet) {
   await p.goto('file://' + url); await ready(p);
   const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
-  const tall = {};
+  const tall = {}, notes = {};
   let debt = null;
   for (const [sheet, label] of READINGS_ON_SCREEN) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
@@ -148,6 +148,11 @@ async function openPage(p, url, sheet) {
     if (!r.vgrid) miss.push('vertical rules'); if (!r.yl) miss.push('y labels'); if (!r.xl) miss.push('x labels');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
     tall[label] = r.tall;
+    notes[label] = await p.evaluate(() => {
+      const body = document.getElementById('detail-modal-body'), shut = document.getElementById('detail-modal-close'), out = [];
+      document.querySelectorAll('#metric-page [data-detail-idx]').forEach(b => { b.click(); out.push(body.innerText); shut.click(); });
+      return out.join('\n');
+    });
 
     if (r.headBtn) {
       await p.evaluate(h => document.querySelector('.bh-more[data-head-more="' + h + '"]').click(), hid);
@@ -161,8 +166,9 @@ async function openPage(p, url, sheet) {
       const body = await p.evaluate(() => {
         const bd = document.getElementById('detail-modal-body');
         return { shown: document.getElementById('detail-backdrop').classList.contains('show'),
-                 len: bd.innerText.trim().length };
+                 len: bd.innerText.trim().length, text: bd.innerText };
       });
+      notes[label] += '\n' + body.text;
       (note.rows && body.shown && body.len > 100)
         ? ok('note ' + label, body.len + ' chars')
         : bad('note ' + label, 'menu rows ' + note.rows + ', modal ' + body.shown + ', ' + body.len + ' chars');
@@ -174,6 +180,10 @@ async function openPage(p, url, sheet) {
     (hs.length === READINGS_ON_SCREEN.length - NO_HISTORY.length && Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5)
       ? ok('every history draws at one height', hs.length + ' pages, ' + Math.min(...hs) + '\u2013' + Math.max(...hs) + 'px')
       : bad('every history draws at one height', JSON.stringify(tall));
+    const relabelled = Object.keys(notes).flatMap(k => [...notes[k].matchAll(/(.{0,16})\bnormal range/gi)]
+      .filter(m => !/\b(not a|no official|no)\s*$/i.test(m[1])).map(m => k + ': \u2026' + m[0]));
+    !relabelled.length ? ok('no note calls a band a normal range', Object.keys(notes).length + ' notes read')
+                       : bad('no note calls a band a normal range', relabelled.join(' | ') + ' \u2014 a target is never relabelled normal; say whose band it is');
     (debt && debt.page.indexOf(debt.card) !== -1)
       ? ok('Federal debt prints the card\u2019s figure on its page', debt.card)
       : bad('Federal debt prints the card\u2019s figure on its page', JSON.stringify(debt && debt.card));
