@@ -55,7 +55,7 @@
       btn.addEventListener("click", function(){ open = !open; apply(); });
     })();
 
-    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle"), slot = byId("calendar-cycle-slot");
+    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle");
     function open(from){
       var era = marketCycles.filter(function(c){ return c.from === from; })[0];
       if (!era) return;
@@ -63,7 +63,7 @@
         var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
         if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
       }
-      enterEra(era, slot);
+      enterEra(era, detail);
       listWrap.hidden = true; detail.hidden = false;
       setTopbar(era.name, back);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -152,11 +152,11 @@
     for (var id in pageCycles){ pageCycles[id] = era ? era.name : null; pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id]; }
     if (!era) modeHome = null;
   }
-  function enterEra(era, slot){
+  function enterEra(era, page){
     var ta = byId("today-analysis");
     if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
     eraOpen = era; showCycle(era);
-    slot.appendChild(cycleViewEl); slot.appendChild(ta);
+    page.appendChild(cycleViewEl); page.appendChild(ta);
     eraShow(era);
   }
   function leaveEra(){

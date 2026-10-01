@@ -6944,4 +6944,9 @@ code in our code base" — today and a closed cycle render through one set of fu
 tab and the search tab locations in the bottom menu." And: "in the analysis tab, the bull bear market line
 disappeared" — V662's unused-style pruning had removed .mkt-up and .mkt-down, whose names are built at run time;
 they are back, the hygiene check knows them, and the suite now checks the runs are drawn in colour.
+And: "when I'm looking at past cycles, pages, for example, the housing cycle, this spacing between the cycle and
+the analysis is not the same as the main current cycle page … in terms of components and page structure, we're doing
+the same thing because it's supposed to be identical." A past cycle had an extra wrapper (a slot) that took away the
+gap; the cycle and its analysis now sit straight in the past cycle's page, which shares the tab panel's stack rule,
+and the suite compares the two frames.
 ~~~

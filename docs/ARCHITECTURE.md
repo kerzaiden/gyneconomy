@@ -311,23 +311,26 @@ Rules that shape the pages:
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
-  tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the four tiles and their category and
-  reading pages) into the cycle's slot (`enterEra`), and `leaveEra` puts it back; the tab switch and the back
-  arrow both call it. In between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the
-  figure at the cycle's last reading, the range over the cycle as the label, the cycle's own mini) and
-  sets every history page's cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored
-  on leaving). Today's cards are kept on the element (`__today`) and restored as they were, so the live
-  repaint still finds its first text node. The reading pages' panels and insights stay today's: they are
-  the page, and the picker says which cycle the chart shows. A reading without history in the cycle shows a
-  dash and says since when it is measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of
-  cards that led nowhere (Keren, V659: one view to maintain).
-  **Since V660 the cycle's card is built like today's** (Keren: "identical in design to the current cycle
-  categories"): the figure is today's first text node with only the number replaced (`eraFig` keeps its
-  decimals, sign, prefix and suffix, drops the ≈ of an estimate), the unit stays (a roster row's `eraUnit`
-  names a different measure: the effective rate, not the target range; a surplus year says surplus), and the
-  mini is today's kind drawn with the cycle's data (`colPeek` with the row's `base`/`rule`, the Volatility ring
-  through `vixPct`, the Pulse trace through `pulsePeek`). The label is the range over the cycle, not a
-  verdict: several verdicts are Keren's words for today, not bands a past value can be read against.
+  tab's own live DOM (`#cycle-view`, the dial, and `#today-analysis`, the Diagnosis and the category and
+  reading pages) straight into `#calendar-cycle` (`enterEra`), and `leaveEra`, which the tab switch and the
+  back arrow both call, puts it back. That container shares the tab panel's stack rule (`.tab-panel,
+  #calendar-cycle`: a column at `--gap`) and has no wrapper of its own, so a past cycle stacks exactly like
+  the current one (V665: a slot inside it once took the gap away; the suite now compares the two frames). In
+  between, `eraShow` rewrites the same category cards for the cycle (`eraCard`: the figure at the cycle's
+  last reading, the range over the cycle as the label, the cycle's own mini) and sets every history page's
+  cycle picker to it (`pageCycles`, cycles mode; each page's own mode is restored on leaving). Today's cards
+  are kept on the element (`__today`) and restored as they were, so the live repaint still finds its first
+  text node. The reading pages' panels and insights stay today's: they are the page, and the picker says
+  which cycle the chart shows. A reading without history in the cycle shows a dash and says since when it is
+  measured. This replaced `renderCycleCats` (V656–V658), a second, flat set of cards that led nowhere
+  (Keren, V659: one view to maintain). **Since V660 the cycle's card is built like today's** (Keren:
+  "identical in design to the current cycle categories"): the figure is today's first text node with only
+  the number replaced (`eraFig` keeps its decimals, sign, prefix and suffix, drops the ≈ of an estimate),
+  the unit stays (a roster row's `eraUnit` names a different measure: the effective rate, not the target
+  range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
+  with the row's `base`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
+  The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
+  bands a past value can be read against.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
   the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot

@@ -523,6 +523,14 @@ async function openPage(p, url, sheet) {
   }
 
   {
+    const frame = () => p.evaluate(() => {
+      const cv = document.getElementById('cycle-view'), page = cv.parentElement, cs = getComputedStyle(page), r = cv.getBoundingClientRect();
+      return { kids: [...page.children].filter(e => e.offsetParent).map(e => e.id).join(), flow: cs.display + ' ' + cs.flexDirection + ' ' + cs.rowGap,
+        gap: Math.round(document.getElementById('diagnosis').getBoundingClientRect().top - r.bottom), x: Math.round(r.left), w: Math.round(r.width) };
+    });
+    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
+    await p.waitForTimeout(400);
+    const nowFrame = await frame();
     await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
     await p.waitForTimeout(400);
     const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => {
@@ -543,6 +551,10 @@ async function openPage(p, url, sheet) {
         closed: /Closed/.test(cal.querySelector('#cycle-view').innerText),
         bar: document.getElementById('topbar-title').textContent.trim() };
     });
+    const pastFrame = cc && await frame();
+    (pastFrame && JSON.stringify(pastFrame) === JSON.stringify(nowFrame) && nowFrame.kids === 'cycle-view,today-analysis' && nowFrame.gap > 0)
+      ? ok('a past cycle stacks like the current one', nowFrame.kids + ' · ' + nowFrame.flow + ' · dial to diagnosis ' + nowFrame.gap + 'px')
+      : bad('a past cycle stacks like the current one', JSON.stringify({ nowFrame, pastFrame }));
     await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
     await p.waitForTimeout(500);
     const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({

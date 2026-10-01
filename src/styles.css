@@ -263,7 +263,7 @@
   .era-econ{ display:flex; gap:8px; flex-wrap:wrap; }
 
   .era-foot b{ color:var(--text-primary); font-weight:700; }
-  #today-analysis{ display:flex; flex-direction:column; gap:10px; margin-top:0; }
+  #today-analysis{ display:flex; flex-direction:column; gap:var(--gap); margin-top:0; }
   #signs-list{ display:flex; flex-direction:column; gap:10px; }
 
   .strip{ display:flex; align-items:center; height:14px; margin-top:12px; }
@@ -403,7 +403,8 @@
     .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }
   }
-  .tab-panel{ padding-top:2px; display:flex; flex-direction:column; gap:var(--gap); }
+  .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
+  .tab-panel{ padding-top:2px; }
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
   .tab-panel[hidden]{ display:none; }
 
@@ -464,7 +465,7 @@
   .ind-card .ind-fig{ display:inline; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:400; letter-spacing:0;
     color:var(--text-muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
 
-  #cycle-view, #calendar-list, #calendar-cycle{ display:flex; flex-direction:column; gap:16px; }
+  #cycle-view, #calendar-list{ display:flex; flex-direction:column; gap:16px; }
   .era-row{ cursor:pointer; }
   .era-row:hover{ background:var(--surface-2); }
   .era-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
