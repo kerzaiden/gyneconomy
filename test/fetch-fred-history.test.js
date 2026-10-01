@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { monthEnd, curveMonthly, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { monthEnd, curveMonthly, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -132,6 +132,20 @@ ok('a quarter without its year-earlier twin is left out',
    yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
 ok('with productivity, its series is written',
    /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], 'x', null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
+ok('a month averages its daily closes',
+   monthlyMean([d('1990-01-02', 17.24), d('1990-01-03', 18.19), d('1990-02-01', 20)], 1, 200),
+   [{ m: '1990-01', v: 17.72 }, { m: '1990-02', v: 20 }]);
+ok('a close outside the band is left out of the mean, not clamped',
+   monthlyMean([d('1990-01-02', 17), d('1990-01-03', 900)], 1, 200), [{ m: '1990-01', v: 17 }]);
+ok('the running month is left out until it closes',
+   monthlyMean([d('2026-09-30', 16), d('2026-10-01', 18)], 1, 200, '2026-10'), [{ m: '2026-09', v: 16 }]);
+ok('the VIX starts where the VXO hands over',
+   volatilityMonthly([d('1987-10-19', 150.19), d('1989-12-29', 23), d('1990-01-02', 99)],
+                     [d('1990-01-02', 17.24), d('2026-10-01', 18)], VOL_JOIN, '2026-10'),
+   [{ m: '1987-10', v: 150.19 }, { m: '1989-12', v: 23 }, { m: '1990-01', v: 17.24 }]);
+ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
+ok('with volatility, its series is written after the fear curve',
+   /var fearCurveHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [], 'x', null, null, null, [{ m: '1990-01', v: 17.24 }])), true);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 
