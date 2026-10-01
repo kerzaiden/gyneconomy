@@ -767,6 +767,26 @@ async function openPage(p, url, sheet) {
         ? ok('no more than two mixed steps', JSON.stringify(k))
         : bad('no more than two mixed steps', JSON.stringify(k) + ' \u2014 split a mixed step into a derive and a render');
     }
+
+    const roster = await g.evaluate(() => {
+      const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
+      if (!R || !step) return null;
+      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open);
+      const warned = [], warn = console.warn;
+      console.warn = m => warned.push(String(m));
+      R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
+      try { step.fn(); } finally { R.pop(); console.warn = warn; }
+      return { ids: R.map(r => r.id), cards, warned: warned.join(' ') };
+    });
+    if (!roster) bad('the roster is every card, in card order', 'no GYN.ROSTER or no checkRoster step');
+    else {
+      JSON.stringify(roster.ids) === JSON.stringify(roster.cards)
+        ? ok('the roster is every card, in card order', roster.ids.length + ' readings')
+        : bad('the roster is every card, in card order', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
+      ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)
+        ? ok('checkRoster refuses a reading declared twice, a split group and an unknown live name')
+        : bad('checkRoster refuses a reading declared twice, a split group and an unknown live name', roster.warned || 'no warning');
+    }
     await c.close();
   }
 

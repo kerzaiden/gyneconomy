@@ -146,8 +146,12 @@
     return '<div class="hist-controls">' +
       modeBar(id, mode, extra) +
       (!known ? "" : on ? cyclePicker(id, pageCycles[id], minYear)
-                        : rangeBar(id, timelineFor(tl), pageRange[id])) +
+                        : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:PAGE_STOPS[id] }), pageRange[id])) +
     '</div>';
+  }
+  function pageCycle(id, y0){
+    var c = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+    return c && c.from < y0 ? openCycle() : c;
   }
   function cycLabel(c){
     return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),

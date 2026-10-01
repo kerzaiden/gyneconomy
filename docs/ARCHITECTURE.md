@@ -92,7 +92,42 @@ caller does not own. A reading whose doors print nothing is recorded, and the su
 stays empty.
 ```
 
-#### The reading registry
+#### The roster
+
+Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
+dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/07b-roster.js`,
+one row per reading in card order), and everything that used to name it again reads the row: the category pages
+and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems and symptoms, the timing chips
+and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
+dates (`when`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
+(`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
+`CATEGORIES` beside it holds the four categories in source order with `shown`, their place in Search and the
+Diagnosis (two orders, both Keren's). A row's fields:
+
+```text
+id, name, cat, timing, mark   the page, the name on every door, the category, the timing chip, the glyph
+group                         consecutive rows with one group are one group (Valuations, Economic power, Activity)
+door                          how the card is built: peek (a peek card), pair (Pulse and Volume's peek pair),
+                              split (a split peek), subject (an authored subject row), row (a sign row)
+term                          the bodyTerm of the reading object a sign row or pair is built from
+slot                          the authored page whose timing slot and order orderMetricSheets sets
+dx                            the reading's place in its Diagnosis system, where that differs from card order
+hk, head, range, cycles, stops   the history key (when it is not the page id), its head's title, its default
+                              window, false where it has no Cycles mode, and its window stops
+headMark                      false: the history head carries no mark (the deficit's, until Keren picks one)
+hist, pair, peek              the series as written ({s, k, y0} or a function), read by keyed() into {k, v}
+dp, unit, signed, flip, pre, last, eraUnit, rule, ring, pulse, mid   how the past cycles print and draw it
+when, cardUnit, miniSel       the card's date, its unit, the element that is its miniature
+live                          the live registry rows that feed it
+```
+
+`checkRoster` (a `check` step) refuses a reading declared twice, an unknown category or timing, a missing mark,
+a group split in two, and a live name in either direction that the other registry does not know; the suite
+proves it refuses each, and that the roster is every card on screen in card order. **A new reading is one row**
+(plus its page's own renderer). The live registry below stays separate: it is the service contract, and the roster
+only names which of its rows feed each reading.
+
+#### The live registry
 
 ```text
 Keren, V629: "a component based app that will be 100% ready for server side integration with controllers
@@ -249,14 +284,14 @@ Rules that shape the pages:
   reads the snapshot `catItem` stashes.
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
-- **Home is `grid-area`, never DOM reorder**: source order is the taxonomy, read by the roster, the
-  category sheets and Search.
+- **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
+  read by the category sheets, the past cycles, the Diagnosis and Search.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Economic power: Federal debt · Interest payments · Federal
   budget). The split pages are
-  built by one builder, `src/js/12a-indicators.js` (`splitSpecs` → `mountSplit` → `drawSplit`), on the history
-  component (`divergeChart` hung from the reading's sourced line, `histControls`, `histHead`, `histNote`), so
-  a new split is a spec, not a page. The parent keeps its breakdown panel, each part a door to its page.
+  built by one builder, `src/js/12a-indicators.js` (the roster row plus its `splitPages` entry, joined by
+  `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
+  sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
   the cards run as one list. **The group lives in Search instead**: one row named for the group (no figure),
   opening a group page (`#sheet-grp-valuations`, `#sheet-grp-economic-power`) built by the same
@@ -273,7 +308,7 @@ Rules that shape the pages:
   `colPeek` and `meterPeek`, own theirs); a `font-size` that is not a `--type-` token; a style aimed
   at one page by id (make it an option of the component, as `goodAbove` is for Productivity's bars); a branch on a
   reading's name (`ind.bodyTerm === ...`: a reading declares its page in `ind.page` — `bare`, `noHead`, `noMark`,
-  `chartFirst`, `deferHighlights`, `peeked`, `chart`, `after`, `id`, `seat` — and `signSubject` only reads it; looking a
+  `chartFirst`, `deferHighlights`, `peeked`, `chart`, `after`, `seat` — and `signSubject` only reads it; looking a
   reading up by name is fine); and anything unused — a function or variable nothing calls, a style class nothing
   carries (classes built at run time are listed in the tool). V662 removed what that found: the Temperature and
   Growth cycle cards (drawn but shown nowhere since V656), the hidden GDP and Valuation summary blocks, eleven dead
@@ -284,12 +319,12 @@ Rules that shape the pages:
   in the chart's (i) menu: `histNote(head, info)` registers it (Households' note is the bill and the cushion
   together). A reading without a history (Industrial output, and Productivity growth until its series lands)
   keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
-- **Activity is a group of three (V661):** Unemployment rate (the Activity page; `ind.title` renames it on
-  screen while `bodyTerm` keeps the page id), Productivity growth and Industrial output, each a sign page of
-  its own (`signSubject`; ids drop spaces). Productivity growth is structural (Claude's call, to confirm).
-  Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`; until the first run
-  the page has no chart, and when the series exists `productivitySpec` mounts the split chart on the same
-  page (the 1.3% slowdown line is the BLS figure; above it is good, so its bars read green).
+- **Activity is a group of three (V661):** Unemployment rate (the Activity page; its roster name renames it on
+  screen while `bodyTerm` stays the reading's term), Productivity growth and Industrial output, each a sign page
+  of its own (`signSubject`, the page id from the roster). Productivity growth is structural (Claude's call, to
+  confirm). Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`, and its
+  `splitPages` entry mounts the split chart on the same page (the 1.3% slowdown line is the BLS figure; above it
+  is good, so its bars read green).
 - **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
   the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
@@ -301,7 +336,8 @@ Rules that shape the pages:
 - **Search (V657) is every reading, grouped by category** in Keren's order, Weather · Mood · Circulation ·
   Energy, one inset card per category with hairlines between rows. A row is icon · name · today's figure ·
   chevron; the verdict and the date stay on the reading's page. **Membership is read from the category
-  pages** (`#sheet-cat-*` items), never listed twice. Each heading opens its category page; each row its
+  pages** (`#sheet-cat-*` items, built from the roster), never listed twice; the heads come from `CATEGORIES`
+  in `shown` order. Each heading opens its category page; each row its
   reading's page, and back returns to Search. The timing filter (All · Structural · Leading · Coincident ·
   Lagging, default All) and the search box combine; the box matches a reading's name, its economic term,
   its source line, or a category name. A reading's timing chip opens Search on its timing. **Icons wear
@@ -328,7 +364,7 @@ Rules that shape the pages:
   the number replaced (`eraFig` keeps its decimals, sign, prefix and suffix, drops the ≈ of an estimate),
   the unit stays (a roster row's `eraUnit` names a different measure: the effective rate, not the target
   range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
-  with the row's `base`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
+  with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
@@ -456,7 +492,8 @@ its heading is the door to the category page) with one **Analysis** line (what t
 `analysisFor` and `assessmentFor`, which take the closed era or null): the
 season and the feeling at the closing month, each symptom's value at the close from the roster series without a
 verdict word (verdicts are today's words), the Analysis as the movement across the cycle, and what actually
-followed a year later. Search builds its category heads from `categoryCats()` now that the hub cards are gone.
+followed a year later. The systems are `CATEGORIES` in `shown` order, and each system's symptoms are its
+roster rows.
 
 - **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
   (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
@@ -616,8 +653,8 @@ over a full cycle as a regularity of the low-inflation era, **never described as
 `GAP_BAND = 1.5`, decides both the word and the run counter.
 
 **The federal budget page** ends at FY2025, the last actual, while the marker above reads CBO's FY2026
-projection — the same deliberate gap CAPE's chart has, stated in the caption. Add `opens` to another
-marker the day it gets a series; that is the whole change.
+projection — the same deliberate gap CAPE's chart has, stated in the caption. A `labPanel` marker is found by
+its page id (`labRow`); the day another gets a series, give its roster row a `hist`.
 
 ## Editorial slots
 

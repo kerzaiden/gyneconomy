@@ -259,8 +259,6 @@
     var sp = timelineSpan(key);
     return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 4);
   }
-  var VOL_STOPS = ["5y", "10y", "25y", "max"];
-  var PULSE_STOPS = ["5y", "10y", "25y", "max"];
 
   var DEF_1983 = deficitHistory[1983 - DEF_FROM_YEAR];
   function defFrom(key){
@@ -344,7 +342,7 @@
     function row(name, val){
       return '<div class="legend-row"><span>' + name + '</span><small>' + val + '</small></div>';
     }
-    var defRow = labPanel.filter(function(r){ return r.opens && r.opens.id === "sheet-marker-deficit"; })[0];
+    var defRow = labRow("sheet-marker-deficit");
     var note = '<h4>Federal budget deficit or surplus</h4>' +
       (defRow ? ledeHtml(defRow.note) : '') +
       facts([
@@ -393,7 +391,6 @@
     return { y:2000 + +t.slice(0, 2), m:+t.slice(2, 4), d:+t.slice(4, 6) };
   }
   function hyLabel(i){ var t = hyAt(i); return MONTHS_SHORT[t.m - 1] + " " + t.d + " " + t.y; }
-  var DESIRE_STOPS = ["1y", "max"];
   function hyNum(i){ var a = hyAt(i); return a.y * 10000 + a.m * 100 + a.d; }
   function hyWindowFrom(key){
     var sp = timelineSpan(key);
@@ -433,7 +430,7 @@
 
   function checkGrossDebt(){
     if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
-    var row = labPanel[0], by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
+    var row = labRow("sheet-metric-debt"), by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
     var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
     var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
     if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
@@ -529,7 +526,7 @@
       src:[{t:"Federal Reserve via FRED — Velocity of M2 Money Stock, quarterly since 1959 (M2V; record low 1.126 in Q2 2020, high 2.192 in Q3 1997)", u:"https://fred.stlouisfed.org/series/M2V"}]
     },
     {
-      bodyTerm:"Volume", econTerm:"Money stock (M2)", timing:"leading",
+      bodyTerm:"Volume", econTerm:"Money stock (M2)",
       page:{ bare:true, noHead:true, chartFirst:true, peeked:true, chart:function(ind){ return volumeBlock(ind); } },
       tag:null,
       metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",

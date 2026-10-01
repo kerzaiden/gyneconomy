@@ -121,7 +121,7 @@
   function eraMini(t, r, e){
     if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
     if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
-    return colPeek(e.peek, function(){ return "era-col"; }, r.base, r.rule);
+    return colPeek(e.peek, function(){ return "era-col"; }, r.mid, r.rule);
   }
   function eraCard(item, r, era){
     var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
@@ -166,76 +166,38 @@
   }
 
   /* ---- THE ROSTER AS SERIES ---- */
-  function rosterGroups(byM, byQ, byY, qFrom, hyList){
-    return [
-      { key:"weather", label:"Weather", mark:weatherSvg, rows:[
-        { name:"Temperature", open:"sheet-metric-temp", mark:thermoSvg,   list:byM(cpiYoYHistory),           dp:1, unit:"%" },
-        { name:"Growth", open:"sheet-metric-gdp",      mark:sproutSvg,   list:byQ(gdpQuarterlyYoY),         dp:1, unit:"%" }
-      ]},
-      { key:"circulation", label:"Circulation", mark:circulationSvg, rows:[
-        { name:"Hormones", open:"sheet-sign-hormones",    mark:hormoneSvg,  list:byM(fedFundsHistory),         dp:2, unit:"%", rule:true, eraUnit:"Fed funds rate" },
-        { name:"Pressure", open:"sheet-sign-pressure",    mark:gaugeSvg,    list:byQ(t10yYieldHistory),        dp:2, unit:"%", rule:true },
-        { name:"Pulse", open:"sheet-sign-pulse",       mark:ecgSvg,      list:qFrom(m2vHistory, M2V_FROM_YEAR),   dp:2, pulse:PULSE_PRE2008 },
-        { name:"Volume", open:"sheet-sign-volume",      mark:volumeSvg,   list:qFrom(m2Yoy, M2_FROM_YEAR),         dp:1, unit:"%", rule:true }
-      ]},
-      { key:"mood", label:"Mood", mark:moodSvg, rows:[
-        { name:"Shiller CAPE", open:"sheet-metric-valuation", mark:diamondSvg, list:byY(capeHistory),  dp:1, pre:"Jan ", last:"today", base:CAPE_FAIR },
-        { name:"Buffett indicator", open:"sheet-metric-buffett", mark:diamondSvg, list:byQ(buffettHistory), dp:0, unit:"%", base:splitMid("sheet-metric-buffett") },
-        { name:"Volatility", open:"sheet-sign-sentiment",  mark:volatilitySvg, list:byM(volatilityHistory),       dp:1, ring:vixPct },
-        { name:"Desire", open:"sheet-sign-desire",      mark:flameSvg,    list:hyList,                       dp:2, unit:"%", peek:hyQuarterEnds() },
-        { name:"Horizon", open:"sheet-sign-horizon",     mark:sunriseSvg,  list:byQ(t10y3mHistory),           dp:2, signed:true, rule:true }
-      ]},
-      { key:"energy", label:"Energy", mark:boltSvg, rows:[
-        { name:"Federal debt", open:"sheet-metric-debt", mark:debtSvg,     list:byQ(grossDebtQuarterly),      dp:0, unit:"%", base:splitMid("sheet-metric-debt") },
-        { name:"Interest payments", open:"sheet-metric-interest", mark:interestSvg, list:byY(fiscalHistory.interest), dp:1, unit:"%", base:splitMid("sheet-metric-interest") },
-        { name:"Federal budget", open:"sheet-marker-deficit", mark:budgetSvg, list:deficitHistory.map(function(v, i){ return { k:String(DEF_FROM_YEAR + i), v:v }; }), dp:1, unit:"%", signed:true, flip:true, base:DEF_PEEK_BASE },
-        { name:"Households", open:"sheet-metric-households",  mark:houseSvg,    list:qFrom(dsrHistory, DSR_FROM_YEAR),   dp:1, unit:"%", pair:qFrom(savHistory, SAV_FROM_YEAR), peek:qFrom(savHistory, SAV_FROM_YEAR) },
-        { name:"Unemployment rate", open:"sheet-sign-activity",    mark:trendUpSvg,  list:byM(unempHistory),            dp:1, unit:"%" }
-      ].concat(typeof productivityHistory === "undefined" || !productivityHistory.length ? [] :
-        [{ name:"Productivity growth", open:"sheet-sign-productivity-growth", mark:clockSvg, list:byQ(productivityHistory), dp:1, unit:"%" }])}
-    ];
+  function rosterRow(R){
+    var r = Object.create(R), seen = keyed(R.hist).filter(function(d){ return d.v != null; });
+    var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
+    r.place = function(v){
+      var lo = 0, hi = sorted.length;
+      while (lo < hi){ var mid = (lo + hi) >> 1; if (sorted[mid] < v) lo = mid + 1; else hi = mid; }
+      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+    };
+    r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
+    if (R.pair) r.pair = keyed(R.pair);
+    if (R.peek) r.peek = R.peek === "pair" ? r.pair : keyed(R.peek);
+    return r;
   }
   var __roster = null;
   function readingRoster(){
     if (__roster) return __roster;
-    var byM = function(a){ return a.map(function(d){ return { k:d.m, v:d.v }; }); };
-    var byQ = function(a){ return a.map(function(d){ return { k:d.q, v:d.v }; }); };
-    var byY = function(a){ return a.map(function(d){ return { k:String(d.y), v:d.v }; }); };
-    var qFrom = function(a, y0){ return a.map(function(v, i){
-      return { k:(y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1), v:v }; }); };
-    var hyList = hyOas.map(function(v, i){ var a = hyAt(i);
-      return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
-    var GRPS = rosterGroups(byM, byQ, byY, qFrom, hyList);
-    GRPS.forEach(function(g){ g.rows.forEach(function(r){
-      var seen = r.list.filter(function(d){ return d.v != null; });
-      var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
-      r.place = function(v){
-        var lo = 0, hi = sorted.length;
-        while (lo < hi){ var mid = (lo + hi) >> 1; if (sorted[mid] < v) lo = mid + 1; else hi = mid; }
-        return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-      };
-      r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
-    }); });
-    GRPS.byOpen = {};
-    GRPS.forEach(function(g){ g.rows.forEach(function(r){ GRPS.byOpen[r.open] = r; }); });
-    return (__roster = GRPS);
+    __roster = ROSTER.filter(function(R){ return R.hist; }).map(rosterRow);
+    __roster.byId = {};
+    __roster.forEach(function(r){ __roster.byId[r.id] = r; });
+    return __roster;
   }
   function readFig(r, v){
     var a = Math.abs(v).toFixed(r.dp);
     var sign = +a === 0 ? "" : v < 0 ? "\u2212" : r.signed ? "+" : "";
     return sign + a + (r.unit ? '<span class="unit">' + r.unit + '</span>' : "");
   }
-  function prettyK(r, k){
-    if (r.pre) return r.pre + k;
-    if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
-    if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
-    return k;
-  }
+  function prettyK(r, k){ return r.pre ? r.pre + k : prettyKey(k); }
 
   // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
   function cycleSymptoms(cyc, years){
     var rows = [], quiet = [], absent = [];
-    readingRoster().forEach(function(g){ g.rows.forEach(function(r){
+    readingRoster().forEach(function(r){
       var now = r.place(r.now.v), measured = false;
       var cells = years.map(function(y){
         if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return { y:y, state:y === calendarTodayY && cyc.ongoing ? "now" : "ahead" };
@@ -250,9 +212,9 @@
         return { y:y, state:best.gap <= ALIKE ? "on" : "off", best:best.d };
       });
       var hits = cells.filter(function(c){ return c.state === "on"; });
-      if (hits.length) rows.push({ g:g, r:r, cells:cells, hits:hits });
+      if (hits.length) rows.push({ r:r, cells:cells, hits:hits });
       else (measured ? quiet : absent).push(r.name);
-    }); });
+    });
     var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") +
       (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
     return { rows:rows, foot:foot.trim() };
@@ -272,7 +234,7 @@
     var r = row.r;
     return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) +
       '" aria-label="' + r.name + ': alike in ' + row.hits.map(function(c){ return c.y; }).join(", ") + '">' +
-      row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " cat-" + row.g.key : "") + '"></i>'; }).join("") +
+      row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>'; }).join("") +
       '<b>' + r.name + '</b></button>';
   }
   function cycleTrack(cyc, strip, bands){
@@ -292,8 +254,8 @@
   }
   function symptomLegend(){
     return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>' +
-      '<div class="sx-keys">' + readingRoster().map(function(g){
-        return '<span><i class="cat-' + g.key + '"></i>' + g.label + '</span>';
+      '<div class="sx-keys">' + CATEGORIES.map(function(c){
+        return '<span><i class="cat-' + c.key + '"></i>' + c.title + '</span>';
       }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' +
       '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
   }
