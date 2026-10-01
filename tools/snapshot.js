@@ -8,7 +8,7 @@ const SHEETS = ['sheet-metric-temp','sheet-metric-gdp','sheet-sign-activity',
   'sheet-metric-valuation','sheet-metric-households','sheet-sign-volume','sheet-sign-pulse',
   'sheet-sign-horizon','sheet-sign-hormones','sheet-sign-desire','sheet-sign-sentiment','sheet-sign-pressure',
   'sheet-marker-deficit', 'sheet-metric-buffett', 'sheet-metric-debt', 'sheet-metric-interest',
-  'sheet-sign-productivity-growth', 'sheet-sign-industrial-output'];
+  'sheet-sign-productivity-growth', 'sheet-sign-industrial-output', 'sheet-diagnosis'];
 const TABS = ['cycle','analysis','search','portfolio'];
 
 const NORMALISERS = [
@@ -86,8 +86,8 @@ async function capture(file, out) {
     for (const entry of SHEETS) {
       const [sheet, via] = entry.split('>');
       await p.goto('file://' + file); await p.waitForTimeout(1100);
-      let opened = false;
-      for (const c of CATS) {
+      let opened = await click(p, '.browse-list [data-open="' + sheet + '"]');
+      for (const c of opened ? [] : CATS) {
         if (!await click(p, '[data-open="' + c + '"]')) continue;
         await p.waitForTimeout(380);
         if (await click(p, '.cat-item[data-open="' + sheet + '"]')) { opened = true; break; }

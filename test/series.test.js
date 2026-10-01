@@ -43,6 +43,7 @@ const KEYED = [
   ['03b-history-fred.js',  'fedFundsHistory',         'm', 860],
   ['03b-history-fred.js',  'volatilityHistory',       'm', 480],
   ['03b-history-fred.js',  'productivityHistory',     'q', 300],
+  ['03b-history-fred.js',  'sp500MonthlyHistory',     'm', 900],
   ['04-components.js',     'buffettHistory',          'q', 220],
   ['04-components.js',     'capeHistory',             'y',  55],
 ];

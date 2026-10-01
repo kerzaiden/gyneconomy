@@ -440,6 +440,39 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
+## The Diagnosis (V664)
+
+Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
+Also, I want to have emotional intelligence in this analysis." One card on the Cycle hub (a fifth `cat-row`,
+`cat-wide`, built by the same `catRow` as the four categories) opens `sheet-diagnosis`: a **Work-up**
+(History, Weather, Mood, Circulation, Energy) and an **Assessment** (how she feels, the posture with its record,
+the body in Wild Power's words, what to watch).
+
+- **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
+  (`readDoor` on `.cat-item[data-open]`), so a repaint of a reading is a repaint of the Diagnosis the next time
+  it opens. The page draws on open, through `sheetRenderers`.
+- **The feeling is the market chart's seven words** (V664, reversing V236): Hope, Optimism, Euphoria, Anxiety,
+  Fear, Capitulation, Despondency. `readFeeling` in 08-model names one from facts knowable that month, in this
+  order, first match wins: Capitulation, Fear, Despondency, Anxiety, Hope, Euphoria, Optimism; a month no rule
+  names keeps the last feeling named. The cut-offs are Keren's, confirmed from the research: calm below the 20th
+  percentile of fear's own history, frightened from the 80th, rising 20 points in three months, slowing under 65%
+  of the bull's best twelve-month change, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
+  15% off the high) are the research's stage table as she supplied it. **Euphoria keeps the tested rule** (V664):
+  it needs calm fear; valuations are not part of it.
+- **The posture** (`readPosture`): Offense (Fear, Capitulation or Anxiety in a cool half), Patience (Fear or
+  Capitulation, warm), Defense (momentum negative, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
+  of its own history), Neutral otherwise. Warm is Summer and both Autumns (`seasonHalf`).
+- **The record is computed at load, never written down** (`whatFollowed`): every month from the season track's
+  first quarter (Dec 1989) with a VIX rank and a year to look forward, by feeling and half: months, spells, how many
+  were higher a year later, the median and the worst. Fear is `volatilityHistory` ranked against every month
+  before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
+  live VIX close ranked against those monthly averages.
+- **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
+  workbook the CAPE fetcher reads): the twelve-month change and its share of the best change since momentum last
+  turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
+  his next update; it is what he publishes, so it is what the app reads.
+- **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
+
 ## The season model
 
 Six seasons in cycle order: Summer–Inflation · Autumn–Disinflation · Autumn–Stagflation (key `lateautumn`;

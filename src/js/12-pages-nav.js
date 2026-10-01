@@ -1018,7 +1018,7 @@
   function repaintDiagnosis(){ put("diagnosis-sub", diagnosisSub()); }
   function buildDiagnosis(){
     var list = document.querySelector(".browse-list"), home = byId("today-analysis");
-    if (!list || !home || byId("sheet-diagnosis")) return;
+    if (!list || !home || document.getElementById("sheet-diagnosis")) return;
     list.appendChild(catRow("cat-row cat-wide", "sheet-diagnosis", "Diagnosis", stethoscopeSvg(), diagnosisSub(), "diagnosis-sub"));
     var sheet = metricSheet("sheet-diagnosis");
     sheet.innerHTML = '<div id="diagnosis-body"></div>';

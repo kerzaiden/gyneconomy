@@ -627,6 +627,7 @@
   .browse-list > .cat-row:nth-of-type(2){ grid-area:2 / 1; }
   .browse-list > .cat-row:nth-of-type(3){ grid-area:1 / 2; }
   .browse-list > .cat-row:nth-of-type(4){ grid-area:2 / 2; }
+  .browse-list > .cat-row.cat-wide{ grid-column:1 / -1; }
   .browse-list > .cat-row .subject-summary{ flex-direction:column; align-items:stretch; gap:10px;
     padding:var(--pad); height:100%; }
   .browse-list > .cat-row .subject-ring{ width:42px; height:42px; }
@@ -15288,7 +15289,7 @@
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       },
-      paint: [ repaintVolatility ]
+      paint: [ repaintVolatility, repaintDiagnosis ]
     },
     vix3mClose: {
       kind: "scalar",
@@ -16551,7 +16552,7 @@
     var defRow = labPanel.filter(function(r) {
       return r.opens && r.opens.id === "sheet-marker-deficit";
     })[0];
-    var note = "<h4>Federal budget deficit or surplus</h4>" + (defRow ? '<p class="lede">' + defRow.note + "</p>" : "") + facts([ "Every fiscal year since " + DEF_FROM_YEAR + " as a share of GDP — <b>a surplus above the line, a " + "deficit below</b>.", "The <b>shaded stretches</b> are fiscal years that contained at least one month of an NBER-dated recession. " + "A fiscal year is not a calendar year, so the rule is stated rather than assumed: the federal year ran " + "July–June through FY1976 and October–September since FY1977.", "They carry the whole of what this picture has to say: <b>a deficit this deep has almost always sat inside " + "a recession, in the few years just after one, or at the end of a war.</b>", "<b>FY1983</b> — the year usually named beside today — is shaded, because the recession it came out of " + "ended two months into it. The dashed line is its level, drawn at every range so the comparison stays on " + "screen even when 1983 is off the left edge. Today’s is five years past the last recession and has not closed.", "There have been <b>" + surCount + " surplus years</b> since " + DEF_FROM_YEAR + ", none since FY" + (DEF_FROM_YEAR + iSur) + ". The average across the whole series is " + DEF_MEAN.toFixed(1) + "%.", "The chart ends at FY" + lastY + ", the last actual — the Deficit rate row this page opens from carries " + "CBO’s projection for the year in progress, which is why the two figures differ.", "The chart starts at <b>FY" + DEF_FROM_YEAR + "</b> because peacetime is the only frame in which 1983 and " + "today are comparable at all. The wartime record sits outside it and is stated rather than drawn: " + "<b>−26.9% of GDP in FY1943</b>, which inside the plot would flatten eighty years into a band." ]);
+    var note = "<h4>Federal budget deficit or surplus</h4>" + (defRow ? ledeHtml(defRow.note) : "") + facts([ "Every fiscal year since " + DEF_FROM_YEAR + " as a share of GDP — <b>a surplus above the line, a " + "deficit below</b>.", "The <b>shaded stretches</b> are fiscal years that contained at least one month of an NBER-dated recession. " + "A fiscal year is not a calendar year, so the rule is stated rather than assumed: the federal year ran " + "July–June through FY1976 and October–September since FY1977.", "They carry the whole of what this picture has to say: <b>a deficit this deep has almost always sat inside " + "a recession, in the few years just after one, or at the end of a war.</b>", "<b>FY1983</b> — the year usually named beside today — is shaded, because the recession it came out of " + "ended two months into it. The dashed line is its level, drawn at every range so the comparison stays on " + "screen even when 1983 is off the left edge. Today’s is five years past the last recession and has not closed.", "There have been <b>" + surCount + " surplus years</b> since " + DEF_FROM_YEAR + ", none since FY" + (DEF_FROM_YEAR + iSur) + ". The average across the whole series is " + DEF_MEAN.toFixed(1) + "%.", "The chart ends at FY" + lastY + ", the last actual — the Deficit rate row this page opens from carries " + "CBO’s projection for the year in progress, which is why the two figures differ.", "The chart starts at <b>FY" + DEF_FROM_YEAR + "</b> because peacetime is the only frame in which 1983 and " + "today are comparable at all. The wartime record sits outside it and is stated rather than drawn: " + "<b>−26.9% of GDP in FY1943</b>, which inside the plot would flatten eighty years into a band." ]);
     HIST_NOTE["deficit-range"] = note;
     return histBar("", "deficit-rangebar") + '<div class="page-chart pulsebox">' + histHead("deficit-range") + '<div id="deficit-record" class="vh-host"></div>' + histTip("deficit-hist-tooltip") + '<div id="deficit-records"></div>' + '<div id="deficit-trend"></div></div>';
   }
@@ -18053,7 +18054,7 @@
       title: "High-Yield Spread over Treasuries"
     },
     "fear-range": {
-      mark: umbrellaSvg,
+      mark: volatilitySvg,
       title: "Cboe Volatility Index (VIX)"
     },
     "hormones-range": {
@@ -19125,7 +19126,7 @@
       state: "critical"
     };
   }
-  var tempInfo = "<h4>Temperature</h4>" + '<p class="lede">Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.</p>' + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
+  var tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
   var calendarTodayY = DATA_COMPILED.getFullYear();
   var vix3mClose = LIVE("vix3mClose", 17.61);
   function fearCurve() {
@@ -19340,9 +19341,9 @@
     return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' + "<span>" + (label || "More details") + "</span>" + CHEV + "</button>";
   }
   var tempCaptionFull = "", tempLeadShown = "";
-  function highlightsHtml(cards, cyclesHtml, moreHtml) {
+  function highlightsHtml(cards, cyclesHtml, moreHtml, head) {
     if (!cards.length && !cyclesHtml && !moreHtml) return "";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + (cyclesHtml || "") + (moreHtml || "") + "</section>";
+    return '<section class="highlights insights"><div class="hi-head">' + (head || "Insights") + "</div>" + cards.join("") + (cyclesHtml || "") + (moreHtml || "") + "</section>";
   }
   function xLabelOf(o, d, i, all) {
     if (o.xLabel) return o.xLabel(d, i);
@@ -19922,11 +19923,11 @@
   function sunriseSvg() {
     return markSvg('<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' + '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' + '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>');
   }
-  function umbrellaSvg() {
-    return markSvg('<path d="M12 2.4v2.3" stroke-width="1.8"/>' + '<path d="M2.4 12.6a9.6 9.6 0 0 1 19.2 0z" stroke-width="1.9"/>' + '<path d="M12 12.6v6.1a2.4 2.4 0 0 1-4.8 0" stroke-width="1.9"/>');
+  function volatilitySvg() {
+    return markSvg('<path d="M5.5 7.5v2.5M5.5 15.5v2.5M12 2.5v3M12 18.5v3M18.5 5.5v3.5M18.5 14.5v2" stroke-width="1.8"/>' + '<rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>' + '<rect x="10.4" y="5.5" width="3.2" height="13" rx="0.6" stroke-width="1.8"/>' + '<rect x="16.9" y="9" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>');
   }
   var signMarks = {
-    VIX: umbrellaSvg,
+    Volatility: volatilitySvg,
     Desire: flameSvg,
     Pulse: ecgSvg,
     Activity: trendUpSvg,
@@ -20304,6 +20305,182 @@
   function seasonGroup(key) {
     return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
   }
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = .65, NEAR_HIGH = .05, STRETCHED = 80;
+  var FEELINGS = [ "Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency" ];
+  function seasonHalf(season) {
+    return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool";
+  }
+  function rankToDate(prior, v) {
+    if (v == null || prior.length < 12) return null;
+    return 100 * prior.filter(function(x) {
+      return x < v;
+    }).length / prior.length;
+  }
+  function readFeeling(f) {
+    if (f.fear == null || f.mom == null) return null;
+    if (f.fear >= 90 && f.dd <= -.15) return "Capitulation";
+    if (f.mom < 0 && f.fear >= 60) return "Fear";
+    if (f.dd <= -.1 && f.fearPeak >= FRIGHTENED && f.fear <= f.fearPeak - RISE) return "Despondency";
+    if (f.fear3 != null && f.fear3 < CALM && f.fear - f.fear3 >= RISE && f.dd >= -.1) return "Anxiety";
+    if (f.mom > 0 && f.wasNegative) return "Hope";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
+    return null;
+  }
+  function readPosture(stage, half, f) {
+    var afraid = stage === "Fear" || stage === "Capitulation";
+    if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
+    if (half === "warm" && afraid) return "Patience";
+    if (half === "warm" && f.mom < 0) return "Defense";
+    if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
+    return "Neutral";
+  }
+  var marketCache = null;
+  function marketMonths() {
+    if (marketCache) return marketCache;
+    var sp = sp500MonthlyHistory, vol = volatilityHistory, spAt = {}, volAt = {};
+    var top = -Infinity, mom = [], best = [], dd = [];
+    sp.forEach(function(d, i) {
+      spAt[d.m] = i;
+      top = Math.max(top, d.v);
+      dd.push(d.v / top - 1);
+      mom.push(i >= 12 ? d.v / sp[i - 12].v - 1 : null);
+      var prevPos = i > 0 && mom[i - 1] > 0 && best[i - 1] != null;
+      best.push(mom[i] > 0 ? Math.max(mom[i], prevPos ? best[i - 1] : -Infinity) : null);
+    });
+    var fearRank = vol.map(function(d, j) {
+      volAt[d.m] = j;
+      return rankToDate(vol.slice(0, j).map(function(x) {
+        return x.v;
+      }), d.v);
+    });
+    var quarters = {};
+    seasonTrackAll.forEach(function(e) {
+      if (e) quarters[e.y + "-" + QUARTER_END_MONTH[e.qn]] = e.reading.season;
+    });
+    marketCache = {
+      sp: sp,
+      vol: vol,
+      spAt: spAt,
+      volAt: volAt,
+      mom: mom,
+      best: best,
+      dd: dd,
+      fearRank: fearRank,
+      quarterKeys: Object.keys(quarters).sort(),
+      quarters: quarters
+    };
+    return marketCache;
+  }
+  function seasonInMonth(S, m) {
+    var s = null;
+    S.quarterKeys.forEach(function(k) {
+      if (k <= m) s = S.quarters[k];
+    });
+    return s;
+  }
+  function stretchRank(year, value) {
+    return rankToDate(capeHistory.filter(function(d) {
+      return d.y < year;
+    }).map(function(d) {
+      return d.v;
+    }), value);
+  }
+  function marketFacts(S, m, fearNow) {
+    var i = S.spAt[m], j = S.volAt[m];
+    if (i == null || j == null || S.mom[i] == null) return null;
+    var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v) {
+      return v != null;
+    });
+    var y = parseInt(m.slice(0, 4), 10), cape = capeHistory.filter(function(d) {
+      return d.y === y;
+    })[0];
+    return {
+      m: m,
+      dd: S.dd[i],
+      mom: S.mom[i],
+      share: S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
+      wasNegative: S.mom.slice(Math.max(0, i - 3), i).some(function(v) {
+        return v != null && v < 0;
+      }),
+      fear: fearNow != null ? fearNow : S.fearRank[j],
+      fear3: S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
+      fearPeak: peak.length ? Math.max.apply(null, peak) : null,
+      stretch: cape ? stretchRank(y, cape.v) : null
+    };
+  }
+  var followedCache = null;
+  function whatFollowed() {
+    if (followedCache) return followedCache;
+    var S = marketMonths(), cells = {}, last = null, prevKey = null, from = null;
+    S.vol.forEach(function(d) {
+      var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
+      if (!f || !season || i == null || i + 12 >= S.sp.length) return;
+      var stage = readFeeling(f) || last;
+      last = stage;
+      if (!stage) return;
+      if (!from) from = d.m;
+      var key = stage + "|" + seasonHalf(season), c = cells[key] = cells[key] || {
+        months: 0,
+        spells: 0,
+        higher: 0,
+        gains: []
+      };
+      var gain = S.sp[i + 12].v / S.sp[i].v - 1;
+      c.months++;
+      if (gain > 0) c.higher++;
+      c.gains.push(gain);
+      if (key !== prevKey) c.spells++;
+      prevKey = key;
+    });
+    Object.keys(cells).forEach(function(k) {
+      var g = cells[k].gains.slice().sort(function(a, b) {
+        return a - b;
+      });
+      cells[k].median = g[Math.floor(g.length / 2)];
+      cells[k].worst = g[0];
+    });
+    followedCache = {
+      cells: cells,
+      from: from
+    };
+    return followedCache;
+  }
+  function diagnoseToday() {
+    var S = marketMonths(), lastM = S.sp[S.sp.length - 1].m;
+    var vols = S.vol.map(function(d) {
+      return d.v;
+    });
+    var f = marketFacts(S, lastM, rankToDate(vols, vixRow.meter.value));
+    if (!f) return null;
+    var j = S.vol.length;
+    f.fear3 = S.fearRank[j - 3];
+    f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v) {
+      return v != null;
+    }));
+    f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
+    var stage = readFeeling(f), carried = false;
+    if (!stage) {
+      for (var k = S.sp.length - 2; k >= 0 && !stage; k--) {
+        var pf = marketFacts(S, S.sp[k].m);
+        stage = pf && readFeeling(pf);
+      }
+      carried = true;
+    }
+    var half = seasonHalf(currentSeason), rec = whatFollowed();
+    return {
+      stage: stage,
+      carried: carried,
+      half: half,
+      season: currentSeason,
+      facts: f,
+      month: lastM,
+      posture: readPosture(stage, half, f),
+      record: rec.cells[stage + "|" + half] || null,
+      recordFrom: rec.from,
+      bestMom: S.best[S.sp.length - 1]
+    };
+  }
   function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
     var offset = c * (1 - clampPct(pct, 0, 100) / 100);
@@ -20485,6 +20662,16 @@
       detailSlots[key] = idx;
     }
     return idx;
+  }
+  function metricSheet(id) {
+    var sheet = document.createElement("div");
+    sheet.className = "metric-sheet";
+    sheet.id = id;
+    sheet.hidden = true;
+    return sheet;
+  }
+  function ledeHtml(text) {
+    return '<p class="lede">' + text + "</p>";
   }
   function facts(list) {
     return '<ul class="facts">' + list.map(function(f) {
@@ -21774,7 +21961,7 @@
     put("subj-ring-sentiment", volatilityRing());
     (function() {
       var lab = document.querySelector('[data-subject="sentiment"] .subject-label');
-      put(lab, '<span class="peek-mark mood-mark">' + umbrellaSvg() + "</span>Volatility");
+      put(lab, '<span class="peek-mark mood-mark">' + volatilitySvg() + "</span>Volatility");
     })();
     var volTag = volatilityTag();
     set("sentiment", vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
@@ -22227,7 +22414,7 @@
     if (v < 1) return "s0";
     return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
   }
-  var growthDetail = "<h4>Growth per cycle</h4>" + '<p class="lede">Real GDP across this cycle, quarter by quarter, on the Temperature chart’s axis so the years line up.</p>' + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Green is expansion, red is contraction</b> — the season model’s own reading, the direction of the trend through the last six quarters.", "That trend turns about nine months after the line does, so the colour can stay red while a quarter or two rise. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.", "The dropdown at the top right switches the economy — the United States, Israel, Japan or the European Union, one at a time." ]) + srcBlock(gdpSrc.concat([ {
+  var growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter, on the Temperature chart’s axis so the years line up.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline, so any economy here can be read the same way.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Green is expansion, red is contraction</b> — the season model’s own reading, the direction of the trend through the last six quarters.", "That trend turns about nine months after the line does, so the colour can stay red while a quarter or two rise. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.", "The dropdown at the top right switches the economy — the United States, Israel, Japan or the European Union, one at a time." ]) + srcBlock(gdpSrc.concat([ {
     t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
     u: "https://fred.stlouisfed.org/series/GDPC1"
   } ]).concat(gdpPeerSrc));
@@ -22574,10 +22761,7 @@
   }
   function mountSplit(s) {
     if (!document.getElementById(s.id)) {
-      var sheet = document.createElement("div");
-      sheet.className = "metric-sheet";
-      sheet.id = s.id;
-      sheet.hidden = true;
+      var sheet = metricSheet(s.id);
       sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill("structural") + "</div>" + '<div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
       var after = byId(s.after);
       if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
@@ -22659,10 +22843,8 @@
     });
   }
   function catSheet(id, key) {
-    var sheet = document.createElement("div");
-    sheet.className = "metric-sheet cat-sheet cat-" + key;
-    sheet.id = id;
-    sheet.hidden = true;
+    var sheet = metricSheet(id);
+    sheet.className += " cat-sheet cat-" + key;
     return sheet;
   }
   function groupId(name) {
@@ -22832,7 +23014,7 @@
       (function() {
         var MARK = {
           horizon: sunriseSvg,
-          sentiment: umbrellaSvg,
+          sentiment: volatilitySvg,
           hormones: hormoneSvg,
           pressure: gaugeSvg
         };
@@ -22840,10 +23022,7 @@
         if (lab && MARK[cfg.key] && !lab.querySelector("svg")) lab.innerHTML = '<span class="peek-mark">' + MARK[cfg.key]() + "</span>" + lab.innerHTML;
       })();
       row.appendChild(face);
-      var sheet = document.createElement("div");
-      sheet.className = "metric-sheet";
-      sheet.id = id;
-      sheet.hidden = true;
+      var sheet = metricSheet(id);
       sheet.innerHTML = timingPill(cfg.timing);
       while (body.firstChild) sheet.appendChild(body.firstChild);
       det.parentNode.insertBefore(row, det);
@@ -22904,10 +23083,7 @@
         icon: subjectIcon(ind.tag.state, svg),
         text: '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + "</div>" + '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + "</span></div>" + '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + "</span></div>" + (ind.peek || "")
       }));
-      var d = document.createElement("div");
-      d.className = "metric-sheet";
-      d.id = id;
-      d.hidden = true;
+      var d = metricSheet(id);
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
       d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") + function() {
         var h = heldHighlights;
@@ -23522,6 +23698,15 @@
     mSent.parentNode.removeChild(mSent);
     mAct.parentNode.removeChild(mAct);
   }
+  function catRow(cls, open, title, mark, sub, subId) {
+    return elFrom(subjectRow({
+      cls: cls,
+      open: open,
+      title: title,
+      icon: subjectIcon("norm", mark),
+      text: '<div class="subject-label">' + title + '</div><div class="cat-sub"' + (subId ? ' id="' + subId + '"' : "") + ">" + sub + "</div>"
+    }));
+  }
   function buildCategories() {
     var host = byId("today-analysis");
     if (!host) return;
@@ -23558,13 +23743,7 @@
         var old = document.querySelector(c.drop);
         if (old && old.parentNode) old.parentNode.removeChild(old);
       }
-      list.appendChild(elFrom(subjectRow({
-        cls: "cat-row",
-        open: c.open || "sheet-cat-" + c.key,
-        title: c.title,
-        icon: subjectIcon("norm", c.mark),
-        text: '<div class="subject-label">' + c.title + '</div><div class="cat-sub">' + c.sub + "</div>"
-      })));
+      list.appendChild(catRow("cat-row", c.open || "sheet-cat-" + c.key, c.title, c.mark, c.sub));
     });
     host.insertBefore(list, host.firstChild);
     [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
@@ -24041,6 +24220,152 @@
   }
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
+  var DIAG_SYSTEMS = [ {
+    name: "Weather",
+    doors: [ "sheet-metric-temp", "sheet-metric-gdp" ]
+  }, {
+    name: "Mood",
+    doors: [ "sheet-sign-sentiment", "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-desire", "sheet-sign-horizon" ]
+  }, {
+    name: "Circulation",
+    doors: [ "sheet-sign-hormones", "sheet-sign-pressure", "sheet-sign-pulse", "sheet-sign-volume" ]
+  }, {
+    name: "Energy",
+    doors: [ "sheet-metric-debt", "sheet-metric-interest", "sheet-marker-deficit", "sheet-metric-households", "sheet-sign-activity", "sheet-sign-industrial-output", "sheet-sign-productivity-growth" ]
+  } ];
+  var FEELING_RULES = {
+    Hope: "momentum has just turned positive after being negative",
+    Optimism: "rising, within 5% of the high, fear not calm",
+    Euphoria: "within 5% of the high, momentum under 65% of this bull’s best, fear calm",
+    Anxiety: "fear up 20 points from calm in three months, within 10% of the high",
+    Fear: "momentum negative, fear in its top 40%",
+    Capitulation: "fear in its top tenth, price 15% or more off its high",
+    Despondency: "fear 20 points down from a frightened peak, price still 10% down"
+  };
+  var FEELING_STATE = {
+    Hope: "good",
+    Optimism: "good",
+    Euphoria: "warning",
+    Anxiety: "warning",
+    Fear: "serious",
+    Capitulation: "critical",
+    Despondency: "serious"
+  };
+  var POSTURE_STATE = {
+    Offense: "good",
+    Patience: "warning",
+    Prepare: "warning",
+    Defense: "serious",
+    Neutral: "norm"
+  };
+  var POSTURE_SAYS = {
+    Offense: "Fear has arrived after the body cooled",
+    Patience: "Fear in a warm body, where the falls have gone furthest; wait for her to cool",
+    Prepare: "Near her high, stretched and still warm; slow down before the body asks",
+    Defense: "Momentum has turned negative while the body is still warm",
+    Neutral: "No posture the record singles out"
+  };
+  var BODY_SAYS = {
+    summer: "In summer the authors of Wild Power describe a body that can feel like “Superwoman… for about 10 days”; at the crossover that follows, “crucially, you’re asked to slow down.”",
+    autumn: "In autumn, the authors of Wild Power write, the inner critic “has a missive to deliver from your deep self.”",
+    lateautumn: "In autumn, the authors of Wild Power write, the inner critic “has a missive to deliver from your deep self.”",
+    winter: "In winter the task the authors of Wild Power give is to let go and rest.",
+    spring: "In spring, the authors of Wild Power warn, the critic can be “your wilful power of agency taking over too soon.”",
+    springdeflation: "In spring, the authors of Wild Power warn, the critic can be “your wilful power of agency taking over too soon.”"
+  };
+  var DIAG_SRC = [ {
+    t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
+    u: "https://fred.stlouisfed.org/series/VIXCLS"
+  }, {
+    t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
+    u: "https://shillerdata.com/"
+  }, {
+    t: "Alexandra Pope & Sjanie Hugo Wurlitzer — Wild Power (Hay House, 2017); Red School",
+    u: "https://www.redschool.net/"
+  } ];
+  function stethoscopeSvg() {
+    return markSvg('<path d="M6 3.5v5.5a5 5 0 0 0 10 0V3.5" stroke-width="1.8"/>' + '<path d="M11 14v1.5a4.5 4.5 0 0 0 9 0V13" stroke-width="1.8"/><circle cx="20" cy="11" r="2" stroke-width="1.7"/>');
+  }
+  function readDoor(open) {
+    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
+    if (!item) return null;
+    var val = item.querySelector(".ci-value"), unit = item.querySelector(".ci-unit"), word = item.querySelector(".ci-word");
+    var figure = val ? val.cloneNode(true) : null;
+    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
+      n.parentNode.removeChild(n);
+    });
+    return {
+      name: item.getAttribute("data-title"),
+      figure: figure ? figure.textContent.trim() : "",
+      unit: unit ? unit.textContent.trim() : "",
+      word: word ? word.textContent.trim() : ""
+    };
+  }
+  function doorLine(open) {
+    var d = readDoor(open);
+    return d ? "<b>" + d.name + "</b> " + d.figure + (d.unit ? " " + d.unit : "") + (d.word ? ", " + d.word : "") : "";
+  }
+  function pct(v) {
+    return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
+  }
+  function feelingFacts(d) {
+    var f = d.facts, at = monthLabel(d.month);
+    var where = f.dd > -.005 ? "at its high" : Math.abs(f.dd * 100).toFixed(0) + "% below its high";
+    var moving = f.mom >= 0 ? "up " + pct(f.mom).slice(1) + " over the year to " + at + ", " + Math.round(f.share * 100) + "% of this bull’s best pace (" + pct(d.bestMom) + ")" : "down " + pct(f.mom).slice(1) + " over the year to " + at;
+    var fear = "fear at the " + ordinal(Math.round(f.fear)) + " percentile of every month since 1986" + (f.fear < CALM ? ", calm" : f.fear >= FRIGHTENED ? ", frightened" : "") + (f.fear3 != null && f.fear - f.fear3 >= RISE ? ", and rising" : "");
+    return "The S&amp;P 500 is " + where + ", " + moving + "; " + fear + ".";
+  }
+  function recordLine(d) {
+    var r = d.record, half = d.half + " season";
+    if (!r) return "No month since " + monthLabel(d.recordFrom) + " has read " + d.stage + " in a " + half + ".";
+    return "Since " + monthLabel(d.recordFrom) + ", " + d.stage + " in a " + half + ": " + r.months + " months over " + r.spells + " spells. A year later the market was higher in " + r.higher + " of " + r.months + " (" + Math.round(r.higher / r.months * 100) + "%), median " + pct(r.median) + ", worst " + pct(r.worst) + ".";
+  }
+  function watchList(d) {
+    var f = d.facts, out = [];
+    if (f.fear < FRIGHTENED) out.push("Fear at the " + ordinal(Math.round(f.fear)) + " percentile: below 20 is calm, and a rise of 20 points from calm reads Anxiety.");
+    if (d.half === "warm") out.push("Momentum turning negative while the body is warm turns the posture to Defense.");
+    out.push(d.half === "warm" ? "Fear arriving after the body cools to Winter or Spring is the record’s opening for Offense." : "Fear arriving now, with the body cool, would read Offense.");
+    return out;
+  }
+  function diagnosisInfo(d) {
+    return "<h4>Diagnosis</h4>" + ledeHtml("How Mrs. Market feels, read from facts knowable this month, and what has followed that feeling in her season.") + facts(FEELINGS.map(function(w) {
+      return "<b>" + w + "</b>: " + FEELING_RULES[w];
+    }).concat([ "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard.", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(d.recordFrom) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast." ])) + srcBlock(DIAG_SRC);
+  }
+  function renderDiagnosisPage() {
+    var host = byId("diagnosis-body"), d = diagnoseToday();
+    if (!host || !d) return;
+    var prev = marketCycles.filter(function(c) {
+      return c.to != null && c.to < currentEra.from;
+    }).pop();
+    var history = "The " + currentEra.name + ", year " + nowModel.yearIndex + " of a typical " + typicalCycleYears + "." + (prev ? " Her last bleed closed the " + prev.name + " in " + prev.to + "." : "");
+    var work = [ hiCard("History", "", history) ].concat(DIAG_SYSTEMS.map(function(s) {
+      var lines = s.doors.map(doorLine).filter(Boolean);
+      if (s.name === "Weather") lines.unshift("<b>" + seasonTitle(wheelMeta[d.season]) + "</b>, the " + d.half + " half of her cycle");
+      return hiCard(s.name, "", lines.join(" · "));
+    }));
+    var assess = [ lede("Mrs. Market is in <b>" + d.stage + "</b>" + (d.carried ? ", the last feeling the record named" : "") + ", in the " + d.half + " half of her cycle."), hiCard("How she feels", FEELING_STATE[d.stage], feelingFacts(d)), hiCard("Posture: " + d.posture + expandBtn(diagnosisInfo(d)), POSTURE_STATE[d.posture], POSTURE_SAYS[d.posture] + ". " + recordLine(d)), hiCard("In the body", "", BODY_SAYS[d.season] || ""), hiCard("What to watch", "", watchList(d).join(" ")) ];
+    host.innerHTML = highlightsHtml(work, "", "", "Work-up") + highlightsHtml(assess, "", "", "Assessment");
+  }
+  function diagnosisSub() {
+    var d = diagnoseToday();
+    return d ? d.stage + " · " + d.posture : "";
+  }
+  function repaintDiagnosis() {
+    put("diagnosis-sub", diagnosisSub());
+  }
+  function buildDiagnosis() {
+    var list = document.querySelector(".browse-list"), home = byId("today-analysis");
+    if (!list || !home || document.getElementById("sheet-diagnosis")) return;
+    list.appendChild(catRow("cat-row cat-wide", "sheet-diagnosis", "Diagnosis", stethoscopeSvg(), diagnosisSub(), "diagnosis-sub"));
+    var sheet = metricSheet("sheet-diagnosis");
+    sheet.innerHTML = '<div id="diagnosis-body"></div>';
+    home.appendChild(sheet);
+    sheetRenderers["sheet-diagnosis"] = renderDiagnosisPage;
+    addSources(DIAG_SRC);
+  }
+  GYN.step("buildDiagnosis", buildDiagnosis, "build");
+  buildDiagnosis();
   window.__sources = {
     all: allSources,
     cards: coincident.concat(lagging).map(function(c) {
@@ -24411,7 +24736,7 @@
         name: "Volatility",
         open: "sheet-sign-sentiment",
         on: "m",
-        mark: umbrellaSvg,
+        mark: volatilitySvg,
         list: byM(volatilityHistory),
         dp: 1,
         ring: vixPct

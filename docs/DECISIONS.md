@@ -6907,3 +6907,21 @@ Then: "remove unused code, set the rules per convention, merge". So the fear cur
 fetched or kept (nothing drew it), and the band is the market's convention rather than ours: below 20 calm, 20 to 30
 elevated, above 30 fearful, cited to Chase and TD.
 ~~~
+
+### V664
+
+~~~text
+Keren: "What I want is a diagnosis. Like a doctor would analyze a patient and I want the diagnosis to be based on
+the app's parameters. Meaning everything in weather, mood, circulation and energy. Also, I want to have emotional
+intelligence in this analysis. Meaning what is the current feeling whether it's optimism, euphoria, and
+despondency, depression, whatever, I want to understand how Mrs. Market is feeling at this present time." On the
+first diagnosis, written in chat: "i like it".
+Asked, she chose: the feeling in the chart's words — Hope, Optimism, Euphoria, Anxiety, Fear, Capitulation,
+Despondency — reopening V236's "drop the emotions"; the posture word with its record in its (i); all five cut-offs
+as tested (calm below the 20th percentile, frightened from the 80th, rising 20 points in three months, slowing
+under 65% of the bull's best, near the high within 5%); the card on the Cycle hub, with fear from 1986 only and no
+estimate before the VXO; and Euphoria by the tested rule, so today reads Optimism while fear is not yet calm.
+Then: "give the functions meaningful names like seasonHalf". And: "choose a better icon for volatility" — so
+Volatility wears three candles of uneven height, the day's range made visible, in place of V467's umbrella, which
+belonged to the fear index the page no longer is.
+~~~
