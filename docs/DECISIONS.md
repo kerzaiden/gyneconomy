@@ -321,9 +321,11 @@ one whose scope, or the code, is in doubt; it waits for Keren.
 - **A cycle's reading is today's while the cycle is open and its closing value once it has closed, with its
   range over the cycle; a reading with nothing inside the cycle's years says so, and nothing is carried in
   from outside them. Every reading with a history in the app reads this way, Productivity growth included
-  (V667: it had said "No history in the app" with a record from 1948).** Keren chose this over the peak
-  reading (which would leave the Big Tech Cycle empty) and over first-against-last (which hides the extreme).
-  (V613, undated, Sep 18, 2026)
+  (V667: it had said "No history in the app" with a record from 1948). Productivity's figure, quarter and
+  range all come from its quarterly history, the series its chart plots: one figure on the card, the Diagnosis
+  and every cycle, and its range is the quarterly record, not an annual span (Keren, V667: "follow the
+  quarterly points").** Keren chose this over the peak reading (which would leave the Big Tech Cycle empty)
+  and over first-against-last (which hides the extreme). (V613, undated, Sep 18, 2026)
 - **A closed cycle is read, not graded: its small pictures are drawn in the neutral accent, never a state
   colour.** A cycle that ended is not being judged. (V615)
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never

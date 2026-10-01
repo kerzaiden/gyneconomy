@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `03884a0` on 2026-10-01. **73 components**, **42 shared patterns**.
+Generated from commit `62b307a` on 2026-10-01. **73 components**, **42 shared patterns**.
 
 ## components.js
 
@@ -169,12 +169,12 @@ renderer speaks. Listed most-used first.
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
 | **`monthLabel`** | model.js | 7 places |
+| **`fmtSigned`** | render-pages.js | 6 places |
 | **`highlightsHtml`** | charts.js | 6 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
 | **`expandBtn`** | render-core.js | 5 places |
-| **`fmtSigned`** | render-pages.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
 | **`paintReading`** | live.js | 5 places |
@@ -188,6 +188,7 @@ renderer speaks. Listed most-used first.
 | **`marketFacts`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
+| **`qPretty`** | pages-nav.js | 4 places |
 | **`readFeeling`** | model.js | 4 places |
 | **`readingRoster`** | analysis.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
@@ -200,7 +201,6 @@ renderer speaks. Listed most-used first.
 | **`mWindowFrom`** | components.js | 3 places |
 | **`pct`** | pages-nav.js | 3 places |
 | **`periodOf`** | indicators.js | 3 places |
-| **`qPretty`** | pages-nav.js | 3 places |
 | **`rankToDate`** | model.js | 3 places |
 | **`readFig`** | analysis.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |

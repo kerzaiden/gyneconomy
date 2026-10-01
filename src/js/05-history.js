@@ -164,7 +164,7 @@
     return '<h4>' + f.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
         'business sector, against the same quarter a year earlier (' + f.metricSub + '). The ends of the track ' +
-        'are the record for that series: \u22121.7% in 1974 and +6.7% in 1950.</p>' +
+        'are the record for that series, quarter by quarter: ' + f.span + '.</p>' +
       '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
         'era</b> \u2014 since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year ' +
         'across 1947\u20132018. So the band says something narrower than it looks: above the line is <i>better than ' +

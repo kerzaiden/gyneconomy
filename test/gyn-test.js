@@ -21,6 +21,7 @@ if (!CHROME || !fs.existsSync(CHROME)) {
 }
 
 const NO_HISTORY = ['sheet-sign-industrial-output'];
+const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
 const TOKENS = {
   '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
 };
@@ -115,15 +116,15 @@ async function openPage(p, url, sheet) {
   const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
   const tall = {}, notes = {};
-  let debt = null;
+  const onPage = {};
   for (const [sheet, label] of READINGS_ON_SCREEN) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
     await sweep(p);
     if (NO_HISTORY.includes(sheet)) continue;
     const hid = await p.evaluate(() => { const b = document.querySelector('#metric-page .bh-more[data-head-more]'); return b ? b.dataset.headMore : ''; });
-    if (sheet === 'sheet-metric-debt') debt = await p.evaluate(() => ({
-      card: document.querySelector('.cat-item[data-open="sheet-metric-debt"] .ci-value').firstChild.textContent.trim(),
-      page: document.getElementById('metric-page').textContent }));
+    if (CARD_ON_PAGE.includes(sheet)) onPage[label] = await p.evaluate(s => {
+      const card = document.querySelector('.cat-item[data-open="' + s + '"] .ci-value').firstChild.textContent.trim();
+      return document.getElementById('metric-page').textContent.indexOf(card) !== -1 ? null : card; }, sheet);
     const r = await p.evaluate(h => {
       const mp = document.getElementById('metric-page');
       const hb = document.querySelector('.bh-more[data-head-more="' + h + '"]');
@@ -184,9 +185,10 @@ async function openPage(p, url, sheet) {
       .filter(m => !/\b(not a|no official|no)\s*$/i.test(m[1])).map(m => k + ': \u2026' + m[0]));
     !relabelled.length ? ok('no note calls a band a normal range', Object.keys(notes).length + ' notes read')
                        : bad('no note calls a band a normal range', relabelled.join(' | ') + ' \u2014 a target is never relabelled normal; say whose band it is');
-    (debt && debt.page.indexOf(debt.card) !== -1)
-      ? ok('Federal debt prints the card\u2019s figure on its page', debt.card)
-      : bad('Federal debt prints the card\u2019s figure on its page', JSON.stringify(debt && debt.card));
+    const off = Object.keys(onPage).filter(k => onPage[k] !== null);
+    (Object.keys(onPage).length === CARD_ON_PAGE.length && !off.length)
+      ? ok('the card\u2019s figure is the page\u2019s figure', Object.keys(onPage).join(', '))
+      : bad('the card\u2019s figure is the page\u2019s figure', JSON.stringify(onPage));
   }
   {
     const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });

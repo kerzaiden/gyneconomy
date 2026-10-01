@@ -554,9 +554,8 @@
   function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
   function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
   function eraMarketTotal(cyc){
-    var endY = cyc.ongoing ? calendarTodayY : cyc.to, level = 1, any = false;
-    for (var y = cyc.from; y <= endY; y++) if (sp500AnnualReturns[y] != null){ level *= 1 + sp500AnnualReturns[y] / 100; any = true; }
-    return any ? (level - 1) * 100 : null;
+    var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
+    return years.length ? cum[years[years.length - 1]] : null;
   }
   var cycleViewEl = byId("cycle-view");
   var shownEra = null;
