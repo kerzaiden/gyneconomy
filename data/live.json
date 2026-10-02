@@ -5,15 +5,15 @@
   "rows": [
    {
     "m": "1M",
-    "y": 4.06
+    "y": 4.04
    },
    {
     "m": "2M",
-    "y": 4.13
+    "y": 4.11
    },
    {
     "m": "3M",
-    "y": 4.17
+    "y": 4.19
    },
    {
     "m": "4M",
@@ -25,58 +25,62 @@
    },
    {
     "m": "1Y",
-    "y": 4.44
+    "y": 4.46
    },
    {
     "m": "2Y",
-    "y": 4.78
+    "y": 4.83
    },
    {
     "m": "3Y",
-    "y": 4.91
+    "y": 4.96
    },
    {
     "m": "5Y",
-    "y": 5.01
+    "y": 5.06
    },
    {
     "m": "7Y",
-    "y": 5.12
+    "y": 5.17
    },
    {
     "m": "10Y",
-    "y": 5.24
+    "y": 5.28
    },
    {
     "m": "20Y",
-    "y": 5.64
+    "y": 5.67
    },
    {
     "m": "30Y",
-    "y": 5.61
+    "y": 5.63
    }
   ],
-  "asOf": "2026-10-01"
+  "asOf": "2026-10-02"
  },
  "fedFunds": {
   "kind": "object",
   "lo": 3.75,
-  "hi": 4
+  "hi": 4,
+  "lastMove": "+0.25",
+  "lastMoveLabel": "raised a quarter point",
+  "asOf": "Sep 16, 2026",
+  "next": "Oct 28, 2026"
  },
  "vixClose": {
   "kind": "scalar",
-  "value": 16.34,
-  "asOf": "2026-09-30"
+  "value": 16.39,
+  "asOf": "2026-10-01"
  },
  "hyOasNow": {
   "kind": "scalar",
-  "value": 3.12,
-  "asOf": "2026-09-30"
+  "value": 3.24,
+  "asOf": "2026-10-01"
  },
  "vix3mClose": {
   "kind": "scalar",
-  "value": 18.37,
-  "asOf": "2026-09-30"
+  "value": 18.58,
+  "asOf": "2026-10-01"
  },
  "capeValue": {
   "kind": "scalar",
@@ -84,7 +88,7 @@
   "asOf": "2026-09-01"
  },
  "_meta": {
-  "fetchedAt": "2026-10-01T22:48:12Z",
+  "fetchedAt": "2026-10-02T22:47:50Z",
   "ok": [
    "yieldCurve",
    "fedFunds",
@@ -94,6 +98,6 @@
    "capeValue"
   ],
   "failed": [],
-  "note": "Fetched from primary sources. CNN Fear & Greed is not here and cannot be — see the note in tools/fetch-live.js. The weekly task supplies it and copies everything into the artifact's database."
+  "note": "Fetched from primary sources. A reading that failed keeps its previous document and its own asOf. The daily task copies every document into the artifact's database."
  }
 }
