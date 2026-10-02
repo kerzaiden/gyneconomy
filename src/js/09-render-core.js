@@ -462,7 +462,7 @@
     cards.push(hiCard("The risk-free loan", "",
       "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " +
       "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " +
-      "a stock’s future earnings are measured against. Hormones is the overnight rate the Fed sets" +
+      "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" +
       (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
       "; this is that rate as the market re-prices it ten years out" +
       (y10 != null ? " — " + pct(y10) + " today" : "") + "."));

@@ -422,11 +422,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   output per hour measures what the body is doing. (V395)
 - **Institutional trust (Gallup's confidence survey) is not an Economic power reading; don't re-add it.**
   Keren: "the trust is embodied in the bond market." (V392)
-- **Circulation reads in the order cause runs: Hormones (the rate the Fed sets), Pressure (the rate the market
+- **Circulation reads in the order cause runs: Interest rates (the rate the Fed sets), Pressure (the rate the market
   charges), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
   volume are what it acts on. (V317, V639)
-- **Hormones is the policy rate, a member of Circulation.** A hormone is a messenger secreted on purpose that
-  sets the tempo of everything downstream, which is the rate the Fed sets. (V592)
+- **The policy-rate reading is Interest rates, a member of Circulation; "hormones" is its word only in the
+  Diagnosis.** Keren: "when I'm looking at circulation page I want to see interest rates instead of hormones and
+  in the analysis … I would want to see hormones because hormones are not the official terminology of the
+  market." The card, page, Search and Insights say Interest rates; the Diagnosis says "Hormones are …" and, where it
+  gives figures, "hormones (the Fed funds rate)". A hormone is a messenger secreted on purpose that sets the tempo
+  of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
 - **Pressure is the Treasury yields, opening on the 10-year; Horizon is the spreads; the two are never folded
   into one page again.** Keren: "Pressure should be yields, and the default should be the 10-year Treasury
   yield, because it's considered the risk-free loan across the economy". (V639)

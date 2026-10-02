@@ -338,9 +338,9 @@ async function openPage(p, url, sheet) {
     const ffBefore = await doors('sheet-sign-hormones');
     await p.evaluate(() => window.__GYN.applyLive('fedFunds', { lo: 1.25, hi: 1.50, lastMove: '-0.25' }));
     await settle(p);
-    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('regulator');
+    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('Hormones are');
     (ffBefore.length >= 2 && ffAfter.every(t => /^1\.25/.test(t)) &&
-     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /regulator is easing/.test(ffDx))
+     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /Hormones are easing/.test(ffDx))
       ? ok('a rate cut reaches every door, word and all', ffAfter.concat(ffDx).join(' \u00b7 '))
       : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter, ffDx }));
 
@@ -939,8 +939,8 @@ async function openPage(p, url, sheet) {
     const cape = await doors('sheet-metric-valuation');
     const dxDrift = await g.evaluate(() => {
       const word = id => ((document.querySelector('.cat-item[data-open="' + id + '"] .ci-word') || {}).textContent || '').trim().toLowerCase();
-      const line = [...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => /regulator/.test(t)) || '';
-      const want = 'The regulator is ' + word('sheet-sign-hormones') + '; money is ' + word('sheet-sign-volume') + '.';
+      const line = [...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => /Hormones are/.test(t)) || '';
+      const want = 'Hormones are ' + word('sheet-sign-hormones') + '; money is ' + word('sheet-sign-volume') + '.';
       return line === want ? [] : ['diagnosis "' + line + '", cards "' + want + '"'];
     });
     const ff = await doors('sheet-sign-hormones');
