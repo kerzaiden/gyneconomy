@@ -230,8 +230,8 @@
   function atQuarter(d){ return d.q; }
   function atMonth(d){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }
   function ordinal(n){ var t = n % 100, o = ["th","st","nd","rd"][(t - 20) % 10] || ["th","st","nd","rd"][t] || "th"; return n + o; }
-  function hiCard(name, state, text){
-    return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span><p>' + text + '</p></div>';
+  function hiCard(name, state, text, body){
+    return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
   }
   // ---- The cycle average component ----
   function dropWhatIsShown(full, shown){

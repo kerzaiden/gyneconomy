@@ -25,8 +25,15 @@
         fmt:tenth, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
       "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
         fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
-      "sheet-sign-productivity-growth": productivityPage(tenth)
+      "sheet-sign-productivity-growth": productivityPage(tenth),
+      "sheet-sign-confidence": confidencePage()
     };
+  }
+  function confidencePage(){
+    var r = confidenceReading;
+    return { goodAbove:true, line:"OECD average", fmt:function(v){ return v.toFixed(1); }, tick:function(v){ return String(Math.round(v)); },
+      src:CONFIDENCE_SRC, insight:confidenceInsight, info:r.info,
+      row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
   }
   function productivityPage(tenth){
     var r = productivityReading;
@@ -44,11 +51,11 @@
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
   }
   function periodTicks(vals){
-    if (!vals.length || !vals[0].q) return null;
+    if (!vals.length || !(vals[0].q || vals[0].m)) return null;
     var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
-    return function(d){ return /Q1$/.test(d.q) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d.q.slice(2, 4) : ""; };
+    return function(d){ var k = d.q || d.m; return /(Q1|-01)$/.test(k) && ys.indexOf(yearOf(d)) !== -1 ? "’" + k.slice(2, 4) : ""; };
   }
-  function periodOfSeries(d){ return d.q ? "quarter" : "year"; }
+  function periodOfSeries(d){ return d.m ? "month" : d.q ? "quarter" : "year"; }
   function drawSplit(s, W){
     var id = s.id, cyc = pageCycle(id);
     var span = cyc ? cycleSlice(s.series, cyc) : null;
@@ -56,7 +63,7 @@
     var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
     var chart = function(w){
       return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
-        xLabel:periodTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : "FY" + d.y; },
+        xLabel:periodTicks(vals), at:function(d){ return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y; },
         alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };
     put(id + "-chart", histBar(histControls(id, { series:s.series })) +
@@ -179,6 +186,17 @@
         (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."),
       hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
         fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
+  }
+  function confidenceInsight(s){
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
+    var side = function(d){ return d.v >= s.mid; }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
+    return [lede('How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 ' +
+        'is the long-term average. Confident households spend; worried ones save.'),
+      hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " +
+        (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")),
+      hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
+        confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.")];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

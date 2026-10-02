@@ -123,13 +123,14 @@ console.log('\nwhatFollowed, lastFeeling, diagnoseClose — the record and the c
   const seasons = Array.from({ length: 20 }, (_, k) => ({ y: 2000 + Math.floor(k / 4), qn: 'Q' + (k % 4 + 1), reading: { season: 'summer' } }));
   const env = { sp500MonthlyHistory: sp, volatilityHistory: vol, seasonTrackAll: seasons, capeHistory: [],
     QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, marketCache: null, followedCache: null };
-  const M = lift(['seasonHalf', 'rankToDate', 'readFeeling', 'readPosture', 'marketMonths', 'seasonInMonth', 'stretchRank',
+  const M = lift(['seasonHalf', 'seasonGroup', 'rankToDate', 'readFeeling', 'readPosture', 'marketMonths', 'seasonInMonth', 'stretchRank',
                   'marketFacts', 'whatFollowed', 'lastFeeling', 'diagnoseClose'], env);
   const rec = M.whatFollowed(), cell = rec.cells['Optimism|warm'];
   ok('the record starts when momentum and a fear rank both exist', rec.from, '2001-01');
   ok('every month with a year still to come is counted, and no later one', cell.months, 36);
   ok('a year later means twelve months, not fewer', near(cell.median, Math.pow(1.01, 12) - 1), true);
   ok('one unbroken spell', cell.spells, 1);
+  ok('each month is also counted by its season, the four seasons of the dial', rec.bySeason, { 'Optimism|summer': 36 });
   const S = M.marketMonths();
   ok('a month no rule names carries the last named feeling', [M.readFeeling(M.marketFacts(S, '2004-12')), M.lastFeeling(S, '2004-12')], [null, 'Optimism']);
   const at = M.diagnoseClose({ endMonth: '2002-06', season: 'summer' });

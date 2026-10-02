@@ -448,6 +448,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
   did before V672: the twelve-month change against zero, with Keren's 65% line splitting Euphoria from Optimism.
   (V672, V677)
+- **Mood holds Consumer confidence, the OECD's index for the United States, read against the OECD's own 100
+  line.** Keren: "I want to add the consumer confidence index to the mood categories", and "the consumer
+  confidence index has a threshold of 100 … it already comes with the threshold". The OECD scales it so 100 is the
+  long-term average: above is Confident, below is Pessimistic. Michigan's and the Conference Board's 100 are base
+  years (1966, 1985), not thresholds; Keren chose the OECD over Michigan on that ground. It trails the month it
+  describes by a few months. It is a leading sign, as consumer expectations are in the Conference Board's leading
+  index. (V679)
 
 ### Bands and verdicts
 
@@ -1028,6 +1035,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   tested rule.** (V664)
 - **The posture word carries its record in its (i).** Keren's choice. (V664)
 - **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
+- **The Mood page carries the market emotions cycle drawn in the Diagnosis's seven words only (Optimism,
+  Euphoria, Anxiety, Fear, Capitulation, Despondency, Hope, in the order of the chart Keren supplied), today's
+  lit in its state colour, and what has followed today's feeling a year later.** Keren: "I want in the mood page
+  to have some kind of evaluation over the market current feeling"; "We agreed on showing only seven emotions."
+  The chart's other seven stages have no published rule. Don't add a how-often breakdown: "how often she has
+  felt each is not really informative." (V679)
+- **The Analysis ends on a trend card, Apple Health's Trends: today's feeling in today's season, against the
+  other seasons, as share of months since the record began.** Keren: "make a correlation between what we called
+  mood and season … reflected in the homepage under analysis in the same way Apple Health app shows trends". The
+  card opens the Mood page. (V679)
 
 ## Code and process
 

@@ -513,13 +513,29 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon+Consumer confidence' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
     (lists.mood.white && lists.energy.white)
       ? ok('a category card stays white when touched or hovered', 'Keren, V678')
       : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
+    const feel = await p.evaluate(() => {
+      const card = document.querySelector('#diagnosis .trend-card');
+      return { stage: document.querySelector('#diagnosis .dx-title span').textContent.trim(),
+        head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
+    });
+    await click(p, '#diagnosis .trend-card'); await settle(p);
+    const curve = await p.evaluate(() => {
+      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .emo-curve');
+      return s && { labels: [...s.querySelectorAll('.emo-lab')].map(t => t.textContent).join('+'),
+        now: [...s.querySelectorAll('.emo-lab.now')].map(t => t.textContent) };
+    });
+    await p.click('#topbar-back'); await settle(p);
+    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && curve &&
+     curve.labels === 'Optimism+Euphoria+Anxiety+Fear+Capitulation+Despondency+Hope' && curve.now.length === 1 && curve.now[0] === feel.stage)
+      ? ok('the trend card and the emotions curve read today\u2019s feeling', feel.head + ' \u00b7 ' + curve.labels)
+      : bad('the trend card and the emotions curve read today\u2019s feeling', JSON.stringify({ feel, curve }));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
     await p.click('#search-list [data-open="sheet-grp-economic-power"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,
@@ -587,7 +603,7 @@ async function openPage(p, url, sheet) {
     const view = cc && await p.evaluate(() => {
       const cal = document.getElementById('calendar-cycle');
       return { dial: !!cal.querySelector('#cycle-view .season-card'), today: !!cal.querySelector('#today-analysis'),
-        tiles: [...cal.querySelectorAll('#today-analysis [data-open^="sheet-cat-"]')].filter(x => x.offsetParent).length,
+        tiles: [...cal.querySelectorAll('#today-analysis [data-open^="sheet-cat-"]:not(.trend-card)')].filter(x => x.offsetParent).length,
         closed: /Closed/.test(cal.querySelector('#cycle-view').innerText),
         bar: document.getElementById('topbar-title').textContent.trim() };
     });
@@ -603,7 +619,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 18 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 19 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -611,7 +627,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];

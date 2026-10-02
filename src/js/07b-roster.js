@@ -8,7 +8,7 @@
   var CATEGORIES = [
     { key:"weather", title:"Weather", mark:weatherSvg, shown:0, insight:insightWeather },
     { key:"circulation", title:"Circulation", mark:circulationSvg, shown:2, insight:insightCirculation },
-    { key:"mood", title:"Mood", mark:moodSvg, shown:1 },
+    { key:"mood", title:"Mood", mark:moodSvg, shown:1, insight:insightMood },
     { key:"energy", title:"Energy", mark:boltSvg, shown:3 }
   ];
   var ROSTER = [
@@ -41,6 +41,9 @@
       live:["coincident", "hyOasNow"] },
     { id:"sheet-sign-horizon", name:"Horizon", cat:"mood", timing:"leading", mark:sunriseSvg, door:"subject", hk:"hzn-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10y3mHistory, k:"q" }, rule:true, when:compiledDay, live:["yieldCurve"] },
+    { id:"sheet-sign-confidence", name:"Consumer confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Consumer confidence",
+      head:"Consumer Confidence, Against the OECD\u2019s Average", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
+      cardUnit:"OECD index" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"energy", group:"Economic power", timing:"structural", mark:debtSvg, door:"split",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:70, when:labPeriod, cardUnit:"of GDP" },
     { id:"sheet-metric-interest", name:"Interest payments", cat:"energy", group:"Economic power", timing:"structural", mark:interestSvg,
@@ -92,7 +95,7 @@
   function compiledDay(){ return dataCompiledLabel; }
   function labPeriod(R){ return periodOf(labRow(R.id)); }
   function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
-  function rowReadings(){ return coincident.concat(lagging, [productivityReading]); }
+  function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading]); }
   function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
   function peekOf(id, o){
     var R = ROSTER_BY[id];
