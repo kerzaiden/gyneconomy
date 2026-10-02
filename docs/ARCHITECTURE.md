@@ -273,8 +273,8 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
-(Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
+Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Horizon · Pressure · Pulse · Volume) ·
+Mood (Valuations · Volatility · Desire · Consumer confidence) · Energy (Economic power · Households · Activity). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -610,8 +610,8 @@ figure computed. **The chart's resting plate names a quarter, and the quarter st
 the row is today and the plate is an average, and without the words the two read as two different todays
 (Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
-The gap is a forecast, not a pressure, so it is Mood's fourth member, Horizon, judged optimistic or
-pessimistic. **Horizon's word is slope AND
+The gap is a forecast, not a pressure, so it is its own reading, Horizon, judged optimistic or
+pessimistic; it sat in Mood until V685 and is now Circulation's, after Interest rates. **Horizon's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
 is fixed at four quarters and does not follow the chart's window; its (i) carries the NY Fed's caution that
 it is the level of the spread that forecasts, not the crossing.

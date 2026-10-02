@@ -22337,6 +22337,23 @@
     },
     live: [ "fedFunds" ]
   }, {
+    id: "sheet-sign-horizon",
+    name: "Horizon",
+    cat: "circulation",
+    timing: "leading",
+    mark: sunriseSvg,
+    door: "subject",
+    hk: "hzn-range",
+    head: "",
+    stops: [ "5y", "10y", "max" ],
+    hist: {
+      s: t10y3mHistory,
+      k: "q"
+    },
+    rule: true,
+    when: compiledDay,
+    live: [ "yieldCurve" ]
+  }, {
     id: "sheet-sign-pressure",
     name: "Pressure",
     cat: "circulation",
@@ -22463,23 +22480,6 @@
     hist: hyMonths,
     peek: hyQuarters,
     live: [ "coincident", "hyOasNow" ]
-  }, {
-    id: "sheet-sign-horizon",
-    name: "Horizon",
-    cat: "mood",
-    timing: "leading",
-    mark: sunriseSvg,
-    door: "subject",
-    hk: "hzn-range",
-    head: "",
-    stops: [ "5y", "10y", "max" ],
-    hist: {
-      s: t10y3mHistory,
-      k: "q"
-    },
-    rule: true,
-    when: compiledDay,
-    live: [ "yieldCurve" ]
   }, {
     id: "sheet-sign-confidence",
     name: "Consumer confidence",

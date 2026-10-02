@@ -436,9 +436,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   yield, because it's considered the risk-free loan across the economy". (V639)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
-- **Horizon (the yield spread) is Mood's member, not a category of its own and not part of Pressure.** Keren:
-  "if the horizon says if we're optimistic or pessimistic, then it should be in mood"; the gap between two
-  rates is a forecast, not a pressure. (V473, V598)
+- **Horizon (the yield spread) is Circulation's member, after Interest rates, not a category of its own and not
+  part of Pressure.** It sat in Mood from V473 ("if the horizon says if we're optimistic or pessimistic, then it
+  should be in mood"); in V685 it left the mood reading (the curve steepens when the Fed cuts into a crash, so its
+  level does not sort mood), Keren asked where it belongs, and chose Circulation: the 3-month end follows the
+  Fed, so the curve is the bond market's answer to the hormones. It keeps its optimistic/pessimistic word. (V473,
+  V598, V685)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
