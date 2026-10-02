@@ -148,13 +148,6 @@
     });
     return trackCache;
   }
-  function explained(keys, vals){
-    var n = vals.length, mean = vals.reduce(function(a, v){ return a + v; }, 0) / n, sum = {}, cnt = {}, tot = 0, bet = 0;
-    vals.forEach(function(v, i){ sum[keys[i]] = (sum[keys[i]] || 0) + v; cnt[keys[i]] = (cnt[keys[i]] || 0) + 1; tot += (v - mean) * (v - mean); });
-    Object.keys(cnt).forEach(function(k){ var m = sum[k] / cnt[k]; bet += cnt[k] * (m - mean) * (m - mean); });
-    return bet / tot;
-  }
-  function slid(list, s){ return list.slice(s).concat(list.slice(0, s)); }
   function monthsApart(a, b){ return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7)); }
   function feelingSpells(stage, group, upTo){
     var spells = [], run = null;
@@ -229,23 +222,15 @@
     return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
   }
 
-  var emoCache = null;
-  function emotionSeason(){
-    if (emoCache) return emoCache;
-    var cells = {}, keys = [], vals = [], prev = null, t = feelingTrack();
-    t.forEach(function(x){
-      var key = x.stage + "|" + x.group, c = cells[key] = cells[key] || { months:0, spells:0, after:0, higher:0 };
-      c.months++;
-      if (key !== prev) c.spells++;
-      prev = key;
-      if (x.after == null) return;
-      c.after++; if (x.after > 0) c.higher++;
-      keys.push(key); vals.push(x.after);
-    });
-    var r2 = explained(keys, vals), hit = 0, all = 0;
-    for (var k = 12; k < vals.length - 12; k++, all++) if (explained(keys, slid(vals, k)) >= r2) hit++;
-    emoCache = { cells:cells, from:t[0].m, r2:r2, share:hit / all };
-    return emoCache;
+  function cycleStory(c){
+    var from = c.from + "-01", to = c.to ? c.to + "-12" : "9999-12", count = {};
+    var t = moodTrack().filter(function(x){ return x.word && x.m >= from && x.m <= to; });
+    if (t.length < 2) return null;
+    var hi = t[0], lo = t[0];
+    t.forEach(function(x){ if (x.pct > hi.pct) hi = x; if (x.pct < lo.pct) lo = x; count[x.word] = (count[x.word] || 0) + 1; });
+    var most = Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).slice(0, 2);
+    var now = c.ongoing && moodToday();
+    return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
   }
 
   function vitalRingSvg(pct, state, label, cls){

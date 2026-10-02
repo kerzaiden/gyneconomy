@@ -492,7 +492,7 @@ then `#diagnosis` under it, in place of the four category cards (Keren: "I want 
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
 under its cycle view. In clinical order: the trend card (the emotion in its season, since V681), then each **System** (a category;
 its heading is the door to the category page) with its one **Analysis** line (what the readings tell the doctor).
-Feeling and season (V684) moved to the Mood page as Emotion × Season in V686. There are no Symptoms lists since V672 (Keren: the
+Feeling and season (V684) left in V686; the Mood page tells her story by cycle instead. There are no Symptoms lists since V672 (Keren: the
 category page behind each heading already shows every reading).
 Since V686 the Diagnosis is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend
 card and a `.dx-sys` card for the systems the dial and the trend card do not already show (`!c.onDial && !c.inTrend`,
@@ -515,22 +515,20 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
   cut-offs, `lastFeeling`'s carrying, the Diagnosis (i)) are retired; the V685 commit is the last copy with them.
-- **Emotion × Season** (V686, `emotionSeason` in 08-model, `emotionSeasonHtml` in 12-pages-nav): a second
-  `.insights` box on the Mood page, headed by `highlightsHtml`'s `head`. The twelve emotions (from `MOOD_CHART`,
-  in the chart's order) by the seasons that have any month; each cell the months in that pair and the months per
-  separate spell, shaded continuously by the share of those months the S&P 500 was higher a year later (`--tint`,
-  green above even, red below; no cut-offs, so no band to source); a cell under `THIN_MONTHS` (12, Claude's call at
-  Keren's request) is faint. The test is the share of the next year's change the pair explains (`explained`),
-  against the returns slid one month at a time (`slid`), keeping every run whole. `replaceInsights` swaps every
-  `.insights` box of a category on a repaint, so the second box never doubles.
+- **Her story by cycle** (V686, `cycleStory` in 08-model, `storyHtml` and `storyText` in 12-pages-nav): a second
+  `.insights` box on the Mood page, headed by `highlightsHtml`'s `head`. For each of `marketCycles`, the `moodTrack`
+  months inside its years: the first, the highest and lowest `pct`, the last (today's `moodToday` for the open
+  cycle), told in month order, with the high or low folded into the opening or closing beat when they share a
+  month, and the two emotions with the most months. `replaceInsights` swaps every `.insights` box of a category on a
+  repaint, so the second box never doubles. It replaced Emotion × Season (a twelve-by-four grid with a slid test),
+  which Keren found uninformative.
 - **The record is computed at load, never written down** (`feelingTrack`): every month from the season track's
   first quarter (Dec 1989) with an emotion, its season group, and the S&P 500 twelve months on (`yearAfter`).
 - **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
-- **Mood and season** (V679, V686): Emotion × Season counts each month's emotion by its season (the four seasons
-  of `seasonGroup`). The Analysis's trend card (`trendCardHtml`) names today's feeling in today's season
+- **Mood and season** (V679, V686): The Analysis's trend card (`trendCardHtml`) names today's feeling in today's season
   (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
   market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in 08-model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to

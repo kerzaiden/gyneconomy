@@ -528,15 +528,15 @@ async function openPage(p, url, sheet) {
       return s && { labels: [...s.querySelectorAll('.mood-lab')].map(t => t.textContent).join('+'), calls: s.querySelectorAll('.mood-call').length,
         now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent,
         es: [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .hi-head')].map(h => h.textContent).join('+') + ':' +
-          document.querySelectorAll('#sheet-cat-mood:not([hidden]) .fs-feel').length + ':' + document.querySelectorAll('#sheet-cat-mood:not([hidden]) .fs-cell.now').length };
+          [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .highlights')].pop().querySelectorAll('.hi-card').length };
     });
     await p.click('#topbar-back'); await settle(p);
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === 'Insights+Emotion \u00d7 Season:12:1' && feel.stage.toUpperCase() === cyc.now[0])
-      ? ok('the trend card opens the cycle of market emotions and Emotion \u00d7 Season, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
-      : bad('the trend card opens the cycle of market emotions and Emotion \u00d7 Season, one emotion everywhere', JSON.stringify({ feel, cyc }));
+     cyc.es === 'Insights+Her story by cycle:5' && feel.stage.toUpperCase() === cyc.now[0])
+      ? ok('the trend card opens the cycle of market emotions and her story by cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('the trend card opens the cycle of market emotions and her story by cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');

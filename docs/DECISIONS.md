@@ -436,6 +436,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   yield, because it's considered the risk-free loan across the economy". (V639)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
+- **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
+  Elevated, Fearful).** Keren: "if we already have it as the vix lets use volatility - i prefer market
+  terminology." (V686)
 - **Horizon (the yield spread) is Circulation's member, after Interest rates, not a category of its own and not
   part of Pressure.** It sat in Mood from V473 ("if the horizon says if we're optimistic or pessimistic, then it
   should be in mood"); in V685 it left the mood reading (the curve steepens when the Fed cuts into a crash, so its
@@ -1037,7 +1040,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
 - **The Diagnosis is two separate cards at the cycle's width: the emotion in its season, then Circulation and
   Energy.** Keren: "I want to break the analysis container to three separate containers. That would be at the
-  width of the current cycle"; the third, Feeling and season, moved to the Mood page as Emotion × Season in V686.
+  width of the current cycle"; the third, Feeling and season, left in V686 (the Mood page tells her story by cycle).
   The second card is headed by its systems' names with the stethoscope, and its systems carry no "Analysis" label
   (Keren, V674: "it just takes up space"). A closed cycle's card ends on what followed: the S&P 500 a year after
   the close. (V674, V682, V686)
@@ -1048,19 +1051,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **Emotion × Season is its own box on the Mood page, under Insights: a grid of the cycle's twelve emotions by
-  the four seasons, each cell the months she spent in that pair since the record began and how long each visit
-  lasted on average, shaded by what the S&P 500 did a year later, today's cell outlined; then her lifespan in an
-  emotion and the test.** Keren: "it should measure the amount of time that the market has spent in each
-  combination … what's the lifespan of the mood in a particular season … if you can show any correlation to what
-  the market has done"; "I would like to call this metric emotion X season"; "it should be in the mood page under
-  insights … in a new container." The test is the share of the next year's S&P 500 change that emotion and season
-  explain, compared with the S&P 500's track slid against them (months are not independent, so they are not
-  shuffled). A cell resting on fewer than 12 months is drawn faint but never dropped: each month's year ahead
-  overlaps the next, so under twelve is less than one year that stands on its own; the line is Claude's call at
-  Keren's request ("make a judgement call", V684). The shade is continuous from even, green above and red below,
-  with no bands. It replaces V684's Feeling and season grid on the Diagnosis and its Cramér's V. Don't re-add a
-  posture or a forecast. (V684, V686)
+- **The Mood page tells her story by cycle, in its own box under Insights: for each cycle, where she opened, her
+  high and her low (the months her mood ranked highest and lowest against her own history) in the order they came,
+  where she closed (or is now), and the two emotions she spent most months in.** Keren: "i would rather have it
+  analyse the emotions each cycle goes through like a story." It replaced Emotion × Season the same day, which
+  she judged uninformative ("it doesn't tell me anything"): an emotion in a season lasted about two months, and
+  emotion and season together did no better than slid tracks at explaining the next year. V684's Feeling and season
+  grid and its Cramér's V left the Diagnosis with it. Don't re-add a season grid or a posture or forecast. (V684,
+  V686)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
   words for today, and a closed cycle's figures are on its cards. (V665, V672)

@@ -18,7 +18,7 @@ function lift(names, env) {
   }
   return new Function('__env', out + 'return { ' + names.join(', ') + ', GROWTH_WINDOW };')(env || {});
 }
-const { rankToDate, explained } = lift(['rankToDate', 'explained']);
+const { rankToDate } = lift(['rankToDate']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -27,34 +27,32 @@ function ok(label, got, want) {
   else { fail++; console.log('  FAIL ' + label + '\n       got  ' + g + '\n       want ' + w); }
 }
 
-console.log('\nexplained \u2014 the Emotion \u00d7 Season test\n');
-ok('all of the swing is explained when each cell is one value', explained(['a', 'a', 'b', 'b'], [1, 1, 3, 3]), 1);
-ok('none of it when every cell has the same mean', explained(['a', 'a', 'b', 'b'], [1, 3, 1, 3]), 0);
-
 console.log('\nrankToDate\n');
 const twelve = Array.from({ length: 12 }, (_, i) => i + 1);
 ok('the share of earlier months below the value', rankToDate(twelve, 7), 50);
 ok('above every earlier month is 100', rankToDate(twelve, 99), 100);
 ok('fewer than twelve earlier months is no rank yet', rankToDate([1, 2, 3], 2), null);
 
-console.log('\nfeelingTrack, spells, emotionSeason, diagnoseClose \u2014 the record and the close\n');
+console.log('\nfeelingTrack, spells, cycleStory, diagnoseClose \u2014 the record and the close\n');
 {
   const months = ['2001-06', '2001-07', '2001-08', '2001-09', '2001-10', '2001-11', '2001-12'];
   const words = ['Hope', 'Hope', 'Optimism', 'Hope', 'Hope', 'Hope', 'Fear'];
   const sp = Array.from({ length: 30 }, (_, i) => ({ m: (2001 + Math.floor((i + 5) / 12)) + '-' + String((i + 5) % 12 + 1).padStart(2, '0'), v: 100 + (i % 3 ? i : -i) }));
   const env = { QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, sp500MonthlyHistory: sp,
     seasonTrackAll: [{ y: 2001, qn: 'Q2', reading: { season: 'summer' } }, { y: 2001, qn: 'Q4', reading: { season: 'lateautumn' } }],
-    moodTrack: () => months.map((m, i) => ({ m, word: words[i] })), marketCache: null, trackCache: null, emoCache: null,
+    moodTrack: () => months.map((m, i) => ({ m, word: words[i], pct: [40, 45, 90, 30, 35, 50, 10][i] })), moodToday: () => ({ m: '2001-12', word: 'Hope', pct: 60 }), marketCache: null, trackCache: null,
     seasonGroup: k => k === 'springdeflation' ? 'spring' : k === 'lateautumn' ? 'autumn' : k };
-  const M = lift(['marketMonths', 'seasonInMonth', 'yearAfter', 'feelingTrack', 'explained', 'slid', 'monthsApart', 'feelingSpells', 'spellRecord', 'emotionSeason', 'diagnoseClose'], env);
+  const M = lift(['marketMonths', 'seasonInMonth', 'yearAfter', 'feelingTrack', 'monthsApart', 'feelingSpells', 'spellRecord', 'cycleStory', 'diagnoseClose'], env);
   const t = M.feelingTrack();
   ok('each month carries its emotion and its season group', t.map(x => x.stage[0] + x.group[0]).join(' '), 'Hs Hs Os Hs Hs Hs Fa');
   ok('a year later is the S&P 500 twelve months on', +t[0].after.toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
   const r = M.spellRecord({ stage: 'Hope', season: 'summer', month: '2001-11' });
   ok('the current spell runs to the month, the earlier ones are kept', [r.now, r.before], [{ from: '2001-09', to: '2001-11', n: 3 }, [{ from: '2001-06', to: '2001-07', n: 2 }]]);
-  const E = M.emotionSeason();
-  ok('a cell counts months and separate spells', [E.cells['Hope|summer'].months, E.cells['Hope|summer'].spells, E.cells['Fear|autumn'].months], [5, 2, 1]);
-  ok('the record starts at the first month read', E.from, '2001-06');
+  const st = M.cycleStory({ from: 2001, to: 2001 });
+  ok('a cycle\u2019s story: where she opened, her high, her low, where she closed', [st.first.m, st.hi.m, st.lo.m, st.last.m], ['2001-06', '2001-08', '2001-12', '2001-12']);
+  ok('the two emotions she spent most months in', st.most, [{ word: 'Hope', n: 5 }, { word: 'Optimism', n: 1 }]);
+  ok('an open cycle ends on today', M.cycleStory({ from: 2001, to: null, ongoing: true }).last.pct, 60);
+  ok('a cycle with under two months read has no story', M.cycleStory({ from: 1990, to: 1990 }), null);
   ok('the close reads its own month\u2019s emotion', [M.diagnoseClose({ endMonth: '2001-08', season: 'summer' }).stage, M.diagnoseClose({ endMonth: '2003-01', season: 'summer' })], ['Optimism', null]);
 }
 

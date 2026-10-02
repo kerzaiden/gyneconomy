@@ -622,20 +622,6 @@
   .dx-row .dx-k{ display:block; margin-bottom:3px; }
   .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
-  .fs-grid{ display:grid; grid-template-columns:auto repeat(var(--cols), 1fr); gap:4px; margin-top:4px; font-family:"Public Sans",sans-serif; }
-  .fs-col{ text-align:center; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 0 2px; }
-  .fs-col.now, .fs-feel.now{ color:var(--accent-ink); }
-  .fs-feel{ align-self:center; padding-right:6px; font-size:var(--type-meta); color:var(--text-secondary); }
-  .fs-feel.now{ font-weight:700; }
-  .fs-cell{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:5px 2px; border-radius:8px;
-    background:color-mix(in srgb, var(--good) var(--tint), var(--surface)); line-height:1.15; }
-  .fs-cell.lo{ background:color-mix(in srgb, var(--critical) var(--tint), var(--surface)); }
-  .fs-cell b{ font-size:var(--type-interface); font-weight:700; color:var(--text-primary); }
-  .fs-cell small{ font-size:var(--type-label); color:var(--text-secondary); }
-  .fs-cell.none{ background:none; color:var(--text-muted); }
-  .fs-cell.thin{ background:none; border:1px dashed var(--border-strong); }
-  .fs-cell.thin b{ font-weight:600; color:var(--text-muted); }
-  .fs-cell.now{ outline:2px solid var(--accent); outline-offset:-1px; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -22977,24 +22963,6 @@
     });
     return trackCache;
   }
-  function explained(keys, vals) {
-    var n = vals.length, mean = vals.reduce(function(a, v) {
-      return a + v;
-    }, 0) / n, sum = {}, cnt = {}, tot = 0, bet = 0;
-    vals.forEach(function(v, i) {
-      sum[keys[i]] = (sum[keys[i]] || 0) + v;
-      cnt[keys[i]] = (cnt[keys[i]] || 0) + 1;
-      tot += (v - mean) * (v - mean);
-    });
-    Object.keys(cnt).forEach(function(k) {
-      var m = sum[k] / cnt[k];
-      bet += cnt[k] * (m - mean) * (m - mean);
-    });
-    return bet / tot;
-  }
-  function slid(list, s) {
-    return list.slice(s).concat(list.slice(0, s));
-  }
   function monthsApart(a, b) {
     return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7));
   }
@@ -23142,35 +23110,34 @@
       return p.m < x.m;
     }));
   }
-  var emoCache = null;
-  function emotionSeason() {
-    if (emoCache) return emoCache;
-    var cells = {}, keys = [], vals = [], prev = null, t = feelingTrack();
-    t.forEach(function(x) {
-      var key = x.stage + "|" + x.group, c = cells[key] = cells[key] || {
-        months: 0,
-        spells: 0,
-        after: 0,
-        higher: 0
-      };
-      c.months++;
-      if (key !== prev) c.spells++;
-      prev = key;
-      if (x.after == null) return;
-      c.after++;
-      if (x.after > 0) c.higher++;
-      keys.push(key);
-      vals.push(x.after);
+  function cycleStory(c) {
+    var from = c.from + "-01", to = c.to ? c.to + "-12" : "9999-12", count = {};
+    var t = moodTrack().filter(function(x) {
+      return x.word && x.m >= from && x.m <= to;
     });
-    var r2 = explained(keys, vals), hit = 0, all = 0;
-    for (var k = 12; k < vals.length - 12; k++, all++) if (explained(keys, slid(vals, k)) >= r2) hit++;
-    emoCache = {
-      cells: cells,
-      from: t[0].m,
-      r2: r2,
-      share: hit / all
+    if (t.length < 2) return null;
+    var hi = t[0], lo = t[0];
+    t.forEach(function(x) {
+      if (x.pct > hi.pct) hi = x;
+      if (x.pct < lo.pct) lo = x;
+      count[x.word] = (count[x.word] || 0) + 1;
+    });
+    var most = Object.keys(count).sort(function(a, b) {
+      return count[b] - count[a];
+    }).slice(0, 2);
+    var now = c.ongoing && moodToday();
+    return {
+      first: t[0],
+      last: now && now.word ? now : t[t.length - 1],
+      hi: hi,
+      lo: lo,
+      most: most.map(function(w) {
+        return {
+          word: w,
+          n: count[w]
+        };
+      })
     };
-    return emoCache;
   }
   function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
@@ -26156,8 +26123,6 @@
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
   } ];
-  var THIN_MONTHS = 12;
-  var SEASON_ORDER = [ "spring", "summer", "autumn", "winter" ];
   function seasonName(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
@@ -26210,48 +26175,49 @@
     var d = moodToday();
     var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
     if (!d || !d.word) return highlightsHtml([ intro ], "", "");
-    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo())) + emotionSeasonHtml(d);
+    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo())) + storyHtml();
   }
-  function emoCell(c, now) {
-    if (!c) return '<span class="fs-cell none">–</span>';
-    var lean = c.after ? c.higher / c.after - .5 : 0;
-    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (c.months < THIN_MONTHS ? " thin" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' + "<b>" + c.months + "</b><small>" + (c.months / c.spells).toFixed(1) + " each</small></span>";
-  }
-  function emotionGrid(d) {
-    var E = emotionSeason(), here = seasonGroup(currentSeason), words = [];
-    MOOD_CHART.forEach(function(s) {
-      if (words.indexOf(s[0]) < 0) words.push(s[0]);
-    });
-    var seasons = SEASON_ORDER.filter(function(s) {
-      return words.some(function(w) {
-        return E.cells[w + "|" + s];
+  function storyText(s, open) {
+    var ev = [ {
+      x: s.first,
+      verb: "opened in"
+    }, {
+      x: s.last,
+      verb: open ? "is now in" : "closed in"
+    } ];
+    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
+      var same = ev.filter(function(e) {
+        return e.x.m === p[0].m;
+      })[0];
+      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
+        x: p[0],
+        verb: p[0] === s.hi ? "rose to" : "fell to",
+        tag: p[1]
       });
     });
-    var head = "<span></span>" + seasons.map(function(s) {
-      return '<span class="fs-col' + (s === here ? " now" : "") + '">' + seasonName(s) + "</span>";
-    }).join("");
-    var rows = words.map(function(w) {
-      return '<span class="fs-feel' + (w === d.word ? " now" : "") + '">' + w + "</span>" + seasons.map(function(s) {
-        return emoCell(E.cells[w + "|" + s], w === d.word && s === here);
-      }).join("");
-    }).join("");
-    return '<div class="fs-grid" style="--cols:' + seasons.length + '" role="img" aria-label="Months Mrs. Market spent in each emotion in each season">' + head + rows + "</div>";
-  }
-  function emotionSeasonInfo() {
-    var E = emotionSeason();
-    return "<h4>Emotion × Season</h4>" + facts([ "Each cell counts the months since " + monthLabel(E.from) + " that Mrs. Market spent in that emotion in that season, read as on the cycle above, and under it how many months each visit lasted on average: the months over the number of separate spells.", "The shade is what the S&amp;P 500 did a year later: green when it was higher more often than not, red when lower, deeper the further from even. A cell resting on fewer than " + THIN_MONTHS + " months is drawn faint, the same line as before, Claude’s call at Keren’s request.", "The test: the share of the swing in the S&amp;P 500 a year later that emotion and season together account for. Because both last months, the S&amp;P 500’s track is slid against them a month at a time, and the test counts how often a slid track does as well. A record, not a forecast." ]) + srcBlock(DIAG_SRC);
-  }
-  function emotionSeasonHtml(d) {
-    var E = emotionSeason(), here = seasonGroup(currentSeason), c = E.cells[d.word + "|" + here], pc = function(v) {
-      return Math.round(v * 100) + "%";
-    };
-    var all = 0, spells = 0;
-    Object.keys(E.cells).forEach(function(k) {
-      all += E.cells[k].months;
-      spells += E.cells[k].spells;
+    ev.sort(function(a, b) {
+      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
     });
-    var now = c ? d.word + " in " + seasonName(here) + ": " + c.months + (c.months === 1 ? " month" : " months") + " since " + monthLabel(E.from) + ", in " + c.spells + (c.spells === 1 ? " spell" : " spells") + (c.after ? "; a year later the S&amp;P 500 was higher " + Math.round(100 * c.higher / c.after) + "% of the time." : ".") : "";
-    return highlightsHtml([ emotionGrid(d), hiCard("Lifespan", "", "An emotion in a season lasts " + (all / spells).toFixed(1) + " months on average before she moves on. " + now), hiCard("The test", "", "Emotion and season together account for " + pc(E.r2) + " of the swing in the S&amp;P 500 a year later; a slid track does as well " + pc(E.share) + " of the time.") ], "", moreRow(emotionSeasonInfo()), "Emotion × Season");
+    var parts = ev.map(function(e) {
+      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
+    });
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ". Most of it she spent in " + s.most.map(function(m) {
+      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
+    }).join(" and ") + ".";
+  }
+  function storyInfo() {
+    return "<h4>Her story by cycle</h4>" + facts([ "Each cycle is told from her emotion month by month, read as on the cycle of market emotions above: where she opened, her high and her low (the months her mood ranked highest and lowest against her own history), and where she closed, in the order they came.", "The two emotions she spent most months in close each story. The record of her emotions starts in " + monthLabel(moodTrack().filter(function(x) {
+      return x.word;
+    })[0].m) + "; an open cycle is told to the latest month." ]);
+  }
+  function storyHtml() {
+    var cards = marketCycles.map(function(c) {
+      var s = cycleStory(c);
+      return s ? hiCard(c.name + " · " + c.from + "–" + (c.to || "now"), "", storyText(s, c.ongoing)) : "";
+    }).filter(function(h) {
+      return h;
+    });
+    return highlightsHtml(cards, "", moreRow(storyInfo()), "Her story by cycle");
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind) {
@@ -26844,7 +26810,7 @@
       var when = x.n === 1 ? monthLabel(x.from) : monthLabel(x.from) + " to " + monthLabel(x.to), next = after[x.to];
       return when + ", " + x.n + (x.n === 1 ? " month" : " months") + (next == null ? "." : "; a year later the S&amp;P 500 was " + pct(next) + ".");
     });
-    var head = r.before.length ? "Before, " + r.before.length + (r.before.length === 1 ? " time" : " times") + " since " + monthLabel(emotionSeason().from) + (r.before.length > 4 ? ", the latest four:" : ":") : "Her first time since " + monthLabel(emotionSeason().from) + ".";
+    var head = r.before.length ? "Before, " + r.before.length + (r.before.length === 1 ? " time" : " times") + " since " + monthLabel(feelingTrack()[0].m) + (r.before.length > 4 ? ", the latest four:" : ":") : "Her first time since " + monthLabel(feelingTrack()[0].m) + ".";
     return '<span class="trend-text">' + lead + "</span>" + [ head ].concat(lines).map(trendSub).join("");
   }
   function trendSub(t) {
