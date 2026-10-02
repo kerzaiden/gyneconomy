@@ -454,6 +454,11 @@
       ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
       (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
   }
+  var DIAG_SRC = [
+    {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
+    {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
+  ];
+  function seasonName(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
   var MOOD_CHART = [
     ["Optimism", 168, 290, "cream", -23, 7, "end"], ["Excitement", 211, 221, "amber", -23, 0, "end"], ["Thrill", 279, 158, "orange", -21, 0, "end"],
     ["Euphoria", 362, 135, "red", 0, -25, "middle"], ["Anxiety", 438, 163, "wine", 24, -3, "start"], ["Denial", 500, 222, "slate", -23, 7, "end"],
@@ -508,7 +513,34 @@
     var d = moodToday();
     var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor\u2019s euphoria is not another\u2019s.");
     if (!d || !d.word) return highlightsHtml([intro], "", "");
-    return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo()));
+    return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo())) +
+      storyHtml();
+  }
+  function storyBeats(s, open){
+    var ev = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
+    [[s.hi, "her high"], [s.lo, "her low"]].forEach(function(p){
+      var same = ev.filter(function(e){ return e.x.m === p[0].m; })[0];
+      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1];
+      else ev.push({ x:p[0], verb:p[0] === s.hi ? "rose to" : "fell to", tag:p[1] });
+    });
+    ev.sort(function(a, b){ return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0; });
+    var parts = ev.map(function(e){ return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")"; });
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  }
+  function storyText(s, open){
+    return storyBeats(s, open) + " Most of it she spent in " +
+      s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
+  }
+  function storyInfo(){
+    return '<h4>Her story this cycle</h4>' + facts([
+      "The cycle on screen is told from her emotion month by month, read as on the cycle of market emotions above: where she opened, her high and her low (the months her mood ranked highest and lowest against her own history), and where she closed, in the order they came.",
+      "The two emotions she spent most months in close each story. The record of her emotions starts in " + monthLabel(moodTrack().filter(function(x){ return x.word; })[0].m) + "; an open cycle is told to the latest month."
+    ]);
+  }
+  function storyHtml(){
+    var c = eraOpen || currentEra, s = cycleStory(c);
+    if (!s) return "";
+    return highlightsHtml([hiCard(c.name + " \u00b7 " + c.from + "\u2013" + (c.to || "now"), "", storyText(s, c.ongoing))], "", moreRow(storyInfo()), "Her story this cycle");
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
@@ -867,19 +899,6 @@
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render"); renderPagesAndNav();
 
   // ---- The Diagnosis: under the dial, today or at a cycle's close ----
-  var FEELING_RULES = {
-    Hope:"momentum has just turned positive after being negative",
-    Optimism:"rising, within 5% of the high, momentum at 65% or more of this bull\u2019s best or fear not calm",
-    Euphoria:"within 5% of the high, momentum under 65% of this bull\u2019s best, fear calm",
-    Anxiety:"fear up 20 points from calm in three months, within 10% of the high",
-    Fear:"momentum negative, fear in its top 40%",
-    Capitulation:"fear in its top tenth, price 15% or more off its high",
-    Despondency:"fear 20 points down from a frightened peak, price still 10% down"
-  };
-  var DIAG_SRC = [
-    {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
-    {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
-  ];
   function todayFace(item){
     var t = item.__today, box = document.createElement("div");
     if (!t) return { val:item.querySelector(".ci-value"), word:item.querySelector(".ci-word") };
@@ -925,59 +944,14 @@
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
       (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
-  function gridNotes(){
-    return [
-      "Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
-      "The grid counts every month since " + monthLabel(whatFollowed().from) + " by feeling and season, and how often the S&amp;P 500 was higher a year later; each cell says over how many months. It is a count of what followed, not a forecast. A cell resting on fewer than " + THIN_MONTHS + " months is drawn faint: each month\u2019s year ahead overlaps the next month\u2019s, so fewer than twelve is less than one year that stands on its own. The line is Claude\u2019s call, at Keren\u2019s request, not a published standard.",
-      "The test: Cram\u00e9r\u2019s V measures how closely feeling and season go together, from 0 (not at all) to 1 (each feeling only ever in one season). The share of the following year\u2019s S&amp;P 500 change that the feeling and season together account for is its variance explained. Because a feeling and a season each last months, neither is compared with chance by shuffling months; the season track is slid against the feelings, one month at a time, keeping how long each lasts, and the test counts how often a slid track does as well."
-    ];
-  }
-  function diagnosisInfo(d){
-    return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
-      facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
-        "Momentum is the S&amp;P 500\u2019s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard."
-      ].concat(gridNotes(), [
-        "The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."]))) +
-      srcBlock(DIAG_SRC);
-  }
-  var THIN_MONTHS = 12;
-  function share(c){ return Math.round(c.higher / c.months * 100) + "%"; }
-  function gridCell(c, now){
-    if (!c) return '<span class="fs-cell none">\u2013</span>';
-    var lean = c.higher / c.months - 0.5;
-    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (c.months < THIN_MONTHS ? " thin" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' +
-      '<b>' + share(c) + '</b><small>' + c.months + ' mo</small></span>';
-  }
-  function feelingGrid(d){
-    var cells = whatFollowed().cells, here = seasonGroup(d.season);
-    var seasons = SEASON_ORDER.filter(function(s){ return FEELINGS.some(function(w){ return cells[w + "|" + s]; }); });
-    var head = '<span></span>' + seasons.map(function(s){ return '<span class="fs-col' + (s === here ? " now" : "") + '">' + seasonName(s) + '</span>'; }).join("");
-    var rows = FEELINGS.map(function(w){
-      return '<span class="fs-feel' + (w === d.stage ? " now" : "") + '">' + w + '</span>' +
-        seasons.map(function(s){ return gridCell(cells[w + "|" + s], w === d.stage && s === here); }).join("");
-    }).join("");
-    return '<div class="fs-grid" style="--cols:' + seasons.length + '" role="img" aria-label="How often the S&amp;P 500 was higher a year later, by feeling and season">' + head + rows + '</div>';
-  }
-  function gridLines(d, era){
-    var cells = whatFollowed().cells, t = feelingSeasonTest(), pc = function(v){ return Math.round(v * 100) + "%"; };
-    var here = seasonGroup(d.season), mine = cells[d.stage + "|" + here], rest = { months:0, higher:0 };
-    SEASON_ORDER.forEach(function(s){ var c = cells[d.stage + "|" + s]; if (s !== here && c){ rest.months += c.months; rest.higher += c.higher; } });
-    var said = mine && rest.months ? "A year after " + d.stage + " in " + seasonName(here) + ", the S&amp;P 500 was higher in " + share(mine) + " of " +
-      mine.months + " months; after " + d.stage + " in the other seasons, in " + share(rest) + " of " + rest.months + "." : "";
-    return (said ? dxRow(d.stage + " by season", said) : "") +
-      dxRow("The test", "Feeling and season go together: Cram\u00e9r\u2019s V is " + t.v.toFixed(2) + ", and a season track slid against the feelings matches it " +
-        pc(t.vShare) + " of the time. Together they account for " + pc(t.r2) + " of the swing in the S&amp;P 500 a year later, which slid tracks match " +
-        pc(t.rShare) + " of the time: a record, not a forecast.") +
-      (era && d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : "");
-  }
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
     if (!d) return "";
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return trendCardHtml(d) +
+    return trendCardHtml(d, m.era) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
-        systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) : "")) +
-      dxSection(dxHead("Feeling and season" + expandBtn(diagnosisInfo(d))), feelingGrid(d) + gridLines(d, closed));
+        systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
+        d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
   }
   function acrossCycle(era){
     var span = { from:era.from, to:calendarTodayY };
@@ -986,76 +960,33 @@
     return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
-  var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
-  function seasonName(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-  function feelingBySeason(stage){
-    var by = whatFollowed().cells, n = function(k){ return by[k] ? by[k].months : 0; };
-    return SEASON_ORDER.map(function(s){
-      var all = FEELINGS.reduce(function(a, w){ return a + n(w + "|" + s); }, 0);
-      return { season:s, name:seasonName(s), n:n(stage + "|" + s), all:all };
-    }).filter(function(r){ return r.all; });
-  }
-  function trendBarsSvg(rest, cur, restShare){
-    var bars = rest.concat([cur]), slot = 300 / (bars.length + 0.5), top = 22, base = 96;
-    var hi = Math.max.apply(null, bars.map(function(r){ return r.n / r.all; }).concat([restShare])) || 1;
-    var y = function(v){ return base - (base - top) * v / hi; };
-    var x = function(i){ return 10 + slot * (i + (i === rest.length ? 1 : 0.5)); };
-    var out = bars.map(function(r, i){
-      var cx = x(i), h = r.n / r.all;
-      var bw = slot * 0.3, by = Math.min(base - 2, y(h));
-      return '<rect class="trend-bar" x="' + (cx - bw / 2).toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (base - by).toFixed(1) + '" rx="3"/>' +
-        '<text class="trend-x" x="' + cx.toFixed(1) + '" y="' + (base + 15) + '" text-anchor="middle">' + r.name + '</text>';
-    });
-    var line = function(x0, x1, v, cls, anchor){
-      return '<path class="trend-avg' + cls + '" d="M' + x0.toFixed(1) + ',' + y(v).toFixed(1) + 'H' + x1.toFixed(1) + '"/>' +
-        '<text class="trend-val' + cls + '" x="' + (anchor === "end" ? x1 : x0).toFixed(1) + '" y="' + (y(v) - 8).toFixed(1) + '" text-anchor="' + anchor + '">' + Math.round(v * 100) + '%</text>';
-    };
-    out.push(line(x(0) - slot * 0.4, x(rest.length - 1) + slot * 0.4, restShare, "", "start"));
-    out.push(line(x(rest.length) - slot * 0.4, x(rest.length) + slot * 0.4, cur.n / cur.all, " now", "end"));
-    return '<svg class="trend-svg" viewBox="0 0 320 116" aria-hidden="true">' + out.join("") + '</svg>';
-  }
-  function trendCardHtml(d){
-    var rows = feelingBySeason(d.stage), here = seasonGroup(d.season);
-    var cur = rows.filter(function(r){ return r.season === here; })[0], rest = rows.filter(function(r){ return r !== cur; });
-    if (!cur || !rest.length) return "";
-    var restN = 0, restAll = 0;
-    rest.forEach(function(r){ restN += r.n; restAll += r.all; });
-    var share = cur.n / cur.all, restShare = restN / restAll, mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
-    var most = rows.every(function(r){ return r.n / r.all <= share; }), from = monthLabel(whatFollowed().from);
-    var text = "In the " + cur.all + " " + cur.name + " months since " + from + " she felt " + d.stage + " in " +
-      Math.round(share * 100) + "%, against " + Math.round(restShare * 100) + "% in the other seasons" + (most ? ", the most of any season." : ".");
+  function trendCardHtml(d, era){
+    var name = seasonName(seasonGroup(d.season)), mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0], story = cycleStory(era);
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
-      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + cur.name + CHEV + '</span>' +
-      spellLines(d, cur.name, from) + trendSub(text) + trendBarsSvg(rest, cur, restShare) +
-      '<span class="trend-foot"><span>Other seasons</span><span class="now">' + cur.name + '</span></span></button>';
+      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + name + CHEV + '</span>' +
+      spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : "") + '</button>';
   }
-  function spellLines(d, season, from){
+  function spellLines(d, season, story){
     var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
-    var lead = r.now.n === 1 ? (open ? "She came into " : "She was in ") + both + " in " + monthLabel(r.now.to) + "."
-      : open ? "She has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
-      : "She was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
-    var stats = [];
-    if (r.before.length){
-      var ns = r.before.map(function(x){ return x.n; }).sort(function(a, b){ return a - b; }), long = r.before.reduce(function(a, x){ return x.n > a.n ? x : a; });
-      stats.push(r.before.length + (r.before.length === 1 ? " earlier spell" : " earlier spells") + " since " + from + ": a median of " +
-        ns[Math.floor(ns.length / 2)] + " months, the longest " + long.n + " (" + monthLabel(long.from) + " to " + monthLabel(long.to) + ").");
-    }
-    else stats.push("Her first spell of " + both + " since " + from + ".");
-    if (r.after > 1) stats.push("A year after a month of " + both + ", the S&amp;P 500 was higher " + Math.round(100 * r.higher / r.after) + "% of the time (" + r.after + " months).");
-    else if (r.after) stats.push("A year after her one month of " + both + " on record, the S&amp;P 500 was " + (r.higher ? "higher." : "lower."));
-    return '<span class="trend-text">' + lead + '</span>' + stats.map(trendSub).join("");
+    var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
+      : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
+      : "Mrs. Market was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
+    return '<span class="trend-text">' + lead + '</span>' + (story ? trendSub(story) : "");
   }
   function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){
     var host = document.getElementById("diagnosis");
     if (host && m) host.innerHTML = diagnosisHtml(m);
   }
+  function replaceInsights(c){
+    var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
+    if (!boxes.length || !c.insight) return;
+    boxes.slice(1).forEach(function(b){ b.parentNode.removeChild(b); });
+    boxes[0].outerHTML = c.insight();
+  }
   function repaintDiagnosis(){
     if (!eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(function(c){
-      var box = document.querySelector("#sheet-cat-" + c.key + " > .insights");
-      if (box && c.insight) box.outerHTML = c.insight();
-    });
+    CATEGORIES.forEach(replaceInsights);
   }
   function buildDiagnosis(){
     var home = byId("today-analysis");

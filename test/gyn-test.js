@@ -266,6 +266,9 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
+                   story: [...d.querySelectorAll('.trend-sub')].map(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)).join() === 'true',
+                   told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
+                     ((b.querySelector('.hi-card .hi-name') || {}).textContent || '').split(' \u00b7 ')[0]).pop(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -280,18 +283,12 @@ async function openPage(p, url, sheet) {
     const today = await read();
     const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Circulation and Energy:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
-    const FEEL = /^(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) in (Spring|Summer|Autumn|Winter)$/;
-    (today && today.visible && FEEL.test(today.title) && /^She (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.cards === 0 &&
-     today.heads.join() === 'Circulation and Energy,Circulation,Energy,Feeling and season' && today.boxes === 'trend,sys,sys' && today.across && today.grid === '7:1:true' &&
+    const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
+    (today && today.visible && FEEL.test(today.title) && /^Mrs. Market (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
+     today.heads.join() === 'Circulation and Energy,Circulation,Energy' && today.boxes === 'trend,sys' && today.across && today.grid === '0:0:false' &&
      today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
-    await click(p, '#diagnosis .expand-btn'); await settle(p);
-    const info = await p.evaluate(() => document.getElementById('detail-modal-body').innerText);
-    await p.evaluate(() => document.getElementById('detail-modal-close').click());
-    (/Despondency: fear 20 points down/.test(info) && /Robert Shiller/.test(info) && /A spell is a run of months/.test(info))
-      ? ok('the Diagnosis (i) states every rule and its sources')
-      : bad('the Diagnosis (i) states every rule and its sources', info.slice(0, 160));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -301,9 +298,9 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys,sys' && !past.across && past.grid === '7:1:true')
-      ? ok('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', 'Keren, V682')
-      : bad('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', JSON.stringify([today, past]));
+    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys' && !past.across && past.grid === '0:0:false')
+      ? ok('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', 'Keren, V682, V686')
+      : bad('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
@@ -315,7 +312,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && FEEL.test(past.title) && /^She was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.heads.length === 4)
+    (past && past.visible && FEEL.test(past.title) && /^Mrs. Market was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -532,14 +529,17 @@ async function openPage(p, url, sheet) {
     const cyc = await p.evaluate(() => {
       const s = document.querySelector('#sheet-cat-mood:not([hidden]) .mood-curve'), card = document.querySelector('#sheet-cat-mood:not([hidden]) .hi-card .hi-name');
       return s && { labels: [...s.querySelectorAll('.mood-lab')].map(t => t.textContent).join('+'), calls: s.querySelectorAll('.mood-call').length,
-        now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent };
+        now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent,
+        es: [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .hi-head')].map(h => h.textContent).join('+') + ':' +
+          [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .highlights')].pop().querySelectorAll('.hi-card').length };
     });
     await p.click('#topbar-back'); await settle(p);
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
-     cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0])
-      ? ok('the trend card opens the cycle of market emotions, today\u2019s stage lit and named', feel.head + ' \u00b7 ' + cyc.now[0])
-      : bad('the trend card opens the cycle of market emotions, today\u2019s stage lit and named', JSON.stringify({ feel, cyc }));
+     cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
+     cyc.es === 'Insights+Her story this cycle:1' && feel.stage.toUpperCase() === cyc.now[0])
+      ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');

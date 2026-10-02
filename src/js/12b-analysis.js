@@ -142,14 +142,18 @@
     if (e.none){ val.innerHTML = "\u2014"; word.textContent = e.word; return; }
     eraValue(val, t, r, e); word.textContent = eraRange(t, r, e);
   }
-  function eraShow(era){
+  function eraCards(era){
     var rows = rosterRows();
     Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item){
       eraCard(item, rows[item.getAttribute("data-open")], era);
     });
+  }
+  function eraShow(era){
+    eraCards(era);
     if (era && !modeHome){ modeHome = {}; for (var k in pageMode) modeHome[k] = pageMode[k]; }
     for (var id in pageCycles){ pageCycles[id] = era ? era.name : null; pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id]; }
     if (!era) modeHome = null;
+    CATEGORIES.forEach(replaceInsights);
   }
   function enterEra(era, page){
     var ta = byId("today-analysis");
