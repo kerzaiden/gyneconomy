@@ -73,10 +73,6 @@
 
   function dropSvg(sw){ return markSvg(
     '<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>'); }
-  function volumeSvg(){ return markSvg(
-    '<path d="M6.64 7.76A6 6 0 0 1 6.64 16.24" stroke-width="1.9"/>' +
-    '<path d="M9.82 4.58A10.5 10.5 0 0 1 9.82 19.42" stroke-width="1.9"/>' +
-    '<path d="M13.01 1.39A15 15 0 0 1 13.01 22.61" stroke-width="1.9"/>'); }
   function gaugeSvg(){ return markSvg(
     '<circle cx="12" cy="11.2" r="7.6" stroke-width="1.7"/>' +
     '<path d="M12 11.2 7.9 7.1" stroke-width="1.9"/>' +
@@ -98,9 +94,6 @@
   }
   function heartSvg(){ return markSvg(
     '<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>'); }
-  function batterySvg(){ return markSvg(
-    '<rect x="2.6" y="7" width="16.4" height="10" rx="2.2" stroke-width="1.8"/>' +
-    '<path d="M21.4 10.4v3.2" stroke-width="2"/><path d="M6 10.4v3.2" stroke-width="2.6"/>'); }
   function flameSvg(){ return markSvg(
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
     '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }

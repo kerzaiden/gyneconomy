@@ -615,11 +615,11 @@ async function openPage(p, url, sheet) {
       const cards = [...document.querySelectorAll('#sheet-cat-' + k + ' .cat-item .ci-head .peek-mark')];
       const rows = [...document.querySelectorAll('#search-list .ind-cat.cat-' + k + ' .ind-row .subject-icon span')];
       return { k, cards: cards.length, rows: rows.length, shapes: new Set(cards.map(m => (m.querySelector('svg') || {}).innerHTML)).size,
-        same: !!cat && cards.concat(rows).every(m => col(m) === cat) && col(document.querySelector('#search-list .ind-cat.cat-' + k + ' .ind-cat-mark')) === cat };
+        same: !!cat && cards.concat(rows).every(m => col(m) === cat) && col(document.querySelector('#search-list .ind-cat.cat-' + k + ' .ind-cat-name')) === cat };
     }));
     await openPage(p, url, 'sheet-metric-valuation');
     const headCol = await p.evaluate(() => getComputedStyle(document.querySelector('#metric-page .bh-mark')).color ===
-      getComputedStyle(document.querySelector('#sheet-cat-mood .ci-name') || document.querySelector('.cat-mood .ind-cat-mark')).color);
+      getComputedStyle(document.querySelector('#sheet-cat-mood .ci-name') || document.querySelector('.cat-mood .ind-cat-name')).color);
     icons.every(i => i.same && i.shapes > 1) && icons[3].cards === lists.energy.names.split('+').length && headCol
       ? ok('every reading keeps its icon in its category colour', icons.map(i => i.k + ' ' + i.shapes + ' shapes').join(', '))
       : bad('every reading keeps its icon in its category colour', JSON.stringify({ icons, headCol }));

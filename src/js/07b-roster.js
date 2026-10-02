@@ -26,7 +26,7 @@
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", timing:"coincident", mark:ecgSvg, door:"pair", term:"Pulse", hk:"pulse-range",
       head:"Velocity of Money (M2)", hist:{ s:m2vHistory, k:"qi", y0:M2V_FROM_YEAR }, pulse:PULSE_PRE2008, when:lastDate,
       cardUnit:"M2 velocity", live:["coincident"] },
-    { id:"sheet-sign-volume", name:"Volume", cat:"circulation", timing:"leading", mark:volumeSvg, door:"pair", term:"Volume", hk:"volume-range",
+    { id:"sheet-sign-volume", name:"Volume", cat:"circulation", timing:"leading", mark:circulationSvg, door:"pair", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, rule:true,
       when:function(R){ return indPeriod(R) || lastDate(R); }, cardUnit:"M2, YoY", live:["coincident"] },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", group:"Valuations", timing:"structural", mark:diamondSvg, door:"peek",
@@ -61,7 +61,7 @@
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
-  var GROUP_MARK = { "Stress":batterySvg };
+  var GROUP_MARK = { "Stress":boltSvg };
   var ROSTER_BY = {};
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
   function pageState(of){

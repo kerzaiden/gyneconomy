@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `bf76980` on 2026-10-02. **77 components**, **40 shared patterns**.
+Generated from commit `56b1e8f` on 2026-10-02. **77 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -113,7 +113,7 @@ Generated from commit `bf76980` on 2026-10-02. **77 components**, **40 shared pa
 | **`dxHead`** | `.dx-sys-head` | `pages-nav.js:diagnosisHtml`, `pages-nav.js:systemHtml` |
 | **`dxRow`** | `.dx-k` `.dx-row` | `pages-nav.js:acrossCycle`, `pages-nav.js:diagnosisHtml` |
 | **`dxText`** | `.dx-v` | `pages-nav.js:systemHtml` |
-| **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
+| **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-name` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
 | **`insightMood`** | `.mood-fig` | — |
 | **`moodCallout`** | `.mood-arrow` `.mood-call` | `pages-nav.js:moodCycleSvg` |

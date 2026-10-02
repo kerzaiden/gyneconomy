@@ -163,9 +163,8 @@
     var key = c.key, sheet = byId("sheet-cat-" + key);
     if (!sheet) return "";
     var rows = indRows(sheet, find);
-    return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
-      '" data-title="' + c.title + '"><span class="ind-cat-mark" aria-hidden="true">' + c.mark() + '</span>' +
-      '<span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
+    return '<section class="ind-cat ind-card cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
+      '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button>' + rows.join("") + '</section>';
   }
   function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
