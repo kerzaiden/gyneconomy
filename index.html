@@ -622,9 +622,20 @@
   .dx-row .dx-k{ display:block; margin-bottom:3px; }
   .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
-  .dx-list{ margin:0; padding:0; list-style:none; font-size:var(--type-interface); line-height:1.5; color:var(--text-secondary); }
-  .dx-list li{ padding:1px 0; }
-  .dx-list b{ font-weight:600; color:var(--text-primary); }
+  .fs-grid{ display:grid; grid-template-columns:auto repeat(var(--cols), 1fr); gap:4px; margin-top:4px; font-family:"Public Sans",sans-serif; }
+  .fs-col{ text-align:center; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); padding:0 0 2px; }
+  .fs-col.now, .fs-feel.now{ color:var(--accent-ink); }
+  .fs-feel{ align-self:center; padding-right:6px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .fs-feel.now{ font-weight:700; }
+  .fs-cell{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:5px 2px; border-radius:8px;
+    background:color-mix(in srgb, var(--good) var(--tint), var(--surface)); line-height:1.15; }
+  .fs-cell.lo{ background:color-mix(in srgb, var(--critical) var(--tint), var(--surface)); }
+  .fs-cell b{ font-size:var(--type-interface); font-weight:700; color:var(--text-primary); }
+  .fs-cell small{ font-size:var(--type-label); color:var(--text-secondary); }
+  .fs-cell.none{ background:none; color:var(--text-muted); }
+  .fs-cell.thin{ background:none; border:1px dashed var(--border-strong); }
+  .fs-cell.thin b{ font-weight:600; color:var(--text-muted); }
+  .fs-cell.now{ outline:2px solid var(--accent); outline-offset:-1px; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -643,9 +654,6 @@
   .trend-val.now{ fill:var(--cat); }
   .trend-foot{ display:flex; justify-content:space-between; gap:10px; margin-top:6px; font-size:var(--type-meta); color:var(--text-muted); }
   .trend-foot .now{ color:var(--cat); font-weight:600; }
-  .dx-word{ font-weight:700; margin-right:2px; }
-  .dx-word.good{ color:var(--good-ink); } .dx-word.warning{ color:var(--warning-ink); }
-  .dx-word.serious{ color:var(--serious-ink); } .dx-word.norm{ color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
   .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }
@@ -22927,7 +22935,7 @@
   function seasonGroup(key) {
     return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
   }
-  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = .65, NEAR_HIGH = .05, STRETCHED = 80;
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = .65, NEAR_HIGH = .05;
   var FEELINGS = [ "Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency" ];
   var FEELING_STATE = {
     Hope: "good",
@@ -22938,9 +22946,6 @@
     Capitulation: "critical",
     Despondency: "serious"
   };
-  function seasonHalf(season) {
-    return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool";
-  }
   function rankToDate(prior, v) {
     if (v == null || prior.length < 12) return null;
     return 100 * prior.filter(function(x) {
@@ -22957,14 +22962,6 @@
     if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
     if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
     return null;
-  }
-  function readPosture(stage, half, f) {
-    var afraid = stage === "Fear" || stage === "Capitulation";
-    if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
-    if (half === "warm" && afraid) return "Patience";
-    if (half === "warm" && f.mom < 0) return "Defense";
-    if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
-    return "Neutral";
   }
   var marketCache = null;
   function marketMonths() {
@@ -23010,22 +23007,12 @@
     });
     return s;
   }
-  function stretchRank(year, value) {
-    return rankToDate(capeHistory.filter(function(d) {
-      return d.y < year;
-    }).map(function(d) {
-      return d.v;
-    }), value);
-  }
   function marketFacts(S, m, fearNow) {
     var i = S.spAt[m], j = S.volAt[m];
     if (i == null || j == null || S.mom[i] == null) return null;
     var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v) {
       return v != null;
     });
-    var y = parseInt(m.slice(0, 4), 10), cape = capeHistory.filter(function(d) {
-      return d.y === y;
-    })[0];
     return {
       m: m,
       dd: S.dd[i],
@@ -23036,14 +23023,13 @@
       }),
       fear: fearNow != null ? fearNow : S.fearRank[j],
       fear3: S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
-      fearPeak: peak.length ? Math.max.apply(null, peak) : null,
-      stretch: cape ? stretchRank(y, cape.v) : null
+      fearPeak: peak.length ? Math.max.apply(null, peak) : null
     };
   }
   var followedCache = null;
   function whatFollowed() {
     if (followedCache) return followedCache;
-    var S = marketMonths(), cells = {}, bySeason = {}, last = null, prevKey = null, from = null;
+    var S = marketMonths(), cells = {}, last = null, from = null;
     S.vol.forEach(function(d) {
       var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
       if (!f || !season || i == null || i + 12 >= S.sp.length) return;
@@ -23051,31 +23037,15 @@
       last = stage;
       if (!stage) return;
       if (!from) from = d.m;
-      var key = stage + "|" + seasonHalf(season), c = cells[key] = cells[key] || {
+      var key = stage + "|" + seasonGroup(season), c = cells[key] = cells[key] || {
         months: 0,
-        spells: 0,
-        higher: 0,
-        gains: []
+        higher: 0
       };
-      var gain = S.sp[i + 12].v / S.sp[i].v - 1;
       c.months++;
-      if (gain > 0) c.higher++;
-      c.gains.push(gain);
-      var sk = stage + "|" + seasonGroup(season);
-      bySeason[sk] = (bySeason[sk] || 0) + 1;
-      if (key !== prevKey) c.spells++;
-      prevKey = key;
-    });
-    Object.keys(cells).forEach(function(k) {
-      var g = cells[k].gains.slice().sort(function(a, b) {
-        return a - b;
-      });
-      cells[k].median = g[Math.floor(g.length / 2)];
-      cells[k].worst = g[0];
+      if (S.sp[i + 12].v > S.sp[i].v) c.higher++;
     });
     followedCache = {
       cells: cells,
-      bySeason: bySeason,
       from: from
     };
     return followedCache;
@@ -23098,6 +23068,66 @@
     });
     trackCache = out;
     return out;
+  }
+  function cramerV(a, b) {
+    var n = a.length, tab = {}, ra = {}, cb = {}, chi = 0;
+    a.forEach(function(x, i) {
+      var k = x + "|" + b[i];
+      tab[k] = (tab[k] || 0) + 1;
+      ra[x] = (ra[x] || 0) + 1;
+      cb[b[i]] = (cb[b[i]] || 0) + 1;
+    });
+    Object.keys(ra).forEach(function(x) {
+      Object.keys(cb).forEach(function(y) {
+        var e = ra[x] * cb[y] / n, o = tab[x + "|" + y] || 0;
+        chi += (o - e) * (o - e) / e;
+      });
+    });
+    return Math.sqrt(chi / n / (Math.min(Object.keys(ra).length, Object.keys(cb).length) - 1));
+  }
+  function explained(keys, vals) {
+    var n = vals.length, mean = vals.reduce(function(a, v) {
+      return a + v;
+    }, 0) / n, sum = {}, cnt = {}, tot = 0, bet = 0;
+    vals.forEach(function(v, i) {
+      sum[keys[i]] = (sum[keys[i]] || 0) + v;
+      cnt[keys[i]] = (cnt[keys[i]] || 0) + 1;
+      tot += (v - mean) * (v - mean);
+    });
+    Object.keys(cnt).forEach(function(k) {
+      var m = sum[k] / cnt[k];
+      bet += cnt[k] * (m - mean) * (m - mean);
+    });
+    return bet / tot;
+  }
+  function slid(list, s) {
+    return list.slice(s).concat(list.slice(0, s));
+  }
+  var testCache = null;
+  function feelingSeasonTest() {
+    if (testCache) return testCache;
+    var t = feelingTrack(), st = t.map(function(x) {
+      return x.stage;
+    }), gr = t.map(function(x) {
+      return x.group;
+    });
+    var a = t.filter(function(x) {
+      return x.after != null;
+    }), ak = a.map(function(x) {
+      return x.stage + "|" + x.group;
+    }), av = a.map(function(x) {
+      return x.after;
+    });
+    var v = cramerV(st, gr), r2 = explained(ak, av), vHit = 0, vAll = 0, rHit = 0, rAll = 0, s;
+    for (s = 12; s < st.length - 12; s++, vAll++) if (cramerV(st, slid(gr, s)) >= v) vHit++;
+    for (s = 12; s < av.length - 12; s++, rAll++) if (explained(ak, slid(av, s)) >= r2) rHit++;
+    testCache = {
+      v: v,
+      vShare: vHit / vAll,
+      r2: r2,
+      rShare: rHit / rAll
+    };
+    return testCache;
   }
   function monthsApart(a, b) {
     return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7));
@@ -23156,15 +23186,13 @@
   function diagnoseClose(m) {
     var S = marketMonths(), at = m.endMonth, f = marketFacts(S, at), i = S.spAt[at];
     if (!f) return null;
-    var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
+    var named = readFeeling(f), stage = named || lastFeeling(S, at);
     return {
       stage: stage,
       carried: !named,
-      half: half,
       season: m.season,
       facts: f,
       month: at,
-      posture: readPosture(stage, half, f),
       after: i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null
     };
   }
@@ -23180,20 +23208,14 @@
     f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v) {
       return v != null;
     }));
-    f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
     var stage = readFeeling(f), carried = !stage;
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
-    var half = seasonHalf(currentSeason), rec = whatFollowed();
     return {
       stage: stage,
       carried: carried,
-      half: half,
       season: currentSeason,
       facts: f,
-      month: lastM,
-      posture: readPosture(stage, half, f),
-      record: rec.cells[stage + "|" + half] || null,
-      recordFrom: rec.from
+      month: lastM
     };
   }
   function vitalRingSvg(pct, state, label, cls) {
@@ -26698,20 +26720,6 @@
     Capitulation: "fear in its top tenth, price 15% or more off its high",
     Despondency: "fear 20 points down from a frightened peak, price still 10% down"
   };
-  var POSTURE_STATE = {
-    Offense: "good",
-    Patience: "warning",
-    Prepare: "warning",
-    Defense: "serious",
-    Neutral: "norm"
-  };
-  var POSTURE_SAYS = {
-    Offense: "Fear has arrived after the body cooled.",
-    Patience: "Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
-    Prepare: "Near her high, stretched and still warm: slow down before the body asks.",
-    Defense: "Momentum has turned negative while the body is still warm.",
-    Neutral: "No posture the record singles out."
-  };
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
@@ -26784,8 +26792,8 @@
     if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
   }
-  function dxRow(label, html, asList) {
-    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + (asList ? '<ul class="dx-list">' + html + "</ul>" : dxText(html)) + "</div>";
+  function dxRow(label, html) {
+    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + dxText(html) + "</div>";
   }
   function dxText(html) {
     return '<p class="dx-v">' + html + "</p>";
@@ -26800,23 +26808,57 @@
     var tag = c ? 'button type="button"' : "div";
     return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
   }
-  function postureLine(d, more) {
-    return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + "</b>" + expandBtn(diagnosisInfo(d)) + " " + POSTURE_SAYS[d.posture] + (more ? " " + more : ""));
+  function gridNotes() {
+    return [ "Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The grid counts every month since " + monthLabel(whatFollowed().from) + " by feeling and season, and how often the S&amp;P 500 was higher a year later; each cell says over how many months. It is a count of what followed, not a forecast. A cell resting on fewer than " + THIN_MONTHS + " months is drawn faint: each month’s year ahead overlaps the next month’s, so fewer than twelve is less than one year that stands on its own. The line is Claude’s call, at Keren’s request, not a published standard.", "The test: Cramér’s V measures how closely feeling and season go together, from 0 (not at all) to 1 (each feeling only ever in one season). The share of the following year’s S&amp;P 500 change that the feeling and season together account for is its variance explained. Because a feeling and a season each last months, neither is compared with chance by shuffling months; the season track is slid against the feelings, one month at a time, keeping how long each lasts, and the test counts how often a slid track does as well." ];
   }
   function diagnosisInfo(d) {
     return "<h4>Diagnosis</h4>" + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") + facts(FEELINGS.map(function(w) {
       return "<b>" + w + "</b>: " + FEELING_RULES[w];
-    }).concat([ "Momentum is the S&amp;P 500’s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard.", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast. The trend at the top counts the same months by season: how often today’s feeling came in today’s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500’s monthly average twelve months on." ])) + srcBlock(DIAG_SRC);
+    }).concat([ "Momentum is the S&amp;P 500’s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard." ].concat(gridNotes(), [ "The trend at the top counts the same months by season: how often today’s feeling came in today’s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500’s monthly average twelve months on." ]))) + srcBlock(DIAG_SRC);
   }
-  function assessmentFor(d, era) {
-    if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
-    var r = d.record, watch = [];
-    var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " + r.months + " months in " + r.spells + " separate spells, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
-    if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
-    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense"); else watch.push("Fear arriving now, with the body cool, reads Offense");
-    return postureLine(d, rec) + dxRow("Watch", watch.map(function(x) {
-      return "<li>" + x + "</li>";
-    }).join(""), true);
+  var THIN_MONTHS = 12;
+  function share(c) {
+    return Math.round(c.higher / c.months * 100) + "%";
+  }
+  function gridCell(c, now) {
+    if (!c) return '<span class="fs-cell none">–</span>';
+    var lean = c.higher / c.months - .5;
+    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (c.months < THIN_MONTHS ? " thin" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' + "<b>" + share(c) + "</b><small>" + c.months + " mo</small></span>";
+  }
+  function feelingGrid(d) {
+    var cells = whatFollowed().cells, here = seasonGroup(d.season);
+    var seasons = SEASON_ORDER.filter(function(s) {
+      return FEELINGS.some(function(w) {
+        return cells[w + "|" + s];
+      });
+    });
+    var head = "<span></span>" + seasons.map(function(s) {
+      return '<span class="fs-col' + (s === here ? " now" : "") + '">' + seasonName(s) + "</span>";
+    }).join("");
+    var rows = FEELINGS.map(function(w) {
+      return '<span class="fs-feel' + (w === d.stage ? " now" : "") + '">' + w + "</span>" + seasons.map(function(s) {
+        return gridCell(cells[w + "|" + s], w === d.stage && s === here);
+      }).join("");
+    }).join("");
+    return '<div class="fs-grid" style="--cols:' + seasons.length + '" role="img" aria-label="How often the S&amp;P 500 was higher a year later, by feeling and season">' + head + rows + "</div>";
+  }
+  function gridLines(d, era) {
+    var cells = whatFollowed().cells, t = feelingSeasonTest(), pc = function(v) {
+      return Math.round(v * 100) + "%";
+    };
+    var here = seasonGroup(d.season), mine = cells[d.stage + "|" + here], rest = {
+      months: 0,
+      higher: 0
+    };
+    SEASON_ORDER.forEach(function(s) {
+      var c = cells[d.stage + "|" + s];
+      if (s !== here && c) {
+        rest.months += c.months;
+        rest.higher += c.higher;
+      }
+    });
+    var said = mine && rest.months ? "A year after " + d.stage + " in " + seasonName(here) + ", the S&amp;P 500 was higher in " + share(mine) + " of " + mine.months + " months; after " + d.stage + " in the other seasons, in " + share(rest) + " of " + rest.months + "." : "";
+    return (said ? dxRow(d.stage + " by season", said) : "") + dxRow("The test", "Feeling and season go together: Cramér’s V is " + t.v.toFixed(2) + ", and a season track slid against the feelings matches it " + pc(t.vShare) + " of the time. Together they account for " + pc(t.r2) + " of the swing in the S&amp;P 500 a year later, which slid tracks match " + pc(t.rShare) + " of the time: a record, not a forecast.") + (era && d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : "");
   }
   function diagnosisHtml(m) {
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
@@ -26828,7 +26870,7 @@
       return c.title;
     }).join(" and "), null, stethoscopeSvg()), systems.map(function(c) {
       return systemHtml(c, analysisFor(c.key, d, closed));
-    }).join("") + (open ? acrossCycle(m.era) : "")) + dxSection(dxHead("Assessment"), assessmentFor(d, closed));
+    }).join("") + (open ? acrossCycle(m.era) : "")) + dxSection(dxHead("Feeling and season" + expandBtn(diagnosisInfo(d))), feelingGrid(d) + gridLines(d, closed));
   }
   function acrossCycle(era) {
     var span = {
@@ -26840,16 +26882,21 @@
     return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
   var SEASON_ORDER = [ "spring", "summer", "autumn", "winter" ];
+  function seasonName(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
   function feelingBySeason(stage) {
-    var by = whatFollowed().bySeason;
+    var by = whatFollowed().cells, n = function(k) {
+      return by[k] ? by[k].months : 0;
+    };
     return SEASON_ORDER.map(function(s) {
       var all = FEELINGS.reduce(function(a, w) {
-        return a + (by[w + "|" + s] || 0);
+        return a + n(w + "|" + s);
       }, 0);
       return {
         season: s,
-        name: s.charAt(0).toUpperCase() + s.slice(1),
-        n: by[stage + "|" + s] || 0,
+        name: seasonName(s),
+        n: n(stage + "|" + s),
         all: all
       };
     }).filter(function(r) {

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c14365a` on 2026-10-02. **79 components**, **40 shared patterns**.
+Generated from commit `38327d2` on 2026-10-02. **80 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -111,14 +111,15 @@ Generated from commit `c14365a` on 2026-10-02. **79 components**, **40 shared pa
 | **`catItem`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `indicators.js:appendPicks` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
 | **`dxHead`** | `.dx-sys-head` | `pages-nav.js:diagnosisHtml`, `pages-nav.js:systemHtml` |
-| **`dxRow`** | `.dx-k` `.dx-list` `.dx-row` | `pages-nav.js:acrossCycle`, `pages-nav.js:assessmentFor`, `pages-nav.js:postureLine` |
-| **`dxText`** | `.dx-v` | `pages-nav.js:dxRow`, `pages-nav.js:systemHtml` |
+| **`dxRow`** | `.dx-k` `.dx-row` | `pages-nav.js:acrossCycle`, `pages-nav.js:gridLines` |
+| **`dxText`** | `.dx-v` | `pages-nav.js:systemHtml` |
 | **`emotionCurveSvg`** | `.emo-curve` `.emo-line` | `pages-nav.js:insightMood` |
+| **`feelingGrid`** | `.fs-grid` | `pages-nav.js:diagnosisHtml` |
+| **`gridCell`** | `.fs-cell` `.none` | `pages-nav.js:feelingGrid` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
 | **`insightMood`** | `.emo-fig` | — |
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
-| **`postureLine`** | `.dx-word` | `pages-nav.js:assessmentFor` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
 | **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
@@ -161,14 +162,15 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
-| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
+| **`monthLabel`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
 | **`pageCycle`** | charts.js | 9 places |
+| **`seasonGroup`** | model.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
 | **`histNote`** | history.js | 8 places |
@@ -178,7 +180,6 @@ renderer speaks. Listed most-used first.
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
 | **`highlightsHtml`** | charts.js | 7 places |
-| **`seasonGroup`** | model.js | 7 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
@@ -193,7 +194,6 @@ renderer speaks. Listed most-used first.
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
 | **`readFeeling`** | model.js | 5 places |
-| **`valRow`** | components.js | 5 places |
 | **`detailSlot`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
@@ -203,18 +203,19 @@ renderer speaks. Listed most-used first.
 | **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
+| **`valRow`** | components.js | 4 places |
 | **`byIdMaybe`** | refresh-season.js | 3 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |
 | **`eraFig`** | analysis.js | 3 places |
+| **`feelingTrack`** | model.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
-| **`rankToDate`** | model.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |
 | **`renderDiagnosis`** | pages-nav.js | 3 places |
-| **`seasonHalf`** | model.js | 3 places |
+| **`seasonName`** | pages-nav.js | 3 places |
 | **`showCycle`** | dial-cycle.js | 3 places |
 | **`timelineWindow`** | components.js | 3 places |
 | **`volatilityTag`** | charts.js | 3 places |

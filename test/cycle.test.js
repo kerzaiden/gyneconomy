@@ -16,9 +16,9 @@ function lift(names, env) {
     }
     out += SRC.slice(start, j + 1) + '\n';
   }
-  return new Function('__env', out + 'return { ' + names.join(', ') + ', GROWTH_WINDOW, CUTS: { CALM, FRIGHTENED, RISE, SLOWING, NEAR_HIGH, STRETCHED } };')(env || {});
+  return new Function('__env', out + 'return { ' + names.join(', ') + ', GROWTH_WINDOW, CUTS: { CALM, FRIGHTENED, RISE, SLOWING, NEAR_HIGH } };')(env || {});
 }
-const { seasonHalf, rankToDate, readFeeling, readPosture, CUTS } = lift(['seasonHalf', 'rankToDate', 'readFeeling', 'readPosture']);
+const { rankToDate, readFeeling, cramerV, explained, CUTS } = lift(['rankToDate', 'readFeeling', 'cramerV', 'explained']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -26,16 +26,18 @@ function ok(label, got, want) {
   if (g === w) { pass++; console.log('  ok   ' + label.padEnd(58) + g); }
   else { fail++; console.log('  FAIL ' + label + '\n       got  ' + g + '\n       want ' + w); }
 }
-const base = { dd: 0, mom: 0.2, share: 0.9, wasNegative: false, fear: 40, fear3: 40, fearPeak: 40, stretch: 50 };
+const base = { dd: 0, mom: 0.2, share: 0.9, wasNegative: false, fear: 40, fear3: 40, fearPeak: 40 };
 const feel = o => readFeeling(Object.assign({}, base, o));
 
 console.log('\nThe cut-offs Keren confirmed (V664)\n');
-ok('calm, frightened, rising, slowing, near the high, stretched', CUTS,
-   { CALM: 20, FRIGHTENED: 80, RISE: 20, SLOWING: 0.65, NEAR_HIGH: 0.05, STRETCHED: 80 });
+ok('calm, frightened, rising, slowing, near the high', CUTS,
+   { CALM: 20, FRIGHTENED: 80, RISE: 20, SLOWING: 0.65, NEAR_HIGH: 0.05 });
 
-console.log('\nseasonHalf — all six seasons\n');
-ok('Summer and both Autumns are warm', ['summer', 'autumn', 'lateautumn'].map(seasonHalf), ['warm', 'warm', 'warm']);
-ok('Winter and both Springs are cool', ['winter', 'spring', 'springdeflation'].map(seasonHalf), ['cool', 'cool', 'cool']);
+console.log('\ncramerV and explained — the Feeling and season test\n');
+ok('V is 1 when each feeling only ever comes in one season', cramerV(['a', 'a', 'b', 'b'], ['x', 'x', 'y', 'y']), 1);
+ok('V is 0 when the seasons are spread alike', cramerV(['a', 'a', 'b', 'b'], ['x', 'y', 'x', 'y']), 0);
+ok('all of the swing is explained when each cell is one value', explained(['a', 'a', 'b', 'b'], [1, 1, 3, 3]), 1);
+ok('none of it when every cell has the same mean', explained(['a', 'a', 'b', 'b'], [1, 3, 1, 3]), 0);
 
 console.log('\nrankToDate\n');
 const twelve = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -64,21 +66,6 @@ ok('Optimism: rising, within 5% of the high', feel({ dd: -0.05 }), 'Optimism');
 ok('no feeling named 6% off the high and rising', feel({ dd: -0.06 }), null);
 ok('no reading without fear', feel({ fear: null }), null);
 
-console.log('\nreadPosture — every feeling in both halves\n');
-const P = (s, h, o) => readPosture(s, h, Object.assign({ mom: 0.1, stretch: 50 }, o));
-ok('Offense: fear, capitulation or anxiety in a cool body',
-   ['Fear', 'Capitulation', 'Anxiety'].map(s => P(s, 'cool', { mom: -0.1 })), ['Offense', 'Offense', 'Offense']);
-ok('Patience: fear or capitulation in a warm body',
-   ['Fear', 'Capitulation'].map(s => P(s, 'warm', { mom: -0.1 })), ['Patience', 'Patience']);
-ok('Defense: momentum negative in a warm body', ['Despondency', 'Anxiety', 'Optimism'].map(s => P(s, 'warm', { mom: -0.01 })),
-   ['Defense', 'Defense', 'Defense']);
-ok('Prepare: euphoria or optimism, warm, stretch in its top fifth',
-   ['Euphoria', 'Optimism'].map(s => P(s, 'warm', { stretch: 80 })), ['Prepare', 'Prepare']);
-ok('not Prepare at stretch 79', P('Euphoria', 'warm', { stretch: 79 }), 'Neutral');
-ok('Neutral: the same in a cool body', ['Euphoria', 'Optimism', 'Hope', 'Despondency'].map(s => P(s, 'cool', { stretch: 99 })),
-   ['Neutral', 'Neutral', 'Neutral', 'Neutral']);
-ok('Neutral: hope or anxiety, warm, momentum positive', ['Hope', 'Anxiety'].map(s => P(s, 'warm')), ['Neutral', 'Neutral']);
-
 const near = (a, b) => a != null && Math.abs(a - b) < 1e-9;
 const month = i => (2000 + Math.floor(i / 12)) + '-' + String(i % 12 + 1).padStart(2, '0');
 
@@ -98,8 +85,7 @@ console.log('\nmarketMonths — momentum, its best, and the drawdown\n');
 
 console.log('\nmarketFacts — each window at its edge\n');
 {
-  const capeHistory = Array.from({ length: 13 }, (_, k) => ({ y: 1990 + k, v: 10 + k })).concat([{ y: 2003, v: 99 }]);
-  const { marketFacts } = lift(['rankToDate', 'stretchRank', 'marketFacts'], { capeHistory });
+  const { marketFacts } = lift(['marketFacts']);
   const fearRank = [95, 1, 2, 3, 50, 4, 5, 33];
   const S = { spAt: { '2003-08': 5 }, volAt: { '2003-08': 7 }, dd: [0, 0, 0, 0, 0, -0.02], best: [0, 0, 0, 0, 0, 0.2],
               mom: [0.1, -0.1, 0.1, 0.1, 0.1, 0.05], fearRank };
@@ -111,7 +97,6 @@ console.log('\nmarketFacts — each window at its edge\n');
   S.mom[2] = -0.1;
   ok('a negative month three back is', marketFacts(S, '2003-08').wasNegative, true);
   ok('the share of the best run', f.share, 0.25);
-  ok('the stretch ranks this year\u2019s CAPE against earlier years only', f.stretch, 100);
   ok('a given fear replaces the month\u2019s', marketFacts(S, '2003-08', 12).fear, 12);
 }
 
@@ -121,20 +106,19 @@ console.log('\nwhatFollowed, lastFeeling, diagnoseClose — the record and the c
   sp[59].v = sp[58].v * 0.94;
   const vol = sp.map(d => ({ m: d.m, v: 20 }));
   const seasons = Array.from({ length: 20 }, (_, k) => ({ y: 2000 + Math.floor(k / 4), qn: 'Q' + (k % 4 + 1), reading: { season: 'summer' } }));
-  const env = { sp500MonthlyHistory: sp, volatilityHistory: vol, seasonTrackAll: seasons, capeHistory: [],
+  const env = { sp500MonthlyHistory: sp, volatilityHistory: vol, seasonTrackAll: seasons,
     QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, marketCache: null, followedCache: null };
-  const M = lift(['seasonHalf', 'seasonGroup', 'rankToDate', 'readFeeling', 'readPosture', 'marketMonths', 'seasonInMonth', 'stretchRank',
+  const M = lift(['seasonGroup', 'rankToDate', 'readFeeling', 'marketMonths', 'seasonInMonth',
                   'marketFacts', 'whatFollowed', 'lastFeeling', 'diagnoseClose'], env);
-  const rec = M.whatFollowed(), cell = rec.cells['Optimism|warm'];
+  const rec = M.whatFollowed(), cell = rec.cells['Optimism|summer'];
   ok('the record starts when momentum and a fear rank both exist', rec.from, '2001-01');
   ok('every month with a year still to come is counted, and no later one', cell.months, 36);
-  ok('a year later means twelve months, not fewer', near(cell.median, Math.pow(1.01, 12) - 1), true);
-  ok('one unbroken spell', cell.spells, 1);
-  ok('each month is also counted by its season, the four seasons of the dial', rec.bySeason, { 'Optimism|summer': 36 });
+  ok('each month a year after a rise counts as higher', cell.higher, 36);
+  ok('the cells are the four seasons of the dial', Object.keys(rec.cells), ['Optimism|summer']);
   const S = M.marketMonths();
   ok('a month no rule names carries the last named feeling', [M.readFeeling(M.marketFacts(S, '2004-12')), M.lastFeeling(S, '2004-12')], [null, 'Optimism']);
   const at = M.diagnoseClose({ endMonth: '2002-06', season: 'summer' });
-  ok('the close reads its own month', [at.stage, at.carried, at.half], ['Optimism', false, 'warm']);
+  ok('the close reads its own month', [at.stage, at.carried], ['Optimism', false]);
   ok('what followed the close is the change a year later', near(at.after, Math.pow(1.01, 12) - 1), true);
   ok('a close with no year after it has nothing to report', M.diagnoseClose({ endMonth: '2004-06', season: 'summer' }).after, null);
   ok('a close no rule names says it carried', [M.diagnoseClose({ endMonth: '2004-12', season: 'summer' }).stage, M.diagnoseClose({ endMonth: '2004-12', season: 'summer' }).carried], ['Optimism', true]);

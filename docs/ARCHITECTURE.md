@@ -492,16 +492,16 @@ then `#diagnosis` under it, in place of the four category cards (Keren: "I want 
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
 under its cycle view. In clinical order: the trend card (the feeling in its season, since V681), then each **System** (a category;
 its heading is the door to the category page) with its one **Analysis** line (what the readings tell the doctor),
-then the **Assessment** (posture, record, what to watch). There are no Symptoms lists since V672 (Keren: the
+then **Feeling and season** (since V684, in place of the Assessment). There are no Symptoms lists since V672 (Keren: the
 category page behind each heading already shows every reading).
 Since V682 the Diagnosis is three sibling cards inside `#diagnosis` (a flex column with the page gap): the trend
 card, a `.dx-sys` card for the systems the dial and the trend card do not already show (`!c.onDial && !c.inTrend`,
-so today Circulation and Energy, named in its head), and a `.dx-sys` card for the Assessment, whose `.dx-k` titles
-sit on their own line. The systems card ends, for the open cycle only, on **Across the cycle** (`acrossCycle`):
+so today Circulation and Energy, named in its head), and a `.dx-sys` card for Feeling and season; every `.dx-k`
+title sits on its own line. The systems card ends, for the open cycle only, on **Across the cycle** (`acrossCycle`):
 the Fed funds rate and unemployment from the cycle's first month to today, read through `eraEnds`, the same ends
 `eraMove` gives a closed cycle's lines, so the two never disagree.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same
-`analysisFor` and `assessmentFor`, which take the closed era or null): the
+`analysisFor` and `gridLines`, which take the closed era or null): the
 season and the feeling at the closing month, the Analysis as the movement across the cycle, and what actually
 followed a year later. The systems are `CATEGORIES` in `shown` order.
 
@@ -518,12 +518,18 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   of the bull's best twelve-month change, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
   15% off the high) are the research's stage table as she supplied it. **Euphoria keeps the tested rule** (V664):
   it needs calm fear; valuations are not part of it.
-- **The posture** (`readPosture`): Offense (Fear, Capitulation or Anxiety in a cool half), Patience (Fear or
-  Capitulation, warm), Defense (momentum negative, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
-  of its own history), Neutral otherwise. Warm is Summer and both Autumns (`seasonHalf`).
+- **Feeling and season** (V684, `feelingGrid` and `gridLines`): the seven feelings by the seasons that have any
+  month, each cell from `whatFollowed` (months, and how many were higher a year later), tinted continuously from 50%
+  by `--tint` (green above, red below; no cut-offs, so no band to source); a cell under `THIN_MONTHS` (12, Claude's
+  call at Keren's request) is drawn faint, since overlapping years ahead make fewer months less than one free year. The test (`feelingSeasonTest`, cached) is
+  Cramér's V of feeling against season over `feelingTrack`, and the share of the following year's change explained
+  by the feeling-and-season cell (`explained`). Neither is compared with chance by shuffling months, because a
+  feeling and a season each run for months; the season track (or the returns) is slid one month at a time against
+  the rest, keeping every run whole, and the share of slides that do as well is printed beside each figure. The
+  posture and the warm/cool halves left with the Assessment, and with them the CAPE stretch in `marketFacts`.
 - **The record is computed at load, never written down** (`whatFollowed`): every month from the season track's
-  first quarter (Dec 1989) with a VIX rank and a year to look forward, by feeling and half: months, spells, how many
-  were higher a year later, the median and the worst. Fear is `volatilityHistory` ranked against every month
+  first quarter (Dec 1989) with a VIX rank and a year to look forward, by feeling and season: months and how many
+  were higher a year later. Fear is `volatilityHistory` ranked against every month
   before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
   live VIX close ranked against those monthly averages.
 - **The Diagnosis's momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
@@ -542,7 +548,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
-- **One feeling** (V681): the Diagnosis is the trend card (`trendCardHtml`), the Analysis and the Assessment. Its
+- **One feeling** (V681): the Diagnosis is the trend card (`trendCardHtml`), the Analysis and the Assessment (Feeling and season since V684). Its
   spell lines (`spellLines`) read `spellRecord`: `feelingTrack` is every month's feeling (carried, as in the record)
   and season group, `feelingSpells` cuts it into runs of the same feeling in the same season, and the spell that
   reaches the diagnosed month is the current one. Unlike `whatFollowed`, the track runs to the latest month; only
