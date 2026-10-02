@@ -579,7 +579,7 @@ async function openPage(p, url, sheet) {
      cyc.es === 'Insights:1' && feel.stage.toUpperCase() === cyc.now[0])
       ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
       : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
-    await click(p, '.season-wheel-hub-detail .who'); await settle(p);
+    await click(p, '#season-wheel-hub-open'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');
       return page && { bar: document.getElementById('topbar-title').textContent.trim(),
@@ -592,6 +592,26 @@ async function openPage(p, url, sheet) {
      wx.cards.indexOf('In the body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The barometer') > 0)
       ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
+    await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);
+    const qhub = await p.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent.trim(),
+      ret: (document.querySelector('#season-wheel-hub-detail .hub-line b') || {}).textContent }));
+    await click(p, '#season-wheel-hub-open'); await settle(p);
+    const qs = await p.evaluate(() => {
+      const body = document.getElementById('detail-modal-body');
+      return { shown: document.getElementById('detail-backdrop').classList.contains('show'),
+        sub: (body.querySelector('.marker-sub') || {}).textContent || '',
+        names: [...body.querySelectorAll('.cat-item .ci-name')].map(n => n.textContent.trim()).join('+'),
+        market: (body.querySelector('.cat-item[data-open="sheet-sign-market"] .ci-value') || {}).textContent || '',
+        about: !!body.querySelector('.more-row') };
+    });
+    await click(p, '#detail-modal-body .cat-item[data-open="sheet-metric-gdp"]'); await settle(p);
+    const qpage = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent.trim(),
+      shown: document.getElementById('detail-backdrop').classList.contains('show') }));
+    await p.click('#topbar-back'); await settle(p);
+    (qs.shown && qs.sub.indexOf(qhub.date) === 0 && qs.names === 'Temperature+Growth+S&P 500' && qhub.ret && qs.market.indexOf(qhub.ret) === 0 &&
+     qs.about && qpage.bar === 'Growth' && !qpage.shown)
+      ? ok('a tapped quarter opens its sheet: Temperature, Growth and that year\u2019s S&P 500, one number with the dial', qhub.date + ' \u00b7 ' + qhub.ret)
+      : bad('a tapped quarter opens its sheet: Temperature, Growth and that year\u2019s S&P 500, one number with the dial', JSON.stringify({ qhub, qs, qpage }));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
     await p.click('#search-list [data-open="sheet-grp-stress"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,

@@ -19,7 +19,6 @@
     --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--surface));
     --on-accent: #ffffff;
     --overlay: rgba(28,22,32,0.38);
-    --rose-ink: var(--accent-ink);
     --track: #ece6dd;
     --mark-wash: #e3dacd;
     --good: #1ea8a3;
@@ -64,7 +63,6 @@
       --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
       --on-accent: #100d12;
       --overlay: rgba(0,0,0,0.62);
-      --rose-ink: var(--accent-ink);
       --track: #322c36; --mark-wash: #3f3846;
       --good: #3dc2bb;
       --good-ink: #5fd6cf;
@@ -105,7 +103,6 @@
     --accent-ink: #e3c6ea;
     --accent-wash: rgba(201,160,214,0.16);
     --on-accent: #100d12;
-    --rose-ink: #f0a9c6;
     --track: #322c36; --mark-wash: #3f3846;
     --good: #3dc2bb;
     --good-ink: #5fd6cf;
@@ -311,29 +308,26 @@
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
   .season-wheel-hub{
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; pointer-events:none; padding:0 18px; gap:2px;
+    text-align:center; pointer-events:none; padding:0 18px;
   }
-  .season-wheel-hub-date{ font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.042); color:var(--text-secondary); }
+  .season-wheel-hub-open{ display:flex; flex-direction:column; align-items:center; gap:calc(var(--dial) * 0.014); pointer-events:auto;
+    background:none; border:0; padding:calc(var(--dial) * 0.02); margin:0; font:inherit; color:inherit; text-align:center; cursor:pointer;
+    border-radius:calc(var(--dial) * 0.04); -webkit-tap-highlight-color:transparent; transition:opacity 0.12s; }
+  .season-wheel-hub-open:active:not(:disabled){ opacity:0.55; }
+  .season-wheel-hub-open:disabled{ cursor:default; }
+  .season-wheel-hub-open:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .season-wheel-hub-date{ font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.042); line-height:1.1; color:var(--text-secondary); }
   .season-wheel-hub-date b{ font-weight:700; color:var(--text-primary); }
-  .season-wheel-hub-theme, .season-wheel-hub-detail .who, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
+  .season-wheel-hub-theme, .detail-modal .legend-row, .seasons-rows .lag-row span:first-child{ font-variant-ligatures:none; font-feature-settings:"liga" 0, "dlig" 0, "clig" 0; }
   .season-wheel-hub-theme.bull, .season-wheel-hub-theme.bear{ padding:0.04em 0.32em 0.08em; border-radius:0.3em; }
   .season-wheel-hub-theme.bull{ color:var(--bull-ink); background:var(--bull-wash); }
   .season-wheel-hub-theme.bear{ color:var(--bear-ink); background:var(--bear-wash); }
-  .season-wheel-hub-theme{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.116); color:var(--text-primary); line-height:1.05; margin-top:calc(var(--dial) * 0.012); }
-  .season-wheel-hub-detail{ margin-top:calc(var(--dial) * 0.02); font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.034); line-height:1.4; color:var(--text-secondary); }
-  .season-wheel-hub-detail div{ white-space:nowrap; }
-  .season-wheel-hub-detail .who{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.058); color:var(--accent-ink); }
-  .season-wheel-hub-detail button.who{ background:none; border:0; padding:0; cursor:pointer; pointer-events:auto;
-    display:inline-flex; align-items:baseline; gap:0.22em; color:var(--accent-ink); }
-  .season-wheel-hub-detail button.who:hover{ text-decoration:underline; }
-  .season-wheel-hub-detail button.who:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
-  .who-chev{ font-size:0.82em; opacity:0.75; }
-  .season-wheel-hub-detail .details-link:not(.who){
-    pointer-events:auto; cursor:pointer; background:none; border:none; padding:2px 6px; margin-top:calc(var(--dial) * 0.01);
-    font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.036); font-weight:600; color:var(--accent-ink);
-  }
-  .season-wheel-hub-detail .details-link:hover{ text-decoration:underline; }
-  .season-wheel-hub.away .season-wheel-hub-date b{ color:var(--rose-ink); }
+  .season-wheel-hub-theme{ position:relative; font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.116); color:var(--text-primary); line-height:1.05; }
+  .hub-chev{ position:absolute; left:100%; top:50%; transform:translateY(-38%); margin-left:0.12em; font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:0.5em; line-height:1; color:var(--text-muted); }
+  .season-wheel-hub-detail{ display:flex; flex-direction:column; align-items:center; gap:calc(var(--dial) * 0.012); font-family:"Public Sans",sans-serif; font-size:calc(var(--dial) * 0.034); line-height:1.25; color:var(--text-secondary); }
+  .hub-line{ white-space:nowrap; }
+  .hub-line b{ font-weight:700; color:var(--text-primary); }
+  .hub-stage{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:calc(var(--dial) * 0.058); line-height:1.1; color:var(--text-secondary); }
   .cycle-dial{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
   .cycle-dial .dial-track{ fill:none; stroke:var(--border); stroke-width:var(--track-w, 16); opacity:0.6; stroke-linecap:round; }
   .cycle-dial .dial-dot{ fill:var(--text-muted); opacity:0.45; }
@@ -1106,7 +1100,7 @@
   .sx-foot{ margin:8px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
-  .cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
+  .metric-sheet.cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
     background:linear-gradient(to bottom, color-mix(in srgb, var(--cat) 26%, var(--page)), color-mix(in srgb, var(--cat) 8%, var(--page)) 55%, var(--page)); }
   body:has(#metric-page .cat-sheet:not([hidden])) .wrap > .topbar{ background:transparent; border-bottom-color:transparent; }
   .cat-sheet .cat-item{ margin:0; padding:18px 20px 20px; border:0; border-radius:24px; }
@@ -1269,6 +1263,7 @@
     transform:translateY(10px); transition:transform 0.15s ease;
   }
   .detail-backdrop.show .detail-modal{ transform:translateY(0); }
+  .detail-modal:has(.cat-sheet){ background:var(--page); }
   .detail-modal-close{
     position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%;
     border:1px solid var(--border-strong); background:var(--surface-2); color:var(--accent-ink);
@@ -1382,9 +1377,11 @@
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
           <div class="season-wheel-hub">
-            <div class="season-wheel-hub-date" id="season-wheel-hub-date"></div>
-            <div class="season-wheel-hub-theme" id="season-wheel-hub-theme"></div>
-            <div class="season-wheel-hub-detail" id="season-wheel-hub-detail"></div>
+            <button type="button" class="season-wheel-hub-open" id="season-wheel-hub-open">
+              <span class="season-wheel-hub-date" id="season-wheel-hub-date"></span>
+              <span class="season-wheel-hub-theme" id="season-wheel-hub-theme"></span>
+              <span class="season-wheel-hub-detail" id="season-wheel-hub-detail"></span>
+            </button>
           </div>
         </div>
       </div>
@@ -24892,6 +24889,25 @@
       says: "a negative total return, which the dial draws as a bear year"
     };
   }
+  function marketCol(v) {
+    return "dv-bar " + (v >= 0 ? "over" : "under");
+  }
+  function marketPeek(y, from) {
+    var v = sp500AnnualReturns[y], w = v == null ? null : marketWord(v);
+    return w && peekOf("sheet-sign-market", {
+      value: fmtSigned(v, 1) + "%",
+      word: w.text,
+      state: w.state,
+      colBase: 0,
+      colRule: true,
+      cols: sp500Years.filter(function(d) {
+        return d.y >= from && d.y <= y;
+      }).map(function(d) {
+        return d.v;
+      }),
+      colClass: marketCol
+    });
+  }
   var marketReading = function(h) {
     var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
     var lo = h.reduce(function(a, d) {
@@ -24939,9 +24955,7 @@
       get peek() {
         return colPeek(sp500Years.map(function(d) {
           return d.v;
-        }), function(v) {
-          return "dv-bar " + (v >= 0 ? "over" : "under");
-        }, 0, true);
+        }), marketCol, 0, true);
       },
       lead: "",
       caption: now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
@@ -27536,7 +27550,8 @@
       badgeDeg: badgeDeg,
       badgeAt: BADGE_AT,
       polar: polar,
-      parked: null
+      parked: null,
+      sheets: {}
     };
     hubShowDefault();
   }
@@ -27570,7 +27585,7 @@
   GYN.step("wireThemeChoice", wireThemeChoice, "wire");
   wireThemeChoice();
   function renderCycleKicker() {
-    var html = '<h4>Legend</h4><span class="marker-sub">The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.</span>' + '<div class="legend-head">Seasons</div><div class="legend-rows">' + [ [ "winter", "Winter", "below the range" ], [ "spring", "Spring", "below or within the range" ], [ "summer", "Summer", "above the range" ], [ "autumn", "Autumn", "within or above the range" ] ].map(function(r) {
+    var html = popHead("Legend", "The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.") + '<div class="legend-head">Seasons</div><div class="legend-rows">' + [ [ "winter", "Winter", "below the range" ], [ "spring", "Spring", "below or within the range" ], [ "summer", "Summer", "above the range" ], [ "autumn", "Autumn", "within or above the range" ] ].map(function(r) {
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
     }).join("") + "</div>" + '<p class="caption">The seasons wear the temperature’s colours: periwinkle below the 1–3% range, orange above it — deep where a season sits wholly outside the range (Winter, Summer), light where it straddles it (Spring, Autumn). Tap a quarter to read which season it was in, and why, in the centre.</p>' + '<div class="legend-head">S&amp;P 500</div><div class="legend-rows">' + '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>positive return</small></div>' + '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>negative return</small></div>' + '<div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div>' + '<div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div>' + "</div>" + '<div class="legend-head">The ring’s span</div>' + '<p class="caption">An open cycle’s ring is scaled to <b>' + typicalCycleYears + " years</b>, and the pale dots are what is left of one: a typical full cycle — one bull market and the bear market that ends it — has run about five to six and a half years across the long record. A cycle that outlasts it extends the ring instead of overflowing it, which is why the Dot-Com ring spans twelve. It is a typical length, not a forecast.</p>" + srcBlock(typicalCycleSrc) + '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
@@ -27581,20 +27596,57 @@
   var dialState;
   var hubDetailIdx = detailTexts.length;
   detailTexts.push("");
-  function hubSet(dateHtml, theme, meta, popupHtml, cat) {
+  function hubSet(dateHtml, meta, y, open) {
     put("season-wheel-hub-date", dateHtml);
-    var themeEl = byId("season-wheel-hub-theme");
-    themeEl.textContent = meta.name;
+    var themeEl = byId("season-wheel-hub-theme"), ret = sp500AnnualReturns[y];
+    themeEl.innerHTML = meta.name + '<span class="hub-chev" aria-hidden="true">›</span>';
     themeEl.classList.remove("bull", "bear");
-    var who = theme && theme !== meta.name ? theme : "", chev = '<span class="who-chev" aria-hidden="true">›</span>';
-    put("season-wheel-hub-detail", !who ? "" : cat ? '<button type="button" class="who" data-open="sheet-cat-' + cat.key + '" data-title="' + cat.title + '">' + who + chev + "</button>" : popupHtml ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + chev + "</button>" : '<div class="who">' + who + "</div>");
-    detailTexts[hubDetailIdx] = popupHtml || "";
+    put("season-wheel-hub-detail", (meta.theme ? '<span class="hub-stage">' + meta.theme + "</span>" : "") + (ret != null ? hubLine("<b>" + fmtSigned(ret, 1) + "%</b> " + y) : ""));
+    hubOpen(open);
   }
-  function quarterPopup(m, seg, i, isPresent) {
+  function hubOpen(open) {
+    var b = byId("season-wheel-hub-open");
+    [ "data-open", "data-title", "data-detail-idx" ].forEach(function(a) {
+      b.removeAttribute(a);
+    });
+    b.disabled = !open;
+    b.classList.toggle("details-link", !!(open && open.html));
+    if (open && open.cat) {
+      b.setAttribute("data-open", "sheet-cat-" + open.cat.key);
+      b.setAttribute("data-title", open.cat.title);
+    }
+    if (open && open.html) {
+      detailTexts[hubDetailIdx] = open.html;
+      b.setAttribute("data-detail-idx", hubDetailIdx);
+    }
+  }
+  function quarterCards(m, seg) {
+    var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
+    var gq = gdpQuarterlyYoY.filter(function(d) {
+      return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q;
+    });
+    var cards = [ [ tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c) {
+      return c.m <= qEnd;
+    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q) ], [ marketPeek(y, m.era.from), String(y) ] ];
+    return '<div class="cat-sheet cat-weather">' + catList(cards.map(function(c) {
+      return c[0] ? catCard(elFrom(c[0]), c[1]).outerHTML : "";
+    }).join("")) + "</div>";
+  }
+  function popHead(title, sub) {
+    return "<h4>" + title + '</h4><span class="marker-sub">' + sub + "</span>";
+  }
+  function hubLine(html) {
+    return '<span class="hub-line">' + html + "</span>";
+  }
+  function quarterSheet(m, seg, isPresent) {
+    var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
+    return popHead(meta.name + (meta.theme ? " · " + meta.theme : ""), qLabel(seg.q) + " · year " + (Math.floor(seg.from) + 1) + " of the " + m.era.name) + quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
+  }
+  function quarterPopup(m, seg, isPresent) {
     var meta = wheelMeta[seg.season], era = m.era;
     var yearN = Math.floor(seg.from) + 1;
     var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
-    var head = "<h4>" + when + " · " + (meta.theme || meta.name) + "</h4>" + '<span class="marker-sub">' + meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to) + "</span>";
+    var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
     var reading = seasonReading[seg.season] || {};
     return head + (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
       return "<li>" + w + "</li>";
@@ -27608,33 +27660,41 @@
       return;
     }
     var m = dialState.m, meta = wheelMeta[m.season], qs = dialState.quarters, last = qs[qs.length - 1];
+    if (m.ongoing) {
+      hubSet(hubTodayHtml(), meta, calendarTodayY, {
+        cat: CATEGORIES.filter(function(c) {
+          return c.onDial;
+        })[0]
+      });
+      return;
+    }
     var presentSeg = {
       q: last ? last.seg.q : m.reading.gdpLatest.q,
       from: last ? last.seg.from : 0,
       season: m.season,
       reading: m.reading
     };
-    document.querySelector(".season-wheel-hub").classList.remove("away");
-    hubSet(m.ongoing ? hubTodayHtml() : "<b>Closed,</b> " + monthLabel(m.endMonth), meta.theme || meta.name, meta, m.ongoing ? "" : quarterPopup(m, presentSeg, qs.length, true), m.ongoing && CATEGORIES.filter(function(c) {
-      return c.onDial;
-    })[0]);
+    hubSet("<b>Closed,</b> " + monthLabel(m.endMonth), meta, m.endYear, {
+      html: quarterSheet(m, presentSeg, true)
+    });
   }
   function hubShowQuarter(i) {
-    var q = dialState.quarters[i];
+    var q = dialState.quarters[i], cache = dialState.sheets;
     if (!q) return;
-    var meta = wheelMeta[q.seg.season];
-    document.querySelector(".season-wheel-hub").classList.add("away");
-    hubSet("<b>" + qLabel(q.seg.q) + "</b>", meta.theme || meta.name, meta, quarterPopup(dialState.m, q.seg, i, false));
+    hubSet("<b>" + qLabel(q.seg.q) + "</b>", wheelMeta[q.seg.season], parseInt(q.seg.q, 10), {
+      html: cache[i] || (cache[i] = quarterSheet(dialState.m, q.seg, false))
+    });
   }
   function hubShowYear(y) {
     var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
     var cum = m.cumByYear[y];
+    hubOpen(null);
     put("season-wheel-hub-date", "<b>" + y + "</b>" + (isYtd ? " · Today" : ""));
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0);
     themeEl.classList.toggle("bear", ret < 0);
-    put("season-wheel-hub-detail", "<div>S&amp;P 500 total return <b>" + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%</b></div>" + (cum != null ? "<div><b>" + (cum >= 0 ? "+" : "") + cum.toFixed(1) + "%</b> since " + m.era.from + (y === m.peakYear ? " · <b>Peak year</b>" : "") + "</div>" : ""));
+    put("season-wheel-hub-detail", hubLine("S&amp;P 500 total return <b>" + fmtSigned(ret, 1) + "%</b>") + (cum != null ? hubLine("<b>" + fmtSigned(cum, 1) + "%</b> since " + m.era.from + (y === m.peakYear ? " · <b>Peak year</b>" : "")) : ""));
   }
   function renderCycleDial() {
     var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
@@ -27681,7 +27741,7 @@
       passive: true
     });
     document.addEventListener("click", function(e) {
-      if (dial.contains(e.target)) return;
+      if (dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null) {
         shown = false;
         goTo(-1);
@@ -27753,8 +27813,13 @@
       hub.classList.remove("scrubbing");
       if (dialState.parked != null) mark(dialState.parked);
     }
-    dial.addEventListener("pointerup", endScrub);
-    dial.addEventListener("pointercancel", endScrub);
+    [ "pointerup", "pointercancel" ].forEach(function(t) {
+      dial.addEventListener(t, endScrub);
+    });
+    dial.addEventListener("click", function(e) {
+      var t = !scrubbing && e.target.closest && e.target.closest("[data-q]");
+      if (t) goTo(+t.getAttribute("data-q"));
+    });
   }
   GYN.step("renderCycleDial", renderCycleDial, "wire");
   renderCycleDial();
@@ -28142,6 +28207,9 @@
     sheet.className += " cat-sheet cat-" + key;
     return sheet;
   }
+  function catList(html) {
+    return '<div class="cat-list">' + html + "</div>";
+  }
   function groupId(name) {
     return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-");
   }
@@ -28157,7 +28225,7 @@
   function groupSheet(grp, name, key, items) {
     items.appendChild(groupCard(grp, name));
     var sheet = catSheet(groupId(name), key);
-    sheet.innerHTML = '<div class="cat-list"></div>';
+    sheet.innerHTML = catList("");
     sheet.firstChild.appendChild(grp);
     byId("today-analysis").appendChild(sheet);
   }
@@ -28622,10 +28690,13 @@
       if (draw) draw(metricPage.clientWidth);
       collapseEmptyBlocks(el);
     }
-    cyclePanel.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest("[data-open]");
-      if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
+    [ cyclePanel, byId("detail-modal-body") ].forEach(function(host) {
+      host.addEventListener("click", function(e) {
+        var btn = e.target.closest && e.target.closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl.closest(".tab-panel").getAttribute("data-tab");
+        if (!btn) return;
+        byId("detail-backdrop").classList.remove("show");
+        openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
+      });
     });
     [ "analysis", "search" ].forEach(function(key) {
       var panel = PAGE_HOME[key].panel, go = function(el) {
@@ -28746,7 +28817,12 @@
     var page = document.getElementById(open);
     if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
-    var item = document.createElement("button");
+    var item = catCard(src, cardDate(ROSTER_BY[open]));
+    if (src.parentNode) src.parentNode.removeChild(src);
+    return item;
+  }
+  function catCard(src, when) {
+    var open = src.getAttribute("data-open"), item = document.createElement("button");
     item.type = "button";
     item.className = "cat-item";
     item.setAttribute("data-open", open);
@@ -28767,7 +28843,6 @@
     var read = document.createElement("div");
     read.className = "ci-read";
     var val = src.querySelector(".peek-value, .subject-value");
-    var when = cardDate(ROSTER_BY[open]);
     if (val) {
       var unit = val.querySelector(".peek-unit, .unit");
       if (unit) {
@@ -28802,7 +28877,6 @@
     head.appendChild(chev.firstChild);
     item.appendChild(head);
     item.appendChild(body);
-    if (src.parentNode) src.parentNode.removeChild(src);
     return item;
   }
   function insightCirculation() {
@@ -29083,13 +29157,38 @@
       if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
     });
   }
+  function tempPeek(r, value, cpi) {
+    var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+    return peekOf("sheet-metric-temp", {
+      value: value,
+      word: word,
+      state: heatStep(r.cpiNow),
+      cols: cpi.map(function(d) {
+        return d.v;
+      }),
+      colClass: function(v) {
+        return "temp-col " + heatStep(v);
+      }
+    });
+  }
+  function gdpPeek(r, gq) {
+    return peekOf("sheet-metric-gdp", {
+      value: fmtSigned(r.gdpLatest.v, 1) + "%",
+      word: growthShownCap(r.regime),
+      state: phaseClass(r.regime),
+      cols: gq.map(function(d) {
+        return d.v;
+      }),
+      colClass: function(v, i) {
+        return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
+      }
+    });
+  }
   function renderPeekAndCategories() {
     var host = byId("peek-row");
     if (!host) return null;
     var tempInd = indOf(ROSTER_BY["sheet-metric-temp"]);
     var r = nowModel.reading, era = nowModel.era;
-    var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
-    var cpiDir = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
     var gq = gdpQuarterlyYoY.filter(function(d) {
       return parseInt(d.q.slice(0, 4), 10) >= era.from;
     });
@@ -29099,27 +29198,7 @@
       y: calendarTodayY,
       v: capeNow
     });
-    host.innerHTML = peekOf("sheet-metric-temp", {
-      value: tempInd.metric,
-      word: cpiWord + " · " + cpiDir,
-      state: heatStep(r.cpiNow),
-      cols: nowModel.cpi.map(function(d) {
-        return d.v;
-      }),
-      colClass: function(v) {
-        return "temp-col " + heatStep(v);
-      }
-    }) + peekOf("sheet-metric-gdp", {
-      value: (r.gdpLatest.v >= 0 ? "+" : "") + r.gdpLatest.v.toFixed(1) + "%",
-      word: growthShownCap(r.regime),
-      state: phaseClass(r.regime),
-      cols: gq.map(function(d) {
-        return d.v;
-      }),
-      colClass: function(v, i) {
-        return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
-      }
-    }) + peekOf("sheet-metric-valuation", {
+    host.innerHTML = tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) + peekOf("sheet-metric-valuation", {
       value: capeNow.toFixed(1) + "×",
       word: valuation.tag.text,
       state: valuation.tag.state,

@@ -77,7 +77,7 @@
     dialEl.style.setProperty("--track-w", trackW.toFixed(2));
     dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
     dialEl.innerHTML = parts.join("");
-    dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null };
+    dialState = { m:m, quarters:quarters, badgeDeg:badgeDeg, badgeAt:BADGE_AT, polar:polar, parked:null, sheets:{} };
     hubShowDefault();
   }
   // ---- the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice ----
@@ -101,7 +101,7 @@
   GYN.step("wireThemeChoice", wireThemeChoice, "wire"); wireThemeChoice();
   // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
   function renderCycleKicker(){
-    var html = '<h4>Legend</h4><span class="marker-sub">The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.</span>' +
+    var html = popHead('Legend', 'The outer ring is the cycle season by season — one shape per season, from the quarter it began to the quarter it ended, in its colour; the band inside is the stock market, one segment per year.') +
       '<div class="legend-head">Seasons</div><div class="legend-rows">' +
       [["winter","Winter","below the range"],["spring","Spring","below or within the range"],["summer","Summer","above the range"],["autumn","Autumn","within or above the range"]].map(function(r){
         return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
@@ -124,24 +124,45 @@
   // ---- the hub: the reading inside the circle ----
   var dialState;
   var hubDetailIdx = detailTexts.length; detailTexts.push("");
-  function hubSet(dateHtml, theme, meta, popupHtml, cat){
+  function hubSet(dateHtml, meta, y, open){
     put("season-wheel-hub-date", dateHtml);
-    var themeEl = byId("season-wheel-hub-theme");
-    themeEl.textContent = meta.name; themeEl.classList.remove("bull", "bear");
-    var who = theme && theme !== meta.name ? theme : "", chev = '<span class="who-chev" aria-hidden="true">\u203a</span>';
-    put("season-wheel-hub-detail", !who ? "" :
-      cat ? '<button type="button" class="who" data-open="sheet-cat-' + cat.key + '" data-title="' + cat.title + '">' + who + chev + '</button>'
-      : popupHtml ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + chev + '</button>'
-      : '<div class="who">' + who + '</div>');
-    detailTexts[hubDetailIdx] = popupHtml || "";
+    var themeEl = byId("season-wheel-hub-theme"), ret = sp500AnnualReturns[y];
+    themeEl.innerHTML = meta.name + '<span class="hub-chev" aria-hidden="true">\u203a</span>'; themeEl.classList.remove("bull", "bear");
+    put("season-wheel-hub-detail", (meta.theme ? '<span class="hub-stage">' + meta.theme + '</span>' : '') +
+      (ret != null ? hubLine('<b>' + fmtSigned(ret, 1) + '%</b> ' + y) : ''));
+    hubOpen(open);
   }
-  function quarterPopup(m, seg, i, isPresent){
+  function hubOpen(open){
+    var b = byId("season-wheel-hub-open");
+    ["data-open", "data-title", "data-detail-idx"].forEach(function(a){ b.removeAttribute(a); });
+    b.disabled = !open; b.classList.toggle("details-link", !!(open && open.html));
+    if (open && open.cat){ b.setAttribute("data-open", "sheet-cat-" + open.cat.key); b.setAttribute("data-title", open.cat.title); }
+    if (open && open.html){ detailTexts[hubDetailIdx] = open.html; b.setAttribute("data-detail-idx", hubDetailIdx); }
+  }
+  function quarterCards(m, seg){
+    var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
+    var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q; });
+    var cards = [
+      [tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c){ return c.m <= qEnd; })), monthLabel(qEnd)],
+      [gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)],
+      [marketPeek(y, m.era.from), String(y)]
+    ];
+    return '<div class="cat-sheet cat-weather">' +
+      catList(cards.map(function(c){ return c[0] ? catCard(elFrom(c[0]), c[1]).outerHTML : ""; }).join("")) + '</div>';
+  }
+  function popHead(title, sub){ return '<h4>' + title + '</h4><span class="marker-sub">' + sub + '</span>'; }
+  function hubLine(html){ return '<span class="hub-line">' + html + '</span>'; }
+  function quarterSheet(m, seg, isPresent){
+    var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
+    return popHead(meta.name + (meta.theme ? ' \u00b7 ' + meta.theme : ''), qLabel(seg.q) + ' \u00b7 year ' + (Math.floor(seg.from) + 1) + ' of the ' + m.era.name) +
+      quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
+  }
+  function quarterPopup(m, seg, isPresent){
     var meta = wheelMeta[seg.season], era = m.era;
     var yearN = Math.floor(seg.from) + 1;
     var when = isPresent ? (m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth)) : qLabel(seg.q);
-    var head = '<h4>' + when + ' · ' + (meta.theme || meta.name) + '</h4>' +
-      '<span class="marker-sub">' + meta.name + (meta.altName ? ' · ' + meta.altName : '') +
-      ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to) + '</span>';
+    var head = popHead(when + ' · ' + (meta.theme || meta.name), meta.name + (meta.altName ? ' · ' + meta.altName : '') +
+      ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
     var reading = seasonReading[seg.season] || {};
     return head +
       (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + era.blurb + '</p>' : '') +
@@ -161,27 +182,24 @@
   function hubShowDefault(){
     if (dialState.parked != null){ hubShowQuarter(dialState.parked); return; }
     var m = dialState.m, meta = wheelMeta[m.season], qs = dialState.quarters, last = qs[qs.length - 1];
+    if (m.ongoing){ hubSet(hubTodayHtml(), meta, calendarTodayY, { cat:CATEGORIES.filter(function(c){ return c.onDial; })[0] }); return; }
     var presentSeg = { q:last ? last.seg.q : m.reading.gdpLatest.q, from:last ? last.seg.from : 0, season:m.season, reading:m.reading };
-    document.querySelector(".season-wheel-hub").classList.remove("away");
-    hubSet(m.ongoing ? hubTodayHtml() : "<b>Closed,</b> " + monthLabel(m.endMonth),
-           meta.theme || meta.name, meta, m.ongoing ? "" : quarterPopup(m, presentSeg, qs.length, true),
-           m.ongoing && CATEGORIES.filter(function(c){ return c.onDial; })[0]);
+    hubSet("<b>Closed,</b> " + monthLabel(m.endMonth), meta, m.endYear, { html:quarterSheet(m, presentSeg, true) });
   }
   function hubShowQuarter(i){
-    var q = dialState.quarters[i]; if (!q) return;
-    var meta = wheelMeta[q.seg.season];
-    document.querySelector(".season-wheel-hub").classList.add("away");
-    hubSet("<b>" + qLabel(q.seg.q) + "</b>", meta.theme || meta.name, meta, quarterPopup(dialState.m, q.seg, i, false));
+    var q = dialState.quarters[i], cache = dialState.sheets; if (!q) return;
+    hubSet("<b>" + qLabel(q.seg.q) + "</b>", wheelMeta[q.seg.season], parseInt(q.seg.q, 10),
+      { html:cache[i] || (cache[i] = quarterSheet(dialState.m, q.seg, false)) });
   }
   function hubShowYear(y){
     var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
-    var cum = m.cumByYear[y];
+    var cum = m.cumByYear[y]; hubOpen(null);
     put("season-wheel-hub-date", "<b>" + y + "</b>" + (isYtd ? " · Today" : ""));
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
     themeEl.classList.toggle("bull", ret >= 0); themeEl.classList.toggle("bear", ret < 0);
-    put("season-wheel-hub-detail", '<div>S&amp;P 500 total return <b>' + (ret >= 0 ? "+" : "") + ret.toFixed(1) + '%</b></div>' +
-      (cum != null ? '<div><b>' + (cum >= 0 ? "+" : "") + cum.toFixed(1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '') + '</div>' : ""));
+    put("season-wheel-hub-detail", hubLine('S&amp;P 500 total return <b>' + fmtSigned(ret, 1) + '%</b>') +
+      (cum != null ? hubLine('<b>' + fmtSigned(cum, 1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '')) : ""));
   }
   function renderCycleDial(){
     var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub");
@@ -205,7 +223,7 @@
     dial.addEventListener("mouseleave", reset);
     dial.addEventListener("touchstart", function(e){ if (scrubbing) return; if (readTarget(e.target)) e.stopPropagation(); }, {passive:true});
     document.addEventListener("click", function(e){
-      if (dial.contains(e.target)) return;
+      if (dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null){ shown = false; goTo(-1); return; }
       reset();
     });
@@ -259,8 +277,8 @@
       hub.classList.remove("scrubbing");
       if (dialState.parked != null) mark(dialState.parked);
     }
-    dial.addEventListener("pointerup", endScrub);
-    dial.addEventListener("pointercancel", endScrub);
+    ["pointerup", "pointercancel"].forEach(function(t){ dial.addEventListener(t, endScrub); });
+    dial.addEventListener("click", function(e){ var t = !scrubbing && e.target.closest && e.target.closest("[data-q]"); if (t) goTo(+t.getAttribute("data-q")); });
   }
   GYN.step("renderCycleDial", renderCycleDial, "wire"); renderCycleDial();
 

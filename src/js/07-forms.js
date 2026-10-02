@@ -247,6 +247,12 @@
     if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
     return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
   }
+  function marketCol(v){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
+  function marketPeek(y, from){
+    var v = sp500AnnualReturns[y], w = v == null ? null : marketWord(v);
+    return w && peekOf("sheet-sign-market", { value:fmtSigned(v, 1) + "%", word:w.text, state:w.state, colBase:0, colRule:true,
+      cols:sp500Years.filter(function(d){ return d.y >= from && d.y <= y; }).map(function(d){ return d.v; }), colClass:marketCol });
+  }
   var marketReading = (function(h){
     var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
     var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
@@ -259,7 +265,7 @@
       meter:{ min:lo.v, max:hi.v, value:now.v, optimal:{ gte:0, label:"\u2265 0%" }, ends:{ low:"Bear year" } },
       span:span,
       get peek(){
-        return colPeek(sp500Years.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v >= 0 ? "over" : "under"); }, 0, true);
+        return colPeek(sp500Years.map(function(d){ return d.v; }), marketCol, 0, true);
       },
       lead:"",
       caption:now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% with dividends, " + word.says +
