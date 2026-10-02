@@ -522,7 +522,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   1973, 2000 and 2007 and late in 1962, 1987 and 2022. The speed stays as one Insights card (the last three
   months against the three before). The chart is the margin, month by month, around cash. This replaces V674's
   speedometer and cruising speed, V673's pace comparison and V672's 65%-of-the-bull's-best word; the Diagnosis
-  still reads Euphoria and Optimism off the 65% line (asked of Keren). RSI, MACD and stochastics were weighed and
+  reads the same trend since V677. RSI, MACD and stochastics were weighed and
   declined: trading oscillators for daily bars, with 70/30 lines that are convention with no primary source.
   (V672, V673, V674, V675)
 - **Every line that says what followed also says how many separate spells it rests on, not only how many
@@ -1039,8 +1039,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Capitulation, Despondency.** Keren chose the chart's own words; this reopens V236's "drop the emotions" for
   the Diagnosis only. (V664)
 - **The cut-offs are Keren's, as tested: calm below the 20th percentile, frightened from the 80th, rising 20
-  points in three months, slowing under 65% of the bull's best, near the high within 5%; Euphoria keeps the
-  tested rule.** (V664)
+  points in three months, near the high within 5%; Euphoria keeps the tested rule.** (V664) V677 dropped the
+  fifth, slowing under 65% of the bull's best.
+- **The Diagnosis reads Momentum's trend: intact or broken against cash, not the twelve-month change against
+  zero, and no 65% line.** Keren: "the diagnosis should use intact or broken trend." Hope is the trend just turned
+  intact; Fear and Defense need it broken; Optimism and Euphoria need it intact, and Euphoria is now the trend
+  intact near the high with fear calm. With no slowing line, Euphoria takes calm months Optimism used to hold:
+  since 1986 it names 85 months against 59, Optimism 148 against 192, Hope 40 against 28, Anxiety 32 against 25,
+  and today's record (Optimism, warm) reads 63% of 71 months instead of 72% of 98. Today still reads Optimism and
+  Prepare. (V677)
 - **The posture word carries its record in its (i).** Keren's choice. (V664)
 - **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
 

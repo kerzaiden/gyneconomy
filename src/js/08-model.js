@@ -117,7 +117,7 @@
   function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 
   // ---- The diagnosis: how she feels, and what has followed ----
-  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05, STRETCHED = 80;
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, NEAR_HIGH = 0.05, STRETCHED = 80;
   var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
   function seasonHalf(season){ return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool"; }
   function rankToDate(prior, v){
@@ -125,21 +125,21 @@
     return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
   }
   function readFeeling(f){
-    if (f.fear == null || f.mom == null) return null;
+    if (f.fear == null || f.trend == null) return null;
     if (f.fear >= 90 && f.dd <= -0.15) return "Capitulation";
-    if (f.mom < 0 && f.fear >= 60) return "Fear";
+    if (f.trend < 0 && f.fear >= 60) return "Fear";
     if (f.dd <= -0.10 && f.fearPeak >= FRIGHTENED && f.fear <= f.fearPeak - RISE) return "Despondency";
     if (f.fear3 != null && f.fear3 < CALM && f.fear - f.fear3 >= RISE && f.dd >= -0.10) return "Anxiety";
-    if (f.mom > 0 && f.wasNegative) return "Hope";
-    if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
-    if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
+    if (f.trend > 0 && f.wasBroken) return "Hope";
+    if (f.trend > 0 && f.dd >= -NEAR_HIGH && f.fear < CALM) return "Euphoria";
+    if (f.trend > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
     return null;
   }
   function readPosture(stage, half, f){
     var afraid = stage === "Fear" || stage === "Capitulation";
     if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
     if (half === "warm" && afraid) return "Patience";
-    if (half === "warm" && f.mom < 0) return "Defense";
+    if (half === "warm" && f.trend < 0) return "Defense";
     if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
     return "Neutral";
   }
@@ -147,12 +147,10 @@
   function marketMonths(){
     if (marketCache) return marketCache;
     var sp = sp500MonthlyHistory, vol = volatilityHistory, spAt = {}, volAt = {};
-    var top = -Infinity, mom = [], best = [], dd = [];
+    var top = -Infinity, mom = [], dd = [];
     sp.forEach(function(d, i){
       spAt[d.m] = i; top = Math.max(top, d.v); dd.push(d.v / top - 1);
       mom.push(i >= 12 ? d.v / sp[i - 12].v - 1 : null);
-      var prevPos = i > 0 && mom[i - 1] > 0 && best[i - 1] != null;
-      best.push(mom[i] > 0 ? Math.max(mom[i], prevPos ? best[i - 1] : -Infinity) : null);
     });
     var fearRank = vol.map(function(d, j){
       volAt[d.m] = j;
@@ -160,8 +158,9 @@
     });
     var quarters = {};
     seasonTrackAll.forEach(function(e){ if (e) quarters[e.y + "-" + QUARTER_END_MONTH[e.qn]] = e.reading.season; });
-    marketCache = { sp:sp, vol:vol, spAt:spAt, volAt:volAt, mom:mom, best:best, dd:dd, fearRank:fearRank,
+    marketCache = { sp:sp, vol:vol, spAt:spAt, volAt:volAt, mom:mom, dd:dd, fearRank:fearRank,
                    quarterKeys:Object.keys(quarters).sort(), quarters:quarters };
+    marketCache.trend = momentumMargins(marketCache).map(function(d){ return d ? d.v / 100 : null; });
     return marketCache;
   }
   function seasonInMonth(S, m){
@@ -174,11 +173,11 @@
   }
   function marketFacts(S, m, fearNow){
     var i = S.spAt[m], j = S.volAt[m];
-    if (i == null || j == null || S.mom[i] == null) return null;
+    if (i == null || j == null || S.trend[i] == null) return null;
     var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v){ return v != null; });
     var y = parseInt(m.slice(0, 4), 10), cape = capeHistory.filter(function(d){ return d.y === y; })[0];
-    return { m:m, dd:S.dd[i], mom:S.mom[i], share:S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
-             wasNegative:S.mom.slice(Math.max(0, i - 3), i).some(function(v){ return v != null && v < 0; }),
+    return { m:m, dd:S.dd[i], trend:S.trend[i],
+             wasBroken:S.trend.slice(Math.max(0, i - 3), i).some(function(v){ return v != null && v < 0; }),
              fear:fearNow != null ? fearNow : S.fearRank[j], fear3:S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
              fearPeak:peak.length ? Math.max.apply(null, peak) : null,
              stretch:cape ? stretchRank(y, cape.v) : null };
@@ -216,7 +215,7 @@
     if (!f) return null;
     var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
     return { stage:stage, carried:!named, half:half, season:m.season, facts:f, month:at,
-             posture:readPosture(stage, half, f), bestMom:S.best[i],
+             posture:readPosture(stage, half, f),
              after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
   }
   function diagnoseToday(){
@@ -231,8 +230,7 @@
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     var half = seasonHalf(currentSeason), rec = whatFollowed();
     return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
-             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from,
-             bestMom:S.best[S.sp.length - 1] };
+             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from };
   }
 
   // ---- Momentum: the S&P 500's year against cash ----
@@ -323,7 +321,7 @@
           "the federal funds rate stands in for the bill rate here because its monthly record reaches back to 1954.",
         momentumOddsLine(f) + " The alarm speaks to the risk of a deep fall; it does not promise a lower return.",
         momentumSpeedLine(f),
-        "The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.",
+        "The Diagnosis reads this same trend: Hope when it has just turned intact, Fear and Defense when it is broken, Optimism and Euphoria only while it holds.",
         "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index."]) +
       srcBlock(MOMENTUM_SRC);
   }

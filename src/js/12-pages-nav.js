@@ -797,11 +797,11 @@
 
   // ---- The Diagnosis: under the dial, today or at a cycle's close ----
   var FEELING_RULES = {
-    Hope:"momentum has just turned positive after being negative",
-    Optimism:"rising, within 5% of the high, momentum at 65% or more of this bull\u2019s best or fear not calm",
-    Euphoria:"within 5% of the high, momentum under 65% of this bull\u2019s best, fear calm",
+    Hope:"the trend has just turned intact after being broken",
+    Optimism:"the trend intact, within 5% of the high, fear not calm",
+    Euphoria:"the trend intact, within 5% of the high, fear calm",
     Anxiety:"fear up 20 points from calm in three months, within 10% of the high",
-    Fear:"momentum negative, fear in its top 40%",
+    Fear:"the trend broken, fear in its top 40%",
     Capitulation:"fear in its top tenth, price 15% or more off its high",
     Despondency:"fear 20 points down from a frightened peak, price still 10% down"
   };
@@ -811,7 +811,7 @@
     Offense:"Fear has arrived after the body cooled.",
     Patience:"Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
     Prepare:"Near her high, stretched and still warm: slow down before the body asks.",
-    Defense:"Momentum has turned negative while the body is still warm.",
+    Defense:"The trend has broken while the body is still warm.",
     Neutral:"No posture the record singles out."
   };
   var BODY_SAYS = {
@@ -880,7 +880,7 @@
   function diagnosisInfo(d){
     return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
-        "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
+        "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard. The trend is Momentum\u2019s: the S&amp;P 500\u2019s last twelve months against cash (the effective federal funds rate): intact when it beat cash, broken when cash won.",
         "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
         "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast."])) +
       srcBlock(DIAG_SRC);
@@ -891,7 +891,7 @@
     var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " +
       r.months + " months in " + r.spells + " separate spells, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
     if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
-    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense");
+    if (d.half === "warm") watch.push("The trend breaking reads Defense", "Fear after the body cools to Winter or Spring reads Offense");
     else watch.push("Fear arriving now, with the body cool, reads Offense");
     return postureLine(d, rec) + dxRow("Watch", watch.map(function(x){ return "<li>" + x + "</li>"; }).join(""), true);
   }

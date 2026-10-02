@@ -508,12 +508,11 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   Fear, Capitulation, Despondency. `readFeeling` in 08-model names one from facts knowable that month, in this
   order, first match wins: Capitulation, Fear, Despondency, Anxiety, Hope, Euphoria, Optimism; a month no rule
   names keeps the last feeling named. The cut-offs are Keren's, confirmed from the research: calm below the 20th
-  percentile of fear's own history, frightened from the 80th, rising 20 points in three months, slowing under 65%
-  of the bull's best twelve-month change, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
+  percentile of fear's own history, frightened from the 80th, rising 20 points in three months, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
   15% off the high) are the research's stage table as she supplied it. **Euphoria keeps the tested rule** (V664):
   it needs calm fear; valuations are not part of it.
 - **The posture** (`readPosture`): Offense (Fear, Capitulation or Anxiety in a cool half), Patience (Fear or
-  Capitulation, warm), Defense (momentum negative, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
+  Capitulation, warm), Defense (the trend broken, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
   of its own history), Neutral otherwise. Warm is Summer and both Autumns (`seasonHalf`).
 - **The record is computed at load, never written down** (`whatFollowed`): every month from the season track's
   first quarter (Dec 1989) with a VIX rank and a year to look forward, by feeling and half: months, spells, how many
@@ -524,7 +523,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
   the margin over cash (`momentumMargins`: the twelve-month change less `momentumCash`, the fed funds rate
   compounded over the same months, with the newest Fed month carried until the next is published) for the page and
-  the roster. Its word is the margin's sign, not the Diagnosis's 65% line; `momentumOdds` counts, from the same
+  the roster. Its word is the margin's sign, and `marketMonths` keeps it as `S.trend` so the Diagnosis reads the same trend (V677); `momentumOdds` counts, from the same
   arrays, how often a 15%+ fall followed within a year on each side, by month and by turn (`momentumFell`; a turn
   is the first month of each spell, V676); `momentumSpeed` survives only for the speed
   card (V675).
