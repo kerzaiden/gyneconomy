@@ -515,12 +515,13 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
   cut-offs, `lastFeeling`'s carrying, the Diagnosis (i)) are retired; the V685 commit is the last copy with them.
-- **Her story by cycle** (V686, `cycleStory` in 08-model, `storyHtml` and `storyText` in 12-pages-nav): a second
-  `.insights` box on the Mood page, headed by `highlightsHtml`'s `head`. For each of `marketCycles`, the `moodTrack`
-  months inside its years: the first, the highest and lowest `pct`, the last (today's `moodToday` for the open
+- **Her story this cycle** (V686, `cycleStory` in 08-model, `storyHtml` and `storyText` in 12-pages-nav): a second
+  `.insights` box on the Mood page, headed by `highlightsHtml`'s `head`. For the cycle on screen (`eraOpen`, else
+  `currentEra`), the `moodTrack` months inside its years: the first, the highest and lowest `pct`, the last (today's `moodToday` for the open
   cycle), told in month order, with the high or low folded into the opening or closing beat when they share a
   month, and the two emotions with the most months. `replaceInsights` swaps every `.insights` box of a category on a
-  repaint, so the second box never doubles. It replaced Emotion × Season (a twelve-by-four grid with a slid test),
+  repaint, so the second box never doubles; `eraShow` runs it on entering and leaving a past cycle, so the box
+  follows the cycle. It replaced Emotion × Season (a twelve-by-four grid with a slid test),
   which Keren found uninformative.
 - **The record is computed at load, never written down** (`feelingTrack`): every month from the season track's
   first quarter (Dec 1989) with an emotion, its season group, and the S&P 500 twelve months on (`yearAfter`).
@@ -545,8 +546,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   lands by running the Backfill.
 - **One feeling** (V681): the Diagnosis is the trend card (`trendCardHtml`) and the Analysis. Its
   spell lines (`spellLines`) read `spellRecord`: `feelingTrack` is every month's emotion and season group, `feelingSpells` cuts it into runs of the same feeling in the same season, and the spell that
-  reaches the diagnosed month is the current one; the earlier spells are listed, each with the S&P 500 a year after
-  its last month (`feelingTrack`'s `after`, empty when the year has not passed). The track runs to the latest month.
+  reaches the diagnosed month is the current one (earlier spells are not shown, Keren, V686). The track runs to the
+  latest month.
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.

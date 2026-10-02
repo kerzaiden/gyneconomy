@@ -144,7 +144,7 @@
     if (trackCache) return trackCache;
     var S = marketMonths();
     trackCache = moodTrack().filter(function(x){ return x.word && seasonInMonth(S, x.m); }).map(function(x){
-      return { m:x.m, stage:x.word, group:seasonGroup(seasonInMonth(S, x.m)), after:yearAfter(S, x.m) };
+      return { m:x.m, stage:x.word, group:seasonGroup(seasonInMonth(S, x.m)) };
     });
     return trackCache;
   }
@@ -164,7 +164,7 @@
     var here = seasonGroup(d.season), spells = feelingSpells(d.stage, here, d.month), last = spells[spells.length - 1];
     var now = last && monthsApart(last.to, d.month) <= 1 ? spells.pop() : null;
     now = now ? { from:now.from, to:d.month, n:monthsApart(now.from, d.month) + 1 } : { from:d.month, to:d.month, n:1 };
-    return { now:now, before:spells };
+    return { now:now };
   }
   function diagnoseClose(m){
     var x = moodTrack().filter(function(t){ return t.m === m.endMonth; })[0];

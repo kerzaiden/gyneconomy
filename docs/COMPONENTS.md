@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d859810` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `62fa92e` on 2026-10-02. **78 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -123,7 +123,7 @@ Generated from commit `d859810` on 2026-10-02. **78 components**, **40 shared pa
 | **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
 | **`trendCardHtml`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:diagnosisHtml` |
-| **`trendSub`** | `.trend-sub` | — |
+| **`trendSub`** | `.trend-sub` | `pages-nav.js:spellLines` |
 
 ## indicators.js
 
@@ -137,7 +137,7 @@ Generated from commit `d859810` on 2026-10-02. **78 components**, **40 shared pa
 |---|---|---|
 | **`cycleRowsHtml`** | `.chip` `.data` `.era-bands` `.era-econ` `.era-foot` `.era-head` `.era-name` `.era-open` `.era-row` `.era-years` | `analysis.js:wireCycleData` |
 | **`cycleTrack`** | `.cyc-scale` `.cyc-track` `.sx-foot` `.sx-yrs` | `analysis.js:cycleRowsHtml` |
-| **`eraCard`** | `.ci-word` | `analysis.js:eraShow` |
+| **`eraCard`** | `.ci-word` | `analysis.js:eraCards` |
 | **`symptomLegend`** | `.sx-down` `.sx-keys` `.sx-now` `.sx-off` | `analysis.js:wireCycleData` |
 | **`symptomRow`** | `.sx-row` | `analysis.js:cycleTrack` |
 
@@ -207,7 +207,6 @@ renderer speaks. Listed most-used first.
 | **`merge`** | live.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
-| **`pct`** | pages-nav.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |

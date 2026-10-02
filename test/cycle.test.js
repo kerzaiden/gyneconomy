@@ -45,9 +45,9 @@ console.log('\nfeelingTrack, spells, cycleStory, diagnoseClose \u2014 the record
   const M = lift(['marketMonths', 'seasonInMonth', 'yearAfter', 'feelingTrack', 'monthsApart', 'feelingSpells', 'spellRecord', 'cycleStory', 'diagnoseClose'], env);
   const t = M.feelingTrack();
   ok('each month carries its emotion and its season group', t.map(x => x.stage[0] + x.group[0]).join(' '), 'Hs Hs Os Hs Hs Hs Fa');
-  ok('a year later is the S&P 500 twelve months on', +t[0].after.toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
+  ok('a year later is the S&P 500 twelve months on', +M.yearAfter(M.marketMonths(), t[0].m).toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
   const r = M.spellRecord({ stage: 'Hope', season: 'summer', month: '2001-11' });
-  ok('the current spell runs to the month, the earlier ones are kept', [r.now, r.before], [{ from: '2001-09', to: '2001-11', n: 3 }, [{ from: '2001-06', to: '2001-07', n: 2 }]]);
+  ok('the current spell runs to the month, an earlier spell apart from it does not count', r.now, { from: '2001-09', to: '2001-11', n: 3 });
   const st = M.cycleStory({ from: 2001, to: 2001 });
   ok('a cycle\u2019s story: where she opened, her high, her low, where she closed', [st.first.m, st.hi.m, st.lo.m, st.last.m], ['2001-06', '2001-08', '2001-12', '2001-12']);
   ok('the two emotions she spent most months in', st.most, [{ word: 'Hope', n: 5 }, { word: 'Optimism', n: 1 }]);

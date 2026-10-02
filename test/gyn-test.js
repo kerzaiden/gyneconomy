@@ -266,7 +266,9 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
-                   story: [...d.querySelectorAll('.trend-sub')].some(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)),
+                   story: [...d.querySelectorAll('.trend-sub')].map(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)).join() === 'true',
+                   told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
+                     ((b.querySelector('.hi-card .hi-name') || {}).textContent || '').split(' \u00b7 ')[0]).pop(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -282,7 +284,7 @@ async function openPage(p, url, sheet) {
     const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Circulation and Energy:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
-    (today && today.visible && FEEL.test(today.title) && /^Mrs. Market (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.story && today.cards === 0 &&
+    (today && today.visible && FEEL.test(today.title) && /^Mrs. Market (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
      today.heads.join() === 'Circulation and Energy,Circulation,Energy' && today.boxes === 'trend,sys' && today.across && today.grid === '0:0:false' &&
      today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
@@ -310,7 +312,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && FEEL.test(past.title) && /^Mrs. Market was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.story && past.heads.length === 3)
+    (past && past.visible && FEEL.test(past.title) && /^Mrs. Market was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -535,9 +537,9 @@ async function openPage(p, url, sheet) {
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === 'Insights+Her story by cycle:5' && feel.stage.toUpperCase() === cyc.now[0])
-      ? ok('the trend card opens the cycle of market emotions and her story by cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
-      : bad('the trend card opens the cycle of market emotions and her story by cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
+     cyc.es === 'Insights+Her story this cycle:1' && feel.stage.toUpperCase() === cyc.now[0])
+      ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');

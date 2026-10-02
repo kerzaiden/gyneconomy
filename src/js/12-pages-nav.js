@@ -532,17 +532,15 @@
       s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
   }
   function storyInfo(){
-    return '<h4>Her story by cycle</h4>' + facts([
-      "Each cycle is told from her emotion month by month, read as on the cycle of market emotions above: where she opened, her high and her low (the months her mood ranked highest and lowest against her own history), and where she closed, in the order they came.",
+    return '<h4>Her story this cycle</h4>' + facts([
+      "The cycle on screen is told from her emotion month by month, read as on the cycle of market emotions above: where she opened, her high and her low (the months her mood ranked highest and lowest against her own history), and where she closed, in the order they came.",
       "The two emotions she spent most months in close each story. The record of her emotions starts in " + monthLabel(moodTrack().filter(function(x){ return x.word; })[0].m) + "; an open cycle is told to the latest month."
     ]);
   }
   function storyHtml(){
-    var cards = marketCycles.map(function(c){
-      var s = cycleStory(c);
-      return s ? hiCard(c.name + " \u00b7 " + c.from + "\u2013" + (c.to || "now"), "", storyText(s, c.ongoing)) : "";
-    }).filter(function(h){ return h; });
-    return highlightsHtml(cards, "", moreRow(storyInfo()), "Her story by cycle");
+    var c = eraOpen || currentEra, s = cycleStory(c);
+    if (!s) return "";
+    return highlightsHtml([hiCard(c.name + " \u00b7 " + c.from + "\u2013" + (c.to || "now"), "", storyText(s, c.ongoing))], "", moreRow(storyInfo()), "Her story this cycle");
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
@@ -973,15 +971,7 @@
     var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
       : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
       : "Mrs. Market was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
-    var after = {};
-    feelingTrack().forEach(function(t){ after[t.m] = t.after; });
-    var lines = r.before.slice(-4).reverse().map(function(x){
-      var when = x.n === 1 ? monthLabel(x.from) : monthLabel(x.from) + " to " + monthLabel(x.to), next = after[x.to];
-      return when + ", " + x.n + (x.n === 1 ? " month" : " months") + (next == null ? "." : "; a year later the S&amp;P 500 was " + pct(next) + ".");
-    });
-    var head = r.before.length ? "Before, " + r.before.length + (r.before.length === 1 ? " time" : " times") + " since " + monthLabel(feelingTrack()[0].m) +
-      (r.before.length > 4 ? ", the latest four:" : ":") : "Her first time since " + monthLabel(feelingTrack()[0].m) + ".";
-    return '<span class="trend-text">' + lead + '</span>' + (story ? [story] : []).concat([head], lines).map(trendSub).join("");
+    return '<span class="trend-text">' + lead + '</span>' + (story ? trendSub(story) : "");
   }
   function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){

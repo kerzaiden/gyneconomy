@@ -1051,9 +1051,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **The Mood page tells her story by cycle, in its own box under Insights: for each cycle, where she opened, her
-  high and her low (the months her mood ranked highest and lowest against her own history) in the order they came,
-  where she closed (or is now), and the two emotions she spent most months in.** Keren: "i would rather have it
+- **The Mood page tells her story this cycle, in its own box under Insights: for the cycle on screen only, where
+  she opened, her high and her low (the months her mood ranked highest and lowest against her own history) in the
+  order they came, where she closed (or is now), and the two emotions she spent most months in.** Today's page tells
+  the current cycle; a past cycle's page tells that cycle's (Keren: "her story by cycle should be per that cycle …
+  If I go to .com cycle, I press mood, I will see the mood story of the .com cycle", V686). Keren: "i would rather have it
   analyse the emotions each cycle goes through like a story." It replaced Emotion × Season the same day, which
   she judged uninformative ("it doesn't tell me anything"): an emotion in a season lasted about two months, and
   emotion and season together did no better than slid tracks at explaining the next year. V684's Feeling and season
@@ -1082,8 +1084,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   only that.** Keren: "I love the fact that you said she has been in optimism in summer for seven months … call it
   Mrs. Market has been. And also, I want the analysis below it to be much shorter and only refer to optimism in
   summer. When it happened in the past, for how long, what happened next, very briefly." The card says how long
-  the current spell has run, then lists the earlier spells of the same feeling in the same season, newest first
-  (the latest four when there are more), each with its months and the S&P 500 a year after it ended. The share
+  the current spell has run. The earlier spells of the same feeling in the same season, with the S&P 500 a year
+  after each, were listed for a day and dropped (Keren: "Drop the before three times since …", V686). The share
   of months by season, its bars, and the median and longest spell are gone. Under the opening line the card
   previews this cycle's story, the same beats as the Mood page's story (Keren: "give a preview of that emotional
   story") (V686; the Apple Health bars were V679,
