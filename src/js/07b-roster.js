@@ -55,7 +55,7 @@
     { id:"sheet-metric-households", name:"Households", cat:"energy", group:"Stress", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
       head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
       pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, peek:"pair", when:lastDate, cardUnit:"% paid / kept" },
-    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"energy", timing:"lagging", mark:trendUpSvg, door:"row",
+    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"energy", timing:"lagging", mark:personSvg, door:"row",
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
     { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"energy", timing:"structural", mark:clockSvg,
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },

@@ -946,7 +946,7 @@
     var open = m.ongoing, d = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;
     if (!d) return "";
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Her story", trendText(m.era.story)) +
+    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -961,7 +961,7 @@
   function moodDoor(head, body){
     var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
-      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
+      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
   }
   function trendText(t){ return '<span class="trend-text">' + t + '</span>'; }
   function renderDiagnosis(m){

@@ -59,7 +59,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
-  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Her story",
+  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Cycle story" (V691; "Her story" in V689),
   never by the mood it closed on, and the card carries the story alone (no "came into" line, no note on when the
   mood is measured).** Keren: "a cycle is a story from the beginning to end, not just the end… we will always see
   the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
@@ -900,8 +900,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
     "like volume that is in sound", the one mark named for the word rather than the body; with her drawing,
     "make this the volume icon across the app". (V507, V646)
   - Pulse: the ECG trace. Keren: the trace "is more representative of a pulse than a heart". (V524, V586)
-  - Activity (Unemployment rate): three rising bars with no axis or arrowhead, apart from the trend pill's
-    arrow and the Analysis tab's icon. (V524, V586)
+  - Unemployment rate: a person, head and shoulders. Keren: "I want unemployment rate to have a person icon, an
+    avatar icon, in the search menu and everywhere else". (V691; three rising bars before.)
+  - The cycle story: a book, left of its heading, today ("Optimism in Autumn") and on a past cycle ("Cycle
+    story"). Keren: "for the cycle story, I want a book icon". (V691)
   - Interest rates: a heart. Keren: "give interest rates a heart icon". (V688)
   - Stress: a battery nearly spent, apart from Energy's bolt; stress that never lifts spends the reserve.
     Keren: Stress "should also have an icon, not a lightning"; the battery is Claude's pick of three drawn

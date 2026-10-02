@@ -24435,7 +24435,7 @@
       return classOf(v, i + from);
     };
     var W = PEEK_W, H = PEEK_H, padT = 6, padB = 3, zero = base == null ? 0 : base;
-    var hi = Math.max.apply(null, vals.concat([ zero ])) * 1.06, lo = Math.min(zero, Math.min.apply(null, vals)) * 1.06;
+    var hi = zero + (Math.max.apply(null, vals.concat([ zero ])) - zero) * 1.06, lo = zero + (Math.min(zero, Math.min.apply(null, vals)) - zero) * 1.06;
     var slot = W / vals.length, sw = Math.max(1.6, Math.min(7, slot * COL_FILL));
     function y(v) {
       return (padT + (H - padT - padB) * (1 - (v - lo) / (hi - lo || 1))).toFixed(1);
@@ -24735,8 +24735,11 @@
   function stethoscopeSvg() {
     return markSvg('<path d="M5.5 3.5v5a4.5 4.5 0 0 0 9 0v-5M4 3.5h3M13 3.5h3" stroke-width="1.8"/>' + '<path d="M10 13v2.5a4.5 4.5 0 0 0 9 0v-2" stroke-width="1.8"/><circle cx="19" cy="11" r="2.2" stroke-width="1.7"/>');
   }
-  function trendUpSvg() {
-    return markSvg('<path d="M5 19.4V13.6M12 19.4V9.4M19 19.4V4.9" stroke-width="2.4"/>');
+  function personSvg() {
+    return markSvg('<circle cx="12" cy="8" r="3.9" stroke-width="1.8"/><path d="M4.4 20.4c.6-4 3.7-6.5 7.6-6.5s7 2.5 7.6 6.5" stroke-width="1.8"/>');
+  }
+  function bookSvg() {
+    return markSvg('<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/>' + '<path d="M12 6.6v13.6" stroke-width="1.7"/>');
   }
   function ecgSvg() {
     return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
@@ -25418,7 +25421,7 @@
     name: "Unemployment rate",
     cat: "energy",
     timing: "lagging",
-    mark: trendUpSvg,
+    mark: personSvg,
     door: "row",
     term: "Activity",
     head: "Unemployment Rate",
@@ -29572,7 +29575,7 @@
     var systems = categoriesShown().filter(function(c) {
       return !c.onDial && !c.inTrend;
     });
-    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Her story", trendText(m.era.story)) + dxSection(dxHead(systems.map(function(c) {
+    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + dxSection(dxHead(systems.map(function(c) {
       return c.title;
     }).join(" and "), null, stethoscopeSvg()), systems.map(function(c) {
       return systemHtml(c, analysisFor(c.key, d, closed));
@@ -29591,7 +29594,7 @@
     var mood = CATEGORIES.filter(function(c) {
       return c.key === "mood";
     })[0];
-    return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' + '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + "</span>" + (head || mood.title) + CHEV + "</span>" + body + "</button>";
+    return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' + '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + "</span>" + (head || mood.title) + CHEV + "</span>" + body + "</button>";
   }
   function trendText(t) {
     return '<span class="trend-text">' + t + "</span>";
