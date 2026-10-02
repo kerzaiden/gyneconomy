@@ -550,7 +550,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
 - **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
-  head is today's feeling in today's season, or "Her story" on a past cycle (a cycle is told whole, never by its
+  head is today's feeling in today's season, or "Cycle story" on a past cycle, beside a book mark (a cycle is told whole, never by its
   close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.

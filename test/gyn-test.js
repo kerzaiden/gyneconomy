@@ -335,7 +335,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && past.title === 'Her story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
+    (past && past.visible && past.title === 'Cycle story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
