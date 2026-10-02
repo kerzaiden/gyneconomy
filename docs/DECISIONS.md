@@ -59,8 +59,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
-  It sits on the cycle page under the mood and season (the Diagnosis's mood card), today's cycle and every past
-  one; a cycle that closed before her mood is measured says its story is told, not measured.** Keren: "each cycle
+  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Her story",
+  never by the mood it closed on, and the card carries the story alone (no "came into" line, no note on when the
+  mood is measured).** Keren: "a cycle is a story from the beginning to end, not just the end… we will always see
+  the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
   has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
   nine cycles from 1948 keep Claude's draft names for now (Keren: "keep the names as they are for now"). (V689)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
@@ -1115,9 +1117,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   summer. When it happened in the past, for how long, what happened next, very briefly." The card says how long
   the current spell has run. The earlier spells of the same feeling in the same season, with the S&P 500 a year
   after each, were listed for a day and dropped (Keren: "Drop the before three times since …", V686). The share
-  of months by season, its bars, and the median and longest spell are gone. Under the opening line the card
-  previews this cycle's story, the same beats as the Mood page's story (Keren: "give a preview of that emotional
-  story") (V686; the Apple Health bars were V679,
+  of months by season, its bars, and the median and longest spell are gone; in V689 the spell line went too, and
+  the card holds the cycle's written story under the feeling and season (Keren: "I'm not sure I need this"). Before
+  that it previewed the measured story beats (Keren: "give a preview of that emotional story") (V686; the Apple Health bars were V679,
   the spell statistics V681). The card opens the Mood page; no "She's in" header, no History record, no Mood row
   in the Analysis, and the Wild Power quote stays gone (V681).
 

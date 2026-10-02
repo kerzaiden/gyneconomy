@@ -124,51 +124,14 @@
   var marketCache = null;
   function marketMonths(){
     if (marketCache) return marketCache;
-    var spAt = {}, quarters = {};
+    var spAt = {};
     sp500MonthlyHistory.forEach(function(d, i){ spAt[d.m] = i; });
-    seasonTrackAll.forEach(function(e){ if (e) quarters[e.y + "-" + QUARTER_END_MONTH[e.qn]] = e.reading.season; });
-    marketCache = { sp:sp500MonthlyHistory, spAt:spAt, quarterKeys:Object.keys(quarters).sort(), quarters:quarters };
+    marketCache = { sp:sp500MonthlyHistory, spAt:spAt };
     return marketCache;
-  }
-  function seasonInMonth(S, m){
-    var s = null;
-    S.quarterKeys.forEach(function(k){ if (k <= m) s = S.quarters[k]; });
-    return s;
   }
   function yearAfter(S, m){
     var i = S.spAt[m];
     return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
-  }
-  var trackCache = null;
-  function feelingTrack(){
-    if (trackCache) return trackCache;
-    var S = marketMonths();
-    trackCache = moodTrack().filter(function(x){ return x.word && seasonInMonth(S, x.m); }).map(function(x){
-      return { m:x.m, stage:x.word, group:seasonGroup(seasonInMonth(S, x.m)) };
-    });
-    return trackCache;
-  }
-  function monthsApart(a, b){ return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7)); }
-  function feelingSpells(stage, group, upTo){
-    var spells = [], run = null;
-    feelingTrack().forEach(function(t){
-      if (t.m > upTo) return;
-      if (t.stage !== stage || t.group !== group){ run = null; return; }
-      if (!run || monthsApart(run.to, t.m) > 1) spells.push(run = { from:t.m, to:t.m });
-      run.to = t.m;
-    });
-    spells.forEach(function(sp){ sp.n = monthsApart(sp.from, sp.to) + 1; });
-    return spells;
-  }
-  function spellRecord(d){
-    var here = seasonGroup(d.season), spells = feelingSpells(d.stage, here, d.month), last = spells[spells.length - 1];
-    var now = last && monthsApart(last.to, d.month) <= 1 ? spells.pop() : null;
-    now = now ? { from:now.from, to:d.month, n:monthsApart(now.from, d.month) + 1 } : { from:d.month, to:d.month, n:1 };
-    return { now:now };
-  }
-  function diagnoseClose(m){
-    var x = moodTrack().filter(function(t){ return t.m === m.endMonth; })[0];
-    return x && x.word ? { stage:x.word, season:m.season, month:x.m, after:yearAfter(marketMonths(), x.m) } : null;
   }
   function diagnoseToday(){
     var x = moodToday();

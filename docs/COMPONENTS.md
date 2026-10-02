@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `73e60f5` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `251b6b2` on 2026-10-02. **77 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -118,12 +118,11 @@ Generated from commit `73e60f5` on 2026-10-02. **78 components**, **40 shared pa
 | **`insightMood`** | `.mood-fig` | — |
 | **`moodCallout`** | `.mood-arrow` `.mood-call` | `pages-nav.js:moodCycleSvg` |
 | **`moodCycleSvg`** | `.mood-curve` `.mood-dot` `.mood-line` `.on` | `pages-nav.js:insightMood` |
-| **`moodDoor`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:trendCardHtml` |
+| **`moodDoor`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:diagnosisHtml` |
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
-| **`trendSub`** | `.trend-sub` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:spellLines` |
-| **`trendText`** | `.trend-text` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:spellLines` |
+| **`trendText`** | `.trend-text` | `pages-nav.js:diagnosisHtml` |
 
 ## indicators.js
 
@@ -160,13 +159,13 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
-| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
+| **`monthLabel`** | model.js | 9 places |
 | **`pageCycle`** | charts.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
@@ -177,10 +176,8 @@ renderer speaks. Listed most-used first.
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
 | **`highlightsHtml`** | charts.js | 7 places |
-| **`moodTrack`** | model.js | 7 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
-| **`seasonGroup`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
 | **`atMonth`** | charts.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
@@ -194,12 +191,13 @@ renderer speaks. Listed most-used first.
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
-| **`marketMonths`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
+| **`moodTrack`** | model.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`paintReading`** | live.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
+| **`seasonGroup`** | model.js | 4 places |
 | **`valRow`** | components.js | 4 places |
 | **`byIdMaybe`** | refresh-season.js | 3 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |

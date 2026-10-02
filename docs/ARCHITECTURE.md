@@ -528,13 +528,13 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   beat when they share a month, and the two emotions with the most months. `eraShow` runs `replaceInsights` on
   entering and leaving a past cycle, so the card follows the cycle. `moodFigures` is the first fact of `moodInfo`.
   It replaced Emotion × Season (a twelve-by-four grid with a slid test), which Keren found uninformative.
-- **The record is computed at load, never written down** (`feelingTrack`): every month from the season track's
-  first quarter (Dec 1989) with an emotion, its season group, and the S&P 500 twelve months on (`yearAfter`).
-- **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
+- **The record is computed at load, never written down** (`moodTrack`): every month her mood can be read, and the
+  S&P 500 twelve months on (`yearAfter`).
+- **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1948, through the Backfill from the same
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
-- **Mood and season** (V679, V686): The Analysis's trend card (`trendCardHtml`) names today's feeling in today's season
+- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) names today's feeling in today's season
   (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
   market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in 08-model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
@@ -549,10 +549,9 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
-- **One feeling** (V681): the Diagnosis is the trend card (`trendCardHtml`) and the Analysis. Its
-  spell lines (`spellLines`) read `spellRecord`: `feelingTrack` is every month's emotion and season group, `feelingSpells` cuts it into runs of the same feeling in the same season, and the spell that
-  reaches the diagnosed month is the current one (earlier spells are not shown, Keren, V686). The track runs to the
-  latest month.
+- **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
+  head is today's feeling in today's season, or "Her story" on a past cycle (a cycle is told whole, never by its
+  close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.

@@ -943,11 +943,10 @@
       (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function diagnosisHtml(m){
-    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
-    if (!d && open) return "";
-    if (!d) d = { after:yearAfter(marketMonths(), m.endMonth) };
+    var open = m.ongoing, d = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;
+    if (!d) return "";
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return (d.stage ? trendCardHtml(d, m.era) : noMoodCardHtml(m.era)) +
+    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Her story", trendText(m.era.story)) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -964,23 +963,7 @@
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
       '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
   }
-  function trendCardHtml(d, era){
-    var name = seasonName(seasonGroup(d.season));
-    return moodDoor(d.stage + ' in ' + name, spellLines(d, name, era.story));
-  }
-  function noMoodCardHtml(era){
-    var first = moodTrack().filter(function(x){ return x.word; })[0];
-    return moodDoor("", trendText(era.story) + trendSub("Her mood is measured from " + monthLabel(first.m) + "; this cycle closed before it, so its story is told, not measured."));
-  }
-  function spellLines(d, season, story){
-    var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
-    var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
-      : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
-      : "Mrs. Market was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
-    return trendText(lead) + (story ? trendSub(story) : "");
-  }
   function trendText(t){ return '<span class="trend-text">' + t + '</span>'; }
-  function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){
     var host = document.getElementById("diagnosis");
     if (host && m) host.innerHTML = diagnosisHtml(m);
