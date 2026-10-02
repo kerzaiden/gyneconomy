@@ -139,6 +139,9 @@
   function houseSvg(){ return markSvg(
     '<path d="M3.4 10.9 12 4.1l8.6 6.8" stroke-width="1.9"/>' +
     '<path d="M5.7 9.6v9.7h12.6V9.6" stroke-width="1.9"/>'); }
+  function marketSvg(){ return markSvg(
+    '<path d="M3.5 17.5 9 12l3.5 3.5L20 8" stroke-width="1.9"/>' +
+    '<path d="M15 8h5v5" stroke-width="1.8"/>'); }
   function bagSvg(){ return markSvg(
     '<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/>' +
     '<path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>'); }
@@ -266,6 +269,40 @@
     {t:"S&P 500 total returns by year (Slickcharts' compilation of S&P DJI's figures)", u:"https://www.slickcharts.com/sp500/returns"},
     {t:"NYU Stern (Damodaran) — Historical returns on stocks, bonds and bills, 1928– (independent cross-check)", u:"https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"}
   ];
+  // ---- The S&P 500, year by year ----
+  var sp500Years = Object.keys(sp500AnnualReturns).map(function(y){ return { y:+y, v:sp500AnnualReturns[y] }; });
+  function marketWord(v){
+    if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
+    return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
+  }
+  var marketReading = (function(h){
+    var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
+    var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
+    var span = fmtSigned(lo.v, 1) + "% (" + lo.y + ") to " + fmtSigned(hi.v, 1) + "% (" + hi.y + ")";
+    return {
+      bodyTerm:"S&P 500", info:function(){ return marketInfoHtml(marketReading); },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-market-chart"></div><div id="sheet-sign-market-highlights"></div>'; } },
+      econTerm:"S&P 500", metricSub:"total return", now:now, lo:lo, hi:hi, open:open,
+      metric:fmtSigned(now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
+      meter:{ min:lo.v, max:hi.v, value:now.v, optimal:{ gte:0, label:"\u2265 0%" }, ends:{ low:"Bear year" } },
+      span:span,
+      get peek(){
+        return colPeek(sp500Years.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v >= 0 ? "over" : "under"); }, 0, true);
+      },
+      lead:"",
+      caption:now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% with dividends, " + word.says +
+        ". The track runs over every year since " + h[0].y + ": " + span + "."
+    };
+  })(sp500Years);
+  function marketInfoHtml(f){
+    return '<h4>' + f.econTerm + '</h4>' +
+      '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
+        'The record, year by year, runs ' + f.span + '.</p>' +
+      '<p class="caption" style="margin-top:10px;"><b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
+        'dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial\u2019s inner band ' +
+        'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
+      srcBlock(sp500AnnualReturnSource);
+  }
 
   var marketCycles = [
     {
