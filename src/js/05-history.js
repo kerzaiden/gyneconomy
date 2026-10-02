@@ -145,7 +145,7 @@
   ];
   var CONFIDENCE_SRC = [
     {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},
-    {t:"OECD via FRED \u2014 Composite Consumer Confidence for the United States, monthly (CSCICP03USM665S)", u:"https://fred.stlouisfed.org/series/CSCICP03USM665S"}
+    {t:"OECD Data Explorer \u2014 Composite leading indicators: consumer confidence (CCICP), United States, monthly", u:"https://data-explorer.oecd.org/vis?df[ds]=DisseminateFinalDMZ&df[id]=DSD_STES%40DF_CLI&df[ag]=OECD.SDD.STES"}
   ];
   function confidenceInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +

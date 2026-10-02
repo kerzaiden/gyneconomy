@@ -532,8 +532,10 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   today's feeling a year later. Both read the same counts as the record, and `repaintDiagnosis` repaints every category's
   Insights after a live reading lands, so the curve moves with the VIX.
 - **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in 03-data, a split
-  page against the OECD's 100 line, and its history `confidenceHistory` (FRED CSCICP03USM665S, monthly from 1960)
-  through the Backfill. FRED is not reachable from a cloud session, so the series lands by running the Backfill.
+  page against the OECD's 100 line, and its history `confidenceHistory` (the OECD's own SDMX API, dataflow `DSD_STES@DF_CLI`,
+  measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
+  rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
+  lands by running the Backfill.
 
 ## The season model
 

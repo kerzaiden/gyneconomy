@@ -27,6 +27,31 @@ async function fredSeries(series, start) {
   return obs;
 }
 
+const OECD_CCI = 'https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.CCICP......'
+  + '?dimensionAtObservation=AllDimensions&format=csvfile&startPeriod=';
+
+function oecdRows(csv) {
+  const lines = csv.trim().split(/\r?\n/), head = lines[0].split(',');
+  const at = n => head.indexOf(n), t = at('TIME_PERIOD'), v = at('OBS_VALUE');
+  if (t < 0 || v < 0) throw new Error('OECD CCI: no TIME_PERIOD or OBS_VALUE in ' + lines[0]);
+  const keys = head.map((h, i) => i).filter(i => i !== t && i !== v && !/^(OBS_STATUS|UNIT_MULT|DECIMALS|BASE_PER|STRUCTURE.*)$/.test(head[i]));
+  const series = new Set(), seen = new Map();
+  for (const line of lines.slice(1)) {
+    const c = line.split(','), m = c[t], x = Number(c[v]);
+    series.add(keys.map(i => head[i] + '=' + c[i]).join(' '));
+    if (!/^\d{4}-\d{2}$/.test(m) || !band(x, 50, 150)) continue;
+    if (seen.has(m)) throw new Error('OECD CCI: more than one series came back: ' + [...series].join(' | '));
+    seen.set(m, x);
+  }
+  return [...seen.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([m, x]) => ({ m, v: Math.round(x * 100) / 100 }));
+}
+
+async function oecdConfidence(start) {
+  const r = await fetch(OECD_CCI + start, { headers: { accept: 'application/vnd.sdmx.data+csv' } });
+  if (!r.ok) throw new Error('OECD CCI: HTTP ' + r.status);
+  return oecdRows(await r.text());
+}
+
 const VOL_JOIN = '1990-01';
 const SP500_FROM = '1950-01';
 const { shillerSheet, priceFromRows } = require('./fetch-live.js');
@@ -196,8 +221,8 @@ async function main() {
   const sp500 = await shillerSheet(rows => priceFromRows(rows, SP500_FROM, new Date().toISOString().slice(0, 7)));
   say('S&P 500       ' + sp500.length + ' months, ' + sp500[0].m + ' → ' + sp500[sp500.length - 1].m + ' (Shiller, monthly average of daily closes)');
 
-  const confidence = monthlyLevels(await fredSeries('CSCICP03USM665S', '1960-01-01'), 50, 150);
-  if (!confidence.length) throw new Error('CSCICP03USM665S: no month inside the band');
+  const confidence = await oecdConfidence('1960-01');
+  if (!confidence.length) throw new Error('OECD CCI: no month inside the band');
   say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500, confidence));
@@ -207,5 +232,5 @@ async function main() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }
