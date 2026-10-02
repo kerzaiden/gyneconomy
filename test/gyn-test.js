@@ -265,7 +265,7 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
-      return d ? { visible: !!d.offsetParent, title: d.querySelector('.dx-title').textContent,
+      return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => h.textContent.trim()),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
                    symptoms: [...d.querySelectorAll('.dx-k')].filter(k => /Symptoms/.test(k.textContent)).length,
@@ -275,18 +275,18 @@ async function openPage(p, url, sheet) {
                    cards: document.querySelectorAll('.cat-row').length } : null;
     });
     const today = await read();
-    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 3 && d.analyses.every(a => a === '0:true');
+    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
-    const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
-    (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
-     today.heads.join() === 'History,Analysis,Mood,Circulation,Energy,Assessment' &&
-     today.doors.join() === 'sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
+    const FEEL = /^(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) in (Spring|Summer|Autumn|Winter)$/;
+    (today && today.visible && FEEL.test(today.title) && /^She (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.cards === 0 &&
+     today.heads.join() === 'Analysis,Circulation,Energy,Assessment' &&
+     today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
     await click(p, '#diagnosis .expand-btn'); await settle(p);
     const info = await p.evaluate(() => document.getElementById('detail-modal-body').innerText);
     await p.evaluate(() => document.getElementById('detail-modal-close').click());
-    (/Despondency: fear 20 points down/.test(info) && /Robert Shiller/.test(info) && /Wild Power/.test(info))
+    (/Despondency: fear 20 points down/.test(info) && /Robert Shiller/.test(info) && /A spell is a run of months/.test(info))
       ? ok('the Diagnosis (i) states every rule and its sources')
       : bad('the Diagnosis (i) states every rule and its sources', info.slice(0, 160));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
@@ -312,7 +312,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 6)
+    (past && past.visible && FEEL.test(past.title) && /^She was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.heads.length === 4)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -522,7 +522,7 @@ async function openPage(p, url, sheet) {
       : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
     const feel = await p.evaluate(() => {
       const card = document.querySelector('#diagnosis .trend-card');
-      return { stage: document.querySelector('#diagnosis .dx-title span').textContent.trim(),
+      return { stage: document.querySelector('#diagnosis .trend-head').textContent.trim().split(' ')[0],
         head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
     });
     await click(p, '#diagnosis .trend-card'); await settle(p);
@@ -631,7 +631,7 @@ async function openPage(p, url, sheet) {
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
-    (view && view.dial && view.today && view.tiles === 3 && view.closed && view.bar === 'Housing Cycle' &&
+    (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
      got.length === 20 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')

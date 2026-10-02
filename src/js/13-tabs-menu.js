@@ -111,7 +111,7 @@
     // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
     var built = false;
     var groups = [
-      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|eurostat|ftportfolios|fisherinvestments|yardeni|redschool/],
+      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|eurostat|ftportfolios|fisherinvestments|yardeni/],
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
       ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/],

@@ -864,18 +864,9 @@
     Defense:"Momentum has turned negative while the body is still warm.",
     Neutral:"No posture the record singles out."
   };
-  var BODY_SAYS = {
-    summer:"\u201cSuperwoman\u2026 for about 10 days\u201d; then, at the crossover, \u201ccrucially, you\u2019re asked to slow down.\u201d",
-    autumn:"The inner critic \u201chas a missive to deliver from your deep self.\u201d",
-    lateautumn:"The inner critic \u201chas a missive to deliver from your deep self.\u201d",
-    winter:"The task is to let go and rest.",
-    spring:"The critic can be \u201cyour wilful power of agency taking over too soon.\u201d",
-    springdeflation:"The critic can be \u201cyour wilful power of agency taking over too soon.\u201d"
-  };
   var DIAG_SRC = [
     {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
-    {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
-    {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
+    {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
   ];
   function todayFace(item){
     var t = item.__today, box = document.createElement("div");
@@ -903,7 +894,6 @@
   }
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
-    if (key === "mood") return "<b>" + d.stage + "</b>: " + FEELING_RULES[d.stage] + ".";
     if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
     if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
@@ -931,7 +921,7 @@
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
         "Momentum is the S&amp;P 500\u2019s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
         "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
-        "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast. The trend under the Analysis counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three."])) +
+        "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast. The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."])) +
       srcBlock(DIAG_SRC);
   }
   function assessmentFor(d, era){
@@ -945,19 +935,11 @@
     return postureLine(d, rec) + dxRow("Watch", watch.map(function(x){ return "<li>" + x + "</li>"; }).join(""), true);
   }
   function diagnosisHtml(m){
-    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), era = m.era, closed = open ? null : era;
+    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
     if (!d) return "";
-    var prev = marketCycles.filter(function(c){ return c.to != null && c.to < era.from; }).pop();
-    var history = open ? "The " + era.name + ", year " + m.yearIndex + " of a typical " + typicalCycleYears + "." +
-        (prev ? " Last bleed: the " + prev.name + ", " + prev.to + "." : "")
-      : "The " + era.name + ", closed in " + era.to + " after " + m.yearIndex + " years; a typical cycle runs " + typicalCycleYears + ".";
-    return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She\u2019s in " : "She closed in ") +
-        '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + '</span></h2>' +
-        '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " \u00b7 the " + d.half + " half \u00b7 " + d.posture + '</p>' +
-        '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
-      dxSection(dxHead("History"), dxRow("Record", history)) +
+    return trendCardHtml(d) +
       dxSection(dxHead("Analysis", null, stethoscopeSvg()),
-        categoriesShown().filter(function(c){ return !c.onDial; }).map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + trendCardHtml(d)) +
+        categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; }).map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("")) +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
@@ -994,14 +976,31 @@
     var restN = 0, restAll = 0;
     rest.forEach(function(r){ restN += r.n; restAll += r.all; });
     var share = cur.n / cur.all, restShare = restN / restAll, mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
-    var most = rows.every(function(r){ return r.n / r.all <= share; });
-    var text = "In the " + cur.all + " " + cur.name + " months since " + monthLabel(whatFollowed().from) + " she felt " + d.stage + " in " +
+    var most = rows.every(function(r){ return r.n / r.all <= share; }), from = monthLabel(whatFollowed().from);
+    var text = "In the " + cur.all + " " + cur.name + " months since " + from + " she felt " + d.stage + " in " +
       Math.round(share * 100) + "%, against " + Math.round(restShare * 100) + "% in the other seasons" + (most ? ", the most of any season." : ".");
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
       '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + cur.name + CHEV + '</span>' +
-      '<span class="trend-text">' + text + '</span>' + trendBarsSvg(rest, cur, restShare) +
+      spellLines(d, cur.name, from) + trendSub(text) + trendBarsSvg(rest, cur, restShare) +
       '<span class="trend-foot"><span>Other seasons</span><span class="now">' + cur.name + '</span></span></button>';
   }
+  function spellLines(d, season, from){
+    var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
+    var lead = r.now.n === 1 ? (open ? "She came into " : "She was in ") + both + " in " + monthLabel(r.now.to) + "."
+      : open ? "She has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
+      : "She was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
+    var stats = [];
+    if (r.before.length){
+      var ns = r.before.map(function(x){ return x.n; }).sort(function(a, b){ return a - b; }), long = r.before.reduce(function(a, x){ return x.n > a.n ? x : a; });
+      stats.push(r.before.length + (r.before.length === 1 ? " earlier spell" : " earlier spells") + " since " + from + ": a median of " +
+        ns[Math.floor(ns.length / 2)] + " months, the longest " + long.n + " (" + monthLabel(long.from) + " to " + monthLabel(long.to) + ").");
+    }
+    else stats.push("Her first spell of " + both + " since " + from + ".");
+    if (r.after > 1) stats.push("A year after a month of " + both + ", the S&amp;P 500 was higher " + Math.round(100 * r.higher / r.after) + "% of the time (" + r.after + " months).");
+    else if (r.after) stats.push("A year after her one month of " + both + " on record, the S&amp;P 500 was " + (r.higher ? "higher." : "lower."));
+    return '<span class="trend-text">' + lead + '</span>' + stats.map(trendSub).join("");
+  }
+  function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){
     var host = document.getElementById("diagnosis");
     if (host && m) host.innerHTML = diagnosisHtml(m);
