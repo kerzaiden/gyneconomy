@@ -163,9 +163,8 @@
     var key = c.key, sheet = byId("sheet-cat-" + key);
     if (!sheet) return "";
     var rows = indRows(sheet, find);
-    return '<section class="ind-cat cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
-      '" data-title="' + c.title + '"><span class="ind-cat-mark" aria-hidden="true">' + c.mark() + '</span>' +
-      '<span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button><div class="ind-card">' + rows.join("") + '</div></section>';
+    return '<section class="ind-cat ind-card cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
+      '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button>' + rows.join("") + '</section>';
   }
   function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
@@ -940,7 +939,7 @@
   function dxHead(title, c, mark){
     var tag = c ? 'button type="button"' : "div";
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
-      (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+      (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;

@@ -178,7 +178,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Search lists every reading by category (Weather, Mood, Circulation, Energy), with a timing filter (All,
   Structural, Leading, Coincident, Lagging; All by default) and a search box; each heading opens its category
   page, and each row shows today's figure only and opens its reading's page.** Keren modelled it on Apple
-  Health's search page; the All indicators page and its row stay gone. (V657)
+  Health's search page; the All indicators page and its row stay gone. (V657) Each category is one card: its
+  name, in the category's colour and without an icon, heads the card on a light wash of that colour, and its
+  readings are listed below it. Keren: "categories to not have icons… one container for weather and below its
+  subcategories… make it beautiful." (V692)
 - **In Search, readings that form a group are one row (Valuations, Stress) that opens a page holding
   their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660)
 - **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
@@ -896,25 +899,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
     instead of a piggy bank". (V302, V661)
   - Circulation: a hollow drop, kept apart from Desire's flame by the flame's filled core. Keren: "I want
     circulation to be an icon of a drop"; in this app Circulation is blood. (V302, V507)
-  - Volume: three sound waves with no speaker, every Volume mark from the one function. Keren asked for it
-    "like volume that is in sound", the one mark named for the word rather than the body; with her drawing,
-    "make this the volume icon across the app". (V507, V646)
+  - Volume: Circulation's drop. Keren: "take the drop icon of circulation and put it in volume", when the
+    Search headings lost their icons. (V692; three sound waves from V507 and V646.)
   - Pulse: the ECG trace. Keren: the trace "is more representative of a pulse than a heart". (V524, V586)
   - Unemployment rate: a person, head and shoulders. Keren: "I want unemployment rate to have a person icon, an
     avatar icon, in the search menu and everywhere else". (V691; three rising bars before.)
   - The cycle story: a book, left of its heading, today ("Optimism in Autumn") and on a past cycle ("Cycle
     story"). Keren: "for the cycle story, I want a book icon". (V691)
   - Interest rates: a heart. Keren: "give interest rates a heart icon". (V688)
-  - Stress: a battery nearly spent, apart from Energy's bolt; stress that never lifts spends the reserve.
-    Keren: Stress "should also have an icon, not a lightning"; the battery is Claude's pick of three drawn
-    (a kettlebell read as a person, a knot as infinity). (V688)
+  - Stress: Energy's bolt. Keren: "take the lightning icon in energy and put it in stress", when the Search
+    headings lost their icons. (V692; a battery in V688.)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index,
     which the page no longer is. (V664)
-  - Mood: three waves (two half-waves a line, three lines 5.6 apart, amplitude 1.7); its members are all
-    readings of a swell that arrives and passes, and Keren supplied the glyph. (V490)
-  - Energy: a bolt drawn as an outline, the one glyph with no curve, which keeps it apart from the flame and
-    the drop at row size. (V457)
+  - The categories (Weather, Circulation, Mood, Energy) carry no mark, in Search or on the Diagnosis headings;
+    the drop went to Volume and the bolt to Stress. Keren, asked whether the Diagnosis headings should lose
+    theirs too: "yes make them gone". (V692; Mood's three waves from V490, Energy's bolt from V457.)
 
 ### Cards and miniatures
 

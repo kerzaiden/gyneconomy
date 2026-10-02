@@ -73,10 +73,6 @@
 
   function dropSvg(sw){ return markSvg(
     '<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>'); }
-  function volumeSvg(){ return markSvg(
-    '<path d="M6.64 7.76A6 6 0 0 1 6.64 16.24" stroke-width="1.9"/>' +
-    '<path d="M9.82 4.58A10.5 10.5 0 0 1 9.82 19.42" stroke-width="1.9"/>' +
-    '<path d="M13.01 1.39A15 15 0 0 1 13.01 22.61" stroke-width="1.9"/>'); }
   function gaugeSvg(){ return markSvg(
     '<circle cx="12" cy="11.2" r="7.6" stroke-width="1.7"/>' +
     '<path d="M12 11.2 7.9 7.1" stroke-width="1.9"/>' +
@@ -98,9 +94,6 @@
   }
   function heartSvg(){ return markSvg(
     '<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>'); }
-  function batterySvg(){ return markSvg(
-    '<rect x="2.6" y="7" width="16.4" height="10" rx="2.2" stroke-width="1.8"/>' +
-    '<path d="M21.4 10.4v3.2" stroke-width="2"/><path d="M6 10.4v3.2" stroke-width="2.6"/>'); }
   function flameSvg(){ return markSvg(
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
     '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }
@@ -118,18 +111,6 @@
   function ecgSvg(){ return markSvg(
     '<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>'); }
   function circulationSvg(){ return dropSvg(1.9); }
-  function weatherSvg(){
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95"/>' +
-      '<path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65"/>' +
-      '<path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z"/>' +
-    '</svg>';
-  }
-  function moodSvg(){ return markSvg(
-    '<path d="M3.6 6.4q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>' +
-    '<path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>' +
-    '<path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>'); }
   function boltSvg(){ return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>'); }
   function houseSvg(){ return markSvg(
     '<path d="M3.4 10.9 12 4.1l8.6 6.8" stroke-width="1.9"/>' +
