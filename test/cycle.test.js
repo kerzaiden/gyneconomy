@@ -33,7 +33,7 @@ ok('the share of earlier months below the value', rankToDate(twelve, 7), 50);
 ok('above every earlier month is 100', rankToDate(twelve, 99), 100);
 ok('fewer than twelve earlier months is no rank yet', rankToDate([1, 2, 3], 2), null);
 
-console.log('\nfeelingTrack, spells, cycleStory, diagnoseClose \u2014 the record and the close\n');
+console.log('\nyearAfter, cycleStory \u2014 the record\n');
 {
   const months = ['2001-06', '2001-07', '2001-08', '2001-09', '2001-10', '2001-11', '2001-12'];
   const words = ['Hope', 'Hope', 'Optimism', 'Hope', 'Hope', 'Hope', 'Fear'];
@@ -42,18 +42,13 @@ console.log('\nfeelingTrack, spells, cycleStory, diagnoseClose \u2014 the record
     seasonTrackAll: [{ y: 2001, qn: 'Q2', reading: { season: 'summer' } }, { y: 2001, qn: 'Q4', reading: { season: 'lateautumn' } }],
     moodTrack: () => months.map((m, i) => ({ m, word: words[i], pct: [40, 45, 90, 30, 35, 50, 10][i] })), moodToday: () => ({ m: '2001-12', word: 'Hope', pct: 60 }), marketCache: null, trackCache: null,
     seasonGroup: k => k === 'springdeflation' ? 'spring' : k === 'lateautumn' ? 'autumn' : k };
-  const M = lift(['marketMonths', 'seasonInMonth', 'yearAfter', 'feelingTrack', 'monthsApart', 'feelingSpells', 'spellRecord', 'cycleStory', 'diagnoseClose'], env);
-  const t = M.feelingTrack();
-  ok('each month carries its emotion and its season group', t.map(x => x.stage[0] + x.group[0]).join(' '), 'Hs Hs Os Hs Hs Hs Fa');
-  ok('a year later is the S&P 500 twelve months on', +M.yearAfter(M.marketMonths(), t[0].m).toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
-  const r = M.spellRecord({ stage: 'Hope', season: 'summer', month: '2001-11' });
-  ok('the current spell runs to the month, an earlier spell apart from it does not count', r.now, { from: '2001-09', to: '2001-11', n: 3 });
+  const M = lift(['marketMonths', 'yearAfter', 'cycleStory'], env);
+  ok('a year later is the S&P 500 twelve months on', +M.yearAfter(M.marketMonths(), sp[0].m).toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
   const st = M.cycleStory({ from: 2001, to: 2001 });
   ok('a cycle\u2019s story: where she opened, her high, her low, where she closed', [st.first.m, st.hi.m, st.lo.m, st.last.m], ['2001-06', '2001-08', '2001-12', '2001-12']);
   ok('the two emotions she spent most months in', st.most, [{ word: 'Hope', n: 5 }, { word: 'Optimism', n: 1 }]);
   ok('an open cycle ends on today', M.cycleStory({ from: 2001, to: null, ongoing: true }).last.pct, 60);
   ok('a cycle with under two months read has no story', M.cycleStory({ from: 1990, to: 1990 }), null);
-  ok('the close reads its own month\u2019s emotion', [M.diagnoseClose({ endMonth: '2001-08', season: 'summer' }).stage, M.diagnoseClose({ endMonth: '2003-01', season: 'summer' })], ['Optimism', null]);
 }
 
 console.log('\ncycleReturns — the peak is the best single year, never compounded\n');

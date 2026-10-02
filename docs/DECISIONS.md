@@ -58,6 +58,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for it since V379. (V453, V604)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
+- **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
+  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Her story",
+  never by the mood it closed on, and the card carries the story alone (no "came into" line, no note on when the
+  mood is measured).** Keren: "a cycle is a story from the beginning to end, not just the end… we will always see
+  the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
+  has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
+  nine cycles from 1948 keep Claude's draft names for now (Keren: "keep the names as they are for now"). (V689)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -330,8 +337,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A cycle runs from its first bull year to its last bear year, so it ends with its bleed.** What built a
   cycle is what broke it (dot-com mania and crash, the housing boom and subprime); the YEAR badge and
   `cycleNowNote` count from the same year. (V511)
-- **The record opens at 1991; 1990 belongs to an unnamed earlier cycle and is context, not content.** That is
-  the cost of the bull-to-bear dating, stated openly. (V511)
+- **The record opens at 1948, the first year the seasons can be read (quarterly GDP and CPI begin in 1947).**
+  Keren: "from 1948", asked whether past cycles could reach the S&P 500's beginning. Before 1957 the returns are
+  the S&P's 90-stock predecessor's, as Damodaran's table carries them. (V689; the record opened at 1991 from V511.)
+- **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
+  and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
   following year; the open era leaves `to` unset.** The open era then keeps working as years are added. (V511)
 - **Cycles are named for what grew in them (Dot-Com, Housing, Big Tech, COVID-19, AI), and no sentence on
@@ -1107,9 +1117,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   summer. When it happened in the past, for how long, what happened next, very briefly." The card says how long
   the current spell has run. The earlier spells of the same feeling in the same season, with the S&P 500 a year
   after each, were listed for a day and dropped (Keren: "Drop the before three times since …", V686). The share
-  of months by season, its bars, and the median and longest spell are gone. Under the opening line the card
-  previews this cycle's story, the same beats as the Mood page's story (Keren: "give a preview of that emotional
-  story") (V686; the Apple Health bars were V679,
+  of months by season, its bars, and the median and longest spell are gone; in V689 the spell line went too, and
+  the card holds the cycle's written story under the feeling and season (Keren: "I'm not sure I need this"). Before
+  that it previewed the measured story beats (Keren: "give a preview of that emotional story") (V686; the Apple Health bars were V679,
   the spell statistics V681). The card opens the Mood page; no "She's in" header, no History record, no Mood row
   in the Analysis, and the Wild Power quote stays gone (V681).
 

@@ -943,10 +943,10 @@
       (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function diagnosisHtml(m){
-    var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
+    var open = m.ongoing, d = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;
     if (!d) return "";
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return trendCardHtml(d, m.era) +
+    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Her story", trendText(m.era.story)) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -958,20 +958,12 @@
     return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
-  function trendCardHtml(d, era){
-    var name = seasonName(seasonGroup(d.season)), mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0], story = cycleStory(era);
+  function moodDoor(head, body){
+    var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
-      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + name + CHEV + '</span>' +
-      spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : "") + '</button>';
+      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
   }
-  function spellLines(d, season, story){
-    var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
-    var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
-      : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
-      : "Mrs. Market was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
-    return '<span class="trend-text">' + lead + '</span>' + (story ? trendSub(story) : "");
-  }
-  function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
+  function trendText(t){ return '<span class="trend-text">' + t + '</span>'; }
   function renderDiagnosis(m){
     var host = document.getElementById("diagnosis");
     if (host && m) host.innerHTML = diagnosisHtml(m);
