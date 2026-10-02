@@ -1,4 +1,6 @@
   /* ---- Live data without a render refactor ---- */
+  cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
+  gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
   var LIVE_CACHE = (function(){
     try { return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {}; }
     catch (e) { return {}; }

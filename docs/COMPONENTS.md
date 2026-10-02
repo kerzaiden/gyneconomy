@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `1f4503c` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `0913554` on 2026-10-02. **78 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -194,6 +194,7 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
 | **`mean`** | charts.js | 4 places |
+| **`merge`** | live.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`paintReading`** | live.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
@@ -205,7 +206,6 @@ renderer speaks. Listed most-used first.
 | **`groupId`** | indicators.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`marketMonths`** | model.js | 3 places |
-| **`merge`** | live.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |

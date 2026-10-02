@@ -46,7 +46,11 @@ async function oecdConfidence(start) {
 }
 
 const VOL_JOIN = '1990-01';
-const SP500_FROM = '1950-01';
+const SP500_FROM = '1948-01';
+const GDP_JOIN = '1988 Q1';
+const CPI_JOIN = '1989-01';
+const RETURNS_FROM = 1948, RETURNS_JOIN = 1990;
+const DAMODARAN = 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html';
 const { shillerSheet, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
 
@@ -117,6 +121,34 @@ function withoutGap(qs, rows, gap) {
   return qs.map(d => traded.has(d.q) ? d : Object.assign({}, d, { v: null, raw: null }));
 }
 
+function yoyMonthly(rows, lo, hi) {
+  const at = new Map(rows.map(r => [r.date.slice(0, 7), r.v]));
+  return rows.map(r => {
+    const m = r.date.slice(0, 7), prev = at.get((Number(m.slice(0, 4)) - 1) + m.slice(4));
+    return prev > 0 ? { m, v: Math.round((r.v / prev - 1) * 10000) / 100 } : null;
+  }).filter(d => d && band(d.v, lo, hi));
+}
+
+function yoyQuarterly2(qs, lo, hi) {
+  const at = new Map(qs.map(d => [d.q, d.v]));
+  return qs.map(d => {
+    const prev = at.get((Number(d.q.slice(0, 4)) - 1) + d.q.slice(4));
+    return prev > 0 ? { q: d.q, v: Math.round((d.v / prev - 1) * 10000) / 100 } : null;
+  }).filter(d => d && band(d.v, lo, hi));
+}
+
+function damodaranReturns(html, from, to) {
+  const out = {};
+  for (const row of html.split(/<tr[\s>]/i).slice(1)) {
+    const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(m => m[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
+    if (cells.length < 2 || !/^\d{4}$/.test(cells[0])) continue;
+    const y = Number(cells[0]), v = Number(cells[1].replace(/[%,\s]/g, ''));
+    if (y >= from && y < to && band(v, -60, 70)) out[y] = Math.round(v * 100) / 100;
+  }
+  for (let y = from; y < to; y++) if (!(y in out)) throw new Error('S&P returns: no ' + y + ' in the Damodaran table');
+  return out;
+}
+
 function fiscalYears(rows, lo, hi) {
   return rows.filter(r => band(r.v, lo, hi)).map(r => {
     if (!/^\d{4}-01-01$/.test(r.date)) throw new Error('not a fiscal-year date: ' + r.date);
@@ -124,7 +156,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500, confidence) {
+function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500, confidence, early) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
@@ -132,7 +164,15 @@ function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500
 ` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
     (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
     (sp500 ? '\n  var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '') +
-    (confidence ? '\n  var confidenceHistory = [' + rows(confidence) + '];\n' : '');
+    (confidence ? '\n  var confidenceHistory = [' + rows(confidence) + '];\n' : '') + earlyBlock(early);
+}
+
+function earlyBlock(e) {
+  e = e || { gdp: [], cpi: [], returns: {} };
+  const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
+  const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
+  return '\n  var gdpYoYBefore = [' + qrows(e.gdp) + '];\n  var cpiYoYBefore = [' + rows(e.cpi) + '];\n' +
+    '  var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n';
 }
 
 function treasuryBlock(t) {
@@ -218,12 +258,27 @@ async function main() {
   if (!confidence.length) throw new Error('OECD CCI: no month inside the band');
   say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500, confidence));
+  const early = await earlySeasons();
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500, confidence, early));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
+}
+
+async function earlySeasons() {
+  const gdp = yoyQuarterly2(quarterly(await fredSeries('GDPC1', '1947-01-01'), 1, 1e6), -15, 25).filter(d => d.q < GDP_JOIN);
+  if (!gdp.length || gdp[0].q !== '1948 Q1' || gdp[gdp.length - 1].q !== '1987 Q4') throw new Error('GDPC1: expected 1948 Q1 → 1987 Q4');
+  say('GDPC1 YoY     ' + gdp.length + ' quarters, ' + gdp[0].q + ' → ' + gdp[gdp.length - 1].q + ' (before ' + GDP_JOIN + ')');
+  const cpi = yoyMonthly(await fredSeries('CPIAUCSL', '1947-01-01'), -5, 20).filter(d => d.m < CPI_JOIN);
+  if (!cpi.length || cpi[0].m !== '1948-01' || cpi[cpi.length - 1].m !== '1988-12') throw new Error('CPIAUCSL: expected 1948-01 → 1988-12');
+  say('CPIAUCSL YoY  ' + cpi.length + ' months, ' + cpi[0].m + ' → ' + cpi[cpi.length - 1].m + ' (before ' + CPI_JOIN + ')');
+  const r = await fetch(DAMODARAN, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('Damodaran: HTTP ' + r.status);
+  const returns = damodaranReturns(await r.text(), RETURNS_FROM, RETURNS_JOIN);
+  say('S&P returns   ' + Object.keys(returns).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (Damodaran, dividends included)');
+  return { gdp, cpi, returns };
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { damodaranReturns, yoyMonthly, yoyQuarterly2, earlyBlock, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

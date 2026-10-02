@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { damodaranReturns, yoyMonthly, earlyBlock, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -102,8 +102,19 @@ ok('the OECD reply is read month by month, in month order',
 ok('two series in one reply is refused, not guessed between',
    (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
             catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
-ok('with consumer confidence, its series is written last',
-   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+ok('consumer confidence is written after the S&P 500, and the early seasons last',
+   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+ok('the early seasons are written as the app reads them',
+   earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 } }),
+   '\n  var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\n  var cpiYoYBefore = [{m:"1948-01",v:10.24}];\n  var sp500ReturnsBefore = {1948:5.7,1949:18.3};\n');
+const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
+  '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
+ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });
+ok('a year missing from the Damodaran table is refused, not filled',
+   (() => { try { damodaranReturns(dTable, 1948, 1952); return 'kept'; } catch (e) { return /no 1950|no 1951/.test(e.message); } })(), true);
+ok('a monthly change is the month against the same month a year before, to two decimals',
+   yoyMonthly([d('1947-01-01', 21.48), d('1947-02-01', 21.62), d('1948-01-01', 23.68), d('1948-02-01', 23.67)], -5, 20),
+   [{ m: '1948-01', v: 10.24 }, { m: '1948-02', v: 9.48 }]);
 ok('a month averages its daily closes',
    monthlyMean([d('1990-01-02', 17.24), d('1990-01-03', 18.19), d('1990-02-01', 20)], 1, 200),
    [{ m: '1990-01', v: 17.72 }, { m: '1990-02', v: 20 }]);

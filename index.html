@@ -17435,6 +17435,11 @@
     m: "2026-08",
     v: 96.5
   } ];
+  var gdpYoYBefore = [];
+  var cpiYoYBefore = [];
+  var sp500ReturnsBefore = {};
+  cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
+  gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
   var LIVE_CACHE = function() {
     try {
       return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {};
@@ -21937,7 +21942,7 @@
       u: "https://fred.stlouisfed.org/series/PSAVERT"
     } ]);
   }
-  var sp500AnnualReturns = {
+  var sp500AnnualReturns = merge(sp500ReturnsBefore, {
     1990: -3.1,
     1991: 30.47,
     1992: 7.62,
@@ -21975,7 +21980,7 @@
     2024: 25.02,
     2025: 17.88,
     2026: 14.4
-  };
+  });
   var curveSub = "Cboe, " + vixRow.sub;
   function vixPct(v) {
     var m = vixRow.meter;
