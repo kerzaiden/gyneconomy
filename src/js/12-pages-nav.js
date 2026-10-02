@@ -947,7 +947,7 @@
     if (!d && open) return "";
     if (!d) d = { after:yearAfter(marketMonths(), m.endMonth) };
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return (d.stage ? trendCardHtml(d, m.era) : noMoodCardHtml()) +
+    return (d.stage ? trendCardHtml(d, m.era) : noMoodCardHtml(m.era)) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -965,12 +965,12 @@
       '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
   }
   function trendCardHtml(d, era){
-    var name = seasonName(seasonGroup(d.season)), story = cycleStory(era);
-    return moodDoor(d.stage + ' in ' + name, spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : ""));
+    var name = seasonName(seasonGroup(d.season));
+    return moodDoor(d.stage + ' in ' + name, spellLines(d, name, era.story));
   }
-  function noMoodCardHtml(){
+  function noMoodCardHtml(era){
     var first = moodTrack().filter(function(x){ return x.word; })[0];
-    return moodDoor("", trendText("Her mood is read from " + monthLabel(first.m) + ", the first month all its measures allow; this cycle closed before it."));
+    return moodDoor("", trendText(era.story) + trendSub("Her mood is measured from " + monthLabel(first.m) + "; this cycle closed before it, so its story is told, not measured."));
   }
   function spellLines(d, season, story){
     var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;

@@ -58,6 +58,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for it since V379. (V453, V604)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
+- **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
+  It sits on the cycle page under the mood and season (the Diagnosis's mood card), today's cycle and every past
+  one; a cycle that closed before her mood is measured says its story is told, not measured.** Keren: "each cycle
+  has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
+  nine cycles from 1948 keep Claude's draft names for now (Keren: "keep the names as they are for now"). (V689)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)

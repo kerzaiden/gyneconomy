@@ -289,7 +289,7 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
-                   story: [...d.querySelectorAll('.trend-sub')].map(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)).join() === 'true',
+                   story: [...d.querySelectorAll('.trend-sub')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
                    told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
                      (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1]).pop(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),

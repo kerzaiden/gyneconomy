@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `e23b6d0` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `73e60f5` on 2026-10-02. **78 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -122,7 +122,7 @@ Generated from commit `e23b6d0` on 2026-10-02. **78 components**, **40 shared pa
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
-| **`trendSub`** | `.trend-sub` | `pages-nav.js:spellLines` |
+| **`trendSub`** | `.trend-sub` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:spellLines` |
 | **`trendText`** | `.trend-text` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:spellLines` |
 
 ## indicators.js
