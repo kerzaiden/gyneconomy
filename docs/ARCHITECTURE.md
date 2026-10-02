@@ -539,13 +539,15 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
 - **Mood and season** (V679): `whatFollowed` also counts each month's feeling by its season (`bySeason`, the four
   seasons of `seasonGroup`). The Analysis's trend card (`trendCardHtml`) sets today's feeling in today's season
-  against the other three pooled; the Mood page's Insights (`insightMood`) draws the mood ladder
-  (V685): `moodAt` in 08-model ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each
-  against its own history to that month (`rankIn`, over `rankToDate`) and averages the three; `moodTrack` keeps every
-  month since all three can rank, for the card's record low and high; `MOOD_STEPS` in 12-pages-nav names the eight
-  equal steps and their hues. The score describes, it does not forecast, so it is not the composite that failed out of
-  sample. `repaintDiagnosis` repaints every category's Insights after a live reading lands, so the ladder moves with
-  the VIX.
+  against the other three pooled; the Mood page's Insights (`insightMood`) draws the cycle of
+  market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in 08-model
+  ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
+  that month (`rankIn`, over `rankToDate`) and averages the three; `moodTrack` keeps every month since all three can
+  rank, and `moodRead` ranks each against the months before it and takes its change over `MOOD_TURN` months;
+  `moodWord` picks the nearest stage by height on the rising (`MOOD_RISING`) or falling (`MOOD_FALLING`) side.
+  Optimism is on the chart twice, so both dots light. The mood describes, it does not forecast, so it is not the
+  composite that failed out of sample. `repaintDiagnosis` repaints every category's Insights after a live reading
+  lands, so the lit stage moves with the VIX.
 - **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in 03-data, a split
   page against the OECD's 100 line, and its history `confidenceHistory` (the OECD's own SDMX API, dataflow `DSD_STES@DF_CLI`,
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD

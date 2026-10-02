@@ -184,13 +184,19 @@ console.log('\nmoodAt \u2014 each reading ranked against its own past, turned to
   const env = { QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' },
     capeHistory: ramp(30, i => ({ y: 1985 + i, v: i })), buffettHistory: ramp(80, i => ({ q: (1990 + Math.floor(i / 4)) + ' Q' + (i % 4 + 1), v: i })),
     volatilityHistory: months(24).map(d => Object.assign({}, d, { v: 24 - d.v })), confidenceHistory: months(24), sp500MonthlyHistory: months(24), moodLists: null, moodCache: null };
-  const M = lift(['rankToDate', 'rankIn', 'moodSeries', 'moodAt', 'moodTrack'], env);
+  for (const v of ['MOOD_TURN', 'MOOD_RISING', 'MOOD_FALLING']) env[v] = new Function('return ' + new RegExp('var ' + v + ' = ([^;]*);').exec(SRC)[1])();
+  const M = lift(['rankToDate', 'rankIn', 'moodSeries', 'moodAt', 'moodWord', 'moodRead', 'moodTrack'], env);
   const top = M.moodAt('2001-12');
   ok('rising valuations and confidence and a falling VIX all rank at the top', [top.valuations, top.calm, top.confidence, top.score], [100, 100, 100, 100]);
   ok('a new low in the VIX is calm, a new high is not', [M.moodAt('2001-12', 0).calm, M.moodAt('2001-12', 99).calm], [100, 0]);
   ok('the market is valuations and calm; households are confidence', [M.moodAt('2001-12', 99).market, M.moodAt('2001-12', 99).confidence], [50, 100]);
   ok('a month with fewer than twelve earlier ones has no mood', M.moodAt('2000-12'), null);
   ok('the track starts at the first month every reading can rank', M.moodTrack()[0].m, '2001-01');
+  ok('rising, the stage is the nearest on the climbing side', [M.moodWord(38, 1), M.moodWord(37, 1), M.moodWord(97, 1), M.moodWord(2, 1)], ['Optimism', 'Hope', 'Euphoria', 'Despair']);
+  ok('falling, the nearest on the descending side', [M.moodWord(90, -1), M.moodWord(60, -1), M.moodWord(20, -1), M.moodWord(4, -1)], ['Anxiety', 'Fear', 'Desperation', 'Despair']);
+  ok('unchanged counts as falling; no rank or no turn is no stage', [M.moodWord(52, 0), M.moodWord(null, 1), M.moodWord(50, null)], ['Fear', null, null]);
+  const before = Array.from({ length: 12 }, (_, i) => ({ m: 'm' + i, score: i * 5 })), x = M.moodRead({ score: 30 }, before);
+  ok('a month is ranked against her moods before it, and turns against three months back', [x.pct, x.change, x.ago.m, x.word], [50, -15, 'm9', 'Fear']);
 }
 function FEELINGS_IN(src) { return new Function('return ' + /var FEELINGS = (\[[^\]]*\]);/.exec(src)[1])(); }
 function GROWTH_WINDOW_OF(src) { return +/var GROWTH_WINDOW = (\d+);/.exec(src)[1]; }

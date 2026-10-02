@@ -288,13 +288,31 @@
     var val = (cape + buf) / 2, calm = 100 - vix;
     return { m:m, valuations:val, calm:calm, confidence:conf, market:(val + calm) / 2, score:(val + calm + conf) / 3 };
   }
+  var MOOD_TURN = 3;
+  var MOOD_RISING = [["Despair", 0], ["Depression", 5], ["Hope", 24], ["Optimism", 51], ["Excitement", 75], ["Thrill", 92], ["Euphoria", 100]];
+  var MOOD_FALLING = [["Despair", 0], ["Panic", 9], ["Desperation", 30], ["Fear", 52], ["Denial", 74], ["Anxiety", 91], ["Euphoria", 100]];
+  function moodWord(pct, change){
+    if (pct == null || change == null) return null;
+    return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(s[1] - pct) < Math.abs(a[1] - pct) ? s : a; })[0];
+  }
+  function moodRead(x, before){
+    var ago = before[before.length - MOOD_TURN];
+    x.pct = rankToDate(before.map(function(p){ return p.score; }), x.score);
+    x.change = ago ? x.score - ago.score : null; x.ago = ago || null;
+    x.word = moodWord(x.pct, x.change);
+    return x;
+  }
   var moodCache = null;
   function moodTrack(){
     if (moodCache) return moodCache;
-    moodCache = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; });
+    var t = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; });
+    moodCache = t.map(function(x, i){ return moodRead(x, t.slice(0, i)); });
     return moodCache;
   }
-  function moodToday(){ return moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value); }
+  function moodToday(){
+    var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
+    return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
+  }
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;

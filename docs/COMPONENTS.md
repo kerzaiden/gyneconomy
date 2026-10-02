@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `651f890` on 2026-10-02. **80 components**, **40 shared patterns**.
+Generated from commit `5cac0cb` on 2026-10-02. **81 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -118,7 +118,8 @@ Generated from commit `651f890` on 2026-10-02. **80 components**, **40 shared pa
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
 | **`insightMood`** | `.mood-fig` | — |
-| **`moodLadder`** | `.mood-chip` `.mood-ladder` `.mood-span` `.mood-word` | `pages-nav.js:insightMood` |
+| **`moodCallout`** | `.mood-arrow` `.mood-call` | `pages-nav.js:moodCycleSvg` |
+| **`moodCycleSvg`** | `.mood-curve` `.mood-dot` `.mood-line` `.on` | `pages-nav.js:insightMood` |
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
 | **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
@@ -162,10 +163,10 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
+| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
-| **`monthLabel`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
@@ -202,6 +203,7 @@ renderer speaks. Listed most-used first.
 | **`mean`** | charts.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
+| **`rankToDate`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
 | **`valRow`** | components.js | 4 places |
 | **`byIdMaybe`** | refresh-season.js | 3 places |
@@ -210,10 +212,10 @@ renderer speaks. Listed most-used first.
 | **`feelingTrack`** | model.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
+| **`moodTrack`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
-| **`rankToDate`** | model.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |
 | **`renderDiagnosis`** | pages-nav.js | 3 places |
 | **`seasonName`** | pages-nav.js | 3 places |
