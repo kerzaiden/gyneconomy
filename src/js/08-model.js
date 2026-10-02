@@ -216,7 +216,7 @@
     if (!f) return null;
     var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
     return { stage:stage, carried:!named, half:half, season:m.season, facts:f, month:at,
-             posture:readPosture(stage, half, f), bestMom:S.best[i],
+             posture:readPosture(stage, half, f),
              after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
   }
   function diagnoseToday(){
@@ -231,8 +231,7 @@
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     var half = seasonHalf(currentSeason), rec = whatFollowed();
     return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
-             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from,
-             bestMom:S.best[S.sp.length - 1] };
+             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from };
   }
 
   function vitalRingSvg(pct, state, label, cls){
