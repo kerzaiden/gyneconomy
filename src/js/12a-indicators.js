@@ -36,8 +36,8 @@
   }
   function momentumPage(){
     var r = momentumReading;
-    return { goodAbove:true, line:"Standing still", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight, info:r.info,
-      fmt:function(v){ return momentumPct(v / 100); },
+    return { goodAbove:true, line:"Cash", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight, info:r.info,
+      fmt:momentumPts,
       row:{ sub:r.metricSub, note:r.caption, flagState:r.tag.state } };
   }
   function splitSpec(R, P){
@@ -189,10 +189,12 @@
         fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
   }
   function momentumInsight(){
-    var r = momentumReading;
-    return [lede('A speedometer does not say how far you have driven; it says how fast you are going now. Read the same way, ' +
-        'the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is moving fast or slow.'),
-      hiCard("The speedometer", r.tag.state, momentumDrive(r.drive))];
+    var r = momentumReading, f = r.drive;
+    return [lede('A trend alarm asks one question: has Mrs. Market’s price beaten cash over the past year? ' +
+        'While it has, the trend is intact; when cash wins, the alarm sounds.'),
+      hiCard("The trend", r.tag.state, momentumTrend(f)),
+      hiCard("The odds", r.tag.state, momentumOddsLine(f)),
+      hiCard("The speed", f.speed >= f.before ? "good" : "warning", momentumSpeedLine(f))];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

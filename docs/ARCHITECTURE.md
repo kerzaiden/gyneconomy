@@ -522,9 +522,11 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   live VIX close ranked against those monthly averages.
 - **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
   arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
-  the speed (`momentumSpeed`: three-month change compounded to % a year) for the page and the roster. Its word
-  sets that speed against zero and `momentumCruise` (the median speed since the series begins), not the
-  Diagnosis's 65% line (V674).
+  the margin over cash (`momentumMargins`: the twelve-month change less `momentumCash`, the fed funds rate
+  compounded over the same months, with the newest Fed month carried until the next is published) for the page and
+  the roster. Its word is the margin's sign, not the Diagnosis's 65% line; `momentumOdds` counts, from the same
+  arrays, how often a 15%+ fall followed within a year on each side; `momentumSpeed` survives only for the speed
+  card (V675).
   Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
   its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.
 - **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same

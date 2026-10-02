@@ -508,23 +508,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
-- **Momentum reads like a speedometer: how fast the S&P 500 is moving now, in percent a year.** Keren: "we need
-  to measure it like a speedometer … it should behave like a speedometer, like when I'm driving a car I know when
-  I'm moving fast or I'm moving slow." Speed is the monthly average against three months earlier, compounded to
-  a yearly pace (the short end of the momentum research's 3-to-12-month window, which she asked for at V673:
-  Jegadeesh & Titman 1993; Moskowitz, Ooi & Pedersen 2012). Cruising speed is the median of every speed
-  reading since 1950 (about 11% a year), recomputed every month: the same measure as the speed, so she runs
-  faster than it half the time. Keren asked for timelines compared; the compound pace since 1950 (8.3%) was
-  weighed and declined because it measures distance, not speed, and sits under the typical reading; windows
-  that start in this century swing with their start (6.5% from 2000, 14.1% from March 2009); every window of
-  thirty years or more gives a median of 11 to 14%. Fast is above cruising speed, Slow is
-  forward but below it, Reversing is below zero; zero and cruising speed are the only lines and neither is set
-  by hand. Insights add whether she is speeding up or easing off against the three months before; the (i) gives
-  the twelve-month change as the distance, not the speed. The chart is the speed, month by month, around zero.
-  The figure is whole percent, signed. This replaces V672's 65%-of-the-bull's-best word and V673's pace
-  comparison; the Diagnosis still reads Euphoria and Optimism off the 65% line (asked of Keren). RSI, MACD and
-  stochastics were weighed and declined: trading oscillators for daily bars, with 70/30 lines that are
-  convention with no primary source. (V672, V673, V674)
+- **Momentum is a trend alarm: has the S&P 500's last twelve months beaten cash? Intact if it has, Broken if
+  not; the figure is the margin in points, signed.** Keren questioned reading 1950 as the same economy and asked
+  whether a Momentum reading is needed at all and how it could give "distinct and prominent conclusions"; of the
+  options put to her she chose "Trend alarm". The year is the monthly average against the same month a year
+  earlier, price only; cash is the effective federal funds rate (FRED FEDFUNDS, from July 1954), compounded
+  monthly over the same twelve months, standing in for the Treasury bills of Moskowitz, Ooi & Pedersen 2012
+  (time-series momentum). Cash is the only line and moves with the era's own rates, which answers the 1950
+  question: nothing is a fixed average across economies. It was chosen over the three-month speed because, since
+  1955, the speed changed sign about 186 times against the trend's 64 and gave no return edge, while a broken
+  trend roughly doubled the odds of a 15%+ fall within a year (20% against 9%, computed live in the Insights).
+  The alarm speaks to the risk of a deep fall, not the average return, and the (i) says so; it was early in 1969,
+  1973, 2000 and 2007 and late in 1962, 1987 and 2022. The speed stays as one Insights card (the last three
+  months against the three before). The chart is the margin, month by month, around cash. This replaces V674's
+  speedometer and cruising speed, V673's pace comparison and V672's 65%-of-the-bull's-best word; the Diagnosis
+  still reads Euphoria and Optimism off the 65% line (asked of Keren). RSI, MACD and stochastics were weighed and
+  declined: trading oscillators for daily bars, with 70/30 lines that are convention with no primary source.
+  (V672, V673, V674, V675)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its
