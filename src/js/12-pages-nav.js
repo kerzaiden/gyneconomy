@@ -884,13 +884,16 @@
   }
   function pct(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(0) + "%"; }
   function rosterRows(){ return readingRoster().byId; }
-  function eraMove(id, era){
-    var r = rosterRows()[id]; if (!r) return "";
+  function eraEnds(id, era){
+    var r = rosterRows()[id]; if (!r) return null;
     var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= era.from && y <= era.to; });
-    if (span.length < 2) return "";
+    if (span.length < 2) return null;
     var a = span[0], b = span[span.length - 1];
-    return (r.eraUnit || r.name) + " went from " + pastFigure(r, a.v, pairAt(r, a.k)) + " (" + prettyK(r, a.k) + ") to " +
-      pastFigure(r, b.v, pairAt(r, b.k)) + " (" + prettyK(r, b.k) + ") across the cycle.";
+    return { r:r, from:prettyK(r, a.k), to:prettyK(r, b.k), a:pastFigure(r, a.v, pairAt(r, a.k)), b:pastFigure(r, b.v, pairAt(r, b.k)) };
+  }
+  function eraMove(id, era){
+    var e = eraEnds(id, era); if (!e) return "";
+    return (e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
   }
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
@@ -937,10 +940,18 @@
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
     if (!d) return "";
+    var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
     return trendCardHtml(d) +
-      dxSection(dxHead("Analysis", null, stethoscopeSvg()),
-        categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; }).map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("")) +
+      dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
+        systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) : "")) +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
+  }
+  function acrossCycle(era){
+    var span = { from:era.from, to:calendarTodayY };
+    var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
+    if (!fed || !job) return "";
+    return dxRow("Across the cycle", "Since " + fed.from + " the " + fed.r.eraUnit + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
+      ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
   function feelingBySeason(stage){
