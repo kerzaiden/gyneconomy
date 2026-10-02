@@ -258,22 +258,17 @@ async function openPage(p, url, sheet) {
       return d ? { visible: !!d.offsetParent, title: d.querySelector('.dx-title').textContent,
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => h.textContent.trim()),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
-                   symptoms: d.querySelectorAll('.dx-list li').length, cards: document.querySelectorAll('.cat-row').length } : null;
+                   symptoms: [...d.querySelectorAll('.dx-k')].filter(k => /Symptoms/.test(k.textContent)).length,
+                   analyses: [...d.querySelectorAll('.dx-sys[class*="cat-"]')].map(s => [...s.querySelectorAll('.dx-k')].map(k => k.textContent).join()),
+                   cards: document.querySelectorAll('.cat-row').length } : null;
     });
     const today = await read();
-    const dxOrder = () => p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-sys[class*="cat-"]')].map(s => {
-      const key = [...s.classList].find(c => c.indexOf('cat-') === 0).slice(4);
-      const cards = [...document.querySelectorAll('#sheet-cat-' + key + ' .cat-item')].map(i => i.dataset.title);
-      const names = [...s.querySelectorAll('.dx-list li b')].map(b => b.textContent).filter(n => cards.indexOf(n) !== -1);
-      const want = cards.filter(n => names.indexOf(n) !== -1);
-      return names.join() === want.join() ? '' : key + ': ' + names.join(',') + ' / cards ' + want.join(',');
-    }).filter(Boolean));
-    const todayOrder = await dxOrder();
+    const onlyAnalysis = d => d && d.symptoms === 0 && d.analyses.length === 4 && d.analyses.every(a => a === 'Analysis');
     await sweep(p);
     const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
     (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
      today.heads.join() === 'History,Weather,Mood,Circulation,Energy,Assessment' &&
-     today.doors.join() === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy' && today.symptoms > 15)
+     today.doors.join() === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
     await click(p, '#diagnosis .expand-btn'); await settle(p);
@@ -291,22 +286,21 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    const pastOrder = await dxOrder();
-    (!todayOrder.length && !pastOrder.length)
-      ? ok('each Diagnosis system lists its readings in card order, today and at a close')
-      : bad('each Diagnosis system lists its readings in card order, today and at a close', todayOrder.concat(pastOrder).join(' | '));
-    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('#diagnosis .dx-list li')].map(li => {
-      const name = li.querySelector('b').textContent, item = [...document.querySelectorAll('.cat-item')].find(i => i.dataset.title === name);
-      return item && item.__today ? { name, fig: li.textContent.slice(name.length).split(' \u00b7 ')[0].trim(), today: item.__today.text.trim() } : null;
-    }).filter(Boolean));
+    (onlyAnalysis(today) && onlyAnalysis(past))
+      ? ok('each Diagnosis system reads its Analysis only, today and at a close')
+      : bad('each Diagnosis system reads its Analysis only, today and at a close', JSON.stringify([today, past]));
+    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
+      const v = item.querySelector('.ci-value');
+      return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
+    }).filter(f => f && f.fig !== '\u2014'));
     const decimals = t => ((/\d+(?:\.(\d+))?/.exec(t) || [])[1] || '').length;
     const KEREN = { 'Federal debt': /^\d+\.\d%$/, 'Shiller CAPE': /\u00d7$/, 'Pulse': /\u00d7$/, 'Growth': /^[+\u2212]/,
-                    'Volume': /^[+\u2212]/, 'Volatility': / VIX$/, 'Horizon': / pts/ };
+                    'Volume': /^[+\u2212]/, 'Momentum': /^[+\u2212]\d+%$/ };
     const figOff = pastFigs.filter(f => decimals(f.fig) !== decimals(f.today) || (KEREN[f.name] && !KEREN[f.name].test(f.fig)));
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && /^She closed in /.test(past.title) && past.symptoms > 10 && past.heads.length === 6)
+    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 6)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -318,21 +312,21 @@ async function openPage(p, url, sheet) {
       const w = d.querySelector('.tag');
       return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
     }), sheet);
-    const says = re => p.evaluate(s => ([...document.querySelectorAll('#diagnosis .dx-list li')].map(li => li.textContent).find(t => new RegExp(s).test(t)) || ''), re);
+    const says = re => p.evaluate(s => ([...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => new RegExp(s).test(t)) || ''), re);
     const capeBefore = await doors('sheet-metric-valuation');
     await p.evaluate(() => window.__GYN.applyLive('capeValue', 50.5));
     await settle(p);
-    const capeAfter = await doors('sheet-metric-valuation'), capeDx = await says('CAPE');
-    (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)) && /CAPE 50\.5/.test(capeDx))
-      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors and the Diagnosis')
-      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter, capeDx }));
+    const capeAfter = await doors('sheet-metric-valuation');
+    (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)))
+      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors')
+      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter }));
 
     const ffBefore = await doors('sheet-sign-hormones');
     await p.evaluate(() => window.__GYN.applyLive('fedFunds', { lo: 1.25, hi: 1.50, lastMove: '-0.25' }));
     await settle(p);
-    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('Hormones');
+    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('regulator');
     (ffBefore.length >= 2 && ffAfter.every(t => /^1\.25/.test(t)) &&
-     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /1\.25.*Easing/.test(ffDx))
+     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /regulator is easing/.test(ffDx))
       ? ok('a rate cut reaches every door, word and all', ffAfter.concat(ffDx).join(' \u00b7 '))
       : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter, ffDx }));
 
@@ -503,7 +497,7 @@ async function openPage(p, url, sheet) {
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Momentum+Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
@@ -590,7 +584,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 18 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 19 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -598,7 +592,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
@@ -894,12 +888,10 @@ async function openPage(p, url, sheet) {
     }), sheet);
     const cape = await doors('sheet-metric-valuation');
     const dxDrift = await g.evaluate(() => {
-      const lis = [...document.querySelectorAll('#diagnosis .dx-list li')].map(li => li.textContent.replace(/\s+/g, ' '));
-      return [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => {
-        const name = c.dataset.title || c.querySelector('.ci-name').textContent.trim(), fig = c.querySelector('.ci-value').firstChild.textContent.trim();
-        const li = lis.find(t => t.indexOf(name + ' ') === 0);
-        return li && li.indexOf(fig) === -1 ? name + ': card ' + fig + ', diagnosis ' + li : null;
-      }).filter(Boolean);
+      const word = id => ((document.querySelector('.cat-item[data-open="' + id + '"] .ci-word') || {}).textContent || '').trim().toLowerCase();
+      const line = [...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => /regulator/.test(t)) || '';
+      const want = 'The regulator is ' + word('sheet-sign-hormones') + '; money is ' + word('sheet-sign-volume') + '.';
+      return line === want ? [] : ['diagnosis "' + line + '", cards "' + want + '"'];
     });
     const ff = await doors('sheet-sign-hormones');
     const cache = await g.evaluate(() => {

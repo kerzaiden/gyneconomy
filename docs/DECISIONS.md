@@ -433,6 +433,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The high-yield spread is Desire's figure and appears on no other reading.** It was once tagged good on
   Desire and warning elsewhere; Keren: "is it the same thing? If so, unite it". (V464)
 - **Industrial output keeps a card with no history chart.** ISM's history is not free. (V658)
+- **Momentum is Mood's first reading: the S&P 500's monthly average against the same month a year earlier
+  (Shiller's series, the one the Diagnosis already read), leading, with its own card, page and history.** Keren:
+  "place another category under mood. Call it momentum … make judgment calls on how to evaluate that. And make
+  the KPI as intuitive as possible." It is the market's pace, not its altitude; the season does not read it
+  (the season is CPI and GDP, and no season points to an asset class). (V670, V672)
 
 ### Bands and verdicts
 
@@ -493,6 +498,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
+- **Momentum's word comes off two lines: below zero (definitional) is Falling; above it, 65% or more of this
+  bull's best twelve-month change is Rising, and less is Slowing.** The 65% is Keren's line from the Diagnosis
+  research (V664), the one Euphoria and Optimism read, so the card and the feeling can never disagree; the chart
+  draws zero, and the (i) says the 65% is hers, not a published standard. The figure is whole percent, signed.
+  RSI, MACD and stochastics were weighed and declined: they are trading oscillators for daily bars, and their
+  70/30 lines are convention with no primary source. (V672)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its
@@ -984,14 +995,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   diagnosis to open below the cycle. Mind you, that the cycle page applies to past cycles as well." It follows
   her cycle-tracking app's home page. (V665)
 - **It reads in clinical order and language: a headline (the feeling), History, then each System (a category,
-  whose heading opens the category page) with one Analysis line and its Symptoms, then the Assessment.**
-  Keren: "use clinical language, ergo symptoms and analysis. Analysis would be what it tells the doctor.
-  Symptoms is the reading today. System is basically the category." (V665)
-- **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, each symptom's
-  value at the close with no verdict word, the Analysis as the movement across the cycle, and what actually
-  followed a year later.** Keren chose this layout; verdicts are words for today. (V665)
-- **Each system lists its symptoms in the order of the category page's cards (Momentum leads Mood).** Keren
-  chose one order for a category wherever it is read. (V670)
+  whose heading opens the category page) with its one Analysis line, then the Assessment. It lists no
+  Symptoms; the readings live on the category pages its headings open.** Keren: "use clinical language, ergo
+  symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
+  V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
+  symptoms … just want the analysis." (V665, V672)
+- **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
+  the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
+  words for today, and a closed cycle's figures are on its cards. (V665, V672)
 - **The feeling is named in the market chart's seven words: Hope, Optimism, Euphoria, Anxiety, Fear,
   Capitulation, Despondency.** Keren chose the chart's own words; this reopens V236's "drop the emotions" for
   the Diagnosis only. (V664)

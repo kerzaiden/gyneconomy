@@ -235,6 +235,65 @@
              bestMom:S.best[S.sp.length - 1] };
   }
 
+  // ---- Momentum: the S&P 500 against a year earlier ----
+  var MOMENTUM_SRC = [
+    {t:"Robert Shiller — U.S. stock market data: the S&P 500’s monthly average", u:"https://shillerdata.com/"},
+    {t:"The Conference Board — US Leading Indicators (stock prices are one of the ten components)", u:"https://www.conference-board.org/topics/us-leading-indicators"}
+  ];
+  function momentumSeries(){
+    var S = marketMonths();
+    return S.sp.map(function(d, i){ return { m:d.m, v:S.mom[i] == null ? null : S.mom[i] * 100 }; })
+      .filter(function(d){ return d.v != null; });
+  }
+  function momentumPct(v){
+    var r = Math.round(v * 100);
+    return (r > 0 ? "+" : r < 0 ? "\u2212" : "") + Math.abs(r) + "%";
+  }
+  function momentumWord(mom, share){
+    if (mom < 0) return { state:"serious", text:"Falling" };
+    if (share >= SLOWING) return { state:"good", text:"Rising" };
+    return { state:"warning", text:"Slowing" };
+  }
+  function momentumRun(S){
+    var i = S.sp.length - 1, up = S.mom[i] >= 0, from = i, peak = i;
+    while (from > 0 && S.mom[from - 1] != null && (S.mom[from - 1] >= 0) === up) from--;
+    for (var k = from; k <= i; k++) if (up ? S.mom[k] > S.mom[peak] : S.mom[k] < S.mom[peak]) peak = k;
+    return { i:i, up:up, since:monthLabel(S.sp[from].m), peak:S.mom[peak], peakAt:monthLabel(S.sp[peak].m) };
+  }
+  var momentumReading = (function(S){
+    var run = momentumRun(S), now = S.mom[run.i], share = now > 0 ? now / S.best[run.i] : 0;
+    var w = momentumWord(now, share), at = monthLabel(S.sp[run.i].m);
+    var says = run.up
+      ? "above where it stood a year earlier, as it has been since " + run.since + ", at " + Math.round(share * 100) +
+        "% of this bull’s best pace (" + momentumPct(run.peak) + ", " + run.peakAt + ")"
+      : "below where it stood a year earlier, as it has been since " + run.since + "; the deepest so far is " +
+        momentumPct(run.peak) + " (" + run.peakAt + ")";
+    return {
+      bodyTerm:"Momentum", econTerm:"S&P 500, change on a year earlier", metricSub:"S&P 500 vs. a year earlier, " + at,
+      metric:momentumPct(now), tag:{ state:w.state, text:w.text }, run:run, share:share,
+      info:function(){ return momentumInfoHtml(momentumReading); },
+      page:{ chart:function(){ return '<div id="sheet-sign-momentum-chart"></div><div id="sheet-sign-momentum-highlights"></div>'; } },
+      shortCaption:at + " — the S&P 500 is " + says + ".",
+      caption:at + ", the S&P 500’s monthly average against the same month a year earlier: " + momentumPct(now) + ", " + says +
+        ". The word is " + w.text + ": below zero is Falling; above it, " + Math.round(SLOWING * 100) +
+        "% or more of this bull’s best pace is Rising, and less is Slowing."
+    };
+  })(marketMonths());
+  function momentumInfoHtml(f){
+    var line = Math.round(SLOWING * 100) + "%";
+    return '<h4>' + f.econTerm + '</h4>' +
+      ledeHtml("How fast Mrs. Market\u2019s price is moving: the S&amp;P 500\u2019s monthly average against the same month a year earlier (" +
+        f.metricSub + "). The reading is <b>" + f.tag.text + "</b>.") +
+      facts([
+        "<b>Falling</b>: below zero, the market is lower than a year ago. Zero is definitional.",
+        "<b>Rising</b>: above zero and at " + line + " or more of this bull\u2019s best pace, the fastest twelve-month change since momentum last turned positive.",
+        "<b>Slowing</b>: above zero but under " + line + " of that best.",
+        "The " + line + " line is Keren\u2019s, from the research behind the Diagnosis, not a published standard; the Diagnosis reads Euphoria and Optimism off the same line.",
+        "It is a leading reading: stock prices are one of the ten components of The Conference Board\u2019s Leading Economic Index.",
+        "A twelve-month change carries its starting point: a weak month a year ago makes today look stronger than it feels, and a strong one the reverse."]) +
+      srcBlock(MOMENTUM_SRC);
+  }
+
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;
