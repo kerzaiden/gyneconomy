@@ -266,6 +266,7 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
+                   story: [...d.querySelectorAll('.trend-sub')].some(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -281,7 +282,7 @@ async function openPage(p, url, sheet) {
     const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Circulation and Energy:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
-    (today && today.visible && FEEL.test(today.title) && /^Mrs. Market (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.cards === 0 &&
+    (today && today.visible && FEEL.test(today.title) && /^Mrs. Market (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.story && today.cards === 0 &&
      today.heads.join() === 'Circulation and Energy,Circulation,Energy' && today.boxes === 'trend,sys' && today.across && today.grid === '0:0:false' &&
      today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
@@ -309,7 +310,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && FEEL.test(past.title) && /^Mrs. Market was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.heads.length === 3)
+    (past && past.visible && FEEL.test(past.title) && /^Mrs. Market was in .+ \w{3} \d{4}\.$/.test(past.lead) && past.story && past.heads.length === 3)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);

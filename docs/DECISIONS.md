@@ -1084,7 +1084,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   summer. When it happened in the past, for how long, what happened next, very briefly." The card says how long
   the current spell has run, then lists the earlier spells of the same feeling in the same season, newest first
   (the latest four when there are more), each with its months and the S&P 500 a year after it ended. The share
-  of months by season, its bars, and the median and longest spell are gone (V686; the Apple Health bars were V679,
+  of months by season, its bars, and the median and longest spell are gone. Under the opening line the card
+  previews this cycle's story, the same beats as the Mood page's story (Keren: "give a preview of that emotional
+  story") (V686; the Apple Health bars were V679,
   the spell statistics V681). The card opens the Mood page; no "She's in" header, no History record, no Mood row
   in the Analysis, and the Wild Power quote stays gone (V681).
 

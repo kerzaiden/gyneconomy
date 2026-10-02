@@ -516,7 +516,7 @@
     return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo())) +
       storyHtml();
   }
-  function storyText(s, open){
+  function storyBeats(s, open){
     var ev = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
     [[s.hi, "her high"], [s.lo, "her low"]].forEach(function(p){
       var same = ev.filter(function(e){ return e.x.m === p[0].m; })[0];
@@ -525,7 +525,10 @@
     });
     ev.sort(function(a, b){ return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0; });
     var parts = ev.map(function(e){ return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")"; });
-    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ". Most of it she spent in " +
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  }
+  function storyText(s, open){
+    return storyBeats(s, open) + " Most of it she spent in " +
       s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
   }
   function storyInfo(){
@@ -947,7 +950,7 @@
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
     if (!d) return "";
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return trendCardHtml(d) +
+    return trendCardHtml(d, m.era) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -959,13 +962,13 @@
     return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
-  function trendCardHtml(d){
-    var name = seasonName(seasonGroup(d.season)), mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
+  function trendCardHtml(d, era){
+    var name = seasonName(seasonGroup(d.season)), mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0], story = cycleStory(era);
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
       '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + name + CHEV + '</span>' +
-      spellLines(d, name) + '</button>';
+      spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : "") + '</button>';
   }
-  function spellLines(d, season){
+  function spellLines(d, season, story){
     var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
     var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
       : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
@@ -978,7 +981,7 @@
     });
     var head = r.before.length ? "Before, " + r.before.length + (r.before.length === 1 ? " time" : " times") + " since " + monthLabel(feelingTrack()[0].m) +
       (r.before.length > 4 ? ", the latest four:" : ":") : "Her first time since " + monthLabel(feelingTrack()[0].m) + ".";
-    return '<span class="trend-text">' + lead + '</span>' + [head].concat(lines).map(trendSub).join("");
+    return '<span class="trend-text">' + lead + '</span>' + (story ? [story] : []).concat([head], lines).map(trendSub).join("");
   }
   function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){
