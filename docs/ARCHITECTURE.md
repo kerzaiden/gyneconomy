@@ -51,6 +51,23 @@ the `asOf` its own reading was taken on.
 is why the literals stay. This is a cache, not a store: the database is the record.
 ```
 
+Since V694 the cache holds only what the registry admits (the V693 review found one malformed document could
+blank the app on every later visit):
+
+- **Checked on the way in and on the way out.** `receive` caches a document only once `docOk` (the reading's
+  `kind`, `band` and `ok`, and no `<` anywhere, because live documents carry data, never markup) has passed it,
+  and `LIVE()` checks the cached copy again before the app builds on it. A refused document falls back to the
+  literal.
+- **Every reading is applied at load.** A scalar that lands inside an object row (`vixClose`, `capeValue`,
+  `hyOasNow`) is applied by `liveInto` right after its row exists, so a second visit no longer shows the file's
+  figures.
+- **Applied, not cached, decides a repaint.** `receive` compares a document with what this page load applied
+  (`liveApplied`), never with storage, so an unchanged value that was never applied still lands.
+- **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
+  `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
+- **A card's date is its figure's date.** Pressure and Volatility date their cards from the applied document's
+  `asOf`, and `paintWhen` repaints the date with the figure.
+
 #### Where live data enters
 
 ```text
@@ -219,10 +236,23 @@ two surfaces cannot disagree about a number. A document missing from the file is
 the report says so rather than filling the gap. The task exists only because a GitHub Action cannot write
 an artifact's database; delete it and the artifact freezes while the site carries on.
 
-**A failure leaves the previous value standing.** The fetcher's bands are wide on purpose: they catch a
+**A failure leaves the previous value standing.** Since V694 this is true of the file itself: `assemble`
+starts from the existing `data/live.json` and replaces only the readings that arrived, each keeping its own
+`asOf`. The Treasury's file for a new year is empty on its first business day, so the curve falls back to
+last year's file. The fetcher's bands are wide on purpose: they catch a
 decimal slip or an error page, not a market that moved. The data is committed, not stored, so every
 refresh is a diff, and a run where only the timestamp moved commits nothing. Because the commit lands on
 `main`, data cannot reach the site without passing the suite.
+
+**The Fed's last move is read from the target's own history (V694).** `fedMove` walks DFEDTARU back to its
+last change and dates it by the FOMC decision in `FOMC_DECISIONS` (federalreserve.gov's calendar) just before
+the day it took effect, or the day before when no meeting matches. The same calendar gives the next decision.
+**The calendar ends at December 2026**: add 2027's dates when the Fed publishes them, and until then the page
+leaves out "Next decision" rather than showing a date already past. A vote belongs to its meeting, so a move
+with a new date drops the literal's vote; a document with a new range and no move hides the direction and date.
+
+**The running quarter is not a quarter (V694).** The Backfill marks it `partial`; Horizon's verdict reads the
+last complete quarter, and its meter's ends are the series' own record, computed, not typed.
 
 **CAPE comes from the originator (V541).** Shiller publishes his series himself as an `.xls`. Two traps,
 both pinned by `npm run test:tools`: his dates are `YYYY.MM` with a one-digit month, so **`.1` is October,
@@ -572,9 +602,12 @@ two Autumns share names, so **every season is named through `seasonTitle(meta)`,
 Harvest · Winter Seeding); fertility names only where the book has one — don't invent one.
 
 `readSeason(cpi12, gdp8, prevRegime)` computes the season, **never set by hand** (`seasonOverride` exists
-and shouldn't be used). Growth = the least-squares slope of the last **six** quarters (Keren ratified six:
-four gave 34 regime runs since 1988, six 26, eight 21); a trend turns about nine months after the line, by
-design. Temperature = CPI level against the band plus direction from a twelve-month fitted trend.
+and shouldn't be used). Growth = the least-squares slope of the last **eight** quarters (`GROWTH_WINDOW`; Keren chose eight
+at V687, after six from V664); a trend turns about a year after the line, by design. Temperature = CPI level
+against the band plus direction from a twelve-month fitted trend. The twelve months are calendar months
+(`cpiYear`) and the trend is fitted on their real positions (`cpiTrend`), because the record has a hole: BLS
+published no October 2025. A window may hold eleven readings; counting the last twelve entries would have
+stretched it to thirteen months and steepened the slope (V694).
 
 | Season | Growth | Temperature |
 |---|---|---|
@@ -897,6 +930,25 @@ Text 4.5:1, graphics 3:1, both themes — measured (`npm run a11y`, zero violati
 computed values, not the stylesheet). Touch targets 44px, small marks meeting it with an invisible disc.
 Every hover has a tap equivalent. Nothing colour-alone. Order the DOM, not the paint. Keep an `aria-label`
 where a heading is lost.
+
+**One keyboard layer stack.** Every closable layer registers with `layer(rank, {open, close, box})`
+(`01-refresh-season.js`), and one document `keydown` reads them in rank order: the head ⋯ menu (0), the (i)
+modal (1), a menu sheet (2), the menu (3), a reading page (4). Escape closes only the topmost open one; Tab
+loops inside the topmost one that has a `box` (the modal, a sheet, the menu). A new overlay registers here,
+never with its own Escape listener, or one key press closes two layers. Focus follows the layer: a dialog
+focuses its first control and gives focus back to its opener (the (i) opened from a head menu falls back to
+that head's ⋯); a page focuses the top bar's title (`tabindex=-1`) and its back gives focus to the card that
+opened it. The head ⋯ menu is a disclosure of plain buttons, not an ARIA menu: it promises no arrow keys, so it
+claims no `role="menu"`; opening it, or changing level, focuses its first row. The tab bar and the Appearance
+choices share `rovingKeys` (arrows, Home/End, one tab stop). The dial's hub steps through quarters with
+Left/Right/Home/End through the same `goTo` the pointer uses, and says the parked quarter in a polite live
+region. The (i) backdrop is `visibility:hidden` once its fade ends (the delay sits only on the closing
+transition, so opening is instant), which takes it out of the tab order and the accessibility tree. One global
+`prefers-reduced-motion` rule makes every transition and animation effectively instant (0.01ms, so
+`transitionend` and `getAnimations()` still settle). Every history chart is a focusable group whose
+Left/Right/Home/End step the same readout the pointer drives (`histKeysWire`), said in a polite live region.
+The service worker never reloads a page someone is looking at: an update swaps in when the tab is hidden and no
+text field holds a draft, and never on a first visit (V694).
 
 ---
 

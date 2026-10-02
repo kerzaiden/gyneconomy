@@ -1,4 +1,4 @@
-var VERSION = 'gyn-693';
+var VERSION = 'gyn-694';
 var SHELL = [
   './',
   './index.html',
@@ -49,6 +49,21 @@ self.addEventListener('fetch', function (e) {
         return caches.match(req).then(function (hit) {
           return hit || caches.match('./index.html');
         });
+      })
+    );
+    return;
+  }
+
+  if (url.pathname.indexOf('/data/') !== -1) {
+    e.respondWith(
+      fetch(req, { cache: 'no-store' }).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(VERSION).then(function (c) { c.put(req, copy); }).catch(function () {});
+        }
+        return res;
+      }).catch(function () {
+        return caches.match(req);
       })
     );
     return;

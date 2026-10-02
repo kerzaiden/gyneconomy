@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -24,6 +24,8 @@ ok('a height anywhere else is caught', chartFrames('a.js', '\n  function drawX(W
 ok('a margin in a mini chart passes', chartFrames('a.js', '\n  function colPeek(a){\n    var padT = 6;\n  }'), []);
 ok('a margin in a history chart is caught', chartFrames('a.js', '\n  function drawX(W){\n    var padB = 30;\n  }').length, 1);
 ok('an unused function is caught', unused('function lonely(){}', '', ''), ['function lonely is never used']);
+ok('a function declared twice is caught', twice('  function trendOf(a){}\n  function trendOf(b){}\n'), ['function trendOf is declared 2 times; the last one silently replaces the others']);
+ok('an inner function of the same name is not a second declaration', twice('  function draw(){}\n    function draw(){}\n'), []);
 ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);

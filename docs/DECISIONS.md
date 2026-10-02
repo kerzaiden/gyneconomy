@@ -1152,6 +1152,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ## Code and process
 
+- **Where Keren hands Claude the call, Claude's choice is recorded here as Claude's, for her to overturn.** Keren,
+  on the V693 review: "fix all issue and make judgement calls where needed". At V694 Claude chose: the installed
+  app turns with the device (WCAG 1.3.4); a chart's ⋯ menu is a plain disclosure, not an ARIA menu; an update
+  never reloads a page in view or one holding a draft; the Fed card leaves out what it cannot date rather than
+  show a stale move or a past meeting; CAPE's file figure is Shiller's own monthly reading, the source the live
+  figure comes from, so one card never shows two sources. (V694)
+
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)
 - **There are no comments in `src/`, the tools, the tests, the service worker or the workflows, except

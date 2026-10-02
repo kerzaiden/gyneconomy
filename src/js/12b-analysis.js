@@ -166,7 +166,7 @@
     if (!eraOpen) return;
     var ta = byId("today-analysis");
     taHome.parent.insertBefore(ta, taHome.next); taHome.parent.insertBefore(cycleViewEl, ta);
-    eraOpen = null; eraShow(null); showCycle(currentEra);
+    eraOpen = null; eraShow(null); showCycle(currentEra); repaintLive();
   }
 
   /* ---- THE ROSTER AS SERIES ---- */

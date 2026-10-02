@@ -470,7 +470,11 @@
     return PRESSURE_ZONES[PRESSURE_ZONES.length - 1];
   }
   var HZN_BACK = 4;
-  function hznLast(a){ for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null) return { i:i, v:a[i].v }; return null; }
+  function hznLast(a){ for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return { i:i, v:a[i].v }; return null; }
+  function hznRecord(a){
+    var vs = a.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
+    return { min:Math.min.apply(null, vs), max:Math.max.apply(null, vs) };
+  }
   function hznBack(a, from, back){ for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
   function horizonWord(sp, dLong, dShort, dSpread){
     if (sp < -0.10) return { word:"Pessimistic", state:"critical" };
@@ -493,9 +497,9 @@
              word:w.word, state:w.state };
   })();
   var HZN_METERS = {
-    "3m": { min:-1.48, max:3.61, value:horizonRead.spread,
+    "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
-    "2y": { min:-0.77, max:2.80,
+    "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max,
             value:(function(){ var p = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : 0; };
                                return p("10Y") - p("2Y"); })(),
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }

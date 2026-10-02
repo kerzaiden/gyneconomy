@@ -301,7 +301,7 @@
       "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
       "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
       "so the two are different figures and the page says which is which: the range is the decision, the " +
-      "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf +
+      "chart is where money traded. Target " + fedFundsRange() + (fedFunds.asOf ? ", set " + fedFunds.asOf : "") +
       (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " +
       fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " +
       atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " +
@@ -316,7 +316,7 @@
       var out = [], mode = "up", ext = fedFundsHistory[0];
       fedFundsHistory.forEach(function(d){
         if (mode === "up"){
-          if (d.v >= ext.v) ext = d;
+          if (d.v > ext.v) ext = d;
           else if (ext.v - d.v >= 1.5){ out.push(ext); mode = "down"; ext = d; }
         } else {
           if (d.v <= ext.v) ext = d;

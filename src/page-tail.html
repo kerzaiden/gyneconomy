@@ -6,6 +6,7 @@
     if (window.top !== window.self) return;
     if (location.protocol !== "https:" && location.hostname !== "localhost") return;
     window.addEventListener("load", function () {
+      var hadController = !!navigator.serviceWorker.controller;
       navigator.serviceWorker.register("sw.js").then(function (reg) {
         if (!reg) return;
         var last = 0;
@@ -19,11 +20,21 @@
         document.addEventListener("visibilitychange", check);
         window.addEventListener("focus", check);
 
-        var reloading = false;
-        navigator.serviceWorker.addEventListener("controllerchange", function () {
-          if (reloading) return;
+        var pending = false, reloading = false;
+        var drafting = function () {
+          return Array.prototype.some.call(document.querySelectorAll("textarea, input[type=text], input:not([type])"),
+            function (el) { return el.value.trim() !== ""; });
+        };
+        var settle = function () {
+          if (!pending || reloading || document.visibilityState !== "hidden" || drafting()) return;
           reloading = true;
-          if (navigator.serviceWorker.controller) location.reload();
+          location.reload();
+        };
+        document.addEventListener("visibilitychange", settle);
+        navigator.serviceWorker.addEventListener("controllerchange", function () {
+          if (!hadController) return;
+          pending = true;
+          settle();
         });
       }).catch(function () {  });
     });

@@ -5,6 +5,7 @@
     try { return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {}; }
     catch (e) { return {}; }
   })();
+  var liveAsOf = {}, liveApplied = {};
   function merge(base, over){
     var o = {};
     if (base && typeof base === "object" && !Array.isArray(base))
@@ -12,44 +13,66 @@
     for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
     return o;
   }
+  function docValue(d){
+    if (!d || typeof d !== "object") return null;
+    if (d.kind === "series") return Array.isArray(d.rows) ? d.rows : null;
+    if (d.kind === "scalar") return d.value === undefined ? null : d.value;
+    if (d.kind !== "object") return null;
+    var over = {}, any = false;
+    for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)){ over[k] = d[k]; any = true; }
+    return any ? over : null;
+  }
+  function docOk(name, d){
+    var r = READINGS[name];
+    try { return !!r && shapeOk(r, docValue(d)) && JSON.stringify(d).indexOf("<") < 0; } catch (e) { return false; }
+  }
   function LIVE(name, fallback){
     var d = LIVE_CACHE[name];
-    if (!d || typeof d !== "object") return fallback;
-    try {
-      if (d.kind === "series") return Array.isArray(d.rows) && d.rows.length ? d.rows : fallback;
-      if (d.kind === "scalar") return d.value === undefined ? fallback : d.value;
-      if (d.kind === "object"){
-        var over = {}, any = false;
-        for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)){ over[k] = d[k]; any = true; }
-        return any ? merge(fallback, over) : fallback;
-      }
-    } catch (e) {}
-    return fallback;
+    if (!docOk(name, d)) return fallback;
+    liveApplied[name] = JSON.stringify(d);
+    if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf);
+    return d.kind === "object" ? merge(fallback, docValue(d)) : docValue(d);
+  }
+  function liveIsoOf(name){
+    try { return JSON.parse(liveApplied[name] || "{}").asOf || ""; } catch (e) { return ""; }
+  }
+  function liveInto(name){
+    var v = LIVE(name, null);
+    if (v != null) READINGS[name].set(v);
   }
   var fedFunds = { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
                    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" };
-  fedFunds = LIVE("fedFunds", fedFunds);
   /* ---- The first series to come from outside the file ---- */
 
   function paintReading(sheet, value, tag){
     var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
     Array.prototype.forEach.call(doors, function(d){
+      if (d.__today){ painted++; return; }
       var v = d.querySelector(".ci-value, .subject-value");
       if (v && v.firstChild && v.firstChild.nodeType === 3){ v.firstChild.nodeValue = String(value); painted++; }
-      if (!tag) return;
-      var t = d.querySelector(".tag");
-      if (!t) return;
-      t.textContent = tag.text;
-      if (tag.state != null && /\btag\b/.test(t.className))
-        t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
+      if (tag) paintTag(d, tag);
     });
+    paintWhen(sheet);
     if (doors.length && !painted)
       (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
     return painted;
   }
 
+  function repaintVolatilityRing(){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d){
+      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
+      if (m) m.innerHTML = volatilityRing();
+    });
+  }
+  function paintTag(d, tag){
+    var t = d.querySelector(".tag");
+    if (!t) return;
+    t.textContent = tag.text;
+    if (tag.state != null && /\btag\b/.test(t.className))
+      t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
+  }
   function repaintVolatility(){
-    put("subj-ring-sentiment", volatilityRing());
+    repaintVolatilityRing();
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintPressureRow(){
@@ -61,6 +84,25 @@
     var s = byIdMaybe("sheet-sign-pressure");
     if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
   }
+  function repaintLive(){
+    LIVE_NAMES.forEach(function(n){
+      (READINGS[n].paint || []).forEach(function(fn){ try { fn(); } catch (e) { if (window.console) console.warn("repaint " + n + " failed", e); } });
+    });
+  }
+  function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
+  function repaintDesire(){
+    var row = desireRow(), cape = valRow("cape");
+    if (!row || !cape) return;
+    paintReading("sheet-sign-desire", row.metric, null);
+    Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el){
+      el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
+    });
+  }
+  function syncCapeHistory(){
+    var last = capeHistory[capeHistory.length - 1], now = valRow("cape").meter.value;
+    if (last.y === calendarTodayY) last.v = now; else capeHistory.push({ y:calendarTodayY, v:now });
+    moodLists = null; moodCache = null;
+  }
   function repaintValuationRow(){
     var row = valRow("cape");
     if (!row) return;
@@ -70,22 +112,36 @@
   var READINGS = {
     fedFunds: {
       kind: "object",
-      ok: function(v){ return typeof v.lo === "number"; },
-      set: function(v){ fedFunds = merge(fedFunds, v); },
+      ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
+      set: function(v){
+        if (!v.lastMove && (v.lo !== fedFunds.lo || v.hi !== fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"" });
+        if (v.asOf !== undefined && v.asOf !== fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
+        fedFunds = merge(fedFunds, v);
+      },
       paint: [repaintPolicy]
     },
-    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintPressureRow, repaintPressureChart] },
-    sentiment:  { kind: "object", set: function(v){ sentiment = v; }, onOpen: true },
+    yieldCurve: {
+      kind: "series",
+      ok: function(v){ return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || isNum(r.y)); }); },
+      set: function(v){ yieldCurve = v; }, paint: [repaintPressureRow, repaintPressureChart]
+    },
+    sentiment:  {
+      kind: "object",
+      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
+      set: function(v){ sentiment = merge(sentiment, v); vixRow = sentiment.rows[0]; }, onOpen: true
+    },
     valuation:  {
       kind: "object",
+      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
       set: function(v){
-        valuation = v;
+        valuation = merge(valuation, v);
         if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
       },
       paint: [repaintValuationRow]
     },
     coincident: {
       kind: "series",
+      ok: rowsOk,
       set: function(v){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
       onOpen: true
     },
@@ -103,12 +159,12 @@
     hyOasNow: {
       kind: "scalar", band: [1, 30],
       set: function(v){
-        var row = coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0];
+        var row = desireRow();
         row.meter.value = v;
         row.metric = v.toFixed(2) + "%";
         if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
       },
-      onOpen: true
+      paint: [repaintDesire]
     },
     capeValue: {
       kind: "scalar", band: [4, 60],
@@ -119,10 +175,15 @@
         if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
         valuation.tag = valuationVerdict(v);
       },
-      paint: [repaintValuationRow]
+      paint: [repaintValuationRow, syncCapeHistory, repaintDesire]
     }
   };
   var LIVE_NAMES = Object.keys(READINGS);
+  fedFunds = LIVE("fedFunds", fedFunds);
+  function isNum(x){ return typeof x === "number" && isFinite(x); }
+  function rowsOk(rows){
+    return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){ return r && typeof r === "object" && (!r.meter || isNum(r.meter.value)); });
+  }
   var KINDS = ["object", "series", "scalar"];
   function checkLiveCoverage(){
     var bad = [];
@@ -139,22 +200,21 @@
     if (bad.length && window.console) console.warn("reading registry: " + bad.join(", "));
   }
   function receive(next, mode){
-    var names = Object.keys(next).filter(function(n){ return READINGS[n]; });
+    var names = Object.keys(next).filter(function(n){ return docOk(n, next[n]); });
     if (!names.length) return 0;
-    var prev = LIVE_CACHE, moved = 0;
-    var now = mode === "replace" ? next : merge(LIVE_CACHE, next);
+    var fresh = {}, moved = 0;
+    names.forEach(function(n){ fresh[n] = next[n]; });
+    var now = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
     try { window.localStorage.setItem("gyn.live", JSON.stringify(now)); } catch (e) {}
     LIVE_CACHE = now;
     names.forEach(function(name){
-      try {
-        if (next[name] && next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
-        if (prev && prev[name] && JSON.stringify(prev[name]) === JSON.stringify(next[name])) return;
-      } catch (e) {}
-      if (applyLive(name, LIVE(name, null))) moved++;
+      var doc = JSON.stringify(next[name]);
+      if (next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
+      if (liveApplied[name] === doc) return;
+      if (applyLive(name, docValue(next[name]))) { liveApplied[name] = doc; moved++; }
     });
     return moved;
   }
-  var liveAsOf = {};
   function fmtAsOf(iso){
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
     if (!m) return "";
@@ -174,7 +234,7 @@
     return true;
   }
   function shapeOk(r, v){
-    if (r.kind === "series") return Array.isArray(v) && v.length > 0;
+    if (r.kind === "series") return Array.isArray(v) && v.length > 0 && (r.ok ? !!r.ok(v) : true);
     if (r.kind === "scalar") return typeof v === "number" && v >= r.band[0] && v <= r.band[1];
     if (!v || typeof v !== "object" || Array.isArray(v)) return false;
     return r.ok ? !!r.ok(v) : true;

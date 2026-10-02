@@ -74,11 +74,13 @@
         byId("topbar-back").hidden = true;
         if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); showCycle(currentEra); }
         if (tab === "analysis") settleStrips();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
       });
     });
   }
   GYN.step("renderTopbar", renderTopbar, "wire"); renderTopbar();
+  function wireTabKeys(){ rovingKeys(document.querySelector(".tabbar"), ".tab-btn", "aria-selected"); }
+  GYN.step("wireTabKeys", wireTabKeys, "wire"); wireTabKeys();
 
   // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
   function wireContactForm(){
@@ -150,7 +152,8 @@
     }
     menu.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".menu-row[data-sheet]"); if (row) showSheet(row.getAttribute("data-sheet"), row); });
     document.addEventListener("click", function(e){ if (e.target.closest && e.target.closest("[data-sheet-back]")) hideSheet(); });
-    document.addEventListener("keydown", function(e){ if (e.key !== "Escape") return; if (openSheet) hideSheet(); else hide(); });
+    layer(2, { open:function(){ return !!openSheet; }, close:hideSheet, box:function(){ return openSheet; } });
+    layer(3, { open:function(){ return !menu.hidden && menu.classList.contains("in"); }, close:hide, box:function(){ return menu; } });
 
     // ---- Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its ----
     (function(){
