@@ -231,10 +231,10 @@
       var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
       collapseEmptyBlocks(el);
     }
-    cyclePanel.addEventListener("click", function(e){
-      var btn = e.target.closest && e.target.closest("[data-open]"); if (!btn) return;
-      openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"));
-    });
+    [cyclePanel, byId("detail-modal-body")].forEach(function(host){ host.addEventListener("click", function(e){
+      var btn = e.target.closest && e.target.closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl.closest(".tab-panel").getAttribute("data-tab"); if (!btn) return;
+      byId("detail-backdrop").classList.remove("show"); openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
+    }); });
     ["analysis", "search"].forEach(function(key){
       var panel = PAGE_HOME[key].panel, go = function(el){ openMetricPage(byId(el.getAttribute("data-open")), el.getAttribute("data-title"), false, key); };
       panel.addEventListener("click", function(e){ var btn = e.target.closest && e.target.closest("[data-open]"); if (btn) go(btn); });
@@ -324,7 +324,12 @@
     var open = src.getAttribute("data-open");
     var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
-    var item = document.createElement("button");
+    var item = catCard(src, cardDate(ROSTER_BY[open]));
+    if (src.parentNode) src.parentNode.removeChild(src);
+    return item;
+  }
+  function catCard(src, when){
+    var open = src.getAttribute("data-open"), item = document.createElement("button");
     item.type = "button"; item.className = "cat-item";
     item.setAttribute("data-open", open);
     item.setAttribute("data-title", src.getAttribute("data-title") || "");
@@ -340,7 +345,6 @@
     var body = document.createElement("div"); body.className = "ci-body";
     var read = document.createElement("div"); read.className = "ci-read";
     var val = src.querySelector(".peek-value, .subject-value");
-    var when = cardDate(ROSTER_BY[open]);
     if (val){
       var unit = val.querySelector(".peek-unit, .unit");
       if (unit){
@@ -364,7 +368,6 @@
     chev.innerHTML = CHEV;
     head.appendChild(chev.firstChild);
     item.appendChild(head); item.appendChild(body);
-    if (src.parentNode) src.parentNode.removeChild(src);
     return item;
   }
   function insightCirculation(){
@@ -600,27 +603,27 @@
       if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
     });
   }
+  function tempPeek(r, value, cpi){
+    var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +
+      (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+    return peekOf("sheet-metric-temp", { value:value, word:word, state:heatStep(r.cpiNow),
+      cols:cpi.map(function(d){ return d.v; }), colClass:function(v){ return "temp-col " + heatStep(v); } });
+  }
+  function gdpPeek(r, gq){
+    return peekOf("sheet-metric-gdp", { value:fmtSigned(r.gdpLatest.v, 1) + "%",
+      word:growthShownCap(r.regime), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
+      colClass:function(v, i){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
+  }
   function renderPeekAndCategories(){
     var host = byId("peek-row"); if (!host) return null;
     var tempInd = indOf(ROSTER_BY["sheet-metric-temp"]);
     var r = nowModel.reading, era = nowModel.era;
-    var cpiWord = r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm";
-    var cpiDir = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
     var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= era.from; });
     var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
     var capeLast = capeHistory[capeHistory.length - 1];
     if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
     host.innerHTML =
-      peekOf("sheet-metric-temp", { value:tempInd.metric,
-                 word:cpiWord + " \u00b7 " + cpiDir, state:heatStep(r.cpiNow),
-                 cols:nowModel.cpi.map(function(d){ return d.v; }),
-                 colClass:function(v){ return "temp-col " + heatStep(v); } }) +
-      peekOf("sheet-metric-gdp", { value:(r.gdpLatest.v >= 0 ? "+" : "") + r.gdpLatest.v.toFixed(1) + "%",
-                 word:growthShownCap(r.regime), state:phaseClass(r.regime),
-                 cols:gq.map(function(d){ return d.v; }),
-                 colClass:function(v, i){
-                   return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos");
-                 } }) +
+      tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) +
       peekOf("sheet-metric-valuation", { value:capeNow.toFixed(1) + "\u00d7", word:valuation.tag.text,
                  state:valuation.tag.state,
                  cols:capeHistory.map(function(d){ return d.v; }), colBase:CAPE_FAIR,

@@ -305,16 +305,26 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **An ordinary tap anywhere on the page changes nothing; only a hover or tap on the dial's own targets
   rewrites the hub.** On iOS Safari a touch handler that changes the page cancels the tap's click, which broke
   every button ("the buttons don't work on mobile"). (undated, Sep 19, 2026)
-- **In the hub the big word is the season and the theme is the small line under it; that line is the hub's one
-  link, opening the quarter's full read-out in a popup.** Keren: "switch them"; "a link below Autumn that will
-  open a pop up with all of this quarter's information". (V181, undated, Sep 19, 2026)
-- **A quarter reads as prose (the season in the economy, in the body, what usually comes next, what to watch),
-  never as a data popup of its figures; it lives in that popup, not in a block on the tab.** Keren: "the data
-  already exists in the app"; a separate block repeated the popup's text from the same data. (V165, V505)
+- **The hub reads four centred lines, evenly spaced: the date, the season (the big word) with a small grey ›
+  beside it, the theme in grey italic, and that year's S&P 500 return as "+17.9% 2025". No purple, no pill, no
+  disc, border or shadow: the colour stays on the rings, and the › alone says the centre opens.** Keren: "stick
+  with two rings"; "remove the emotions from the preview … only present the data that is relevant for the dial";
+  "there's no hover effect anywhere in the app"; "drop the gray circle … just put the chevron next to autumn".
+  (V181, V693)
+- **The whole centre is one button. Today it opens Weather; a tapped quarter, or a closed cycle's close, opens that
+  quarter's sheet.** Tapping a moon selects it and moves the year badge there, so the centre can be tapped next;
+  tapping the centre never resets the dial. Keren: "when I go to each quarter and I click on whatever is in the
+  middle of the cycle, how can I see all the data for the cycle in that specific quarter?" (V693)
+- **A quarter's sheet is the app's own cards at that quarter: Temperature, Growth and that year's S&P 500, each
+  with its small bars running up to it, then "About <season>, <theme>" opening the season's prose (in the
+  economy, in the body, what usually comes next, what to watch).** No gradient, no mood, no list of every
+  reading. Keren: "simplify it only to the basics"; "give up on the gradient in the pop-up"; "we don't need the
+  mood". This replaces V165/V505's "a quarter reads as prose, never as a data popup of its figures"; the prose
+  is one tap further in. (V165, V505, V693)
 - **The season popup's title carries the theme and its sub-line the season's name and body term, so the two
   lines never repeat each other.** Keren: "Summer, Inflation, Inflation — it repeats." (V505)
 - **In the hub a year reads "Bull year" or "Bear year" as dark ink in a soft pill washed in the band's
-  colour.** Keren asked for "a lighter shade of that same color" behind the word; the inks are darker cuts so
+  colour; a year opens nothing.** Keren asked for "a lighter shade of that same color" behind the word; the inks are darker cuts so
   the text stays readable (5.0:1 teal, 4.6:1 coral on their 18% washes). (undated, Sep 19, 2026)
 - **The dial's date line always reads today's date ("Today, <date>"), never the data's compile date.** Keren:
   "just write today … The data will show the date that it derives from in each metric. And the cycle is the
@@ -515,7 +525,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth, and S&P 500", its Insights saying "what it means" for the season and "in terms of bull bear market … the
   S&P 500 history basically during the cycle". The card reads the dial's own yearly total returns, so a bull year
   is a positive year and a bear year a negative one, with no band of ours. A past quarter or a closed cycle in the
-  dial still opens its own reading, since Weather is today's. (V680)
+  dial opens its own quarter sheet instead, since Weather is today's. (V680, V693)
 - **Weather is not in the Diagnosis's Analysis.** Keren: "this means that we don't need weather under analysis.
   Because we already have this in the cycle." The season stays in the Diagnosis's subtitle. (V680)
 

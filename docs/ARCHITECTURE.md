@@ -555,8 +555,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
-  The hub's season button opens it (`hubSet`'s `cat`) while the dial shows today; a parked quarter or a closed
-  cycle keeps its popup (`quarterPopup`), since the Weather page is today's. The Diagnosis's Analysis leaves out
+  The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
+  cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
   every `onDial` category. Weather's Insights open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   barometer. The S&P 500 card is a row reading (`marketReading` in 07-forms) whose series `sp500Years` is the same
@@ -690,8 +690,16 @@ the four seasons as one round-ended shape per run, colours from the `--season-*`
 sits between Winter and Spring–Reflation at Keren's choice — don't move it.** A thinner market band runs
 one segment per year from `sp500AnnualReturns`, carrying the **peak year**: the cycle's most profitable
 year by annual total return, **per year, never the compounded high** (Keren's rule); the reader-facing term
-is "Peak year". Press and hold the year badge to scrub; it stays where it is let go. The hub shows the
-season word, the theme, and one link; a past quarter gets prose, **never a data popup of its figures**.
+is "Peak year". Press and hold the year badge to scrub; it stays where it is let go; tapping a moon parks the
+badge there too. The hub is one button (`#season-wheel-hub-open`): date, season with a grey ›, theme, and the
+year's S&P 500 return from `sp500AnnualReturns`, the band's own number. `hubOpen` points it at Weather (today),
+at a quarter's sheet (a detail slot), or at nothing (a year). **The quarter sheet** (V693, `quarterSheet`) is
+the Weather page's own cards at that quarter, built by the same `tempPeek`, `gdpPeek` and `marketPeek` the
+pages use and turned into category cards by `catCard` (the half of `catItem` with no side effects, so a sheet
+never overwrites the Search snapshot); its "About" row opens the season's prose (`quarterPopup`). The cards sit
+in a `.cat-sheet` without `.metric-sheet`, which is why the category gradient is drawn only for
+`.metric-sheet.cat-sheet`. A card in the sheet opens its page from whichever tab holds the dial (the
+`detail-modal-body` handler in `buildNav`). Sheets are cached per quarter in `dialState.sheets`.
 
 **The date line always reads "Today, <the reader's date>"**, never `DATA_COMPILED`. Provenance lives on
 the figures: every card names the day its number derives from, and a card that doesn't is the bug.

@@ -117,6 +117,7 @@
     sheet.className += " cat-sheet cat-" + key;
     return sheet;
   }
+  function catList(html){ return '<div class="cat-list">' + html + '</div>'; }
   function groupId(name){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }
   function groupCard(grp, name){
     var first = grp.firstChild, card = first.cloneNode(true);
@@ -129,7 +130,7 @@
   function groupSheet(grp, name, key, items){
     items.appendChild(groupCard(grp, name));
     var sheet = catSheet(groupId(name), key);
-    sheet.innerHTML = '<div class="cat-list"></div>';
+    sheet.innerHTML = catList("");
     sheet.firstChild.appendChild(grp);
     byId("today-analysis").appendChild(sheet);
   }
