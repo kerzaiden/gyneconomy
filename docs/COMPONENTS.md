@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `86b7a73` on 2026-10-02. **79 components**, **40 shared patterns**.
+Generated from commit `237fbfa` on 2026-10-02. **79 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -156,24 +156,24 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | refresh-season.js | 48 places |
+| **`byId`** | refresh-season.js | 49 places |
 | **`put`** | refresh-season.js | 24 places |
 | **`fmtSigned`** | render-pages.js | 13 places |
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
+| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
-| **`monthLabel`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
 | **`pageCycle`** | charts.js | 9 places |
+| **`qLabel`** | model.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
 | **`histNote`** | history.js | 8 places |
 | **`lede`** | indicators.js | 8 places |
-| **`qLabel`** | model.js | 8 places |
 | **`vhOpen`** | charts.js | 8 places |
 | **`windowScale`** | components.js | 8 places |
 | **`yearOf`** | charts.js | 8 places |
@@ -191,9 +191,11 @@ renderer speaks. Listed most-used first.
 | **`drawsPage`** | render-core.js | 4 places |
 | **`expandBtn`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
+| **`focusQuiet`** | refresh-season.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
+| **`layer`** | refresh-season.js | 4 places |
 | **`mean`** | charts.js | 4 places |
 | **`moodTrack`** | model.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
@@ -209,6 +211,7 @@ renderer speaks. Listed most-used first.
 | **`histReadFill`** | components.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
+| **`onScreen`** | refresh-season.js | 3 places |
 | **`popHead`** | dial-cycle.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |

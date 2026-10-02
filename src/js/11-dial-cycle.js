@@ -97,6 +97,7 @@
       paint();
     });
     paint();
+    rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
   }
   GYN.step("wireThemeChoice", wireThemeChoice, "wire"); wireThemeChoice();
   // ---- the legend popup (Keren, Sep 19, 2026): the ring's temperature scale, the market band's colors, one line on the ----
@@ -279,6 +280,23 @@
     }
     ["pointerup", "pointercancel"].forEach(function(t){ dial.addEventListener(t, endScrub); });
     dial.addEventListener("click", function(e){ var t = !scrubbing && e.target.closest && e.target.closest("[data-q]"); if (t) goTo(+t.getAttribute("data-q")); });
+    byId("season-wheel-hub-open").addEventListener("keydown", function(e){
+      var i = dialKeyStep(e.key); if (i == null) return;
+      e.preventDefault(); shown = false; goTo(i); dialSay();
+    });
+  }
+  function dialKeyStep(key){
+    if (!dialState) return null;
+    var n = dialState.quarters.length, at = dialState.parked == null ? n : dialState.parked;
+    var to = key === "ArrowLeft" ? at - 1 : key === "ArrowRight" ? at + 1 : key === "Home" ? 0 : key === "End" ? n : null;
+    if (to == null) return null;
+    to = Math.max(0, Math.min(n, to));
+    return to === n ? -1 : to;
+  }
+  function dialSay(){
+    var m = dialState.m, q = dialState.quarters[dialState.parked], meta = wheelMeta[q ? q.seg.season : m.season];
+    var when = q ? qLabel(q.seg.q) : m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth);
+    byId("season-wheel-live").textContent = when + ", " + meta.name + (meta.theme ? ", " + meta.theme : "");
   }
   GYN.step("renderCycleDial", renderCycleDial, "wire"); renderCycleDial();
 

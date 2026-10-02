@@ -5,7 +5,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#f7f3ee",
   "theme_color": "#f7f3ee",
   "categories": ["finance", "education", "books"],

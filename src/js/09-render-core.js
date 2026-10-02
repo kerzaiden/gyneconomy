@@ -39,10 +39,21 @@
       var sheet = btn && btn.closest && btn.closest(".metric-sheet");
       var chip = sheet && sheet.querySelector(".timing-row");
       if (chip) body.appendChild(chip.cloneNode(true));
+      if (!backdrop.classList.contains('show')) opener = btn;
       backdrop.classList.add('show');
+      byId('detail-modal-close').focus({ preventScroll:true });
     }
-
-    function close(){ backdrop.classList.remove('show'); body.innerHTML = ""; }
+    var opener = null;
+    function close(){
+      if (!backdrop.classList.contains('show')) return;
+      backdrop.classList.remove('show'); body.innerHTML = "";
+      var from = opener; opener = null;
+      if (from && !onScreen(from) && from.closest) from = from.closest('.bh-more-wrap') && from.closest('.bh-more-wrap').querySelector('.bh-more');
+      focusQuiet(from);
+    }
+    detailClose = close;
+    layer(1, { open:function(){ return backdrop.classList.contains('show'); }, close:close,
+               box:function(){ return backdrop.querySelector('.detail-modal'); } });
     document.addEventListener('click', function(e){
       var btn = e.target.closest && e.target.closest('.expand-btn, .details-link, .more-row, .bh-opt, .sx-row');
       if (btn){ if (btn.closest('summary')) e.preventDefault();
@@ -56,8 +67,8 @@
       close();
       if (openIndicatorsPage) openIndicatorsPage(chip.getAttribute('data-ind-tab'));
     });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
   }
+  var detailClose = null;
   GYN.step("wireDetailModal", wireDetailModal, "wire"); wireDetailModal();
 
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----

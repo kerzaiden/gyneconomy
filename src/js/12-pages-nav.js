@@ -187,7 +187,7 @@
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
-    var pageStack = [];
+    var pageStack = [], openers = [];
 
     function homeFromPage(keepScroll){
       if (!openSheet) return;
@@ -200,20 +200,24 @@
       var y = returnScroll;
       window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
     }
-    function closeMetricPage(){ pageStack.length = 0; homeFromPage(); }
+    function closeMetricPage(){ pageStack.length = 0; openers.length = 0; homeFromPage(); }
     function backFromPage(){
-      var prev = pageStack.pop();
-      if (!prev){ closeMetricPage(); return; }
-      var el = byId(prev.id);
-      homeFromPage(true);
-      openMetricPage(el, prev.title, true);
-      window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
+      var prev = pageStack.pop(), from = openers.pop();
+      if (!prev) closeMetricPage();
+      else {
+        homeFromPage(true);
+        openMetricPage(byId(prev.id), prev.title, true);
+        window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
+      }
+      if (!focusQuiet(from)) focusQuiet(byId("topbar-title"));
     }
+    layer(4, { open:function(){ return !!openSheet; }, close:backFromPage });
     metricPageReset = closeMetricPage;
 
     function openMetricPage(el, title, returning, homeKey){
       if (!el) return;
       seatPageFoot(el);
+      if (!returning && openSheet !== el) openers.push(document.activeElement);
       if (!returning && openSheet && openSheet !== el)
         pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
       var wasOpen = !!openSheet;
@@ -230,10 +234,11 @@
       if (!returning) window.scrollTo({ top:0, behavior:"auto" });
       var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
       collapseEmptyBlocks(el);
+      if (!returning) focusQuiet(byId("topbar-title"));
     }
     [cyclePanel, byId("detail-modal-body")].forEach(function(host){ host.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl.closest(".tab-panel").getAttribute("data-tab"); if (!btn) return;
-      byId("detail-backdrop").classList.remove("show"); openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
+      if (detailClose) detailClose(); openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
     }); });
     ["analysis", "search"].forEach(function(key){
       var panel = PAGE_HOME[key].panel, go = function(el){ openMetricPage(byId(el.getAttribute("data-open")), el.getAttribute("data-title"), false, key); };
@@ -255,10 +260,6 @@
       var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
       e.preventDefault();
       openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
-    });
-
-    document.addEventListener("keydown", function(e){
-      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
     });
     NAV.open = openMetricPage;
     NAV.panel = analysisPanel;
