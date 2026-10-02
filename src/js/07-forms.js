@@ -105,14 +105,6 @@
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
     '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }
   function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>'); }
-  function gearSvg(){
-    var teeth = "", i, a;
-    for (i = 0; i < 6; i++){ a = i * Math.PI / 3;
-      teeth += '<path d="M' + (12 + 7 * Math.cos(a)).toFixed(2) + ' ' + (12 + 7 * Math.sin(a)).toFixed(2) +
-               'L' + (12 + 9.6 * Math.cos(a)).toFixed(2) + ' ' + (12 + 9.6 * Math.sin(a)).toFixed(2) + '"/>';
-    }
-    return markSvg('<g stroke-width="2.5">' + teeth + '</g><circle cx="12" cy="12" r="6.4" stroke-width="1.7"/><circle cx="12" cy="12" r="2.4" stroke-width="1.7"/>');
-  }
   function thermoSvg(){ return markSvg(
     '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
     '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>'); }

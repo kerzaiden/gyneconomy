@@ -503,16 +503,6 @@
       src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]
     },
     {
-      bodyTerm:"Industrial output", econTerm:"Industrial output", info:function(){ return outputInfoHtml(this); },
-      tag:{text:"Expanding", state:"good"},
-      metric:"54.6", metricSub:"ISM Manufacturing PMI, Aug 2026",
-      meter:{min:29.4,max:77.5,value:54.6,optimal:{gte:50, label:"≥ 50"}, ends:{ low:"Contracting" }},
-      shortCaption:"Above the breakeven line for an eighth straight month — genuinely expanding.",
-      caption:"How hard she is working right now, i.e. current industrial output — a real-time read on activity, not a forecast or a valuation. Above the 50 breakeven line for an eighth straight month, genuinely up rather than just avoiding a slump. Range: ISM's record low (29.4, May 1980) and high (77.5, July 1950); ISM's full history is members-only, so the two extremes are taken from Trading Economics' compilation of it.",
-      aux:{label:"Months above 50", value:"8"},
-      src:[{t:"ISM — Manufacturing PMI Report On Business, August 2026 (ISM's release, distributed via PR Newswire)", u:"https://www.prnewswire.com/news-releases/manufacturing-pmi-at-54-6-august-2026-ism-manufacturing-pmi-report-302865127.html"},{t:"ISM — Report On Business, Manufacturing PMI (report page)", u:"https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/pmi/august/"},{t:"ISM Manufacturing PMI record high/low, 1948– (Trading Economics compilation of ISM data)", u:"https://tradingeconomics.com/united-states/business-confidence"}]
-    },
-    {
       bodyTerm:"Pulse", econTerm:"Money velocity",
       page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
              chart:function(ind){ return pulseBlock(ind.meter.value, PULSE_PRE2008, ind); } },

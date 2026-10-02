@@ -20,7 +20,7 @@ if (!CHROME || !fs.existsSync(CHROME)) {
   process.exit(2);
 }
 
-const NO_HISTORY = ['sheet-sign-industrial-output'];
+const NO_HISTORY = [];
 const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
 const TOKENS = {
   '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
@@ -540,7 +540,7 @@ async function openPage(p, url, sheet) {
       await p.click('#topbar-back'); await settle(p);
     }
     (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Valuations+Volatility+Desire+Confidence' &&
-     lists.energy.names === 'Stress+Unemployment rate+Productivity growth+Industrial output' &&
+     lists.energy.names === 'Stress+Unemployment rate+Productivity growth' &&
      lists.mood.lead === 'sheet-grp-valuations<sheet-metric-valuation:true' && lists.energy.lead === 'sheet-grp-stress<sheet-metric-debt:true')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
@@ -667,7 +667,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 19 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 18 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -675,7 +675,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];

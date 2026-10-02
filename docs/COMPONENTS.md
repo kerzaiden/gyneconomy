@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4adba3b` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `cc3c441` on 2026-10-02. **78 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -79,7 +79,7 @@ Generated from commit `4adba3b` on 2026-10-02. **78 components**, **40 shared pa
 | **`ledeHtml`** | `.lede` | `charts.js:volatilityTag`, `components.js:deficitBlock`, `dial-cycle.js:heatStep` |
 | **`metricSheet`** | `.metric-sheet` | `indicators.js:catSheet`, `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:renderSignsList` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.js:buildNav` |
-| **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `forms.js:volatilityDetailHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `pages-nav.js:moodInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `forms.js:volatilityDetailHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `pages-nav.js:moodInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
 | **`subjectIcon`** | `.subject-icon` | `indicators.js:splitPeek`, `pages-nav.js:indGroupRow`, `pages-nav.js:registerRoster`, `pages-nav.js:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.js:timingPill` |
@@ -223,7 +223,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 
 | Class | Places | Written by |
 |---|---|---|
-| `.caption` | 21 | `charts.js:horizonInfoHtml`, `charts.js:riskMatrixBlock`, `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:pulseInfoHtml`, `history.js:temperatureInfoHtml`, `history.js:volumeInfoHtml`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| `.caption` | 20 | `charts.js:horizonInfoHtml`, `charts.js:riskMatrixBlock`, `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:productivityInfoHtml`, `history.js:pulseInfoHtml`, `history.js:temperatureInfoHtml`, `history.js:volumeInfoHtml`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
 | `.page-chart` | 12 | `charts.js:riskMatrixBlock`, `components.js:deficitBlock`, `forms.js:pulseBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-core.js:cardDetailHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | `.hi-lede` | 10 | `indicators.js:lede`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:insightCirculation`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
 | `.hcol` | 8 | `charts.js:divergeChart`, `components.js:desireHistoryChart`, `components.js:velocityHistoryChart`, `history.js:cpiHistoryChart`, `history.js:fedFundsHistoryChart`, `history.js:householdsChart`, `history.js:m2GrowthChart`, `history.js:unempHistoryChart` |

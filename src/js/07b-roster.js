@@ -59,9 +59,7 @@
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
     { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"energy", timing:"structural", mark:clockSvg,
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
-      mid:PRODUCTIVITY_SLOWDOWN, when:lastDate },
-    { id:"sheet-sign-industrial-output", name:"Industrial output", cat:"energy", timing:"coincident", mark:gearSvg, door:"row",
-      term:"Industrial output", live:["coincident"] }
+      mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
   var GROUP_MARK = { "Stress":boltSvg };
   var ROSTER_BY = {};
