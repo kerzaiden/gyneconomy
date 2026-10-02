@@ -49,7 +49,7 @@ const VOL_JOIN = '1990-01';
 const SP500_FROM = '1948-01';
 const GDP_JOIN = '1988 Q1';
 const CPI_JOIN = '1989-01';
-const RETURNS_FROM = 1948, RETURNS_JOIN = 1990;
+const RETURNS_FROM = 1928, RETURNS_JOIN = 1990, GROWTH_FROM = 1930, CPI_EARLY = '1928-01';
 const DAMODARAN = 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html';
 const { shillerSheet, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
@@ -268,17 +268,21 @@ async function earlySeasons() {
   const gdp = yoyQuarterly2(quarterly(await fredSeries('GDPC1', '1947-01-01'), 1, 1e6), -15, 25).filter(d => d.q < GDP_JOIN);
   if (!gdp.length || gdp[0].q !== '1948 Q1' || gdp[gdp.length - 1].q !== '1987 Q4') throw new Error('GDPC1: expected 1948 Q1 → 1987 Q4');
   say('GDPC1 YoY     ' + gdp.length + ' quarters, ' + gdp[0].q + ' → ' + gdp[gdp.length - 1].q + ' (before ' + GDP_JOIN + ')');
-  const cpi = yoyMonthly(await fredSeries('CPIAUCSL', '1947-01-01'), -5, 20).filter(d => d.m < CPI_JOIN);
-  if (!cpi.length || cpi[0].m !== '1948-01' || cpi[cpi.length - 1].m !== '1988-12') throw new Error('CPIAUCSL: expected 1948-01 → 1988-12');
-  say('CPIAUCSL YoY  ' + cpi.length + ' months, ' + cpi[0].m + ' → ' + cpi[cpi.length - 1].m + ' (before ' + CPI_JOIN + ')');
+  const nsa = yoyMonthly(await fredSeries('CPIAUCNS', '1927-01-01'), -15, 25).filter(d => d.m >= CPI_EARLY && d.m < '1948-01');
+  if (!nsa.length || nsa[0].m !== CPI_EARLY || nsa[nsa.length - 1].m !== '1947-12' || nsa.length !== 240) throw new Error('CPIAUCNS: expected ' + CPI_EARLY + ' → 1947-12');
+  say('CPIAUCNS YoY  ' + nsa.length + ' months, ' + nsa[0].m + ' → ' + nsa[nsa.length - 1].m + ' (before CPIAUCSL)');
+  const sa = yoyMonthly(await fredSeries('CPIAUCSL', '1947-01-01'), -5, 20).filter(d => d.m < CPI_JOIN);
+  if (!sa.length || sa[0].m !== '1948-01' || sa[sa.length - 1].m !== '1988-12') throw new Error('CPIAUCSL: expected 1948-01 → 1988-12');
+  const cpi = nsa.concat(sa);
+  say('CPIAUCSL YoY  ' + sa.length + ' months, ' + sa[0].m + ' → ' + sa[sa.length - 1].m + ' (before ' + CPI_JOIN + ')');
   const r = await fetch(DAMODARAN, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
   if (!r.ok) throw new Error('Damodaran: HTTP ' + r.status);
   const returns = damodaranReturns(await r.text(), RETURNS_FROM, RETURNS_JOIN);
   say('S&P returns   ' + Object.keys(returns).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (Damodaran, dividends included)');
   const growth = {};
-  fiscalYears(await fredSeries('A191RL1A225NBEA', RETURNS_FROM + '-01-01'), -15, 25).filter(d => d.y < RETURNS_JOIN).forEach(d => { growth[d.y] = d.v; });
-  for (let y = RETURNS_FROM; y < RETURNS_JOIN; y++) if (!(y in growth)) throw new Error('A191RL1A225NBEA: no ' + y);
-  say('Real GDP      ' + Object.keys(growth).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (BEA, annual change)');
+  fiscalYears(await fredSeries('A191RL1A225NBEA', GROWTH_FROM + '-01-01'), -15, 25).filter(d => d.y < RETURNS_JOIN).forEach(d => { growth[d.y] = d.v; });
+  for (let y = GROWTH_FROM; y < RETURNS_JOIN; y++) if (!(y in growth)) throw new Error('A191RL1A225NBEA: no ' + y);
+  say('Real GDP      ' + Object.keys(growth).length + ' years, ' + GROWTH_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (BEA, annual change)');
   return { gdp, cpi, returns, growth };
 }
 
