@@ -101,13 +101,13 @@
     var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
     return {
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
-      page:{ chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
       metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
               ends:{ low:"Falling" } },
       span:span,
-      shortCaption:at + " — " + word.says + ".",
+      lead:"",
       caption:at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
     };
   })(productivityRecord);
