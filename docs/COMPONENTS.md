@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `e836806` on 2026-10-02. **79 components**, **40 shared patterns**.
+Generated from commit `49ec7d9` on 2026-10-02. **80 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -16,7 +16,8 @@ Generated from commit `e836806` on 2026-10-02. **79 components**, **40 shared pa
 |---|---|---|
 | **`deficitChart`** | `.def-col` `.spread-history-band` | `pages-nav.js:registerActivityPowerDeficitPages` |
 | **`desireHistoryChart`** | `.hy-avg` `.hy-col2` | `render-core.js:registerFlowPages` |
-| **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `components.js:wireHistHover`, `render-pages.js:renderSpreadHistory` |
+| **`histKeysWire`** | `.sr-only` | `components.js:wireHistHover` |
+| **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `components.js:histKeysWire`, `components.js:wireHistHover`, `render-pages.js:renderSpreadHistory` |
 | **`velocityHistoryChart`** | `.pv-col` | `render-core.js:registerFlowPages` |
 
 ## history.js
@@ -194,6 +195,7 @@ renderer speaks. Listed most-used first.
 | **`expandBtn`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`focusQuiet`** | refresh-season.js | 4 places |
+| **`histReadFill`** | components.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
@@ -210,7 +212,6 @@ renderer speaks. Listed most-used first.
 | **`eraFig`** | analysis.js | 3 places |
 | **`fmtAsOf`** | live.js | 3 places |
 | **`groupId`** | indicators.js | 3 places |
-| **`histReadFill`** | components.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`onScreen`** | refresh-season.js | 3 places |

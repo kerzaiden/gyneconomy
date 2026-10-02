@@ -21551,22 +21551,57 @@
         return;
       }
       var i = Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1));
-      i = Math.max(0, Math.min(g.n - 1, i));
-      var d = g.vals[i];
-      if (!d) return;
-      host.classList.add("hovering");
-      if (host.__onCol) host.__onCol.classList.remove("on");
-      var col = svg.querySelectorAll(".hcol")[i];
-      if (col) {
-        col.classList.add("on");
-        host.__onCol = col;
-      }
-      histReadFill(host, d, i);
+      histShow(host, svg, Math.max(0, Math.min(g.n - 1, i)));
     }
     host.addEventListener("pointermove", at);
     host.addEventListener("pointerdown", at);
     host.addEventListener("pointerleave", function(e) {
       if (e.pointerType !== "touch") hide();
+    });
+    histKeysWire(host, hide);
+  }
+  function histShow(host, svg, i) {
+    var d = host.__geom.vals[i];
+    if (!d) return false;
+    host.classList.add("hovering");
+    if (host.__onCol) host.__onCol.classList.remove("on");
+    var col = svg.querySelectorAll(".hcol")[i];
+    if (col) {
+      col.classList.add("on");
+      host.__onCol = col;
+    }
+    histReadFill(host, d, i);
+    return true;
+  }
+  function histKeysWire(host, hide) {
+    var live = document.createElement("span");
+    live.className = "sr-only";
+    live.setAttribute("aria-live", "polite");
+    host.appendChild(live);
+    var named = host.querySelector("svg[aria-label]");
+    host.setAttribute("tabindex", "0");
+    host.setAttribute("role", "group");
+    host.setAttribute("aria-label", (named ? named.getAttribute("aria-label") + ". " : "") + "Left and right arrows read each value.");
+    host.addEventListener("blur", function() {
+      host.__keyI = null;
+      hide();
+    });
+    host.addEventListener("keydown", function(e) {
+      var g = host.__geom, svg = host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
+      var step = {
+        ArrowLeft: -1,
+        ArrowRight: 1
+      }[e.key], i = host.__keyI == null ? g && g.n - 1 : host.__keyI;
+      if (!g || !svg || step == null && e.key !== "Home" && e.key !== "End") return;
+      e.preventDefault();
+      i = e.key === "Home" ? 0 : e.key === "End" ? g.n - 1 : Math.max(0, Math.min(g.n - 1, i + (host.__keyI == null ? 0 : step)));
+      host.__keyI = i;
+      if (!histShow(host, svg, i)) return;
+      var read = histReadEnsure(host), part = function(s) {
+        var n = read && read.querySelector(s);
+        return n ? n.textContent : "";
+      };
+      live.textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
   function mWindowFrom(len, key) {

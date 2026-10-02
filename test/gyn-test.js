@@ -1084,6 +1084,17 @@ async function keyboardAndLayers(b, url) {
            : bad('the closed (i) is out of the tab order', 'its Close button still takes focus');
   } else bad('Escape closes the head menu alone and returns focus to its ⋯', 'no door to Pressure');
 
+  if (await openPage(g, url, 'sheet-metric-temp')) {
+    const host = await g.evaluate(() => { const h = [...document.querySelectorAll('#metric-page [role="group"][tabindex="0"]')].filter(x => x.offsetParent)[0];
+      if (!h) return null; h.focus(); return h.id || h.className; });
+    await g.keyboard.press('End'); await g.keyboard.press('ArrowLeft'); await settle(g);
+    const said = await g.evaluate(() => { const a = document.activeElement, l = a.querySelector('[aria-live]');
+      return { on: a.getAttribute('role') === 'group', text: l ? l.textContent.trim() : '', col: !!a.querySelector('.hcol.on') }; });
+    (host && said.on && said.text.length > 3)
+      ? ok('a history chart reads its values from the arrow keys', said.text.slice(0, 40))
+      : bad('a history chart reads its values from the arrow keys', JSON.stringify({ host, said }));
+  } else bad('a history chart reads its values from the arrow keys', 'no door to Temperature');
+
   await g.goto('file://' + url); await ready(g);
   const card = await g.evaluate(() => {
     const c = [...document.querySelectorAll('.tab-panel[data-tab="cycle"] [data-open^="sheet-cat-"]')].filter(x => x.offsetParent)[0];

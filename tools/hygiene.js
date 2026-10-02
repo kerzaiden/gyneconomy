@@ -81,6 +81,12 @@ function unused(js, html, css) {
   return out;
 }
 
+function twice(js) {
+  const seen = {};
+  for (const m of js.matchAll(/^  function ([A-Za-z_$][\w$]*)\s*\(/gm)) seen[m[1]] = (seen[m[1]] || 0) + 1;
+  return Object.keys(seen).filter(n => seen[n] > 1).map(n => 'function ' + n + ' is declared ' + seen[n] + ' times; the last one silently replaces the others');
+}
+
 function unusedTokens(css, code) {
   const bare = css.replace(/\/\*[\s\S]*?\*\//g, ''), all = bare + code;
   return [...new Set([...bare.matchAll(/(--[\w-]+)\s*:/g)].map(m => m[1]))]
@@ -100,7 +106,7 @@ function audit(files, html, css) {
   let out = fontSizes(css).concat(pageScoped(css));
   Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
   const js = Object.values(files).join('\n');
-  return out.concat(unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
+  return out.concat(twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
 }
 
 if (require.main === module) {
@@ -116,5 +122,5 @@ if (require.main === module) {
   }
   console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, nothing unused, nothing removed come back, pins held');
 } else {
-  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
+  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
 }
