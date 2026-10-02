@@ -889,7 +889,7 @@
     if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
     var r = d.record, watch = [];
     var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " +
-      r.months + " months, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
+      r.months + " months in " + r.spells + " separate spells, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
     if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
     if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense");
     else watch.push("Fear arriving now, with the body cool, reads Offense");
