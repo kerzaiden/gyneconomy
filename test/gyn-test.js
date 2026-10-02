@@ -307,7 +307,7 @@ async function openPage(p, url, sheet) {
     }).filter(f => f && f.fig !== '\u2014'));
     const decimals = t => ((/\d+(?:\.(\d+))?/.exec(t) || [])[1] || '').length;
     const KEREN = { 'Federal debt': /^\d+\.\d%$/, 'Shiller CAPE': /\u00d7$/, 'Pulse': /\u00d7$/, 'Growth': /^[+\u2212]/,
-                    'Volume': /^[+\u2212]/, 'Momentum': /^[+\u2212]\d+%$/ };
+                    'Volume': /^[+\u2212]/, 'Momentum': /^[+\u2212]?\d+ pts$/ };
     const figOff = pastFigs.filter(f => decimals(f.fig) !== decimals(f.today) || (KEREN[f.name] && !KEREN[f.name].test(f.fig)));
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))

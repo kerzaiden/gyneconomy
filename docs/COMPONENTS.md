@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d4f869f` on 2026-10-02. **74 components**, **39 shared patterns**.
+Generated from commit `b529a60` on 2026-10-02. **74 components**, **39 shared patterns**.
 
 ## components.js
 
@@ -161,11 +161,11 @@ renderer speaks. Listed most-used first.
 | **`addSources`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
+| **`monthLabel`** | model.js | 9 places |
 | **`pageCycle`** | charts.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
 | **`histNote`** | history.js | 8 places |
-| **`monthLabel`** | model.js | 8 places |
 | **`vhOpen`** | charts.js | 8 places |
 | **`windowScale`** | components.js | 8 places |
 | **`yearOf`** | charts.js | 8 places |
@@ -179,7 +179,6 @@ renderer speaks. Listed most-used first.
 | **`fmtSigned`** | render-pages.js | 5 places |
 | **`lede`** | indicators.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
-| **`marketMonths`** | model.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
@@ -190,6 +189,7 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
 | **`marketFacts`** | model.js | 4 places |
+| **`marketMonths`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
@@ -201,8 +201,7 @@ renderer speaks. Listed most-used first.
 | **`eraFig`** | analysis.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
-| **`momentumPct`** | model.js | 3 places |
-| **`momentumSpeed`** | model.js | 3 places |
+| **`momentumTrend`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |

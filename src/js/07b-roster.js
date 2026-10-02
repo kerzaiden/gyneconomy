@@ -28,7 +28,7 @@
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, rule:true,
       when:function(R){ return indPeriod(R) || lastDate(R); }, cardUnit:"M2, YoY", live:["coincident"] },
     { id:"sheet-sign-momentum", name:"Momentum", cat:"mood", timing:"leading", mark:momentumSvg, door:"row", term:"Momentum",
-      head:"S&P 500, Speed in % a Year", hist:momentumMonths, mid:0, rule:true, when:lastDate },
+      head:"S&P 500’s Year Against Cash", hist:momentumMonths, mid:0, rule:true, when:lastDate },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", group:"Valuations", timing:"structural", mark:diamondSvg, door:"peek",
       slot:"valuation", head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, pre:"Jan ", last:"today", mid:CAPE_FAIR,
       when:lastDate, cardUnit:"CAPE", live:["valuation", "capeValue"] },
