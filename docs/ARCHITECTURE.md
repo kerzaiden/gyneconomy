@@ -520,7 +520,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   it needs calm fear; valuations are not part of it.
 - **Feeling and season** (V684, `feelingGrid` and `gridLines`): the seven feelings by the seasons that have any
   month, each cell from `whatFollowed` (months, and how many were higher a year later), tinted continuously from 50%
-  by `--tint` (green above, red below; no cut-offs, so no band to source). The test (`feelingSeasonTest`, cached) is
+  by `--tint` (green above, red below; no cut-offs, so no band to source); a cell under `THIN_MONTHS` (12, Claude's
+  call at Keren's request) is drawn faint, since overlapping years ahead make fewer months less than one free year. The test (`feelingSeasonTest`, cached) is
   Cramér's V of feeling against season over `feelingTrack`, and the share of the following year's change explained
   by the feeling-and-season cell (`explained`). Neither is compared with chance by shuffling months, because a
   feeling and a season each run for months; the season track (or the returns) is slid one month at a time against

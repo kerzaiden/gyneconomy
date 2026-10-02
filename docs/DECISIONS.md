@@ -1050,8 +1050,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   some kind of statistics … that tests the correlation between emotion and season, just like in the menstrual cycle
   … euphoria in summer or fear in summer can mean different things." The test is Cramér's V for how closely feeling
   and season go together and the variance of the following year's S&P 500 change they explain, each compared with
-  the season track slid against the feelings (months are not independent, so they are not shuffled). Cells are
-  never faded or dropped for being small, since no one set a minimum; each prints its months. The tint is
+  the season track slid against the feelings (months are not independent, so they are not shuffled). A cell
+  resting on fewer than 12 months is drawn faint (dashed, no tint) but never dropped, and every cell prints its
+  months: each month's year ahead overlaps the next, so under twelve is less than one year that stands on its own.
+  The line is Claude's call at Keren's request ("make a judgement call"), and the (i) says so. The tint is
   continuous from 50%, green above and red below, with no bands. Don't re-add a posture or a forecast. (V684)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are

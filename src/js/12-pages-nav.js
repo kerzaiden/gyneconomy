@@ -905,21 +905,27 @@
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
       (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
+  function gridNotes(){
+    return [
+      "Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
+      "The grid counts every month since " + monthLabel(whatFollowed().from) + " by feeling and season, and how often the S&amp;P 500 was higher a year later; each cell says over how many months. It is a count of what followed, not a forecast. A cell resting on fewer than " + THIN_MONTHS + " months is drawn faint: each month\u2019s year ahead overlaps the next month\u2019s, so fewer than twelve is less than one year that stands on its own. The line is Claude\u2019s call, at Keren\u2019s request, not a published standard.",
+      "The test: Cram\u00e9r\u2019s V measures how closely feeling and season go together, from 0 (not at all) to 1 (each feeling only ever in one season). The share of the following year\u2019s S&amp;P 500 change that the feeling and season together account for is its variance explained. Because a feeling and a season each last months, neither is compared with chance by shuffling months; the season track is slid against the feelings, one month at a time, keeping how long each lasts, and the test counts how often a slid track does as well."
+    ];
+  }
   function diagnosisInfo(d){
     return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
-        "Momentum is the S&amp;P 500\u2019s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
-        "Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
-        "The grid counts every month since " + monthLabel(whatFollowed().from) + " by feeling and season, and how often the S&amp;P 500 was higher a year later; each cell says over how many months. It is a count of what followed, not a forecast.",
-        "The test: Cram\u00e9r\u2019s V measures how closely feeling and season go together, from 0 (not at all) to 1 (each feeling only ever in one season). The share of the following year\u2019s S&amp;P 500 change that the feeling and season together account for is its variance explained. Because a feeling and a season each last months, neither is compared with chance by shuffling months; the season track is slid against the feelings, one month at a time, keeping how long each lasts, and the test counts how often a slid track does as well.",
-        "The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."])) +
+        "Momentum is the S&amp;P 500\u2019s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard."
+      ].concat(gridNotes(), [
+        "The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."]))) +
       srcBlock(DIAG_SRC);
   }
+  var THIN_MONTHS = 12;
   function share(c){ return Math.round(c.higher / c.months * 100) + "%"; }
   function gridCell(c, now){
     if (!c) return '<span class="fs-cell none">\u2013</span>';
     var lean = c.higher / c.months - 0.5;
-    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' +
+    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (c.months < THIN_MONTHS ? " thin" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' +
       '<b>' + share(c) + '</b><small>' + c.months + ' mo</small></span>';
   }
   function feelingGrid(d){
