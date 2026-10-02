@@ -294,6 +294,51 @@
 
   var marketCycles = [
     {
+      from:1948, to:1953,
+      name:"Postwar Cycle",
+      blurb:"The peacetime economy finds its feet: returning soldiers, new households and years of pent-up demand, carried on through the Korean War. It ends in 1953, the year the war ended and the first postwar recession began."
+    },
+    {
+      from:1954, to:1957,
+      name:"Suburban Cycle",
+      blurb:"Out of the 1953–54 recession comes the best year in the record, 1954, and a boom in cars, highways and new suburbs. It ends with the recession of 1957."
+    },
+    {
+      from:1958, to:1962,
+      name:"Space Race Cycle",
+      blurb:"Sputnik sets off a race in rockets and electronics, and the market chases the new technology stocks of the day. It ends in the slide of 1962."
+    },
+    {
+      from:1963, to:1966,
+      name:"Go-Go Cycle",
+      blurb:"Tax cuts and a long expansion, with fund managers trading growth stocks fast enough to give the decade its “go-go” name. It ends in 1966 as rates climb and credit tightens."
+    },
+    {
+      from:1967, to:1969,
+      name:"Conglomerate Cycle",
+      blurb:"Conglomerates grow by buying other companies, and speculation runs with them. It ends in 1969 as inflation and rising rates catch up."
+    },
+    {
+      from:1970, to:1974,
+      name:"Nifty Fifty Cycle",
+      blurb:"Investors crowd into fifty blue-chip growth stocks they believe can be bought at any price. It ends in the bear market of 1973–74, with the oil embargo and a deep recession."
+    },
+    {
+      from:1975, to:1977,
+      name:"Rebound Cycle",
+      blurb:"A sharp recovery out of the 1973–74 collapse, with inflation never far behind. It ends in 1977 as prices start to run again."
+    },
+    {
+      from:1978, to:1981,
+      name:"Inflation Cycle",
+      blurb:"Inflation runs into double digits and hard assets like oil and gold lead. It ends in 1981, when Volcker’s rates break it."
+    },
+    {
+      from:1982, to:1990,
+      name:"Buyout Cycle",
+      blurb:"The defeat of inflation opens a long bull market, fuelled by falling rates, junk bonds and leveraged buyouts, through the crash of 1987. It ends in 1990 with the savings-and-loan collapse, the Gulf War oil shock and recession."
+    },
+    {
       from:1991, to:2002,
       name:"Dot-Com Cycle",
       blurb:"Nine years of uninterrupted growth out of the 1990–91 recession — confidence building all decade and cresting into the internet mania that gives the cycle its name — then three straight losing years to unwind it, a run of consecutive declines the market had not seen since the 1930s. The mania and its undoing are one story, and the cycle holds both."

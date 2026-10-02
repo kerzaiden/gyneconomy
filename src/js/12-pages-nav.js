@@ -944,9 +944,10 @@
   }
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
-    if (!d) return "";
+    if (!d && open) return "";
+    if (!d) d = { after:yearAfter(marketMonths(), m.endMonth) };
     var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-    return trendCardHtml(d, m.era) +
+    return (d.stage ? trendCardHtml(d, m.era) : noMoodCardHtml()) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
         d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -958,19 +959,27 @@
     return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
-  function trendCardHtml(d, era){
-    var name = seasonName(seasonGroup(d.season)), mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0], story = cycleStory(era);
+  function moodDoor(head, body){
+    var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
     return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
-      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + d.stage + ' in ' + name + CHEV + '</span>' +
-      spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : "") + '</button>';
+      '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mood.mark() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
+  }
+  function trendCardHtml(d, era){
+    var name = seasonName(seasonGroup(d.season)), story = cycleStory(era);
+    return moodDoor(d.stage + ' in ' + name, spellLines(d, name, story ? "This cycle, s" + storyBeats(story, era.ongoing).slice(1) : ""));
+  }
+  function noMoodCardHtml(){
+    var first = moodTrack().filter(function(x){ return x.word; })[0];
+    return moodDoor("", trendText("Her mood is read from " + monthLabel(first.m) + ", the first month all its measures allow; this cycle closed before it."));
   }
   function spellLines(d, season, story){
     var r = spellRecord(d), open = d.month === marketMonths().sp[marketMonths().sp.length - 1].m, both = d.stage + " in " + season;
     var lead = r.now.n === 1 ? (open ? "Mrs. Market came into " : "Mrs. Market was in ") + both + " in " + monthLabel(r.now.to) + "."
       : open ? "Mrs. Market has been in " + both + " for " + r.now.n + " months, since " + monthLabel(r.now.from) + "."
       : "Mrs. Market was in " + both + " for " + r.now.n + " months, " + monthLabel(r.now.from) + " to " + monthLabel(r.now.to) + ".";
-    return '<span class="trend-text">' + lead + '</span>' + (story ? trendSub(story) : "");
+    return trendText(lead) + (story ? trendSub(story) : "");
   }
+  function trendText(t){ return '<span class="trend-text">' + t + '</span>'; }
   function trendSub(t){ return '<span class="trend-sub">' + t + '</span>'; }
   function renderDiagnosis(m){
     var host = document.getElementById("diagnosis");

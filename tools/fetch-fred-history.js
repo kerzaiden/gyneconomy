@@ -168,11 +168,12 @@ function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500
 }
 
 function earlyBlock(e) {
-  e = e || { gdp: [], cpi: [], returns: {} };
+  e = e || { gdp: [], cpi: [], returns: {}, growth: {} };
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return '\n  var gdpYoYBefore = [' + qrows(e.gdp) + '];\n  var cpiYoYBefore = [' + rows(e.cpi) + '];\n' +
-    '  var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n';
+    '  var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n' +
+    '  var gdpGrowthBefore = {' + Object.keys(e.growth || {}).map(y => y + ':' + e.growth[y]).join(',') + '};\n';
 }
 
 function treasuryBlock(t) {
@@ -274,7 +275,11 @@ async function earlySeasons() {
   if (!r.ok) throw new Error('Damodaran: HTTP ' + r.status);
   const returns = damodaranReturns(await r.text(), RETURNS_FROM, RETURNS_JOIN);
   say('S&P returns   ' + Object.keys(returns).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (Damodaran, dividends included)');
-  return { gdp, cpi, returns };
+  const growth = {};
+  fiscalYears(await fredSeries('A191RL1A225NBEA', RETURNS_FROM + '-01-01'), -15, 25).filter(d => d.y < RETURNS_JOIN).forEach(d => { growth[d.y] = d.v; });
+  for (let y = RETURNS_FROM; y < RETURNS_JOIN; y++) if (!(y in growth)) throw new Error('A191RL1A225NBEA: no ' + y);
+  say('Real GDP      ' + Object.keys(growth).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (BEA, annual change)');
+  return { gdp, cpi, returns, growth };
 }
 
 if (require.main === module) {

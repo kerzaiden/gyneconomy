@@ -103,10 +103,10 @@ ok('two series in one reply is refused, not guessed between',
    (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
             catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
 ok('consumer confidence is written after the S&P 500, and the early seasons last',
-   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n  var gdpGrowthBefore = \{\};\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
 ok('the early seasons are written as the app reads them',
-   earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 } }),
-   '\n  var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\n  var cpiYoYBefore = [{m:"1948-01",v:10.24}];\n  var sp500ReturnsBefore = {1948:5.7,1949:18.3};\n');
+   earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }),
+   '\n  var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\n  var cpiYoYBefore = [{m:"1948-01",v:10.24}];\n  var sp500ReturnsBefore = {1948:5.7,1949:18.3};\n  var gdpGrowthBefore = {1948:4.1};\n');
 const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
   '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });

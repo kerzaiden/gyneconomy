@@ -330,8 +330,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A cycle runs from its first bull year to its last bear year, so it ends with its bleed.** What built a
   cycle is what broke it (dot-com mania and crash, the housing boom and subprime); the YEAR badge and
   `cycleNowNote` count from the same year. (V511)
-- **The record opens at 1991; 1990 belongs to an unnamed earlier cycle and is context, not content.** That is
-  the cost of the bull-to-bear dating, stated openly. (V511)
+- **The record opens at 1948, the first year the seasons can be read (quarterly GDP and CPI begin in 1947).**
+  Keren: "from 1948", asked whether past cycles could reach the S&P 500's beginning. Before 1957 the returns are
+  the S&P's 90-stock predecessor's, as Damodaran's table carries them. (V689; the record opened at 1991 from V511.)
+- **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
+  and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
   following year; the open era leaves `to` unset.** The open era then keeps working as years are added. (V511)
 - **Cycles are named for what grew in them (Dot-Com, Housing, Big Tech, COVID-19, AI), and no sentence on

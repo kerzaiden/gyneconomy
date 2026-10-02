@@ -74,7 +74,7 @@ ok('only the open cycle has no end', cycles.filter(c => c.to == null).length, 1)
 ok('no cycle ends before it starts', cycles.every(c => c.to == null || c.to >= c.from), true);
 const seams = cycles.slice(0, -1).map((c, i) => cycles[i + 1].from - c.to);
 ok('cycles meet with no gap and no overlap', seams.join(','), seams.map(() => 1).join(','));
-ok('the board reaches back to 1991', cycles[0].from, 1991);
+ok('the board reaches back to 1948', cycles[0].from, 1948);
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed');
 process.exit(fail ? 1 : 0);

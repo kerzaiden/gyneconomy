@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f58b8b4` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `eb2edfb` on 2026-10-02. **78 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -118,12 +118,12 @@ Generated from commit `f58b8b4` on 2026-10-02. **78 components**, **40 shared pa
 | **`insightMood`** | `.mood-fig` | — |
 | **`moodCallout`** | `.mood-arrow` `.mood-call` | `pages-nav.js:moodCycleSvg` |
 | **`moodCycleSvg`** | `.mood-curve` `.mood-dot` `.mood-line` `.on` | `pages-nav.js:insightMood` |
+| **`moodDoor`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:trendCardHtml` |
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
-| **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
-| **`trendCardHtml`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:diagnosisHtml` |
 | **`trendSub`** | `.trend-sub` | `pages-nav.js:spellLines` |
+| **`trendText`** | `.trend-text` | `pages-nav.js:noMoodCardHtml`, `pages-nav.js:spellLines` |
 
 ## indicators.js
 
@@ -160,10 +160,10 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
+| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
-| **`monthLabel`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
@@ -177,7 +177,7 @@ renderer speaks. Listed most-used first.
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
 | **`highlightsHtml`** | charts.js | 7 places |
-| **`moodTrack`** | model.js | 6 places |
+| **`moodTrack`** | model.js | 7 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`seasonGroup`** | model.js | 6 places |
@@ -185,6 +185,7 @@ renderer speaks. Listed most-used first.
 | **`atMonth`** | charts.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
+| **`merge`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
 | **`detailSlot`** | render-core.js | 4 places |
 | **`drawsPage`** | render-core.js | 4 places |
@@ -193,8 +194,8 @@ renderer speaks. Listed most-used first.
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
+| **`marketMonths`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
-| **`merge`** | live.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`paintReading`** | live.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
@@ -205,7 +206,6 @@ renderer speaks. Listed most-used first.
 | **`eraFig`** | analysis.js | 3 places |
 | **`groupId`** | indicators.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
-| **`marketMonths`** | model.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
@@ -262,4 +262,4 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.strip` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
 | `.subject-value` | 2 | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
 | `.cat-list` | 2 | `indicators.js:groupSheet`, `pages-nav.js:buildCategories` |
-| `.dx-mark` | 2 | `pages-nav.js:dxHead`, `pages-nav.js:trendCardHtml` |
+| `.dx-mark` | 2 | `pages-nav.js:dxHead`, `pages-nav.js:moodDoor` |
