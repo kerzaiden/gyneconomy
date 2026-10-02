@@ -30,7 +30,7 @@
   /* ---- The first series to come from outside the file ---- */
 
   function paintReading(sheet, value, tag){
-    var doors = document.querySelectorAll('[data-open="' + sheet + '"]'), painted = 0;
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
     Array.prototype.forEach.call(doors, function(d){
       var v = d.querySelector(".ci-value, .subject-value");
       if (v && v.firstChild && v.firstChild.nodeType === 3){ v.firstChild.nodeValue = String(value); painted++; }

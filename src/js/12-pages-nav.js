@@ -137,9 +137,17 @@
     if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? subjectIcon("norm", gm()) : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
     groups[grp].kinds[kind] = 1; groups[grp].terms.push(find[e.title]);
   }
+  function catMembers(sheet){
+    var out = [];
+    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(card){
+      var grp = card.hasAttribute("data-preview") && byId(card.getAttribute("data-open"));
+      out.push.apply(out, grp ? [].slice.call(grp.querySelectorAll(".cat-item[data-open]")) : [card]);
+    });
+    return out;
+  }
   function indRows(sheet, find){
     var rows = [], groups = {};
-    Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(item){
+    catMembers(sheet).forEach(function(item){
       var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
       IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
         if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));

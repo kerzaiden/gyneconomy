@@ -50,9 +50,12 @@ const ready = pg => pg.waitForFunction(() => window.__GYN && document.getElement
 
 async function openPage(p, url, sheet) {
   await p.goto('file://' + url); await ready(p);
-  const cat = await p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
-    return c ? c.closest('.cat-sheet').id : null; }, sheet);
-  if (!cat || !await click(p, '[data-open="' + cat + '"]')) return false;
+  const home = s => p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
+    return c ? c.closest('.cat-sheet').id : null; }, s);
+  const cat = await home(sheet), up = cat && cat.indexOf('sheet-grp-') === 0 ? await home(cat) : null;
+  if (up && !await click(p, '[data-open="' + up + '"]')) return false;
+  if (up) await settle(p);
+  if (!cat || !await click(p, (up ? '.cat-item' : '') + '[data-open="' + cat + '"]')) return false;
   await settle(p);
   if (!await click(p, '.cat-item[data-open="' + sheet + '"]')) return false;
   await settle(p); return true;
@@ -113,7 +116,7 @@ async function openPage(p, url, sheet) {
   const p = await b.newPage({ viewport: { width: 414, height: 1000 } });
   watch(p, 'navigating');
   await p.goto('file://' + url); await ready(p);
-  const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
+  const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
   const tall = {}, notes = {}, gaps = {};
   const searchFigs = await p.evaluate(() => [...document.querySelectorAll('#search-list .ind-row[data-open]')].map(r => {
@@ -321,7 +324,7 @@ async function openPage(p, url, sheet) {
     (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys' && !past.across && past.grid === '0:0:false')
       ? ok('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', 'Keren, V682, V686')
       : bad('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', JSON.stringify([today, past]));
-    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
+    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
     }).filter(f => f && f.fig !== '\u2014'));
@@ -470,7 +473,7 @@ async function openPage(p, url, sheet) {
         title: document.getElementById('topbar-title').textContent,
         cats: [...host.querySelectorAll('.ind-cat-name')].map(n => n.textContent),
         rows: rows.length, titles: new Set(rows.map(r => r.dataset.title)).size,
-        cards: document.querySelectorAll('.cat-sheet .cat-item[data-open]').length,
+        cards: document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])').length,
         grouped: rows.filter(r => r.classList.contains('ind-grp')).length,
         doors: rows.every(r => document.getElementById(r.dataset.open)),
         figs: rows.every(r => r.classList.contains('ind-grp') ? !r.querySelector('.subject-value').textContent : r.querySelector('.subject-value').firstChild.nodeType === 3),
@@ -479,7 +482,7 @@ async function openPage(p, url, sheet) {
       };
     });
     (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === list.titles &&
-     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Economic power>sheet-grp-economic-power,Activity>sheet-grp-activity' && list.tabs === 'All Structural Leading Coincident Lagging')
+     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Stress>sheet-grp-stress' && list.tabs === 'All Structural Leading Coincident Lagging')
       ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
       : bad('search lists every reading by category', JSON.stringify(list));
     const shown = async (kind, q) => {
@@ -492,7 +495,7 @@ async function openPage(p, url, sheet) {
       }));
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
-    (st.rows.sort().join() === 'Activity,Economic power,Households,Valuations' &&
+    (st.rows.sort().join() === 'Productivity growth,Stress,Valuations' &&
      st.cats.join() === 'Mood,Energy' && le.rows.length > 0 && le.cats.join() === 'Weather,Mood,Circulation' && al.rows.length === list.rows && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
@@ -527,6 +530,8 @@ async function openPage(p, url, sheet) {
       await click(p, '[data-open="sheet-cat-' + cat + '"]'); await settle(p);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
         tall: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => Math.round(i.getBoundingClientRect().height)),
+        lead: (i => i && i.dataset.open + '<' + i.dataset.preview + ':' + (i.querySelector('.ci-value').textContent ===
+          (document.querySelector('.cat-group .cat-item[data-open="' + i.dataset.preview + '"] .ci-value') || {}).textContent))(document.querySelector('#sheet-cat-' + c + ' .cat-item')),
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.hover('#sheet-cat-' + cat + ' .cat-item');
       lists[cat].white = await p.evaluate(c => { const i = document.querySelector('#sheet-cat-' + c + ' .cat-item'), st = getComputedStyle(i);
@@ -534,8 +539,9 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Confidence' &&
-     lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Valuations+Volatility+Desire+Confidence' &&
+     lists.energy.names === 'Stress+Unemployment rate+Productivity growth+Industrial output' &&
+     lists.mood.lead === 'sheet-grp-valuations<sheet-metric-valuation:true' && lists.energy.lead === 'sheet-grp-stress<sheet-metric-debt:true')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
     const uneven = Object.keys(lists).filter(c => Math.max(...lists[c].tall) - Math.min(...lists[c].tall) > 1);
@@ -579,7 +585,7 @@ async function openPage(p, url, sheet) {
       ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
-    await p.click('#search-list [data-open="sheet-grp-economic-power"]'); await settle(p);
+    await p.click('#search-list [data-open="sheet-grp-stress"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,
       names: [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }));
     await p.click('#metric-page .cat-item[data-open="sheet-metric-debt"]'); await settle(p);
@@ -590,7 +596,7 @@ async function openPage(p, url, sheet) {
     await click(p, '[data-open="sheet-cat-energy"]'); await settle(p);
     const home = await p.evaluate(() => [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+'));
     await p.click('#topbar-back'); await settle(p);
-    (grp.bar === 'Economic power' && grp.names === 'Federal debt+Interest payments+Federal budget' && deep === 'Federal debt' &&
+    (grp.bar === 'Stress' && grp.names === 'Federal debt+Interest payments+Federal budget+Households' && deep === 'Federal debt' &&
      again === grp.names.split('+').length && home === lists.energy.names)
       ? ok('a group in Search opens its cards, and they return home', grp.names)
       : bad('a group in Search opens its cards, and they return home', JSON.stringify({ grp, deep, again, home }));
@@ -631,7 +637,7 @@ async function openPage(p, url, sheet) {
     const nowFrame = await frame();
     await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
     await settle(p);
-    const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => {
+    const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => {
       const m = n.querySelector('.ci-mini > *'), cls = m ? (m.getAttribute('class') || '').split(' ') : [];
       return [n.dataset.open, { art: cls.filter(x => /^(heat|pulsepeek|vital-ring)$/.test(x)).join(), unit: !!n.querySelector('.ci-value .ci-unit'),
         val: n.querySelector('.ci-value').textContent }];
@@ -656,7 +662,7 @@ async function openPage(p, url, sheet) {
       : bad('a past cycle stacks like the current one', JSON.stringify({ nowFrame, pastFrame }));
     await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
     await settle(p);
-    const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({
+    const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => ({
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
@@ -679,13 +685,15 @@ async function openPage(p, url, sheet) {
       ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · '))
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
-    await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-metric-valuation"]');
+    await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-grp-valuations"]');
+    await settle(p);
+    await click(p, '#sheet-grp-valuations .cat-item[data-open="sheet-metric-valuation"]');
     await settle(p);
     const picked = await p.evaluate(() => (document.querySelector('#metric-page .hist-controls') || {}).textContent || '');
     const bar = () => p.evaluate(() => (document.getElementById('topbar-back').hidden ? '' : '← ') + document.getElementById('topbar-title').textContent);
     const trail = [];
-    for (let i = 0; i < 3; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
-    (trail.join(' | ') === '← Mood | ← Housing Cycle | Analysis')
+    for (let i = 0; i < 4; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
+    (trail.join(' | ') === '← Valuations | ← Mood | ← Housing Cycle | Analysis')
       ? ok('back walks out of a past cycle one page at a time', trail.join(' | '))
       : bad('back walks out of a past cycle one page at a time', trail.join(' | '));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
@@ -903,7 +911,7 @@ async function openPage(p, url, sheet) {
     const roster = await g.evaluate(() => {
       const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
       if (!R || !step) return null;
-      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open);
+      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(c => c.dataset.open);
       const warned = [], warn = console.warn;
       console.warn = m => warned.push(String(m));
       R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));

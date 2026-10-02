@@ -106,7 +106,7 @@ Diagnosis (two orders, both Keren's). A row's fields:
 
 ```text
 id, name, cat, timing, mark   the page, the name on every door, the category, the timing chip, the glyph
-group                         consecutive rows with one group are one group (Valuations, Economic power, Activity)
+group                         consecutive rows with one group are one group (Valuations, Stress)
 door                          how the card is built: peek (a peek card), pair (Pulse and Volume's peek pair),
                               split (a split peek), subject (an authored subject row), row (a sign row)
 term                          the bodyTerm of the reading object a sign row or pair is built from
@@ -274,7 +274,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
-Mood (Valuations · Volatility · Desire · Confidence) · Energy (Economic power · Households · Activity). Named Weather, never
+Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth · Industrial output). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -287,8 +287,8 @@ Rules that shape the pages:
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
   read by the category sheets, the past cycles, the Diagnosis and Search.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
-  card (Valuations: Shiller CAPE · Buffett indicator; Economic power: Federal debt · Interest payments · Federal
-  budget). The split pages are
+  card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
+  budget · Households). The split pages are
   built by one builder, `src/js/12a-indicators.js` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
@@ -319,7 +319,7 @@ Rules that shape the pages:
   in the chart's (i) menu: `histNote(head, info)` registers it (Households' note is the bill and the cushion
   together). A reading without a history (Industrial output, and Productivity growth until its series lands)
   keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
-- **Activity is a group of three (V661):** Unemployment rate (the Activity page; its roster name renames it on
+- **The activity readings (V661; ungrouped since V688):** Unemployment rate (the Activity page; its roster name renames it on
   screen while `bodyTerm` stays the reading's term), Productivity growth and Industrial output, each a sign page
   of its own (`signSubject`, the page id from the roster). Productivity growth is structural (Claude's call, to
   confirm). Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`, and its
@@ -328,8 +328,14 @@ Rules that shape the pages:
 - **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
   the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
-  its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark of
-  their own (Economic power the bolt; the others their first member's).
+  its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark
+  of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
+  **A group is one card on its category page (V688).** `groupSheet` builds it with `groupCard`: a clone of the
+  first member's card renamed to the group, `data-open` the group's page and `data-preview` the member it
+  previews, so `paintReading` repaints both doors and `eraCards` reads the past cycle's figure through it. The
+  members move onto the group's page (`catSheet`); `catMembers` expands a group card back into its members for
+  Search, and the tests enumerate readings as `.cat-item[data-open]:not([data-preview])`. Every card on a
+  category page stands the same height: the value never wraps and a long unit ellipses.
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.
@@ -866,8 +872,8 @@ by its own picture, by cycle = the average never the total.
 ## Wording
 
 Hormones = the policy rate; Pressure = the Treasury level, never "Yield curve"; Volatility (the VIX, V663), never "Fear" or "Fear & Greed"
-or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Economic power is the
-group of Federal debt, Interest payments and Federal budget (V660); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
+or "Sentiment"; Households, not "Debt service"; Valuations, plural; Growth, not "GDP growth"; Stress is the
+group of Federal debt, Interest payments, Federal budget and Households (V688; Economic power until then); Federal budget, not "deficit rate". Peak year, never "the cycle's peak". Bull year / Bear
 year. warm · 1–3%, never "in range". expanding / contracting / steady, never "positive growth" or "rising"
 on screen. Seasons as *Spring — Deflation*; "Late" never used. Year over year is written YoY. The section
 carrying a sentence about the figures above it is Insights. Nothing here is investment advice.

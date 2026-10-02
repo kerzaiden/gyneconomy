@@ -26,7 +26,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **The category holding Economic power, Households and Activity is Energy.** Keren: "activity should be
+- **The category holding Stress and the activity readings is Energy.** Keren: "activity should be
   renamed to energy — the icon needs to embody energy"; what is left and what is spent are one reading of her
   energy. (V457)
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
@@ -166,8 +166,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Structural, Leading, Coincident, Lagging; All by default) and a search box; each heading opens its category
   page, and each row shows today's figure only and opens its reading's page.** Keren modelled it on Apple
   Health's search page; the All indicators page and its row stay gone. (V657)
-- **In Search, readings that form a group are one row (Valuations, Economic power) that opens a page holding
+- **In Search, readings that form a group are one row (Valuations, Stress) that opens a page holding
   their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660)
+- **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
+  as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
+  cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
+  some more breathing room in the category pages." (V688)
+- **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
+  Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
+  economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
 - **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
   "each category page should have the shade of the color of the category". (V660)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
@@ -413,19 +420,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Energy holds the whole energy reading: Economic power (the federal side: Federal debt, Interest payments,
-  Federal budget), Households (the household balance sheet) and Activity; there is no separate Load or debt
-  category.** Keren: "we don't need a new category named Load — stress is connected to energy"; a category
+- **Energy holds the whole energy reading: Stress (Federal debt, Interest payments, Federal budget and
+  Households), then Unemployment rate, Productivity growth and Industrial output, each its own card; there is no
+  separate Load or debt category.** (Activity stopped being a group in V688: Keren listed the three as cards.) Keren: "we don't need a new category named Load — stress is connected to energy"; a category
   holding a reading's inputs apart from the reading splits one idea. (V457, V462, V660)
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)
 - **Activity holds three readings, each with its own page: Unemployment rate, Productivity growth (its history
   is OPHNFB, through the Backfill) and Industrial output.** Keren: they "should be their own pages under
   activity category". (V661)
-- **Productivity growth belongs to Activity, not Economic power, and its range is the annual year-over-year
+- **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
   one it plots.** Keren: "I think it doesn't belong to economic power — I think it belongs to activity";
   output per hour measures what the body is doing. (V395)
-- **Institutional trust (Gallup's confidence survey) is not an Economic power reading; don't re-add it.**
+- **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.**
   Keren: "the trust is embodied in the bond market." (V392)
 - **Circulation reads in the order cause runs: Interest rates (the rate the Fed sets), Pressure (the rate the market
   charges), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
