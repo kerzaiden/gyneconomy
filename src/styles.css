@@ -1122,11 +1122,12 @@
   .cat-sheet .ci-when{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface); }
   .cat-sheet .ci-body{ margin-top:26px; align-items:flex-end; min-height:0; }
   .cat-sheet .ci-read{ display:flex; flex-direction:column-reverse; gap:3px; }
-  .cat-sheet .ci-value{ display:flex; flex-wrap:wrap; align-items:baseline; column-gap:6px; font-family:"Public Sans",sans-serif;
+  .cat-sheet .ci-value{ display:flex; flex-wrap:nowrap; align-items:baseline; column-gap:6px; white-space:nowrap; font-family:"Public Sans",sans-serif;
     font-size:var(--type-page-title); font-weight:600; letter-spacing:-0.01em; line-height:1.05; }
-  .cat-sheet .ci-unit{ font-size:var(--type-interface); font-weight:500; color:var(--text-muted); }
+  .cat-sheet .ci-unit{ min-width:0; overflow:hidden; text-overflow:ellipsis; line-height:1.3; font-size:var(--type-interface); font-weight:500; color:var(--text-muted); }
   .cat-sheet .ci-word{ padding:0; background:none; color:var(--text-muted); font-size:var(--type-interface); font-weight:500;
     letter-spacing:0; text-transform:none; }
+  .cat-sheet .ci-word:empty::before{ content:"\00a0"; }
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
   .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
   .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }

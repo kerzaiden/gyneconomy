@@ -96,23 +96,15 @@
   function markSvg(body, extra){
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
   }
-  function hormoneSvg(){ return markSvg(
-    '<circle cx="12" cy="5.4" r="2.6" stroke-width="1.7"/>' +
-    '<circle cx="5.6" cy="16.6" r="2.6" stroke-width="1.7"/>' +
-    '<circle cx="18.4" cy="16.6" r="2.6" stroke-width="1.7"/>' +
-    '<path d="M10.7 7.7 6.9 14.3M13.3 7.7 17.1 14.3M8.2 16.6h7.6" stroke-width="1.7"/>'); }
+  function heartSvg(){ return markSvg(
+    '<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>'); }
+  function batterySvg(){ return markSvg(
+    '<rect x="2.6" y="7" width="16.4" height="10" rx="2.2" stroke-width="1.8"/>' +
+    '<path d="M21.4 10.4v3.2" stroke-width="2"/><path d="M6 10.4v3.2" stroke-width="2.6"/>'); }
   function flameSvg(){ return markSvg(
     '<path d="M12 21.6c3.5 0 6.1-2.4 6.1-5.7 0-4.2-3.3-6.6-5.2-11.1-.4 3.1-2.2 4.7-3.6 6.2-1.8 2-3.4 3.3-3.4 4.9 0 3.3 2.6 5.7 6.1 5.7Z" stroke-width="1.7"/>' +
     '<path d="M12 21.6c1.7 0 2.9-1.2 2.9-2.8 0-1.6-1.2-2.6-2.9-4.9-1.1 1.6-2.9 3-2.9 4.9 0 1.6 1.2 2.8 2.9 2.8Z" fill="currentColor" stroke="none"/>'); }
   function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stroke-width="1.8"/><path d="M12 7.4V12l3.1 2.1" stroke-width="1.8"/>'); }
-  function gearSvg(){
-    var teeth = "", i, a;
-    for (i = 0; i < 6; i++){ a = i * Math.PI / 3;
-      teeth += '<path d="M' + (12 + 7 * Math.cos(a)).toFixed(2) + ' ' + (12 + 7 * Math.sin(a)).toFixed(2) +
-               'L' + (12 + 9.6 * Math.cos(a)).toFixed(2) + ' ' + (12 + 9.6 * Math.sin(a)).toFixed(2) + '"/>';
-    }
-    return markSvg('<g stroke-width="2.5">' + teeth + '</g><circle cx="12" cy="12" r="6.4" stroke-width="1.7"/><circle cx="12" cy="12" r="2.4" stroke-width="1.7"/>');
-  }
   function thermoSvg(){ return markSvg(
     '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
     '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>'); }
@@ -145,10 +137,6 @@
   function bagSvg(){ return markSvg(
     '<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/>' +
     '<path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>'); }
-  function sunriseSvg(){ return markSvg(
-    '<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' +
-    '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' +
-    '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>'); }
   function volatilitySvg(){ return markSvg(
     '<path d="M5.5 7.5v2.5M5.5 15.5v2.5M12 2.5v3M12 18.5v3M18.5 5.5v3.5M18.5 14.5v2" stroke-width="1.8"/>' +
     '<rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>' +

@@ -197,77 +197,58 @@
   }
   GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive"); deriveUninversionDetail();
 
-  /* ---- RENDER: Horizon — the spread's own page ---- */
-  function drawHznHead(){
-    var H = HIST_HEAD["hzn-range"];
-    H.title = spreadLabel(spreadPick) + " Treasury Spread";
-    H.menu = function(){
-      return [
-        { key:"spreads", label:"Spreads", on:true, value:spreadLabel(spreadPick),
-          rows:HZN_SPREADS.map(function(r){
-            return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-          }).join("") }
-      ];
-    };
-    HIST_NOTE["hzn-range"] = horizonInfoHtml(spreadPick);
-    put("hzn-head", histHead("hzn-range"));
-  }
+  // ---- RENDER: the Treasury spreads, inside Pressure ----
   function renderHorizonPage(){
-    var host = byId("hzn-timeline"); if (!host) return;
+    var host = byId("pressure-timeline"); if (!host) return;
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
     function drawHzn(){
       var data = hznData();
-      var cyc = pageCycle("hzn-range", hznY0);
+      var cyc = pageCycle("pressure-range", hznY0);
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["hzn-range"]);
+      var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["pressure-range"]);
       var to = idx ? idx[1] : data.length;
-      host.innerHTML = histControls("hzn-range",
+      host.innerHTML = histControls("pressure-range",
         { depth:Math.floor(data.length / 4) }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
-      var tr = byId("hzn-trend");
+      var tr = byId("ylm-trend");
       if (tr){
         var w = [];
         data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
         tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"steepening", falling:"flattening" });
       }
-      drawHznHead();
+      put("pressure-insights", spreadInsights());
     }
-    GYN.on("pickSpread", function(code){ spreadPick = code; drawHzn(); });
-    drawsPage("sheet-sign-horizon", drawHzn);
-    drawHzn();
-
+    drawSpreadView = drawHzn;
+  }
+  function spreadInsights(){
     var r = horizonRead;
     var sgn = function(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); };
-    var moved = function(v){ return (v >= 0 ? "risen " : "fallen ") + Math.abs(v).toFixed(2) + " points"; };
     var fromLong = r.dLong >= -r.dShort;
-    var ins = byId("horizon-insights");
-    if (ins){
-      var cards = [];
-      cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' +
-        'growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s ' +
-        'forecast of its own next season — a mood, not a measurement taken off it.</p>');
-      cards.push(hiCard(r.word, r.state,
-        "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
-        " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " +
-        (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " +
-        (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
-        (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
-                  : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") +
-        " Which end moved is the reading: on a chart the two look identical."));
-      cards.push(hiCard("The short end", "",
-        "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
-        ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
-        "prices where the Fed is going, the bill only where it has been."));
-      var facts =
-        '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
-          uninvLagToday.months + ' months</b></div>' +
-        '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
-        '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
-      ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-        cards.join("") + facts + '</section>';
-    }
+    var cards = [];
+    cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' +
+      'growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s ' +
+      'forecast of its own next season — a mood, not a measurement taken off it.</p>');
+    cards.push(hiCard(r.word, r.state,
+      "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
+      " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " +
+      (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " +
+      (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
+      (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
+                : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") +
+      " Which end moved is the reading: on a chart the two look identical."));
+    cards.push(hiCard("The short end", "",
+      "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
+      ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
+      "prices where the Fed is going, the bill only where it has been."));
+    var facts =
+      '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
+        uninvLagToday.months + ' months</b></div>' +
+      '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
+      '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
+      cards.join("") + facts + '</section>';
   }
   GYN.step("renderHorizonPage", renderHorizonPage, "render"); renderHorizonPage();
 
@@ -464,15 +445,6 @@
     }
 
 
-    set("horizon", (horizonRead.spread >= 0 ? "+" : "\u2212") + Math.abs(horizonRead.spread).toFixed(2) +
-      '<span class="unit">pts \u00b7 10Y \u2212 3M</span>' +
-      '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + '</span>', "");
-    say("horizon", "");
-    (function(){
-      var slot = put("subj-spark-horizon", colPeek(
-        t10y3mHistory.map(function(d){ return d.v; }).filter(function(v){ return v != null; }),
-        function(v){ return "hzn-col " + (v < 0 ? "neg" : "pos"); }, 0, true));
-    })();
 
     put("subj-ring-sentiment", volatilityRing());
     var volTag = volatilityTag();

@@ -18,11 +18,9 @@
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
-    { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:hormoneSvg, door:"subject", hk:"hormones-range",
+    { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return fedFunds.asOf; }, live:["fedFunds"] },
-    { id:"sheet-sign-horizon", name:"Horizon", cat:"circulation", timing:"leading", mark:sunriseSvg, door:"subject", hk:"hzn-range",
-      head:"", stops:["5y", "10y", "max"], hist:{ s:t10y3mHistory, k:"q" }, rule:true, when:compiledDay, live:["yieldCurve"] },
     { id:"sheet-sign-pressure", name:"Pressure", cat:"circulation", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, rule:true, when:compiledDay, live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", timing:"coincident", mark:ecgSvg, door:"pair", term:"Pulse", hk:"pulse-range",
@@ -43,29 +41,27 @@
     { id:"sheet-sign-desire", name:"Desire", cat:"mood", timing:"coincident", mark:flameSvg, door:"row", term:"Desire", hk:"desire-range",
       head:"High-Yield Spread over Treasuries", range:"max", cycles:false, stops:["1y", "max"], hist:hyMonths, peek:hyQuarters,
       live:["coincident", "hyOasNow"] },
-    { id:"sheet-sign-confidence", name:"Consumer confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Consumer confidence",
-      head:"Consumer Confidence, Against the OECD\u2019s Average", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
+    { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Confidence",
+      head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
       cardUnit:"OECD index" },
-    { id:"sheet-metric-debt", name:"Federal debt", cat:"energy", group:"Economic power", timing:"structural", mark:debtSvg, door:"split",
+    { id:"sheet-metric-debt", name:"Federal debt", cat:"energy", group:"Stress", timing:"structural", mark:debtSvg, door:"split",
       head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:70, when:labPeriod, cardUnit:"of GDP" },
-    { id:"sheet-metric-interest", name:"Interest payments", cat:"energy", group:"Economic power", timing:"structural", mark:interestSvg,
+    { id:"sheet-metric-interest", name:"Interest payments", cat:"energy", group:"Stress", timing:"structural", mark:interestSvg,
       door:"split", head:"Net Interest, Share of GDP", hist:{ s:fiscalHistory.interest, k:"y" }, mid:2, when:labPeriod,
       cardUnit:"of GDP" },
-    { id:"sheet-marker-deficit", name:"Federal budget", cat:"energy", group:"Economic power", timing:"structural", mark:budgetSvg, door:"split",
+    { id:"sheet-marker-deficit", name:"Federal budget", cat:"energy", group:"Stress", timing:"structural", mark:budgetSvg, door:"split",
       hk:"deficit-range", slot:"deficit", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },
       flip:true, mid:3.8, when:labPeriod, cardUnit:"deficit, of GDP" },
-    { id:"sheet-metric-households", name:"Households", cat:"energy", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
+    { id:"sheet-metric-households", name:"Households", cat:"energy", group:"Stress", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
       head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
       pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, peek:"pair", when:lastDate, cardUnit:"% paid / kept" },
-    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"energy", group:"Activity", timing:"lagging", mark:trendUpSvg, door:"row",
+    { id:"sheet-sign-activity", name:"Unemployment rate", cat:"energy", timing:"lagging", mark:trendUpSvg, door:"row",
       term:"Activity", head:"Unemployment Rate", hist:{ s:unempHistory, k:"m" } },
-    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"energy", group:"Activity", timing:"structural", mark:clockSvg,
+    { id:"sheet-sign-productivity-growth", name:"Productivity growth", cat:"energy", timing:"structural", mark:clockSvg,
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
-      mid:PRODUCTIVITY_SLOWDOWN, when:lastDate },
-    { id:"sheet-sign-industrial-output", name:"Industrial output", cat:"energy", group:"Activity", timing:"coincident", mark:gearSvg, door:"row",
-      term:"Industrial output", live:["coincident"] }
+      mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
-  var GROUP_MARK = { "Economic power":boltSvg };
+  var GROUP_MARK = { "Stress":batterySvg };
   var ROSTER_BY = {};
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
   function pageState(of){

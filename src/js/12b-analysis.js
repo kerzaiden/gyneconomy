@@ -145,7 +145,7 @@
   function eraCards(era){
     var rows = rosterRows();
     Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item){
-      eraCard(item, rows[item.getAttribute("data-open")], era);
+      eraCard(item, rows[item.getAttribute("data-preview") || item.getAttribute("data-open")], era);
     });
   }
   function eraShow(era){

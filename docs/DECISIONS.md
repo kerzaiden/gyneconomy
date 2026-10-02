@@ -26,7 +26,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The bloodstream category is Circulation, never Blood.** Keren: "instead of Blood call it Circulation".
   (V454)
-- **The category holding Economic power, Households and Activity is Energy.** Keren: "activity should be
+- **The category holding Stress and the activity readings is Energy.** Keren: "activity should be
   renamed to energy — the icon needs to embody energy"; what is left and what is spent are one reading of her
   energy. (V457)
 - **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
@@ -42,7 +42,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The fiscal reading is Federal budget, never "deficit rate", and its chart head says "deficit or surplus",
   never deficit alone.** It can go either way (the budget was in surplus four straight years), and a name that
   covers one sign is wrong in the other sign's years. (V359, V397)
-- **The reading is Industrial output, never Effort.** Keren: "we just call it industrial output now"; the body
+- **Industrial output is gone (V688): its card, page and copy. Don't re-add it.** Keren: "I don't need the
+  industrial output, it's just too much information." Before that: **the reading was Industrial output, never Effort.** Keren: "we just call it industrial output now"; the body
   term left the screen. (V352, V357)
 - **The manuscript's framework table keeps the book's own words (its "Effort" row is not renamed); ask Keren
   before touching it.** That table is the book's, not the app's. (V228, V357)
@@ -159,15 +160,22 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   never for a page's content.** Keren asked for inner pages "aligning to our inner pages format"; a long
   record "is not a footnote you glance at and dismiss". (V269, V303)
 - **One indicator gets one card and one page; a reading with a card has no second row.** The Buffett
-  indicator, Federal debt, Interest payments and Federal budget each have their own; Horizon's two spreads
-  stay one page, Households' debt service and saving rate stay one page, and Pressure stays one card with its
+  indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
+  stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
 - **Search lists every reading by category (Weather, Mood, Circulation, Energy), with a timing filter (All,
   Structural, Leading, Coincident, Lagging; All by default) and a search box; each heading opens its category
   page, and each row shows today's figure only and opens its reading's page.** Keren modelled it on Apple
   Health's search page; the All indicators page and its row stay gone. (V657)
-- **In Search, readings that form a group are one row (Valuations, Economic power) that opens a page holding
+- **In Search, readings that form a group are one row (Valuations, Stress) that opens a page holding
   their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660)
+- **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
+  as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
+  cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
+  some more breathing room in the category pages." (V688)
+- **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
+  Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
+  economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
 - **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
   "each category page should have the shade of the color of the category". (V660)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
@@ -413,19 +421,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Where each reading belongs
 
-- **Energy holds the whole energy reading: Economic power (the federal side: Federal debt, Interest payments,
-  Federal budget), Households (the household balance sheet) and Activity; there is no separate Load or debt
-  category.** Keren: "we don't need a new category named Load — stress is connected to energy"; a category
+- **Energy holds the whole energy reading: Stress (Federal debt, Interest payments, Federal budget and
+  Households), then Unemployment rate and Productivity growth, each its own card; there is no
+  separate Load or debt category.** (Activity stopped being a group in V688: Keren listed the three as cards.) Keren: "we don't need a new category named Load — stress is connected to energy"; a category
   holding a reading's inputs apart from the reading splits one idea. (V457, V462, V660)
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)
-- **Activity holds three readings, each with its own page: Unemployment rate, Productivity growth (its history
-  is OPHNFB, through the Backfill) and Industrial output.** Keren: they "should be their own pages under
-  activity category". (V661)
-- **Productivity growth belongs to Activity, not Economic power, and its range is the annual year-over-year
+- **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
+  page, directly under Energy; there is no Activity page or group.** Keren: they "should be their own pages";
+  then "get rid of the activity page… I want productivity growth and unemployment rate to be under energy". (V661, V688)
+- **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
   one it plots.** Keren: "I think it doesn't belong to economic power — I think it belongs to activity";
   output per hour measures what the body is doing. (V395)
-- **Institutional trust (Gallup's confidence survey) is not an Economic power reading; don't re-add it.**
+- **Institutional trust (Gallup's confidence survey) is not a Stress reading; don't re-add it.**
   Keren: "the trust is embodied in the bond market." (V392)
 - **Circulation reads in the order cause runs: Interest rates (the rate the Fed sets), Pressure (the rate the market
   charges), Pulse (how fast money moves), Volume (how much of it there is).** The rate is the cause; pulse and
@@ -436,20 +444,25 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   market." The card, page, Search and Insights say Interest rates; the Diagnosis says "Hormones are …" and, where it
   gives figures, "hormones (the Fed funds rate)". A hormone is a messenger secreted on purpose that sets the tempo
   of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
-- **Pressure is the Treasury yields, opening on the 10-year; Horizon is the spreads; the two are never folded
-  into one page again.** Keren: "Pressure should be yields, and the default should be the 10-year Treasury
-  yield, because it's considered the risk-free loan across the economy". (V639)
+- **Pressure is the Treasury yields and the Treasury spreads in one page, opening on the 10-year yield; its ⋯
+  menu holds two groups, Treasury yields and Treasury spreads (10Y − 3M, 10Y − 2Y), and the page shows one series
+  at a time, with that series' chart, note and Insights.** Keren: "merge horizon into pressure with the 3 dots
+  having another sub menu called treasury spreads" (V688). This overturns V639's "never folded into one page
+  again" ("Pressure should be yields, and the default should be the 10-year Treasury yield, because it's considered
+  the risk-free loan across the economy", which still sets the opening series). (V598, V639, V688)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
+- **Every card on a category page stands the same height: the card keeps its word line even when the reading has
+  no word (Pressure's, by decision), and a figure's unit stays on its line, trimmed with an ellipsis rather than
+  wrapped.** Keren: "the pressure container is a bit smaller than the rest … They need to be in the same height."
+  The suite measures every card on Circulation, Mood and Energy. (V688)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** Keren: "if we already have it as the vix lets use volatility - i prefer market
   terminology." (V686)
-- **Horizon (the yield spread) is Circulation's member, after Interest rates, not a category of its own and not
-  part of Pressure.** It sat in Mood from V473 ("if the horizon says if we're optimistic or pessimistic, then it
-  should be in mood"); in V685 it left the mood reading (the curve steepens when the Fed cuts into a crash, so its
-  level does not sort mood), Keren asked where it belongs, and chose Circulation: the 3-month end follows the
-  Fed, so the curve is the bond market's answer to the hormones. It keeps its optimistic/pessimistic word. (V473,
-  V598, V685)
+- **Horizon has no card of its own: the yield spread lives in Pressure, under Treasury spreads.** It sat in Mood
+  from V473, left the mood reading in V685 (the curve steepens when the Fed cuts into a crash, so its level does
+  not sort mood), became Circulation's own card in V685 at Keren's choice, and folded into Pressure in V688. Its
+  spread view keeps the optimistic/pessimistic word in its Insights. (V473, V598, V685, V688)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
@@ -457,13 +470,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   details.** Keren: "Shiller CAPE above the Buffett indicator"; she removed both closing cards. (V365, V494)
 - **The high-yield spread is Desire's figure and appears on no other reading.** It was once tagged good on
   Desire and warning elsewhere; Keren: "is it the same thing? If so, unite it". (V464)
-- **Industrial output keeps a card with no history chart.** ISM's history is not free. (V658)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
   did before V672: the twelve-month change against zero, with Keren's 65% line splitting Euphoria from Optimism.
   (V672, V677)
-- **Mood holds Consumer confidence, the OECD's index for the United States, read against the OECD's own 100
+- **Mood holds Confidence (V688: card and page named Confidence, its history titled "OECD Consumer Confidence"; Keren: "call it confidence … in the history component, call it OECD consumer confidence"), the OECD's index for the United States, read against the OECD's own 100
   line.** Keren: "I want to add the consumer confidence index to the mood categories", and "the consumer
   confidence index has a threshold of 100 … it already comes with the threshold". The OECD scales it so 100 is the
   long-term average: above is Confident, below is Pessimistic. Michigan's and the Conference Board's 100 are base
@@ -865,7 +877,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   - Pulse: the ECG trace. Keren: the trace "is more representative of a pulse than a heart". (V524, V586)
   - Activity (Unemployment rate): three rising bars with no axis or arrowhead, apart from the trend pill's
     arrow and the Analysis tab's icon. (V524, V586)
-  - Industrial output: the cog; a cog is a factory. (V510)
+  - Interest rates: a heart. Keren: "give interest rates a heart icon". (V688)
+  - Stress: a battery nearly spent, apart from Energy's bolt; stress that never lifts spends the reserve.
+    Keren: Stress "should also have an icon, not a lightning"; the battery is Claude's pick of three drawn
+    (a kettlebell read as a person, a knot as infinity). (V688)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index,
     which the page no longer is. (V664)
@@ -1056,16 +1071,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **The Mood page tells her story this cycle, in its own box under Insights: for the cycle on screen only, where
-  she opened, her high and her low (the months her mood ranked highest and lowest against her own history) in the
-  order they came, where she closed (or is now), and the two emotions she spent most months in.** Today's page tells
-  the current cycle; a past cycle's page tells that cycle's (Keren: "her story by cycle should be per that cycle …
-  If I go to .com cycle, I press mood, I will see the mood story of the .com cycle", V686). Keren: "i would rather have it
-  analyse the emotions each cycle goes through like a story." It replaced Emotion × Season the same day, which
-  she judged uninformative ("it doesn't tell me anything"): an emotion in a season lasted about two months, and
-  emotion and season together did no better than slid tracks at explaining the next year. V684's Feeling and season
-  grid and its Cramér's V left the Diagnosis with it. Don't re-add a season grid or a posture or forecast. (V684,
-  V686)
+- **The Mood page has one Insights box: the cycle of market emotions, then "She's in …" with the cycle on screen
+  (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
+  score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
+  and two more details buttons … she's in optimism and her story this cycle it's pretty much the same thing"
+  (V688). The story tells the cycle on screen: today's page the current cycle, a past cycle's page that cycle's.
+  It tells where she opened, her high and her low (the months her mood ranked highest and lowest against her own
+  history) in the order they came, where she closed (or is now), and the two emotions she spent most months in.
+  Keren: "i would rather have it analyse the emotions each cycle goes through like a story." It replaced Emotion ×
+  Season, which she judged uninformative ("it doesn't tell me anything"): an emotion in a season lasted about two
+  months, and emotion and season together did no better than slid tracks at explaining the next year. Don't re-add
+  a season grid or a posture or forecast. (V684, V686, V688)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
   words for today, and a closed cycle's figures are on its cards. (V665, V672)

@@ -173,20 +173,6 @@
         'each one, and only the second kind compounds.</p>' +
       srcBlock(PRODUCTIVITY_SRC);
   }
-  function outputInfoHtml(f){
-    return '<h4>' + f.econTerm + '</h4>' +
-      '<p class="caption">The reading is <b>' + f.tag.text + '</b>. The ISM Manufacturing PMI ' +
-        '(' + f.metricSub + ') is a diffusion index, not a quantity: it asks purchasing managers whether ' +
-        'activity is up, down or flat against last month, so it reports DIRECTION rather than level.</p>' +
-      '<p class="caption" style="margin-top:10px;"><b>50 is definitional, not drawn</b> \u2014 it is the point at ' +
-        'which as many firms report improvement as report decline, so above it manufacturing is expanding and ' +
-        'below it contracting. That is why this band is one-sided: there is no level a PMI ought to sit at, only ' +
-        'a line it is on one side of. The ends of the track are the record, 29.4 in May 1980 and 77.5 in July ' +
-        '1950; ISM\u2019s full history is members-only, so those two come from a compilation of it.</p>' +
-      '<p class="caption" style="margin-top:10px;">Read it as the fast reading on this page. The labour market ' +
-        'above lags a turn by two to three quarters; this one is a survey of what is happening now.</p>' +
-      srcBlock(f.src || []);
-  }
   function activityInfoHtml(ind){
     return '<h4>' + ind.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +

@@ -303,6 +303,29 @@
         { fit:ylmFit, fmt:function(v){ return v.toFixed(2) + "%"; } },
         x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
   }
+  function pressureHead(maturities, mat, title, note){
+    var H = HIST_HEAD["pressure-range"], spread = pressureView === "spread";
+    H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
+    H.menu = function(){
+      return [
+        { key:"levels", label:"Treasury yields", on:!spread, value:(mat || {}).name || "",
+          rows:maturities.map(function(m){
+            return headPickRow(!spread && mat === m, "data-ylm-mat", m.code, m.name);
+          }).join("") },
+        { key:"spreads", label:"Treasury spreads", on:spread, value:spreadLabel(spreadPick),
+          rows:HZN_SPREADS.map(function(r){
+            return headPickRow(spread && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+          }).join("") }
+      ];
+    };
+    HIST_NOTE["pressure-range"] = spread ? horizonInfoHtml(spreadPick) : note;
+    put("pressure-head", histHead("pressure-range"));
+  }
+  function showPressureView(spread){
+    [["ylm-shell", !spread], ["spread-history-shell", spread]].forEach(function(p){
+      var e = byId(p[0]); if (e) e.hidden = !p[1];
+    });
+  }
   function renderPressurePage(){
     var svg = byId("ylm-svg");
     var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
@@ -393,9 +416,10 @@
     var matPick = "10y";
     var SERIES = maturities.map(function(m){ return { key:m.code, label:m.name.replace("-Month", "M").replace("-Year", "Y") }; });
     GYN.on("pickSeries", function(bar, code){
-      matPick = code; maturities.forEach(function(m){ m.on = (m.code === matPick); });
+      matPick = code; pressureView = "yield"; maturities.forEach(function(m){ m.on = (m.code === matPick); });
       drawPressure();
     });
+    GYN.on("pickSpread", function(code){ spreadPick = code; pressureView = "spread"; drawPressure(); });
     registerFlowPages();
 
     function matOf(code){ return maturities.filter(function(m){ return m.code === code; })[0]; }
@@ -419,23 +443,14 @@
         yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
           { rising:"climbing", falling:"easing" });
       }
+    }
+    function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())); }
+    function drawPressure(){
+      var spread = pressureView === "spread" && drawSpreadView;
+      showPressureView(!!spread);
+      if (spread) drawSpreadView(); else { drawYlm(); renderPressureInsights(); }
       drawPressureHead();
     }
-    function drawPressureHead(){
-      var H = HIST_HEAD["pressure-range"];
-      H.title = matTitle();
-      H.menu = function(){
-        return [
-          { key:"levels", label:"Treasury yields", on:true, value:(matOf(matPick) || {}).name || "",
-            rows:maturities.map(function(m){
-              return headPickRow(matPick === m.code, "data-ylm-mat", m.code, m.name);
-            }).join("") }
-        ];
-      };
-      HIST_NOTE["pressure-range"] = '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail());
-      put("pressure-head", histHead("pressure-range"));
-    }
-    function drawPressure(){ drawYlm(); renderPressureInsights(); }
     drawsPage("sheet-sign-pressure", drawPressure);
 
     maturities.forEach(function(m){ m.on = (m.code === matPick); });
@@ -474,7 +489,7 @@
       "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
       " to " + pct(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "",
-      "This page reads the LEVEL. The gap between this yield and the three-month bill is Horizon, in Mood, " +
+      "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the \u22ef menu, " +
       "because that gap is the market’s forecast of the next few years rather than a pressure it is under " +
       "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " +
       "relief; a low level with a steep curve is one at rest that expects to work."));

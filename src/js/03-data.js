@@ -129,9 +129,9 @@
     var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
     var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
     return {
-      bodyTerm:"Consumer confidence", info:function(){ return confidenceInfoHtml(confidenceReading); },
+      bodyTerm:"Confidence", info:function(){ return confidenceInfoHtml(confidenceReading); },
       page:{ bare:true, chart:function(){ return '<div id="sheet-sign-confidence-chart"></div><div id="sheet-sign-confidence-highlights"></div>'; } },
-      econTerm:"Consumer confidence", metricSub:"OECD index, United States, " + at,
+      econTerm:"Confidence", metricSub:"OECD index, United States, " + at,
       metric:R.now.v.toFixed(1), tag:{ state:word.state, text:word.text }, wordSays:word.says,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:CONFIDENCE_LINE, label:"\u2265 100"}, ends:{ low:"Pessimistic" } },
       span:span,

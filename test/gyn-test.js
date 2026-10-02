@@ -20,7 +20,7 @@ if (!CHROME || !fs.existsSync(CHROME)) {
   process.exit(2);
 }
 
-const NO_HISTORY = ['sheet-sign-industrial-output'];
+const NO_HISTORY = [];
 const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
 const TOKENS = {
   '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
@@ -50,9 +50,12 @@ const ready = pg => pg.waitForFunction(() => window.__GYN && document.getElement
 
 async function openPage(p, url, sheet) {
   await p.goto('file://' + url); await ready(p);
-  const cat = await p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
-    return c ? c.closest('.cat-sheet').id : null; }, sheet);
-  if (!cat || !await click(p, '[data-open="' + cat + '"]')) return false;
+  const home = s => p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
+    return c ? c.closest('.cat-sheet').id : null; }, s);
+  const cat = await home(sheet), up = cat && cat.indexOf('sheet-grp-') === 0 ? await home(cat) : null;
+  if (up && !await click(p, '[data-open="' + up + '"]')) return false;
+  if (up) await settle(p);
+  if (!cat || !await click(p, (up ? '.cat-item' : '') + '[data-open="' + cat + '"]')) return false;
   await settle(p);
   if (!await click(p, '.cat-item[data-open="' + sheet + '"]')) return false;
   await settle(p); return true;
@@ -113,7 +116,7 @@ async function openPage(p, url, sheet) {
   const p = await b.newPage({ viewport: { width: 414, height: 1000 } });
   watch(p, 'navigating');
   await p.goto('file://' + url); await ready(p);
-  const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
+  const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
   const tall = {}, notes = {}, gaps = {};
   const searchFigs = await p.evaluate(() => [...document.querySelectorAll('#search-list .ind-row[data-open]')].map(r => {
@@ -230,8 +233,8 @@ async function openPage(p, url, sheet) {
     const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });
     watch(gp, 'head menu');
     await gp.goto('file://' + url); await ready(gp);
-    if (await openPage(gp, url, 'sheet-sign-horizon')) {
-      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="hzn-range"]').click());
+    if (await openPage(gp, url, 'sheet-sign-pressure')) {
+      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
       await settle(gp);
       const root = await gp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.getAttribute('data-head-grp')));
       let drilled = null, back = null;
@@ -250,7 +253,27 @@ async function openPage(p, url, sheet) {
       (root.length >= 1 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
         ? ok('head menu drills and returns', root.join(', '))
         : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
-    } else bad('head menu drills and returns', 'no door to Horizon');
+      const view = () => gp.evaluate(() => {
+        const vis = id => { const e = document.getElementById(id); return !!e && !e.hidden && !!e.offsetParent; };
+        return { title: (document.querySelector('#pressure-head .bh-title') || {}).textContent, ylm: vis('ylm-shell'), spread: vis('spread-history-shell'),
+                 level: /risk-free loan/i.test(document.getElementById('pressure-insights').textContent),
+                 slope: /un-inversion/i.test(document.getElementById('pressure-insights').textContent),
+                 boxes: document.querySelectorAll('#sheet-sign-pressure .insights').length, cols: document.querySelectorAll('#spread-history-svg .hzn-col').length };
+      });
+      if (!(await gp.evaluate(() => !!document.querySelector('.bh-grp-row'))))
+        await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
+      await gp.click('[data-head-grp="spreads"]'); await settle(gp);
+      await gp.click('[data-hzn-spread="2y"]'); await settle(gp);
+      const sp = await view();
+      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click()); await settle(gp);
+      await gp.click('[data-head-grp="levels"]'); await settle(gp);
+      await gp.click('[data-ylm-mat="10y"]'); await settle(gp);
+      const lv = await view();
+      (root.join() === 'levels,spreads' && /10Y \u2212 2Y Treasury Spread/.test(sp.title || '') && sp.spread && !sp.ylm && sp.slope && !sp.level && sp.cols > 10 && sp.boxes === 1 && lv.boxes === 1 &&
+       /10-Year/.test(lv.title || '') && lv.ylm && !lv.spread && lv.level && !lv.slope)
+        ? ok('Pressure holds the Treasury spreads under its \u22ef menu', sp.title + ' \u00b7 ' + lv.title)
+        : bad('Pressure holds the Treasury spreads under its \u22ef menu', JSON.stringify({ root, sp, lv }));
+    } else bad('head menu drills and returns', 'no door to Pressure');
     await gp.close();
   }
 
@@ -268,7 +291,7 @@ async function openPage(p, url, sheet) {
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
                    story: [...d.querySelectorAll('.trend-sub')].map(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)).join() === 'true',
                    told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
-                     ((b.querySelector('.hi-card .hi-name') || {}).textContent || '').split(' \u00b7 ')[0]).pop(),
+                     (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1]).pop(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -301,7 +324,7 @@ async function openPage(p, url, sheet) {
     (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys' && !past.across && past.grid === '0:0:false')
       ? ok('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', 'Keren, V682, V686')
       : bad('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', JSON.stringify([today, past]));
-    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
+    const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
     }).filter(f => f && f.fig !== '\u2014'));
@@ -450,7 +473,7 @@ async function openPage(p, url, sheet) {
         title: document.getElementById('topbar-title').textContent,
         cats: [...host.querySelectorAll('.ind-cat-name')].map(n => n.textContent),
         rows: rows.length, titles: new Set(rows.map(r => r.dataset.title)).size,
-        cards: document.querySelectorAll('.cat-sheet .cat-item[data-open]').length,
+        cards: document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])').length,
         grouped: rows.filter(r => r.classList.contains('ind-grp')).length,
         doors: rows.every(r => document.getElementById(r.dataset.open)),
         figs: rows.every(r => r.classList.contains('ind-grp') ? !r.querySelector('.subject-value').textContent : r.querySelector('.subject-value').firstChild.nodeType === 3),
@@ -459,7 +482,7 @@ async function openPage(p, url, sheet) {
       };
     });
     (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === list.titles &&
-     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Economic power>sheet-grp-economic-power,Activity>sheet-grp-activity' && list.tabs === 'All Structural Leading Coincident Lagging')
+     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Stress>sheet-grp-stress' && list.tabs === 'All Structural Leading Coincident Lagging')
       ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
       : bad('search lists every reading by category', JSON.stringify(list));
     const shown = async (kind, q) => {
@@ -472,7 +495,7 @@ async function openPage(p, url, sheet) {
       }));
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
-    (st.rows.sort().join() === 'Activity,Economic power,Households,Valuations' &&
+    (st.rows.sort().join() === 'Productivity growth,Stress,Valuations' &&
      st.cats.join() === 'Mood,Energy' && le.rows.length > 0 && le.cats.join() === 'Weather,Mood,Circulation' && al.rows.length === list.rows && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
@@ -503,9 +526,12 @@ async function openPage(p, url, sheet) {
       : bad('a trend button works on a page opened from Search', JSON.stringify(fromSearch));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
-    for (const cat of ['mood', 'energy']) {
+    for (const cat of ['circulation', 'mood', 'energy']) {
       await click(p, '[data-open="sheet-cat-' + cat + '"]'); await settle(p);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
+        tall: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => Math.round(i.getBoundingClientRect().height)),
+        lead: (i => i && i.dataset.open + '<' + i.dataset.preview + ':' + (i.querySelector('.ci-value').textContent ===
+          (document.querySelector('.cat-group .cat-item[data-open="' + i.dataset.preview + '"] .ci-value') || {}).textContent))(document.querySelector('#sheet-cat-' + c + ' .cat-item')),
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.hover('#sheet-cat-' + cat + ' .cat-item');
       lists[cat].white = await p.evaluate(c => { const i = document.querySelector('#sheet-cat-' + c + ' .cat-item'), st = getComputedStyle(i);
@@ -513,10 +539,15 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Consumer confidence' &&
-     lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Valuations+Volatility+Desire+Confidence' &&
+     lists.energy.names === 'Stress+Unemployment rate+Productivity growth' &&
+     lists.mood.lead === 'sheet-grp-valuations<sheet-metric-valuation:true' && lists.energy.lead === 'sheet-grp-stress<sheet-metric-debt:true')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
+    const uneven = Object.keys(lists).filter(c => Math.max(...lists[c].tall) - Math.min(...lists[c].tall) > 1);
+    (!uneven.length)
+      ? ok('every card on a category page stands the same height', Object.keys(lists).map(c => c + ' ' + lists[c].tall[0] + 'px').join(', '))
+      : bad('every card on a category page stands the same height', JSON.stringify(uneven.map(c => [c, lists[c].tall])));
     (lists.mood.white && lists.energy.white)
       ? ok('a category card stays white when touched or hovered', 'Keren, V678')
       : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
@@ -537,7 +568,7 @@ async function openPage(p, url, sheet) {
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === 'Insights+Her story this cycle:1' && feel.stage.toUpperCase() === cyc.now[0])
+     cyc.es === 'Insights:1' && feel.stage.toUpperCase() === cyc.now[0])
       ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
       : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
@@ -554,7 +585,7 @@ async function openPage(p, url, sheet) {
       ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
-    await p.click('#search-list [data-open="sheet-grp-economic-power"]'); await settle(p);
+    await p.click('#search-list [data-open="sheet-grp-stress"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,
       names: [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }));
     await p.click('#metric-page .cat-item[data-open="sheet-metric-debt"]'); await settle(p);
@@ -565,7 +596,7 @@ async function openPage(p, url, sheet) {
     await click(p, '[data-open="sheet-cat-energy"]'); await settle(p);
     const home = await p.evaluate(() => [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+'));
     await p.click('#topbar-back'); await settle(p);
-    (grp.bar === 'Economic power' && grp.names === 'Federal debt+Interest payments+Federal budget' && deep === 'Federal debt' &&
+    (grp.bar === 'Stress' && grp.names === 'Federal debt+Interest payments+Federal budget+Households' && deep === 'Federal debt' &&
      again === grp.names.split('+').length && home === lists.energy.names)
       ? ok('a group in Search opens its cards, and they return home', grp.names)
       : bad('a group in Search opens its cards, and they return home', JSON.stringify({ grp, deep, again, home }));
@@ -606,7 +637,7 @@ async function openPage(p, url, sheet) {
     const nowFrame = await frame();
     await p.evaluate(() => { const b = document.querySelector('.tab-btn[data-tab="analysis"]'); if (b) b.click(); });
     await settle(p);
-    const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => {
+    const sig = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => {
       const m = n.querySelector('.ci-mini > *'), cls = m ? (m.getAttribute('class') || '').split(' ') : [];
       return [n.dataset.open, { art: cls.filter(x => /^(heat|pulsepeek|vital-ring)$/.test(x)).join(), unit: !!n.querySelector('.ci-value .ci-unit'),
         val: n.querySelector('.ci-value').textContent }];
@@ -631,12 +662,12 @@ async function openPage(p, url, sheet) {
       : bad('a past cycle stacks like the current one', JSON.stringify({ nowFrame, pastFrame }));
     await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
     await settle(p);
-    const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(n => ({
+    const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => ({
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 20 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 18 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -644,7 +675,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 20 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
@@ -654,13 +685,15 @@ async function openPage(p, url, sheet) {
       ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · '))
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
-    await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-metric-valuation"]');
+    await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-grp-valuations"]');
+    await settle(p);
+    await click(p, '#sheet-grp-valuations .cat-item[data-open="sheet-metric-valuation"]');
     await settle(p);
     const picked = await p.evaluate(() => (document.querySelector('#metric-page .hist-controls') || {}).textContent || '');
     const bar = () => p.evaluate(() => (document.getElementById('topbar-back').hidden ? '' : '← ') + document.getElementById('topbar-title').textContent);
     const trail = [];
-    for (let i = 0; i < 3; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
-    (trail.join(' | ') === '← Mood | ← Housing Cycle | Analysis')
+    for (let i = 0; i < 4; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
+    (trail.join(' | ') === '← Valuations | ← Mood | ← Housing Cycle | Analysis')
       ? ok('back walks out of a past cycle one page at a time', trail.join(' | '))
       : bad('back walks out of a past cycle one page at a time', trail.join(' | '));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
@@ -699,7 +732,7 @@ async function openPage(p, url, sheet) {
 
   const readLive = () => {
     const fg  = document.getElementById('subj-value-sentiment');
-    const yld = document.getElementById('subj-value-horizon');
+    const yld = document.getElementById('subj-value-pressure');
     const ink = document.querySelector('.curve-w');
     return {
       fgNum: fg ? fg.textContent.trim().split('VIX')[0] : null,
@@ -769,10 +802,8 @@ async function openPage(p, url, sheet) {
       return { sentiment: t('#subj-value-sentiment'),
                mood: t('[data-open="sheet-sign-sentiment"] .tag'),
                moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
-               horizon: t('#subj-value-horizon'),
-               horizonTag: t('[data-open="sheet-sign-horizon"] .tag'),
-               horizonFigs: [...document.querySelectorAll('[data-open="sheet-sign-horizon"] .ci-value, [data-open="sheet-sign-horizon"] .subject-value')]
-                              .map(e => e.textContent.trim().split('pts')[0]),
+               pressureFigs: [...document.querySelectorAll('[data-open="sheet-sign-pressure"] .ci-value, [data-open="sheet-sign-pressure"] .subject-value')]
+                              .map(e => e.textContent.trim()),
                valuation: t('#subj-value-valuation') };
     });
 
@@ -802,10 +833,9 @@ async function openPage(p, url, sheet) {
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 
-      (rv.yc && after.horizonFigs.length > 1 && after.horizonFigs.every(f => /1\.50/.test(f)) &&
-       after.horizonTag === 'Pessimistic')
-        ? ok('repaint horizon spread and verdict', before.horizonFigs.join('/') + ' -> ' + after.horizonFigs.join('/') + ' ' + after.horizonTag)
-        : bad('repaint horizon spread and verdict', JSON.stringify(after.horizonFigs) + ' / ' + after.horizonTag);
+      (rv.yc && after.pressureFigs.length > 0 && after.pressureFigs.every(f => /^4\.05%/.test(f)))
+        ? ok('repaint the 10-year yield on Pressure', before.pressureFigs.join('/') + ' -> ' + after.pressureFigs.join('/'))
+        : bad('repaint the 10-year yield on Pressure', JSON.stringify(after.pressureFigs));
 
       (rv.nul === false && rv.bad === false && rv.unk === false)
         ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')
@@ -881,7 +911,7 @@ async function openPage(p, url, sheet) {
     const roster = await g.evaluate(() => {
       const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
       if (!R || !step) return null;
-      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open);
+      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(c => c.dataset.open);
       const warned = [], warn = console.warn;
       console.warn = m => warned.push(String(m));
       R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
