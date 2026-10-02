@@ -593,6 +593,12 @@ Autumn–Disinflation). Within-range stagflation is real (17 quarters since 1990
 the prior regime**: never test `growthTrend !== "falling"`. `prevRegime` comes from `seasonTrackAll`,
 computed once over the full history, never per cycle.
 
+**Two tracks, one reading.** `seasonTrackAll` is quarterly and indexed like `gdpQuarterlyYoY` (cycleModel finds
+a close by that index). `seasonTrackYears` reads the years before it from annual growth (`readSeason(..., 4)`:
+four quarters a step, so `growthSlopeQ` stays per quarter and the same thresholds hold) and spreads each year
+over its four quarters. `seasonTrack` joins them; the cycle strip, the dial and `regimeByQ` read it. A closed
+cycle with no quarterly close takes `closingReading`, and its (i) says the reading is annual. (V690)
+
 **One direction, one source.** Every expansion/contraction on screen comes from `r.regime`/`regimeByQ`.
 Growth's chart is coloured by regime, **never by the sign of growth**.
 

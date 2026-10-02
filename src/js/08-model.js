@@ -5,12 +5,12 @@
     return den ? num / den : 0;
   }
   var GROWTH_WINDOW = 8;
-  function readSeason(cpi12, gdp8, prevRegime){
+  function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
     var cpiNow = cpi12[cpi12.length - 1].v;
     var cpiSlope = slopeOf(cpi12.map(function(d){ return d.v; }));
     var cpiDirection = cpiSlope > 0.02 ? "rising" : cpiSlope < -0.02 ? "falling" : "steady";
     var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
-    var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; }));
+    var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
     var growthTrend = growthSlopeQ > 0.025 ? "rising" : growthSlopeQ < -0.025 ? "falling" : "flat";
     var regime = growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : (prevRegime || "expansion");
     var cooling = cpiDirection === "falling", season;
@@ -22,7 +22,7 @@
       else season = cooling ? "autumn" : "lateautumn";
     }
     return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, cpiHot:cpiHot, cpiCold:cpiCold,
-             growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1] };
+             growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1], annual:quartersPerStep === 4 };
   }
   var QUARTER_END_MONTH = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
   function qLabel(q){ var m = /^(\d{4}) (Q[1-4])$/.exec(q); return m ? m[2] + " " + m[1] : q; }
@@ -41,9 +41,32 @@
     return out;
   })();
 
+  var SEASON_YEARS = 2;
+  var seasonTrackYears = (function(){
+    var first = seasonTrackAll.filter(Boolean)[0], out = [], prevRegime;
+    Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b){ return a - b; }).forEach(function(y){
+      if (y > first.y) return;
+      var g = [];
+      for (var k = y - SEASON_YEARS + 1; k <= y; k++) if (usRealGdpGrowth[k] != null) g.push({ q:String(k), v:usRealGdpGrowth[k] });
+      var c12 = cpiYoYHistory.filter(function(c){ return c.m <= y + "-12"; }).slice(-12);
+      if (g.length < SEASON_YEARS || c12.length < 12 || c12[11].m !== y + "-12") return;
+      var r = readSeason(c12, g, prevRegime, 4);
+      prevRegime = r.regime;
+      ["Q1", "Q2", "Q3", "Q4"].forEach(function(qn){
+        if (y < first.y || qn < first.qn) out.push({ q:y + " " + qn, y:y, qn:qn, reading:r });
+      });
+    });
+    return out;
+  })();
+  var seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
+  function closingReading(endYear){
+    var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
+    return e ? e.reading : null;
+  }
+
   var regimeByQ = (function(){
     var out = {};
-    seasonTrackAll.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
+    seasonTrack.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
     return out;
   })();
   function quarterRegime(d){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
@@ -76,11 +99,11 @@
     var prevEntry = seasonTrackAll[gdpEnd - 1];
     var reading = ongoing
       ? readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime)
-      : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
+      : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear) : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
     var season = (ongoing && seasonOverride) || reading.season;
     var track = [];
-    seasonTrackAll.forEach(function(entry){
-      if (!entry || entry.y < era.from || entry.y > endYear) return;
+    seasonTrack.forEach(function(entry){
+      if (entry.y < era.from || entry.y > endYear) return;
       var qi = {Q1:0, Q2:1, Q3:2, Q4:3}[entry.qn];
       track.push({ q:entry.q, season:entry.reading.season, from:(entry.y - era.from) + qi / 4, to:(entry.y - era.from) + (qi + 1) / 4, reading:entry.reading });
     });
@@ -103,9 +126,9 @@
   };
   function seasonWhyFor(m){
     var r = m.reading, was = m.ongoing ? "is" : "was";
-    return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + ", the same way today's is: ") +
+    return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) +
       "the economy " + was + " in " + r.regime + " (real GDP " +
-      r.gdpLatest.v.toFixed(1) + "% year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " eight quarters, " + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+      r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " eight quarters, ") + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
   }
   var nowModel = cycleModel(currentEra);
   var readingNow = nowModel.reading;
@@ -236,6 +259,7 @@
     {t:"BLS Consumer Price Index", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
     {t:"Federal Reserve FOMC statement", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},
     {t:"FRED — Consumer Price Index for All Urban Consumers (CPIAUCSL)", u:"https://fred.stlouisfed.org/series/CPIAUCSL"},
+    {t:"FRED — Consumer Price Index for All Urban Consumers, not seasonally adjusted, before 1948 (CPIAUCNS)", u:"https://fred.stlouisfed.org/series/CPIAUCNS"},
     {t:"FRED — Federal Funds Target Range, upper limit (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
     {t:"FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}
   ];

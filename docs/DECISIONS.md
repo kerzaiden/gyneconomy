@@ -65,6 +65,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
   has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
   nine cycles from 1948 keep Claude's draft names for now (Keren: "keep the names as they are for now"). (V689)
+  The five cycles from 1928 carry Claude's draft names and stories in the same shape, except the first: Keren named
+  it the Great Depression Cycle ("i think the crash is the great depression"). Keren then asked for research into
+  each period ("maybe will give us better cycle names"): Postwar became Baby Boom (1947–53), Go-Go became Great
+  Society (1963–66), Go-Go moved to 1967–69 where the go-go funds and conglomerates peaked (was Conglomerate),
+  Rebound became Bicentennial (1975–77) and Inflation became Volcker (1978–81). (V690)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -337,9 +342,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A cycle runs from its first bull year to its last bear year, so it ends with its bleed.** What built a
   cycle is what broke it (dot-com mania and crash, the housing boom and subprime); the YEAR badge and
   `cycleNowNote` count from the same year. (V511)
-- **The record opens at 1948, the first year the seasons can be read (quarterly GDP and CPI begin in 1947).**
-  Keren: "from 1948", asked whether past cycles could reach the S&P 500's beginning. Before 1957 the returns are
-  the S&P's 90-stock predecessor's, as Damodaran's table carries them. (V689; the record opened at 1991 from V511.)
+- **The record opens at 1928, the first year of Damodaran's S&P return table; before 1949 the seasons are read
+  from annual growth.** Keren: "ok lets go all the way with annual seasons for older cycles", choosing it over
+  Claude's recommendation (cycles from 1928, no seasons before 1947). Five cycles were added (Great Depression 1928–32, New
+  Deal 1933–34, Recovery 1935–37, War Clouds 1938–41, Victory 1942–46; Claude's draft names) and the Baby Boom
+  Cycle opens at 1947, its first bull year under the cycle rule. Before 1957 the returns are the S&P's 90-stock
+  predecessor's, as Damodaran's table carries them. (V690; from 1948 in V689, 1991 from V511.)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
@@ -426,6 +434,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   value to change a label turns a display tweak into a data bug. (V304)
 - **No season points to an asset class; the Investment Clock tilt is gone and stays gone.** Dropped at Keren's
   instruction. (undated, Sep 17, 2026)
+- **Before quarterly GDP (1947), a season is read from annual real GDP growth: the trend across the last two
+  years, ±0.1 pp a year counting as flat (the quarterly ±0.025 pp a quarter, at a year's scale), with prices
+  read monthly as always (CPIAUCNS before 1948).** Keren chose annual seasons for the older cycles (V690). Two
+  years is the window nearest eight quarters in the span of GDP it reads; it fills every quarter of a year, and
+  the quarters before the first quarterly reading (1949 Q4). BEA's annual growth begins in 1930, so 1928–30 have
+  no season. Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
+  growth rose from −8.5% to −6.4%. (V690)
 
 ## Readings and bands
 
