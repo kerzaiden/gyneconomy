@@ -378,11 +378,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   confirmed both at V668. (V193, V668)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
-- **Growth's direction is the trend of real GDP year over year across the last six quarters (±0.025 pp a
+- **Growth's direction is the trend of real GDP year over year across the last eight quarters (±0.025 pp a
   quarter counts as flat); prices are hot above 3% and cold below 1%, their direction a trend fitted to the
-  last twelve monthly readings (±0.02 pp a month counts as flat).** Keren chose six quarters after seeing what
-  each window does (four would change season 34 times in 37 years); the inputs sit on screen so the reader can
-  check the call. (V221, undated, Sep 18, 2026)
+  last twelve monthly readings (±0.02 pp a month counts as flat).** Keren first chose six quarters after seeing
+  what each window does (four would change season 34 times in 37 years), then eight in V687, on seeing growth
+  slow from 3.1% to 2.1% over two years while six quarters still read rising off one 2.7% quarter (Q1 2026):
+  "so would you say that 8 quarters is the more conservative view?" Eight needs two years of evidence, so one
+  odd quarter cannot swing the season; it turns later at real turns and changes season about as often (63
+  seasons since 1989 against 62). It moved today from Summer to Autumn–Stagflation (since Q3 2025), changed 33
+  of 147 past quarters, and took the Summers from 8 to 11. The inputs sit on screen so the reader can check the
+  call. (V221, Sep 18, 2026; V687)
 - **In expansion, hot is Summer, and otherwise heating is Spring–Reflation and cooling is Spring–Deflation. In
   contraction, cold is Winter, and otherwise cooling is Autumn–Disinflation and heating or steady is
   Autumn–Stagflation, within or above the range.** Keren's season table. (undated, Sep 18–19, 2026)
