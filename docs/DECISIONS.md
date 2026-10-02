@@ -512,8 +512,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   to measure it like a speedometer … it should behave like a speedometer, like when I'm driving a car I know when
   I'm moving fast or I'm moving slow." Speed is the monthly average against three months earlier, compounded to
   a yearly pace (the short end of the momentum research's 3-to-12-month window, which she asked for at V673:
-  Jegadeesh & Titman 1993; Moskowitz, Ooi & Pedersen 2012). Cruising speed is the S&P 500's own compound pace
-  since 1950 (about 8% a year), computed from the record every month. Fast is above cruising speed, Slow is
+  Jegadeesh & Titman 1993; Moskowitz, Ooi & Pedersen 2012). Cruising speed is the median of every speed
+  reading since 1950 (about 11% a year), recomputed every month: the same measure as the speed, so she runs
+  faster than it half the time. Keren asked for timelines compared; the compound pace since 1950 (8.3%) was
+  weighed and declined because it measures distance, not speed, and sits under the typical reading; windows
+  that start in this century swing with their start (6.5% from 2000, 14.1% from March 2009); every window of
+  thirty years or more gives a median of 11 to 14%. Fast is above cruising speed, Slow is
   forward but below it, Reversing is below zero; zero and cruising speed are the only lines and neither is set
   by hand. Insights add whether she is speeding up or easing off against the three months before; the (i) gives
   the twelve-month change as the distance, not the speed. The chart is the speed, month by month, around zero.

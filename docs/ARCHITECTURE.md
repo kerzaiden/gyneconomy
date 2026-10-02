@@ -523,7 +523,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
   arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
   the speed (`momentumSpeed`: three-month change compounded to % a year) for the page and the roster. Its word
-  sets that speed against zero and `momentumCruise` (the compound pace since the series begins), not the
+  sets that speed against zero and `momentumCruise` (the median speed since the series begins), not the
   Diagnosis's 65% line (V674).
   Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
   its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.

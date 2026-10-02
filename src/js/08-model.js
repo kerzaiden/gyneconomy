@@ -251,7 +251,10 @@
     var r = Math.round(v * 100);
     return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + "%";
   }
-  function momentumCruise(S){ return Math.pow(S.sp[S.sp.length - 1].v / S.sp[0].v, 12 / (S.sp.length - 1)) - 1; }
+  function momentumCruise(S){
+    var v = S.sp.map(function(d, i){ return momentumSpeed(S, i); }).filter(function(x){ return x != null; }).sort(function(a, b){ return a - b; });
+    return v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
+  }
   function momentumWord(speed, cruise){
     if (speed < 0) return { state:"serious", text:"Reversing" };
     if (speed < cruise) return { state:"warning", text:"Slow" };
@@ -260,7 +263,7 @@
   function momentumDrive(f){
     var c = momentumPct(f.cruise);
     return "Over the last three months the S&amp;P 500 moved at " + momentumPct(f.speed) + " a year, against a cruising speed of " + c +
-      " a year, its average since " + f.since + ". In the three months before, it ran at " + momentumPct(f.before) + " a year: she is " +
+      " a year, her typical speed since " + f.since + ". In the three months before, it ran at " + momentumPct(f.before) + " a year: she is " +
       (f.speed >= f.before ? "speeding up." : "easing off.");
   }
   var momentumReading = (function(S){
@@ -282,7 +285,7 @@
         "The reading is <b>" + r.tag.text + "</b> (" + r.metric + " " + r.metricSub + ").") +
       facts([momentumDrive(f),
         "<b>Speed</b>: the S&amp;P 500’s monthly average against three months earlier, compounded to a yearly pace, the way a speedometer turns a few seconds of travel into miles an hour.",
-        "<b>Cruising speed</b>: " + c + " a year, the S&amp;P 500’s own compound pace since " + f.since + ", recomputed with every month. It is the record’s average, not a target.",
+        "<b>Cruising speed</b>: " + c + " a year, the median of every speed reading since " + f.since + ": she ran faster in half of those months and slower in the other half. It is the same measure as the speed, recomputed with every month, not a target.",
         "<b>Fast</b>: above cruising speed. <b>Slow</b>: moving forward, below it. <b>Reversing</b>: lower than three months ago. Zero and cruising speed are the only lines; neither is set by hand.",
         "Over the whole year she covered " + momentumPct(f.year) + ": that is the distance, not the speed.",
         "Three months is the short end of the momentum research’s window (Jegadeesh and Titman ranked stocks on their past three to twelve months; Moskowitz, Ooi and Pedersen found the same persistence in equity indexes). A short window reads the present quickly and moves a lot from month to month, as a speedometer does.",

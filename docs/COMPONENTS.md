@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `d77d2df` on 2026-10-02. **74 components**, **39 shared patterns**.
+Generated from commit `d4f869f` on 2026-10-02. **74 components**, **39 shared patterns**.
 
 ## components.js
 
@@ -202,6 +202,7 @@ renderer speaks. Listed most-used first.
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`momentumPct`** | model.js | 3 places |
+| **`momentumSpeed`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
