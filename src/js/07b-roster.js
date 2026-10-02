@@ -27,8 +27,6 @@
     { id:"sheet-sign-volume", name:"Volume", cat:"circulation", timing:"leading", mark:volumeSvg, door:"pair", term:"Volume", hk:"volume-range",
       head:"M2 Money Stock", hist:{ s:m2Yoy, k:"qi", y0:M2_FROM_YEAR }, rule:true,
       when:function(R){ return indPeriod(R) || lastDate(R); }, cardUnit:"M2, YoY", live:["coincident"] },
-    { id:"sheet-sign-momentum", name:"Momentum", cat:"mood", timing:"leading", mark:momentumSvg, door:"row", term:"Momentum",
-      head:"S&P 500’s Year Against Cash", hist:momentumMonths, mid:0, rule:true, when:lastDate },
     { id:"sheet-metric-valuation", name:"Shiller CAPE", cat:"mood", group:"Valuations", timing:"structural", mark:diamondSvg, door:"peek",
       slot:"valuation", head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, pre:"Jan ", last:"today", mid:CAPE_FAIR,
       when:lastDate, cardUnit:"CAPE", live:["valuation", "capeValue"] },
@@ -82,9 +80,6 @@
            : { k:h.k === "y" ? String(d.y) : d[h.k], v:d.v };
     });
   }
-  function momentumMonths(){
-    return momentumSeries().map(function(d){ return { k:d.m, v:d.v }; });
-  }
   function hyMonths(){
     return hyOas.map(function(v, i){ var a = hyAt(i); return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
   }
@@ -97,7 +92,7 @@
   function compiledDay(){ return dataCompiledLabel; }
   function labPeriod(R){ return periodOf(labRow(R.id)); }
   function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
-  function rowReadings(){ return coincident.concat(lagging, [productivityReading, momentumReading]); }
+  function rowReadings(){ return coincident.concat(lagging, [productivityReading]); }
   function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
   function peekOf(id, o){
     var R = ROSTER_BY[id];

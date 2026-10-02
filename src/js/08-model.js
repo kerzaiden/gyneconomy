@@ -216,7 +216,7 @@
     if (!f) return null;
     var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
     return { stage:stage, carried:!named, half:half, season:m.season, facts:f, month:at,
-             posture:readPosture(stage, half, f), bestMom:S.best[i],
+             posture:readPosture(stage, half, f),
              after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
   }
   function diagnoseToday(){
@@ -231,103 +231,8 @@
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     var half = seasonHalf(currentSeason), rec = whatFollowed();
     return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
-             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from,
-             bestMom:S.best[S.sp.length - 1] };
+             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from };
   }
-
-  // ---- Momentum: the S&P 500's year against cash ----
-  var MOMENTUM_SRC = [
-    {t:"Robert Shiller — U.S. stock market data: the S&P 500’s monthly average", u:"https://shillerdata.com/"},
-    {t:"Board of Governors of the Federal Reserve System — Federal Funds Effective Rate (FEDFUNDS), via FRED", u:"https://fred.stlouisfed.org/series/FEDFUNDS"},
-    {t:"Moskowitz, Ooi & Pedersen — Time Series Momentum, Journal of Financial Economics 104(2), 2012 (each market’s past twelve months against Treasury bills)", u:"https://doi.org/10.1016/j.jfineco.2011.11.003"},
-    {t:"Jegadeesh & Titman — Returns to Buying Winners and Selling Losers, Journal of Finance 48(1), 1993 (3- to 12-month formation periods)", u:"https://doi.org/10.1111/j.1540-6261.1993.tb04702.x"},
-    {t:"The Conference Board — US Leading Indicators (stock prices are one of the ten components)", u:"https://www.conference-board.org/topics/us-leading-indicators"}
-  ];
-  function momentumSpeed(S, i){ return i < 3 ? null : Math.pow(S.sp[i].v / S.sp[i - 3].v, 4) - 1; }
-  function momentumCash(S){
-    var at = {}, first = fedFundsHistory[0].m, last = null;
-    fedFundsHistory.forEach(function(d){ at[d.m] = d.v; });
-    return S.sp.map(function(d){ if (at[d.m] != null) last = at[d.m]; return d.m < first ? null : last; });
-  }
-  function momentumMargins(S){
-    var cash = momentumCash(S);
-    return S.sp.map(function(d, i){
-      if (i < 12 || cash[i - 11] == null) return null;
-      var c = 1;
-      for (var k = i - 11; k <= i; k++) c *= 1 + cash[k] / 1200;
-      return { m:d.m, gain:S.mom[i], cash:c - 1, v:(S.mom[i] - (c - 1)) * 100 };
-    });
-  }
-  function momentumSeries(){ return momentumMargins(marketMonths()).filter(Boolean); }
-  function momentumPct(v){
-    var r = Math.round(v * 100);
-    return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + "%";
-  }
-  function momentumPts(v){
-    var r = Math.round(v);
-    return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + " pts";
-  }
-  function momentumFell(S, i){ return Math.min.apply(null, S.sp.slice(i + 1, i + 13).map(function(x){ return x.v; })) / S.sp[i].v - 1 <= -0.15; }
-  function momentumOdds(S, M){
-    var n = { intact:[0, 0, 0, 0], broken:[0, 0, 0, 0] }, prev = null;
-    M.forEach(function(d, i){
-      if (!d || i + 12 >= S.sp.length) return;
-      var fell = momentumFell(S, i), o = n[d.v < 0 ? "broken" : "intact"];
-      o[1]++; if (fell) o[0]++;
-      if ((d.v < 0) !== prev){ o[3]++; if (fell) o[2]++; }
-      prev = d.v < 0;
-    });
-    return { intact:n.intact[0] / n.intact[1], broken:n.broken[0] / n.broken[1], breaks:n.broken.slice(2), mends:n.intact.slice(2) };
-  }
-  function momentumTrend(f){
-    return "Over the last twelve months the S&amp;P 500 " + (f.gain < 0 ? "fell " : "rose ") + momentumPct(Math.abs(f.gain)).replace("+", "") +
-      ", against " + momentumPct(f.cash).replace("+", "") +
-      " for cash: the trend is " + (f.broken ? "broken" : "intact") + " by " + momentumPts(Math.abs(f.margin)).replace("+", "") +
-      ", and has been since " + f.since + ".";
-  }
-  function momentumOddsLine(f){
-    return "Since " + f.from + ", a fall of 15% or more came within the next year in " + Math.round(f.odds.broken * 100) +
-      "% of the months with the trend broken, against " + Math.round(f.odds.intact * 100) + "% with it intact. " +
-      "Neighbouring months share most of their next year, so the true sample is the turns: the trend broke " + f.odds.breaks[1] +
-      " times and a fall of 15% or more followed " + f.odds.breaks[0] + " of them within a year; it turned intact " + f.odds.mends[1] +
-      " times and a fall followed " + f.odds.mends[0] + ".";
-  }
-  function momentumSpeedLine(f){
-    return "Her speed over the last three months was " + momentumPct(f.speed) + " a year, against " + momentumPct(f.before) +
-      " in the three months before: she is " + (f.speed >= f.before ? "speeding up." : "easing off.");
-  }
-  var momentumReading = (function(S){
-    var M = momentumMargins(S), i = S.sp.length - 1, d = M[i], broken = d.v < 0, run = i;
-    while (M[run - 1] && (M[run - 1].v < 0) === broken) run--;
-    var at = monthLabel(S.sp[i].m), f = { gain:d.gain, cash:d.cash, margin:d.v, broken:broken, since:monthLabel(M[run].m),
-      from:M.filter(Boolean)[0].m.slice(0, 4), odds:momentumOdds(S, M), speed:momentumSpeed(S, i), before:momentumSpeed(S, i - 3) };
-    return {
-      bodyTerm:"Momentum", econTerm:"S&P 500’s year against cash", metricSub:"over cash, S&P 500 over the last twelve months, " + at,
-      metric:momentumPts(d.v), tag:broken ? { state:"serious", text:"Broken" } : { state:"good", text:"Intact" }, drive:f, lead:"",
-      info:function(){ return momentumInfoHtml(momentumReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-momentum-chart"></div><div id="sheet-sign-momentum-highlights"></div>'; } },
-      caption:at + ". " + momentumTrend(f)
-    };
-  })(marketMonths());
-  function momentumInfoHtml(r){
-    var f = r.drive, ff = fedFundsHistory[fedFundsHistory.length - 1].m;
-    return '<h4>' + r.econTerm + '</h4>' +
-      ledeHtml("Momentum read as a trend alarm: has Mrs. Market’s price beaten cash over the past year? " +
-        "The reading is <b>" + r.tag.text + "</b> (" + r.metric + " " + r.metricSub + ").") +
-      facts([momentumTrend(f),
-        "<b>The year</b>: the S&amp;P 500’s monthly average against the same month a year earlier, price only, dividends left out.",
-        "<b>Cash</b>: the effective federal funds rate, compounded month by month over the same twelve months. The Fed’s latest month is " +
-          monthLabel(ff) + "; until the next one is published, it is carried forward.",
-        "<b>Intact</b>: the year beat cash. <b>Broken</b>: cash beat the year. Cash is the only line, and nobody sets it by hand. " +
-          "This is the time-series momentum of Moskowitz, Ooi and Pedersen, who measured each market’s past twelve months against Treasury bills; " +
-          "the federal funds rate stands in for the bill rate here because its monthly record reaches back to 1954.",
-        momentumOddsLine(f) + " The alarm speaks to the risk of a deep fall; it does not promise a lower return.",
-        momentumSpeedLine(f),
-        "The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.",
-        "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index."]) +
-      srcBlock(MOMENTUM_SRC);
-  }
-
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;

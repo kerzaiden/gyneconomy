@@ -520,18 +520,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   were higher a year later, the median and the worst. Fear is `volatilityHistory` ranked against every month
   before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
   live VIX close ranked against those monthly averages.
-- **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
-  arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
-  the margin over cash (`momentumMargins`: the twelve-month change less `momentumCash`, the fed funds rate
-  compounded over the same months, with the newest Fed month carried until the next is published) for the page and
-  the roster. Its word is the margin's sign, not the Diagnosis's 65% line; `momentumOdds` counts, from the same
-  arrays, how often a 15%+ fall followed within a year on each side, by month and by turn (`momentumFell`; a turn
-  is the first month of each spell, V676); `momentumSpeed` survives only for the speed
-  card (V675).
-  Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
-  its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.
-- **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
-  workbook the CAPE fetcher reads): the card reads its three-month speed; the Diagnosis reads the twelve-month
+- **The Diagnosis's momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
+  workbook the CAPE fetcher reads); Mood has had no Momentum card since V677. The Diagnosis reads the twelve-month
   change and its share of the best change since momentum last turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
@@ -587,7 +577,7 @@ it is the level of the spread that forecasts, not the crossing.
 ## Pages and components
 
 **A history page is three containers**: control on the page's ground, the history container (head,
-readout, picture, trend), the reading container. All twelve share one frame, `histFrame`, and one head,
+readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
 `histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
 the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
 `divergeChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis
