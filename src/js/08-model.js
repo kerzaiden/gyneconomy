@@ -117,10 +117,9 @@
   function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 
   // ---- The diagnosis: how she feels, and what has followed ----
-  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05, STRETCHED = 80;
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05;
   var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
   var FEELING_STATE = { Hope:"good", Optimism:"good", Euphoria:"warning", Anxiety:"warning", Fear:"serious", Capitulation:"critical", Despondency:"serious" };
-  function seasonHalf(season){ return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool"; }
   function rankToDate(prior, v){
     if (v == null || prior.length < 12) return null;
     return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
@@ -135,14 +134,6 @@
     if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
     if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
     return null;
-  }
-  function readPosture(stage, half, f){
-    var afraid = stage === "Fear" || stage === "Capitulation";
-    if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
-    if (half === "warm" && afraid) return "Patience";
-    if (half === "warm" && f.mom < 0) return "Defense";
-    if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
-    return "Neutral";
   }
   var marketCache = null;
   function marketMonths(){
@@ -170,42 +161,29 @@
     S.quarterKeys.forEach(function(k){ if (k <= m) s = S.quarters[k]; });
     return s;
   }
-  function stretchRank(year, value){
-    return rankToDate(capeHistory.filter(function(d){ return d.y < year; }).map(function(d){ return d.v; }), value);
-  }
   function marketFacts(S, m, fearNow){
     var i = S.spAt[m], j = S.volAt[m];
     if (i == null || j == null || S.mom[i] == null) return null;
     var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v){ return v != null; });
-    var y = parseInt(m.slice(0, 4), 10), cape = capeHistory.filter(function(d){ return d.y === y; })[0];
     return { m:m, dd:S.dd[i], mom:S.mom[i], share:S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
              wasNegative:S.mom.slice(Math.max(0, i - 3), i).some(function(v){ return v != null && v < 0; }),
              fear:fearNow != null ? fearNow : S.fearRank[j], fear3:S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
-             fearPeak:peak.length ? Math.max.apply(null, peak) : null,
-             stretch:cape ? stretchRank(y, cape.v) : null };
+             fearPeak:peak.length ? Math.max.apply(null, peak) : null };
   }
   var followedCache = null;
   function whatFollowed(){
     if (followedCache) return followedCache;
-    var S = marketMonths(), cells = {}, bySeason = {}, last = null, prevKey = null, from = null;
+    var S = marketMonths(), cells = {}, last = null, from = null;
     S.vol.forEach(function(d){
       var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
       if (!f || !season || i == null || i + 12 >= S.sp.length) return;
       var stage = readFeeling(f) || last; last = stage;
       if (!stage) return;
       if (!from) from = d.m;
-      var key = stage + "|" + seasonHalf(season), c = cells[key] = cells[key] || { months:0, spells:0, higher:0, gains:[] };
-      var gain = S.sp[i + 12].v / S.sp[i].v - 1;
-      c.months++; if (gain > 0) c.higher++; c.gains.push(gain);
-      var sk = stage + "|" + seasonGroup(season); bySeason[sk] = (bySeason[sk] || 0) + 1;
-      if (key !== prevKey) c.spells++;
-      prevKey = key;
+      var key = stage + "|" + seasonGroup(season), c = cells[key] = cells[key] || { months:0, higher:0 };
+      c.months++; if (S.sp[i + 12].v > S.sp[i].v) c.higher++;
     });
-    Object.keys(cells).forEach(function(k){
-      var g = cells[k].gains.slice().sort(function(a, b){ return a - b; });
-      cells[k].median = g[Math.floor(g.length / 2)]; cells[k].worst = g[0];
-    });
-    followedCache = { cells:cells, bySeason:bySeason, from:from };
+    followedCache = { cells:cells, from:from };
     return followedCache;
   }
   var trackCache = null;
@@ -220,6 +198,32 @@
     });
     trackCache = out;
     return out;
+  }
+  function cramerV(a, b){
+    var n = a.length, tab = {}, ra = {}, cb = {}, chi = 0;
+    a.forEach(function(x, i){ var k = x + "|" + b[i]; tab[k] = (tab[k] || 0) + 1; ra[x] = (ra[x] || 0) + 1; cb[b[i]] = (cb[b[i]] || 0) + 1; });
+    Object.keys(ra).forEach(function(x){ Object.keys(cb).forEach(function(y){
+      var e = ra[x] * cb[y] / n, o = tab[x + "|" + y] || 0; chi += (o - e) * (o - e) / e;
+    }); });
+    return Math.sqrt(chi / n / (Math.min(Object.keys(ra).length, Object.keys(cb).length) - 1));
+  }
+  function explained(keys, vals){
+    var n = vals.length, mean = vals.reduce(function(a, v){ return a + v; }, 0) / n, sum = {}, cnt = {}, tot = 0, bet = 0;
+    vals.forEach(function(v, i){ sum[keys[i]] = (sum[keys[i]] || 0) + v; cnt[keys[i]] = (cnt[keys[i]] || 0) + 1; tot += (v - mean) * (v - mean); });
+    Object.keys(cnt).forEach(function(k){ var m = sum[k] / cnt[k]; bet += cnt[k] * (m - mean) * (m - mean); });
+    return bet / tot;
+  }
+  function slid(list, s){ return list.slice(s).concat(list.slice(0, s)); }
+  var testCache = null;
+  function feelingSeasonTest(){
+    if (testCache) return testCache;
+    var t = feelingTrack(), st = t.map(function(x){ return x.stage; }), gr = t.map(function(x){ return x.group; });
+    var a = t.filter(function(x){ return x.after != null; }), ak = a.map(function(x){ return x.stage + "|" + x.group; }), av = a.map(function(x){ return x.after; });
+    var v = cramerV(st, gr), r2 = explained(ak, av), vHit = 0, vAll = 0, rHit = 0, rAll = 0, s;
+    for (s = 12; s < st.length - 12; s++, vAll++) if (cramerV(st, slid(gr, s)) >= v) vHit++;
+    for (s = 12; s < av.length - 12; s++, rAll++) if (explained(ak, slid(av, s)) >= r2) rHit++;
+    testCache = { v:v, vShare:vHit / vAll, r2:r2, rShare:rHit / rAll };
+    return testCache;
   }
   function monthsApart(a, b){ return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7)); }
   function feelingSpells(stage, group, upTo){
@@ -248,9 +252,8 @@
   function diagnoseClose(m){
     var S = marketMonths(), at = m.endMonth, f = marketFacts(S, at), i = S.spAt[at];
     if (!f) return null;
-    var named = readFeeling(f), stage = named || lastFeeling(S, at), half = seasonHalf(m.season);
-    return { stage:stage, carried:!named, half:half, season:m.season, facts:f, month:at,
-             posture:readPosture(stage, half, f),
+    var named = readFeeling(f), stage = named || lastFeeling(S, at);
+    return { stage:stage, carried:!named, season:m.season, facts:f, month:at,
              after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
   }
   function diagnoseToday(){
@@ -260,12 +263,9 @@
     if (!f) return null;
     var j = S.vol.length;
     f.fear3 = S.fearRank[j - 3]; f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v){ return v != null; }));
-    f.stretch = stretchRank(calendarTodayY, valRow("cape").meter.value);
     var stage = readFeeling(f), carried = !stage;
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
-    var half = seasonHalf(currentSeason), rec = whatFollowed();
-    return { stage:stage, carried:carried, half:half, season:currentSeason, facts:f, month:lastM,
-             posture:readPosture(stage, half, f), record:rec.cells[stage + "|" + half] || null, recordFrom:rec.from };
+    return { stage:stage, carried:carried, season:currentSeason, facts:f, month:lastM };
   }
 
   function vitalRingSvg(pct, state, label, cls){

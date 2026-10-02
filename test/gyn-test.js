@@ -266,7 +266,8 @@ async function openPage(p, url, sheet) {
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
-                   heads: [...d.querySelectorAll('.dx-sys-head')].map(h => h.textContent.trim()),
+                   heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
+                   grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
                    symptoms: [...d.querySelectorAll('.dx-k')].filter(k => /Symptoms/.test(k.textContent)).length,
                    analyses: [...d.querySelectorAll('.dx-cat')].map(s => s.querySelectorAll('.dx-k').length + ':' + !!s.querySelector('.dx-v')),
@@ -281,7 +282,7 @@ async function openPage(p, url, sheet) {
     await sweep(p);
     const FEEL = /^(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) in (Spring|Summer|Autumn|Winter)$/;
     (today && today.visible && FEEL.test(today.title) && /^She (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.cards === 0 &&
-     today.heads.join() === 'Circulation and Energy,Circulation,Energy,Assessment' && today.boxes === 'trend,sys,sys' && today.across &&
+     today.heads.join() === 'Circulation and Energy,Circulation,Energy,Feeling and season' && today.boxes === 'trend,sys,sys' && today.across && today.grid === '7:1:true' &&
      today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
@@ -300,7 +301,7 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys,sys' && !past.across)
+    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys,sys' && !past.across && past.grid === '7:1:true')
       ? ok('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', 'Keren, V682')
       : bad('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {

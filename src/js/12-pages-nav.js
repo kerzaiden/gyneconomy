@@ -856,14 +856,6 @@
     Capitulation:"fear in its top tenth, price 15% or more off its high",
     Despondency:"fear 20 points down from a frightened peak, price still 10% down"
   };
-  var POSTURE_STATE = { Offense:"good", Patience:"warning", Prepare:"warning", Defense:"serious", Neutral:"norm" };
-  var POSTURE_SAYS = {
-    Offense:"Fear has arrived after the body cooled.",
-    Patience:"Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
-    Prepare:"Near her high, stretched and still warm: slow down before the body asks.",
-    Defense:"Momentum has turned negative while the body is still warm.",
-    Neutral:"No posture the record singles out."
-  };
   var DIAG_SRC = [
     {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
     {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
@@ -902,10 +894,7 @@
     if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
   }
-  function dxRow(label, html, asList){
-    return '<div class="dx-row"><span class="dx-k">' + label + '</span>' +
-      (asList ? '<ul class="dx-list">' + html + '</ul>' : dxText(html)) + '</div>';
-  }
+  function dxRow(label, html){ return '<div class="dx-row"><span class="dx-k">' + label + '</span>' + dxText(html) + '</div>'; }
   function dxText(html){ return '<p class="dx-v">' + html + '</p>'; }
   function dxSection(head, body, cls){ return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + '</section>'; }
   function systemHtml(c, analysis){
@@ -916,27 +905,44 @@
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
       (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
-  function postureLine(d, more){
-    return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + '</b>' + expandBtn(diagnosisInfo(d)) +
-      " " + POSTURE_SAYS[d.posture] + (more ? " " + more : ""));
-  }
   function diagnosisInfo(d){
     return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
         "Momentum is the S&amp;P 500\u2019s monthly average against the same month a year earlier. Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull\u2019s best; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard.",
-        "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
-        "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast. The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."])) +
+        "Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
+        "The grid counts every month since " + monthLabel(whatFollowed().from) + " by feeling and season, and how often the S&amp;P 500 was higher a year later; each cell says over how many months. It is a count of what followed, not a forecast.",
+        "The test: Cram\u00e9r\u2019s V measures how closely feeling and season go together, from 0 (not at all) to 1 (each feeling only ever in one season). The share of the following year\u2019s S&amp;P 500 change that the feeling and season together account for is its variance explained. Because a feeling and a season each last months, neither is compared with chance by shuffling months; the season track is slid against the feelings, one month at a time, keeping how long each lasts, and the test counts how often a slid track does as well.",
+        "The trend at the top counts the same months by season: how often today\u2019s feeling came in today\u2019s season, against the other three. A spell is a run of months with the same feeling in the same season, counted to the latest month; a year after is the S&amp;P 500\u2019s monthly average twelve months on."])) +
       srcBlock(DIAG_SRC);
   }
-  function assessmentFor(d, era){
-    if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
-    var r = d.record, watch = [];
-    var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " +
-      r.months + " months in " + r.spells + " separate spells, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
-    if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
-    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense");
-    else watch.push("Fear arriving now, with the body cool, reads Offense");
-    return postureLine(d, rec) + dxRow("Watch", watch.map(function(x){ return "<li>" + x + "</li>"; }).join(""), true);
+  function share(c){ return Math.round(c.higher / c.months * 100) + "%"; }
+  function gridCell(c, now){
+    if (!c) return '<span class="fs-cell none">\u2013</span>';
+    var lean = c.higher / c.months - 0.5;
+    return '<span class="fs-cell' + (lean < 0 ? " lo" : "") + (now ? " now" : "") + '" style="--tint:' + Math.round(Math.abs(lean) * 60) + '%">' +
+      '<b>' + share(c) + '</b><small>' + c.months + ' mo</small></span>';
+  }
+  function feelingGrid(d){
+    var cells = whatFollowed().cells, here = seasonGroup(d.season);
+    var seasons = SEASON_ORDER.filter(function(s){ return FEELINGS.some(function(w){ return cells[w + "|" + s]; }); });
+    var head = '<span></span>' + seasons.map(function(s){ return '<span class="fs-col' + (s === here ? " now" : "") + '">' + seasonName(s) + '</span>'; }).join("");
+    var rows = FEELINGS.map(function(w){
+      return '<span class="fs-feel' + (w === d.stage ? " now" : "") + '">' + w + '</span>' +
+        seasons.map(function(s){ return gridCell(cells[w + "|" + s], w === d.stage && s === here); }).join("");
+    }).join("");
+    return '<div class="fs-grid" style="--cols:' + seasons.length + '" role="img" aria-label="How often the S&amp;P 500 was higher a year later, by feeling and season">' + head + rows + '</div>';
+  }
+  function gridLines(d, era){
+    var cells = whatFollowed().cells, t = feelingSeasonTest(), pc = function(v){ return Math.round(v * 100) + "%"; };
+    var here = seasonGroup(d.season), mine = cells[d.stage + "|" + here], rest = { months:0, higher:0 };
+    SEASON_ORDER.forEach(function(s){ var c = cells[d.stage + "|" + s]; if (s !== here && c){ rest.months += c.months; rest.higher += c.higher; } });
+    var said = mine && rest.months ? "A year after " + d.stage + " in " + seasonName(here) + ", the S&amp;P 500 was higher in " + share(mine) + " of " +
+      mine.months + " months; after " + d.stage + " in the other seasons, in " + share(rest) + " of " + rest.months + "." : "";
+    return (said ? dxRow(d.stage + " by season", said) : "") +
+      dxRow("The test", "Feeling and season go together: Cram\u00e9r\u2019s V is " + t.v.toFixed(2) + ", and a season track slid against the feelings matches it " +
+        pc(t.vShare) + " of the time. Together they account for " + pc(t.r2) + " of the swing in the S&amp;P 500 a year later, which slid tracks match " +
+        pc(t.rShare) + " of the time: a record, not a forecast.") +
+      (era && d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : "");
   }
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : diagnoseClose(m), closed = open ? null : m.era;
@@ -945,7 +951,7 @@
     return trendCardHtml(d) +
       dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
         systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) : "")) +
-      dxSection(dxHead("Assessment"), assessmentFor(d, closed));
+      dxSection(dxHead("Feeling and season" + expandBtn(diagnosisInfo(d))), feelingGrid(d) + gridLines(d, closed));
   }
   function acrossCycle(era){
     var span = { from:era.from, to:calendarTodayY };
@@ -955,11 +961,12 @@
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
+  function seasonName(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
   function feelingBySeason(stage){
-    var by = whatFollowed().bySeason;
+    var by = whatFollowed().cells, n = function(k){ return by[k] ? by[k].months : 0; };
     return SEASON_ORDER.map(function(s){
-      var all = FEELINGS.reduce(function(a, w){ return a + (by[w + "|" + s] || 0); }, 0);
-      return { season:s, name:s.charAt(0).toUpperCase() + s.slice(1), n:by[stage + "|" + s] || 0, all:all };
+      var all = FEELINGS.reduce(function(a, w){ return a + n(w + "|" + s); }, 0);
+      return { season:s, name:seasonName(s), n:n(stage + "|" + s), all:all };
     }).filter(function(r){ return r.all; });
   }
   function trendBarsSvg(rest, cur, restShare){
