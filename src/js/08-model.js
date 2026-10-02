@@ -4,7 +4,7 @@
     vals.forEach(function(v, i){ num += (i - mx) * (v - my); den += (i - mx) * (i - mx); });
     return den ? num / den : 0;
   }
-  var GROWTH_WINDOW = 6;
+  var GROWTH_WINDOW = 8;
   function readSeason(cpi12, gdp8, prevRegime){
     var cpiNow = cpi12[cpi12.length - 1].v;
     var cpiSlope = slopeOf(cpi12.map(function(d){ return d.v; }));
@@ -29,7 +29,7 @@
   var seasonTrackAll = (function(){
     var out = [], prevRegime;
     gdpQuarterlyYoY.forEach(function(d, i){
-      if (i < 5) return;
+      if (i < GROWTH_WINDOW - 1) return;
       var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
       var qEnd = y + "-" + QUARTER_END_MONTH[qn];
       var c12 = cpiYoYHistory.filter(function(c){ return c.m <= qEnd; }).slice(-12);
@@ -105,7 +105,7 @@
     var r = m.reading, was = m.ongoing ? "is" : "was";
     return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + ", the same way today's is: ") +
       "the economy " + was + " in " + r.regime + " (real GDP " +
-      r.gdpLatest.v.toFixed(1) + "% year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " six quarters, " + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+      r.gdpLatest.v.toFixed(1) + "% year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " eight quarters, " + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
   }
   var nowModel = cycleModel(currentEra);
   var readingNow = nowModel.reading;
