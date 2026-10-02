@@ -1450,14 +1450,14 @@
 <details class="subject" data-subject="hormones">
     <summary class="subject-summary">
       <div class="subject-text">
-        <div class="subject-label">Hormones</div>
+        <div class="subject-label">Interest rates</div>
         <div class="subject-value" id="subj-value-hormones"></div>
         <p class="subject-say" id="subj-say-hormones"></p>
       </div>
       <div class="subject-more"><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></div>
     </summary>
     <div class="subject-body">
-    <section class="hero" aria-label="Hormones — the policy rate and the U.S. Treasury yield curve">
+    <section class="hero" aria-label="Interest rates — the policy rate and the U.S. Treasury yield curve">
       <div id="hormones-history"></div>
       <div id="hormones-insights"></div>
     </section>
@@ -22311,7 +22311,7 @@
     cardUnit: "total return"
   }, {
     id: "sheet-sign-hormones",
-    name: "Hormones",
+    name: "Interest rates",
     cat: "circulation",
     timing: "leading",
     mark: hormoneSvg,
@@ -24007,7 +24007,7 @@
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' + "downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one " + "risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>");
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " + "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " + "a stock’s future earnings are measured against. Hormones is the overnight rate the Fed sets" + (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " + "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " + "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
     cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " + "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " + "payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page reads the LEVEL. The gap between this yield and the three-month bill is Horizon, in Mood, " + "because that gap is the market’s forecast of the next few years rather than a pressure it is under " + "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " + "relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
@@ -26093,7 +26093,7 @@
     var f1 = function(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
     };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' + "are cardiac output — how much money there is times how hard each unit works. Pressure is the " + "resistance that flow meets, and Hormones is the signal that sets all three.</p>";
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' + "are cardiac output — how much money there is times how hard each unit works. Pressure is the " + "resistance that flow meets, and Interest rates are the signal that sets all three.</p>";
     var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
     if (run >= 8) {
       var oc = openCycle();
@@ -26769,18 +26769,19 @@
       b: pastFigure(r, b.v, pairAt(r, b.k))
     };
   }
-  function eraMove(id, era) {
+  function eraMove(id, era, label) {
     var e = eraEnds(id, era);
     if (!e) return "";
-    return (e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
+    return (label || e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
   }
+  var HORMONES = "Hormones (the Fed funds rate)";
   function analysisFor(key, d, era) {
     var w = function(id) {
       var r = readDoor(id);
       return r && r.word ? r.word.toLowerCase() : "";
     };
-    if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
-    if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
+    if (era) return key === "circulation" ? eraMove("sheet-sign-hormones", era, HORMONES) : eraMove("sheet-sign-activity", era);
+    if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
   }
   function dxRow(label, html, asList) {
@@ -26836,7 +26837,7 @@
     };
     var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
     if (!fed || !job) return "";
-    return dxRow("Across the cycle", "Since " + fed.from + " the " + fed.r.eraUnit + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
+    return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
   var SEASON_ORDER = [ "spring", "summer", "autumn", "winter" ];
   function feelingBySeason(stage) {

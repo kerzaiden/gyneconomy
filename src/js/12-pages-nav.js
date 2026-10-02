@@ -383,7 +383,7 @@
     var f1 = function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
     var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
       'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
-      'resistance that flow meets, and Hormones is the signal that sets all three.</p>';
+      'resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
     var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " +
       f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " +
       (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
@@ -891,14 +891,15 @@
     var a = span[0], b = span[span.length - 1];
     return { r:r, from:prettyK(r, a.k), to:prettyK(r, b.k), a:pastFigure(r, a.v, pairAt(r, a.k)), b:pastFigure(r, b.v, pairAt(r, b.k)) };
   }
-  function eraMove(id, era){
+  function eraMove(id, era, label){
     var e = eraEnds(id, era); if (!e) return "";
-    return (e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
+    return (label || e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
   }
+  var HORMONES = "Hormones (the Fed funds rate)";
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
-    if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
-    if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
+    if (era) return key === "circulation" ? eraMove("sheet-sign-hormones", era, HORMONES) : eraMove("sheet-sign-activity", era);
+    if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
   }
   function dxRow(label, html, asList){
@@ -950,7 +951,7 @@
     var span = { from:era.from, to:calendarTodayY };
     var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
     if (!fed || !job) return "";
-    return dxRow("Across the cycle", "Since " + fed.from + " the " + fed.r.eraUnit + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
+    return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
       ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
   }
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
