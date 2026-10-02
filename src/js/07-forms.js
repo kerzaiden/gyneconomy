@@ -295,7 +295,7 @@
   var marketCycles = [
     {
       from:1928, to:1932,
-      name:"Crash Cycle",
+      name:"Great Depression Cycle",
       story:"The Roaring Twenties ended in the crash of October 1929, and bank failures, tight money and a tariff war turned it into the Great Depression. Mrs. Market fell from Euphoria into the deepest Despair in the record, four bear years in a row.",
       blurb:"The last boom year of the Twenties, then the crash of 1929 and three more years of falling prices, failing banks and lost jobs. It ends in 1932, at the bottom of the Great Depression."
     },

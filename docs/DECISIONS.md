@@ -65,7 +65,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
   has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
   nine cycles from 1948 keep Claude's draft names for now (Keren: "keep the names as they are for now"). (V689)
-  The five cycles from 1928 carry Claude's draft names and stories in the same shape. (V690)
+  The five cycles from 1928 carry Claude's draft names and stories in the same shape, except the first: Keren named
+  it the Great Depression Cycle ("i think the crash is the great depression"). (V690)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
@@ -340,7 +341,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   `cycleNowNote` count from the same year. (V511)
 - **The record opens at 1928, the first year of Damodaran's S&P return table; before 1949 the seasons are read
   from annual growth.** Keren: "ok lets go all the way with annual seasons for older cycles", choosing it over
-  Claude's recommendation (cycles from 1928, no seasons before 1947). Five cycles were added (Crash 1928–32, New
+  Claude's recommendation (cycles from 1928, no seasons before 1947). Five cycles were added (Great Depression 1928–32, New
   Deal 1933–34, Recovery 1935–37, War Clouds 1938–41, Victory 1942–46; Claude's draft names) and the Postwar
   Cycle opens at 1947, its first bull year under the cycle rule. Before 1957 the returns are the S&P's 90-stock
   predecessor's, as Damodaran's table carries them. (V690; from 1948 in V689, 1991 from V511.)
