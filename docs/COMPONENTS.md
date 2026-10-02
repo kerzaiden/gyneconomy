@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `904f241` on 2026-10-02. **78 components**, **40 shared patterns**.
+Generated from commit `baa06bb` on 2026-10-02. **79 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -110,9 +110,8 @@ Generated from commit `904f241` on 2026-10-02. **78 components**, **40 shared pa
 | **`buildSearch`** | `.ind-hint` `.ind-tabs` `.search-none` | `pages-nav.js:renderPagesAndNav` |
 | **`catItem`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `indicators.js:appendPicks` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
-| **`diagnosisHtml`** | `.dx-body` `.dx-sub` `.dx-title` `.dx-top` | `pages-nav.js:renderDiagnosis` |
 | **`dxHead`** | `.dx-sys-head` | `pages-nav.js:diagnosisHtml`, `pages-nav.js:systemHtml` |
-| **`dxRow`** | `.dx-k` `.dx-list` `.dx-row` | `pages-nav.js:assessmentFor`, `pages-nav.js:diagnosisHtml`, `pages-nav.js:postureLine` |
+| **`dxRow`** | `.dx-k` `.dx-list` `.dx-row` | `pages-nav.js:assessmentFor`, `pages-nav.js:postureLine` |
 | **`dxText`** | `.dx-v` | `pages-nav.js:dxRow`, `pages-nav.js:systemHtml` |
 | **`emotionCurveSvg`** | `.emo-curve` `.emo-line` | `pages-nav.js:insightMood` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
@@ -121,9 +120,11 @@ Generated from commit `904f241` on 2026-10-02. **78 components**, **40 shared pa
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`postureLine`** | `.dx-word` | `pages-nav.js:assessmentFor` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
+| **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
 | **`trendBarsSvg`** | `.trend-bar` `.trend-svg` `.trend-x` | `pages-nav.js:trendCardHtml` |
-| **`trendCardHtml`** | `.cat-mood` `.now` `.trend-card` `.trend-foot` `.trend-head` `.trend-text` | `pages-nav.js:diagnosisHtml` |
+| **`trendCardHtml`** | `.cat-mood` `.now` `.trend-card` `.trend-foot` `.trend-head` | `pages-nav.js:diagnosisHtml` |
+| **`trendSub`** | `.trend-sub` | `pages-nav.js:trendCardHtml` |
 
 ## indicators.js
 
@@ -160,10 +161,10 @@ renderer speaks. Listed most-used first.
 | **`histFrame`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
+| **`monthLabel`** | model.js | 11 places |
 | **`publishGeom`** | charts.js | 11 places |
 | **`windowYears`** | components.js | 11 places |
 | **`addSources`** | model.js | 10 places |
-| **`monthLabel`** | model.js | 10 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
@@ -177,6 +178,7 @@ renderer speaks. Listed most-used first.
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
 | **`highlightsHtml`** | charts.js | 7 places |
+| **`seasonGroup`** | model.js | 7 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
@@ -185,27 +187,26 @@ renderer speaks. Listed most-used first.
 | **`drawsPage`** | render-core.js | 5 places |
 | **`expandBtn`** | render-core.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
+| **`marketFacts`** | model.js | 5 places |
+| **`marketMonths`** | model.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
-| **`seasonGroup`** | model.js | 5 places |
+| **`readFeeling`** | model.js | 5 places |
 | **`valRow`** | components.js | 5 places |
 | **`detailSlot`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
 | **`labRow`** | data.js | 4 places |
-| **`marketFacts`** | model.js | 4 places |
 | **`mean`** | charts.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
-| **`readFeeling`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
 | **`byIdMaybe`** | refresh-season.js | 3 places |
 | **`cycleQtrIdx`** | charts.js | 3 places |
 | **`eraFig`** | analysis.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
-| **`marketMonths`** | model.js | 3 places |
 | **`merge`** | live.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
@@ -214,7 +215,6 @@ renderer speaks. Listed most-used first.
 | **`registerTiming`** | render-core.js | 3 places |
 | **`renderDiagnosis`** | pages-nav.js | 3 places |
 | **`seasonHalf`** | model.js | 3 places |
-| **`seasonTitle`** | model.js | 3 places |
 | **`showCycle`** | dial-cycle.js | 3 places |
 | **`timelineWindow`** | components.js | 3 places |
 | **`volatilityTag`** | charts.js | 3 places |

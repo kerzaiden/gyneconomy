@@ -536,6 +536,12 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
+- **One feeling** (V681): the Diagnosis is the trend card (`trendCardHtml`), the Analysis and the Assessment. Its
+  spell lines (`spellLines`) read `spellRecord`: `feelingTrack` is every month's feeling (carried, as in the record)
+  and season group, `feelingSpells` cuts it into runs of the same feeling in the same season, and the spell that
+  reaches the diagnosed month is the current one. Unlike `whatFollowed`, the track runs to the latest month; only
+  its "a year after" counts need the year ahead. Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
+  left out of the Analysis.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's season button opens it (`hubSet`'s `cat`) while the dial shows today; a parked quarter or a closed
   cycle keeps its popup (`quarterPopup`), since the Weather page is today's. The Diagnosis's Analysis leaves out

@@ -8,7 +8,7 @@
   var CATEGORIES = [
     { key:"weather", title:"Weather", mark:weatherSvg, shown:0, insight:insightWeather, onDial:true },
     { key:"circulation", title:"Circulation", mark:circulationSvg, shown:2, insight:insightCirculation },
-    { key:"mood", title:"Mood", mark:moodSvg, shown:1, insight:insightMood },
+    { key:"mood", title:"Mood", mark:moodSvg, shown:1, insight:insightMood, inTrend:true },
     { key:"energy", title:"Energy", mark:boltSvg, shown:3 }
   ];
   var ROSTER = [

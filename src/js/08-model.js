@@ -208,6 +208,38 @@
     followedCache = { cells:cells, bySeason:bySeason, from:from };
     return followedCache;
   }
+  var trackCache = null;
+  function feelingTrack(){
+    if (trackCache) return trackCache;
+    var S = marketMonths(), out = [], last = null;
+    S.vol.forEach(function(d){
+      var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
+      if (!f || !season) return;
+      var stage = readFeeling(f) || last; last = stage;
+      if (stage) out.push({ m:d.m, stage:stage, group:seasonGroup(season), after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null });
+    });
+    trackCache = out;
+    return out;
+  }
+  function monthsApart(a, b){ return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7)); }
+  function feelingSpells(stage, group, upTo){
+    var spells = [], run = null;
+    feelingTrack().forEach(function(t){
+      if (t.m > upTo) return;
+      if (t.stage !== stage || t.group !== group){ run = null; return; }
+      if (!run || monthsApart(run.to, t.m) > 1) spells.push(run = { from:t.m, to:t.m });
+      run.to = t.m;
+    });
+    spells.forEach(function(sp){ sp.n = monthsApart(sp.from, sp.to) + 1; });
+    return spells;
+  }
+  function spellRecord(d){
+    var here = seasonGroup(d.season), spells = feelingSpells(d.stage, here, d.month), last = spells[spells.length - 1];
+    var now = last && monthsApart(last.to, d.month) <= 1 ? spells.pop() : null;
+    now = now ? { from:now.from, to:d.month, n:monthsApart(now.from, d.month) + 1 } : { from:d.month, to:d.month, n:1 };
+    var after = feelingTrack().filter(function(t){ return t.stage === d.stage && t.group === here && t.after != null && t.m <= d.month; });
+    return { now:now, before:spells, after:after.length, higher:after.filter(function(t){ return t.after > 0; }).length };
+  }
   function lastFeeling(S, m){
     var stage = null;
     for (var k = S.spAt[m]; k >= 0 && !stage; k--){ var pf = marketFacts(S, S.sp[k].m); stage = pf && readFeeling(pf); }

@@ -1022,12 +1022,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **It sits under the dial on the Cycle page, for today and for any closed cycle.** Keren: "I want the
   diagnosis to open below the cycle. Mind you, that the cycle page applies to past cycles as well." It follows
   her cycle-tracking app's home page. (V665)
-- **It reads in clinical order and language: a headline (the feeling), History, then each System (a category,
-  whose heading opens the category page) with its one Analysis line, then the Assessment. It lists no
+- **It reads in clinical order and language: the trend card (the feeling in its season), then each System (a
+  category, whose heading opens the category page) with its one Analysis line, then the Assessment. It lists no
   Symptoms; the readings live on the category pages its headings open.** Keren: "use clinical language, ergo
   symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
   V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
-  symptoms … just want the analysis." (V665, V672)
+  symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
 - **The Systems sit under one Analysis head, marked with a stethoscope, and carry no "Analysis" label of their
   own.** Keren: "you have analysis next to text in each one of the categories … it just takes up space so remove
   it and maybe call the entire container analysis with a stethoscope." The stethoscope mark was drawn here, not
@@ -1049,10 +1049,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   to have some kind of evaluation over the market current feeling"; "We agreed on showing only seven emotions."
   The chart's other seven stages have no published rule. Don't add a how-often breakdown: "how often she has
   felt each is not really informative." (V679)
-- **The Analysis ends on a trend card, Apple Health's Trends: today's feeling in today's season, against the
+- **The Diagnosis opens on the trend card, Apple Health's Trends: today's feeling in today's season, against the
   other seasons, as share of months since the record began.** Keren: "make a correlation between what we called
   mood and season … reflected in the homepage under analysis in the same way Apple Health app shows trends". The
   card opens the Mood page. (V679)
+- **The trend card is the Diagnosis's headline: no "She's in" header, no History record, no Mood row in the
+  Analysis.** Keren: "I want to keep optimism in summer"; "Under analysis, I don't need the mood. because the mood
+  is already in optimism in summer"; "the history record, I don't need it … on the dial". The card says how long
+  the current spell has run, how the earlier spells of the same feeling in the same season ran (count, median,
+  longest), and how often the S&P 500 was higher a year after such a month; Keren left the choice of statistic to
+  Claude. The Wild Power quote left with the header. (V681)
 
 ## Code and process
 
