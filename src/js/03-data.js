@@ -7,8 +7,7 @@
   yieldCurve = LIVE("yieldCurve", yieldCurve);
   var YIELD_CURVE_ASOF = "2026-09-24";
   function curveAsOf(){
-    var d = LIVE_CACHE && LIVE_CACHE.yieldCurve;
-    return (d && Array.isArray(d.rows) && d.rows.length && d.asOf) || YIELD_CURVE_ASOF;
+    return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
   }
 
   var t10y3mHistory = treasuryQuarterly.s3m;

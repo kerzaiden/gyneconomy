@@ -54,6 +54,21 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
+  if (url.pathname.indexOf('/data/') !== -1) {
+    e.respondWith(
+      fetch(req, { cache: 'no-store' }).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(VERSION).then(function (c) { c.put(req, copy); }).catch(function () {});
+        }
+        return res;
+      }).catch(function () {
+        return caches.match(req);
+      })
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(req).then(function (hit) {
       if (hit) return hit;

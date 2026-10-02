@@ -16,7 +16,7 @@ function lift(file, names) {
   }
   return new Function(out + 'return { ' + names.join(', ') + ' };')();
 }
-const { slopeOf, readSeason } = lift('src/js/08-model.js', ['slopeOf', 'readSeason']);
+const { slopeOf, readSeason, cpiTrend } = lift('src/js/08-model.js', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -32,6 +32,9 @@ ok('flat series has no slope', slopeOf([2, 2, 2, 2]), 0);
 ok('a step of 0.5 fits as 0.5', +slopeOf([1, 1.5, 2, 2.5]).toFixed(10), 0.5);
 ok('a falling step fits negative', +slopeOf([3, 2.5, 2, 1.5]).toFixed(10), -0.5);
 ok('one point has no slope', slopeOf([4]), 0);
+const months = ['2025-08', '2025-09', '2025-11', '2025-12'];
+ok('a missing month is a gap in time, not a step', +cpiTrend(months.map((m, i) => ({ m, v: [1, 1.1, 1.3, 1.4][i] }))).toFixed(10), 0.1);
+ok('points with no month fall back to even steps', +cpiTrend([{ v:1 }, { v:1.5 }, { v:2 }]).toFixed(10), 0.5);
 
 ok('expansion + hot prices        = summer',         season(cpi(4.2, 0.05), gdp(2, 0.05)),  'summer');
 ok('expansion + cooling prices    = springdeflation', season(cpi(2.0, -0.05), gdp(2, 0.05)), 'springdeflation');

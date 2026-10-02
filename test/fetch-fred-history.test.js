@@ -52,7 +52,7 @@ ok('a quarter wholly inside the gap is null',
    withoutGap(qm(g30), g30, ['2002-03', '2006-01']).map(x => [x.q, x.v]), [['2005 Q4', null], ['2006 Q1', 4.6]]);
 
 ok('the treasury block is written with its partial mark',
-   /treasuryQuarterly = \{\s*y10:\[\{q:"2026 Q3",v:4\.7,partial:true\}\]/.test(emit([], [], 'x', null,
+   /treasuryQuarterly = \{\s*y10:\[\{q:"2026 Q3",v:4\.7,partial:true\}\]/.test(emit([], [], null,
      { y10: [{ q: '2026 Q3', v: 4.7, partial: true }] })), true);
 
 ok('a fiscal-year series keeps its years',
@@ -65,12 +65,12 @@ ok('a value outside the band is left out, not clamped',
 throws('a date that is not 1 January is refused', () => fiscalYears([d('1946-10-01', 1)], 0, 300), /not a fiscal-year date/);
 
 ok('the generated file carries no comment',
-   /\/\*|\/\//.test(emit([], [], '2026-09-29', { gross: [], held: [], interest: [], budget: [], grossQ: [] },
+   /\/\*|\/\//.test(emit([], [], { gross: [], held: [], interest: [], budget: [], grossQ: [] },
      { y10: [{ q: '2026 Q3', v: 4.7 }] })), false);
 ok('without fiscal data, no fiscal block is written',
-   /fiscalHistory/.test(emit([], [], '2026-09-29')), false);
+   /fiscalHistory/.test(emit([], [])), false);
 ok('with fiscal data, the block is written',
-   /var fiscalHistory = \{\s*gross:\[\{y:1946,v:118\}\]/.test(emit([], [], 'x',
+   /var fiscalHistory = \{\s*gross:\[\{y:1946,v:118\}\]/.test(emit([], [],
      { gross: [{ y: 1946, v: 118 }], held: [], interest: [], budget: [], grossQ: [] })), true);
 
 ok('each quarter start month names its quarter',
@@ -93,7 +93,7 @@ ok('year over year compares a quarter with the same quarter a year before',
 ok('a quarter without its year-earlier twin is left out',
    yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
 ok('with productivity, its series is written',
-   /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], 'x', null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
+   /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
 const sdmxSeries = (key, obs) => '<generic:Series><generic:SeriesKey><generic:Value id="MEASURE" value="' + key + '" /></generic:SeriesKey>' +
   obs.map(([m, v]) => '<generic:Obs><generic:ObsDimension value="' + m + '" /><generic:ObsValue value="' + v + '" /></generic:Obs>').join('') + '</generic:Series>';
 ok('the OECD reply is read month by month, in month order',
@@ -103,7 +103,7 @@ ok('two series in one reply is refused, not guessed between',
    (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
             catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
 ok('consumer confidence is written after the S&P 500, and the early seasons last',
-   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n  var gdpGrowthBefore = \{\};\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n  var gdpGrowthBefore = \{\};\n$/.test(emit([], [], null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
 ok('the early seasons are written as the app reads them',
    earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }),
    '\n  var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\n  var cpiYoYBefore = [{m:"1948-01",v:10.24}];\n  var sp500ReturnsBefore = {1948:5.7,1949:18.3};\n  var gdpGrowthBefore = {1948:4.1};\n');
@@ -128,8 +128,8 @@ ok('the VIX starts where the VXO hands over',
    [{ m: '1987-10', v: 150.19 }, { m: '1989-12', v: 23 }, { m: '1990-01', v: 17.24 }]);
 ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
 ok('volatility is written after the Fed funds rate, and the fear curve no longer is',
-   [/var fedFundsHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }], 'x')),
-    /fearCurve/.test(emit([], [], 'x'))], [true, false]);
+   [/var fedFundsHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }])),
+    /fearCurve/.test(emit([], []))], [true, false]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

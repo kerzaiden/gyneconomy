@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { capeFromRows, priceFromRows } = require('../tools/fetch-live.js');
+const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -87,6 +87,26 @@ try { priceFromRows([['Date', 'Price'], ['2026.03', 6100]], '1950-01'); fail++; 
 catch (e) { if (/no header row/.test(e.message)) { pass++; console.log('  ok   the real Price column is never taken for P      threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
 try { priceFromRows([['Date', 'P'], ['2026.03', 900000]], '1950-01'); fail++; console.log('  FAIL band'); }
 catch (e) { if (/out of band/.test(e.message)) { pass++; console.log('  ok   a price outside the band is refused             threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
+
+console.log('\nfedMove and assemble — tools/fetch-live.js\n');
+const days = (from, n, v) => Array.from({ length: n }, (_, i) => ({
+  date: new Date(Date.parse(from + 'T00:00:00Z') + i * 86400000).toISOString().slice(0, 10), value: String(v) }));
+const hike = days('2026-08-01', 47, 3.75).concat(days('2026-09-17', 10, 4)).reverse();
+ok('a hike is dated by its FOMC decision, not the day it took effect', fedMove(hike, '2026-09-26', FOMC_DECISIONS),
+   { lastMove: '+0.25', lastMoveLabel: 'raised a quarter point', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' });
+const cut = days('2026-09-17', 42, 4).concat(days('2026-10-29', 5, 3.5));
+ok('a half-point cut, and the next decision after it', fedMove(cut, '2026-11-02', FOMC_DECISIONS),
+   { lastMove: '-0.50', lastMoveLabel: 'cut half a point', asOf: 'Oct 28, 2026', next: 'Dec 9, 2026' });
+ok('no next decision past the end of the calendar', fedMove(cut, '2026-12-10', FOMC_DECISIONS).next, '');
+ok('a move off the calendar is dated the day before it took effect', fedMove(days('2026-03-01', 3, 2).concat(days('2026-03-04', 2, 1.5)), '2026-03-06', []).asOf,
+   'Mar 3, 2026');
+ok('missing values are skipped', fedMove([{ date: '2026-09-18', value: '.' }].concat(hike), '2026-09-26', FOMC_DECISIONS).lastMove, '+0.25');
+try { fedMove(days('2026-01-01', 30, 4), '2026-02-01', FOMC_DECISIONS); fail++; console.log('  FAIL no change'); }
+catch (e) { if (/no change/.test(e.message)) { pass++; console.log('  ok   a flat history is refused, not guessed            threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
+ok('a reading that failed keeps its previous document',
+   assemble({ vixClose: { v: 1 }, capeValue: { v: 2 }, _meta: { old: true } }, { vixClose: { v: 3 }, _meta: { now: true } }),
+   { vixClose: { v: 3 }, capeValue: { v: 2 }, _meta: { now: true } });
+ok('a first run has nothing to keep', assemble(null, { yieldCurve: 1 }), { yieldCurve: 1 });
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

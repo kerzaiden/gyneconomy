@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v5
         with:
@@ -51,7 +53,10 @@ jobs:
 
       - name: Commit if anything moved
         id: commit
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git diff --quiet -- data/live.json; then
@@ -73,18 +78,18 @@ jobs:
           git add data/live.json
           git commit -m "Data: $(node -p "require('./data/live.json')._meta.ok.join(', ')")
 
-          Fetched by tools/fetch-live.js from its sources. Values that failed their sanity
-          band or could not be fetched are left out, and the previous ones stand."
+          Fetched by tools/fetch-live.js from its sources. A value that failed its sanity
+          band or could not be fetched keeps its previous document, with its own asOf."
 
           for attempt in 1 2 3; do
-            if git push; then echo "pushed on attempt $attempt"; echo "pushed=yes" >> "$GITHUB_OUTPUT"; exit 0; fi
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then echo "pushed on attempt $attempt"; echo "pushed=yes" >> "$GITHUB_OUTPUT"; exit 0; fi
             echo "push rejected — rebasing onto the remote and retrying"
-            git pull --rebase --autostash origin main || exit 1
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME" || exit 1
           done
           echo "::error::could not push after 3 attempts"; exit 1
 
       - name: Deploy the site with the new figures
-        if: steps.commit.outputs.pushed == 'yes'
+        if: steps.commit.outputs.pushed == 'yes' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run ci.yml --ref main --repo "$GITHUB_REPOSITORY"

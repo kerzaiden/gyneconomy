@@ -20318,28 +20318,50 @@
       return {};
     }
   }();
+  var liveAsOf = {}, liveApplied = {};
   function merge(base, over) {
     var o = {};
     if (base && typeof base === "object" && !Array.isArray(base)) for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
     for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
     return o;
   }
+  function docValue(d) {
+    if (!d || typeof d !== "object") return null;
+    if (d.kind === "series") return Array.isArray(d.rows) ? d.rows : null;
+    if (d.kind === "scalar") return d.value === undefined ? null : d.value;
+    if (d.kind !== "object") return null;
+    var over = {}, any = false;
+    for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)) {
+      over[k] = d[k];
+      any = true;
+    }
+    return any ? over : null;
+  }
+  function docOk(name, d) {
+    var r = READINGS[name];
+    try {
+      return !!r && shapeOk(r, docValue(d)) && JSON.stringify(docValue(d)).indexOf("<") < 0;
+    } catch (e) {
+      return false;
+    }
+  }
   function LIVE(name, fallback) {
     var d = LIVE_CACHE[name];
-    if (!d || typeof d !== "object") return fallback;
+    if (!docOk(name, d)) return fallback;
+    liveApplied[name] = JSON.stringify(d);
+    if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf);
+    return d.kind === "object" ? merge(fallback, docValue(d)) : docValue(d);
+  }
+  function liveIsoOf(name) {
     try {
-      if (d.kind === "series") return Array.isArray(d.rows) && d.rows.length ? d.rows : fallback;
-      if (d.kind === "scalar") return d.value === undefined ? fallback : d.value;
-      if (d.kind === "object") {
-        var over = {}, any = false;
-        for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)) {
-          over[k] = d[k];
-          any = true;
-        }
-        return any ? merge(fallback, over) : fallback;
-      }
-    } catch (e) {}
-    return fallback;
+      return JSON.parse(liveApplied[name] || "{}").asOf || "";
+    } catch (e) {
+      return "";
+    }
+  }
+  function liveInto(name) {
+    var v = LIVE(name, null);
+    if (v != null) READINGS[name].set(v);
   }
   var fedFunds = {
     lo: 3.75,
@@ -20350,26 +20372,35 @@
     vote: "12–0",
     next: "Oct 28, 2026"
   };
-  fedFunds = LIVE("fedFunds", fedFunds);
   function paintReading(sheet, value, tag) {
     var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
     Array.prototype.forEach.call(doors, function(d) {
+      if (d.__today) {
+        painted++;
+        return;
+      }
       var v = d.querySelector(".ci-value, .subject-value");
       if (v && v.firstChild && v.firstChild.nodeType === 3) {
         v.firstChild.nodeValue = String(value);
         painted++;
       }
-      if (!tag) return;
-      var t = d.querySelector(".tag");
-      if (!t) return;
-      t.textContent = tag.text;
-      if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
+      if (tag) paintTag(d, tag);
     });
+    paintWhen(sheet);
     if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
     return painted;
   }
+  function paintTag(d, tag) {
+    var t = d.querySelector(".tag");
+    if (!t) return;
+    t.textContent = tag.text;
+    if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
+  }
   function repaintVolatility() {
-    put("subj-ring-sentiment", volatilityRing());
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
+      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
+      if (m) m.innerHTML = volatilityRing();
+    });
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintPressureRow() {
@@ -20383,6 +20414,39 @@
     var s = byIdMaybe("sheet-sign-pressure");
     if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
   }
+  function repaintLive() {
+    LIVE_NAMES.forEach(function(n) {
+      (READINGS[n].paint || []).forEach(function(fn) {
+        try {
+          fn();
+        } catch (e) {
+          if (window.console) console.warn("repaint " + n + " failed", e);
+        }
+      });
+    });
+  }
+  function desireRow() {
+    return coincident.filter(function(c) {
+      return c.bodyTerm === "Desire";
+    })[0];
+  }
+  function repaintDesire() {
+    var row = desireRow(), cape = valRow("cape");
+    if (!row || !cape) return;
+    paintReading("sheet-sign-desire", row.metric, null);
+    Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el) {
+      el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
+    });
+  }
+  function syncCapeHistory() {
+    var last = capeHistory[capeHistory.length - 1], now = valRow("cape").meter.value;
+    if (last.y === calendarTodayY) last.v = now; else capeHistory.push({
+      y: calendarTodayY,
+      v: now
+    });
+    moodLists = null;
+    moodCache = null;
+  }
   function repaintValuationRow() {
     var row = valRow("cape");
     if (!row) return;
@@ -20392,15 +20456,28 @@
     fedFunds: {
       kind: "object",
       ok: function(v) {
-        return typeof v.lo === "number";
+        return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
       },
       set: function(v) {
+        if (!v.lastMove && (v.lo !== fedFunds.lo || v.hi !== fedFunds.hi)) v = merge(v, {
+          lastMove: "",
+          lastMoveLabel: "",
+          asOf: ""
+        });
+        if (v.asOf !== undefined && v.asOf !== fedFunds.asOf && !v.vote) v = merge(v, {
+          vote: ""
+        });
         fedFunds = merge(fedFunds, v);
       },
       paint: [ repaintPolicy ]
     },
     yieldCurve: {
       kind: "series",
+      ok: function(v) {
+        return v.every(function(r) {
+          return r && typeof r.m === "string" && (r.y === null || isNum(r.y));
+        });
+      },
       set: function(v) {
         yieldCurve = v;
       },
@@ -20408,21 +20485,29 @@
     },
     sentiment: {
       kind: "object",
+      ok: function(v) {
+        return v.rows === undefined || rowsOk(v.rows);
+      },
       set: function(v) {
-        sentiment = v;
+        sentiment = merge(sentiment, v);
+        vixRow = sentiment.rows[0];
       },
       onOpen: true
     },
     valuation: {
       kind: "object",
+      ok: function(v) {
+        return v.rows === undefined || rowsOk(v.rows);
+      },
       set: function(v) {
-        valuation = v;
+        valuation = merge(valuation, v);
         if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
       },
       paint: [ repaintValuationRow ]
     },
     coincident: {
       kind: "series",
+      ok: rowsOk,
       set: function(v) {
         coincident = v;
         deriveVolumeTag();
@@ -20453,14 +20538,12 @@
       kind: "scalar",
       band: [ 1, 30 ],
       set: function(v) {
-        var row = coincident.filter(function(c) {
-          return c.bodyTerm === "Desire";
-        })[0];
+        var row = desireRow();
         row.meter.value = v;
         row.metric = v.toFixed(2) + "%";
         if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
       },
-      onOpen: true
+      paint: [ repaintDesire ]
     },
     capeValue: {
       kind: "scalar",
@@ -20472,10 +20555,19 @@
         if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
         valuation.tag = valuationVerdict(v);
       },
-      paint: [ repaintValuationRow ]
+      paint: [ repaintValuationRow, syncCapeHistory, repaintDesire ]
     }
   };
   var LIVE_NAMES = Object.keys(READINGS);
+  fedFunds = LIVE("fedFunds", fedFunds);
+  function isNum(x) {
+    return typeof x === "number" && isFinite(x);
+  }
+  function rowsOk(rows) {
+    return Array.isArray(rows) && rows.length > 0 && rows.every(function(r) {
+      return r && typeof r === "object" && (!r.meter || isNum(r.meter.value));
+    });
+  }
   var KINDS = [ "object", "series", "scalar" ];
   function checkLiveCoverage() {
     var bad = [];
@@ -20493,25 +20585,29 @@
   }
   function receive(next, mode) {
     var names = Object.keys(next).filter(function(n) {
-      return READINGS[n];
+      return docOk(n, next[n]);
     });
     if (!names.length) return 0;
-    var prev = LIVE_CACHE, moved = 0;
-    var now = mode === "replace" ? next : merge(LIVE_CACHE, next);
+    var fresh = {}, moved = 0;
+    names.forEach(function(n) {
+      fresh[n] = next[n];
+    });
+    var now = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
     try {
       window.localStorage.setItem("gyn.live", JSON.stringify(now));
     } catch (e) {}
     LIVE_CACHE = now;
     names.forEach(function(name) {
-      try {
-        if (next[name] && next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
-        if (prev && prev[name] && JSON.stringify(prev[name]) === JSON.stringify(next[name])) return;
-      } catch (e) {}
-      if (applyLive(name, LIVE(name, null))) moved++;
+      var doc = JSON.stringify(next[name]);
+      if (next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
+      if (liveApplied[name] === doc) return;
+      if (applyLive(name, docValue(next[name]))) {
+        liveApplied[name] = doc;
+        moved++;
+      }
     });
     return moved;
   }
-  var liveAsOf = {};
   function fmtAsOf(iso) {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
     if (!m) return "";
@@ -20537,7 +20633,7 @@
     return true;
   }
   function shapeOk(r, v) {
-    if (r.kind === "series") return Array.isArray(v) && v.length > 0;
+    if (r.kind === "series") return Array.isArray(v) && v.length > 0 && (r.ok ? !!r.ok(v) : true);
     if (r.kind === "scalar") return typeof v === "number" && v >= r.band[0] && v <= r.band[1];
     if (!v || typeof v !== "object" || Array.isArray(v)) return false;
     return r.ok ? !!r.ok(v) : true;
@@ -20692,8 +20788,7 @@
   yieldCurve = LIVE("yieldCurve", yieldCurve);
   var YIELD_CURVE_ASOF = "2026-09-24";
   function curveAsOf() {
-    var d = LIVE_CACHE && LIVE_CACHE.yieldCurve;
-    return d && Array.isArray(d.rows) && d.rows.length && d.asOf || YIELD_CURVE_ASOF;
+    return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
   }
   var t10y3mHistory = treasuryQuarterly.s3m;
   var t10y3mRecessions = [ {
@@ -22513,7 +22608,7 @@
         }
       },
       shortNote: "Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
-      note: "The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike — 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 — still well below the ~19–20 long-run average. That is still the newest close the published series carries — FRED's VIXCLS has posted nothing after Sep 22 — so this reading is dated accordingly, and it is worth reading against the Treasury curve beside it, which has moved a long way since: the 10-year went from 4.96% on Sep 21 to 5.18% on Sep 24, its highest in the app's twenty-one-year record. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does — spreads widened through 2007 while the VIX stayed calm — so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
+      note: "The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike — 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 — still well below the ~19–20 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does — spreads widened through 2007 while the VIX stayed calm — so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
       direction: "up",
       flagValue: "14.2",
       flagState: "warning"
@@ -22550,6 +22645,7 @@
     } ]
   };
   sentiment = LIVE("sentiment", sentiment);
+  liveInto("vixClose");
   var valuation = {
     kicker: "What she is priced at",
     hint: "Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months — CAPE passed 30 in 2017 and the market rose for four more years.",
@@ -22583,7 +22679,7 @@
       meter: {
         min: 4.78,
         max: 44.19,
-        value: 41.25,
+        value: 40.58,
         optimal: {
           lte: 17,
           label: "≤ 17×"
@@ -22594,9 +22690,9 @@
         }
       },
       shortNote: "Among the richest readings on record, just shy of the dot-com peak.",
-      note: "Cyclically-adjusted P/E (Sep 24 2026) vs. its ~17× long-run average — among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999); the daily reading is multpl's update of the same data. The band ends at 17×, which is that series' own long-run mean (17.42) rather than a target — there is no level a market ought to trade at.",
+      note: "Cyclically-adjusted P/E (Shiller's own series, September 2026) vs. its ~17× long-run average — among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999). The band ends at 17×, which is that series' own long-run mean (17.42) rather than a target — there is no level a market ought to trade at.",
       direction: "up",
-      flagValue: "41.3×",
+      flagValue: "40.6×",
       flagState: "serious"
     } ],
     shortImpression: "Both gauges are at or near their record — she is priced for everything to keep going right.",
@@ -22610,9 +22706,6 @@
     }, {
       t: "Robert Shiller — U.S. stock market data and CAPE ratio since 1871 (Yale)",
       u: "https://shillerdata.com/"
-    }, {
-      t: "Shiller CAPE ratio, daily reading (multpl.com, from Shiller's data)",
-      u: "https://www.multpl.com/shiller-pe"
     } ]
   };
   valuation = LIVE("valuation", valuation);
@@ -22625,6 +22718,7 @@
   });
   var CAPE_FAIR = 17;
   valuation.tag = valuationVerdict(valRow("cape").meter.value);
+  liveInto("capeValue");
   var coincident = [ {
     bodyTerm: "Desire",
     econTerm: "Risk tolerance (credit)",
@@ -22755,6 +22849,7 @@
     } ]
   } ];
   coincident = LIVE("coincident", coincident);
+  liveInto("hyOasNow");
   function deriveVolumeTag() {
     var vol = coincident.filter(function(c) {
       return c.bodyTerm === "Volume";
@@ -23165,6 +23260,21 @@
   function unempState(v) {
     return v < ACT_BAND_LO ? "tight" : v <= ACT_BAND_HI ? "good" : v < 6.5 ? "warning" : v < 8.5 ? "serious" : "critical";
   }
+  function yearTicks(out, vals, w, X, T, B, f) {
+    var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
+    if (w.cycle) {
+      var stepY = Math.max(1, Math.ceil((w.y1 - w.y0 + 1) / (w.narrow ? 4 : 6)));
+      years = [];
+      for (var cyr = w.y0; cyr <= w.y1; cyr += stepY) years.push(cyr);
+    }
+    years.forEach(function(yr) {
+      var i = -1;
+      for (var k = 0; k < vals.length && i < 0; k++) if (vals[k].m === yr + "-01") i = k;
+      if (i < 0) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push(xLabel(f(X(i)), yr, B + 17));
+    });
+  }
   function unempHistoryChart(Wpx, from, o) {
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -23204,20 +23314,12 @@
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
       }
     }));
-    if (o.cycle) {
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY) {
-        var cix = (cyr - y0) * 12;
-        if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
-      var i = (yr - y0) * 12;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, {
+      y0: y0,
+      y1: y1,
+      cycle: o.cycle,
+      narrow: narrow
+    }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       if (d.v == null) return;
@@ -23307,20 +23409,12 @@
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
       }
     }));
-    if (o.cycle) {
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY) {
-        var cix = (cyr - y0) * 12;
-        if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
-      var i = (yr - y0) * 12;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, {
+      y0: y0,
+      y1: y1,
+      cycle: o.cycle,
+      narrow: narrow
+    }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     var seenV = seen.map(function(d) {
       return d.v;
@@ -23490,20 +23584,12 @@
         return (Math.round(g) === g ? g : g.toFixed(1)) + "%";
       }
     }));
-    if (o.cycle) {
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY) {
-        var cix = (cyr - y0) * 12;
-        if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr) {
-      var i = (yr - y0) * 12;
-      if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, {
+      y0: y0,
+      y1: y1,
+      cycle: o.cycle,
+      narrow: narrow
+    }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
@@ -24485,11 +24571,22 @@
   }
   var HZN_BACK = 4;
   function hznLast(a) {
-    for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null) return {
+    for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return {
       i: i,
       v: a[i].v
     };
     return null;
+  }
+  function hznRecord(a) {
+    var vs = a.filter(function(d) {
+      return d.v != null;
+    }).map(function(d) {
+      return d.v;
+    });
+    return {
+      min: Math.min.apply(null, vs),
+      max: Math.max.apply(null, vs)
+    };
   }
   function hznBack(a, from, back) {
     for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v;
@@ -24546,8 +24643,8 @@
   }();
   var HZN_METERS = {
     "3m": {
-      min: -1.48,
-      max: 3.61,
+      min: hznRecord(t10y3mHistory).min,
+      max: hznRecord(t10y3mHistory).max,
       value: horizonRead.spread,
       optimal: {
         gte: 0,
@@ -24558,8 +24655,8 @@
       }
     },
     "2y": {
-      min: -.77,
-      max: 2.8,
+      min: hznRecord(t10y2yHistory).min,
+      max: hznRecord(t10y2yHistory).max,
       value: function() {
         var p = function(m) {
           var h = yieldCurve.filter(function(d) {
@@ -25212,7 +25309,9 @@
       k: "q"
     },
     rule: true,
-    when: compiledDay,
+    when: function() {
+      return isoLabel(curveAsOf());
+    },
     live: [ "yieldCurve" ]
   }, {
     id: "sheet-sign-pulse",
@@ -25306,7 +25405,9 @@
     },
     ring: vixPct,
     miniSel: ".subject-ring > svg",
-    when: compiledDay,
+    when: function() {
+      return isoLabel(liveIsoOf("vixClose")) || compiledDay();
+    },
     live: [ "sentiment", "vixClose", "vix3mClose" ]
   }, {
     id: "sheet-sign-desire",
@@ -25514,6 +25615,17 @@
   function compiledDay() {
     return dataCompiledLabel;
   }
+  function isoLabel(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    return m ? MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1] : "";
+  }
+  function paintWhen(sheet) {
+    var R = ROSTER_BY[sheet], when = cardDate(R);
+    if (!when) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w) {
+      w.textContent = when;
+    });
+  }
   function labPeriod(R) {
     return periodOf(labRow(R.id));
   }
@@ -25579,12 +25691,40 @@
     });
     return den ? num / den : 0;
   }
+  function monthIndex(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7));
+  }
+  function cpiTrend(points) {
+    if (!points.every(function(d) {
+      return typeof d.m === "string";
+    })) return slopeOf(points.map(function(d) {
+      return d.v;
+    }));
+    var xs = points.map(function(d) {
+      return monthIndex(d.m);
+    }), n = xs.length;
+    var mx = xs.reduce(function(a, b) {
+      return a + b;
+    }, 0) / n, my = points.reduce(function(a, d) {
+      return a + d.v;
+    }, 0) / n, num = 0, den = 0;
+    points.forEach(function(d, i) {
+      num += (xs[i] - mx) * (d.v - my);
+      den += (xs[i] - mx) * (xs[i] - mx);
+    });
+    return den ? num / den : 0;
+  }
+  function cpiYear(endMonth) {
+    var to = monthIndex(endMonth);
+    return cpiYoYHistory.filter(function(c) {
+      var i = monthIndex(c.m);
+      return i > to - 12 && i <= to;
+    });
+  }
   var GROWTH_WINDOW = 8;
   function readSeason(cpi12, gdp8, prevRegime, quartersPerStep) {
     var cpiNow = cpi12[cpi12.length - 1].v;
-    var cpiSlope = slopeOf(cpi12.map(function(d) {
-      return d.v;
-    }));
+    var cpiSlope = cpiTrend(cpi12);
     var cpiDirection = cpiSlope > .02 ? "rising" : cpiSlope < -.02 ? "falling" : "steady";
     var cpiHot = cpiNow > 3, cpiCold = cpiNow < 1;
     var growthSlopeQ = slopeOf(gdp8.map(function(d) {
@@ -25628,10 +25768,8 @@
       if (i < GROWTH_WINDOW - 1) return;
       var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
       var qEnd = y + "-" + QUARTER_END_MONTH[qn];
-      var c12 = cpiYoYHistory.filter(function(c) {
-        return c.m <= qEnd;
-      }).slice(-12);
-      if (c12.length < 12) return;
+      var c12 = cpiYear(qEnd);
+      if (c12.length < 11) return;
       var r = readSeason(c12, gdpQuarterlyYoY.slice(i - GROWTH_WINDOW + 1, i + 1), prevRegime);
       prevRegime = r.regime;
       out[i] = {
@@ -25656,10 +25794,8 @@
         q: String(k),
         v: usRealGdpGrowth[k]
       });
-      var c12 = cpiYoYHistory.filter(function(c) {
-        return c.m <= y + "-12";
-      }).slice(-12);
-      if (g.length < SEASON_YEARS || c12.length < 12 || c12[11].m !== y + "-12") return;
+      var c12 = cpiYear(y + "-12");
+      if (g.length < SEASON_YEARS || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
       var r = readSeason(c12, g, prevRegime, 4);
       prevRegime = r.regime;
       [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(qn) {
@@ -25724,9 +25860,7 @@
     var cpi = cpiYoYHistory.filter(function(c) {
       return c.m >= era.from + "-01" && c.m <= endMonth;
     });
-    var cpi12 = cpiYoYHistory.filter(function(c) {
-      return c.m <= endMonth;
-    }).slice(-12);
+    var cpi12 = cpiYear(endMonth);
     var gdpEnd = -1;
     gdpQuarterlyYoY.forEach(function(d, i) {
       if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i;
@@ -25977,18 +26111,18 @@
     return [ {
       label: "Fed funds target",
       value: fedFundsRange()
-    }, {
+    }, fedFunds.lastMove ? {
       label: "Last Fed move",
       value: fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") + (fedFunds.vote ? " · " + fedFunds.vote : ""),
       wordy: true
-    }, {
+    } : null, {
       label: "First hike since",
       value: "2023 · one more signalled",
       wordy: true
-    }, {
+    }, fedFunds.next ? {
       label: "Next decision",
       value: fedFunds.next
-    } ];
+    } : null ].filter(Boolean);
   }
   function policyFactRows() {
     return policyFacts().map(function(f) {
@@ -26111,15 +26245,40 @@
     }, {
       passive: true
     });
-    document.addEventListener("touchstart", function(evt) {
-      if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide();
-    }, {
-      passive: true
+    hoverAwayAdd({
+      hit: hit,
+      touch: function(evt) {
+        if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide();
+      },
+      scroll: function() {
+        if (viaTouch) hide();
+      }
     });
-    window.addEventListener("scroll", function() {
-      if (viaTouch) hide();
-    }, {
-      passive: true
+  }
+  var hoverAway = null;
+  function hoverAwayAdd(h) {
+    if (!hoverAway) {
+      hoverAway = [];
+      document.addEventListener("touchstart", function(evt) {
+        hoverAwayLive().forEach(function(x) {
+          x.touch(evt);
+        });
+      }, {
+        passive: true
+      });
+      window.addEventListener("scroll", function() {
+        hoverAwayLive().forEach(function(x) {
+          x.scroll();
+        });
+      }, {
+        passive: true
+      });
+    }
+    hoverAway.push(h);
+  }
+  function hoverAwayLive() {
+    return hoverAway = hoverAway.filter(function(x) {
+      return x.hit.isConnected;
     });
   }
   addSources(gdpSrc);
@@ -27189,12 +27348,12 @@
     }
     drawsPage("sheet-sign-hormones", draw);
     draw();
-    HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole " + "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " + "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " + "so the two are different figures and the page says which is which: the range is the decision, the " + "chart is where money traded. Target " + fedFundsRange() + ", set " + fedFunds.asOf + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " + "— that month ran partly under the previous target. " + "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " + "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " + "both is the reason this one stands on zero rather than on its own minimum. " + "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
+    HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole " + "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " + "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " + "so the two are different figures and the page says which is which: the range is the decision, the " + "chart is where money traded. Target " + fedFundsRange() + (fedFunds.asOf ? ", set " + fedFunds.asOf : "") + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " + "— that month ran partly under the previous target. " + "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " + "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " + "both is the reason this one stands on zero rather than on its own minimum. " + "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
     function ffPeaks() {
       var out = [], mode = "up", ext = fedFundsHistory[0];
       fedFundsHistory.forEach(function(d) {
         if (mode === "up") {
-          if (d.v >= ext.v) ext = d; else if (ext.v - d.v >= 1.5) {
+          if (d.v > ext.v) ext = d; else if (ext.v - d.v >= 1.5) {
             out.push(ext);
             mode = "down";
             ext = d;
@@ -29976,6 +30135,7 @@
     eraOpen = null;
     eraShow(null);
     showCycle(currentEra);
+    repaintLive();
   }
   function rosterRow(R) {
     var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
@@ -30391,6 +30551,7 @@
     if (window.top !== window.self) return;
     if (location.protocol !== "https:" && location.hostname !== "localhost") return;
     window.addEventListener("load", function() {
+      var hadController = !!navigator.serviceWorker.controller;
       navigator.serviceWorker.register("sw.js").then(function(reg) {
         if (!reg) return;
         var last = 0;
@@ -30403,11 +30564,22 @@
         };
         document.addEventListener("visibilitychange", check);
         window.addEventListener("focus", check);
-        var reloading = false;
-        navigator.serviceWorker.addEventListener("controllerchange", function() {
-          if (reloading) return;
+        var pending = false, reloading = false;
+        var drafting = function() {
+          return Array.prototype.some.call(document.querySelectorAll("textarea, input[type=text], input:not([type])"), function(el) {
+            return el.value.trim() !== "";
+          });
+        };
+        var settle = function() {
+          if (!pending || reloading || document.visibilityState !== "hidden" || drafting()) return;
           reloading = true;
-          if (navigator.serviceWorker.controller) location.reload();
+          location.reload();
+        };
+        document.addEventListener("visibilitychange", settle);
+        navigator.serviceWorker.addEventListener("controllerchange", function() {
+          if (!hadController) return;
+          pending = true;
+          settle();
         });
       }).catch(function() {});
     });

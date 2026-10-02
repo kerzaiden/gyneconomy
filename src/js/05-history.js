@@ -322,6 +322,21 @@
          : v < 6.5 ? "warning"
          : v < 8.5 ? "serious" : "critical";
   }
+  function yearTicks(out, vals, w, X, T, B, f){
+    var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
+    if (w.cycle){
+      var stepY = Math.max(1, Math.ceil((w.y1 - w.y0 + 1) / (w.narrow ? 4 : 6)));
+      years = [];
+      for (var cyr = w.y0; cyr <= w.y1; cyr += stepY) years.push(cyr);
+    }
+    years.forEach(function(yr){
+      var i = -1;
+      for (var k = 0; k < vals.length && i < 0; k++) if (vals[k].m === yr + "-01") i = k;
+      if (i < 0) return;
+      out.unshift(vGrid(X(i), T, B));
+      out.push(xLabel(f(X(i)), yr, B + 17));
+    });
+  }
   function unempHistoryChart(Wpx, from, o){
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
@@ -341,18 +356,7 @@
     var out = [], zero = Y(0);
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-    if (o.cycle){
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY){
-        var cix = (cyr - y0) * 12; if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-      var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       if (d.v == null) return;
@@ -404,18 +408,7 @@
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
       top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-    if (o.cycle){
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY){
-        var cix = (cyr - y0) * 12; if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-      var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     var seenV = seen.map(function(d){ return d.v; });
     var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
@@ -512,18 +505,7 @@
     var out = [], zero = Y(0), avgShown = null;
     out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
       fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-    if (o.cycle){
-      var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-      for (var cyr = y0; cyr <= y1; cyr += stepY){
-        var cix = (cyr - y0) * 12; if (cix >= n) break;
-        out.unshift(vGrid(X(cix), T, B));
-        out.push(xLabel(f(X(cix)), cyr, B + 17));
-      }
-    } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-      var i = (yr - y0) * 12; if (i < 0 || i >= n) return;
-      out.unshift(vGrid(X(i), T, B));
-      out.push(xLabel(f(X(i)), yr, B + 17));
-    });
+    yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i){
       out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) +

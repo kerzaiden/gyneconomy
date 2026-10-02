@@ -19,6 +19,53 @@ async function getText(url, label) {
   return r.text();
 }
 
+const FOMC_DECISIONS = [
+  '2025-01-29', '2025-03-19', '2025-05-07', '2025-06-18', '2025-07-30', '2025-09-17', '2025-10-29', '2025-12-10',
+  '2026-01-28', '2026-03-18', '2026-04-29', '2026-06-17', '2026-07-29', '2026-09-16', '2026-10-28', '2026-12-09'
+];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dayLabel = iso => MONTHS[Number(iso.slice(5, 7)) - 1] + ' ' + Number(iso.slice(8, 10)) + ', ' + iso.slice(0, 4);
+const dayBefore = iso => new Date(Date.parse(iso + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+const MOVE_WORDS = { 25: 'a quarter point', 50: 'half a point', 75: 'three quarters of a point', 100: 'a full point' };
+
+function fedMove(obs, today, calendar) {
+  const days = obs.filter(o => o.value !== '.' && isFinite(Number(o.value)))
+    .map(o => ({ date: o.date, v: Number(o.value) })).sort((a, b) => a.date < b.date ? -1 : 1);
+  if (!days.length) throw new Error('DFEDTARU: no usable observations');
+  const now = days[days.length - 1];
+  let i = days.length - 1;
+  while (i > 0 && days[i - 1].v === now.v) i--;
+  if (i === 0) throw new Error('DFEDTARU: no change in the ' + days.length + ' days fetched');
+  const bp = Math.round((now.v - days[i - 1].v) * 100);
+  const effective = days[i].date;
+  const decided = calendar.filter(d => d < effective && d >= dayBefore(dayBefore(dayBefore(effective)))).pop() || dayBefore(effective);
+  const size = MOVE_WORDS[Math.abs(bp)] || (Math.abs(bp) / 100).toFixed(2) + ' points';
+  const next = calendar.filter(d => d > today)[0];
+  return {
+    lastMove: (bp > 0 ? '+' : '-') + (Math.abs(bp) / 100).toFixed(2),
+    lastMoveLabel: (bp > 0 ? 'raised ' : 'cut ') + size,
+    asOf: dayLabel(decided),
+    next: next ? dayLabel(next) : ''
+  };
+}
+
+function assemble(prev, fresh) {
+  const out = {};
+  for (const k of Object.keys(prev || {})) if (k !== '_meta') out[k] = prev[k];
+  for (const k of Object.keys(fresh)) out[k] = fresh[k];
+  return out;
+}
+
+async function fredRecent(series, limit) {
+  if (!KEY) throw new Error('FRED_API_KEY not set');
+  const url = 'https://api.stlouisfed.org/fred/series/observations'
+    + '?series_id=' + encodeURIComponent(series)
+    + '&api_key=' + encodeURIComponent(KEY)
+    + '&file_type=json&sort_order=desc&limit=' + limit;
+  const j = await getJson(url, series);
+  return j.observations || [];
+}
+
 async function fredLatest(series) {
   if (!KEY) throw new Error('FRED_API_KEY not set');
   const url = 'https://api.stlouisfed.org/fred/series/observations'
@@ -38,7 +85,15 @@ const MATURITIES = [
 ];
 
 async function treasuryCurve() {
-  const year = new Date().getUTCFullYear();
+  const now = new Date().getUTCFullYear();
+  try { return await treasuryCurveFor(now); }
+  catch (e) {
+    if (!/no rows/.test(e.message)) throw e;
+    return treasuryCurveFor(now - 1);
+  }
+}
+
+async function treasuryCurveFor(year) {
   const url = 'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/'
     + 'daily-treasury-rates.csv/' + year + '/all?type=daily_treasury_yield_curve'
     + '&field_tdr_date_value=' + year + '&page&_format=csv';
@@ -156,7 +211,7 @@ async function shillerSheet(parse) {
   throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape }; }
+if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS }; }
 else (async () => {
   const out = {};
   const failed = [];
@@ -169,10 +224,14 @@ else (async () => {
   } catch (e) { failed.push('yieldCurve: ' + e.message); }
 
   try {
-    const [hi, lo] = await Promise.all([fredLatest('DFEDTARU'), fredLatest('DFEDTARL')]);
+    const [hi, lo, upper] = await Promise.all([fredLatest('DFEDTARU'), fredLatest('DFEDTARL'), fredRecent('DFEDTARU', 1500)]);
     if (hi.value < 0 || hi.value > 25 || lo.value > hi.value) throw new Error('target range out of band');
-    out.fedFunds = { kind: 'object', lo: lo.value, hi: hi.value };
-    say('fedFunds    ' + lo.value + '-' + hi.value + '%  ' + hi.date);
+    let move = {};
+    try { move = fedMove(upper, new Date().toISOString().slice(0, 10), FOMC_DECISIONS); }
+    catch (e) { failed.push('fedFunds last move: ' + e.message); }
+    out.fedFunds = Object.assign({ kind: 'object', lo: lo.value, hi: hi.value }, move);
+    say('fedFunds    ' + lo.value + '-' + hi.value + '%  ' + hi.date + '  last move ' + (move.lastMove || '?') + ' on ' + (move.asOf || '?')
+        + (move.next ? ', next ' + move.next : ', next decision not in FOMC_DECISIONS'));
   } catch (e) { failed.push('fedFunds: ' + e.message); }
 
   let vix = null;
@@ -216,11 +275,14 @@ else (async () => {
     fetchedAt: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
     ok: Object.keys(out).filter(k => k !== '_meta'),
     failed: failed,
-    note: "Fetched from primary sources. CNN Fear & Greed is not here and cannot be — see the note in tools/fetch-live.js. The weekly task supplies it and copies everything into the artifact's database."
+    note: "Fetched from primary sources. A reading that failed keeps its previous document and its own asOf. The daily task copies every document into the artifact's database."
   };
+  let prev = {};
+  try { prev = JSON.parse(fs.readFileSync(OUT, 'utf8')); } catch (e) {}
+  const doc = assemble(prev, out);
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  fs.writeFileSync(OUT, JSON.stringify(out, null, 1) + '\n');
+  fs.writeFileSync(OUT, JSON.stringify(doc, null, 1) + '\n');
   console.log('\nwrote ' + path.relative(path.join(__dirname, '..'), OUT)
               + '  (' + out._meta.ok.length + ' ok, ' + failed.length + ' failed)');
   failed.forEach(f => console.log('  left alone — ' + f));

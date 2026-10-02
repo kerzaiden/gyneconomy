@@ -4,10 +4,22 @@
     vals.forEach(function(v, i){ num += (i - mx) * (v - my); den += (i - mx) * (i - mx); });
     return den ? num / den : 0;
   }
+  function monthIndex(k){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)); }
+  function cpiTrend(points){
+    if (!points.every(function(d){ return typeof d.m === "string"; })) return slopeOf(points.map(function(d){ return d.v; }));
+    var xs = points.map(function(d){ return monthIndex(d.m); }), n = xs.length;
+    var mx = xs.reduce(function(a, b){ return a + b; }, 0) / n, my = points.reduce(function(a, d){ return a + d.v; }, 0) / n, num = 0, den = 0;
+    points.forEach(function(d, i){ num += (xs[i] - mx) * (d.v - my); den += (xs[i] - mx) * (xs[i] - mx); });
+    return den ? num / den : 0;
+  }
+  function cpiYear(endMonth){
+    var to = monthIndex(endMonth);
+    return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
+  }
   var GROWTH_WINDOW = 8;
   function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
     var cpiNow = cpi12[cpi12.length - 1].v;
-    var cpiSlope = slopeOf(cpi12.map(function(d){ return d.v; }));
+    var cpiSlope = cpiTrend(cpi12);
     var cpiDirection = cpiSlope > 0.02 ? "rising" : cpiSlope < -0.02 ? "falling" : "steady";
     var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
     var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
@@ -32,8 +44,8 @@
       if (i < GROWTH_WINDOW - 1) return;
       var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
       var qEnd = y + "-" + QUARTER_END_MONTH[qn];
-      var c12 = cpiYoYHistory.filter(function(c){ return c.m <= qEnd; }).slice(-12);
-      if (c12.length < 12) return;
+      var c12 = cpiYear(qEnd);
+      if (c12.length < 11) return;
       var r = readSeason(c12, gdpQuarterlyYoY.slice(i - GROWTH_WINDOW + 1, i + 1), prevRegime);
       prevRegime = r.regime;
       out[i] = { i:i, q:d.q, y:y, qn:qn, reading:r };
@@ -48,8 +60,8 @@
       if (y > first.y) return;
       var g = [];
       for (var k = y - SEASON_YEARS + 1; k <= y; k++) if (usRealGdpGrowth[k] != null) g.push({ q:String(k), v:usRealGdpGrowth[k] });
-      var c12 = cpiYoYHistory.filter(function(c){ return c.m <= y + "-12"; }).slice(-12);
-      if (g.length < SEASON_YEARS || c12.length < 12 || c12[11].m !== y + "-12") return;
+      var c12 = cpiYear(y + "-12");
+      if (g.length < SEASON_YEARS || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
       var r = readSeason(c12, g, prevRegime, 4);
       prevRegime = r.regime;
       ["Q1", "Q2", "Q3", "Q4"].forEach(function(qn){
@@ -93,7 +105,7 @@
     var dialYears = Math.max(typicalCycleYears, Math.ceil(elapsedYears));
     var endMonth = ongoing ? cpiYoYHistory[cpiYoYHistory.length - 1].m : era.to + "-12";
     var cpi = cpiYoYHistory.filter(function(c){ return c.m >= era.from + "-01" && c.m <= endMonth; });
-    var cpi12 = cpiYoYHistory.filter(function(c){ return c.m <= endMonth; }).slice(-12);
+    var cpi12 = cpiYear(endMonth);
     var gdpEnd = -1;
     gdpQuarterlyYoY.forEach(function(d, i){ if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i; });
     var prevEntry = seasonTrackAll[gdpEnd - 1];
@@ -238,11 +250,11 @@
   }
   function policyFacts(){ return [
     { label:"Fed funds target",  value:fedFundsRange() },
-    { label:"Last Fed move",     value:fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
-                                        (fedFunds.vote ? " \u00b7 " + fedFunds.vote : ""), wordy:true },
+    fedFunds.lastMove ? { label:"Last Fed move", value:fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
+                                        (fedFunds.vote ? " \u00b7 " + fedFunds.vote : ""), wordy:true } : null,
     { label:"First hike since",  value:"2023 \u00b7 one more signalled",  wordy:true },
-    { label:"Next decision",     value:fedFunds.next }
-  ]; }
+    fedFunds.next ? { label:"Next decision", value:fedFunds.next } : null
+  ].filter(Boolean); }
   function policyFactRows(){
     return policyFacts().map(function(f){
       return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
@@ -311,8 +323,18 @@
       if (i !== shownIdx){ shownIdx = i; viaTouch = true; onIndex(i); }
     }, {passive:true});
     hit.addEventListener("touchend", function(){ lastTouch = Date.now(); }, {passive:true});
-    document.addEventListener("touchstart", function(evt){ if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide(); }, {passive:true});
-    window.addEventListener("scroll", function(){ if (viaTouch) hide(); }, {passive:true});
+    hoverAwayAdd({ hit:hit, touch:function(evt){ if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide(); },
+                   scroll:function(){ if (viaTouch) hide(); } });
   }
+  var hoverAway = null;
+  function hoverAwayAdd(h){
+    if (!hoverAway){
+      hoverAway = [];
+      document.addEventListener("touchstart", function(evt){ hoverAwayLive().forEach(function(x){ x.touch(evt); }); }, {passive:true});
+      window.addEventListener("scroll", function(){ hoverAwayLive().forEach(function(x){ x.scroll(); }); }, {passive:true});
+    }
+    hoverAway.push(h);
+  }
+  function hoverAwayLive(){ return (hoverAway = hoverAway.filter(function(x){ return x.hit.isConnected; })); }
 
   addSources(gdpSrc);

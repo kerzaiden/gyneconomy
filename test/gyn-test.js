@@ -791,7 +791,8 @@ async function openPage(p, url, sheet) {
     ? ok('live cache absent', plain.r.fgNum + '% / ' + plain.r.yld)
     : bad('live cache absent', JSON.stringify(plain.r) + ' ' + plain.errs.join(' | '));
 
-  const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75 } });
+  const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75, lastMove: '+0.25', lastMoveLabel: 'raised a quarter point',
+                                                asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' } });
   const objSeed = await loadWith(FF_SEED);
   const dates = t => (t.match(/[A-Z][a-z]{2} \d{1,2}, \d{4}/g) || []);
   const lost = dates(plain.text).filter(d => objSeed.text.indexOf(d) === -1);

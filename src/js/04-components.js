@@ -451,7 +451,7 @@
       { marker:"CBOE VIX", sub:"Sep 22 2026",
         meter:{min:9.14,max:82.69,value:14.21,optimal:{lte:20, label:"below 20"}, ends:{zone:"Calm", high:"Elevated"}},
         shortNote:"Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
-        note:"The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike \u2014 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 \u2014 still well below the ~19\u201320 long-run average. That is still the newest close the published series carries — FRED's VIXCLS has posted nothing after Sep 22 — so this reading is dated accordingly, and it is worth reading against the Treasury curve beside it, which has moved a long way since: the 10-year went from 4.96% on Sep 21 to 5.18% on Sep 24, its highest in the app's twenty-one-year record. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does \u2014 spreads widened through 2007 while the VIX stayed calm \u2014 so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
+        note:"The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike \u2014 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 \u2014 still well below the ~19\u201320 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does \u2014 spreads widened through 2007 while the VIX stayed calm \u2014 so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
         direction:"up", flagValue:"14.2", flagState:"warning" }
     ],
     shortImpression:"The published gauge says fear; the two markets it is built on say almost none is priced.",
@@ -459,6 +459,7 @@
     src:[{t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986\u20132021 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VXOCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)", u:"https://fred.stlouisfed.org/series/VXVCLS"},{t:"Cboe \u2014 Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)", u:"https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"},{t:"Federal Reserve \u2014 FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"S&P DJI via FRED \u2014 S&P 500 daily closes (SP500)", u:"https://fred.stlouisfed.org/series/SP500"},{t:"S&P DJI via FRED \u2014 Dow Jones Industrial Average daily closes (DJIA)", u:"https://fred.stlouisfed.org/series/DJIA"},{t:"Federal Reserve via FRED \u2014 10-year Treasury constant-maturity yield, daily (DGS10)", u:"https://fred.stlouisfed.org/series/DGS10"},{t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"}]
   };
   sentiment = LIVE("sentiment", sentiment);
+  liveInto("vixClose");
   var valuation = {
     kicker:"What she is priced at",
     hint:"Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months \u2014 CAPE passed 30 in 2017 and the market rose for four more years.",
@@ -470,14 +471,14 @@
         note:"Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) \u2014 the same definition the widely quoted charts use. At \u2248256% this is the highest reading in the 80-year record, clear of the 2021 peak (\u2248219%) and the dot-com peak (\u2248163%); the record low is \u224832% (Q2 1982).",
         direction:"up", flagValue:"\u2248256%", flagState:"serious" },
       { key:"cape", marker:"Shiller CAPE", sub:"cyclically-adjusted P/E ratio",
-        meter:{min:4.78,max:44.19,value:41.25,optimal:{lte:17, label:"\u2264 17\u00d7"}, ends:{zone:"Long-run mean", high:"Rich"}},
+        meter:{min:4.78,max:44.19,value:40.58,optimal:{lte:17, label:"\u2264 17\u00d7"}, ends:{zone:"Long-run mean", high:"Rich"}},
         shortNote:"Among the richest readings on record, just shy of the dot-com peak.",
-        note:"Cyclically-adjusted P/E (Sep 24 2026) vs. its ~17\u00d7 long-run average \u2014 among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999); the daily reading is multpl's update of the same data. The band ends at 17\u00d7, which is that series' own long-run mean (17.42) rather than a target \u2014 there is no level a market ought to trade at.",
-        direction:"up", flagValue:"41.3\u00d7", flagState:"serious" }
+        note:"Cyclically-adjusted P/E (Shiller's own series, September 2026) vs. its ~17\u00d7 long-run average \u2014 among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999). The band ends at 17\u00d7, which is that series' own long-run mean (17.42) rather than a target \u2014 there is no level a market ought to trade at.",
+        direction:"up", flagValue:"40.6\u00d7", flagState:"serious" }
     ],
     shortImpression:"Both gauges are at or near their record \u2014 she is priced for everything to keep going right.",
     impression:"Two independent measures of the same thing, both at or near the richest readings ever recorded: capital is worth 2.5 times the economy that produces it, and prices are 41 times a decade of earnings. Valuations are close to useless as a timing signal \u2014 they have been stretched for years and the market kept rising. What it reliably says is what the next decade's returns are likely to look like from here, and that a shock arriving at this price has further to fall before anything looks cheap.",
-    src:[{t:"Federal Reserve Z.1 via FRED \u2014 Nonfinancial corporate equities, market value (NCBEILQ027S)", u:"https://fred.stlouisfed.org/series/NCBEILQ027S"},{t:"BEA via FRED \u2014 Gross Domestic Product, nominal (GDP)", u:"https://fred.stlouisfed.org/series/GDP"},{t:"Robert Shiller \u2014 U.S. stock market data and CAPE ratio since 1871 (Yale)", u:"https://shillerdata.com/"},{t:"Shiller CAPE ratio, daily reading (multpl.com, from Shiller's data)", u:"https://www.multpl.com/shiller-pe"}]
+    src:[{t:"Federal Reserve Z.1 via FRED \u2014 Nonfinancial corporate equities, market value (NCBEILQ027S)", u:"https://fred.stlouisfed.org/series/NCBEILQ027S"},{t:"BEA via FRED \u2014 Gross Domestic Product, nominal (GDP)", u:"https://fred.stlouisfed.org/series/GDP"},{t:"Robert Shiller \u2014 U.S. stock market data and CAPE ratio since 1871 (Yale)", u:"https://shillerdata.com/"}]
   };
   valuation = LIVE("valuation", valuation);
   function valRow(k){
@@ -487,6 +488,7 @@
   valuation.rows.sort(function(a, b){ return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1); });
   var CAPE_FAIR = 17;
   valuation.tag = valuationVerdict(valRow("cape").meter.value);
+  liveInto("capeValue");
 
   var coincident = [
     {
@@ -528,6 +530,7 @@
     }
   ];
   coincident = LIVE("coincident", coincident);
+  liveInto("hyOasNow");
   function deriveVolumeTag(){
     var vol = coincident.filter(function(c){ return c.bodyTerm === "Volume"; })[0];
     if (vol) vol.tag = volumeVerdict(vol.meter.value);

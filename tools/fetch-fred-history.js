@@ -156,7 +156,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500, confidence, early) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
@@ -260,7 +260,7 @@ async function main() {
   say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
 
   const early = await earlySeasons();
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500, confidence, early));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
