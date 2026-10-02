@@ -65,7 +65,7 @@
       }
       enterEra(era, detail);
       listWrap.hidden = true; detail.hidden = false;
-      setTopbar(era.name, back);
+      setTopbar(era.name, eraPageBack = back);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function back(){

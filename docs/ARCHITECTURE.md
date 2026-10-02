@@ -590,6 +590,18 @@ with no reading, by Keren's decision.** Desire has a bare range bar and no mode 
   and the row carries no (i). A row that is a door carries the chevron only.
 - **Window on the ground, series in the menu.** The bar holds one ruler (which window); a series choice
   lives in the `⋯` menu as radio rows. Which menu is open lives in `headMenuFor`, not the DOM.
+- **The trend pill is one handler and one line** (V671). Its click is caught on `#metric-page`, which
+  travels to whichever tab opened it, so a page opened from Search or a past cycle toggles exactly like one
+  opened from the Cycle tab (until V671 the handler sat on the Cycle panel, and every pill opened from Search
+  was dead). Every chart behind a button draws its `<g class="fit">` through `fitLine` (`06-charts.js`),
+  over the same window its pill measures; the suite presses every pill and fails on one that draws nothing.
+  Under eight points the pill is not a button at all (Keren's "unavailable", V437): the annual series
+  (CAPE, Interest payments, Federal budget) reach it inside the current AI Cycle (at most four years, from
+  2023) and the Housing Cycle (six, 2003–2008).
+- **The top bar is restored from the page's home, not remembered** (V671). Each `PAGE_HOME` entry has a
+  `bar()` that returns the title and back action for its tab as it stands now: inside a past cycle the
+  Analysis home is the cycle (its name and `eraPageBack`, the way back to the list), so backing out of a
+  category page keeps the arrow. It used to restore the bare "Analysis" title, which dropped the arrow.
 - **The readout is a fixed block above the chart, never a tooltip on it.** No register under the chart.
 - **A panel built by a renderer is built once and placed, never rebuilt.** `detailTexts` is
   content-addressed (V532), so a note following a control is never frozen and never leaks.

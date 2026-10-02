@@ -610,9 +610,7 @@
         pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
     });
 
-    var pvFit = trendOf(ser, "points", "quarter").fit;
-    if (pvFit && pvFit.n > 1)
-      out.push(fitGroup({ fit:pvFit, fmt:function(v){ return v.toFixed(2) + "\u00d7"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(ser, "quarter", function(v){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
 
     return vhOpen(W, H) +
       'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
@@ -656,6 +654,7 @@
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
         '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
+    out.push(fitLine(ser, "day", function(v){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     return vhOpen(W, H) +
       'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
       ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';

@@ -265,6 +265,10 @@
     return d.y % 10 ? "" : "\u2019" + String(d.y).slice(2);
   }
 
+  function fitLine(vals, per, fmt, x0, x1, y, W, padL, padR){
+    var fit = trendOf(vals, "points", per).fit;
+    return fit && fit.n > 1 ? fitGroup({ fit:fit, fmt:fmt }, x0, x1, y, W, padL, padR) : "";
+  }
   function fitGroup(o, x0, x1, y, W, padL, padR){
     var f = o.fit, v0 = f.intercept, v1 = f.intercept + f.slope * (f.n - 1);
     var y0 = parseFloat(y(v0)), y1 = parseFloat(y(v1));

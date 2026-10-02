@@ -171,11 +171,11 @@
     metricPage.id = "metric-page"; metricPage.hidden = true;
     cyclePanel.appendChild(metricPage);
     var PAGE_HOME = {
-      cycle:    { panel:cyclePanel,    title:"Current Cycle",
+      cycle:    { panel:cyclePanel,    bar:function(){ return ["Current Cycle", null]; },
                   hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
-      analysis: { panel:analysisPanel, title:"Analysis",
+      analysis: { panel:analysisPanel, bar:function(){ return eraOpen ? [eraOpen.name, eraPageBack] : ["Analysis", null]; },
                   hide:function(){ return [byId(eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-      search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), title:"Search",
+      search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), bar:function(){ return ["Search", null]; },
                   hide:function(){ return [byId("search-home")]; } }
     };
     var homeCtx = PAGE_HOME.cycle;
@@ -188,7 +188,7 @@
       openSheet = null; openHome = null;
       metricPage.hidden = true;
       homeCtx.hide().forEach(function(n){ if (n) n.hidden = false; });
-      setTopbar(homeCtx.title, null);
+      setTopbar.apply(null, homeCtx.bar());
       if (keepScroll) return;
       var y = returnScroll;
       window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
@@ -236,7 +236,7 @@
         if (row){ e.preventDefault(); go(row); }
       });
     });
-    cyclePanel.addEventListener("click", function(e){
+    metricPage.addEventListener("click", function(e){
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
       var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
       var on = btn.getAttribute("aria-pressed") !== "true";

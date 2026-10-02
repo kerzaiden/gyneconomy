@@ -359,9 +359,7 @@
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push(avgRule(L, R, f(Y(avgV))));
-    var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
-    if (tfit && tfit.n > 1)
-      out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(NROU_NOW)));
     out.push(crossLine(T, B));
@@ -430,9 +428,7 @@
     });
     var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
     out.push(avgRule(L, R, f(Y(avgV))));
-    var tfit = trendOf(seen.map(function(d){ return d.v; }), "points", "month").fit;
-    if (tfit && tfit.n > 1)
-      out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(2) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
     out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
@@ -485,6 +481,7 @@
         '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
       '</g>');
     });
+    out.push(fitLine(kept, "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     var hovAt = 0;
     publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
       refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
@@ -535,9 +532,7 @@
       out.push(avgRule(L, R, f(avgY)));
       avgShown = avgV;
     }
-    var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "month").fit;
-    if (tfit && tfit.n > 1)
-      out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(vals.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(CPI_TARGET)));
     out.push(crossLine(T, B));
@@ -611,9 +606,7 @@
     });
     var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
     out.push(avgRule(L, R, f(Y(gAvg))));
-    var tfit = trendOf(vals.map(function(d){ return d.v; }), "points", "quarter").fit;
-    if (tfit && tfit.n > 1)
-      out.push(fitGroup({ fit:tfit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(vals.map(function(d){ return d.v; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(GDP_NORM)));
     out.push(crossLine(T, B));
@@ -665,9 +658,7 @@
                      fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
                      refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
                      vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
-    var m2Fit = trendOf(vals.filter(function(v){ return v != null; }), "points", "quarter").fit;
-    if (m2Fit && m2Fit.n > 1)
-      out.push(fitGroup({ fit:m2Fit, fmt:function(v){ return v.toFixed(1) + "%"; } }, X(0), X(n - 1), Y, R, L, 0));
+    out.push(fitLine(vals.filter(function(v){ return v != null; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
     out.push(meanRule(L, R, Y(M2_NORM)));
     return vhOpen(W, H) +
       'aria-label="Money stock growth year over year, every quarter from ' + y0 + ' to ' + y1 +
