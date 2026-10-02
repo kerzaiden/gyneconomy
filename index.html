@@ -17567,12 +17567,8 @@
       if (Math.abs(y1 - pMidY) < .6) y1 = pMidY + (v >= PULSE_PRE2008 ? -.6 : .6);
       out.push('<path class="pv-col hcol ' + (v >= PULSE_PRE2008 ? "over" : "under") + '" stroke-width="' + pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
     });
-    var pvFit = trendOf(ser, "points", "quarter").fit;
-    if (pvFit && pvFit.n > 1) out.push(fitGroup({
-      fit: pvFit,
-      fmt: function(v) {
-        return v.toFixed(2) + "×";
-      }
+    out.push(fitLine(ser, "quarter", function(v) {
+      return v.toFixed(2) + "×";
     }, X(0), X(n - 1), Y, R, L, 0));
     return vhOpen(W, H) + 'aria-label="Velocity of M2, every quarter from ' + y0 + " to " + y1 + ", against the 1959 to 2007 average of " + PULSE_PRE2008.toFixed(2) + ' times">' + out.join("") + "</svg>";
   }
@@ -17650,6 +17646,9 @@
       var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
       out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) + '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
     });
+    out.push(fitLine(ser, "day", function(v) {
+      return v.toFixed(2) + "%";
+    }, X(0), X(n - 1), Y, R, L, 0));
     return vhOpen(W, H) + 'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + " to " + hyLabel(hyOas.length - 1) + ", against the normal " + HY_NORM_LO + " to " + HY_NORM_HI + ' percent band">' + out.join("") + "</svg>";
   }
   var HIST_NOTE = {};
@@ -17939,14 +17938,10 @@
       return a + d.v;
     }, 0) / seen.length;
     out.push(avgRule(L, R, f(Y(avgV))));
-    var tfit = trendOf(seen.map(function(d) {
+    out.push(fitLine(seen.map(function(d) {
       return d.v;
-    }), "points", "month").fit;
-    if (tfit && tfit.n > 1) out.push(fitGroup({
-      fit: tfit,
-      fmt: function(v) {
-        return v.toFixed(1) + "%";
-      }
+    }), "month", function(v) {
+      return v.toFixed(1) + "%";
     }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(NROU_NOW)));
@@ -18054,14 +18049,10 @@
       return a + d.v;
     }, 0) / seen.length;
     out.push(avgRule(L, R, f(Y(avgV))));
-    var tfit = trendOf(seen.map(function(d) {
+    out.push(fitLine(seen.map(function(d) {
       return d.v;
-    }), "points", "month").fit;
-    if (tfit && tfit.n > 1) out.push(fitGroup({
-      fit: tfit,
-      fmt: function(v) {
-        return v.toFixed(2) + "%";
-      }
+    }), "month", function(v) {
+      return v.toFixed(2) + "%";
     }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(crossLine(T, B));
@@ -18142,6 +18133,9 @@
       var cx = X(i);
       out.push('<g class="hcol">' + '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx - hhOff, Y(0), Y(v), hhSw) + '"/>' + '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' + "</g>");
     });
+    out.push(fitLine(kept, "quarter", function(v) {
+      return v.toFixed(1) + "%";
+    }, X(0), X(n - 1), Y, R, L, 0));
     var hovAt = 0;
     publishGeom("householdsChart", {
       L: L,
@@ -18232,14 +18226,10 @@
       out.push(avgRule(L, R, f(avgY)));
       avgShown = avgV;
     }
-    var tfit = trendOf(vals.map(function(d) {
+    out.push(fitLine(vals.map(function(d) {
       return d.v;
-    }), "points", "month").fit;
-    if (tfit && tfit.n > 1) out.push(fitGroup({
-      fit: tfit,
-      fmt: function(v) {
-        return v.toFixed(1) + "%";
-      }
+    }), "month", function(v) {
+      return v.toFixed(1) + "%";
     }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(CPI_TARGET)));
@@ -18336,14 +18326,10 @@
       return a + d.v;
     }, 0) / n;
     out.push(avgRule(L, R, f(Y(gAvg))));
-    var tfit = trendOf(vals.map(function(d) {
+    out.push(fitLine(vals.map(function(d) {
       return d.v;
-    }), "points", "quarter").fit;
-    if (tfit && tfit.n > 1) out.push(fitGroup({
-      fit: tfit,
-      fmt: function(v) {
-        return v.toFixed(1) + "%";
-      }
+    }), "quarter", function(v) {
+      return v.toFixed(1) + "%";
     }, X(0), X(n - 1), Y, R, L, 0));
     out.push(zeroRule(L, R, zero));
     out.push(meanRule(L, R, Y(GDP_NORM)));
@@ -18453,14 +18439,10 @@
         };
       })
     });
-    var m2Fit = trendOf(vals.filter(function(v) {
+    out.push(fitLine(vals.filter(function(v) {
       return v != null;
-    }), "points", "quarter").fit;
-    if (m2Fit && m2Fit.n > 1) out.push(fitGroup({
-      fit: m2Fit,
-      fmt: function(v) {
-        return v.toFixed(1) + "%";
-      }
+    }), "quarter", function(v) {
+      return v.toFixed(1) + "%";
     }, X(0), X(n - 1), Y, R, L, 0));
     out.push(meanRule(L, R, Y(M2_NORM)));
     return vhOpen(W, H) + 'aria-label="Money stock growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run norm of " + M2_NORM + ' per cent">' + out.join("") + "</svg>";
@@ -18944,6 +18926,13 @@
       return ys.indexOf(d.y) === -1 ? "" : "’" + String(d.y).slice(2);
     }
     return d.y % 10 ? "" : "’" + String(d.y).slice(2);
+  }
+  function fitLine(vals, per, fmt, x0, x1, y, W, padL, padR) {
+    var fit = trendOf(vals, "points", per).fit;
+    return fit && fit.n > 1 ? fitGroup({
+      fit: fit,
+      fmt: fmt
+    }, x0, x1, y, W, padL, padR) : "";
   }
   function fitGroup(o, x0, x1, y, W, padL, padR) {
     var f = o.fit, v0 = f.intercept, v1 = f.intercept + f.slope * (f.n - 1);
@@ -21411,6 +21400,9 @@
     function y(v) {
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
     }
+    function pts(v) {
+      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
+    }
     function draw(key, from, to) {
       var s = series[key];
       var data = s.data;
@@ -21476,6 +21468,9 @@
           class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
         }));
       });
+      appendSvgMarkup(svg, fitLine(data.map(function(d) {
+        return d.v;
+      }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
       var crosshair = el("line", {
         x1: 0,
         x2: 0,
@@ -21511,9 +21506,7 @@
           at: function(d) {
             return qLabel(d.q);
           },
-          fmt: function(v) {
-            return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + " pts";
-          },
+          fmt: pts,
           refs: [ {
             label: "NBER recession",
             swatch: "var(--border-strong)"
@@ -21990,7 +21983,7 @@
   var calendarReset = null;
   var metricPageReset = null;
   var openIndicatorsPage = null;
-  var topbarBack = null;
+  var topbarBack = null, eraPageBack = null;
   function setTopbar(title, onBack) {
     byId("topbar-title").textContent = title;
     topbarBack = onBack || null;
@@ -23005,21 +22998,27 @@
     var PAGE_HOME = {
       cycle: {
         panel: cyclePanel,
-        title: "Current Cycle",
+        bar: function() {
+          return [ "Current Cycle", null ];
+        },
         hide: function() {
           return [ cycleViewEl, byId("today-analysis") ];
         }
       },
       analysis: {
         panel: analysisPanel,
-        title: "Analysis",
+        bar: function() {
+          return eraOpen ? [ eraOpen.name, eraPageBack ] : [ "Analysis", null ];
+        },
         hide: function() {
           return [ byId(eraOpen ? "calendar-cycle" : "calendar-list") ];
         }
       },
       search: {
         panel: document.querySelector('.tab-panel[data-tab="search"]'),
-        title: "Search",
+        bar: function() {
+          return [ "Search", null ];
+        },
         hide: function() {
           return [ byId("search-home") ];
         }
@@ -23038,7 +23037,7 @@
       homeCtx.hide().forEach(function(n) {
         if (n) n.hidden = false;
       });
-      setTopbar(homeCtx.title, null);
+      setTopbar.apply(null, homeCtx.bar());
       if (keepScroll) return;
       var y = returnScroll;
       window.requestAnimationFrame(function() {
@@ -23122,7 +23121,7 @@
         }
       });
     });
-    cyclePanel.addEventListener("click", function(e) {
+    metricPage.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest(".trendpill.can-toggle");
       if (!btn) return;
       var box = btn.closest(".page-chart, .spread-history");
@@ -24122,7 +24121,7 @@
       enterEra(era, detail);
       listWrap.hidden = true;
       detail.hidden = false;
-      setTopbar(era.name, back);
+      setTopbar(era.name, eraPageBack = back);
       window.scrollTo({
         top: 0,
         behavior: "smooth"

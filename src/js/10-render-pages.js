@@ -58,6 +58,7 @@
     function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
     function x(i, n){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
     function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
+    function pts(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; }
 
     function draw(key, from, to){
       var s = series[key];
@@ -107,6 +108,7 @@
           class: "hzn-col hcol" + (d.v < 0 ? " inv" : "")
         }));
       });
+      appendSvgMarkup(svg, fitLine(data.map(function(d){ return d.v; }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
 
       var crosshair = el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" });
       svg.appendChild(crosshair);
@@ -119,7 +121,7 @@
         shell.__geom = { vals:data, n:data.length, W:W, T:yTop, B:yBot,
                          L:x(0, data.length), R:x(data.length - 1, data.length),
                          at:function(d){ return qLabel(d.q); },
-                         fmt:function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; },
+                         fmt:pts,
                          refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
                                { label:"Normal",         swatch:"var(--good)" },
                                { label:"Inverted",       swatch:"var(--critical)" }] };
@@ -535,7 +537,7 @@
   var calendarReset = null;
   var metricPageReset = null;
   var openIndicatorsPage = null;
-  var topbarBack = null;
+  var topbarBack = null, eraPageBack = null;
   function setTopbar(title, onBack){
     byId("topbar-title").textContent = title;
     topbarBack = onBack || null;

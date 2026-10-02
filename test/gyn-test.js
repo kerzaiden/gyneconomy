@@ -125,7 +125,7 @@ async function openPage(p, url, sheet) {
   (searchFigs.length > 0 && !searchOff.length)
     ? ok('every Search row prints its card\u2019s figure', searchFigs.length + ' rows')
     : bad('every Search row prints its card\u2019s figure', JSON.stringify(searchOff.length ? searchOff : searchFigs.length));
-  const onPage = {};
+  const onPage = {}, pills = {};
   for (const [sheet, label] of READINGS_ON_SCREEN) {
     if (!await openPage(p, url, sheet)) { bad('page ' + label, 'no door'); continue; }
     await sweep(p);
@@ -160,6 +160,14 @@ async function openPage(p, url, sheet) {
     if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
     tall[label] = r.tall;
+    pills[label] = await p.evaluate(() => {
+      const b = document.querySelector('#metric-page .trendpill.can-toggle');
+      if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : 'no button';
+      b.click();
+      const box = b.closest('.page-chart, .spread-history'), fit = box && box.querySelector('.fit');
+      const on = b.getAttribute('aria-pressed') === 'true' && box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none';
+      b.click(); return on ? 'line' : 'dead';
+    });
     notes[label] = await p.evaluate(() => {
       const body = document.getElementById('detail-modal-body'), shut = document.getElementById('detail-modal-close'), out = [];
       document.querySelectorAll('#metric-page [data-detail-idx]').forEach(b => { b.click(); out.push(body.innerText); shut.click(); });
@@ -188,6 +196,10 @@ async function openPage(p, url, sheet) {
     }
   }
   {
+    const lines = Object.keys(pills).filter(k => pills[k] === 'line'), dead = Object.keys(pills).filter(k => !/^(line|unavailable)$/.test(pills[k]));
+    (lines.length >= 12 && !dead.length)
+      ? ok('every trend button draws its line', lines.length + ' lines · unavailable under eight points: ' + Object.keys(pills).filter(k => pills[k] === 'unavailable').join(', '))
+      : bad('every trend button draws its line', JSON.stringify(pills));
     const hs = Object.values(tall);
     (hs.length === READINGS_ON_SCREEN.length - NO_HISTORY.length && Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5)
       ? ok('every history draws at one height', hs.length + ' pages, ' + Math.min(...hs) + '\u2013' + Math.max(...hs) + 'px')
@@ -474,6 +486,15 @@ async function openPage(p, url, sheet) {
     (head.title === 'Mood' && head.open && head.home && after.title === 'Search' && after.list)
       ? ok('a category heading opens its page and back returns to Search')
       : bad('a category heading opens its page and back returns to Search', JSON.stringify({ head, after }));
+    await p.click('#search-list .ind-row[data-open="sheet-sign-desire"]'); await settle(p);
+    const fromSearch = await p.evaluate(() => {
+      const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
+      b.click(); const box = b.closest('.page-chart, .spread-history'), fit = box.querySelector('.fit');
+      return { bar: document.getElementById('topbar-title').textContent, on: box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none' };
+    });
+    (fromSearch && fromSearch.on)
+      ? ok('a trend button works on a page opened from Search', fromSearch.bar)
+      : bad('a trend button works on a page opened from Search', JSON.stringify(fromSearch));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
     for (const cat of ['mood', 'energy']) {
@@ -590,6 +611,12 @@ async function openPage(p, url, sheet) {
     await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-metric-valuation"]');
     await settle(p);
     const picked = await p.evaluate(() => (document.querySelector('#metric-page .hist-controls') || {}).textContent || '');
+    const bar = () => p.evaluate(() => (document.getElementById('topbar-back').hidden ? '' : '← ') + document.getElementById('topbar-title').textContent);
+    const trail = [];
+    for (let i = 0; i < 3; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
+    (trail.join(' | ') === '← Mood | ← Housing Cycle | Analysis')
+      ? ok('back walks out of a past cycle one page at a time', trail.join(' | '))
+      : bad('back walks out of a past cycle one page at a time', trail.join(' | '));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());
     await settle(p);
     const back = await p.evaluate(() => ({
