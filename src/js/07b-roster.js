@@ -6,7 +6,7 @@
     lagging:    { label:"Lagging",    hint:"confirms a turn after it has happened" }
   };
   var CATEGORIES = [
-    { key:"weather", title:"Weather", mark:weatherSvg, shown:0, insight:insightWeather },
+    { key:"weather", title:"Weather", mark:weatherSvg, shown:0, insight:insightWeather, onDial:true },
     { key:"circulation", title:"Circulation", mark:circulationSvg, shown:2, insight:insightCirculation },
     { key:"mood", title:"Mood", mark:moodSvg, shown:1, insight:insightMood },
     { key:"energy", title:"Energy", mark:boltSvg, shown:3 }
@@ -16,6 +16,8 @@
       head:"CPI", hist:{ s:cpiYoYHistory, k:"m" }, when:lastDate, cardUnit:"CPI, YoY" },
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
+    { id:"sheet-sign-market", name:"S&P 500", cat:"weather", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
+      head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
     { id:"sheet-sign-hormones", name:"Hormones", cat:"circulation", timing:"leading", mark:hormoneSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return fedFunds.asOf; }, live:["fedFunds"] },
@@ -95,7 +97,7 @@
   function compiledDay(){ return dataCompiledLabel; }
   function labPeriod(R){ return periodOf(labRow(R.id)); }
   function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
-  function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading]); }
+  function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading, marketReading]); }
   function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
   function peekOf(id, o){
     var R = ROSTER_BY[id];

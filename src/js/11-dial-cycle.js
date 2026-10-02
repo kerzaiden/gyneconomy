@@ -124,15 +124,15 @@
   // ---- the hub: the reading inside the circle ----
   var dialState;
   var hubDetailIdx = detailTexts.length; detailTexts.push("");
-  function hubSet(dateHtml, theme, meta, popupHtml){
+  function hubSet(dateHtml, theme, meta, popupHtml, cat){
     put("season-wheel-hub-date", dateHtml);
     var themeEl = byId("season-wheel-hub-theme");
     themeEl.textContent = meta.name; themeEl.classList.remove("bull", "bear");
-    var who = theme && theme !== meta.name ? theme : "";
+    var who = theme && theme !== meta.name ? theme : "", chev = '<span class="who-chev" aria-hidden="true">\u203a</span>';
     put("season-wheel-hub-detail", !who ? "" :
-      (popupHtml
-        ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + '<span class="who-chev" aria-hidden="true">\u203a</span></button>'
-        : '<div class="who">' + who + '</div>'));
+      cat ? '<button type="button" class="who" data-open="sheet-cat-' + cat.key + '" data-title="' + cat.title + '">' + who + chev + '</button>'
+      : popupHtml ? '<button type="button" class="details-link who" data-detail-idx="' + hubDetailIdx + '">' + who + chev + '</button>'
+      : '<div class="who">' + who + '</div>');
     detailTexts[hubDetailIdx] = popupHtml || "";
   }
   function quarterPopup(m, seg, i, isPresent){
@@ -144,7 +144,7 @@
       ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to) + '</span>';
     var reading = seasonReading[seg.season] || {};
     return head +
-      (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + (m.ongoing ? cycleNowNote : era.blurb) + '</p>' : '') +
+      (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + era.blurb + '</p>' : '') +
       (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
       (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
       (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
@@ -164,7 +164,8 @@
     var presentSeg = { q:last ? last.seg.q : m.reading.gdpLatest.q, from:last ? last.seg.from : 0, season:m.season, reading:m.reading };
     document.querySelector(".season-wheel-hub").classList.remove("away");
     hubSet(m.ongoing ? hubTodayHtml() : "<b>Closed,</b> " + monthLabel(m.endMonth),
-           meta.theme || meta.name, meta, quarterPopup(m, presentSeg, qs.length, true));
+           meta.theme || meta.name, meta, m.ongoing ? "" : quarterPopup(m, presentSeg, qs.length, true),
+           m.ongoing && CATEGORIES.filter(function(c){ return c.onDial; })[0]);
   }
   function hubShowQuarter(i){
     var q = dialState.quarters[i]; if (!q) return;

@@ -273,7 +273,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
+Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
 (Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
@@ -536,6 +536,14 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
+- **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
+  The hub's season button opens it (`hubSet`'s `cat`) while the dial shows today; a parked quarter or a closed
+  cycle keeps its popup (`quarterPopup`), since the Weather page is today's. The Diagnosis's Analysis leaves out
+  every `onDial` category. Weather's Insights open with `cycleNowNote` (the note the popup used to open with), then
+  the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
+  barometer. The S&P 500 card is a row reading (`marketReading` in 07-forms) whose series `sp500Years` is the same
+  `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
+  calendar years through the page option `at`.
 
 ## The season model
 

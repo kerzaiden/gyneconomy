@@ -275,12 +275,12 @@ async function openPage(p, url, sheet) {
                    cards: document.querySelectorAll('.cat-row').length } : null;
     });
     const today = await read();
-    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 4 && d.analyses.every(a => a === '0:true');
+    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 3 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
     (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
-     today.heads.join() === 'History,Analysis,Weather,Mood,Circulation,Energy,Assessment' &&
-     today.doors.join() === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
+     today.heads.join() === 'History,Analysis,Mood,Circulation,Energy,Assessment' &&
+     today.doors.join() === 'sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
     await click(p, '#diagnosis .expand-btn'); await settle(p);
@@ -312,7 +312,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 7)
+    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 6)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -473,7 +473,7 @@ async function openPage(p, url, sheet) {
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
     (st.rows.sort().join() === 'Activity,Economic power,Households,Valuations' &&
-     st.cats.join() === 'Mood,Energy' && le.rows.length > 0 && le.cats.join() === 'Mood,Circulation' && al.rows.length === list.rows && al.cats.length === 4)
+     st.cats.join() === 'Mood,Energy' && le.rows.length > 0 && le.cats.join() === 'Weather,Mood,Circulation' && al.rows.length === list.rows && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
     const infl = await shown(null, 'inflation'), mood = await shown(null, 'mood'), nil = await shown(null, 'zzzz'), back = await shown(null, '');
@@ -536,6 +536,19 @@ async function openPage(p, url, sheet) {
      curve.labels === 'Optimism+Euphoria+Anxiety+Fear+Capitulation+Despondency+Hope' && curve.now.length === 1 && curve.now[0] === feel.stage)
       ? ok('the trend card and the emotions curve read today\u2019s feeling', feel.head + ' \u00b7 ' + curve.labels)
       : bad('the trend card and the emotions curve read today\u2019s feeling', JSON.stringify({ feel, curve }));
+    await click(p, '.season-wheel-hub-detail .who'); await settle(p);
+    const wx = await p.evaluate(() => {
+      const page = document.querySelector('#sheet-cat-weather:not([hidden])');
+      return page && { bar: document.getElementById('topbar-title').textContent.trim(),
+        names: [...page.querySelectorAll('.cat-item .ci-name')].map(n => n.textContent.trim()).join('+'),
+        cards: [...page.querySelectorAll('.insights .hi-name')].map(n => n.textContent.trim()),
+        modal: !document.getElementById('detail-modal') || document.getElementById('detail-modal').hidden !== false ? false : true };
+    });
+    await p.click('#topbar-back'); await settle(p);
+    (wx && wx.bar === 'Weather' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
+     wx.cards.indexOf('In the body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The barometer') > 0)
+      ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
+      : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
     await p.click('#search-list [data-open="sheet-grp-economic-power"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,
@@ -618,8 +631,8 @@ async function openPage(p, url, sheet) {
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
-    (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 19 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+    (view && view.dial && view.today && view.tiles === 3 && view.closed && view.bar === 'Housing Cycle' &&
+     got.length === 20 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -627,7 +640,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 20 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];

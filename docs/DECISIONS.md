@@ -29,7 +29,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The category holding Economic power, Households and Activity is Energy.** Keren: "activity should be
   renamed to energy — the icon needs to embody energy"; what is left and what is spent are one reading of her
   energy. (V457)
-- **The box holding Temperature and Growth is Weather, never Season.** The season is what those two produce:
+- **The box holding Temperature, Growth and the S&P 500 is Weather, never Season.** The season is what those two produce:
   naming the box for it would put the conclusion on a level with its inputs, and the dial already shows the
   season. (V446)
 - **The VIX reading is Volatility, never Fear.** Keren: "I just realized that the VIX is the volatility index.
@@ -455,6 +455,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   years (1966, 1985), not thresholds; Keren chose the OECD over Michigan on that ground. It trails the month it
   describes by a few months. It is a leading sign, as consumer expectations are in the Conference Board's leading
   index. (V679)
+- **Weather holds the S&P 500 beside Temperature and Growth, read year by year as bull or bear, and the season in
+  the dial's centre opens it.** Keren: "When I press inflation, I want to reach the weather page … with Temperature,
+  growth, and S&P 500", its Insights saying "what it means" for the season and "in terms of bull bear market … the
+  S&P 500 history basically during the cycle". The card reads the dial's own yearly total returns, so a bull year
+  is a positive year and a bear year a negative one, with no band of ours. A past quarter or a closed cycle in the
+  dial still opens its own reading, since Weather is today's. (V680)
+- **Weather is not in the Diagnosis's Analysis.** Keren: "this means that we don't need weather under analysis.
+  Because we already have this in the cycle." The season stays in the Diagnosis's subtitle. (V680)
 
 ### Bands and verdicts
 

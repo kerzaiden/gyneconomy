@@ -38,7 +38,7 @@
     spring:{name:"Spring", theme:"Reflation", altName:null}
   };
   var seasonOverride = null;
-  var cycleNowNote = "Four years into an AI-driven bull run, growth has slowed each year since 2023 while inflation has climbed back above 3% — the stagflation stretch of the cycle, with the Fed now raising rates into it.";
+  var cycleNowNote = "Four years into an AI-driven bull run, growth is still expanding and prices are running hot.";
 
   var cpiYoYHistory = [
     {m:"1989-01", v:4.48}, {m:"1989-02", v:4.65}, {m:"1989-03", v:4.89}, {m:"1989-04", v:5.03}, {m:"1989-05", v:5.28}, {m:"1989-06", v:5.17},

@@ -26,13 +26,20 @@
       "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
         fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
       "sheet-sign-productivity-growth": productivityPage(tenth),
-      "sheet-sign-confidence": confidencePage()
+      "sheet-sign-confidence": confidencePage(),
+      "sheet-sign-market": marketPage()
     };
   }
   function confidencePage(){
     var r = confidenceReading;
     return { goodAbove:true, line:"OECD average", fmt:function(v){ return v.toFixed(1); }, tick:function(v){ return String(Math.round(v)); },
       src:CONFIDENCE_SRC, insight:confidenceInsight, info:r.info,
+      row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+  }
+  function marketPage(){
+    var r = marketReading, pct = function(v){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
+    return { goodAbove:true, line:"No change", fmt:pct, tick:function(v){ return Math.round(v) + "%"; }, at:function(d){ return String(d.y); },
+      src:sp500AnnualReturnSource, insight:marketInsight, info:r.info,
       row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
   }
   function productivityPage(tenth){
@@ -63,7 +70,7 @@
     var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
     var chart = function(w){
       return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
-        xLabel:periodTicks(vals), at:function(d){ return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y; },
+        xLabel:periodTicks(vals), at:s.at || function(d){ return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y; },
         alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };
     put(id + "-chart", histBar(histControls(id, { series:s.series })) +
@@ -197,6 +204,19 @@
         (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")),
       hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
         confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.")];
+  }
+  var ORDINAL = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
+  function marketInsight(s){
+    var h = s.series, last = h[h.length - 1], bull = h.filter(function(d){ return d.v >= 0; }), r = marketReading;
+    var bear = h.filter(function(d){ return d.v < 0; }), lastBear = bear[bear.length - 1], run = 0;
+    for (var i = h.length - 1; i >= 0 && h[i].v >= 0; i--) run++;
+    return [lede('What the whole stock market returned each year, dividends included. A year above the line is a bull year ' +
+        'and one below it a bear year, the same years the dial\u2019s inner band colours.'),
+      hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " +
+        (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") +
+        (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")),
+      hiCard("Against the record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " +
+        bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

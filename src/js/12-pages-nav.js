@@ -433,11 +433,26 @@
         " \u2014 the economy costing more faster than it is growing bigger.";
     else
       txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-    var wxLede = '<p class="hi-lede">Heat and build-up are two readings of one season, and over a whole ' +
-      'cycle they finish close together: the economy grows about as much as it costs more. When prices run ' +
-      'far ahead, the body is paying more without getting bigger.</p>';
     return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-           wxLede + hiCard("The barometer", "", txt) + '</section>';
+           lede(cycleNowNote) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + '</section>';
+  }
+  function seasonCards(m){
+    var r = seasonReading[m.season] || {};
+    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") +
+      (r.body ? hiCard("In the body", "", r.body) : "") +
+      (r.next ? hiCard("What usually comes next", "", r.next) : "");
+  }
+  function marketCycleCard(m){
+    var years = sp500Years.filter(function(d){ return d.y >= m.era.from && d.y <= m.endYear; });
+    if (!years.length) return "";
+    var bear = years.filter(function(d){ return d.v < 0; }), before = sp500Years.filter(function(d){ return d.y < m.era.from && d.v < 0; }).pop();
+    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d){
+      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%"; }).join(", ");
+    var n = function(k, what){ return (k ? (["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][k - 1] || k) : "no") + " " + what + (k === 1 || !k ? " year" : " years"); };
+    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
+    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
+      ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
+      (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
   }
   var EMOTION_CURVE = [
     ["Optimism", 0.45, "rd"], ["Euphoria", 1, "a"], ["Anxiety", 0.8, "ru"], ["Fear", 0.52, "ru"],
@@ -888,7 +903,6 @@
   }
   function analysisFor(key, d, era){
     var w = function(id){ var r = readDoor(id); return r && r.word ? r.word.toLowerCase() : ""; };
-    if (key === "weather") return seasonRuleSentence[d.season];
     if (key === "mood") return "<b>" + d.stage + "</b>: " + FEELING_RULES[d.stage] + ".";
     if (era) return eraMove(key === "circulation" ? "sheet-sign-hormones" : "sheet-sign-activity", era);
     if (key === "circulation") return "The regulator is " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
@@ -943,7 +957,7 @@
         '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
       dxSection(dxHead("History"), dxRow("Record", history)) +
       dxSection(dxHead("Analysis", null, stethoscopeSvg()),
-        categoriesShown().map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + trendCardHtml(d)) +
+        categoriesShown().filter(function(c){ return !c.onDial; }).map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + trendCardHtml(d)) +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
