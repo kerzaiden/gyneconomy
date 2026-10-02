@@ -871,6 +871,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "put a purple line so I can understand what is above the line and what is below". (V312)
 - **Several readings inside one container are separated by hairlines, not each given its own border.** That is
   how the panel Keren sent separates siblings. (V488)
+- **A category card stays white when it is touched, scrolled or hovered: no hover fill and no tap highlight.**
+  Keren: "When I click and scroll, a category container, it changes color. to faded uh, gray. Fix it so it will
+  always be white." On a phone a touch leaves `:hover` stuck on the card. (V678)
 - **A chevron on a door is the `CHEV` SVG, never a CSS border box.** A chevron drawn as a picture cannot fail
   to lay out; the border-box chevron did fail inside a `<button>`. (V450)
 - **A past cycle's category cards are built like today's: the same unit and mini chart, with the cycle's

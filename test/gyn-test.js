@@ -507,12 +507,19 @@ async function openPage(p, url, sheet) {
       await click(p, '[data-open="sheet-cat-' + cat + '"]'); await settle(p);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
+      await p.hover('#sheet-cat-' + cat + ' .cat-item');
+      lists[cat].white = await p.evaluate(c => { const i = document.querySelector('#sheet-cat-' + c + ' .cat-item'), st = getComputedStyle(i);
+        return st.backgroundColor === getComputedStyle(document.querySelector('.cat-sheet:not([hidden]) .cat-item:last-child')).backgroundColor &&
+          st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
     (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
+    (lists.mood.white && lists.energy.white)
+      ? ok('a category card stays white when touched or hovered', 'Keren, V678')
+      : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
     await p.click('.tab-btn[data-tab="search"]'); await settle(p);
     await p.click('#search-list [data-open="sheet-grp-economic-power"]'); await settle(p);
     const grp = await p.evaluate(() => ({ bar: document.getElementById('topbar-title').textContent,
