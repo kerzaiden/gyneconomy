@@ -335,6 +335,14 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
+    const spill = await p.evaluate(() => [...document.querySelectorAll('.peek-chart svg')].map(svg => {
+      const H = +svg.getAttribute('viewBox').split(' ')[3];
+      const ys = [...svg.querySelectorAll('path')].flatMap(el => [...(el.getAttribute('d') || '').matchAll(/[ML][\d.-]+,([\d.-]+)/g)].map(m => +m[1]));
+      return ys.filter(y => y < -0.5 || y > H + 0.5).length;
+    }).filter(n => n));
+    (!spill.length)
+      ? ok('a closed cycle\u2019s preview columns stay inside their card', 'none past the frame')
+      : bad('a closed cycle\u2019s preview columns stay inside their card', JSON.stringify(spill));
     (past && past.visible && past.title === 'Cycle story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));

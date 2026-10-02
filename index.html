@@ -24435,7 +24435,7 @@
       return classOf(v, i + from);
     };
     var W = PEEK_W, H = PEEK_H, padT = 6, padB = 3, zero = base == null ? 0 : base;
-    var hi = Math.max.apply(null, vals.concat([ zero ])) * 1.06, lo = Math.min(zero, Math.min.apply(null, vals)) * 1.06;
+    var hi = zero + (Math.max.apply(null, vals.concat([ zero ])) - zero) * 1.06, lo = zero + (Math.min(zero, Math.min.apply(null, vals)) - zero) * 1.06;
     var slot = W / vals.length, sw = Math.max(1.6, Math.min(7, slot * COL_FILL));
     function y(v) {
       return (padT + (H - padT - padB) * (1 - (v - lo) / (hi - lo || 1))).toFixed(1);
