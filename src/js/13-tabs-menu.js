@@ -111,13 +111,13 @@
     // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
     var built = false;
     var groups = [
-      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org|eurostat|ftportfolios|fisherinvestments|yardeni/],
+      ["Season, growth & the cycle", /CPIAUCSL|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|oecd\.org(?!\/en\/data\/indicators\/consumer)|eurostat|ftportfolios|fisherinvestments|yardeni|redschool/],
       ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
       ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
       ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|BAMLH0A0HYM2|ice\.com|series\/M2V|series\/M2SL/],
-      ["Sentiment", /VIXCLS|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
+      ["Sentiment", /consumer-confidence|CSCICP03USM665S|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/],
       ["Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/],
-      ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB/]
+      ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
     ];
     function buildSources(){
       var src = window.__sources, seen = {}, items = [];

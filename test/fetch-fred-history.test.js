@@ -94,6 +94,8 @@ ok('a quarter without its year-earlier twin is left out',
    yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
 ok('with productivity, its series is written',
    /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], 'x', null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
+ok('with consumer confidence, its series is written last',
+   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
 ok('a month averages its daily closes',
    monthlyMean([d('1990-01-02', 17.24), d('1990-01-03', 18.19), d('1990-02-01', 20)], 1, 200),
    [{ m: '1990-01', v: 17.72 }, { m: '1990-02', v: 20 }]);

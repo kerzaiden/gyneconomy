@@ -143,6 +143,22 @@
     {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
     {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
   ];
+  var CONFIDENCE_SRC = [
+    {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},
+    {t:"OECD via FRED \u2014 Composite Consumer Confidence for the United States, monthly (CSCICP03USM665S)", u:"https://fred.stlouisfed.org/series/CSCICP03USM665S"}
+  ];
+  function confidenceInfoHtml(f){
+    return '<h4>' + f.econTerm + '</h4>' +
+      '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
+        'The record, month by month, runs ' + f.span + '.</p>' +
+      '<p class="caption" style="margin-top:10px;"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
+        '100 is its long-term average. In the OECD\u2019s words, a reading above 100 \u201csignals a boost in the consumers\u2019 confidence ' +
+        'towards the future economic situation\u201d, with households \u201cless prone to save, and more inclined to spend money on major ' +
+        'purchases in the next 12 months\u201d; below 100 indicates \u201ca pessimistic attitude towards future developments in the economy\u201d.</p>' +
+      '<p class="caption" style="margin-top:10px;">It is built from household surveys of their finances, the economy, unemployment and ' +
+        'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
+      srcBlock(CONFIDENCE_SRC);
+  }
   function productivityInfoHtml(f){
     return '<h4>' + f.econTerm + '</h4>' +
       '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +

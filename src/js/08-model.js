@@ -119,6 +119,7 @@
   // ---- The diagnosis: how she feels, and what has followed ----
   var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05, STRETCHED = 80;
   var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
+  var FEELING_STATE = { Hope:"good", Optimism:"good", Euphoria:"warning", Anxiety:"warning", Fear:"serious", Capitulation:"critical", Despondency:"serious" };
   function seasonHalf(season){ return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool"; }
   function rankToDate(prior, v){
     if (v == null || prior.length < 12) return null;
@@ -186,7 +187,7 @@
   var followedCache = null;
   function whatFollowed(){
     if (followedCache) return followedCache;
-    var S = marketMonths(), cells = {}, last = null, prevKey = null, from = null;
+    var S = marketMonths(), cells = {}, bySeason = {}, last = null, prevKey = null, from = null;
     S.vol.forEach(function(d){
       var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
       if (!f || !season || i == null || i + 12 >= S.sp.length) return;
@@ -196,6 +197,7 @@
       var key = stage + "|" + seasonHalf(season), c = cells[key] = cells[key] || { months:0, spells:0, higher:0, gains:[] };
       var gain = S.sp[i + 12].v / S.sp[i].v - 1;
       c.months++; if (gain > 0) c.higher++; c.gains.push(gain);
+      var sk = stage + "|" + seasonGroup(season); bySeason[sk] = (bySeason[sk] || 0) + 1;
       if (key !== prevKey) c.spells++;
       prevKey = key;
     });
@@ -203,7 +205,7 @@
       var g = cells[k].gains.slice().sort(function(a, b){ return a - b; });
       cells[k].median = g[Math.floor(g.length / 2)]; cells[k].worst = g[0];
     });
-    followedCache = { cells:cells, from:from };
+    followedCache = { cells:cells, bySeason:bySeason, from:from };
     return followedCache;
   }
   function lastFeeling(S, m){

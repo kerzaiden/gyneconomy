@@ -112,6 +112,38 @@
     };
   })(productivityRecord);
 
+  // ---- Consumer confidence ----
+  var CONFIDENCE_LINE = 100;
+  var confidenceRecord = (function(){
+    var h = confidenceHistory;
+    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
+             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
+  })();
+  function confidenceWord(v){
+    if (v >= CONFIDENCE_LINE) return { state:"good", text:"Confident",
+      says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
+    return { state:"warning", text:"Pessimistic",
+      says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
+  }
+  var confidenceReading = (function(R){
+    var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
+    var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
+    return {
+      bodyTerm:"Consumer confidence", info:function(){ return confidenceInfoHtml(confidenceReading); },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-confidence-chart"></div><div id="sheet-sign-confidence-highlights"></div>'; } },
+      econTerm:"Consumer confidence", metricSub:"OECD index, United States, " + at,
+      metric:R.now.v.toFixed(1), tag:{ state:word.state, text:word.text }, wordSays:word.says,
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:CONFIDENCE_LINE, label:"\u2265 100"}, ends:{ low:"Pessimistic" } },
+      span:span,
+      get peek(){
+        return colPeek(confidenceHistory.map(function(d){ return d.v - CONFIDENCE_LINE; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
+      },
+      lead:"",
+      caption:at + ", the OECD\u2019s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word.says +
+        ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
+    };
+  })(confidenceRecord);
+
   /* ---- Institutional trust is not in this panel ---- */
 
   /* ---- The deficit, year by year ---- */

@@ -106,14 +106,15 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500) {
+function emit(fedFunds, volatility, stamp, fiscal, treasury, productivity, sp500, confidence) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
   return `  var fedFundsHistory = [${rows(fedFunds)}];
   var volatilityHistory = [${rows(volatility)}];
 ` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
     (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
-    (sp500 ? '\n  var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '');
+    (sp500 ? '\n  var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '') +
+    (confidence ? '\n  var confidenceHistory = [' + rows(confidence) + '];\n' : '');
 }
 
 function treasuryBlock(t) {
@@ -195,7 +196,11 @@ async function main() {
   const sp500 = await shillerSheet(rows => priceFromRows(rows, SP500_FROM, new Date().toISOString().slice(0, 7)));
   say('S&P 500       ' + sp500.length + ' months, ' + sp500[0].m + ' → ' + sp500[sp500.length - 1].m + ' (Shiller, monthly average of daily closes)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500));
+  const confidence = monthlyLevels(await fredSeries('CSCICP03USM665S', '1960-01-01'), 50, 150);
+  if (!confidence.length) throw new Error('CSCICP03USM665S: no month inside the band');
+  say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, new Date().toISOString().slice(0, 10), fiscal, treasury, productivity, sp500, confidence));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

@@ -525,6 +525,15 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   change and its share of the best change since momentum last turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
+- **Mood and season** (V679): `whatFollowed` also counts each month's feeling by its season (`bySeason`, the four
+  seasons of `seasonGroup`). The Analysis's trend card (`trendCardHtml`) sets today's feeling in today's season
+  against the other three pooled; the Mood page's Insights (`insightMood`) draws the emotions curve
+  (`EMOTION_CURVE`: the seven feelings in the order of Keren's chart, heights drawn, not measured) and what followed
+  today's feeling a year later. Both read the same counts as the record, and `repaintDiagnosis` repaints every category's
+  Insights after a live reading lands, so the curve moves with the VIX.
+- **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in 03-data, a split
+  page against the OECD's 100 line, and its history `confidenceHistory` (FRED CSCICP03USM665S, monthly from 1960)
+  through the Backfill. FRED is not reachable from a cloud session, so the series lands by running the Backfill.
 
 ## The season model
 
@@ -577,7 +586,7 @@ it is the level of the spread that forecasts, not the crossing.
 ## Pages and components
 
 **A history page is three containers**: control on the page's ground, the history container (head,
-readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
+readout, picture, trend), the reading container. All twelve share one frame, `histFrame`, and one head,
 `histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
 the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
 `divergeChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis

@@ -139,6 +139,9 @@
   function houseSvg(){ return markSvg(
     '<path d="M3.4 10.9 12 4.1l8.6 6.8" stroke-width="1.9"/>' +
     '<path d="M5.7 9.6v9.7h12.6V9.6" stroke-width="1.9"/>'); }
+  function bagSvg(){ return markSvg(
+    '<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/>' +
+    '<path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>'); }
   function sunriseSvg(){ return markSvg(
     '<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' +
     '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' +
