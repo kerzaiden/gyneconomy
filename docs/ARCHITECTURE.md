@@ -515,14 +515,13 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
   cut-offs, `lastFeeling`'s carrying, the Diagnosis (i)) are retired; the V685 commit is the last copy with them.
-- **Her story this cycle** (V686, `cycleStory` in 08-model, `storyHtml` and `storyText` in 12-pages-nav): a second
-  `.insights` box on the Mood page, headed by `highlightsHtml`'s `head`. For the cycle on screen (`eraOpen`, else
-  `currentEra`), the `moodTrack` months inside its years: the first, the highest and lowest `pct`, the last (today's `moodToday` for the open
-  cycle), told in month order, with the high or low folded into the opening or closing beat when they share a
-  month, and the two emotions with the most months. `replaceInsights` swaps every `.insights` box of a category on a
-  repaint, so the second box never doubles; `eraShow` runs it on entering and leaving a past cycle, so the box
-  follows the cycle. It replaced Emotion × Season (a twelve-by-four grid with a slid test),
-  which Keren found uninformative.
+- **Her story this cycle** (V686, V688; `cycleStory` in 08-model, `moodCard`, `storyBeats` and `storyText` in
+  12-pages-nav): the text of the Mood page's "She's in …" card, for the cycle on screen (`eraOpen`, else
+  `currentEra`): the `moodTrack` months inside its years, the first, the highest and lowest `pct`, the last (today's
+  `moodToday` for the open cycle), told in month order, with the high or low folded into the opening or closing
+  beat when they share a month, and the two emotions with the most months. `eraShow` runs `replaceInsights` on
+  entering and leaving a past cycle, so the card follows the cycle. `moodFigures` is the first fact of `moodInfo`.
+  It replaced Emotion × Season (a twelve-by-four grid with a slid test), which Keren found uninformative.
 - **The record is computed at load, never written down** (`feelingTrack`): every month from the season track's
   first quarter (Dec 1989) with an emotion, its season group, and the S&P 500 twelve months on (`yearAfter`).
 - **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same

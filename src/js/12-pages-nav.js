@@ -345,11 +345,8 @@
       read.appendChild(val);
     }
     var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-    if (!word || !word.textContent.trim()){
-      var inline = val ? val.querySelector(".tag") : null;
-      if (inline) word = inline;
-    }
-    if (word && word.textContent.trim()){ word.classList.add("ci-word"); read.appendChild(word); }
+    if (!word || !word.textContent.trim()) word = (val && val.querySelector(".tag")) || document.createElement("span");
+    word.classList.add("ci-word"); read.appendChild(word);
     body.appendChild(read);
     var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
     if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
@@ -495,26 +492,30 @@
     return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' +
       (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
   }
-  function moodInfo(){
-    return '<h4>Her mood</h4>' + facts([
+  function moodInfo(d){
+    return '<h4>Her mood</h4>' + facts([moodFigures(d),
       "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
       "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor\u2019s euphoria is not another\u2019s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.",
       "The chart, its stages and their heights are the cycle of market emotions\u2019, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren\u2019s call; the three months are Claude\u2019s default.",
-      "Desire and the Treasury spread are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast."
+      "Desire and the Treasury spread are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.",
+      "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month."
     ]) + srcBlock(MOOD_SRC);
   }
-  function moodCard(d){
+  function moodFigures(d){
     var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
-    return hiCard("She\u2019s in " + d.word, "", "Her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) +
+    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) +
       " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) +
-      ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".");
+      ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
+  }
+  function moodCard(d){
+    var c = eraOpen || currentEra, s = cycleStory(c);
+    return hiCard("She\u2019s in " + d.word, "", s ? c.name + ", " + c.from + "\u2013" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
   }
   function insightMood(){
     var d = moodToday();
     var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor\u2019s euphoria is not another\u2019s.");
     if (!d || !d.word) return highlightsHtml([intro], "", "");
-    return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo())) +
-      storyHtml();
+    return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo(d)));
   }
   function storyBeats(s, open){
     var ev = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
@@ -530,17 +531,6 @@
   function storyText(s, open){
     return storyBeats(s, open) + " Most of it she spent in " +
       s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
-  }
-  function storyInfo(){
-    return '<h4>Her story this cycle</h4>' + facts([
-      "The cycle on screen is told from her emotion month by month, read as on the cycle of market emotions above: where she opened, her high and her low (the months her mood ranked highest and lowest against her own history), and where she closed, in the order they came.",
-      "The two emotions she spent most months in close each story. The record of her emotions starts in " + monthLabel(moodTrack().filter(function(x){ return x.word; })[0].m) + "; an open cycle is told to the latest month."
-    ]);
-  }
-  function storyHtml(){
-    var c = eraOpen || currentEra, s = cycleStory(c);
-    if (!s) return "";
-    return highlightsHtml([hiCard(c.name + " \u00b7 " + c.from + "\u2013" + (c.to || "now"), "", storyText(s, c.ongoing))], "", moreRow(storyInfo()), "Her story this cycle");
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },

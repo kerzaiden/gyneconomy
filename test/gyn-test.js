@@ -288,7 +288,7 @@ async function openPage(p, url, sheet) {
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: (d.querySelector('.trend-text') || {}).textContent,
                    story: [...d.querySelectorAll('.trend-sub')].map(x => /^This cycle, she opened in .+ (and is now|and closed) in /.test(x.textContent)).join() === 'true',
                    told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
-                     ((b.querySelector('.hi-card .hi-name') || {}).textContent || '').split(' \u00b7 ')[0]).pop(),
+                     (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1]).pop(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -523,9 +523,10 @@ async function openPage(p, url, sheet) {
       : bad('a trend button works on a page opened from Search', JSON.stringify(fromSearch));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
-    for (const cat of ['mood', 'energy']) {
+    for (const cat of ['circulation', 'mood', 'energy']) {
       await click(p, '[data-open="sheet-cat-' + cat + '"]'); await settle(p);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
+        tall: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => Math.round(i.getBoundingClientRect().height)),
         names: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+') }), cat);
       await p.hover('#sheet-cat-' + cat + ' .cat-item');
       lists[cat].white = await p.evaluate(c => { const i = document.querySelector('#sheet-cat-' + c + ' .cat-item'), st = getComputedStyle(i);
@@ -537,6 +538,10 @@ async function openPage(p, url, sheet) {
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
+    const uneven = Object.keys(lists).filter(c => Math.max(...lists[c].tall) - Math.min(...lists[c].tall) > 1);
+    (!uneven.length)
+      ? ok('every card on a category page stands the same height', Object.keys(lists).map(c => c + ' ' + lists[c].tall[0] + 'px').join(', '))
+      : bad('every card on a category page stands the same height', JSON.stringify(uneven.map(c => [c, lists[c].tall])));
     (lists.mood.white && lists.energy.white)
       ? ok('a category card stays white when touched or hovered', 'Keren, V678')
       : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
@@ -557,7 +562,7 @@ async function openPage(p, url, sheet) {
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === 'Insights+Her story this cycle:1' && feel.stage.toUpperCase() === cyc.now[0])
+     cyc.es === 'Insights:1' && feel.stage.toUpperCase() === cyc.now[0])
       ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
       : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
