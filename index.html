@@ -20310,7 +20310,7 @@
   function seasonGroup(key) {
     return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
   }
-  var CALM = 20, FRIGHTENED = 80, RISE = 20, NEAR_HIGH = .05, STRETCHED = 80;
+  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = .65, NEAR_HIGH = .05, STRETCHED = 80;
   var FEELINGS = [ "Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency" ];
   function seasonHalf(season) {
     return season === "summer" || season === "autumn" || season === "lateautumn" ? "warm" : "cool";
@@ -20322,21 +20322,21 @@
     }).length / prior.length;
   }
   function readFeeling(f) {
-    if (f.fear == null || f.trend == null) return null;
+    if (f.fear == null || f.mom == null) return null;
     if (f.fear >= 90 && f.dd <= -.15) return "Capitulation";
-    if (f.trend < 0 && f.fear >= 60) return "Fear";
+    if (f.mom < 0 && f.fear >= 60) return "Fear";
     if (f.dd <= -.1 && f.fearPeak >= FRIGHTENED && f.fear <= f.fearPeak - RISE) return "Despondency";
     if (f.fear3 != null && f.fear3 < CALM && f.fear - f.fear3 >= RISE && f.dd >= -.1) return "Anxiety";
-    if (f.trend > 0 && f.wasBroken) return "Hope";
-    if (f.trend > 0 && f.dd >= -NEAR_HIGH && f.fear < CALM) return "Euphoria";
-    if (f.trend > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
+    if (f.mom > 0 && f.wasNegative) return "Hope";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
+    if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
     return null;
   }
   function readPosture(stage, half, f) {
     var afraid = stage === "Fear" || stage === "Capitulation";
     if (half === "cool" && (afraid || stage === "Anxiety")) return "Offense";
     if (half === "warm" && afraid) return "Patience";
-    if (half === "warm" && f.trend < 0) return "Defense";
+    if (half === "warm" && f.mom < 0) return "Defense";
     if (half === "warm" && (stage === "Euphoria" || stage === "Optimism") && f.stretch >= STRETCHED) return "Prepare";
     return "Neutral";
   }
@@ -20344,12 +20344,14 @@
   function marketMonths() {
     if (marketCache) return marketCache;
     var sp = sp500MonthlyHistory, vol = volatilityHistory, spAt = {}, volAt = {};
-    var top = -Infinity, mom = [], dd = [];
+    var top = -Infinity, mom = [], best = [], dd = [];
     sp.forEach(function(d, i) {
       spAt[d.m] = i;
       top = Math.max(top, d.v);
       dd.push(d.v / top - 1);
       mom.push(i >= 12 ? d.v / sp[i - 12].v - 1 : null);
+      var prevPos = i > 0 && mom[i - 1] > 0 && best[i - 1] != null;
+      best.push(mom[i] > 0 ? Math.max(mom[i], prevPos ? best[i - 1] : -Infinity) : null);
     });
     var fearRank = vol.map(function(d, j) {
       volAt[d.m] = j;
@@ -20367,28 +20369,13 @@
       spAt: spAt,
       volAt: volAt,
       mom: mom,
+      best: best,
       dd: dd,
       fearRank: fearRank,
       quarterKeys: Object.keys(quarters).sort(),
       quarters: quarters
     };
-    marketCache.trend = trendAgainstCash(marketCache);
     return marketCache;
-  }
-  function trendAgainstCash(S) {
-    var at = {}, first = fedFundsHistory[0].m, last = null;
-    fedFundsHistory.forEach(function(d) {
-      at[d.m] = d.v;
-    });
-    var cash = S.sp.map(function(d) {
-      if (at[d.m] != null) last = at[d.m];
-      return d.m < first ? null : 1 + last / 1200;
-    });
-    return S.sp.map(function(d, i) {
-      if (i < 12 || cash[i - 11] == null) return null;
-      for (var c = 1, k = i - 11; k <= i; k++) c *= cash[k];
-      return S.mom[i] - (c - 1);
-    });
   }
   function seasonInMonth(S, m) {
     var s = null;
@@ -20406,7 +20393,7 @@
   }
   function marketFacts(S, m, fearNow) {
     var i = S.spAt[m], j = S.volAt[m];
-    if (i == null || j == null || S.trend[i] == null) return null;
+    if (i == null || j == null || S.mom[i] == null) return null;
     var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v) {
       return v != null;
     });
@@ -20416,8 +20403,9 @@
     return {
       m: m,
       dd: S.dd[i],
-      trend: S.trend[i],
-      wasBroken: S.trend.slice(Math.max(0, i - 3), i).some(function(v) {
+      mom: S.mom[i],
+      share: S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
+      wasNegative: S.mom.slice(Math.max(0, i - 3), i).some(function(v) {
         return v != null && v < 0;
       }),
       fear: fearNow != null ? fearNow : S.fearRank[j],
@@ -20483,6 +20471,7 @@
       facts: f,
       month: at,
       posture: readPosture(stage, half, f),
+      bestMom: S.best[i],
       after: i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null
     };
   }
@@ -20511,7 +20500,8 @@
       month: lastM,
       posture: readPosture(stage, half, f),
       record: rec.cells[stage + "|" + half] || null,
-      recordFrom: rec.from
+      recordFrom: rec.from,
+      bestMom: S.best[S.sp.length - 1]
     };
   }
   function vitalRingSvg(pct, state, label, cls) {
@@ -23867,11 +23857,11 @@
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
   var FEELING_RULES = {
-    Hope: "the trend has just turned intact after being broken",
-    Optimism: "the trend intact, within 5% of the high, fear not calm",
-    Euphoria: "the trend intact, within 5% of the high, fear calm",
+    Hope: "momentum has just turned positive after being negative",
+    Optimism: "rising, within 5% of the high, momentum at 65% or more of this bull’s best or fear not calm",
+    Euphoria: "within 5% of the high, momentum under 65% of this bull’s best, fear calm",
     Anxiety: "fear up 20 points from calm in three months, within 10% of the high",
-    Fear: "the trend broken, fear in its top 40%",
+    Fear: "momentum negative, fear in its top 40%",
     Capitulation: "fear in its top tenth, price 15% or more off its high",
     Despondency: "fear 20 points down from a frightened peak, price still 10% down"
   };
@@ -23895,7 +23885,7 @@
     Offense: "Fear has arrived after the body cooled.",
     Patience: "Fear in a warm body, where the falls have gone furthest: wait for her to cool.",
     Prepare: "Near her high, stretched and still warm: slow down before the body asks.",
-    Defense: "The trend has broken while the body is still warm.",
+    Defense: "Momentum has turned negative while the body is still warm.",
     Neutral: "No posture the record singles out."
   };
   var BODY_SAYS = {
@@ -23912,12 +23902,6 @@
   }, {
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
-  }, {
-    t: "Board of Governors of the Federal Reserve System — Federal Funds Effective Rate (FEDFUNDS), via FRED: cash for the trend",
-    u: "https://fred.stlouisfed.org/series/FEDFUNDS"
-  }, {
-    t: "Moskowitz, Ooi & Pedersen — Time Series Momentum, Journal of Financial Economics 104(2), 2012 (a market’s past twelve months against Treasury bills)",
-    u: "https://doi.org/10.1016/j.jfineco.2011.11.003"
   }, {
     t: "Alexandra Pope & Sjanie Hugo Wurlitzer — Wild Power (Hay House, 2017); Red School",
     u: "https://www.redschool.net/"
@@ -23999,14 +23983,14 @@
   function diagnosisInfo(d) {
     return "<h4>Diagnosis</h4>" + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") + facts(FEELINGS.map(function(w) {
       return "<b>" + w + "</b>: " + FEELING_RULES[w];
-    }).concat([ "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; near the high is within 5%. These lines are Keren’s, from the research, not a published standard. The trend is the S&amp;P 500’s last twelve months against cash, the effective federal funds rate compounded month by month: intact when it beat cash, broken when cash won (Moskowitz, Ooi and Pedersen’s time-series momentum).", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast." ])) + srcBlock(DIAG_SRC);
+    }).concat([ "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; slowing is under 65% of the bull’s best; near the high is within 5%. These lines are Keren’s, from the research, not a published standard.", "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.", "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast." ])) + srcBlock(DIAG_SRC);
   }
   function assessmentFor(d, era) {
     if (era) return postureLine(d) + (d.after == null ? "" : dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>."));
     var r = d.record, watch = [];
     var rec = r ? "Since " + monthLabel(whatFollowed().from) + ": higher a year later in " + Math.round(r.higher / r.months * 100) + "% of " + r.months + " months in " + r.spells + " separate spells, median " + pct(r.median) + ", worst " + pct(r.worst) + "." : "";
     if (d.facts.fear < FRIGHTENED) watch.push("Fear up 20 points from calm reads Anxiety");
-    if (d.half === "warm") watch.push("The trend breaking reads Defense", "Fear after the body cools to Winter or Spring reads Offense"); else watch.push("Fear arriving now, with the body cool, reads Offense");
+    if (d.half === "warm") watch.push("Momentum turning negative reads Defense", "Fear after the body cools to Winter or Spring reads Offense"); else watch.push("Fear arriving now, with the body cool, reads Offense");
     return postureLine(d, rec) + dxRow("Watch", watch.map(function(x) {
       return "<li>" + x + "</li>";
     }).join(""), true);

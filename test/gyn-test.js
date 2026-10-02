@@ -596,7 +596,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 4 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 19 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 18 && live.length >= 15 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -604,7 +604,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];

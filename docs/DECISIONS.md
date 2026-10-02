@@ -443,11 +443,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The high-yield spread is Desire's figure and appears on no other reading.** It was once tagged good on
   Desire and warning elsewhere; Keren: "is it the same thing? If so, unite it". (V464)
 - **Industrial output keeps a card with no history chart.** ISM's history is not free. (V658)
-- **Momentum is Mood's first reading: the S&P 500's monthly average against the same month a year earlier
-  (Shiller's series, the one the Diagnosis already read), leading, with its own card, page and history.** Keren:
-  "place another category under mood. Call it momentum … make judgment calls on how to evaluate that. And make
-  the KPI as intuitive as possible." It is the market's pace, not its altitude; the season does not read it
-  (the season is CPI and GDP, and no season points to an asset class). (V670, V672)
+- **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
+  informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
+  alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
+  did before V672: the twelve-month change against zero, with Keren's 65% line splitting Euphoria from Optimism.
+  (V672, V677)
 
 ### Bands and verdicts
 
@@ -508,30 +508,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
-- **Momentum is a trend alarm: has the S&P 500's last twelve months beaten cash? Intact if it has, Broken if
-  not; the figure is the margin in points, signed.** Keren questioned reading 1950 as the same economy and asked
-  whether a Momentum reading is needed at all and how it could give "distinct and prominent conclusions"; of the
-  options put to her she chose "Trend alarm". The year is the monthly average against the same month a year
-  earlier, price only; cash is the effective federal funds rate (FRED FEDFUNDS, from July 1954), compounded
-  monthly over the same twelve months, standing in for the Treasury bills of Moskowitz, Ooi & Pedersen 2012
-  (time-series momentum). Cash is the only line and moves with the era's own rates, which answers the 1950
-  question: nothing is a fixed average across economies. It was chosen over the three-month speed because, since
-  1955, the speed changed sign about 186 times against the trend's 64 and gave no return edge, while a broken
-  trend roughly doubled the odds of a 15%+ fall within a year (20% against 9%, computed live in the Insights).
-  The alarm speaks to the risk of a deep fall, not the average return, and the (i) says so; it was early in 1969,
-  1973, 2000 and 2007 and late in 1962, 1987 and 2022. The speed stays as one Insights card (the last three
-  months against the three before). The chart is the margin, month by month, around cash. This replaces V674's
-  speedometer and cruising speed, V673's pace comparison and V672's 65%-of-the-bull's-best word; the Diagnosis
-  reads the same trend since V677. RSI, MACD and stochastics were weighed and
-  declined: trading oscillators for daily bars, with 70/30 lines that are convention with no primary source.
-  (V672, V673, V674, V675)
 - **Every line that says what followed also says how many separate spells it rests on, not only how many
   months.** Keren said "go" to applying time series analysis this way: neighbouring months share most of their next
   year (serial dependence), so a share of months overstates its own weight. The Diagnosis's record reads "N months
-  in S separate spells"; Momentum's odds add the turns (since 1955 the trend broke 32 times and a 15%+ fall followed
-  6 within a year; it turned intact 33 times and a fall followed 2), all computed live. Forecasting models (ARIMA,
+  in S separate spells", computed live. Forecasting models (ARIMA,
   Holt-Winters) were weighed and declined: a dozen cycles is too few, and they would print numbers no source set.
-  (V676)
+  (V676, V677)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its
@@ -1039,15 +1021,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Capitulation, Despondency.** Keren chose the chart's own words; this reopens V236's "drop the emotions" for
   the Diagnosis only. (V664)
 - **The cut-offs are Keren's, as tested: calm below the 20th percentile, frightened from the 80th, rising 20
-  points in three months, near the high within 5%; Euphoria keeps the tested rule.** (V664) V677 dropped the
-  fifth, slowing under 65% of the bull's best.
-- **The Diagnosis reads Momentum's trend: intact or broken against cash, not the twelve-month change against
-  zero, and no 65% line.** Keren: "the diagnosis should use intact or broken trend." Hope is the trend just turned
-  intact; Fear and Defense need it broken; Optimism and Euphoria need it intact, and Euphoria is now the trend
-  intact near the high with fear calm. With no slowing line, Euphoria takes calm months Optimism used to hold:
-  since 1986 it names 85 months against 59, Optimism 148 against 192, Hope 40 against 28, Anxiety 32 against 25,
-  and today's record (Optimism, warm) reads 63% of 71 months instead of 72% of 98. Today still reads Optimism and
-  Prepare. (V677)
+  points in three months, slowing under 65% of the bull's best, near the high within 5%; Euphoria keeps the
+  tested rule.** (V664)
 - **The posture word carries its record in its (i).** Keren's choice. (V664)
 - **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
 

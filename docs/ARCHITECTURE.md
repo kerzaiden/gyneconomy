@@ -508,29 +508,20 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   Fear, Capitulation, Despondency. `readFeeling` in 08-model names one from facts knowable that month, in this
   order, first match wins: Capitulation, Fear, Despondency, Anxiety, Hope, Euphoria, Optimism; a month no rule
   names keeps the last feeling named. The cut-offs are Keren's, confirmed from the research: calm below the 20th
-  percentile of fear's own history, frightened from the 80th, rising 20 points in three months, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
+  percentile of fear's own history, frightened from the 80th, rising 20 points in three months, slowing under 65%
+  of the bull's best twelve-month change, near the high within 5%; the rule-specific lines (fear 60 and 90, 10% and
   15% off the high) are the research's stage table as she supplied it. **Euphoria keeps the tested rule** (V664):
   it needs calm fear; valuations are not part of it.
 - **The posture** (`readPosture`): Offense (Fear, Capitulation or Anxiety in a cool half), Patience (Fear or
-  Capitulation, warm), Defense (the trend broken, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
+  Capitulation, warm), Defense (momentum negative, warm), Prepare (Euphoria or Optimism, warm, CAPE in the top fifth
   of its own history), Neutral otherwise. Warm is Summer and both Autumns (`seasonHalf`).
 - **The record is computed at load, never written down** (`whatFollowed`): every month from the season track's
   first quarter (Dec 1989) with a VIX rank and a year to look forward, by feeling and half: months, spells, how many
   were higher a year later, the median and the worst. Fear is `volatilityHistory` ranked against every month
   before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
   live VIX close ranked against those monthly averages.
-- **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
-  arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
-  the margin over cash (`momentumMargins`: the twelve-month change less `momentumCash`, the fed funds rate
-  compounded over the same months, with the newest Fed month carried until the next is published) for the page and
-  the roster. Its word is the margin's sign, and `marketMonths` keeps it as `S.trend` so the Diagnosis reads the same trend (V677); `momentumOdds` counts, from the same
-  arrays, how often a 15%+ fall followed within a year on each side, by month and by turn (`momentumFell`; a turn
-  is the first month of each spell, V676); `momentumSpeed` survives only for the speed
-  card (V675).
-  Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
-  its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.
-- **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
-  workbook the CAPE fetcher reads): the card reads its three-month speed; the Diagnosis reads the twelve-month
+- **The Diagnosis's momentum** is Shiller's monthly S&P 500 (Mood's Momentum card was dropped in V677) (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
+  workbook the CAPE fetcher reads): the Diagnosis reads the twelve-month
   change and its share of the best change since momentum last turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
