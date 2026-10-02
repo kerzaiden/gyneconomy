@@ -235,58 +235,61 @@
              bestMom:S.best[S.sp.length - 1] };
   }
 
-  // ---- Momentum: the S&P 500 against a year earlier ----
+  // ---- Momentum: the S&P 500's speed ----
   var MOMENTUM_SRC = [
     {t:"Robert Shiller — U.S. stock market data: the S&P 500’s monthly average", u:"https://shillerdata.com/"},
     {t:"The Conference Board — US Leading Indicators (stock prices are one of the ten components)", u:"https://www.conference-board.org/topics/us-leading-indicators"},
     {t:"Jegadeesh & Titman — Returns to Buying Winners and Selling Losers, Journal of Finance 48(1), 1993 (3- to 12-month formation periods)", u:"https://doi.org/10.1111/j.1540-6261.1993.tb04702.x"},
     {t:"Moskowitz, Ooi & Pedersen — Time Series Momentum, Journal of Financial Economics 104(2), 2012", u:"https://doi.org/10.1016/j.jfineco.2011.11.003"}
   ];
+  function momentumSpeed(S, i){ return i < 3 ? null : Math.pow(S.sp[i].v / S.sp[i - 3].v, 4) - 1; }
   function momentumSeries(){
     var S = marketMonths();
-    return S.sp.map(function(d, i){ return { m:d.m, v:S.mom[i] == null ? null : S.mom[i] * 100 }; })
-      .filter(function(d){ return d.v != null; });
+    return S.sp.map(function(d, i){ var v = momentumSpeed(S, i); return v == null ? null : { m:d.m, v:v * 100 }; }).filter(Boolean);
   }
   function momentumPct(v){
     var r = Math.round(v * 100);
-    return (r > 0 ? "+" : r < 0 ? "\u2212" : "") + Math.abs(r) + "%";
+    return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + "%";
   }
-  function momentumPace(r, n){ return Math.pow(1 + r, 12 / n) - 1; }
-  function momentumWindows(S){
-    var i = S.sp.length - 1, by = function(n){ return S.sp[i].v / S.sp[i - n].v - 1; };
-    return { i:i, m3:by(3), m6:by(6), m12:by(12), pace3:momentumPace(by(3), 3), pace6:momentumPace(by(6), 6) };
+  function momentumCruise(S){
+    var v = S.sp.map(function(d, i){ return momentumSpeed(S, i); }).filter(function(x){ return x != null; }).sort(function(a, b){ return a - b; });
+    return v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
   }
-  function momentumWord(w){
-    if (w.m3 < 0) return { state:"serious", text:"Falling", says:"She is lower than three months ago: her velocity has turned down." };
-    if (w.pace3 >= w.m12) return { state:"good", text:"Rising", says:"The latest three months are at least as fast as the year: she is gathering speed." };
-    return { state:"warning", text:"Slowing", says:"The latest three months are slower than the year: she is still climbing, but losing speed." };
+  function momentumWord(speed, cruise){
+    if (speed < 0) return { state:"serious", text:"Reversing" };
+    if (speed < cruise) return { state:"warning", text:"Slow" };
+    return { state:"good", text:"Fast" };
   }
-  function momentumPaces(w){
-    return "Over twelve months the S&amp;P 500 is " + momentumPct(w.m12) + ". Over the last six it moved " + momentumPct(w.m6) +
-      ", a pace of " + momentumPct(w.pace6) + " a year; over the last three, " + momentumPct(w.m3) + ", a pace of " +
-      momentumPct(w.pace3) + " a year.";
+  function momentumDrive(f){
+    var c = momentumPct(f.cruise);
+    return "Over the last three months the S&amp;P 500 moved at " + momentumPct(f.speed) + " a year, against a cruising speed of " + c +
+      " a year, her typical speed since " + f.since + ". In the three months before, it ran at " + momentumPct(f.before) + " a year: she is " +
+      (f.speed >= f.before ? "speeding up." : "easing off.");
   }
   var momentumReading = (function(S){
-    var w = momentumWindows(S), word = momentumWord(w), at = monthLabel(S.sp[w.i].m);
+    var i = S.sp.length - 1, speed = momentumSpeed(S, i), cruise = momentumCruise(S), word = momentumWord(speed, cruise);
+    var at = monthLabel(S.sp[i].m), f = { speed:speed, before:momentumSpeed(S, i - 3), cruise:cruise, since:S.sp[0].m.slice(0, 4),
+      year:S.mom[i] };
     return {
-      bodyTerm:"Momentum", econTerm:"S&P 500, change on a year earlier", metricSub:"S&P 500 vs. a year earlier, " + at,
-      metric:momentumPct(w.m12), tag:{ state:word.state, text:word.text }, windows:w, says:word.says, lead:"",
+      bodyTerm:"Momentum", econTerm:"S&P 500 speed, % a year", metricSub:"a year, S&P 500 over the last three months, " + at,
+      metric:momentumPct(speed), tag:{ state:word.state, text:word.text }, drive:f, lead:"",
       info:function(){ return momentumInfoHtml(momentumReading); },
       page:{ bare:true, chart:function(){ return '<div id="sheet-sign-momentum-chart"></div><div id="sheet-sign-momentum-highlights"></div>'; } },
-      caption:at + ". " + momentumPaces(w) + " " + word.says
+      caption:at + ". " + momentumDrive(f)
     };
   })(marketMonths());
-  function momentumInfoHtml(f){
-    return '<h4>' + f.econTerm + '</h4>' +
-      ledeHtml("How fast Mrs. Market’s price is moving, read the way momentum investors read a stock: its velocity over the " +
-        "trailing three to twelve months (" + f.metricSub + "). The reading is <b>" + f.tag.text + "</b>.") +
-      facts([momentumPaces(f.windows),
-        "<b>Rising</b>: up over the last three months, at a yearly pace at or above the twelve-month change.",
-        "<b>Slowing</b>: up over the last three months, but at a slower yearly pace than the twelve-month change.",
-        "<b>Falling</b>: lower than three months ago.",
-        "A three- or six-month change is put on a yearly pace by compounding it, so the windows can be compared; no line is drawn, the paces are only set against each other.",
-        "Three to twelve months is the window of the momentum research: Jegadeesh and Titman ranked stocks on their past three to twelve months, and Moskowitz, Ooi and Pedersen found the same persistence in equity indexes.",
-        "The chart is the twelve-month change, month by month. The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.",
+  function momentumInfoHtml(r){
+    var f = r.drive, c = momentumPct(f.cruise);
+    return '<h4>' + r.econTerm + '</h4>' +
+      ledeHtml("Momentum read like a speedometer: how fast Mrs. Market’s price is moving right now, in percent a year. " +
+        "The reading is <b>" + r.tag.text + "</b> (" + r.metric + " " + r.metricSub + ").") +
+      facts([momentumDrive(f),
+        "<b>Speed</b>: the S&amp;P 500’s monthly average against three months earlier, compounded to a yearly pace, the way a speedometer turns a few seconds of travel into miles an hour.",
+        "<b>Cruising speed</b>: " + c + " a year, the median of every speed reading since " + f.since + ": she ran faster in half of those months and slower in the other half. It is the same measure as the speed, recomputed with every month, not a target.",
+        "<b>Fast</b>: above cruising speed. <b>Slow</b>: moving forward, below it. <b>Reversing</b>: lower than three months ago. Zero and cruising speed are the only lines; neither is set by hand.",
+        "Over the whole year she covered " + momentumPct(f.year) + ": that is the distance, not the speed.",
+        "Three months is the short end of the momentum research’s window (Jegadeesh and Titman ranked stocks on their past three to twelve months; Moskowitz, Ooi and Pedersen found the same persistence in equity indexes). A short window reads the present quickly and moves a lot from month to month, as a speedometer does.",
+        "The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.",
         "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index."]) +
       srcBlock(MOMENTUM_SRC);
   }

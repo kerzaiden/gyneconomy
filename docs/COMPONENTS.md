@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `fba9ab0` on 2026-10-02. **72 components**, **39 shared patterns**.
+Generated from commit `d4f869f` on 2026-10-02. **74 components**, **39 shared patterns**.
 
 ## components.js
 
@@ -112,12 +112,14 @@ Generated from commit `fba9ab0` on 2026-10-02. **72 components**, **39 shared pa
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
 | **`diagnosisHtml`** | `.dx-body` `.dx-sub` `.dx-title` `.dx-top` | `pages-nav.js:renderDiagnosis` |
 | **`dxHead`** | `.dx-mark` `.dx-sys-head` | `pages-nav.js:diagnosisHtml`, `pages-nav.js:systemHtml` |
-| **`dxRow`** | `.dx-k` `.dx-list` `.dx-row` `.dx-v` | `pages-nav.js:assessmentFor`, `pages-nav.js:diagnosisHtml`, `pages-nav.js:postureLine`, `pages-nav.js:systemHtml` |
+| **`dxRow`** | `.dx-k` `.dx-list` `.dx-row` | `pages-nav.js:assessmentFor`, `pages-nav.js:diagnosisHtml`, `pages-nav.js:postureLine` |
+| **`dxText`** | `.dx-v` | `pages-nav.js:dxRow`, `pages-nav.js:systemHtml` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
 | **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`postureLine`** | `.dx-word` | `pages-nav.js:assessmentFor` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
+| **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
 
 ## indicators.js
 
@@ -199,6 +201,8 @@ renderer speaks. Listed most-used first.
 | **`eraFig`** | analysis.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
 | **`merge`** | live.js | 3 places |
+| **`momentumPct`** | model.js | 3 places |
+| **`momentumSpeed`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |

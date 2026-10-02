@@ -225,6 +225,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   box, because their readings never declared `bare` and so `cardDetailHtml` added both; Keren: "everything that
   is above the selection bar is redundant … there should only be one insight." The suite now fails a page with a
   card head above its bar or a second Insights box. (V661, V673)
+- **Every page's window bar sits the same distance under the top bar (`--gap-top`), whatever wraps it.** Momentum
+  opened 20px lower than the rest because its wrapper and its bar each added the gap; Keren: "make sure that all
+  pages are built with the same structure and same spacing, so that we don't need to go over page by page." The
+  bar owns the gap (`#metric-page .hist-bar`) and every wrapper that holds a bar sets no top margin
+  (`#metric-page :has(.hist-bar)`); the suite fails any page whose bar sits at a different distance. (V674)
 
 ## The dial and the cycles
 
@@ -503,17 +508,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
-- **Momentum is read the way momentum stocks are: price velocity over the trailing three to twelve months.**
-  Keren: "Momentum stocks are equities exhibiting strong upward price velocity over a trailing 3-to-12 month
-  period … I want to see the same logic on the S&P 500." The card's figure stays the twelve-month change; the
-  word sets the last three months, put on a yearly pace by compounding, against it: lower than three months ago
-  is Falling, up at a pace at or above the twelve-month change is Rising, up but slower is Slowing. No line is
-  drawn (the paces are only compared), and the six-month pace is shown with them. The window is the research's
-  own (Jegadeesh & Titman 1993, 3 to 12 months; Moskowitz, Ooi & Pedersen 2012 on indexes). This replaces V672's
-  65%-of-the-bull's-best word; the Diagnosis still reads Euphoria and Optimism off that 65% line, so the card and
-  the feeling can now differ (asked of Keren, V673). The figure is whole percent, signed. RSI, MACD and
-  stochastics were weighed and declined: they are trading oscillators for daily bars, and their 70/30 lines are
-  convention with no primary source. (V672, V673)
+- **Momentum reads like a speedometer: how fast the S&P 500 is moving now, in percent a year.** Keren: "we need
+  to measure it like a speedometer … it should behave like a speedometer, like when I'm driving a car I know when
+  I'm moving fast or I'm moving slow." Speed is the monthly average against three months earlier, compounded to
+  a yearly pace (the short end of the momentum research's 3-to-12-month window, which she asked for at V673:
+  Jegadeesh & Titman 1993; Moskowitz, Ooi & Pedersen 2012). Cruising speed is the median of every speed
+  reading since 1950 (about 11% a year), recomputed every month: the same measure as the speed, so she runs
+  faster than it half the time. Keren asked for timelines compared; the compound pace since 1950 (8.3%) was
+  weighed and declined because it measures distance, not speed, and sits under the typical reading; windows
+  that start in this century swing with their start (6.5% from 2000, 14.1% from March 2009); every window of
+  thirty years or more gives a median of 11 to 14%. Fast is above cruising speed, Slow is
+  forward but below it, Reversing is below zero; zero and cruising speed are the only lines and neither is set
+  by hand. Insights add whether she is speeding up or easing off against the three months before; the (i) gives
+  the twelve-month change as the distance, not the speed. The chart is the speed, month by month, around zero.
+  The figure is whole percent, signed. This replaces V672's 65%-of-the-bull's-best word and V673's pace
+  comparison; the Diagnosis still reads Euphoria and Optimism off the 65% line (asked of Keren). RSI, MACD and
+  stochastics were weighed and declined: trading oscillators for daily bars, with 70/30 lines that are
+  convention with no primary source. (V672, V673, V674)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its
@@ -1010,6 +1021,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
   V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
   symptoms … just want the analysis." (V665, V672)
+- **The Systems sit under one Analysis head, marked with a stethoscope, and carry no "Analysis" label of their
+  own.** Keren: "you have analysis next to text in each one of the categories … it just takes up space so remove
+  it and maybe call the entire container analysis with a stethoscope." The stethoscope mark was drawn here, not
+  in the Lovable DSM. (V674)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
   words for today, and a closed cycle's figures are on its cards. (V665, V672)

@@ -623,6 +623,8 @@
   button.dx-sys-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
   .dx-mark svg{ width:18px; height:18px; }
+  .dx-cat + .dx-cat{ margin-top:12px; }
+  .dx-cat .dx-sys-head{ margin-bottom:4px; }
   .dx-row{ display:grid; grid-template-columns:76px 1fr; gap:10px; align-items:baseline; margin-top:6px; }
   .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
@@ -1180,6 +1182,8 @@
     box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;
   }
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
+  #metric-page :has(.hist-bar){ margin-top:0; }
+  #metric-page .hist-bar{ margin-top:var(--gap-top); }
   .hist-bar > * + *{ margin-top:8px; }
   .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
@@ -19448,6 +19452,9 @@
   function thermoSvg() {
     return markSvg('<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' + '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>');
   }
+  function stethoscopeSvg() {
+    return markSvg('<path d="M5.5 3.5v5a4.5 4.5 0 0 0 9 0v-5M4 3.5h3M13 3.5h3" stroke-width="1.8"/>' + '<path d="M10 13v2.5a4.5 4.5 0 0 0 9 0v-2" stroke-width="1.8"/><circle cx="19" cy="11" r="2.2" stroke-width="1.7"/>');
+  }
   function momentumSvg() {
     return markSvg('<path d="M5.2 6.2 11 12l-5.8 5.8M12.6 6.2l5.8 5.8-5.8 5.8" stroke-width="1.9"/>');
   }
@@ -19788,7 +19795,7 @@
     mark: momentumSvg,
     door: "row",
     term: "Momentum",
-    head: "S&P 500, Change on a Year Earlier",
+    head: "S&P 500, Speed in % a Year",
     hist: momentumMonths,
     mid: 0,
     rule: true,
@@ -20534,70 +20541,70 @@
     t: "Moskowitz, Ooi & Pedersen — Time Series Momentum, Journal of Financial Economics 104(2), 2012",
     u: "https://doi.org/10.1016/j.jfineco.2011.11.003"
   } ];
+  function momentumSpeed(S, i) {
+    return i < 3 ? null : Math.pow(S.sp[i].v / S.sp[i - 3].v, 4) - 1;
+  }
   function momentumSeries() {
     var S = marketMonths();
     return S.sp.map(function(d, i) {
-      return {
+      var v = momentumSpeed(S, i);
+      return v == null ? null : {
         m: d.m,
-        v: S.mom[i] == null ? null : S.mom[i] * 100
+        v: v * 100
       };
-    }).filter(function(d) {
-      return d.v != null;
-    });
+    }).filter(Boolean);
   }
   function momentumPct(v) {
     var r = Math.round(v * 100);
     return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + "%";
   }
-  function momentumPace(r, n) {
-    return Math.pow(1 + r, 12 / n) - 1;
+  function momentumCruise(S) {
+    var v = S.sp.map(function(d, i) {
+      return momentumSpeed(S, i);
+    }).filter(function(x) {
+      return x != null;
+    }).sort(function(a, b) {
+      return a - b;
+    });
+    return v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
   }
-  function momentumWindows(S) {
-    var i = S.sp.length - 1, by = function(n) {
-      return S.sp[i].v / S.sp[i - n].v - 1;
-    };
-    return {
-      i: i,
-      m3: by(3),
-      m6: by(6),
-      m12: by(12),
-      pace3: momentumPace(by(3), 3),
-      pace6: momentumPace(by(6), 6)
-    };
-  }
-  function momentumWord(w) {
-    if (w.m3 < 0) return {
+  function momentumWord(speed, cruise) {
+    if (speed < 0) return {
       state: "serious",
-      text: "Falling",
-      says: "She is lower than three months ago: her velocity has turned down."
+      text: "Reversing"
     };
-    if (w.pace3 >= w.m12) return {
-      state: "good",
-      text: "Rising",
-      says: "The latest three months are at least as fast as the year: she is gathering speed."
+    if (speed < cruise) return {
+      state: "warning",
+      text: "Slow"
     };
     return {
-      state: "warning",
-      text: "Slowing",
-      says: "The latest three months are slower than the year: she is still climbing, but losing speed."
+      state: "good",
+      text: "Fast"
     };
   }
-  function momentumPaces(w) {
-    return "Over twelve months the S&amp;P 500 is " + momentumPct(w.m12) + ". Over the last six it moved " + momentumPct(w.m6) + ", a pace of " + momentumPct(w.pace6) + " a year; over the last three, " + momentumPct(w.m3) + ", a pace of " + momentumPct(w.pace3) + " a year.";
+  function momentumDrive(f) {
+    var c = momentumPct(f.cruise);
+    return "Over the last three months the S&amp;P 500 moved at " + momentumPct(f.speed) + " a year, against a cruising speed of " + c + " a year, her typical speed since " + f.since + ". In the three months before, it ran at " + momentumPct(f.before) + " a year: she is " + (f.speed >= f.before ? "speeding up." : "easing off.");
   }
   var momentumReading = function(S) {
-    var w = momentumWindows(S), word = momentumWord(w), at = monthLabel(S.sp[w.i].m);
+    var i = S.sp.length - 1, speed = momentumSpeed(S, i), cruise = momentumCruise(S), word = momentumWord(speed, cruise);
+    var at = monthLabel(S.sp[i].m), f = {
+      speed: speed,
+      before: momentumSpeed(S, i - 3),
+      cruise: cruise,
+      since: S.sp[0].m.slice(0, 4),
+      year: S.mom[i]
+    };
     return {
       bodyTerm: "Momentum",
-      econTerm: "S&P 500, change on a year earlier",
-      metricSub: "S&P 500 vs. a year earlier, " + at,
-      metric: momentumPct(w.m12),
+      econTerm: "S&P 500 speed, % a year",
+      metricSub: "a year, S&P 500 over the last three months, " + at,
+      metric: momentumPct(speed),
       tag: {
         state: word.state,
         text: word.text
       },
-      windows: w,
-      says: word.says,
+      drive: f,
       lead: "",
       info: function() {
         return momentumInfoHtml(momentumReading);
@@ -20608,11 +20615,12 @@
           return '<div id="sheet-sign-momentum-chart"></div><div id="sheet-sign-momentum-highlights"></div>';
         }
       },
-      caption: at + ". " + momentumPaces(w) + " " + word.says
+      caption: at + ". " + momentumDrive(f)
     };
   }(marketMonths());
-  function momentumInfoHtml(f) {
-    return "<h4>" + f.econTerm + "</h4>" + ledeHtml("How fast Mrs. Market’s price is moving, read the way momentum investors read a stock: its velocity over the " + "trailing three to twelve months (" + f.metricSub + "). The reading is <b>" + f.tag.text + "</b>.") + facts([ momentumPaces(f.windows), "<b>Rising</b>: up over the last three months, at a yearly pace at or above the twelve-month change.", "<b>Slowing</b>: up over the last three months, but at a slower yearly pace than the twelve-month change.", "<b>Falling</b>: lower than three months ago.", "A three- or six-month change is put on a yearly pace by compounding it, so the windows can be compared; no line is drawn, the paces are only set against each other.", "Three to twelve months is the window of the momentum research: Jegadeesh and Titman ranked stocks on their past three to twelve months, and Moskowitz, Ooi and Pedersen found the same persistence in equity indexes.", "The chart is the twelve-month change, month by month. The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.", "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index." ]) + srcBlock(MOMENTUM_SRC);
+  function momentumInfoHtml(r) {
+    var f = r.drive, c = momentumPct(f.cruise);
+    return "<h4>" + r.econTerm + "</h4>" + ledeHtml("Momentum read like a speedometer: how fast Mrs. Market’s price is moving right now, in percent a year. " + "The reading is <b>" + r.tag.text + "</b> (" + r.metric + " " + r.metricSub + ").") + facts([ momentumDrive(f), "<b>Speed</b>: the S&amp;P 500’s monthly average against three months earlier, compounded to a yearly pace, the way a speedometer turns a few seconds of travel into miles an hour.", "<b>Cruising speed</b>: " + c + " a year, the median of every speed reading since " + f.since + ": she ran faster in half of those months and slower in the other half. It is the same measure as the speed, recomputed with every month, not a target.", "<b>Fast</b>: above cruising speed. <b>Slow</b>: moving forward, below it. <b>Reversing</b>: lower than three months ago. Zero and cruising speed are the only lines; neither is set by hand.", "Over the whole year she covered " + momentumPct(f.year) + ": that is the distance, not the speed.", "Three months is the short end of the momentum research’s window (Jegadeesh and Titman ranked stocks on their past three to twelve months; Moskowitz, Ooi and Pedersen found the same persistence in equity indexes). A short window reads the present quickly and moves a lot from month to month, as a speedometer does.", "The Diagnosis reads Euphoria and Optimism off its own line, twelve-month momentum against 65% of this bull’s best, which is Keren’s.", "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index." ]) + srcBlock(MOMENTUM_SRC);
   }
   function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
@@ -22666,7 +22674,7 @@
     var r = momentumReading;
     return {
       goodAbove: true,
-      line: "No change",
+      line: "Standing still",
       series: momentumSeries(),
       src: MOMENTUM_SRC,
       insight: momentumInsight,
@@ -22892,7 +22900,7 @@
   }
   function momentumInsight() {
     var r = momentumReading;
-    return [ lede("Momentum investors judge a stock by how fast its price has moved over the last three to twelve months. " + "Read the same way, the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is gathering speed or losing it."), hiCard("The pace", r.tag.state, momentumPaces(r.windows) + " " + r.says) ];
+    return [ lede("A speedometer does not say how far you have driven; it says how fast you are going now. Read the same way, " + "the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is moving fast or slow."), hiCard("The speedometer", r.tag.state, momentumDrive(r.drive)) ];
   }
   function interestInsight(s) {
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
@@ -24097,17 +24105,20 @@
     return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
   }
   function dxRow(label, html, asList) {
-    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + (asList ? '<ul class="dx-list">' + html + "</ul>" : '<p class="dx-v">' + html + "</p>") + "</div>";
+    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + (asList ? '<ul class="dx-list">' + html + "</ul>" : dxText(html)) + "</div>";
+  }
+  function dxText(html) {
+    return '<p class="dx-v">' + html + "</p>";
   }
   function dxSection(head, body, cls) {
     return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
   }
   function systemHtml(c, analysis) {
-    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis), "cat-" + c.key);
+    return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + "</div>";
   }
-  function dxHead(title, c) {
+  function dxHead(title, c, mark) {
     var tag = c ? 'button type="button"' : "div";
-    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark() + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
+    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
   }
   function postureLine(d, more) {
     return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + "</b>" + expandBtn(diagnosisInfo(d)) + " " + POSTURE_SAYS[d.posture] + (more ? " " + more : ""));
@@ -24134,9 +24145,9 @@
       return c.to != null && c.to < era.from;
     }).pop();
     var history = open ? "The " + era.name + ", year " + m.yearIndex + " of a typical " + typicalCycleYears + "." + (prev ? " Last bleed: the " + prev.name + ", " + prev.to + "." : "") : "The " + era.name + ", closed in " + era.to + " after " + m.yearIndex + " years; a typical cycle runs " + typicalCycleYears + ".";
-    return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She’s in " : "She closed in ") + '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + "</span></h2>" + '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " · the " + d.half + " half · " + d.posture + "</p>" + '<p class="dx-body">' + BODY_SAYS[d.season] + "</p></header>" + dxSection(dxHead("History"), dxRow("Record", history)) + categoriesShown().map(function(c) {
+    return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She’s in " : "She closed in ") + '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + "</span></h2>" + '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " · the " + d.half + " half · " + d.posture + "</p>" + '<p class="dx-body">' + BODY_SAYS[d.season] + "</p></header>" + dxSection(dxHead("History"), dxRow("Record", history)) + dxSection(dxHead("Analysis", null, stethoscopeSvg()), categoriesShown().map(function(c) {
       return systemHtml(c, analysisFor(c.key, d, closed));
-    }).join("") + dxSection(dxHead("Assessment"), assessmentFor(d, closed));
+    }).join("")) + dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");

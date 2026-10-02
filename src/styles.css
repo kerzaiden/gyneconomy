@@ -628,6 +628,8 @@
   button.dx-sys-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
   .dx-mark svg{ width:18px; height:18px; }
+  .dx-cat + .dx-cat{ margin-top:12px; }
+  .dx-cat .dx-sys-head{ margin-bottom:4px; }
   .dx-row{ display:grid; grid-template-columns:76px 1fr; gap:10px; align-items:baseline; margin-top:6px; }
   .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
   .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
@@ -1189,6 +1191,8 @@
     box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;
   }
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
+  #metric-page :has(.hist-bar){ margin-top:0; }
+  #metric-page .hist-bar{ margin-top:var(--gap-top); }
   .hist-bar > * + *{ margin-top:8px; }
   .spread-history-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .spread-history-head h4{ margin:0; display:inline-flex; align-items:center; gap:2px; }
