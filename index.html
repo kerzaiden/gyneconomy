@@ -1007,17 +1007,17 @@
   .hi-name.good{ color:var(--good); } .hi-name.warning{ color:var(--warning-ink); }
   .hi-name.serious{ color:var(--serious-ink); } .hi-name.critical{ color:var(--critical-ink); }
   .hi-card p{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
-  .emo-fig{ margin:0; padding:12px 0 4px; border-bottom:1px solid var(--border); }
-  .emo-curve{ display:block; width:100%; max-width:420px; margin:0 auto; overflow:visible; }
-  .emo-line{ fill:none; stroke:var(--border-strong); stroke-width:2; stroke-linecap:round; }
-  .emo-dot{ fill:var(--surface); stroke:var(--text-secondary); stroke-width:1.6; }
-  .emo-dot.now{ stroke:var(--surface); stroke-width:2.5; }
-  .emo-dot.now.good{ fill:var(--good); } .emo-dot.now.warning{ fill:var(--warning); }
-  .emo-dot.now.serious{ fill:var(--serious); } .emo-dot.now.critical{ fill:var(--critical); }
-  .emo-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-meta); fill:var(--text-primary); }
-  .emo-lab.now{ font-weight:700; }
-  .emo-lab.now.good{ fill:var(--good-ink); } .emo-lab.now.warning{ fill:var(--warning-ink); }
-  .emo-lab.now.serious{ fill:var(--serious-ink); } .emo-lab.now.critical{ fill:var(--critical-ink); }
+  .mood-fig{ margin:0; padding:10px 0 6px; border-bottom:1px solid var(--border); }
+  .mood-ladder{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:3px; font-family:"Public Sans",sans-serif; }
+  .mood-step{ display:flex; align-items:center; gap:10px; padding:5px 10px 5px 6px; border-radius:8px; --tone:hsl(var(--hue) 68% 52%); }
+  .mood-chip{ flex:none; width:10px; align-self:stretch; min-height:22px; border-radius:4px; background:var(--tone); }
+  .mood-word{ display:flex; flex-direction:column; flex:1; min-width:0; }
+  .mood-word b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
+  .mood-word small{ font-size:var(--type-meta); color:var(--text-secondary); }
+  .mood-span{ flex:none; font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); color:var(--text-muted); }
+  .mood-step.now{ background:color-mix(in srgb, var(--tone) 16%, var(--surface)); outline:2px solid var(--tone); outline-offset:-2px; }
+  .mood-step.now b{ font-weight:700; }
+  .mood-step.now .mood-span{ font-weight:700; color:var(--text-primary); }
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
@@ -22937,15 +22937,6 @@
   }
   var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = .65, NEAR_HIGH = .05;
   var FEELINGS = [ "Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency" ];
-  var FEELING_STATE = {
-    Hope: "good",
-    Optimism: "good",
-    Euphoria: "warning",
-    Anxiety: "warning",
-    Fear: "serious",
-    Capitulation: "critical",
-    Despondency: "serious"
-  };
   function rankToDate(prior, v) {
     if (v == null || prior.length < 12) return null;
     return 100 * prior.filter(function(x) {
@@ -23217,6 +23208,70 @@
       facts: f,
       month: lastM
     };
+  }
+  function rankIn(list, m, v) {
+    var i = -1;
+    list.forEach(function(d, j) {
+      if (d.k <= m) i = j;
+    });
+    return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d) {
+      return d.v;
+    }), v != null ? v : list[i].v);
+  }
+  var moodLists = null;
+  function moodSeries() {
+    if (moodLists) return moodLists;
+    var monthly = function(h) {
+      return h.map(function(d) {
+        return {
+          k: d.m,
+          v: d.v
+        };
+      });
+    };
+    moodLists = {
+      cape: capeHistory.map(function(d) {
+        return {
+          k: d.y + "-01",
+          v: d.v
+        };
+      }),
+      buffett: buffettHistory.map(function(d) {
+        return {
+          k: d.q.slice(0, 4) + "-" + QUARTER_END_MONTH[d.q.slice(5)],
+          v: d.v
+        };
+      }),
+      vix: monthly(volatilityHistory),
+      confidence: monthly(confidenceHistory)
+    };
+    return moodLists;
+  }
+  function moodAt(m, vixNow) {
+    var L = moodSeries(), cape = rankIn(L.cape, m), buf = rankIn(L.buffett, m), vix = rankIn(L.vix, m, vixNow), conf = rankIn(L.confidence, m);
+    if (cape == null || buf == null || vix == null || conf == null) return null;
+    var val = (cape + buf) / 2, calm = 100 - vix;
+    return {
+      m: m,
+      valuations: val,
+      calm: calm,
+      confidence: conf,
+      market: (val + calm) / 2,
+      score: (val + calm + conf) / 3
+    };
+  }
+  var moodCache = null;
+  function moodTrack() {
+    if (moodCache) return moodCache;
+    moodCache = sp500MonthlyHistory.map(function(d) {
+      return moodAt(d.m);
+    }).filter(function(x) {
+      return x;
+    });
+    return moodCache;
+  }
+  function moodToday() {
+    return moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
   }
   function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
@@ -26195,49 +26250,48 @@
     var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
     return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
   }
-  var EMOTION_CURVE = [ [ "Optimism", .45, "rd" ], [ "Euphoria", 1, "a" ], [ "Anxiety", .8, "ru" ], [ "Fear", .52, "ru" ], [ "Capitulation", .2, "ld" ], [ "Despondency", 0, "b" ], [ "Hope", .3, "a" ] ];
-  var EMO_PLACE = {
-    rd: [ 8, 14, "start" ],
-    ru: [ 8, -7, "start" ],
-    ld: [ -8, 15, "end" ],
-    a: [ 0, -11, "middle" ],
-    b: [ 0, 19, "middle" ]
-  };
-  function curvePath(pts) {
-    var f = function(p) {
-      return p[0].toFixed(1) + "," + p[1].toFixed(1);
-    };
-    return pts.map(function(p, i) {
-      if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
-      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
-    }).join("");
+  var MOOD_STEPS = [ [ "Depression", 270, "Sold everything, wants nothing" ], [ "Fear", 225, "Selling to protect what is left" ], [ "Anxiety", 190, "Uneasy, trimming risk" ], [ "Pessimism", 150, "Holding back, expecting worse" ], [ "Optimism", 95, "Buying, expecting better" ], [ "Excitement", 48, "Buying more, each gain feeding the next" ], [ "Euphoria", 28, "Sure it can only go up" ], [ "Mania", 5, "Buying everything in sight" ] ];
+  var MOOD_STEP = 100 / MOOD_STEPS.length;
+  var MOOD_SRC = [ {
+    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
+    u: "https://rulerapproach.org/"
+  }, {
+    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
+    u: "https://www.cnn.com/markets/fear-and-greed"
+  }, {
+    t: "Russell Investments — the cycle of market emotions",
+    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
+  } ];
+  function moodStep(score) {
+    return MOOD_STEPS[Math.min(MOOD_STEPS.length - 1, Math.floor(score / MOOD_STEP))];
   }
-  function emotionCurveSvg(now) {
-    var n = EMOTION_CURVE.length, x0 = 20, x1 = 312, top = 30, span = 140;
-    var pts = EMOTION_CURVE.map(function(s, i) {
-      return [ x0 + (x1 - x0) * i / (n - 1), top + (1 - s[1]) * span ];
+  function stepSpan(i) {
+    return +(i * MOOD_STEP).toFixed(1) + "–" + +((i + 1) * MOOD_STEP).toFixed(1);
+  }
+  function moodLadder(now) {
+    var here = moodStep(now.score);
+    var rows = MOOD_STEPS.map(function(s, i) {
+      var on = s === here;
+      return '<li class="mood-step' + (on ? " now" : "") + '" style="--hue:' + s[1] + '"><span class="mood-chip"></span>' + '<span class="mood-word"><b>' + s[0] + "</b><small>" + s[2] + "</small></span>" + '<span class="mood-span">' + (on ? Math.round(now.score) + " now" : stepSpan(i)) + "</span></li>";
+    }).reverse().join("");
+    return '<ol class="mood-ladder" aria-label="Her mood, eight steps from Mania down to Depression, with today at ' + here[0] + '">' + rows + "</ol>";
+  }
+  function moodInfo() {
+    return "<h4>Her mood</h4>" + facts([ "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "Desire and Horizon are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood.", "The eight words are Claude’s pick from the research, at Keren’s request: her two ends, Depression and Mania, the Fear &amp; Greed Index’s idea of one range, and the cycle of market emotions’ names for its steps. Hope, relief and denial are left out, because they name a turn, not a level. The steps are equal, 12.5 points each, Keren’s call; the lines under each word are Claude’s.", "Averaging three ranks pulls toward the middle, so the ends are rare: three readings seldom all touch their lows or highs in the same month." ]) + srcBlock(MOOD_SRC);
+  }
+  function moodCard(d) {
+    var t = moodTrack(), lo = t[0], hi = t[0], r = Math.round;
+    t.forEach(function(x) {
+      if (x.score < lo.score) lo = x;
+      if (x.score > hi.score) hi = x;
     });
-    var out = [ '<path class="emo-line" d="' + curvePath(pts) + '"/>' ];
-    EMOTION_CURVE.forEach(function(s, i) {
-      var p = pts[i], here = s[0] === now, at = EMO_PLACE[s[2]], state = here ? " now " + FEELING_STATE[s[0]] : "";
-      out.push('<circle class="emo-dot' + state + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (here ? 6.5 : 4.5) + '"/>');
-      out.push('<text class="emo-lab' + state + '" x="' + (p[0] + at[0]).toFixed(1) + '" y="' + (p[1] + at[1]).toFixed(1) + '" text-anchor="' + at[2] + '">' + s[0] + "</text>");
-    });
-    return '<svg class="emo-curve" viewBox="0 0 340 200" role="img" aria-label="The market emotions cycle, seven feelings from optimism to hope' + (now ? ", with today at " + now : "") + '.">' + out.join("") + "</svg>";
+    return hiCard("She’s in " + moodStep(d.score)[0], "", "Her mood reads " + r(d.score) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and consumer confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ". Since " + monthLabel(t[0].m) + " she has run from " + r(lo.score) + " (" + monthLabel(lo.m) + ") to " + r(hi.score) + " (" + monthLabel(hi.m) + ").");
   }
   function insightMood() {
-    var d = diagnoseToday(), rec = whatFollowed(), now = d && d.stage, months = 0, higher = 0;
-    Object.keys(rec.cells).forEach(function(k) {
-      if (k.split("|")[0] === now) {
-        months += rec.cells[k].months;
-        higher += rec.cells[k].higher;
-      }
-    });
-    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial " + "risk, then down through anxiety and fear to capitulation and despondency, the point of most opportunity, and back through hope.");
-    var cards = [ intro, '<figure class="emo-fig">' + emotionCurveSvg(now) + "</figure>" ];
-    if (months) cards.push(hiCard("She’s in " + now, FEELING_STATE[now], (d.carried ? "No rule names this month, so the last feeling named holds. " : "") + "Since " + monthLabel(rec.from) + ", a year after she felt " + now + " the S&amp;P 500 was higher " + Math.round(higher / months * 100) + "% of the time."));
-    return highlightsHtml(cards, "", "");
+    var d = moodToday();
+    var intro = lede("Her mood runs on one range, from Depression, wanting to own nothing, to Mania, buying everything in sight. Each Mood reading is ranked against its own history, and her mood is where those ranks meet.");
+    if (!d) return highlightsHtml([ intro ], "", "");
+    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodLadder(d) + "</figure>", moodCard(d) ], "", moreRow(moodInfo()));
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind) {

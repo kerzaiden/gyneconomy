@@ -1065,12 +1065,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   points in three months, slowing under 65% of the bull's best, near the high within 5%; Euphoria keeps the
   tested rule.** (V664)
 - **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
-- **The Mood page carries the market emotions cycle drawn in the Diagnosis's seven words only (Optimism,
-  Euphoria, Anxiety, Fear, Capitulation, Despondency, Hope, in the order of the chart Keren supplied), today's
-  lit in its state colour, and what has followed today's feeling a year later.** Keren: "I want in the mood page
-  to have some kind of evaluation over the market current feeling"; "We agreed on showing only seven emotions."
-  The chart's other seven stages have no published rule. Don't add a how-often breakdown: "how often she has
-  felt each is not really informative." (V679)
+- **The Mood page reads her mood on one range, from Depression to Mania, in eight equal steps: Depression,
+  Fear, Anxiety, Pessimism, Optimism, Excitement, Euphoria, Mania.** Keren: "only focus on two extremes, which is
+  manic, meaning buying everything in sight, or depression … sold everything … it should be like a range"; then
+  "do some little research on emotional intelligence … a rainbow of the prevailing emotions … not too much, not too
+  little". The score is the average of three rank-to-date readings, each turned toward appetite: valuations (CAPE and
+  Buffett), calm (the VIX upside down) and consumer confidence; Desire (too short) and Horizon (its level does not
+  sort mood) stay out. The words are Claude's pick from the research at her request (her two ends, the Fear &
+  Greed Index's single range, the cycle of market emotions' names; Hope, relief and denial name a turn, not a
+  level); the steps are equal, Keren's call on the card ("Equal steps"), so Depression has not yet been reached.
+  The page shows a ladder coloured as a rainbow, today's step lit, and the market's and households' own readings.
+  This replaces V679's seven-word emotions curve. The Diagnosis still reads the V664 seven feelings until mood and
+  season are taken up next, at Keren's order: "once we have the determination of what the market is feeling, in
+  the mood page, at least, then we can move on to the correlation between mood and season." (V685)
 - **The Diagnosis opens on the trend card, Apple Health's Trends: today's feeling in today's season, against the
   other seasons, as share of months since the record began.** Keren: "make a correlation between what we called
   mood and season … reflected in the homepage under analysis in the same way Apple Health app shows trends". The

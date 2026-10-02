@@ -119,7 +119,6 @@
   // ---- The diagnosis: how she feels, and what has followed ----
   var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05;
   var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
-  var FEELING_STATE = { Hope:"good", Optimism:"good", Euphoria:"warning", Anxiety:"warning", Fear:"serious", Capitulation:"critical", Despondency:"serious" };
   function rankToDate(prior, v){
     if (v == null || prior.length < 12) return null;
     return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
@@ -267,6 +266,35 @@
     if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
     return { stage:stage, carried:carried, season:currentSeason, facts:f, month:lastM };
   }
+
+  // ---- Her mood: one range from Depression to Mania ----
+  function rankIn(list, m, v){
+    var i = -1;
+    list.forEach(function(d, j){ if (d.k <= m) i = j; });
+    return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d){ return d.v; }), v != null ? v : list[i].v);
+  }
+  var moodLists = null;
+  function moodSeries(){
+    if (moodLists) return moodLists;
+    var monthly = function(h){ return h.map(function(d){ return { k:d.m, v:d.v }; }); };
+    moodLists = { cape:capeHistory.map(function(d){ return { k:d.y + "-01", v:d.v }; }),
+      buffett:buffettHistory.map(function(d){ return { k:d.q.slice(0, 4) + "-" + QUARTER_END_MONTH[d.q.slice(5)], v:d.v }; }),
+      vix:monthly(volatilityHistory), confidence:monthly(confidenceHistory) };
+    return moodLists;
+  }
+  function moodAt(m, vixNow){
+    var L = moodSeries(), cape = rankIn(L.cape, m), buf = rankIn(L.buffett, m), vix = rankIn(L.vix, m, vixNow), conf = rankIn(L.confidence, m);
+    if (cape == null || buf == null || vix == null || conf == null) return null;
+    var val = (cape + buf) / 2, calm = 100 - vix;
+    return { m:m, valuations:val, calm:calm, confidence:conf, market:(val + calm) / 2, score:(val + calm + conf) / 3 };
+  }
+  var moodCache = null;
+  function moodTrack(){
+    if (moodCache) return moodCache;
+    moodCache = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; });
+    return moodCache;
+  }
+  function moodToday(){ return moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value); }
 
   function vitalRingSvg(pct, state, label, cls){
     var r = 46, c = 2 * Math.PI * r;

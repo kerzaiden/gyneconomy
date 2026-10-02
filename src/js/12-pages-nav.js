@@ -454,41 +454,50 @@
       ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
       (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
   }
-  var EMOTION_CURVE = [
-    ["Optimism", 0.45, "rd"], ["Euphoria", 1, "a"], ["Anxiety", 0.8, "ru"], ["Fear", 0.52, "ru"],
-    ["Capitulation", 0.2, "ld"], ["Despondency", 0, "b"], ["Hope", 0.3, "a"]
+  var MOOD_STEPS = [
+    ["Depression", 270, "Sold everything, wants nothing"], ["Fear", 225, "Selling to protect what is left"],
+    ["Anxiety", 190, "Uneasy, trimming risk"], ["Pessimism", 150, "Holding back, expecting worse"],
+    ["Optimism", 95, "Buying, expecting better"], ["Excitement", 48, "Buying more, each gain feeding the next"],
+    ["Euphoria", 28, "Sure it can only go up"], ["Mania", 5, "Buying everything in sight"]
   ];
-  var EMO_PLACE = { rd:[8, 14, "start"], ru:[8, -7, "start"], ld:[-8, 15, "end"], a:[0, -11, "middle"], b:[0, 19, "middle"] };
-  function curvePath(pts){
-    var f = function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); };
-    return pts.map(function(p, i){
-      if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
-      return "C" + f([b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6]) + " " + f([p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6]) + " " + f(p);
-    }).join("");
+  var MOOD_STEP = 100 / MOOD_STEPS.length;
+  var MOOD_SRC = [
+    {t:"Yale Center for Emotional Intelligence \u2014 the Mood Meter (RULER): feelings placed by pleasantness and energy", u:"https://rulerapproach.org/"},
+    {t:"CNN Business \u2014 Fear &amp; Greed Index: one 0\u2013100 reading from extreme fear to extreme greed", u:"https://www.cnn.com/markets/fear-and-greed"},
+    {t:"Russell Investments \u2014 the cycle of market emotions", u:"https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"}
+  ];
+  function moodStep(score){ return MOOD_STEPS[Math.min(MOOD_STEPS.length - 1, Math.floor(score / MOOD_STEP))]; }
+  function stepSpan(i){ return +(i * MOOD_STEP).toFixed(1) + "\u2013" + +((i + 1) * MOOD_STEP).toFixed(1); }
+  function moodLadder(now){
+    var here = moodStep(now.score);
+    var rows = MOOD_STEPS.map(function(s, i){
+      var on = s === here;
+      return '<li class="mood-step' + (on ? " now" : "") + '" style="--hue:' + s[1] + '"><span class="mood-chip"></span>' +
+        '<span class="mood-word"><b>' + s[0] + '</b><small>' + s[2] + '</small></span>' +
+        '<span class="mood-span">' + (on ? Math.round(now.score) + " now" : stepSpan(i)) + '</span></li>';
+    }).reverse().join("");
+    return '<ol class="mood-ladder" aria-label="Her mood, eight steps from Mania down to Depression, with today at ' + here[0] + '">' + rows + '</ol>';
   }
-  function emotionCurveSvg(now){
-    var n = EMOTION_CURVE.length, x0 = 20, x1 = 312, top = 30, span = 140;
-    var pts = EMOTION_CURVE.map(function(s, i){ return [x0 + (x1 - x0) * i / (n - 1), top + (1 - s[1]) * span]; });
-    var out = ['<path class="emo-line" d="' + curvePath(pts) + '"/>'];
-    EMOTION_CURVE.forEach(function(s, i){
-      var p = pts[i], here = s[0] === now, at = EMO_PLACE[s[2]], state = here ? " now " + FEELING_STATE[s[0]] : "";
-      out.push('<circle class="emo-dot' + state + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (here ? 6.5 : 4.5) + '"/>');
-      out.push('<text class="emo-lab' + state + '" x="' + (p[0] + at[0]).toFixed(1) + '" y="' + (p[1] + at[1]).toFixed(1) +
-        '" text-anchor="' + at[2] + '">' + s[0] + '</text>');
-    });
-    return '<svg class="emo-curve" viewBox="0 0 340 200" role="img" aria-label="The market emotions cycle, seven feelings from optimism to hope' +
-      (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
+  function moodInfo(){
+    return '<h4>Her mood</h4>' + facts([
+      "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
+      "Desire and Horizon are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood.",
+      "The eight words are Claude\u2019s pick from the research, at Keren\u2019s request: her two ends, Depression and Mania, the Fear &amp; Greed Index\u2019s idea of one range, and the cycle of market emotions\u2019 names for its steps. Hope, relief and denial are left out, because they name a turn, not a level. The steps are equal, 12.5 points each, Keren\u2019s call; the lines under each word are Claude\u2019s.",
+      "Averaging three ranks pulls toward the middle, so the ends are rare: three readings seldom all touch their lows or highs in the same month."
+    ]) + srcBlock(MOOD_SRC);
+  }
+  function moodCard(d){
+    var t = moodTrack(), lo = t[0], hi = t[0], r = Math.round;
+    t.forEach(function(x){ if (x.score < lo.score) lo = x; if (x.score > hi.score) hi = x; });
+    return hiCard("She\u2019s in " + moodStep(d.score)[0], "", "Her mood reads " + r(d.score) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) +
+      " and consumer confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ". Since " + monthLabel(t[0].m) +
+      " she has run from " + r(lo.score) + " (" + monthLabel(lo.m) + ") to " + r(hi.score) + " (" + monthLabel(hi.m) + ").");
   }
   function insightMood(){
-    var d = diagnoseToday(), rec = whatFollowed(), now = d && d.stage, months = 0, higher = 0;
-    Object.keys(rec.cells).forEach(function(k){ if (k.split("|")[0] === now){ months += rec.cells[k].months; higher += rec.cells[k].higher; } });
-    var intro = lede('Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial ' +
-      'risk, then down through anxiety and fear to capitulation and despondency, the point of most opportunity, and back through hope.');
-    var cards = [intro, '<figure class="emo-fig">' + emotionCurveSvg(now) + '</figure>'];
-    if (months) cards.push(hiCard("She\u2019s in " + now, FEELING_STATE[now], (d.carried ? "No rule names this month, so the last feeling named holds. " : "") +
-      "Since " + monthLabel(rec.from) + ", a year after she felt " + now + " the S&amp;P 500 was higher " + Math.round(higher / months * 100) + "% of the time."));
-    return highlightsHtml(cards, "", "");
+    var d = moodToday();
+    var intro = lede("Her mood runs on one range, from Depression, wanting to own nothing, to Mania, buying everything in sight. Each Mood reading is ranked against its own history, and her mood is where those ranks meet.");
+    if (!d) return highlightsHtml([intro], "", "");
+    return highlightsHtml([intro, '<figure class="mood-fig">' + moodLadder(d) + '</figure>', moodCard(d)], "", moreRow(moodInfo()));
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },

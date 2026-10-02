@@ -529,16 +529,16 @@ async function openPage(p, url, sheet) {
         head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
     });
     await click(p, '#diagnosis .trend-card'); await settle(p);
-    const curve = await p.evaluate(() => {
-      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .emo-curve');
-      return s && { labels: [...s.querySelectorAll('.emo-lab')].map(t => t.textContent).join('+'),
-        now: [...s.querySelectorAll('.emo-lab.now')].map(t => t.textContent) };
+    const ladder = await p.evaluate(() => {
+      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .mood-ladder'), card = document.querySelector('#sheet-cat-mood:not([hidden]) .hi-card .hi-name');
+      return s && { words: [...s.querySelectorAll('.mood-word b')].map(t => t.textContent).join('+'),
+        now: [...s.querySelectorAll('.mood-step.now b')].map(t => t.textContent), card: card && card.textContent };
     });
     await p.click('#topbar-back'); await settle(p);
-    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && curve &&
-     curve.labels === 'Optimism+Euphoria+Anxiety+Fear+Capitulation+Despondency+Hope' && curve.now.length === 1 && curve.now[0] === feel.stage)
-      ? ok('the trend card and the emotions curve read today\u2019s feeling', feel.head + ' \u00b7 ' + curve.labels)
-      : bad('the trend card and the emotions curve read today\u2019s feeling', JSON.stringify({ feel, curve }));
+    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && ladder &&
+     ladder.words === 'Mania+Euphoria+Excitement+Optimism+Pessimism+Anxiety+Fear+Depression' && ladder.now.length === 1 && ladder.card === 'She\u2019s in ' + ladder.now[0])
+      ? ok('the trend card opens the mood ladder, one step lit and named', feel.head + ' \u00b7 ' + ladder.now[0])
+      : bad('the trend card opens the mood ladder, one step lit and named', JSON.stringify({ feel, ladder }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');
