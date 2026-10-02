@@ -42,7 +42,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The fiscal reading is Federal budget, never "deficit rate", and its chart head says "deficit or surplus",
   never deficit alone.** It can go either way (the budget was in surplus four straight years), and a name that
   covers one sign is wrong in the other sign's years. (V359, V397)
-- **The reading is Industrial output, never Effort.** Keren: "we just call it industrial output now"; the body
+- **Industrial output is gone (V688): its card, page and copy. Don't re-add it.** Keren: "I don't need the
+  industrial output, it's just too much information." Before that: **the reading was Industrial output, never Effort.** Keren: "we just call it industrial output now"; the body
   term left the screen. (V352, V357)
 - **The manuscript's framework table keeps the book's own words (its "Effort" row is not renamed); ask Keren
   before touching it.** That table is the book's, not the app's. (V228, V357)
@@ -421,14 +422,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ### Where each reading belongs
 
 - **Energy holds the whole energy reading: Stress (Federal debt, Interest payments, Federal budget and
-  Households), then Unemployment rate, Productivity growth and Industrial output, each its own card; there is no
+  Households), then Unemployment rate and Productivity growth, each its own card; there is no
   separate Load or debt category.** (Activity stopped being a group in V688: Keren listed the three as cards.) Keren: "we don't need a new category named Load — stress is connected to energy"; a category
   holding a reading's inputs apart from the reading splits one idea. (V457, V462, V660)
 - **The Power score is gone: its card, page, composite and history. Don't re-add it.** Keren: "remove the
   power score". (V660)
-- **Activity holds three readings, each with its own page: Unemployment rate, Productivity growth (its history
-  is OPHNFB, through the Backfill) and Industrial output.** Keren: they "should be their own pages under
-  activity category". (V661)
+- **Unemployment rate and Productivity growth (its history is OPHNFB, through the Backfill) each have their own
+  page, directly under Energy; there is no Activity page or group.** Keren: they "should be their own pages";
+  then "get rid of the activity page… I want productivity growth and unemployment rate to be under energy". (V661, V688)
 - **Productivity growth belongs to the activity readings, not Stress, and its range is the annual year-over-year
   one it plots.** Keren: "I think it doesn't belong to economic power — I think it belongs to activity";
   output per hour measures what the body is doing. (V395)
@@ -469,7 +470,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   details.** Keren: "Shiller CAPE above the Buffett indicator"; she removed both closing cards. (V365, V494)
 - **The high-yield spread is Desire's figure and appears on no other reading.** It was once tagged good on
   Desire and warning elsewhere; Keren: "is it the same thing? If so, unite it". (V464)
-- **Industrial output keeps a card with no history chart.** ISM's history is not free. (V658)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
@@ -877,7 +877,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   - Pulse: the ECG trace. Keren: the trace "is more representative of a pulse than a heart". (V524, V586)
   - Activity (Unemployment rate): three rising bars with no axis or arrowhead, apart from the trend pill's
     arrow and the Analysis tab's icon. (V524, V586)
-  - Industrial output: the cog; a cog is a factory. (V510)
+  - Interest rates: a heart. Keren: "give interest rates a heart icon". (V688)
+  - Stress: a battery nearly spent, apart from Energy's bolt; stress that never lifts spends the reserve.
+    Keren: Stress "should also have an icon, not a lightning"; the battery is Claude's pick of three drawn
+    (a kettlebell read as a person, a knot as infinity). (V688)
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index,
     which the page no longer is. (V664)

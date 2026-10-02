@@ -274,7 +274,7 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
-Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth · Industrial output). Named Weather, never
+Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -317,10 +317,10 @@ Rules that shape the pages:
   read like a blood test under each history (name, range bar, verdict: `panelRow`, `panelBar`, the sign
   page's `meterHtml` bar, `seatBandReading`'s reading box) are gone. What they carried as notes lives on
   in the chart's (i) menu: `histNote(head, info)` registers it (Households' note is the bill and the cushion
-  together). A reading without a history (Industrial output, and Productivity growth until its series lands)
+  together). A reading without a history (Productivity growth until its series lands)
   keeps its note behind **More details** (`ind.info`). The sourced bands stay on the charts as their lines.
 - **The activity readings (V661; ungrouped since V688):** Unemployment rate (the Activity page; its roster name renames it on
-  screen while `bodyTerm` stays the reading's term), Productivity growth and Industrial output, each a sign page
+  screen while `bodyTerm` stays the reading's term), and Productivity growth, each a sign page
   of its own (`signSubject`, the page id from the roster). Productivity growth is structural (Claude's call, to
   confirm). Its history is OPHNFB year over year, written by the Backfill as `productivityHistory`, and its
   `splitPages` entry mounts the split chart on the same page (the 1.3% slowdown line is the BLS figure; above it
@@ -773,8 +773,8 @@ had no listener for two hundred versions (V623) and the listener itself was miss
 **How the suite is written (V667).** It waits on the app, never on a clock: `ready` waits for the app and
 the Diagnosis, `settle` for two frames and every running animation; there is no `waitForTimeout` (fixed
 sleeps were four fifths of a 265-second run; the suite now takes about 40). A check pins a rule, not a
-count: the page loop walks every reading the category pages list (Industrial output, with no history, is the
-one named exception), cycle counts come from the cycle list, Search's counts from its own rows, and a date or
+count: the page loop walks every reading the category pages list (`NO_HISTORY` names any exception; it is empty
+since Industrial output went in V688), cycle counts come from the cycle list, Search's counts from its own rows, and a date or
 figure that moves with the data is compared, never written in. What is Keren's decision stays pinned exactly
 (the tab order, the categories, the card order, the tokens, the verdict words). Static facts belong in the
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are

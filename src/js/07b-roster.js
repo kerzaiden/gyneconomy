@@ -18,7 +18,7 @@
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
-    { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:hormoneSvg, door:"subject", hk:"hormones-range",
+    { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return fedFunds.asOf; }, live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"Pressure", cat:"circulation", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
@@ -61,7 +61,7 @@
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
-  var GROUP_MARK = { "Stress":boltSvg };
+  var GROUP_MARK = { "Stress":batterySvg };
   var ROSTER_BY = {};
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
   function pageState(of){

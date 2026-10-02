@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `cc3c441` on 2026-10-02.
+Generated from commit `1f4503c` on 2026-10-02.
 
 ## The five regions
 
@@ -22,7 +22,7 @@ Generated from commit `cc3c441` on 2026-10-02.
 | **Script** | 1,757–8,192 | one IIFE containing everything: data, model, renderers, wiring |
 | **Close** | 8,193–8,225 | </body></html> |
 
-Counts: **432** top-level functions, **185** top-level vars, **9** top-level IIFEs in the script.
+Counts: **433** top-level functions, **185** top-level vars, **9** top-level IIFEs in the script.
 
 ## Script, section by section
 
@@ -497,7 +497,7 @@ _line 4,154_ · 19 declarations
 
 ### THE FIFTH PEEK FORM: a pulse drawn as a pulse
 
-_line 4,328_ · 28 declarations
+_line 4,328_ · 29 declarations
 
 | Line | Name | Anchor |
 |---|---|---|
@@ -514,7 +514,8 @@ _line 4,328_ · 28 declarations
 | 4,411 | `diamondSvg` | `function diamondSvg(` |
 | 4,415 | `sproutSvg` | `function sproutSvg(` |
 | 4,423 | `markSvg` | `function markSvg(` |
-| 4,426 | `hormoneSvg` | `function hormoneSvg(` |
+| 4,426 | `heartSvg` | `function heartSvg(` |
+| 4,428 | `batterySvg` | `function batterySvg(` |
 | 4,431 | `flameSvg` | `function flameSvg(` |
 | 4,434 | `clockSvg` | `function clockSvg(` |
 | 4,435 | `thermoSvg` | `function thermoSvg(` |
