@@ -898,6 +898,23 @@ computed values, not the stylesheet). Touch targets 44px, small marks meeting it
 Every hover has a tap equivalent. Nothing colour-alone. Order the DOM, not the paint. Keep an `aria-label`
 where a heading is lost.
 
+**One keyboard layer stack.** Every closable layer registers with `layer(rank, {open, close, box})`
+(`01-refresh-season.js`), and one document `keydown` reads them in rank order: the head ⋯ menu (0), the (i)
+modal (1), a menu sheet (2), the menu (3), a reading page (4). Escape closes only the topmost open one; Tab
+loops inside the topmost one that has a `box` (the modal, a sheet, the menu). A new overlay registers here,
+never with its own Escape listener, or one key press closes two layers. Focus follows the layer: a dialog
+focuses its first control and gives focus back to its opener (the (i) opened from a head menu falls back to
+that head's ⋯); a page focuses the top bar's title (`tabindex=-1`) and its back gives focus to the card that
+opened it. The head ⋯ menu is a disclosure of plain buttons, not an ARIA menu: it promises no arrow keys, so it
+claims no `role="menu"`; opening it, or changing level, focuses its first row. The tab bar and the Appearance
+choices share `rovingKeys` (arrows, Home/End, one tab stop). The dial's hub steps through quarters with
+Left/Right/Home/End through the same `goTo` the pointer uses, and says the parked quarter in a polite live
+region. The (i) backdrop is `visibility:hidden` once its fade ends (the delay sits only on the closing
+transition, so opening is instant), which takes it out of the tab order and the accessibility tree. One global
+`prefers-reduced-motion` rule makes every transition and animation effectively instant (0.01ms, so
+`transitionend` and `getAnimations()` still settle). The history charts' readout has no keyboard stepping yet:
+its hover wiring is `wireHistHover` in `04-components.js`.
+
 ---
 
 # Mechanics that have cost hours

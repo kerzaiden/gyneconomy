@@ -1027,6 +1027,8 @@ async function openPage(p, url, sheet) {
       : bad('site feed writes the cache, without _meta', JSON.stringify(cache).slice(0, 200));
   }
 
+  await keyboardAndLayers(b, url);
+
   if (code) {
     const undeclared = [...seen].filter(c => !code.includes(c) && !DYNAMIC_CLASS.test(c));
     undeclared.length ? bad('every class built at run time is declared', undeclared.slice(0, 12).join(', ') + ' \u2014 add to DYNAMIC_CLASS in tools/hygiene.js')
@@ -1044,3 +1046,81 @@ async function openPage(p, url, sheet) {
   console.log('\n' + (results.length - fail.length) + '/' + results.length + ' passed');
   process.exit(fail.length ? 1 : 0);
 })();
+
+async function keyboardAndLayers(b, url) {
+  const g = await b.newPage({ viewport: { width: 414, height: 1000 } });
+  watch(g, 'keyboard');
+  const at = () => g.evaluate(() => {
+    const a = document.activeElement;
+    return { id: a.id, open: a.getAttribute('data-open'), head: a.getAttribute('data-head-more'),
+             inMenu: !!a.closest('.bh-menu'), inModal: !!a.closest('.detail-modal') };
+  });
+  const state = () => g.evaluate(() => ({ page: !document.getElementById('metric-page').hidden,
+    modal: document.getElementById('detail-backdrop').classList.contains('show'),
+    menu: [...document.querySelectorAll('.bh-menu')].some(m => !m.hidden) }));
+
+  if (await openPage(g, url, 'sheet-sign-pressure')) {
+    await g.focus('#metric-page .bh-more[data-head-more]'); await g.keyboard.press('Enter'); await settle(g);
+    const first = await at();
+    await g.keyboard.press('Escape'); await settle(g);
+    const s1 = await state(), back = await at();
+    (first.inMenu && !s1.menu && s1.page && back.head)
+      ? ok('Escape closes the head menu alone and returns focus to its ⋯', back.head)
+      : bad('Escape closes the head menu alone and returns focus to its ⋯', JSON.stringify({ first, s1, back }));
+
+    await g.keyboard.press('Enter'); await settle(g);
+    await g.evaluate(() => [...document.querySelectorAll('#metric-page .bh-opt')].filter(x => x.offsetParent)[0].click());
+    await settle(g);
+    const m1 = await state(), onClose = await at();
+    for (let i = 0; i < 6; i++) await g.keyboard.press('Tab');
+    const trapped = await at();
+    await g.keyboard.press('Escape'); await settle(g);
+    const m2 = await state(), after = await at();
+    (m1.modal && onClose.id === 'detail-modal-close' && trapped.inModal && !m2.modal && m2.page && after.head)
+      ? ok('Escape closes the (i) over a page and leaves the page open; Tab stays in the (i)')
+      : bad('Escape closes the (i) over a page and leaves the page open; Tab stays in the (i)', JSON.stringify({ m1, onClose, trapped, m2, after }));
+    const reach = await g.evaluate(() => { const c = document.getElementById('detail-modal-close'); c.focus(); return document.activeElement === c; });
+    !reach ? ok('the closed (i) is out of the tab order')
+           : bad('the closed (i) is out of the tab order', 'its Close button still takes focus');
+  } else bad('Escape closes the head menu alone and returns focus to its ⋯', 'no door to Pressure');
+
+  await g.goto('file://' + url); await ready(g);
+  const card = await g.evaluate(() => {
+    const c = [...document.querySelectorAll('.tab-panel[data-tab="cycle"] [data-open^="sheet-cat-"]')].filter(x => x.offsetParent)[0];
+    if (!c) return null; c.focus(); return c.getAttribute('data-open');
+  });
+  await g.keyboard.press('Enter'); await settle(g);
+  const onOpen = await at();
+  await g.keyboard.press('Escape'); await settle(g);
+  const onBack = await at();
+  (card && onOpen.id === 'topbar-title' && onBack.open === card)
+    ? ok('a page takes focus to its title and gives it back to its card', card)
+    : bad('a page takes focus to its title and gives it back to its card', JSON.stringify({ card, onOpen, onBack }));
+
+  const hub = () => g.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent,
+    said: document.getElementById('season-wheel-live').textContent }));
+  const today = await hub();
+  await g.focus('#season-wheel-hub-open'); await g.keyboard.press('ArrowLeft'); await settle(g);
+  const parked = await hub();
+  await g.keyboard.press('End'); await settle(g);
+  const home = await hub();
+  (/Q\d/.test(parked.date) && parked.date !== today.date && /Q\d/.test(parked.said) && home.date === today.date)
+    ? ok('ArrowLeft on the hub parks a quarter and says it', parked.said)
+    : bad('ArrowLeft on the hub parks a quarter and says it', JSON.stringify({ today, parked, home }));
+
+  await g.focus('.tab-btn.active'); await g.keyboard.press('ArrowRight'); await settle(g);
+  const tab = await g.evaluate(() => { const a = document.activeElement;
+    return { tab: a.getAttribute('data-tab'), sel: a.getAttribute('aria-selected'), stops: [...document.querySelectorAll('.tab-btn')].filter(t => t.tabIndex === 0).length }; });
+  (tab.sel === 'true' && tab.tab !== 'cycle' && tab.stops === 1)
+    ? ok('the tabs move with the arrow keys, one tab stop', tab.tab)
+    : bad('the tabs move with the arrow keys, one tab stop', JSON.stringify(tab));
+  await g.close();
+
+  const n = await b.newPage({ viewport: { width: 320, height: 800 } });
+  watch(n, 'narrow');
+  const wide = await openPage(n, url, 'sheet-sign-desire') ? await n.evaluate(() => document.documentElement.scrollWidth) : -1;
+  (wide > 0 && wide <= 320)
+    ? ok('the Desire page fits a 320px screen', wide + 'px')
+    : bad('the Desire page fits a 320px screen', wide + 'px');
+  await n.close();
+}

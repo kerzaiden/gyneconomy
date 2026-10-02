@@ -166,6 +166,11 @@
   .more-menu.in{ transform:none;
     transition:transform 0.34s cubic-bezier(0.22, 0.61, 0.36, 1); }
   .more-menu[hidden]{ display:none; }
+  .sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration:0.01ms !important; animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important; transition-delay:0s !important; scroll-behavior:auto !important; }
+  }
   @media (prefers-reduced-motion: reduce){
     .more-menu, .more-menu.in{ transition:none; transform:none; }
   }
@@ -606,7 +611,8 @@
   .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--text-primary); text-align:left; }
-  button.dx-sys-head{ cursor:pointer; }
+  button.dx-sys-head{ cursor:pointer; position:relative; }
+  button.dx-sys-head::before{ content:""; position:absolute; left:0; right:0; top:50%; height:44px; transform:translateY(-50%); }
   button.dx-sys-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
   button.dx-sys-head:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-sys-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
@@ -771,10 +777,10 @@
   .rm-frame{ display:flex; align-items:stretch; gap:7px; margin:14px auto 0; max-width:340px; }
   .rm-grid{ flex:1 1 auto; min-width:0; display:grid; grid-template-columns:13px 1fr; gap:6px; }
   .rm-ylabs{ display:grid; grid-template-rows:repeat(3, 1fr); gap:6px; }
-  .rm-cells{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;
+  .rm-cells{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px;
     border-left:1px solid var(--border-strong); border-bottom:1px solid var(--border-strong);
     padding:0 0 7px 7px; }
-  .rm-xlabs{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; padding-left:7px; }
+  .rm-xlabs{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px; padding-left:7px; }
   .rm-axis{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.09em;
     text-transform:uppercase; color:var(--text-muted); }
   .rm-axis-y{ writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; flex:none; }
@@ -1253,10 +1259,10 @@
 
   .detail-backdrop{
     position:fixed; inset:0; background:var(--overlay); z-index:80; display:flex;
-    align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none;
-    transition:opacity 0.15s ease;
+    align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; visibility:hidden;
+    transition:opacity 0.15s ease, visibility 0s linear 0.15s;
   }
-  .detail-backdrop.show{ opacity:1; pointer-events:auto; }
+  .detail-backdrop.show{ opacity:1; pointer-events:auto; visibility:visible; transition:opacity 0.15s ease; }
   .detail-modal{
     background:var(--surface); border-radius:var(--radius); width:100%; max-width:520px; max-height:85vh;
     overflow-y:auto; padding:26px 26px 22px; box-shadow:var(--shadow); position:relative;
@@ -1351,7 +1357,7 @@
     <button type="button" class="menu-btn back-btn" id="topbar-back" aria-label="Back to all cycles" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
     </button>
-    <h1 class="topbar-title" id="topbar-title">Current Cycle</h1>
+    <h1 class="topbar-title" id="topbar-title" tabindex="-1">Current Cycle</h1>
     <button type="button" class="menu-btn" id="menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="more-menu">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 12h11M4 17h16"/></svg>
     </button>
@@ -1359,16 +1365,16 @@
 
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
-      <button type="button" class="tab-btn active" data-tab="cycle" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
-      <button type="button" class="tab-btn" data-tab="search" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><span>Search</span></button>
-      <button type="button" class="tab-btn" data-tab="analysis" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
-      <button type="button" class="tab-btn" data-tab="portfolio" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
+      <button type="button" class="tab-btn active" data-tab="cycle" role="tab" id="tab-cycle" aria-controls="panel-cycle" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
+      <button type="button" class="tab-btn" data-tab="search" role="tab" id="tab-search" aria-controls="panel-search" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><span>Search</span></button>
+      <button type="button" class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
+      <button type="button" class="tab-btn" data-tab="portfolio" role="tab" id="tab-portfolio" aria-controls="panel-portfolio" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
   </nav>
 
   <main id="main">
 
-  <div class="tab-panel" data-tab="cycle">
+  <div class="tab-panel" data-tab="cycle" id="panel-cycle" role="tabpanel" aria-labelledby="tab-cycle">
   <div id="cycle-view">
 
     <div class="season-card">
@@ -1377,11 +1383,13 @@
         <div class="season-wheel">
           <svg class="cycle-dial" id="cycle-dial" viewBox="-108 -108 216 216" aria-hidden="true" style="pointer-events:none"></svg>
           <div class="season-wheel-hub">
-            <button type="button" class="season-wheel-hub-open" id="season-wheel-hub-open">
+            <button type="button" class="season-wheel-hub-open" id="season-wheel-hub-open" aria-describedby="season-wheel-keys">
               <span class="season-wheel-hub-date" id="season-wheel-hub-date"></span>
               <span class="season-wheel-hub-theme" id="season-wheel-hub-theme"></span>
               <span class="season-wheel-hub-detail" id="season-wheel-hub-detail"></span>
             </button>
+            <span class="sr-only" id="season-wheel-keys">Left and right arrow keys step through the quarters.</span>
+            <span class="sr-only" id="season-wheel-live" aria-live="polite"></span>
           </div>
         </div>
       </div>
@@ -1502,7 +1510,7 @@
   </div>
   </div>
 
-  <div class="tab-panel" data-tab="analysis" hidden>
+  <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
       <div class="cyc-card">
         <div class="cyc-head sx-head">
@@ -1523,7 +1531,7 @@
     <div id="calendar-cycle" hidden></div>
   </div>
 
-  <div class="tab-panel" data-tab="portfolio" hidden>
+  <div class="tab-panel" data-tab="portfolio" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden>
     <div class="soon">
       <svg class="soon-mark" viewBox="0 0 96 96" aria-hidden="true">
         <circle class="soon-ring" cx="48" cy="48" r="38"/>
@@ -1539,7 +1547,7 @@
     </div>
   </div>
 
-  <div class="tab-panel" data-tab="search" hidden>
+  <div class="tab-panel" data-tab="search" id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <div id="search-home">
       <label class="search-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg><input type="search" id="search-input"
@@ -1751,6 +1759,85 @@
     var t = document.createElement("template");
     t.innerHTML = html;
     return t.content.firstElementChild;
+  }
+  var LAYERS = [];
+  function layer(rank, o) {
+    o.rank = rank;
+    LAYERS.push(o);
+    LAYERS.sort(function(a, b) {
+      return a.rank - b.rank;
+    });
+  }
+  function onScreen(el) {
+    return !!el && el.isConnected && el.getClientRects().length > 0;
+  }
+  function focusQuiet(el) {
+    if (!onScreen(el)) return false;
+    el.focus({
+      preventScroll: true
+    });
+    return document.activeElement === el;
+  }
+  function tabStops(box) {
+    return Array.prototype.filter.call(box.querySelectorAll("a[href], button:not([disabled]), input, textarea, select, [tabindex]"), function(n) {
+      return n.tabIndex >= 0 && onScreen(n) && getComputedStyle(n).visibility !== "hidden";
+    });
+  }
+  function keepTab(e, box) {
+    var stops = tabStops(box), at = document.activeElement;
+    if (!stops.length) {
+      e.preventDefault();
+      return;
+    }
+    var first = stops[0], last = stops[stops.length - 1];
+    if (!box.contains(at) || (e.shiftKey ? at === first : at === last)) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+    }
+  }
+  document.addEventListener("keydown", function(e) {
+    if (e.key !== "Escape" && e.key !== "Tab") return;
+    var top = LAYERS.filter(function(l) {
+      return l.open();
+    })[0];
+    if (!top) return;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      top.close();
+      return;
+    }
+    var box = top.box && top.box();
+    if (box) keepTab(e, box);
+  });
+  function rovingKeys(box, sel, onAttr, vertical) {
+    function items() {
+      return Array.prototype.slice.call(box.querySelectorAll(sel));
+    }
+    function sync() {
+      items().forEach(function(b) {
+        b.tabIndex = b.getAttribute(onAttr) === "true" ? 0 : -1;
+      });
+    }
+    var step = {
+      ArrowLeft: -1,
+      ArrowRight: 1
+    };
+    if (vertical) {
+      step.ArrowUp = -1;
+      step.ArrowDown = 1;
+    }
+    box.addEventListener("keydown", function(e) {
+      var all = items(), i = all.indexOf(e.target);
+      if (i < 0) return;
+      var j = e.key === "Home" ? 0 : e.key === "End" ? all.length - 1 : step[e.key] ? (i + step[e.key] + all.length) % all.length : -1;
+      if (j < 0) return;
+      e.preventDefault();
+      if (j === i) return;
+      all[j].focus();
+      all[j].click();
+    });
+    box.addEventListener("click", sync);
+    sync();
   }
   try {
     var savedTheme = localStorage.getItem("gyneconomy-theme");
@@ -20390,6 +20477,12 @@
     if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
     return painted;
   }
+  function repaintVolatilityRing() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
+      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
+      if (m) m.innerHTML = volatilityRing();
+    });
+  }
   function paintTag(d, tag) {
     var t = d.querySelector(".tag");
     if (!t) return;
@@ -20397,10 +20490,7 @@
     if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
   }
   function repaintVolatility() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
-      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
-      if (m) m.innerHTML = volatilityRing();
-    });
+    repaintVolatilityRing();
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintPressureRow() {
@@ -23031,13 +23121,13 @@
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
   function headPickRow(on, attr, key, label) {
-    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
+    return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' + '<span class="cycsel-tick" aria-hidden="true"></span>' + '<span class="cycsel-nm">' + label + "</span></button>";
   }
   function histHead(id) {
     var H = HIST_HEAD[id];
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
-    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + "</h2>" + '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
+    return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + "</h2>" + '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' + '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' + 'aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + "</button>" + '<div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div>" + "</div>";
   }
   var headNoteIdx = {};
   function headMenuHtml(id) {
@@ -23052,10 +23142,10 @@
         headSubFor = null;
         return headMenuHtml(id);
       }
-      return '<button type="button" class="cycsel-opt bh-back" role="menuitem" data-head-grp="">' + CHEV + '<span class="cycsel-nm">' + g.label + "</span></button>" + '<div class="bh-sep" role="separator"></div>' + g.rows;
+      return '<button type="button" class="cycsel-opt bh-back" data-head-grp="" aria-label="Back from ' + g.label + '">' + CHEV + '<span class="cycsel-nm">' + g.label + "</span></button>" + '<div class="bh-sep"></div>' + g.rows;
     } else extra = groups.map(function(x) {
-      return '<button type="button" class="cycsel-opt bh-grp-row" role="menuitem" aria-haspopup="true" ' + 'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + "</span>" + '<span class="cycsel-yr">' + (x.on ? x.value : "") + "</span>" + CHEV + "</button>";
-    }).join("") + '<div class="bh-sep" role="separator"></div>';
+      return '<button type="button" class="cycsel-opt bh-grp-row" ' + 'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + "</span>" + '<span class="cycsel-yr">' + (x.on ? x.value : "") + "</span>" + CHEV + "</button>";
+    }).join("") + '<div class="bh-sep"></div>';
     var note = HIST_NOTE[id];
     if (!note) return extra;
     if (headNoteIdx[id] == null) {
@@ -23063,7 +23153,7 @@
       detailTexts.push("");
     }
     detailTexts[headNoteIdx[id]] = note;
-    return extra + '<button type="button" class="cycsel-opt bh-opt" role="menuitem" data-detail-idx="' + headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
+    return extra + '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' + headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
   }
   var headMenuFor = null;
   var headSubFor = null;
@@ -23078,39 +23168,57 @@
       btn.setAttribute("aria-expanded", on ? "true" : "false");
     }
   }
+  function headMoreBtn(id) {
+    return Array.prototype.filter.call(document.querySelectorAll(".bh-more[data-head-more]"), function(b) {
+      return b.getAttribute("data-head-more") === id && onScreen(b);
+    })[0];
+  }
+  function headMenuFirst() {
+    var b = headMoreBtn(headMenuFor), menu = b && b.closest(".bh-more-wrap").querySelector(".bh-menu");
+    focusQuiet(menu && menu.querySelector("button"));
+  }
+  function headMenuShut(refocus) {
+    var id = headMenuFor;
+    headMenuFor = null;
+    headSubFor = null;
+    paintHeadMenus();
+    if (refocus) focusQuiet(headMoreBtn(id));
+  }
+  layer(0, {
+    open: function() {
+      return headMenuFor !== null;
+    },
+    close: function() {
+      headMenuShut(true);
+    }
+  });
   document.addEventListener("click", function(e) {
     var pick = e.target.closest && e.target.closest(".bh-pick");
     var grp = e.target.closest && e.target.closest("[data-head-grp]");
     if (grp) {
       headSubFor = grp.getAttribute("data-head-grp") || null;
       paintHeadMenus();
+      headMenuFirst();
       return;
     }
     if (pick) {
-      headMenuFor = null;
-      headSubFor = null;
-      paintHeadMenus();
+      var from = headMenuFor;
+      headMenuShut(false);
       var mat = pick.getAttribute("data-ylm-mat");
-      if (mat) {
-        GYN.fire("pickSeries", null, mat);
-        return;
-      }
-      GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
+      if (mat) GYN.fire("pickSeries", null, mat); else GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
+      focusQuiet(headMoreBtn(from));
       return;
     }
     var btn = e.target.closest && e.target.closest("[data-head-more]");
     if (!btn) {
-      if (headMenuFor !== null) {
-        headMenuFor = null;
-        headSubFor = null;
-        paintHeadMenus();
-      }
+      if (headMenuFor !== null) headMenuShut(false);
       return;
     }
     var id = btn.getAttribute("data-head-more");
     headMenuFor = headMenuFor === id || !HIST_NOTE[id] ? null : id;
     headSubFor = null;
     paintHeadMenus();
+    if (headMenuFor) headMenuFirst();
   });
   function histNote(head, info) {
     if (head && info) HIST_NOTE[head] = info;
@@ -26334,12 +26442,32 @@
       var sheet = btn && btn.closest && btn.closest(".metric-sheet");
       var chip = sheet && sheet.querySelector(".timing-row");
       if (chip) body.appendChild(chip.cloneNode(true));
+      if (!backdrop.classList.contains("show")) opener = btn;
       backdrop.classList.add("show");
+      byId("detail-modal-close").focus({
+        preventScroll: true
+      });
     }
+    var opener = null;
     function close() {
+      if (!backdrop.classList.contains("show")) return;
       backdrop.classList.remove("show");
       body.innerHTML = "";
+      var from = opener;
+      opener = null;
+      if (from && !onScreen(from) && from.closest) from = from.closest(".bh-more-wrap") && from.closest(".bh-more-wrap").querySelector(".bh-more");
+      focusQuiet(from);
     }
+    detailClose = close;
+    layer(1, {
+      open: function() {
+        return backdrop.classList.contains("show");
+      },
+      close: close,
+      box: function() {
+        return backdrop.querySelector(".detail-modal");
+      }
+    });
     document.addEventListener("click", function(e) {
       var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt, .sx-row");
       if (btn) {
@@ -26359,10 +26487,8 @@
       close();
       if (openIndicatorsPage) openIndicatorsPage(chip.getAttribute("data-ind-tab"));
     });
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") close();
-    });
   }
+  var detailClose = null;
   GYN.step("wireDetailModal", wireDetailModal, "wire");
   wireDetailModal();
   byId("asof-text").textContent = "Data compiled " + dataCompiledLabel;
@@ -27740,6 +27866,7 @@
       paint();
     });
     paint();
+    rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
   }
   GYN.step("wireThemeChoice", wireThemeChoice, "wire");
   wireThemeChoice();
@@ -27979,6 +28106,27 @@
       var t = !scrubbing && e.target.closest && e.target.closest("[data-q]");
       if (t) goTo(+t.getAttribute("data-q"));
     });
+    byId("season-wheel-hub-open").addEventListener("keydown", function(e) {
+      var i = dialKeyStep(e.key);
+      if (i == null) return;
+      e.preventDefault();
+      shown = false;
+      goTo(i);
+      dialSay();
+    });
+  }
+  function dialKeyStep(key) {
+    if (!dialState) return null;
+    var n = dialState.quarters.length, at = dialState.parked == null ? n : dialState.parked;
+    var to = key === "ArrowLeft" ? at - 1 : key === "ArrowRight" ? at + 1 : key === "Home" ? 0 : key === "End" ? n : null;
+    if (to == null) return null;
+    to = Math.max(0, Math.min(n, to));
+    return to === n ? -1 : to;
+  }
+  function dialSay() {
+    var m = dialState.m, q = dialState.quarters[dialState.parked], meta = wheelMeta[q ? q.seg.season : m.season];
+    var when = q ? qLabel(q.seg.q) : m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth);
+    byId("season-wheel-live").textContent = when + ", " + meta.name + (meta.theme ? ", " + meta.theme : "");
   }
   GYN.step("renderCycleDial", renderCycleDial, "wire");
   renderCycleDial();
@@ -28775,7 +28923,7 @@
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
-    var pageStack = [];
+    var pageStack = [], openers = [];
     function homeFromPage(keepScroll) {
       if (!openSheet) return;
       openHome.appendChild(openSheet);
@@ -28798,28 +28946,34 @@
     }
     function closeMetricPage() {
       pageStack.length = 0;
+      openers.length = 0;
       homeFromPage();
     }
     function backFromPage() {
-      var prev = pageStack.pop();
-      if (!prev) {
-        closeMetricPage();
-        return;
-      }
-      var el = byId(prev.id);
-      homeFromPage(true);
-      openMetricPage(el, prev.title, true);
-      window.requestAnimationFrame(function() {
-        window.scrollTo({
-          top: prev.scroll,
-          behavior: "auto"
+      var prev = pageStack.pop(), from = openers.pop();
+      if (!prev) closeMetricPage(); else {
+        homeFromPage(true);
+        openMetricPage(byId(prev.id), prev.title, true);
+        window.requestAnimationFrame(function() {
+          window.scrollTo({
+            top: prev.scroll,
+            behavior: "auto"
+          });
         });
-      });
+      }
+      if (!focusQuiet(from)) focusQuiet(byId("topbar-title"));
     }
+    layer(4, {
+      open: function() {
+        return !!openSheet;
+      },
+      close: backFromPage
+    });
     metricPageReset = closeMetricPage;
     function openMetricPage(el, title, returning, homeKey) {
       if (!el) return;
       seatPageFoot(el);
+      if (!returning && openSheet !== el) openers.push(document.activeElement);
       if (!returning && openSheet && openSheet !== el) pageStack.push({
         id: openSheet.id,
         title: byId("topbar-title").textContent,
@@ -28848,12 +29002,13 @@
       var draw = sheetRenderers[el.id];
       if (draw) draw(metricPage.clientWidth);
       collapseEmptyBlocks(el);
+      if (!returning) focusQuiet(byId("topbar-title"));
     }
     [ cyclePanel, byId("detail-modal-body") ].forEach(function(host) {
       host.addEventListener("click", function(e) {
         var btn = e.target.closest && e.target.closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl.closest(".tab-panel").getAttribute("data-tab");
         if (!btn) return;
-        byId("detail-backdrop").classList.remove("show");
+        if (detailClose) detailClose();
         openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
       });
     });
@@ -28888,9 +29043,6 @@
       if (!row) return;
       e.preventDefault();
       openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
-    });
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && openSheet && !byId("detail-backdrop").classList.contains("show")) backFromPage();
     });
     NAV.open = openMetricPage;
     NAV.panel = analysisPanel;
@@ -30395,13 +30547,18 @@
         if (tab === "analysis") settleStrips();
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
         });
       });
     });
   }
   GYN.step("renderTopbar", renderTopbar, "wire");
   renderTopbar();
+  function wireTabKeys() {
+    rovingKeys(document.querySelector(".tabbar"), ".tab-btn", "aria-selected");
+  }
+  GYN.step("wireTabKeys", wireTabKeys, "wire");
+  wireTabKeys();
   function wireContactForm() {
     var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
     var prevOverflow = "";
@@ -30515,9 +30672,23 @@
     document.addEventListener("click", function(e) {
       if (e.target.closest && e.target.closest("[data-sheet-back]")) hideSheet();
     });
-    document.addEventListener("keydown", function(e) {
-      if (e.key !== "Escape") return;
-      if (openSheet) hideSheet(); else hide();
+    layer(2, {
+      open: function() {
+        return !!openSheet;
+      },
+      close: hideSheet,
+      box: function() {
+        return openSheet;
+      }
+    });
+    layer(3, {
+      open: function() {
+        return !menu.hidden && menu.classList.contains("in");
+      },
+      close: hide,
+      box: function() {
+        return menu;
+      }
     });
     (function() {
       var form = byId("contact-form"), hint = byId("contact-hint");

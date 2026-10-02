@@ -58,6 +58,12 @@
     return painted;
   }
 
+  function repaintVolatilityRing(){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d){
+      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
+      if (m) m.innerHTML = volatilityRing();
+    });
+  }
   function paintTag(d, tag){
     var t = d.querySelector(".tag");
     if (!t) return;
@@ -66,10 +72,7 @@
       t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
   }
   function repaintVolatility(){
-    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d){
-      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
-      if (m) m.innerHTML = volatilityRing();
-    });
+    repaintVolatilityRing();
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
   function repaintPressureRow(){

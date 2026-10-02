@@ -4,7 +4,7 @@
     '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
   function headPickRow(on, attr, key, label){
     return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") +
-      '" role="menuitemradio" aria-checked="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
+      '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '">' +
       '<span class="cycsel-tick" aria-hidden="true"></span>' +
       '<span class="cycsel-nm">' + label + '</span></button>';
   }
@@ -17,9 +17,9 @@
       '<h2 class="bh-title">' + t + '</h2>' +
       '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
       '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
-        'aria-haspopup="menu" aria-expanded="' + (headMenuFor === id ? "true" : "false") +
+        'aria-expanded="' + (headMenuFor === id ? "true" : "false") +
         '" aria-label="More about this chart">' + DOTS + '</button>' +
-      '<div class="cycsel-menu bh-menu" role="menu"' + (headMenuFor === id ? "" : " hidden") + '>' +
+      '<div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + '>' +
         (headMenuFor === id ? headMenuHtml(id) : "") + '</div></div>' +
     '</div>';
   }
@@ -32,21 +32,21 @@
     else if (headSubFor){
       var g = groups.filter(function(x){ return x.key === headSubFor; })[0];
       if (!g){ headSubFor = null; return headMenuHtml(id); }
-      return '<button type="button" class="cycsel-opt bh-back" role="menuitem" data-head-grp="">' +
+      return '<button type="button" class="cycsel-opt bh-back" data-head-grp="" aria-label="Back from ' + g.label + '">' +
         CHEV + '<span class="cycsel-nm">' + g.label + '</span></button>' +
-        '<div class="bh-sep" role="separator"></div>' + g.rows;
+        '<div class="bh-sep"></div>' + g.rows;
     }
     else extra = groups.map(function(x){
-      return '<button type="button" class="cycsel-opt bh-grp-row" role="menuitem" aria-haspopup="true" ' +
+      return '<button type="button" class="cycsel-opt bh-grp-row" ' +
         'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
         '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
-    }).join("") + '<div class="bh-sep" role="separator"></div>';
+    }).join("") + '<div class="bh-sep"></div>';
     var note = HIST_NOTE[id];
     if (!note) return extra;
     if (headNoteIdx[id] == null){ headNoteIdx[id] = detailTexts.length; detailTexts.push(""); }
     detailTexts[headNoteIdx[id]] = note;
     return extra +
-      '<button type="button" class="cycsel-opt bh-opt" role="menuitem" data-detail-idx="' +
+      '<button type="button" class="cycsel-opt bh-opt" data-detail-idx="' +
       headNoteIdx[id] + '"><span class="cycsel-nm">About this reading</span></button>';
   }
   var headMenuFor = null;
@@ -62,23 +62,40 @@
       btn.setAttribute("aria-expanded", on ? "true" : "false");
     }
   }
+  function headMoreBtn(id){
+    return Array.prototype.filter.call(document.querySelectorAll(".bh-more[data-head-more]"), function(b){
+      return b.getAttribute("data-head-more") === id && onScreen(b); })[0];
+  }
+  function headMenuFirst(){
+    var b = headMoreBtn(headMenuFor), menu = b && b.closest(".bh-more-wrap").querySelector(".bh-menu");
+    focusQuiet(menu && menu.querySelector("button"));
+  }
+  function headMenuShut(refocus){
+    var id = headMenuFor;
+    headMenuFor = null; headSubFor = null; paintHeadMenus();
+    if (refocus) focusQuiet(headMoreBtn(id));
+  }
+  layer(0, { open:function(){ return headMenuFor !== null; }, close:function(){ headMenuShut(true); } });
   document.addEventListener("click", function(e){
     var pick = e.target.closest && e.target.closest(".bh-pick");
     var grp = e.target.closest && e.target.closest("[data-head-grp]");
-    if (grp){ headSubFor = grp.getAttribute("data-head-grp") || null; paintHeadMenus(); return; }
+    if (grp){ headSubFor = grp.getAttribute("data-head-grp") || null; paintHeadMenus(); headMenuFirst(); return; }
     if (pick){
-      headMenuFor = null; headSubFor = null; paintHeadMenus();
+      var from = headMenuFor;
+      headMenuShut(false);
       var mat = pick.getAttribute("data-ylm-mat");
-      if (mat){ GYN.fire("pickSeries", null, mat); return; }
-      GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
+      if (mat) GYN.fire("pickSeries", null, mat);
+      else GYN.fire("pickSpread", pick.getAttribute("data-hzn-spread"));
+      focusQuiet(headMoreBtn(from));
       return;
     }
     var btn = e.target.closest && e.target.closest("[data-head-more]");
-    if (!btn){ if (headMenuFor !== null){ headMenuFor = null; headSubFor = null; paintHeadMenus(); } return; }
+    if (!btn){ if (headMenuFor !== null) headMenuShut(false); return; }
     var id = btn.getAttribute("data-head-more");
     headMenuFor = (headMenuFor === id || !HIST_NOTE[id]) ? null : id;
     headSubFor = null;
     paintHeadMenus();
+    if (headMenuFor) headMenuFirst();
   });
   function histNote(head, info){ if (head && info) HIST_NOTE[head] = info; }
   function meterFlagged(m){
