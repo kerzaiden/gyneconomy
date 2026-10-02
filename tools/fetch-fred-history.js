@@ -27,51 +27,22 @@ async function fredSeries(series, start) {
   return obs;
 }
 
-const OECD_CCI = ['OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.CCICP......', 'OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.CCICP......',
-  'OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.CCICP.......'];
+const OECD_CCI = 'https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.CCICP......?format=genericdata&startPeriod=';
 
-function oecdRows(csv) {
-  const lines = csv.trim().split(/\r?\n/), head = lines[0].split(',');
-  const at = n => head.indexOf(n), t = at('TIME_PERIOD'), v = at('OBS_VALUE');
-  if (t < 0 || v < 0) throw new Error('OECD CCI: no TIME_PERIOD or OBS_VALUE in ' + lines[0]);
-  const keys = head.map((h, i) => i).filter(i => i !== t && i !== v && !/^(OBS_STATUS|UNIT_MULT|DECIMALS|BASE_PER|STRUCTURE.*)$/.test(head[i]));
-  const series = new Set(), seen = new Map();
-  for (const line of lines.slice(1)) {
-    const c = line.split(','), m = c[t], x = Number(c[v]);
-    series.add(keys.map(i => head[i] + '=' + c[i]).join(' '));
-    if (!/^\d{4}-\d{2}$/.test(m) || !band(x, 50, 150)) continue;
-    if (seen.has(m)) throw new Error('OECD CCI: more than one series came back: ' + [...series].join(' | '));
-    seen.set(m, x);
-  }
-  return [...seen.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([m, x]) => ({ m, v: Math.round(x * 100) / 100 }));
-}
-
-const OECD_HEAD = { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)', accept: 'text/csv' };
-
-async function oecdGet(path, start) {
-  const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + path + '?startPeriod=' + start + '&format=csvfile', { headers: OECD_HEAD });
-  return { ok: r.ok, status: r.status, text: await r.text() };
+function oecdRows(xml) {
+  const series = xml.split(/<generic:Series>/).slice(1);
+  if (!series.length) throw new Error('OECD CCI: no series in the reply: ' + xml.replace(/\s+/g, ' ').slice(0, 200));
+  if (series.length > 1) throw new Error('OECD CCI: more than one series came back: ' + series.map(x =>
+    [...x.split(/<\/generic:SeriesKey>/)[0].matchAll(/id="([^"]+)" value="([^"]*)"/g)].map(m => m[1] + '=' + m[2]).join(' ')).join(' | '));
+  const obs = [...series[0].matchAll(/<generic:Obs>[\s\S]*?<generic:ObsDimension[^>]*value="([^"]+)"[\s\S]*?<generic:ObsValue[^>]*value="([^"]+)"/g)];
+  return obs.map(m => ({ m: m[1], v: Number(m[2]) })).filter(d => /^\d{4}-\d{2}$/.test(d.m) && band(d.v, 50, 150))
+    .sort((x, y) => (x.m < y.m ? -1 : 1)).map(d => ({ m: d.m, v: Math.round(d.v * 100) / 100 }));
 }
 
 async function oecdConfidence(start) {
-  const tried = [];
-  for (const path of OECD_CCI) {
-    const r = await oecdGet(path, start);
-    if (r.ok) { say('  OECD from ' + path); return oecdRows(r.text); }
-    tried.push(path + ' → HTTP ' + r.status + ' ' + r.text.replace(/\s+/g, ' ').slice(0, 160));
-  }
-  const st = await fetch('https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest?references=all',
-    { headers: { 'user-agent': OECD_HEAD['user-agent'], accept: 'application/vnd.sdmx.structure+json; version=1.0' } });
-  const sj = await st.text();
-  const dims = [...sj.matchAll(/"id":"([A-Z_]+)","position":\d+/g)].map(m => m[1]).join('.');
-  const cc = [...new Set([...sj.matchAll(/"id":"(CC[A-Z_]*|[A-Z_]*CONF[A-Z_]*)"/g)].map(m => m[1]))].join(' ');
-  const variants = [];
-  for (const q of ['format=jsondata', 'format=csv', 'format=genericdata']) {
-    const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + OECD_CCI[0] + '?startPeriod=2026-01&' + q, { headers: { 'user-agent': OECD_HEAD['user-agent'] } });
-    variants.push(q + ' ' + r.status + ' ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 80));
-  }
-  const measures = 'structure ' + st.status + ' dims ' + dims + ' · codes ' + cc + ' · ' + variants.join(' | ');
-  throw new Error('OECD CCI: ' + tried.join(' || ') + ' || ' + measures);
+  const r = await fetch(OECD_CCI + start, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!r.ok) throw new Error('OECD CCI: HTTP ' + r.status + ' ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 200));
+  return oecdRows(await r.text());
 }
 
 const VOL_JOIN = '1990-01';

@@ -94,11 +94,14 @@ ok('a quarter without its year-earlier twin is left out',
    yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
 ok('with productivity, its series is written',
    /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], 'x', null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
-ok('the OECD file is read by its column names, in month order',
-   oecdRows('STRUCTURE,STRUCTURE_ID,REF_AREA,FREQ,MEASURE,TIME_PERIOD,OBS_VALUE\nDATAFLOW,x,USA,M,CCICP,2024-02,98.91\nDATAFLOW,x,USA,M,CCICP,2024-01,98.7'),
+const sdmxSeries = (key, obs) => '<generic:Series><generic:SeriesKey><generic:Value id="MEASURE" value="' + key + '" /></generic:SeriesKey>' +
+  obs.map(([m, v]) => '<generic:Obs><generic:ObsDimension value="' + m + '" /><generic:ObsValue value="' + v + '" /></generic:Obs>').join('') + '</generic:Series>';
+ok('the OECD reply is read month by month, in month order',
+   oecdRows('<message:DataSet>' + sdmxSeries('CCICP', [['2024-02', '98.913'], ['2024-01', '98.7']]) + '</message:DataSet>'),
    [{ m: '2024-01', v: 98.7 }, { m: '2024-02', v: 98.91 }]);
-ok('two series for one month is refused, not guessed between',
-   (() => { try { oecdRows('MEASURE,ADJUSTMENT,TIME_PERIOD,OBS_VALUE\nCCICP,AA,2024-01,98.7\nCCICP,N,2024-01,97'); return 'kept'; } catch (e) { return /more than one series/.test(e.message); } })(), true);
+ok('two series in one reply is refused, not guessed between',
+   (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
+            catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
 ok('with consumer confidence, its series is written last',
    /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n$/.test(emit([], [], 'x', null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
 ok('a month averages its daily closes',
