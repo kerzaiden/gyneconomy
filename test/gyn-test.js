@@ -791,6 +791,19 @@ async function openPage(p, url, sheet) {
     ? ok('live cache absent', plain.r.fgNum + '% / ' + plain.r.yld)
     : bad('live cache absent', JSON.stringify(plain.r) + ' ' + plain.errs.join(' | '));
 
+  const BAD_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: '3.75', hi: 4 }, yieldCurve: { kind: 'series', rows: [{ m: '10Y', y: 'x' }] },
+                                     vixClose: { kind: 'scalar', value: 33.3, asOf: '<b>2026-09-30</b>' } });
+  const badSeed = await loadWith(BAD_SEED);
+  (badSeed.r.yld && !badSeed.errs.length && !/33\.3VIX/.test(badSeed.text))
+    ? ok('a malformed cache falls back to the literals and the app still builds')
+    : bad('a malformed cache falls back to the literals and the app still builds', JSON.stringify(badSeed.r) + ' ' + badSeed.errs.join(' | '));
+
+  const VIX_SEED = JSON.stringify({ vixClose: { kind: 'scalar', value: 33.3, asOf: '2026-09-30' } });
+  const vixSeed = await loadWith(VIX_SEED);
+  /33\.3VIX/.test(vixSeed.text.replace(/\s+/g, ''))
+    ? ok('a cached scalar is applied at load, on a second visit')
+    : bad('a cached scalar is applied at load, on a second visit', 'the card still shows the file figure');
+
   const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75, lastMove: '+0.25', lastMoveLabel: 'raised a quarter point',
                                                 asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' } });
   const objSeed = await loadWith(FF_SEED);

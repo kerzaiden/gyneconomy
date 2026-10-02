@@ -24,7 +24,7 @@
   }
   function docOk(name, d){
     var r = READINGS[name];
-    try { return !!r && shapeOk(r, docValue(d)) && JSON.stringify(docValue(d)).indexOf("<") < 0; } catch (e) { return false; }
+    try { return !!r && shapeOk(r, docValue(d)) && JSON.stringify(d).indexOf("<") < 0; } catch (e) { return false; }
   }
   function LIVE(name, fallback){
     var d = LIVE_CACHE[name];

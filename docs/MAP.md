@@ -10,7 +10,7 @@ whole, so this file exists to get you to the right two hundred lines.
 > number as rough orientation only. If a number is off by a hundred, the map is doing its job and
 > just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.
 
-Generated from commit `49ec7d9` on 2026-10-02.
+Generated from commit `6b87df4` on 2026-10-02.
 
 ## The five regions
 
