@@ -220,6 +220,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   when a page has no Insights); it is never an (i) beside a title, and it leaves out what the page already
   shows.** The button summarises the Insights above it; Keren: "check that when you add the More details, it's
   not already there". (V287, V288, V426)
+- **Nothing sits above a page's window bar but its timing chip, and a page has one Insights box.** Momentum and
+  Productivity growth still drew the old card head (mark, name, word, figure) and a second, lede-only Insights
+  box, because their readings never declared `bare` and so `cardDetailHtml` added both; Keren: "everything that
+  is above the selection bar is redundant … there should only be one insight." The suite now fails a page with a
+  card head above its bar or a second Insights box. (V661, V673)
 
 ## The dial and the cycles
 
@@ -498,12 +503,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   metric". (V343, V668)
 - **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
   (V655)
-- **Momentum's word comes off two lines: below zero (definitional) is Falling; above it, 65% or more of this
-  bull's best twelve-month change is Rising, and less is Slowing.** The 65% is Keren's line from the Diagnosis
-  research (V664), the one Euphoria and Optimism read, so the card and the feeling can never disagree; the chart
-  draws zero, and the (i) says the 65% is hers, not a published standard. The figure is whole percent, signed.
-  RSI, MACD and stochastics were weighed and declined: they are trading oscillators for daily bars, and their
-  70/30 lines are convention with no primary source. (V672)
+- **Momentum is read the way momentum stocks are: price velocity over the trailing three to twelve months.**
+  Keren: "Momentum stocks are equities exhibiting strong upward price velocity over a trailing 3-to-12 month
+  period … I want to see the same logic on the S&P 500." The card's figure stays the twelve-month change; the
+  word sets the last three months, put on a yearly pace by compounding, against it: lower than three months ago
+  is Falling, up at a pace at or above the twelve-month change is Rising, up but slower is Slowing. No line is
+  drawn (the paces are only compared), and the six-month pace is shown with them. The window is the research's
+  own (Jegadeesh & Titman 1993, 3 to 12 months; Moskowitz, Ooi & Pedersen 2012 on indexes). This replaces V672's
+  65%-of-the-bull's-best word; the Diagnosis still reads Euphoria and Optimism off that 65% line, so the card and
+  the feeling can now differ (asked of Keren, V673). The figure is whole percent, signed. RSI, MACD and
+  stochastics were weighed and declined: they are trading oscillators for daily bars, and their 70/30 lines are
+  convention with no primary source. (V672, V673)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its

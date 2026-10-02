@@ -521,11 +521,14 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
   live VIX close ranked against those monthly averages.
 - **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
-  arrays, so the card, its page (a split page, `momentumPage`, drawn by `divergeChart` around zero) and the
-  feeling are one figure; `momentumSeries` is the monthly series in percent for the page and the roster.
+  arrays; its page is a split page (`momentumPage`, drawn by `divergeChart` around zero) and `momentumSeries` is
+  the monthly twelve-month change in percent for the page and the roster. Its word comes from `momentumWindows`
+  (the 3-, 6- and 12-month changes and the compounded yearly paces), not from the Diagnosis's 65% line (V673).
+  Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
+  its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.
 - **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
-  workbook the CAPE fetcher reads): the twelve-month change and its share of the best change since momentum last
-  turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
+  workbook the CAPE fetcher reads): the twelve-month change; the Diagnosis also reads its share of the best change
+  since momentum last turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
 

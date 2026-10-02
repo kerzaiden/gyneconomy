@@ -31,12 +31,12 @@
   }
   function productivityPage(tenth){
     var r = productivityReading;
-    return { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight,
+    return { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight, info:r.info,
       row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
   }
   function momentumPage(){
     var r = momentumReading;
-    return { goodAbove:true, line:"No change", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight,
+    return { goodAbove:true, line:"No change", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight, info:r.info,
       fmt:function(v){ return momentumPct(v / 100); },
       row:{ sub:r.metricSub, note:r.caption, flagState:r.tag.state } };
   }
@@ -47,7 +47,7 @@
     return s;
   }
   function splitInfo(s){
-    return '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
+    return s.info ? s.info() : '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
   }
   function periodTicks(vals){
@@ -188,17 +188,11 @@
       hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
         fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
   }
-  function momentumInsight(s){
-    var h = s.series, r = momentumReading.run, up = h.filter(function(d){ return d.v >= 0; }).length;
-    var turns = h.filter(function(d, i){ return i > 0 && d.v < 0 && h[i - 1].v >= 0; }).length;
-    return [lede('How fast Mrs. Market\u2019s price is moving: the S&amp;P 500 against the same month a year earlier. ' +
-        'Above zero she is still climbing, and the question is how fast; below it she is lower than a year ago.'),
-      hiCard("This run", momentumReading.tag.state, r.up
-        ? "Above zero since " + r.since + ". The fastest twelve months of this bull ran " + momentumPct(r.peak) + " (" + r.peakAt +
-          "); today\u2019s " + momentumReading.metric + " is " + Math.round(momentumReading.share * 100) + "% of that pace."
-        : "Below zero since " + r.since + ". The deepest reading of this fall is " + momentumPct(r.peak) + " (" + r.peakAt + ")."),
-      hiCard("Against the record", "", "Since " + prettyKey(h[0].m) + ", the S&amp;P 500 stood at or above its level a year earlier in " +
-        up + " of " + h.length + " months; momentum has turned negative " + turns + " times.")];
+  function momentumInsight(){
+    var r = momentumReading;
+    return [lede('Momentum investors judge a stock by how fast its price has moved over the last three to twelve months. ' +
+        'Read the same way, the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is gathering speed or losing it.'),
+      hiCard("The pace", r.tag.state, momentumPaces(r.windows) + " " + r.says)];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
