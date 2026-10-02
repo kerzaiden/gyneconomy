@@ -38,7 +38,7 @@ rules below are the ones that matter most.
 
 ## Always
 
-- **The history component is one component.** A change to one history page is a change to all twelve;
+- **The history component is one component.** A change to one history page is a change to all eleven;
   a page that cannot take it is a finding to report, not a page to skip. The same holds for the head menu
   (one menu shape for every history, Keren, V602) and the history frame.
 - **A parent owns what its children share** (Keren, V662). One frame (`histFrame`: height and margins) for

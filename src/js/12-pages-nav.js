@@ -825,6 +825,8 @@
   var DIAG_SRC = [
     {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
     {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"},
+    {t:"Board of Governors of the Federal Reserve System \u2014 Federal Funds Effective Rate (FEDFUNDS), via FRED: cash for the trend", u:"https://fred.stlouisfed.org/series/FEDFUNDS"},
+    {t:"Moskowitz, Ooi & Pedersen \u2014 Time Series Momentum, Journal of Financial Economics 104(2), 2012 (a market\u2019s past twelve months against Treasury bills)", u:"https://doi.org/10.1016/j.jfineco.2011.11.003"},
     {t:"Alexandra Pope & Sjanie Hugo Wurlitzer \u2014 Wild Power (Hay House, 2017); Red School", u:"https://www.redschool.net/"}
   ];
   function todayFace(item){
@@ -880,7 +882,7 @@
   function diagnosisInfo(d){
     return '<h4>Diagnosis</h4>' + ledeHtml("How Mrs. Market feels, read from facts knowable that month, and what has followed that feeling in her season.") +
       facts(FEELINGS.map(function(w){ return "<b>" + w + "</b>: " + FEELING_RULES[w]; }).concat([
-        "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard. The trend is Momentum\u2019s: the S&amp;P 500\u2019s last twelve months against cash (the effective federal funds rate): intact when it beat cash, broken when cash won.",
+        "Calm is fear in the bottom 20% of its own history to date, frightened the top 20%, rising 20 points in three months; near the high is within 5%. These lines are Keren\u2019s, from the research, not a published standard. The trend is the S&amp;P 500\u2019s last twelve months against cash, the effective federal funds rate compounded month by month: intact when it beat cash, broken when cash won (Moskowitz, Ooi and Pedersen\u2019s time-series momentum).",
         "Warm is Summer and both Autumns; cool is Winter and both Springs. Fear is the VIX from 1990 and the VXO before it, ranked against every month since 1986.",
         "The record counts every month since " + monthLabel(whatFollowed().from) + " with the same feeling in the same half, and the S&amp;P 500 a year later. It is a count of what followed, not a forecast."])) +
       srcBlock(DIAG_SRC);

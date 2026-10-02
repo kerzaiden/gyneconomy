@@ -86,7 +86,7 @@ console.log('\nmarketMonths — momentum, the trend against cash, and the drawdo
 {
   const sp = [...Array(12).fill(100), 120, 110, 90, 105].map((v, i) => ({ m: month(i), v }));
   const cash = sp.map(d => ({ m: d.m, v: 12 }));
-  const { marketMonths } = lift(['rankToDate', 'momentumCash', 'momentumMargins', 'marketMonths'], { sp500MonthlyHistory: sp, volatilityHistory: [],
+  const { marketMonths } = lift(['rankToDate', 'marketMonths', 'trendAgainstCash'], { sp500MonthlyHistory: sp, volatilityHistory: [],
     seasonTrackAll: [], fedFundsHistory: cash, QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, marketCache: null });
   const S = marketMonths();
   ok('no momentum before a year of history', S.mom[11], null);
@@ -124,7 +124,7 @@ console.log('\nwhatFollowed, lastFeeling, diagnoseClose — the record and the c
   const seasons = Array.from({ length: 20 }, (_, k) => ({ y: 2000 + Math.floor(k / 4), qn: 'Q' + (k % 4 + 1), reading: { season: 'summer' } }));
   const env = { sp500MonthlyHistory: sp, volatilityHistory: vol, seasonTrackAll: seasons, capeHistory: [], fedFundsHistory: sp.map(d => ({ m: d.m, v: 0 })),
     QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, marketCache: null, followedCache: null };
-  const M = lift(['seasonHalf', 'rankToDate', 'readFeeling', 'readPosture', 'momentumCash', 'momentumMargins', 'marketMonths', 'seasonInMonth', 'stretchRank',
+  const M = lift(['seasonHalf', 'rankToDate', 'readFeeling', 'readPosture', 'marketMonths', 'trendAgainstCash', 'seasonInMonth', 'stretchRank',
                   'marketFacts', 'whatFollowed', 'lastFeeling', 'diagnoseClose'], env);
   const rec = M.whatFollowed(), cell = rec.cells['Euphoria|warm'];
   ok('the record starts when the trend and a fear rank both exist', rec.from, '2001-01');
