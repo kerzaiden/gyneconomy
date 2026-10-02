@@ -6,10 +6,10 @@
     lagging:    { label:"Lagging",    hint:"confirms a turn after it has happened" }
   };
   var CATEGORIES = [
-    { key:"weather", title:"Weather", mark:weatherSvg, shown:0, insight:insightWeather, onDial:true },
-    { key:"circulation", title:"Circulation", mark:circulationSvg, shown:2, insight:insightCirculation },
-    { key:"mood", title:"Mood", mark:moodSvg, shown:1, insight:insightMood, inTrend:true },
-    { key:"energy", title:"Energy", mark:boltSvg, shown:3 }
+    { key:"weather", title:"Weather", shown:0, insight:insightWeather, onDial:true },
+    { key:"circulation", title:"Circulation", shown:2, insight:insightCirculation },
+    { key:"mood", title:"Mood", shown:1, insight:insightMood, inTrend:true },
+    { key:"energy", title:"Energy", shown:3 }
   ];
   var ROSTER = [
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",

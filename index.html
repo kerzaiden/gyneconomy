@@ -428,7 +428,7 @@
     border-bottom:1px solid color-mix(in srgb, var(--cat) 22%, var(--border));
     background:color-mix(in srgb, var(--cat) 8%, var(--surface)); text-align:left; cursor:pointer; }
   .ind-cat-name{ flex:1; font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
-    font-size:var(--type-reading-head); line-height:1.1; color:var(--cat); }
+    font-size:var(--type-reading-head); line-height:1.1; color:color-mix(in srgb, var(--cat) 70%, var(--text-primary)); }
   .ind-cat-head .peek-chev{ color:var(--cat); opacity:0.7; }
   .ind-cat-head:hover{ background:color-mix(in srgb, var(--cat) 13%, var(--surface)); }
   .ind-cat-head:hover .peek-chev{ opacity:1; }
@@ -24743,12 +24743,6 @@
   function circulationSvg() {
     return dropSvg(1.9);
   }
-  function weatherSvg() {
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + '<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95"/>' + '<path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65"/>' + '<path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z"/>' + "</svg>";
-  }
-  function moodSvg() {
-    return markSvg('<path d="M3.6 6.4q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>' + '<path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>' + '<path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>');
-  }
   function boltSvg() {
     return markSvg('<path d="M14.2 2.4 5.2 13.6h5.9l-1.3 8 9-11.2h-5.9z" stroke-width="1.8"/>');
   }
@@ -25104,27 +25098,23 @@
   var CATEGORIES = [ {
     key: "weather",
     title: "Weather",
-    mark: weatherSvg,
     shown: 0,
     insight: insightWeather,
     onDial: true
   }, {
     key: "circulation",
     title: "Circulation",
-    mark: circulationSvg,
     shown: 2,
     insight: insightCirculation
   }, {
     key: "mood",
     title: "Mood",
-    mark: moodSvg,
     shown: 1,
     insight: insightMood,
     inTrend: true
   }, {
     key: "energy",
     title: "Energy",
-    mark: boltSvg,
     shown: 3
   } ];
   var ROSTER = [ {
@@ -29561,7 +29551,7 @@
   }
   function dxHead(title, c, mark) {
     var tag = c ? 'button type="button"' : "div";
-    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
+    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
   }
   function diagnosisHtml(m) {
     var open = m.ongoing, d = open ? diagnoseToday() : {

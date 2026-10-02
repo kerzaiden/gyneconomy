@@ -939,7 +939,7 @@
   function dxHead(title, c, mark){
     var tag = c ? 'button type="button"' : "div";
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
-      (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+      (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function diagnosisHtml(m){
     var open = m.ongoing, d = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;

@@ -912,10 +912,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   - Pressure: the gauge (a dial on a connector), not the cuff, whose shapes collapse at 15px. (V314, V639)
   - Volatility: three candles of uneven height, the day's range; the umbrella belonged to the fear index,
     which the page no longer is. (V664)
-  - Mood: three waves (two half-waves a line, three lines 5.6 apart, amplitude 1.7); its members are all
-    readings of a swell that arrives and passes, and Keren supplied the glyph. (V490)
-  - Energy: a bolt drawn as an outline, the one glyph with no curve, which keeps it apart from the flame and
-    the drop at row size. (V457)
+  - The categories (Weather, Circulation, Mood, Energy) carry no mark, in Search or on the Diagnosis headings;
+    the drop went to Volume and the bolt to Stress. Keren, asked whether the Diagnosis headings should lose
+    theirs too: "yes make them gone". (V692; Mood's three waves from V490, Energy's bolt from V457.)
 
 ### Cards and miniatures
 
