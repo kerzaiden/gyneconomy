@@ -267,14 +267,17 @@
     var r = Math.round(v);
     return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + " pts";
   }
+  function momentumFell(S, i){ return Math.min.apply(null, S.sp.slice(i + 1, i + 13).map(function(x){ return x.v; })) / S.sp[i].v - 1 <= -0.15; }
   function momentumOdds(S, M){
-    var n = { intact:[0, 0], broken:[0, 0] };
+    var n = { intact:[0, 0, 0, 0], broken:[0, 0, 0, 0] }, prev = null;
     M.forEach(function(d, i){
       if (!d || i + 12 >= S.sp.length) return;
-      var low = Math.min.apply(null, S.sp.slice(i + 1, i + 13).map(function(x){ return x.v; })), o = n[d.v < 0 ? "broken" : "intact"];
-      o[1]++; if (low / S.sp[i].v - 1 <= -0.15) o[0]++;
+      var fell = momentumFell(S, i), o = n[d.v < 0 ? "broken" : "intact"];
+      o[1]++; if (fell) o[0]++;
+      if ((d.v < 0) !== prev){ o[3]++; if (fell) o[2]++; }
+      prev = d.v < 0;
     });
-    return { intact:n.intact[0] / n.intact[1], broken:n.broken[0] / n.broken[1] };
+    return { intact:n.intact[0] / n.intact[1], broken:n.broken[0] / n.broken[1], breaks:n.broken.slice(2), mends:n.intact.slice(2) };
   }
   function momentumTrend(f){
     return "Over the last twelve months the S&amp;P 500 " + (f.gain < 0 ? "fell " : "rose ") + momentumPct(Math.abs(f.gain)).replace("+", "") +
@@ -284,7 +287,10 @@
   }
   function momentumOddsLine(f){
     return "Since " + f.from + ", a fall of 15% or more came within the next year in " + Math.round(f.odds.broken * 100) +
-      "% of the months with the trend broken, against " + Math.round(f.odds.intact * 100) + "% with it intact.";
+      "% of the months with the trend broken, against " + Math.round(f.odds.intact * 100) + "% with it intact. " +
+      "Neighbouring months share most of their next year, so the true sample is the turns: the trend broke " + f.odds.breaks[1] +
+      " times and a fall of 15% or more followed " + f.odds.breaks[0] + " of them within a year; it turned intact " + f.odds.mends[1] +
+      " times and a fall followed " + f.odds.mends[0] + ".";
   }
   function momentumSpeedLine(f){
     return "Her speed over the last three months was " + momentumPct(f.speed) + " a year, against " + momentumPct(f.before) +

@@ -525,7 +525,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   the margin over cash (`momentumMargins`: the twelve-month change less `momentumCash`, the fed funds rate
   compounded over the same months, with the newest Fed month carried until the next is published) for the page and
   the roster. Its word is the margin's sign, not the Diagnosis's 65% line; `momentumOdds` counts, from the same
-  arrays, how often a 15%+ fall followed within a year on each side; `momentumSpeed` survives only for the speed
+  arrays, how often a 15%+ fall followed within a year on each side, by month and by turn (`momentumFell`; a turn
+  is the first month of each spell, V676); `momentumSpeed` survives only for the speed
   card (V675).
   Like Productivity growth, the reading declares `bare` and an empty `lead`, so the split page's own Insights and
   its (i) (`splitInfo` uses the reading's `info` when it has one) are the only ones.

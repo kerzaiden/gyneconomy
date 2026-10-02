@@ -525,6 +525,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   still reads Euphoria and Optimism off the 65% line (asked of Keren). RSI, MACD and stochastics were weighed and
   declined: trading oscillators for daily bars, with 70/30 lines that are convention with no primary source.
   (V672, V673, V674, V675)
+- **Every line that says what followed also says how many separate spells it rests on, not only how many
+  months.** Keren said "go" to applying time series analysis this way: neighbouring months share most of their next
+  year (serial dependence), so a share of months overstates its own weight. The Diagnosis's record reads "N months
+  in S separate spells"; Momentum's odds add the turns (since 1955 the trend broke 32 times and a 15%+ fall followed
+  6 within a year; it turned intact 33 times and a fall followed 2), all computed live. Forecasting models (ARIMA,
+  Holt-Winters) were weighed and declined: a dozen cycles is too few, and they would print numbers no source set.
+  (V676)
 - **Volatility reads today's VIX against the market's convention: Calm below 20, Elevated from 20 to 30,
   Fearful above 30, cited to Chase and TD.** Keren: "set the rules per convention". (V663)
 - **Volatility's reading is a ring, because its scale is heavily skewed (the record high is five times its
