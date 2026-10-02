@@ -244,7 +244,7 @@
     '</svg>';
   }
 
-  var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
+  var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m", pressureView = "yield", drawSpreadView = null;
   var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
   function spreadLabel(key){
     var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];

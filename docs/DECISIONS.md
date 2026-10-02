@@ -159,8 +159,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   never for a page's content.** Keren asked for inner pages "aligning to our inner pages format"; a long
   record "is not a footnote you glance at and dismiss". (V269, V303)
 - **One indicator gets one card and one page; a reading with a card has no second row.** The Buffett
-  indicator, Federal debt, Interest payments and Federal budget each have their own; Horizon's two spreads
-  stay one page, Households' debt service and saving rate stay one page, and Pressure stays one card with its
+  indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
+  stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
 - **Search lists every reading by category (Weather, Mood, Circulation, Energy), with a timing filter (All,
   Structural, Leading, Coincident, Lagging; All by default) and a search box; each heading opens its category
@@ -436,20 +436,21 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   market." The card, page, Search and Insights say Interest rates; the Diagnosis says "Hormones are …" and, where it
   gives figures, "hormones (the Fed funds rate)". A hormone is a messenger secreted on purpose that sets the tempo
   of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
-- **Pressure is the Treasury yields, opening on the 10-year; Horizon is the spreads; the two are never folded
-  into one page again.** Keren: "Pressure should be yields, and the default should be the 10-year Treasury
-  yield, because it's considered the risk-free loan across the economy". (V639)
+- **Pressure is the Treasury yields and the Treasury spreads in one page, opening on the 10-year yield; its ⋯
+  menu holds two groups, Treasury yields and Treasury spreads (10Y − 3M, 10Y − 2Y), and the page shows one series
+  at a time, with that series' chart, note and Insights.** Keren: "merge horizon into pressure with the 3 dots
+  having another sub menu called treasury spreads" (V688). This overturns V639's "never folded into one page
+  again" ("Pressure should be yields, and the default should be the 10-year Treasury yield, because it's considered
+  the risk-free loan across the economy", which still sets the opening series). (V598, V639, V688)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
 - **Mood swings are Volatility: no separate mood-swing figure, and the VIX keeps the market's words (Calm,
   Elevated, Fearful).** Keren: "if we already have it as the vix lets use volatility - i prefer market
   terminology." (V686)
-- **Horizon (the yield spread) is Circulation's member, after Interest rates, not a category of its own and not
-  part of Pressure.** It sat in Mood from V473 ("if the horizon says if we're optimistic or pessimistic, then it
-  should be in mood"); in V685 it left the mood reading (the curve steepens when the Fed cuts into a crash, so its
-  level does not sort mood), Keren asked where it belongs, and chose Circulation: the 3-month end follows the
-  Fed, so the curve is the bond market's answer to the hormones. It keeps its optimistic/pessimistic word. (V473,
-  V598, V685)
+- **Horizon has no card of its own: the yield spread lives in Pressure, under Treasury spreads.** It sat in Mood
+  from V473, left the mood reading in V685 (the curve steepens when the Fed cuts into a crash, so its level does
+  not sort mood), became Circulation's own card in V685 at Keren's choice, and folded into Pressure in V688. Its
+  spread view keeps the optimistic/pessimistic word in its Insights. (V473, V598, V685, V688)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
@@ -463,7 +464,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
   did before V672: the twelve-month change against zero, with Keren's 65% line splitting Euphoria from Optimism.
   (V672, V677)
-- **Mood holds Consumer confidence, the OECD's index for the United States, read against the OECD's own 100
+- **Mood holds Confidence (V688: card and page named Confidence, its history titled "OECD Consumer Confidence"; Keren: "call it confidence … in the history component, call it OECD consumer confidence"), the OECD's index for the United States, read against the OECD's own 100
   line.** Keren: "I want to add the consumer confidence index to the mood categories", and "the consumer
   confidence index has a threshold of 100 … it already comes with the threshold". The OECD scales it so 100 is the
   long-term average: above is Confident, below is Pessimistic. Michigan's and the Conference Board's 100 are base

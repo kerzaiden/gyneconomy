@@ -230,8 +230,8 @@ async function openPage(p, url, sheet) {
     const gp = await b.newPage({ viewport: { width: 414, height: 1000 } });
     watch(gp, 'head menu');
     await gp.goto('file://' + url); await ready(gp);
-    if (await openPage(gp, url, 'sheet-sign-horizon')) {
-      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="hzn-range"]').click());
+    if (await openPage(gp, url, 'sheet-sign-pressure')) {
+      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
       await settle(gp);
       const root = await gp.evaluate(() => [...document.querySelectorAll('.bh-grp-row')].map(n => n.getAttribute('data-head-grp')));
       let drilled = null, back = null;
@@ -250,7 +250,27 @@ async function openPage(p, url, sheet) {
       (root.length >= 1 && drilled && drilled.picks > 1 && drilled.back && back && back.groups === root.length && back.picks === 0)
         ? ok('head menu drills and returns', root.join(', '))
         : bad('head menu drills and returns', JSON.stringify({ root, drilled, back }));
-    } else bad('head menu drills and returns', 'no door to Horizon');
+      const view = () => gp.evaluate(() => {
+        const vis = id => { const e = document.getElementById(id); return !!e && !e.hidden && !!e.offsetParent; };
+        return { title: (document.querySelector('#pressure-head .bh-title') || {}).textContent, ylm: vis('ylm-shell'), spread: vis('spread-history-shell'),
+                 level: /risk-free loan/i.test(document.getElementById('pressure-insights').textContent),
+                 slope: /un-inversion/i.test(document.getElementById('pressure-insights').textContent),
+                 boxes: document.querySelectorAll('#sheet-sign-pressure .insights').length, cols: document.querySelectorAll('#spread-history-svg .hzn-col').length };
+      });
+      if (!(await gp.evaluate(() => !!document.querySelector('.bh-grp-row'))))
+        await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click());
+      await gp.click('[data-head-grp="spreads"]'); await settle(gp);
+      await gp.click('[data-hzn-spread="2y"]'); await settle(gp);
+      const sp = await view();
+      await gp.evaluate(() => document.querySelector('.bh-more[data-head-more="pressure-range"]').click()); await settle(gp);
+      await gp.click('[data-head-grp="levels"]'); await settle(gp);
+      await gp.click('[data-ylm-mat="10y"]'); await settle(gp);
+      const lv = await view();
+      (root.join() === 'levels,spreads' && /10Y \u2212 2Y Treasury Spread/.test(sp.title || '') && sp.spread && !sp.ylm && sp.slope && !sp.level && sp.cols > 10 && sp.boxes === 1 && lv.boxes === 1 &&
+       /10-Year/.test(lv.title || '') && lv.ylm && !lv.spread && lv.level && !lv.slope)
+        ? ok('Pressure holds the Treasury spreads under its \u22ef menu', sp.title + ' \u00b7 ' + lv.title)
+        : bad('Pressure holds the Treasury spreads under its \u22ef menu', JSON.stringify({ root, sp, lv }));
+    } else bad('head menu drills and returns', 'no door to Pressure');
     await gp.close();
   }
 
@@ -513,7 +533,7 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Consumer confidence' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Confidence' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
@@ -636,7 +656,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 20 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 19 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -644,7 +664,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 20 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
@@ -699,7 +719,7 @@ async function openPage(p, url, sheet) {
 
   const readLive = () => {
     const fg  = document.getElementById('subj-value-sentiment');
-    const yld = document.getElementById('subj-value-horizon');
+    const yld = document.getElementById('subj-value-pressure');
     const ink = document.querySelector('.curve-w');
     return {
       fgNum: fg ? fg.textContent.trim().split('VIX')[0] : null,
@@ -769,10 +789,8 @@ async function openPage(p, url, sheet) {
       return { sentiment: t('#subj-value-sentiment'),
                mood: t('[data-open="sheet-sign-sentiment"] .tag'),
                moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
-               horizon: t('#subj-value-horizon'),
-               horizonTag: t('[data-open="sheet-sign-horizon"] .tag'),
-               horizonFigs: [...document.querySelectorAll('[data-open="sheet-sign-horizon"] .ci-value, [data-open="sheet-sign-horizon"] .subject-value')]
-                              .map(e => e.textContent.trim().split('pts')[0]),
+               pressureFigs: [...document.querySelectorAll('[data-open="sheet-sign-pressure"] .ci-value, [data-open="sheet-sign-pressure"] .subject-value')]
+                              .map(e => e.textContent.trim()),
                valuation: t('#subj-value-valuation') };
     });
 
@@ -802,10 +820,9 @@ async function openPage(p, url, sheet) {
         ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
         : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
 
-      (rv.yc && after.horizonFigs.length > 1 && after.horizonFigs.every(f => /1\.50/.test(f)) &&
-       after.horizonTag === 'Pessimistic')
-        ? ok('repaint horizon spread and verdict', before.horizonFigs.join('/') + ' -> ' + after.horizonFigs.join('/') + ' ' + after.horizonTag)
-        : bad('repaint horizon spread and verdict', JSON.stringify(after.horizonFigs) + ' / ' + after.horizonTag);
+      (rv.yc && after.pressureFigs.length > 0 && after.pressureFigs.every(f => /^4\.05%/.test(f)))
+        ? ok('repaint the 10-year yield on Pressure', before.pressureFigs.join('/') + ' -> ' + after.pressureFigs.join('/'))
+        : bad('repaint the 10-year yield on Pressure', JSON.stringify(after.pressureFigs));
 
       (rv.nul === false && rv.bad === false && rv.unk === false)
         ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')

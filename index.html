@@ -1449,32 +1449,6 @@
     </div>
   </details>
 
-<details class="subject" data-subject="horizon">
-    <summary class="subject-summary">
-      <div class="subject-text">
-        <div class="subject-label">Horizon</div>
-        <div class="subject-value" id="subj-value-horizon"></div>
-        <p class="subject-say" id="subj-say-horizon"></p>
-        <div id="subj-spark-horizon"></div>
-      </div>
-      <div class="subject-more"><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></div>
-    </summary>
-    <div class="subject-body">
-    <section class="hero" aria-label="Horizon — what the yield curve expects">
-      <div class="hist-bar" id="hzn-timeline"></div>
-      <div class="spread-history">
-        <div id="hzn-head"></div>
-        <div class="chart-shell" id="spread-history-shell">
-          <svg id="spread-history-svg" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
-          <div class="tooltip mono" id="spread-history-tooltip"></div>
-        </div>
-        <div id="hzn-trend"></div>
-      </div>
-      <div id="horizon-insights"></div>
-    </section>
-    </div>
-    </details>
-
 <details class="subject" data-subject="pressure">
     <summary class="subject-summary">
       <div class="subject-text">
@@ -1492,6 +1466,10 @@
         <div class="chart-shell" id="ylm-shell">
           <svg id="ylm-svg" role="img" aria-label="US Treasury yield levels by maturity, quarterly, 2005 to 2026"></svg>
           <div class="gdp-tooltip mono hist-tip" id="ylm-tooltip" hidden></div>
+        </div>
+        <div class="chart-shell" id="spread-history-shell" hidden>
+          <svg id="spread-history-svg" role="img" aria-label="Treasury yield-curve spread, quarterly, 2005 to 2026, with recession periods shaded"></svg>
+          <div class="tooltip mono" id="spread-history-tooltip"></div>
         </div>
         <div id="ylm-trend"></div>
       </div>
@@ -17517,22 +17495,6 @@
     put("subj-ring-sentiment", volatilityRing());
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
-  function repaintHorizonRow() {
-    var pick = function(m) {
-      var h = yieldCurve.filter(function(d) {
-        return d.m === m;
-      })[0];
-      return h ? h.y : null;
-    };
-    var y10 = pick("10Y"), y3m = pick("3M");
-    if (y10 == null || y3m == null) return;
-    var sp = y10 - y3m;
-    var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
-    paintReading("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), {
-      text: w.word,
-      state: w.state
-    });
-  }
   function repaintPressureRow() {
     var h = yieldCurve.filter(function(d) {
       return d.m === "10Y";
@@ -17565,7 +17527,7 @@
       set: function(v) {
         yieldCurve = v;
       },
-      paint: [ repaintHorizonRow, repaintPressureRow, repaintPressureChart ]
+      paint: [ repaintPressureRow, repaintPressureChart ]
     },
     sentiment: {
       kind: "object",
@@ -18120,7 +18082,7 @@
     var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
     var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
     return {
-      bodyTerm: "Consumer confidence",
+      bodyTerm: "Confidence",
       info: function() {
         return confidenceInfoHtml(confidenceReading);
       },
@@ -18130,7 +18092,7 @@
           return '<div id="sheet-sign-confidence-chart"></div><div id="sheet-sign-confidence-highlights"></div>';
         }
       },
-      econTerm: "Consumer confidence",
+      econTerm: "Confidence",
       metricSub: "OECD index, United States, " + at,
       metric: R.now.v.toFixed(1),
       tag: {
@@ -21967,9 +21929,6 @@
   function bagSvg() {
     return markSvg('<path d="M5.6 8.4h12.8l-1 11.2H6.6z" stroke-width="1.9"/>' + '<path d="M9.2 8.4V7a2.8 2.8 0 0 1 5.6 0v1.4" stroke-width="1.8"/>');
   }
-  function sunriseSvg() {
-    return markSvg('<path d="M2.6 17.9h18.8" stroke-width="1.9"/>' + '<path d="M7.2 17.9a4.8 4.8 0 0 1 9.6 0" stroke-width="1.9"/>' + '<path d="M12 4.3v2.4M6.1 7.4 7.6 8.9M17.9 7.4 16.4 8.9" stroke-width="1.8"/>');
-  }
   function volatilitySvg() {
     return markSvg('<path d="M5.5 7.5v2.5M5.5 15.5v2.5M12 2.5v3M12 18.5v3M18.5 5.5v3.5M18.5 14.5v2" stroke-width="1.8"/>' + '<rect x="3.9" y="10" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>' + '<rect x="10.4" y="5.5" width="3.2" height="13" rx="0.6" stroke-width="1.8"/>' + '<rect x="16.9" y="9" width="3.2" height="5.5" rx="0.6" stroke-width="1.8"/>');
   }
@@ -22314,23 +22273,6 @@
     },
     live: [ "fedFunds" ]
   }, {
-    id: "sheet-sign-horizon",
-    name: "Horizon",
-    cat: "circulation",
-    timing: "leading",
-    mark: sunriseSvg,
-    door: "subject",
-    hk: "hzn-range",
-    head: "",
-    stops: [ "5y", "10y", "max" ],
-    hist: {
-      s: t10y3mHistory,
-      k: "q"
-    },
-    rule: true,
-    when: compiledDay,
-    live: [ "yieldCurve" ]
-  }, {
     id: "sheet-sign-pressure",
     name: "Pressure",
     cat: "circulation",
@@ -22459,13 +22401,13 @@
     live: [ "coincident", "hyOasNow" ]
   }, {
     id: "sheet-sign-confidence",
-    name: "Consumer confidence",
+    name: "Confidence",
     cat: "mood",
     timing: "leading",
     mark: bagSvg,
     door: "row",
-    term: "Consumer confidence",
-    head: "Consumer Confidence, Against the OECD’s Average",
+    term: "Confidence",
+    head: "OECD Consumer Confidence",
     hist: {
       s: confidenceHistory,
       k: "m"
@@ -23142,7 +23084,7 @@
     var offset = c * (1 - clampPct(pct, 0, 100) / 100);
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + ">" + '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' + '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' + 'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' + "</svg>";
   }
-  var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m";
+  var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m", pressureView = "yield", drawSpreadView = null;
   var HZN_SPREADS = [ {
     key: "3m",
     label: "10Y − 3M"
@@ -23697,6 +23639,37 @@
       }
     }, x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
   }
+  function pressureHead(maturities, mat, title, note) {
+    var H = HIST_HEAD["pressure-range"], spread = pressureView === "spread";
+    H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
+    H.menu = function() {
+      return [ {
+        key: "levels",
+        label: "Treasury yields",
+        on: !spread,
+        value: (mat || {}).name || "",
+        rows: maturities.map(function(m) {
+          return headPickRow(!spread && mat === m, "data-ylm-mat", m.code, m.name);
+        }).join("")
+      }, {
+        key: "spreads",
+        label: "Treasury spreads",
+        on: spread,
+        value: spreadLabel(spreadPick),
+        rows: HZN_SPREADS.map(function(r) {
+          return headPickRow(spread && spreadPick === r.key, "data-hzn-spread", r.key, r.label);
+        }).join("")
+      } ];
+    };
+    HIST_NOTE["pressure-range"] = spread ? horizonInfoHtml(spreadPick) : note;
+    put("pressure-head", histHead("pressure-range"));
+  }
+  function showPressureView(spread) {
+    [ [ "ylm-shell", !spread ], [ "spread-history-shell", spread ] ].forEach(function(p) {
+      var e = byId(p[0]);
+      if (e) e.hidden = !p[1];
+    });
+  }
   function renderPressurePage() {
     var svg = byId("ylm-svg");
     var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
@@ -23849,9 +23822,15 @@
     });
     GYN.on("pickSeries", function(bar, code) {
       matPick = code;
+      pressureView = "yield";
       maturities.forEach(function(m) {
         m.on = m.code === matPick;
       });
+      drawPressure();
+    });
+    GYN.on("pickSpread", function(code) {
+      spreadPick = code;
+      pressureView = "spread";
       drawPressure();
     });
     registerFlowPages();
@@ -23890,28 +23869,18 @@
           falling: "easing"
         });
       }
-      drawPressureHead();
     }
     function drawPressureHead() {
-      var H = HIST_HEAD["pressure-range"];
-      H.title = matTitle();
-      H.menu = function() {
-        return [ {
-          key: "levels",
-          label: "Treasury yields",
-          on: true,
-          value: (matOf(matPick) || {}).name || "",
-          rows: maturities.map(function(m) {
-            return headPickRow(matPick === m.code, "data-ylm-mat", m.code, m.name);
-          }).join("")
-        } ];
-      };
-      HIST_NOTE["pressure-range"] = "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail());
-      put("pressure-head", histHead("pressure-range"));
+      pressureHead(maturities, matOf(matPick), matTitle(), "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()));
     }
     function drawPressure() {
-      drawYlm();
-      renderPressureInsights();
+      var spread = pressureView === "spread" && drawSpreadView;
+      showPressureView(!!spread);
+      if (spread) drawSpreadView(); else {
+        drawYlm();
+        renderPressureInsights();
+      }
+      drawPressureHead();
     }
     drawsPage("sheet-sign-pressure", drawPressure);
     maturities.forEach(function(m) {
@@ -23950,7 +23919,7 @@
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' + "downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one " + "risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>");
     cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " + "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " + "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
     cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " + "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " + "payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
-    cards.push(hiCard("Level, not slope", "", "This page reads the LEVEL. The gap between this yield and the three-month bill is Horizon, in Mood, " + "because that gap is the market’s forecast of the next few years rather than a pressure it is under " + "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " + "relief; a low level with a steep curve is one at rest that expects to work."));
+    cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, " + "because that gap is the market’s forecast of the next few years rather than a pressure it is under " + "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " + "relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
   GYN.step("renderPressureInsights", renderPressureInsights, "render");
@@ -24241,25 +24210,8 @@
   }
   GYN.step("deriveUninversionDetail", deriveUninversionDetail, "derive");
   deriveUninversionDetail();
-  function drawHznHead() {
-    var H = HIST_HEAD["hzn-range"];
-    H.title = spreadLabel(spreadPick) + " Treasury Spread";
-    H.menu = function() {
-      return [ {
-        key: "spreads",
-        label: "Spreads",
-        on: true,
-        value: spreadLabel(spreadPick),
-        rows: HZN_SPREADS.map(function(r) {
-          return headPickRow(spreadPick === r.key, "data-hzn-spread", r.key, r.label);
-        }).join("")
-      } ];
-    };
-    HIST_NOTE["hzn-range"] = horizonInfoHtml(spreadPick);
-    put("hzn-head", histHead("hzn-range"));
-  }
   function renderHorizonPage() {
-    var host = byId("hzn-timeline");
+    var host = byId("pressure-timeline");
     if (!host) return;
     var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
     function hznData() {
@@ -24267,15 +24219,15 @@
     }
     function drawHzn() {
       var data = hznData();
-      var cyc = pageCycle("hzn-range", hznY0);
+      var cyc = pageCycle("pressure-range", hznY0);
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["hzn-range"]);
+      var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["pressure-range"]);
       var to = idx ? idx[1] : data.length;
-      host.innerHTML = histControls("hzn-range", {
+      host.innerHTML = histControls("pressure-range", {
         depth: Math.floor(data.length / 4)
       }, hznY0);
       if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
-      var tr = byId("hzn-trend");
+      var tr = byId("ylm-trend");
       if (tr) {
         var w = [];
         data.slice(from, to).forEach(function(d) {
@@ -24286,31 +24238,22 @@
           falling: "flattening"
         });
       }
-      drawHznHead();
+      put("pressure-insights", spreadInsights());
     }
-    GYN.on("pickSpread", function(code) {
-      spreadPick = code;
-      drawHzn();
-    });
-    drawsPage("sheet-sign-horizon", drawHzn);
-    drawHzn();
+    drawSpreadView = drawHzn;
+  }
+  function spreadInsights() {
     var r = horizonRead;
     var sgn = function(v) {
       return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
     };
-    var moved = function(v) {
-      return (v >= 0 ? "risen " : "fallen ") + Math.abs(v).toFixed(2) + " points";
-    };
     var fromLong = r.dLong >= -r.dShort;
-    var ins = byId("horizon-insights");
-    if (ins) {
-      var cards = [];
-      cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' + "growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s " + "forecast of its own next season — a mood, not a measurement taken off it.</p>");
-      cards.push(hiCard(r.word, r.state, "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) + " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " + (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " + (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " + (fromLong ? "long end, which is growth being priced rather than relief about the Fed." : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") + " Which end moved is the reading: on a chart the two look identical."));
-      cards.push(hiCard("The short end", "", "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) + ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " + "prices where the Fed is going, the bill only where it has been."));
-      var facts = '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + "</span><b>" + uninvLagToday.months + " months</b></div>" + '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' + '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
-      ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + facts + "</section>";
-    }
+    var cards = [];
+    cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' + "growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s " + "forecast of its own next season — a mood, not a measurement taken off it.</p>");
+    cards.push(hiCard(r.word, r.state, "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) + " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " + (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " + (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " + (fromLong ? "long end, which is growth being priced rather than relief about the Fed." : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") + " Which end moved is the reading: on a chart the two look identical."));
+    cards.push(hiCard("The short end", "", "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) + ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " + "prices where the Fed is going, the bill only where it has been."));
+    var facts = '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + "</span><b>" + uninvLagToday.months + " months</b></div>" + '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' + '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + facts + "</section>";
   }
   GYN.step("renderHorizonPage", renderHorizonPage, "render");
   renderHorizonPage();
@@ -24507,17 +24450,6 @@
       var c = byIdMaybe("subj-ctx-" + key);
       if (c) c.innerHTML = contextHtml || "";
     }
-    set("horizon", (horizonRead.spread >= 0 ? "+" : "−") + Math.abs(horizonRead.spread).toFixed(2) + '<span class="unit">pts · 10Y − 3M</span>' + '<span class="tag ' + horizonRead.state + '">' + horizonRead.word + "</span>", "");
-    say("horizon", "");
-    (function() {
-      var slot = put("subj-spark-horizon", colPeek(t10y3mHistory.map(function(d) {
-        return d.v;
-      }).filter(function(v) {
-        return v != null;
-      }), function(v) {
-        return "hzn-col " + (v < 0 ? "neg" : "pos");
-      }, 0, true));
-    })();
     put("subj-ring-sentiment", volatilityRing());
     var volTag = volatilityTag();
     set("sentiment", vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
@@ -26163,11 +26095,11 @@
     return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now ? ", with today at " + now : "") + '.">' + out.join("") + "</svg>";
   }
   function moodInfo() {
-    return "<h4>Her mood</h4>" + facts([ "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and Horizon are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast." ]) + srcBlock(MOOD_SRC);
+    return "<h4>Her mood</h4>" + facts([ "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast." ]) + srcBlock(MOOD_SRC);
   }
   function moodCard(d) {
     var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
-    return hiCard("She’s in " + d.word, "", "Her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and consumer confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".");
+    return hiCard("She’s in " + d.word, "", "Her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".");
   }
   function insightMood() {
     var d = moodToday();

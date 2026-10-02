@@ -273,8 +273,8 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Horizon · Pressure · Pulse · Volume) ·
-Mood (Valuations · Volatility · Desire · Consumer confidence) · Energy (Economic power · Households · Activity). Named Weather, never
+Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
+Mood (Valuations · Volatility · Desire · Confidence) · Energy (Economic power · Households · Activity). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -330,7 +330,7 @@ Rules that shape the pages:
   the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
   its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark of
   their own (Economic power the bolt; the others their first member's).
-  Horizon's two spreads and Households' bill and cushion stay one page each (Keren, V658: they read as one).
+  The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.
 - **Search (V657) is every reading, grouped by category** in Keren's order, Weather · Mood · Circulation ·
@@ -601,8 +601,13 @@ figure computed. **The chart's resting plate names a quarter, and the quarter st
 the row is today and the plate is an average, and without the words the two read as two different todays
 (Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
-The gap is a forecast, not a pressure, so it is its own reading, Horizon, judged optimistic or
-pessimistic; it sat in Mood until V685 and is now Circulation's, after Interest rates. **Horizon's word is slope AND
+The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat in Mood until V685, was
+Circulation's own Horizon card for V685–V687, and since V688 is Pressure's second ⋯ group, Treasury spreads
+(Keren). One state, `pressureView` ("yield" or "spread", in 08-model beside `spreadPick`), picks what the page
+draws: `drawPressure` shows one chart shell (`showPressureView`), draws that view (`drawYlm` or the spread view
+`drawSpreadView`, set by `renderHorizonPage`), and writes its Insights into the one `#pressure-insights` box, so
+the page keeps one Insights box; `pressureHead` builds the title, both menu groups and the note. Both views share
+the `pressure-range` window. **The spread's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
 is fixed at four quarters and does not follow the chart's window; its (i) carries the NY Fed's caution that
 it is the level of the spread that forecasts, not the crossing.
@@ -613,7 +618,7 @@ it is the level of the spread that forecasts, not the crossing.
 readout, picture, trend), the reading container. All twelve share one frame, `histFrame`, and one head,
 `histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
 the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
-`divergeChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis
+`divergeChart` and Pressure's two views read `histFrame(W).H` rather than their own numbers, and every axis
 chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`); GDP's year-on-year view, the
 one exception, was removed in V668; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
 with no reading, by Keren's decision.** Desire has a bare range bar and no mode bar.

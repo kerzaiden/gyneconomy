@@ -50,14 +50,6 @@
     put("subj-ring-sentiment", volatilityRing());
     paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
   }
-  function repaintHorizonRow(){
-    var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
-    var y10 = pick("10Y"), y3m = pick("3M");
-    if (y10 == null || y3m == null) return;
-    var sp = y10 - y3m;
-    var w = horizonWord(sp, horizonRead.dLong, horizonRead.dShort, horizonRead.dSpread);
-    paintReading("sheet-sign-horizon", (sp >= 0 ? "+" : "−") + Math.abs(sp).toFixed(2), { text:w.word, state:w.state });
-  }
   function repaintPressureRow(){
     var h = yieldCurve.filter(function(d){ return d.m === "10Y"; })[0];
     if (!h || h.y == null) return;
@@ -80,7 +72,7 @@
       set: function(v){ fedFunds = merge(fedFunds, v); },
       paint: [repaintPolicy]
     },
-    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintHorizonRow, repaintPressureRow, repaintPressureChart] },
+    yieldCurve: { kind: "series", set: function(v){ yieldCurve = v; }, paint: [repaintPressureRow, repaintPressureChart] },
     sentiment:  { kind: "object", set: function(v){ sentiment = v; }, onOpen: true },
     valuation:  {
       kind: "object",
