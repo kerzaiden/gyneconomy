@@ -1028,10 +1028,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
   V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
   symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
-- **The Systems sit under one Analysis head, marked with a stethoscope, and carry no "Analysis" label of their
-  own.** Keren: "you have analysis next to text in each one of the categories … it just takes up space so remove
-  it and maybe call the entire container analysis with a stethoscope." The stethoscope mark was drawn here, not
-  in the Lovable DSM. (V674)
+- **The Diagnosis is three separate cards at the cycle's width: the feeling in its season, then Circulation and
+  Energy, then the Assessment.** Keren: "I want to break the analysis container to three separate containers. That
+  would be at the width of the current cycle". The middle card is headed by its systems' names with the
+  stethoscope, and its systems carry no "Analysis" label (Keren, V674: "it just takes up space"). (V674, V682)
+- **Circulation and Energy close on one combined line, "Across the cycle": the Fed funds rate and the unemployment
+  rate from the month the cycle opened to now.** Keren: "the next combined metrics I want is something to do with
+  circulation and energy so figure it out". Claude chose the pair as the cycle's policy and its result (money's
+  price against work); both figures are the app's own histories, read through the same ends as the past cycles.
+  A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
+- **The Assessment sets each part's title above its text (Posture, Watch), so a title takes no width from its
+  sentence.** Keren: "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot
+  of room." (V682)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
   words for today, and a closed cycle's figures are on its cards. (V665, V672)

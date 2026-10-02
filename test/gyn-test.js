@@ -272,14 +272,16 @@ async function openPage(p, url, sheet) {
                    analyses: [...d.querySelectorAll('.dx-cat')].map(s => s.querySelectorAll('.dx-k').length + ':' + !!s.querySelector('.dx-v')),
                    frame: (() => { const c = d.querySelector('.dx-cat'), s = c && c.closest('.dx-sys');
                      return s ? s.querySelector('.dx-sys-head').textContent.trim() + ':' + !!s.querySelector('.dx-sys-head .dx-mark svg') : ''; })(),
-                   cards: document.querySelectorAll('.cat-row').length } : null;
+                   cards: document.querySelectorAll('.cat-row').length,
+                   boxes: [...d.children].map(c => c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.className).join(),
+                   across: [...d.querySelectorAll('.dx-k')].some(k => k.textContent.trim() === 'Across the cycle') } : null;
     });
     const today = await read();
-    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
+    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Circulation and Energy:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^(Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency) in (Spring|Summer|Autumn|Winter)$/;
     (today && today.visible && FEEL.test(today.title) && /^She (has been|came) in(to)? .+ \w{3} \d{4}\.$/.test(today.lead) && today.cards === 0 &&
-     today.heads.join() === 'Analysis,Circulation,Energy,Assessment' &&
+     today.heads.join() === 'Circulation and Energy,Circulation,Energy,Assessment' && today.boxes === 'trend,sys,sys' && today.across &&
      today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
@@ -298,9 +300,9 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    (onlyAnalysis(today) && onlyAnalysis(past))
-      ? ok('the Diagnosis reads its systems under one Analysis head, unlabelled, today and at a close', 'Keren, V674')
-      : bad('the Diagnosis reads its systems under one Analysis head, unlabelled, today and at a close', JSON.stringify([today, past]));
+    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys,sys' && !past.across)
+      ? ok('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', 'Keren, V682')
+      : bad('the Diagnosis reads its systems in three cards, unlabelled, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;

@@ -490,10 +490,16 @@ Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … ba
 Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
 then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
-under its cycle view. In clinical order: a headline (the feeling), **History**, then each **System** (a category;
+under its cycle view. In clinical order: the trend card (the feeling in its season, since V681), then each **System** (a category;
 its heading is the door to the category page) with its one **Analysis** line (what the readings tell the doctor),
 then the **Assessment** (posture, record, what to watch). There are no Symptoms lists since V672 (Keren: the
 category page behind each heading already shows every reading).
+Since V682 the Diagnosis is three sibling cards inside `#diagnosis` (a flex column with the page gap): the trend
+card, a `.dx-sys` card for the systems the dial and the trend card do not already show (`!c.onDial && !c.inTrend`,
+so today Circulation and Energy, named in its head), and a `.dx-sys` card for the Assessment, whose `.dx-k` titles
+sit on their own line. The systems card ends, for the open cycle only, on **Across the cycle** (`acrossCycle`):
+the Fed funds rate and unemployment from the cycle's first month to today, read through `eraEnds`, the same ends
+`eraMove` gives a closed cycle's lines, so the two never disagree.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same
 `analysisFor` and `assessmentFor`, which take the closed era or null): the
 season and the feeling at the closing month, the Analysis as the movement across the cycle, and what actually
