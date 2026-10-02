@@ -60,10 +60,14 @@ async function oecdConfidence(start) {
     if (r.ok) { say('  OECD from ' + path); return oecdRows(r.text); }
     tried.push(path + ' → HTTP ' + r.status + ' ' + r.text.replace(/\s+/g, ' ').slice(0, 160));
   }
-  const all = await oecdGet('OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M........', '2026-01');
-  const head = all.text.split(/\r?\n/)[0].split(','), mi = head.indexOf('MEASURE');
-  const measures = mi < 0 ? all.text.slice(0, 300) : [...new Set(all.text.split(/\r?\n/).slice(1).map(l => l.split(',')[mi]))].join(' ');
-  throw new Error('OECD CCI: ' + tried.join(' || ') + ' || every US measure in DF_CLI → HTTP ' + all.status + ': ' + measures);
+  const st = await fetch('https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest?references=datastructure', { headers: OECD_HEAD });
+  const xml = await st.text(), dims = [...xml.matchAll(/<structure:(?:Dimension|TimeDimension)[^>]*\bid="([^"]+)"/g)].map(m => m[1]).join('.');
+  const all = await oecdGet('OECD.SDD.STES,DSD_STES@DF_CLI,/all', '2026-06');
+  const head = all.text.split(/\r?\n/)[0].split(','), mi = head.indexOf('MEASURE'), ri = head.indexOf('REF_AREA');
+  const rows = all.text.split(/\r?\n/).slice(1).map(l => l.split(',')).filter(c => c[ri] === 'USA');
+  const keys = [...new Set(rows.map(c => head.map((h, i) => /^(REF_AREA|FREQ|MEASURE|UNIT_MEASURE|ACTIVITY|ADJUSTMENT|TRANSFORMATION|TIME_HORIZ|METHODOLOGY)$/.test(h) ? c[i] : null).filter(x => x !== null).join('.')))].join(' ');
+  const measures = 'dimensions ' + st.status + ' ' + (dims || xml.slice(0, 120)) + ' · all ' + all.status + ' · US keys: ' + (mi < 0 ? all.text.slice(0, 200) : keys);
+  throw new Error('OECD CCI: ' + tried.join(' || ') + ' || ' + measures);
 }
 
 const VOL_JOIN = '1990-01';
