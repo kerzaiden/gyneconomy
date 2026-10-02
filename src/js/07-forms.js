@@ -116,6 +116,7 @@
   function thermoSvg(){ return markSvg(
     '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
     '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>'); }
+  function momentumSvg(){ return markSvg('<path d="M5.2 6.2 11 12l-5.8 5.8M12.6 6.2l5.8 5.8-5.8 5.8" stroke-width="1.9"/>'); }
   function trendUpSvg(){ return markSvg(
     '<path d="M5 19.4V13.6M12 19.4V9.4M19 19.4V4.9" stroke-width="2.4"/>'); }
   function ecgSvg(){ return markSvg(

@@ -14,7 +14,7 @@
   function periodOf(row){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
   function meterWord(m){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
   function splitPages(){
-    var r = productivityReading, tenth = function(v){ return v.toFixed(1) + "%"; };
+    var tenth = function(v){ return v.toFixed(1) + "%"; };
     return {
       "sheet-metric-buffett": { after:"sheet-metric-valuation", row:valRow("buffett"), line:"Buffett’s line",
         fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(valuation.src.slice(0, 2)),
@@ -25,33 +25,46 @@
         fmt:tenth, tick:function(v){ return Math.round(v) + "%"; }, src:longCycleSrc.slice(0, 3), insight:debtInsight },
       "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
         fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
-      "sheet-sign-productivity-growth": { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight,
-        row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } }
+      "sheet-sign-productivity-growth": productivityPage(tenth),
+      "sheet-sign-momentum": momentumPage()
     };
+  }
+  function productivityPage(tenth){
+    var r = productivityReading;
+    return { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight,
+      row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+  }
+  function momentumPage(){
+    var r = momentumReading;
+    return { goodAbove:true, line:"No change", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight,
+      fmt:function(v){ return momentumPct(v / 100); },
+      row:{ sub:r.metricSub, note:r.caption, flagState:r.tag.state } };
   }
   function splitSpec(R, P){
     var s = Object.create(R);
     for (var k in P) s[k] = P[k];
-    s.series = R.hist.s; s.midLabel = P.line + ", " + (P.tick || P.fmt)(R.mid);
+    s.series = P.series || R.hist.s; s.midLabel = P.line + ", " + (P.tick || P.fmt)(R.mid);
     return s;
   }
   function splitInfo(s){
     return '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
       (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
   }
-  function quarterTicks(vals){
-    if (!vals.length || !vals[0].q) return null;
-    var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
-    return function(d){ return /Q1$/.test(d.q) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d.q.slice(2, 4) : ""; };
+  function periodTicks(vals){
+    var key = vals.length && (vals[0].q ? "q" : vals[0].m ? "m" : null);
+    if (!key) return null;
+    var first = key === "q" ? /Q1$/ : /-01$/, ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
+    return function(d){ return first.test(d[key]) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d[key].slice(2, 4) : ""; };
   }
+  function periodOfSeries(d){ return d.q ? "quarter" : d.m ? "month" : "year"; }
   function drawSplit(s, W){
     var id = s.id, cyc = pageCycle(id);
     var span = cyc ? cycleSlice(s.series, cyc) : null;
     var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
-    var tr = trendOf(vals.map(function(d){ return d.v; }), "points", s.series[0].q ? "quarter" : "year");
+    var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
     var chart = function(w){
       return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,
-        xLabel:quarterTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : "FY" + d.y; },
+        xLabel:periodTicks(vals), at:function(d){ return d.q ? qPretty(d.q) : d.m ? prettyKey(d.m) : "FY" + d.y; },
         alt:s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view" }, w);
     };
     put(id + "-chart", histBar(histControls(id, { series:s.series })) +
@@ -174,6 +187,18 @@
         (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."),
       hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
         fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
+  }
+  function momentumInsight(s){
+    var h = s.series, r = momentumReading.run, up = h.filter(function(d){ return d.v >= 0; }).length;
+    var turns = h.filter(function(d, i){ return i > 0 && d.v < 0 && h[i - 1].v >= 0; }).length;
+    return [lede('How fast Mrs. Market\u2019s price is moving: the S&amp;P 500 against the same month a year earlier. ' +
+        'Above zero she is still climbing, and the question is how fast; below it she is lower than a year ago.'),
+      hiCard("This run", momentumReading.tag.state, r.up
+        ? "Above zero since " + r.since + ". The fastest twelve months of this bull ran " + momentumPct(r.peak) + " (" + r.peakAt +
+          "); today\u2019s " + momentumReading.metric + " is " + Math.round(momentumReading.share * 100) + "% of that pace."
+        : "Below zero since " + r.since + ". The deepest reading of this fall is " + momentumPct(r.peak) + " (" + r.peakAt + ")."),
+      hiCard("Against the record", "", "Since " + prettyKey(h[0].m) + ", the S&amp;P 500 stood at or above its level a year earlier in " +
+        up + " of " + h.length + " months; momentum has turned negative " + turns + " times.")];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

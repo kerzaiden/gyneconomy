@@ -97,7 +97,7 @@ stays empty.
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
 dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/07b-roster.js`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
-and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems and symptoms, the timing chips
+and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems, the timing chips
 and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
 dates (`when`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
@@ -491,16 +491,15 @@ Also, I want to have emotional intelligence in this analysis." Since V665 it is 
 then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
 under its cycle view. In clinical order: a headline (the feeling), **History**, then each **System** (a category;
-its heading is the door to the category page) with one **Analysis** line (what the symptoms tell the doctor) and its
-**Symptoms** (the readings, name, figure and word), then the **Assessment** (posture, record, what to watch).
-**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same `symptomsFor`,
+its heading is the door to the category page) with its one **Analysis** line (what the readings tell the doctor),
+then the **Assessment** (posture, record, what to watch). There are no Symptoms lists since V672 (Keren: the
+category page behind each heading already shows every reading).
+**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same
 `analysisFor` and `assessmentFor`, which take the closed era or null): the
-season and the feeling at the closing month, each symptom's value at the close from the roster series without a
-verdict word (verdicts are today's words), the Analysis as the movement across the cycle, and what actually
-followed a year later. The systems are `CATEGORIES` in `shown` order, and each system's symptoms are its
-roster rows in card order (V670).
+season and the feeling at the closing month, the Analysis as the movement across the cycle, and what actually
+followed a year later. The systems are `CATEGORIES` in `shown` order.
 
-- **The work-up reads, never recomputes.** Every reading is taken from the card the app already prints for it
+- **The work-up reads, never recomputes.** Every word the Analysis lines use is taken from the card the app already prints for it
   (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
   `applyLive` runs `repaintDiagnosis` after the reading's own painters, so no reading needs to list it (V665:
   it sat on the VIX's list alone, and CAPE, which lands after the VIX, stayed a day behind on every load). A
@@ -521,6 +520,9 @@ roster rows in card order (V670).
   were higher a year later, the median and the worst. Fear is `volatilityHistory` ranked against every month
   before it (`rankToDate`), from 1986 only, by Keren's choice (no estimate before the VXO). Today's fear is the
   live VIX close ranked against those monthly averages.
+- **Momentum** is also Mood's first reading (V672): `momentumReading` (08-model) reads the same `marketMonths`
+  arrays, so the card, its page (a split page, `momentumPage`, drawn by `divergeChart` around zero) and the
+  feeling are one figure; `momentumSeries` is the monthly series in percent for the page and the roster.
 - **Momentum** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1950, through the Backfill from the same
   workbook the CAPE fetcher reads): the twelve-month change and its share of the best change since momentum last
   turned positive. **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
@@ -578,7 +580,7 @@ it is the level of the spread that forecasts, not the crossing.
 ## Pages and components
 
 **A history page is three containers**: control on the page's ground, the history container (head,
-readout, picture, trend), the reading container. All eleven share one frame, `histFrame`, and one head,
+readout, picture, trend), the reading container. All twelve share one frame, `histFrame`, and one head,
 `histControls`. **The frame's height is every chart's height** (V662, Keren: "make the height universal inside
 the parent component"): 335px on a phone, 375px wide, 25% taller than before so the bars have air;
 `divergeChart`, Pressure and Horizon read `histFrame(W).H` rather than their own numbers, and every axis

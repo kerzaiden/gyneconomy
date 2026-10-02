@@ -19447,6 +19447,9 @@
   function thermoSvg() {
     return markSvg('<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' + '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>');
   }
+  function momentumSvg() {
+    return markSvg('<path d="M5.2 6.2 11 12l-5.8 5.8M12.6 6.2l5.8 5.8-5.8 5.8" stroke-width="1.9"/>');
+  }
   function trendUpSvg() {
     return markSvg('<path d="M5 19.4V13.6M12 19.4V9.4M19 19.4V4.9" stroke-width="2.4"/>');
   }
@@ -19777,6 +19780,19 @@
     cardUnit: "M2, YoY",
     live: [ "coincident" ]
   }, {
+    id: "sheet-sign-momentum",
+    name: "Momentum",
+    cat: "mood",
+    timing: "leading",
+    mark: momentumSvg,
+    door: "row",
+    term: "Momentum",
+    head: "S&P 500, Change on a Year Earlier",
+    hist: momentumMonths,
+    mid: 0,
+    rule: true,
+    when: lastDate
+  }, {
     id: "sheet-metric-valuation",
     name: "Shiller CAPE",
     cat: "mood",
@@ -20027,6 +20043,14 @@
       };
     });
   }
+  function momentumMonths() {
+    return momentumSeries().map(function(d) {
+      return {
+        k: d.m,
+        v: d.v
+      };
+    });
+  }
   function hyMonths() {
     return hyOas.map(function(v, i) {
       var a = hyAt(i);
@@ -20056,8 +20080,11 @@
       return R.term === ind.bodyTerm;
     })[0];
   }
+  function rowReadings() {
+    return coincident.concat(lagging, [ productivityReading, momentumReading ]);
+  }
   function indOf(R) {
-    return coincident.concat(lagging, [ productivityReading ]).filter(function(x) {
+    return rowReadings().filter(function(x) {
       return x.bodyTerm === R.term;
     })[0];
   }
@@ -20492,6 +20519,85 @@
       recordFrom: rec.from,
       bestMom: S.best[S.sp.length - 1]
     };
+  }
+  var MOMENTUM_SRC = [ {
+    t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average",
+    u: "https://shillerdata.com/"
+  }, {
+    t: "The Conference Board — US Leading Indicators (stock prices are one of the ten components)",
+    u: "https://www.conference-board.org/topics/us-leading-indicators"
+  } ];
+  function momentumSeries() {
+    var S = marketMonths();
+    return S.sp.map(function(d, i) {
+      return {
+        m: d.m,
+        v: S.mom[i] == null ? null : S.mom[i] * 100
+      };
+    }).filter(function(d) {
+      return d.v != null;
+    });
+  }
+  function momentumPct(v) {
+    var r = Math.round(v * 100);
+    return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r) + "%";
+  }
+  function momentumWord(mom, share) {
+    if (mom < 0) return {
+      state: "serious",
+      text: "Falling"
+    };
+    if (share >= SLOWING) return {
+      state: "good",
+      text: "Rising"
+    };
+    return {
+      state: "warning",
+      text: "Slowing"
+    };
+  }
+  function momentumRun(S) {
+    var i = S.sp.length - 1, up = S.mom[i] >= 0, from = i, peak = i;
+    while (from > 0 && S.mom[from - 1] != null && S.mom[from - 1] >= 0 === up) from--;
+    for (var k = from; k <= i; k++) if (up ? S.mom[k] > S.mom[peak] : S.mom[k] < S.mom[peak]) peak = k;
+    return {
+      i: i,
+      up: up,
+      since: monthLabel(S.sp[from].m),
+      peak: S.mom[peak],
+      peakAt: monthLabel(S.sp[peak].m)
+    };
+  }
+  var momentumReading = function(S) {
+    var run = momentumRun(S), now = S.mom[run.i], share = now > 0 ? now / S.best[run.i] : 0;
+    var w = momentumWord(now, share), at = monthLabel(S.sp[run.i].m);
+    var says = run.up ? "above where it stood a year earlier, as it has been since " + run.since + ", at " + Math.round(share * 100) + "% of this bull’s best pace (" + momentumPct(run.peak) + ", " + run.peakAt + ")" : "below where it stood a year earlier, as it has been since " + run.since + "; the deepest so far is " + momentumPct(run.peak) + " (" + run.peakAt + ")";
+    return {
+      bodyTerm: "Momentum",
+      econTerm: "S&P 500, change on a year earlier",
+      metricSub: "S&P 500 vs. a year earlier, " + at,
+      metric: momentumPct(now),
+      tag: {
+        state: w.state,
+        text: w.text
+      },
+      run: run,
+      share: share,
+      info: function() {
+        return momentumInfoHtml(momentumReading);
+      },
+      page: {
+        chart: function() {
+          return '<div id="sheet-sign-momentum-chart"></div><div id="sheet-sign-momentum-highlights"></div>';
+        }
+      },
+      shortCaption: at + " — the S&P 500 is " + says + ".",
+      caption: at + ", the S&P 500’s monthly average against the same month a year earlier: " + momentumPct(now) + ", " + says + ". The word is " + w.text + ": below zero is Falling; above it, " + Math.round(SLOWING * 100) + "% or more of this bull’s best pace is Rising, and less is Slowing."
+    };
+  }(marketMonths());
+  function momentumInfoHtml(f) {
+    var line = Math.round(SLOWING * 100) + "%";
+    return "<h4>" + f.econTerm + "</h4>" + ledeHtml("How fast Mrs. Market’s price is moving: the S&amp;P 500’s monthly average against the same month a year earlier (" + f.metricSub + "). The reading is <b>" + f.tag.text + "</b>.") + facts([ "<b>Falling</b>: below zero, the market is lower than a year ago. Zero is definitional.", "<b>Rising</b>: above zero and at " + line + " or more of this bull’s best pace, the fastest twelve-month change since momentum last turned positive.", "<b>Slowing</b>: above zero but under " + line + " of that best.", "The " + line + " line is Keren’s, from the research behind the Diagnosis, not a published standard; the Diagnosis reads Euphoria and Optimism off the same line.", "It is a leading reading: stock prices are one of the ten components of The Conference Board’s Leading Economic Index.", "A twelve-month change carries its starting point: a weak month a year ago makes today look stronger than it feels, and a strong one the reverse." ]) + srcBlock(MOMENTUM_SRC);
   }
   function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
@@ -22485,7 +22591,7 @@
     return meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
   }
   function splitPages() {
-    var r = productivityReading, tenth = function(v) {
+    var tenth = function(v) {
       return v.toFixed(1) + "%";
     };
     return {
@@ -22519,38 +22625,65 @@
         src: [ longCycleSrc[0], longCycleSrc[4] ],
         insight: interestInsight
       },
-      "sheet-sign-productivity-growth": {
-        goodAbove: true,
-        line: "slowdown average",
-        fmt: tenth,
-        src: PRODUCTIVITY_SRC,
-        insight: productivityInsight,
-        row: {
-          sub: r.metricSub,
-          note: r.caption,
-          meter: r.meter,
-          flagValue: r.metric,
-          flagState: r.tag.state
-        }
+      "sheet-sign-productivity-growth": productivityPage(tenth),
+      "sheet-sign-momentum": momentumPage()
+    };
+  }
+  function productivityPage(tenth) {
+    var r = productivityReading;
+    return {
+      goodAbove: true,
+      line: "slowdown average",
+      fmt: tenth,
+      src: PRODUCTIVITY_SRC,
+      insight: productivityInsight,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function momentumPage() {
+    var r = momentumReading;
+    return {
+      goodAbove: true,
+      line: "No change",
+      series: momentumSeries(),
+      src: MOMENTUM_SRC,
+      insight: momentumInsight,
+      fmt: function(v) {
+        return momentumPct(v / 100);
+      },
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        flagState: r.tag.state
       }
     };
   }
   function splitSpec(R, P) {
     var s = Object.create(R);
     for (var k in P) s[k] = P[k];
-    s.series = R.hist.s;
+    s.series = P.series || R.hist.s;
     s.midLabel = P.line + ", " + (P.tick || P.fmt)(R.mid);
     return s;
   }
   function splitInfo(s) {
     return "<h4>" + s.name + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
   }
-  function quarterTicks(vals) {
-    if (!vals.length || !vals[0].q) return null;
-    var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
+  function periodTicks(vals) {
+    var key = vals.length && (vals[0].q ? "q" : vals[0].m ? "m" : null);
+    if (!key) return null;
+    var first = key === "q" ? /Q1$/ : /-01$/, ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
     return function(d) {
-      return /Q1$/.test(d.q) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d.q.slice(2, 4) : "";
+      return first.test(d[key]) && ys.indexOf(yearOf(d)) !== -1 ? "’" + d[key].slice(2, 4) : "";
     };
+  }
+  function periodOfSeries(d) {
+    return d.q ? "quarter" : d.m ? "month" : "year";
   }
   function drawSplit(s, W) {
     var id = s.id, cyc = pageCycle(id);
@@ -22558,7 +22691,7 @@
     var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
     var tr = trendOf(vals.map(function(d) {
       return d.v;
-    }), "points", s.series[0].q ? "quarter" : "year");
+    }), "points", periodOfSeries(s.series[0]));
     var chart = function(w) {
       return divergeChart({
         vals: vals,
@@ -22568,9 +22701,9 @@
         tickFmt: s.tick || s.fmt,
         fit: tr.fit,
         goodAbove: s.goodAbove,
-        xLabel: quarterTicks(vals),
+        xLabel: periodTicks(vals),
         at: function(d) {
-          return d.q ? qPretty(d.q) : "FY" + d.y;
+          return d.q ? qPretty(d.q) : d.m ? prettyKey(d.m) : "FY" + d.y;
         },
         alt: s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view"
       }, w);
@@ -22740,6 +22873,15 @@
     });
     return [ lede("Output per hour worked, against the same quarter a year earlier. An economy can grow by working " + "more hours or by getting more from each one, and only the second kind compounds."), hiCard("The latest quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " + (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."), hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " + fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.") ];
   }
+  function momentumInsight(s) {
+    var h = s.series, r = momentumReading.run, up = h.filter(function(d) {
+      return d.v >= 0;
+    }).length;
+    var turns = h.filter(function(d, i) {
+      return i > 0 && d.v < 0 && h[i - 1].v >= 0;
+    }).length;
+    return [ lede("How fast Mrs. Market’s price is moving: the S&amp;P 500 against the same month a year earlier. " + "Above zero she is still climbing, and the question is how fast; below it she is lower than a year ago."), hiCard("This run", momentumReading.tag.state, r.up ? "Above zero since " + r.since + ". The fastest twelve months of this bull ran " + momentumPct(r.peak) + " (" + r.peakAt + "); today’s " + momentumReading.metric + " is " + Math.round(momentumReading.share * 100) + "% of that pace." : "Below zero since " + r.since + ". The deepest reading of this fall is " + momentumPct(r.peak) + " (" + r.peakAt + ")."), hiCard("Against the record", "", "Since " + prettyKey(h[0].m) + ", the S&amp;P 500 stood at or above its level a year earlier in " + up + " of " + h.length + " months; momentum has turned negative " + turns + " times.") ];
+  }
   function interestInsight(s) {
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
     var rec = hist.reduce(function(a, d) {
@@ -22861,7 +23003,7 @@
       }
       return d;
     }
-    coincident.concat(lagging, [ productivityReading ]).forEach(function(ind) {
+    rowReadings().forEach(function(ind) {
       signSubject(ind);
     });
     convertLeadingSigns();
@@ -23917,26 +24059,6 @@
   function pct(v) {
     return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
   }
-  function symptom(name, figure, word) {
-    return "<li><b>" + name + "</b> " + figure + (word ? " · " + word : "") + "</li>";
-  }
-  function momentumSymptom(d) {
-    var f = d.facts;
-    return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull’s best" : "falling");
-  }
-  function symptomsFor(c, era) {
-    var rows = era ? rosterRows() : null;
-    return ROSTER.filter(function(R) {
-      return R.cat === c.key;
-    }).map(function(R) {
-      if (era) {
-        var r = rows[R.id], e = r && eraReading(r, era);
-        return e && !e.none ? symptom(r.name, pastFigure(r, e.raw, e.second), e.when) : "";
-      }
-      var t = readDoor(R.id);
-      return t ? symptom(t.name, withUnit(t.figure, t.unit), t.word) : "";
-    }).join("");
-  }
   function rosterRows() {
     return readingRoster().byId;
   }
@@ -23968,8 +24090,8 @@
   function dxSection(head, body, cls) {
     return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
   }
-  function systemHtml(c, analysis, symptoms) {
-    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis) + dxRow("Symptoms", symptoms, true), "cat-" + c.key);
+  function systemHtml(c, analysis) {
+    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis), "cat-" + c.key);
   }
   function dxHead(title, c) {
     var tag = c ? 'button type="button"' : "div";
@@ -24001,8 +24123,7 @@
     }).pop();
     var history = open ? "The " + era.name + ", year " + m.yearIndex + " of a typical " + typicalCycleYears + "." + (prev ? " Last bleed: the " + prev.name + ", " + prev.to + "." : "") : "The " + era.name + ", closed in " + era.to + " after " + m.yearIndex + " years; a typical cycle runs " + typicalCycleYears + ".";
     return '<header class="dx-top"><h2 class="dx-title">' + (open ? "She’s in " : "She closed in ") + '<span class="' + FEELING_STATE[d.stage] + '">' + d.stage + "</span></h2>" + '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " · the " + d.half + " half · " + d.posture + "</p>" + '<p class="dx-body">' + BODY_SAYS[d.season] + "</p></header>" + dxSection(dxHead("History"), dxRow("Record", history)) + categoriesShown().map(function(c) {
-      var symptoms = (c.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(c, closed);
-      return systemHtml(c, analysisFor(c.key, d, closed), symptoms);
+      return systemHtml(c, analysisFor(c.key, d, closed));
     }).join("") + dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   function renderDiagnosis(m) {

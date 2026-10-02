@@ -87,7 +87,7 @@
       if (pg.seat) pg.seat(ind, d); else { host.appendChild(row); host.appendChild(d); }
       return d;
     }
-    coincident.concat(lagging, [productivityReading]).forEach(function(ind){ signSubject(ind); });
+    rowReadings().forEach(function(ind){ signSubject(ind); });
 
     convertLeadingSigns();
     orderMetricSheets();
@@ -842,19 +842,6 @@
              unit:unit ? unit.textContent.trim() : "", word:word ? word.textContent.trim() : "" };
   }
   function pct(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(0) + "%"; }
-  function symptom(name, figure, word){ return "<li><b>" + name + "</b> " + figure + (word ? " \u00b7 " + word : "") + "</li>"; }
-  function momentumSymptom(d){
-    var f = d.facts;
-    return symptom("Momentum", pct(f.mom) + " over the year", f.mom > 0 ? Math.round(f.share * 100) + "% of this bull\u2019s best" : "falling");
-  }
-  function symptomsFor(c, era){
-    var rows = era ? rosterRows() : null;
-    return ROSTER.filter(function(R){ return R.cat === c.key; }).map(function(R){
-      if (era){ var r = rows[R.id], e = r && eraReading(r, era); return e && !e.none ? symptom(r.name, pastFigure(r, e.raw, e.second), e.when) : ""; }
-      var t = readDoor(R.id);
-      return t ? symptom(t.name, withUnit(t.figure, t.unit), t.word) : "";
-    }).join("");
-  }
   function rosterRows(){ return readingRoster().byId; }
   function eraMove(id, era){
     var r = rosterRows()[id]; if (!r) return "";
@@ -877,8 +864,8 @@
       (asList ? '<ul class="dx-list">' + html + '</ul>' : '<p class="dx-v">' + html + '</p>') + '</div>';
   }
   function dxSection(head, body, cls){ return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + '</section>'; }
-  function systemHtml(c, analysis, symptoms){
-    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis) + dxRow("Symptoms", symptoms, true), "cat-" + c.key);
+  function systemHtml(c, analysis){
+    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis), "cat-" + c.key);
   }
   function dxHead(title, c){
     var tag = c ? 'button type="button"' : "div";
@@ -919,10 +906,7 @@
         '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " \u00b7 the " + d.half + " half \u00b7 " + d.posture + '</p>' +
         '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
       dxSection(dxHead("History"), dxRow("Record", history)) +
-      categoriesShown().map(function(c){
-        var symptoms = (c.key === "mood" ? momentumSymptom(d) : "") + symptomsFor(c, closed);
-        return systemHtml(c, analysisFor(c.key, d, closed), symptoms);
-      }).join("") +
+      categoriesShown().map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   function renderDiagnosis(m){
