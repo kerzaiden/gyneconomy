@@ -1029,16 +1029,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **It sits under the dial on the Cycle page, for today and for any closed cycle.** Keren: "I want the
   diagnosis to open below the cycle. Mind you, that the cycle page applies to past cycles as well." It follows
   her cycle-tracking app's home page. (V665)
-- **It reads in clinical order and language: the trend card (the feeling in its season), then each System (a
-  category, whose heading opens the category page) with its one Analysis line, then Feeling and season. It lists no
+- **It reads in clinical order and language: the trend card (the emotion in its season), then each System (a
+  category, whose heading opens the category page) with its one Analysis line. It lists no
   Symptoms; the readings live on the category pages its headings open.** Keren: "use clinical language, ergo
   symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
   V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
   symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
-- **The Diagnosis is three separate cards at the cycle's width: the feeling in its season, then Circulation and
-  Energy, then Feeling and season.** Keren: "I want to break the analysis container to three separate containers. That
-  would be at the width of the current cycle". The middle card is headed by its systems' names with the
-  stethoscope, and its systems carry no "Analysis" label (Keren, V674: "it just takes up space"). (V674, V682)
+- **The Diagnosis is two separate cards at the cycle's width: the emotion in its season, then Circulation and
+  Energy.** Keren: "I want to break the analysis container to three separate containers. That would be at the
+  width of the current cycle"; the third, Feeling and season, moved to the Mood page as Emotion × Season in V686.
+  The second card is headed by its systems' names with the stethoscope, and its systems carry no "Analysis" label
+  (Keren, V674: "it just takes up space"). A closed cycle's card ends on what followed: the S&P 500 a year after
+  the close. (V674, V682, V686)
 - **Circulation and Energy close on one combined line, "Across the cycle": the Fed funds rate and the unemployment
   rate from the month the cycle opened to now.** Keren: "the next combined metrics I want is something to do with
   circulation and energy so figure it out". Claude chose the pair as the cycle's policy and its result (money's
@@ -1046,28 +1048,26 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **The Assessment (posture and what to watch) is gone; in its place, Feeling and season: a grid of the seven
-  feelings by the four seasons, each cell how often the S&P 500 was higher a year later and over how many months,
-  today's cell outlined, then today's feeling in its season against the other seasons, and the test.** Keren: "there
-  is no possible way to forecast the market … the assessment is redundant … I would maybe be more leaning towards
-  some kind of statistics … that tests the correlation between emotion and season, just like in the menstrual cycle
-  … euphoria in summer or fear in summer can mean different things." The test is Cramér's V for how closely feeling
-  and season go together and the variance of the following year's S&P 500 change they explain, each compared with
-  the season track slid against the feelings (months are not independent, so they are not shuffled). A cell
-  resting on fewer than 12 months is drawn faint (dashed, no tint) but never dropped, and every cell prints its
-  months: each month's year ahead overlaps the next, so under twelve is less than one year that stands on its own.
-  The line is Claude's call at Keren's request ("make a judgement call"), and the (i) says so. The tint is
-  continuous from 50%, green above and red below, with no bands. Don't re-add a posture or a forecast. (V684)
+- **Emotion × Season is its own box on the Mood page, under Insights: a grid of the cycle's twelve emotions by
+  the four seasons, each cell the months she spent in that pair since the record began and how long each visit
+  lasted on average, shaded by what the S&P 500 did a year later, today's cell outlined; then her lifespan in an
+  emotion and the test.** Keren: "it should measure the amount of time that the market has spent in each
+  combination … what's the lifespan of the mood in a particular season … if you can show any correlation to what
+  the market has done"; "I would like to call this metric emotion X season"; "it should be in the mood page under
+  insights … in a new container." The test is the share of the next year's S&P 500 change that emotion and season
+  explain, compared with the S&P 500's track slid against them (months are not independent, so they are not
+  shuffled). A cell resting on fewer than 12 months is drawn faint but never dropped: each month's year ahead
+  overlaps the next, so under twelve is less than one year that stands on its own; the line is Claude's call at
+  Keren's request ("make a judgement call", V684). The shade is continuous from even, green above and red below,
+  with no bands. It replaces V684's Feeling and season grid on the Diagnosis and its Cramér's V. Don't re-add a
+  posture or a forecast. (V684, V686)
 - **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
   the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
   words for today, and a closed cycle's figures are on its cards. (V665, V672)
-- **The feeling is named in the market chart's seven words: Hope, Optimism, Euphoria, Anxiety, Fear,
-  Capitulation, Despondency.** Keren chose the chart's own words; this reopens V236's "drop the emotions" for
-  the Diagnosis only. (V664)
-- **The cut-offs are Keren's, as tested: calm below the 20th percentile, frightened from the 80th, rising 20
-  points in three months, slowing under 65% of the bull's best, near the high within 5%; Euphoria keeps the
-  tested rule.** (V664)
-- **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
+- **The Diagnosis and the Mood page use one vocabulary: the cycle of market emotions' stages, read from the
+  Mood readings.** Keren chose "Switch" on the card (V686): the seven price-and-VIX feelings of V664 (Hope,
+  Optimism, Euphoria, Anxiety, Fear, Capitulation, Despondency), their cut-offs and the Diagnosis (i) that stated
+  them are retired. (V664, V686)
 - **The Mood page draws the cycle of market emotions exactly as Keren's reference chart (thirteen stages from
   Optimism through Euphoria, Anxiety, Denial, Fear, Desperation, Panic, Despair, Depression and Hope back to
   Optimism, its colours and both callouts), with today's stage lit.** Keren: "Build it exactly as the reference.
@@ -1079,19 +1079,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   three months is Claude's default) and her rank picks the stage on that side whose height on the chart is
   nearest (heights read off the reference, 0 at Despair, 100 at Euphoria). The bottom is Despair, Keren's word
   ("despair"). This replaces V679's seven-word emotions curve and the 20/80 fifths and ladder tried on the way.
-  The Diagnosis still reads the V664 seven feelings until mood and season are taken up next, at Keren's order:
-  "once we have the determination of what the market is feeling, in the mood page, at least, then we can move on
-  to the correlation between mood and season." (V685)
-- **The Diagnosis opens on the trend card, Apple Health's Trends: today's feeling in today's season, against the
-  other seasons, as share of months since the record began.** Keren: "make a correlation between what we called
-  mood and season … reflected in the homepage under analysis in the same way Apple Health app shows trends". The
-  card opens the Mood page. (V679)
-- **The trend card is the Diagnosis's headline: no "She's in" header, no History record, no Mood row in the
-  Analysis.** Keren: "I want to keep optimism in summer"; "Under analysis, I don't need the mood. because the mood
-  is already in optimism in summer"; "the history record, I don't need it … on the dial". The card says how long
-  the current spell has run, how the earlier spells of the same feeling in the same season ran (count, median,
-  longest), and how often the S&P 500 was higher a year after such a month; Keren left the choice of statistic to
-  Claude. The Wild Power quote left with the header. (V681)
+  (V685)
+- **The Diagnosis opens on the trend card: today's emotion in today's season, said of Mrs. Market by name, and
+  only that.** Keren: "I love the fact that you said she has been in optimism in summer for seven months … call it
+  Mrs. Market has been. And also, I want the analysis below it to be much shorter and only refer to optimism in
+  summer. When it happened in the past, for how long, what happened next, very briefly." The card says how long
+  the current spell has run, then lists the earlier spells of the same feeling in the same season, newest first
+  (the latest four when there are more), each with its months and the S&P 500 a year after it ended. The share
+  of months by season, its bars, and the median and longest spell are gone (V686; the Apple Health bars were V679,
+  the spell statistics V681). The card opens the Mood page; no "She's in" header, no History record, no Mood row
+  in the Analysis, and the Wild Power quote stays gone (V681).
 
 ## Code and process
 

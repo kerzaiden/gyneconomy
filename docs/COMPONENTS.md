@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `26ccd4f` on 2026-10-02. **81 components**, **40 shared patterns**.
+Generated from commit `8c7ee1c` on 2026-10-02. **80 components**, **40 shared patterns**.
 
 ## components.js
 
@@ -43,11 +43,11 @@ Generated from commit `26ccd4f` on 2026-10-02. **81 components**, **40 shared pa
 | **`cyclePicker`** | `.cycsel-btn` | `charts.js:histControls` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.js:divergeChart`, `charts.js:fitLine`, `components.js:deficitChart`, `render-core.js:ylmFitLine` |
-| **`hiCard`** | `.hi-name` | `indicators.js:buffettInsight`, `indicators.js:confidenceInsight`, `indicators.js:debtInsight`, `indicators.js:interestInsight`, `indicators.js:marketInsight`, `indicators.js:productivityInsight`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `pages-nav.js:marketCycleCard`, `pages-nav.js:moodCard`, `pages-nav.js:seasonCards`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:volatilityHighlights` |
+| **`hiCard`** | `.hi-name` | `indicators.js:buffettInsight`, `indicators.js:confidenceInsight`, `indicators.js:debtInsight`, `indicators.js:interestInsight`, `indicators.js:marketInsight`, `indicators.js:productivityInsight`, `pages-nav.js:emotionSeasonHtml`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:insightCirculation`, `pages-nav.js:insightWeather`, `pages-nav.js:marketCycleCard`, `pages-nav.js:moodCard`, `pages-nav.js:seasonCards`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:volatilityHighlights` |
 | **`histBar`** | `.hist-bar` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `components.js:deficitBlock`, `history.js:desireBlock`, `history.js:velocityRecordBlock`, `history.js:volumeBlock`, `indicators.js:drawSplit`, `pages-nav.js:activityStackHtml`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`meterPeek`** | `.meterpeek` `.mp-band` `.mp-core` `.mp-here` `.mp-track` | `forms.js:peekCard` |
-| **`moreRow`** | `.more-row` | `pages-nav.js:gdpHighlights`, `pages-nav.js:insightMood`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `pages-nav.js:emotionSeasonHtml`, `pages-nav.js:gdpHighlights`, `pages-nav.js:insightMood`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:cardDetailHtml` |
 | **`riskMatrixBlock`** | `.riskmx` `.rm-axis` `.rm-axis-x` `.rm-axis-y` `.rm-c` `.rm-cells` `.rm-frame` `.rm-grid` `.rm-mark` `.rm-xlabs` `.rm-ylabs` | `components.js:valRow` |
 | **`trendOf`** | `.tp-arrow` | `charts.js:fitLine`, `components.js:deficitChart`, `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
@@ -74,12 +74,12 @@ Generated from commit `26ccd4f` on 2026-10-02. **81 components**, **40 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.js:renderSignsList` |
-| **`facts`** | `.facts` | `analysis.js:symptomNote`, `charts.js:volatilityTag`, `components.js:deficitBlock`, `dial-cycle.js:heatStep`, `forms.js:volatilityDetailHtml`, `pages-nav.js:diagnosisInfo`, `pages-nav.js:moodInfo`, `render-core.js:factsFrom` |
+| **`facts`** | `.facts` | `analysis.js:symptomNote`, `charts.js:volatilityTag`, `components.js:deficitBlock`, `dial-cycle.js:heatStep`, `forms.js:volatilityDetailHtml`, `pages-nav.js:emotionSeasonInfo`, `pages-nav.js:moodInfo`, `render-core.js:factsFrom` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.js:cardDetailHtml` |
-| **`ledeHtml`** | `.lede` | `charts.js:volatilityTag`, `components.js:deficitBlock`, `dial-cycle.js:heatStep`, `pages-nav.js:diagnosisInfo` |
+| **`ledeHtml`** | `.lede` | `charts.js:volatilityTag`, `components.js:deficitBlock`, `dial-cycle.js:heatStep` |
 | **`metricSheet`** | `.metric-sheet` | `indicators.js:catSheet`, `indicators.js:mountSplit`, `pages-nav.js:convertLeadingSigns`, `pages-nav.js:renderSignsList` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.js:buildNav` |
-| **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `forms.js:volatilityDetailHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `pages-nav.js:diagnosisInfo`, `pages-nav.js:moodInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| **`srcBlock`** | `.src` | `dial-cycle.js:heatStep`, `dial-cycle.js:renderCycleKicker`, `forms.js:dsrInfoHtml`, `forms.js:marketInfoHtml`, `forms.js:savInfoHtml`, `forms.js:volatilityDetailHtml`, `history.js:activityInfoHtml`, `history.js:confidenceInfoHtml`, `history.js:desireInfoHtml`, `history.js:growthInfoHtml`, `history.js:outputInfoHtml`, `history.js:productivityInfoHtml`, `history.js:temperatureInfoHtml`, `indicators.js:splitInfo`, `pages-nav.js:emotionSeasonInfo`, `pages-nav.js:moodInfo`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
 | **`subjectIcon`** | `.subject-icon` | `indicators.js:splitPeek`, `pages-nav.js:indGroupRow`, `pages-nav.js:registerRoster`, `pages-nav.js:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.js:timingPill` |
@@ -111,10 +111,10 @@ Generated from commit `26ccd4f` on 2026-10-02. **81 components**, **40 shared pa
 | **`catItem`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `indicators.js:appendPicks` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
 | **`dxHead`** | `.dx-sys-head` | `pages-nav.js:diagnosisHtml`, `pages-nav.js:systemHtml` |
-| **`dxRow`** | `.dx-k` `.dx-row` | `pages-nav.js:acrossCycle`, `pages-nav.js:gridLines` |
+| **`dxRow`** | `.dx-k` `.dx-row` | `pages-nav.js:acrossCycle`, `pages-nav.js:diagnosisHtml` |
 | **`dxText`** | `.dx-v` | `pages-nav.js:systemHtml` |
-| **`feelingGrid`** | `.fs-grid` | `pages-nav.js:diagnosisHtml` |
-| **`gridCell`** | `.fs-cell` `.none` | `pages-nav.js:feelingGrid` |
+| **`emoCell`** | `.fs-cell` `.none` | `pages-nav.js:emotionGrid` |
+| **`emotionGrid`** | `.fs-grid` | `pages-nav.js:emotionSeasonHtml` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-mark` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
 | **`insightMood`** | `.mood-fig` | — |
@@ -124,9 +124,8 @@ Generated from commit `26ccd4f` on 2026-10-02. **81 components**, **40 shared pa
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | — |
 | **`spellLines`** | `.trend-text` | `pages-nav.js:trendCardHtml` |
 | **`systemHtml`** | `.dx-cat` | `pages-nav.js:diagnosisHtml` |
-| **`trendBarsSvg`** | `.trend-bar` `.trend-svg` `.trend-x` | `pages-nav.js:trendCardHtml` |
-| **`trendCardHtml`** | `.cat-mood` `.now` `.trend-card` `.trend-foot` `.trend-head` | `pages-nav.js:diagnosisHtml` |
-| **`trendSub`** | `.trend-sub` | `pages-nav.js:trendCardHtml` |
+| **`trendCardHtml`** | `.cat-mood` `.trend-card` `.trend-head` | `pages-nav.js:diagnosisHtml` |
+| **`trendSub`** | `.trend-sub` | — |
 
 ## indicators.js
 
@@ -171,31 +170,29 @@ renderer speaks. Listed most-used first.
 | **`fmtSigned`** | render-pages.js | 9 places |
 | **`histControls`** | charts.js | 9 places |
 | **`pageCycle`** | charts.js | 9 places |
-| **`seasonGroup`** | model.js | 9 places |
 | **`attachHistory`** | charts.js | 8 places |
 | **`factsFrom`** | render-core.js | 8 places |
+| **`highlightsHtml`** | charts.js | 8 places |
 | **`histNote`** | history.js | 8 places |
 | **`lede`** | indicators.js | 8 places |
+| **`seasonGroup`** | model.js | 8 places |
 | **`vhOpen`** | charts.js | 8 places |
 | **`windowScale`** | components.js | 8 places |
 | **`yearOf`** | charts.js | 8 places |
 | **`cycleSlice`** | charts.js | 7 places |
-| **`highlightsHtml`** | charts.js | 7 places |
 | **`qAtIndex`** | history.js | 6 places |
 | **`qLabel`** | model.js | 6 places |
 | **`timelineSpan`** | components.js | 6 places |
 | **`atMonth`** | charts.js | 5 places |
 | **`drawsPage`** | render-core.js | 5 places |
-| **`expandBtn`** | render-core.js | 5 places |
 | **`LIVE`** | live.js | 5 places |
-| **`marketFacts`** | model.js | 5 places |
-| **`marketMonths`** | model.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
+| **`moodTrack`** | model.js | 5 places |
 | **`paintReading`** | live.js | 5 places |
 | **`qWindowFrom`** | components.js | 5 places |
-| **`readFeeling`** | model.js | 5 places |
-| **`whatFollowed`** | model.js | 5 places |
 | **`detailSlot`** | render-core.js | 4 places |
+| **`emotionSeason`** | model.js | 4 places |
+| **`expandBtn`** | render-core.js | 4 places |
 | **`fedFundsRange`** | live.js | 4 places |
 | **`hyAt`** | components.js | 4 places |
 | **`indOf`** | roster.js | 4 places |
@@ -203,7 +200,6 @@ renderer speaks. Listed most-used first.
 | **`mean`** | charts.js | 4 places |
 | **`openCycle`** | charts.js | 4 places |
 | **`prettyK`** | analysis.js | 4 places |
-| **`rankToDate`** | model.js | 4 places |
 | **`refitHistory`** | components.js | 4 places |
 | **`valRow`** | components.js | 4 places |
 | **`byIdMaybe`** | refresh-season.js | 3 places |
@@ -211,9 +207,10 @@ renderer speaks. Listed most-used first.
 | **`eraFig`** | analysis.js | 3 places |
 | **`feelingTrack`** | model.js | 3 places |
 | **`histReadFill`** | components.js | 3 places |
+| **`marketMonths`** | model.js | 3 places |
 | **`merge`** | live.js | 3 places |
-| **`moodTrack`** | model.js | 3 places |
 | **`mWindowFrom`** | components.js | 3 places |
+| **`pct`** | pages-nav.js | 3 places |
 | **`peekOf`** | roster.js | 3 places |
 | **`qPretty`** | pages-nav.js | 3 places |
 | **`registerTiming`** | render-core.js | 3 places |

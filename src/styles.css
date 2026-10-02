@@ -650,15 +650,6 @@
   .trend-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
   .trend-text{ display:block; margin:8px 0 8px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
   .trend-sub{ display:block; margin:0 0 6px; font-size:var(--type-interface); line-height:1.5; color:var(--text-secondary); }
-  .trend-svg{ display:block; width:100%; margin-top:8px; overflow:visible; }
-  .trend-bar{ fill:var(--border-strong); }
-  .trend-avg{ stroke:var(--text-muted); stroke-width:4; stroke-linecap:round; }
-  .trend-avg.now{ stroke:var(--cat); }
-  .trend-val, .trend-x{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-label); font-weight:700; fill:var(--text-muted); }
-  .trend-x{ font-weight:400; }
-  .trend-val.now{ fill:var(--cat); }
-  .trend-foot{ display:flex; justify-content:space-between; gap:10px; margin-top:6px; font-size:var(--type-meta); color:var(--text-muted); }
-  .trend-foot .now{ color:var(--cat); font-weight:600; }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
   .cat-list{ display:flex; flex-direction:column; gap:var(--gap); margin-top:var(--gap-top); }

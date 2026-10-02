@@ -117,42 +117,17 @@
   function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 
   // ---- The diagnosis: how she feels, and what has followed ----
-  var CALM = 20, FRIGHTENED = 80, RISE = 20, SLOWING = 0.65, NEAR_HIGH = 0.05;
-  var FEELINGS = ["Hope", "Optimism", "Euphoria", "Anxiety", "Fear", "Capitulation", "Despondency"];
   function rankToDate(prior, v){
     if (v == null || prior.length < 12) return null;
     return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
   }
-  function readFeeling(f){
-    if (f.fear == null || f.mom == null) return null;
-    if (f.fear >= 90 && f.dd <= -0.15) return "Capitulation";
-    if (f.mom < 0 && f.fear >= 60) return "Fear";
-    if (f.dd <= -0.10 && f.fearPeak >= FRIGHTENED && f.fear <= f.fearPeak - RISE) return "Despondency";
-    if (f.fear3 != null && f.fear3 < CALM && f.fear - f.fear3 >= RISE && f.dd >= -0.10) return "Anxiety";
-    if (f.mom > 0 && f.wasNegative) return "Hope";
-    if (f.mom > 0 && f.dd >= -NEAR_HIGH && f.share < SLOWING && f.fear < CALM) return "Euphoria";
-    if (f.mom > 0 && f.dd >= -NEAR_HIGH) return "Optimism";
-    return null;
-  }
   var marketCache = null;
   function marketMonths(){
     if (marketCache) return marketCache;
-    var sp = sp500MonthlyHistory, vol = volatilityHistory, spAt = {}, volAt = {};
-    var top = -Infinity, mom = [], best = [], dd = [];
-    sp.forEach(function(d, i){
-      spAt[d.m] = i; top = Math.max(top, d.v); dd.push(d.v / top - 1);
-      mom.push(i >= 12 ? d.v / sp[i - 12].v - 1 : null);
-      var prevPos = i > 0 && mom[i - 1] > 0 && best[i - 1] != null;
-      best.push(mom[i] > 0 ? Math.max(mom[i], prevPos ? best[i - 1] : -Infinity) : null);
-    });
-    var fearRank = vol.map(function(d, j){
-      volAt[d.m] = j;
-      return rankToDate(vol.slice(0, j).map(function(x){ return x.v; }), d.v);
-    });
-    var quarters = {};
+    var spAt = {}, quarters = {};
+    sp500MonthlyHistory.forEach(function(d, i){ spAt[d.m] = i; });
     seasonTrackAll.forEach(function(e){ if (e) quarters[e.y + "-" + QUARTER_END_MONTH[e.qn]] = e.reading.season; });
-    marketCache = { sp:sp, vol:vol, spAt:spAt, volAt:volAt, mom:mom, best:best, dd:dd, fearRank:fearRank,
-                   quarterKeys:Object.keys(quarters).sort(), quarters:quarters };
+    marketCache = { sp:sp500MonthlyHistory, spAt:spAt, quarterKeys:Object.keys(quarters).sort(), quarters:quarters };
     return marketCache;
   }
   function seasonInMonth(S, m){
@@ -160,51 +135,18 @@
     S.quarterKeys.forEach(function(k){ if (k <= m) s = S.quarters[k]; });
     return s;
   }
-  function marketFacts(S, m, fearNow){
-    var i = S.spAt[m], j = S.volAt[m];
-    if (i == null || j == null || S.mom[i] == null) return null;
-    var peak = S.fearRank.slice(Math.max(0, j - 6), j).filter(function(v){ return v != null; });
-    return { m:m, dd:S.dd[i], mom:S.mom[i], share:S.mom[i] > 0 ? S.mom[i] / S.best[i] : null,
-             wasNegative:S.mom.slice(Math.max(0, i - 3), i).some(function(v){ return v != null && v < 0; }),
-             fear:fearNow != null ? fearNow : S.fearRank[j], fear3:S.fearRank[j - 3] != null ? S.fearRank[j - 3] : null,
-             fearPeak:peak.length ? Math.max.apply(null, peak) : null };
-  }
-  var followedCache = null;
-  function whatFollowed(){
-    if (followedCache) return followedCache;
-    var S = marketMonths(), cells = {}, last = null, from = null;
-    S.vol.forEach(function(d){
-      var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
-      if (!f || !season || i == null || i + 12 >= S.sp.length) return;
-      var stage = readFeeling(f) || last; last = stage;
-      if (!stage) return;
-      if (!from) from = d.m;
-      var key = stage + "|" + seasonGroup(season), c = cells[key] = cells[key] || { months:0, higher:0 };
-      c.months++; if (S.sp[i + 12].v > S.sp[i].v) c.higher++;
-    });
-    followedCache = { cells:cells, from:from };
-    return followedCache;
+  function yearAfter(S, m){
+    var i = S.spAt[m];
+    return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
   }
   var trackCache = null;
   function feelingTrack(){
     if (trackCache) return trackCache;
-    var S = marketMonths(), out = [], last = null;
-    S.vol.forEach(function(d){
-      var f = marketFacts(S, d.m), season = seasonInMonth(S, d.m), i = S.spAt[d.m];
-      if (!f || !season) return;
-      var stage = readFeeling(f) || last; last = stage;
-      if (stage) out.push({ m:d.m, stage:stage, group:seasonGroup(season), after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null });
+    var S = marketMonths();
+    trackCache = moodTrack().filter(function(x){ return x.word && seasonInMonth(S, x.m); }).map(function(x){
+      return { m:x.m, stage:x.word, group:seasonGroup(seasonInMonth(S, x.m)), after:yearAfter(S, x.m) };
     });
-    trackCache = out;
-    return out;
-  }
-  function cramerV(a, b){
-    var n = a.length, tab = {}, ra = {}, cb = {}, chi = 0;
-    a.forEach(function(x, i){ var k = x + "|" + b[i]; tab[k] = (tab[k] || 0) + 1; ra[x] = (ra[x] || 0) + 1; cb[b[i]] = (cb[b[i]] || 0) + 1; });
-    Object.keys(ra).forEach(function(x){ Object.keys(cb).forEach(function(y){
-      var e = ra[x] * cb[y] / n, o = tab[x + "|" + y] || 0; chi += (o - e) * (o - e) / e;
-    }); });
-    return Math.sqrt(chi / n / (Math.min(Object.keys(ra).length, Object.keys(cb).length) - 1));
+    return trackCache;
   }
   function explained(keys, vals){
     var n = vals.length, mean = vals.reduce(function(a, v){ return a + v; }, 0) / n, sum = {}, cnt = {}, tot = 0, bet = 0;
@@ -213,17 +155,6 @@
     return bet / tot;
   }
   function slid(list, s){ return list.slice(s).concat(list.slice(0, s)); }
-  var testCache = null;
-  function feelingSeasonTest(){
-    if (testCache) return testCache;
-    var t = feelingTrack(), st = t.map(function(x){ return x.stage; }), gr = t.map(function(x){ return x.group; });
-    var a = t.filter(function(x){ return x.after != null; }), ak = a.map(function(x){ return x.stage + "|" + x.group; }), av = a.map(function(x){ return x.after; });
-    var v = cramerV(st, gr), r2 = explained(ak, av), vHit = 0, vAll = 0, rHit = 0, rAll = 0, s;
-    for (s = 12; s < st.length - 12; s++, vAll++) if (cramerV(st, slid(gr, s)) >= v) vHit++;
-    for (s = 12; s < av.length - 12; s++, rAll++) if (explained(ak, slid(av, s)) >= r2) rHit++;
-    testCache = { v:v, vShare:vHit / vAll, r2:r2, rShare:rHit / rAll };
-    return testCache;
-  }
   function monthsApart(a, b){ return (+b.slice(0, 4) - +a.slice(0, 4)) * 12 + (+b.slice(5, 7) - +a.slice(5, 7)); }
   function feelingSpells(stage, group, upTo){
     var spells = [], run = null;
@@ -240,31 +171,15 @@
     var here = seasonGroup(d.season), spells = feelingSpells(d.stage, here, d.month), last = spells[spells.length - 1];
     var now = last && monthsApart(last.to, d.month) <= 1 ? spells.pop() : null;
     now = now ? { from:now.from, to:d.month, n:monthsApart(now.from, d.month) + 1 } : { from:d.month, to:d.month, n:1 };
-    var after = feelingTrack().filter(function(t){ return t.stage === d.stage && t.group === here && t.after != null && t.m <= d.month; });
-    return { now:now, before:spells, after:after.length, higher:after.filter(function(t){ return t.after > 0; }).length };
-  }
-  function lastFeeling(S, m){
-    var stage = null;
-    for (var k = S.spAt[m]; k >= 0 && !stage; k--){ var pf = marketFacts(S, S.sp[k].m); stage = pf && readFeeling(pf); }
-    return stage;
+    return { now:now, before:spells };
   }
   function diagnoseClose(m){
-    var S = marketMonths(), at = m.endMonth, f = marketFacts(S, at), i = S.spAt[at];
-    if (!f) return null;
-    var named = readFeeling(f), stage = named || lastFeeling(S, at);
-    return { stage:stage, carried:!named, season:m.season, facts:f, month:at,
-             after:i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null };
+    var x = moodTrack().filter(function(t){ return t.m === m.endMonth; })[0];
+    return x && x.word ? { stage:x.word, season:m.season, month:x.m, after:yearAfter(marketMonths(), x.m) } : null;
   }
   function diagnoseToday(){
-    var S = marketMonths(), lastM = S.sp[S.sp.length - 1].m;
-    var vols = S.vol.map(function(d){ return d.v; });
-    var f = marketFacts(S, lastM, rankToDate(vols, vixRow.meter.value));
-    if (!f) return null;
-    var j = S.vol.length;
-    f.fear3 = S.fearRank[j - 3]; f.fearPeak = Math.max.apply(null, S.fearRank.slice(j - 6).filter(function(v){ return v != null; }));
-    var stage = readFeeling(f), carried = !stage;
-    if (carried) stage = lastFeeling(S, S.sp[S.sp.length - 2].m);
-    return { stage:stage, carried:carried, season:currentSeason, facts:f, month:lastM };
+    var x = moodToday();
+    return x && x.word ? { stage:x.word, season:currentSeason, month:x.m } : null;
   }
 
   // ---- Her mood: one range from Depression to Mania ----
@@ -312,6 +227,25 @@
   function moodToday(){
     var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
     return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
+  }
+
+  var emoCache = null;
+  function emotionSeason(){
+    if (emoCache) return emoCache;
+    var cells = {}, keys = [], vals = [], prev = null, t = feelingTrack();
+    t.forEach(function(x){
+      var key = x.stage + "|" + x.group, c = cells[key] = cells[key] || { months:0, spells:0, after:0, higher:0 };
+      c.months++;
+      if (key !== prev) c.spells++;
+      prev = key;
+      if (x.after == null) return;
+      c.after++; if (x.after > 0) c.higher++;
+      keys.push(key); vals.push(x.after);
+    });
+    var r2 = explained(keys, vals), hit = 0, all = 0;
+    for (var k = 12; k < vals.length - 12; k++, all++) if (explained(keys, slid(vals, k)) >= r2) hit++;
+    emoCache = { cells:cells, from:t[0].m, r2:r2, share:hit / all };
+    return emoCache;
   }
 
   function vitalRingSvg(pct, state, label, cls){
