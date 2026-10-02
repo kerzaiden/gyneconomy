@@ -60,13 +60,17 @@ async function oecdConfidence(start) {
     if (r.ok) { say('  OECD from ' + path); return oecdRows(r.text); }
     tried.push(path + ' → HTTP ' + r.status + ' ' + r.text.replace(/\s+/g, ' ').slice(0, 160));
   }
-  const st = await fetch('https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest?references=datastructure', { headers: OECD_HEAD });
-  const xml = await st.text(), dims = [...xml.matchAll(/<structure:(?:Dimension|TimeDimension)[^>]*\bid="([^"]+)"/g)].map(m => m[1]).join('.');
-  const all = await oecdGet('OECD.SDD.STES,DSD_STES@DF_CLI,/all', '2026-06');
-  const head = all.text.split(/\r?\n/)[0].split(','), mi = head.indexOf('MEASURE'), ri = head.indexOf('REF_AREA');
-  const rows = all.text.split(/\r?\n/).slice(1).map(l => l.split(',')).filter(c => c[ri] === 'USA');
-  const keys = [...new Set(rows.map(c => head.map((h, i) => /^(REF_AREA|FREQ|MEASURE|UNIT_MEASURE|ACTIVITY|ADJUSTMENT|TRANSFORMATION|TIME_HORIZ|METHODOLOGY)$/.test(h) ? c[i] : null).filter(x => x !== null).join('.')))].join(' ');
-  const measures = 'dimensions ' + st.status + ' ' + (dims || xml.slice(0, 120)) + ' · all ' + all.status + ' · US keys: ' + (mi < 0 ? all.text.slice(0, 200) : keys);
+  const st = await fetch('https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest?references=all',
+    { headers: { 'user-agent': OECD_HEAD['user-agent'], accept: 'application/vnd.sdmx.structure+json; version=1.0' } });
+  const sj = await st.text();
+  const dims = [...sj.matchAll(/"id":"([A-Z_]+)","position":\d+/g)].map(m => m[1]).join('.');
+  const cc = [...new Set([...sj.matchAll(/"id":"(CC[A-Z_]*|[A-Z_]*CONF[A-Z_]*)"/g)].map(m => m[1]))].join(' ');
+  const variants = [];
+  for (const q of ['format=jsondata', 'format=csv', 'format=genericdata']) {
+    const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + OECD_CCI[0] + '?startPeriod=2026-01&' + q, { headers: { 'user-agent': OECD_HEAD['user-agent'] } });
+    variants.push(q + ' ' + r.status + ' ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 80));
+  }
+  const measures = 'structure ' + st.status + ' dims ' + dims + ' · codes ' + cc + ' · ' + variants.join(' | ');
   throw new Error('OECD CCI: ' + tried.join(' || ') + ' || ' + measures);
 }
 
