@@ -436,9 +436,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   yield, because it's considered the risk-free loan across the economy". (V639)
 - **Pressure is a leading sign.** The market's price of money moves before the activity it finances shows it.
   (V597, V639)
-- **Horizon (the yield spread) is Mood's member, not a category of its own and not part of Pressure.** Keren:
-  "if the horizon says if we're optimistic or pessimistic, then it should be in mood"; the gap between two
-  rates is a forecast, not a pressure. (V473, V598)
+- **Horizon (the yield spread) is Circulation's member, after Interest rates, not a category of its own and not
+  part of Pressure.** It sat in Mood from V473 ("if the horizon says if we're optimistic or pessimistic, then it
+  should be in mood"); in V685 it left the mood reading (the curve steepens when the Fed cuts into a crash, so its
+  level does not sort mood), Keren asked where it belongs, and chose Circulation: the 3-month end follows the
+  Fed, so the curve is the bond market's answer to the hormones. It keeps its optimistic/pessimistic word. (V473,
+  V598, V685)
 - **The Senior Loan Officer Survey left Pressure by Keren's choice (kept at tag `v638-fewer-words`); don't
   bring it back without asking her.** (V639)
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
@@ -1065,12 +1068,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   points in three months, slowing under 65% of the bull's best, near the high within 5%; Euphoria keeps the
   tested rule.** (V664)
 - **Fear is measured from 1986 only, with no estimate before the VXO.** Keren's choice. (V664)
-- **The Mood page carries the market emotions cycle drawn in the Diagnosis's seven words only (Optimism,
-  Euphoria, Anxiety, Fear, Capitulation, Despondency, Hope, in the order of the chart Keren supplied), today's
-  lit in its state colour, and what has followed today's feeling a year later.** Keren: "I want in the mood page
-  to have some kind of evaluation over the market current feeling"; "We agreed on showing only seven emotions."
-  The chart's other seven stages have no published rule. Don't add a how-often breakdown: "how often she has
-  felt each is not really informative." (V679)
+- **The Mood page draws the cycle of market emotions exactly as Keren's reference chart (thirteen stages from
+  Optimism through Euphoria, Anxiety, Denial, Fear, Desperation, Panic, Despair, Depression and Hope back to
+  Optimism, its colours and both callouts), with today's stage lit.** Keren: "Build it exactly as the reference.
+  We don't want to be unique here." Her mood is the average of three rank-to-date readings turned toward
+  appetite: valuations (CAPE and Buffett), calm (the VIX upside down) and consumer confidence; Desire (too short)
+  and Horizon (its level does not sort mood) stay out. That mood is ranked against her own past moods: "One
+  person's euphoria is not another person's euphoria … where is she now in relation to her own history of
+  emotions." Her direction over three months picks the side of the chart (Keren chose "Direction" on the card;
+  three months is Claude's default) and her rank picks the stage on that side whose height on the chart is
+  nearest (heights read off the reference, 0 at Despair, 100 at Euphoria). The bottom is Despair, Keren's word
+  ("despair"). This replaces V679's seven-word emotions curve and the 20/80 fifths and ladder tried on the way.
+  The Diagnosis still reads the V664 seven feelings until mood and season are taken up next, at Keren's order:
+  "once we have the determination of what the market is feeling, in the mood page, at least, then we can move on
+  to the correlation between mood and season." (V685)
 - **The Diagnosis opens on the trend card, Apple Health's Trends: today's feeling in today's season, against the
   other seasons, as share of months since the record began.** Keren: "make a correlation between what we called
   mood and season … reflected in the homepage under analysis in the same way Apple Health app shows trends". The

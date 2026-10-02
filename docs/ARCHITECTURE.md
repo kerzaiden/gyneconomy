@@ -273,8 +273,8 @@ file byte for byte, which is what made the split provable; since V548 a comment 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
 to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
-Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Hormones · Pressure · Pulse · Volume) · Mood
-(Valuations · Volatility · Desire · Horizon) · Energy (Economic power · Households · Activity). Named Weather, never
+Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Horizon · Pressure · Pulse · Volume) ·
+Mood (Valuations · Volatility · Desire · Consumer confidence) · Energy (Economic power · Households · Activity). Named Weather, never
 Season; Volatility, never Fear or Sentiment (V663); Households, never Debt service.
 
 Rules that shape the pages:
@@ -539,10 +539,15 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
 - **Mood and season** (V679): `whatFollowed` also counts each month's feeling by its season (`bySeason`, the four
   seasons of `seasonGroup`). The Analysis's trend card (`trendCardHtml`) sets today's feeling in today's season
-  against the other three pooled; the Mood page's Insights (`insightMood`) draws the emotions curve
-  (`EMOTION_CURVE`: the seven feelings in the order of Keren's chart, heights drawn, not measured) and what followed
-  today's feeling a year later. Both read the same counts as the record, and `repaintDiagnosis` repaints every category's
-  Insights after a live reading lands, so the curve moves with the VIX.
+  against the other three pooled; the Mood page's Insights (`insightMood`) draws the cycle of
+  market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in 08-model
+  ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
+  that month (`rankIn`, over `rankToDate`) and averages the three; `moodTrack` keeps every month since all three can
+  rank, and `moodRead` ranks each against the months before it and takes its change over `MOOD_TURN` months;
+  `moodWord` picks the nearest stage by height on the rising (`MOOD_RISING`) or falling (`MOOD_FALLING`) side.
+  Optimism is on the chart twice, so both dots light. The mood describes, it does not forecast, so it is not the
+  composite that failed out of sample. `repaintDiagnosis` repaints every category's Insights after a live reading
+  lands, so the lit stage moves with the VIX.
 - **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in 03-data, a split
   page against the OECD's 100 line, and its history `confidenceHistory` (the OECD's own SDMX API, dataflow `DSD_STES@DF_CLI`,
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
@@ -605,8 +610,8 @@ figure computed. **The chart's resting plate names a quarter, and the quarter st
 the row is today and the plate is an average, and without the words the two read as two different todays
 (Keren caught it in Version 294 and again in V640). This reversed V597 (the loan survey as "resistance") and V598
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
-The gap is a forecast, not a pressure, so it is Mood's fourth member, Horizon, judged optimistic or
-pessimistic. **Horizon's word is slope AND
+The gap is a forecast, not a pressure, so it is its own reading, Horizon, judged optimistic or
+pessimistic; it sat in Mood until V685 and is now Circulation's, after Interest rates. **Horizon's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback
 is fixed at four quarters and does not follow the chart's window; its (i) carries the NY Fed's caution that
 it is the level of the spread that forecasts, not the crossing.

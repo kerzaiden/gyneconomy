@@ -454,11 +454,18 @@
       ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
       (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
   }
-  var EMOTION_CURVE = [
-    ["Optimism", 0.45, "rd"], ["Euphoria", 1, "a"], ["Anxiety", 0.8, "ru"], ["Fear", 0.52, "ru"],
-    ["Capitulation", 0.2, "ld"], ["Despondency", 0, "b"], ["Hope", 0.3, "a"]
+  var MOOD_CHART = [
+    ["Optimism", 168, 290, "cream", -23, 7, "end"], ["Excitement", 211, 221, "amber", -23, 0, "end"], ["Thrill", 279, 158, "orange", -21, 0, "end"],
+    ["Euphoria", 362, 135, "red", 0, -25, "middle"], ["Anxiety", 438, 163, "wine", 24, -3, "start"], ["Denial", 500, 222, "slate", -23, 7, "end"],
+    ["Fear", 548, 296, "cream", -21, 8, "end"], ["Desperation", 594, 374, "amber", -24, 7, "end"], ["Panic", 656, 443, "orange", -23, 13, "end"],
+    ["Despair", 744, 475, "red", 0, 41, "middle"], ["Depression", 838, 458, "wine", 24, 14, "start"], ["Hope", 925, 393, "slate", 25, 9, "start"],
+    ["Optimism", 978, 310, "cream", -28, -3, "end"]
   ];
-  var EMO_PLACE = { rd:[8, 14, "start"], ru:[8, -7, "start"], ld:[-8, 15, "end"], a:[0, -11, "middle"], b:[0, 19, "middle"] };
+  var MOOD_SRC = [
+    {t:"Yale Center for Emotional Intelligence \u2014 the Mood Meter (RULER): feelings placed by pleasantness and energy", u:"https://rulerapproach.org/"},
+    {t:"CNN Business \u2014 Fear &amp; Greed Index: one 0\u2013100 reading from extreme fear to extreme greed", u:"https://www.cnn.com/markets/fear-and-greed"},
+    {t:"Russell Investments \u2014 the cycle of market emotions", u:"https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"}
+  ];
   function curvePath(pts){
     var f = function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); };
     return pts.map(function(p, i){
@@ -467,28 +474,41 @@
       return "C" + f([b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6]) + " " + f([p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6]) + " " + f(p);
     }).join("");
   }
-  function emotionCurveSvg(now){
-    var n = EMOTION_CURVE.length, x0 = 20, x1 = 312, top = 30, span = 140;
-    var pts = EMOTION_CURVE.map(function(s, i){ return [x0 + (x1 - x0) * i / (n - 1), top + (1 - s[1]) * span]; });
-    var out = ['<path class="emo-line" d="' + curvePath(pts) + '"/>'];
-    EMOTION_CURVE.forEach(function(s, i){
-      var p = pts[i], here = s[0] === now, at = EMO_PLACE[s[2]], state = here ? " now " + FEELING_STATE[s[0]] : "";
-      out.push('<circle class="emo-dot' + state + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (here ? 6.5 : 4.5) + '"/>');
-      out.push('<text class="emo-lab' + state + '" x="' + (p[0] + at[0]).toFixed(1) + '" y="' + (p[1] + at[1]).toFixed(1) +
-        '" text-anchor="' + at[2] + '">' + s[0] + '</text>');
+  function moodCallout(x, y, lines, from, to){
+    return '<path class="mood-arrow" d="M' + x + ',' + from + 'V' + to + 'M' + (x - 7) + ',' + (to + (to < from ? 12 : -12)) + 'L' + x + ',' + to + 'L' + (x + 7) + ',' + (to + (to < from ? 12 : -12)) + '"/>' +
+      lines.map(function(t, i){ return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + '</text>'; }).join("");
+  }
+  function moodCycleSvg(now){
+    var pts = MOOD_CHART.map(function(s){ return [s[1], s[2]]; });
+    var out = ['<path class="mood-line" d="' + curvePath([[156, 322]].concat(pts, [[995, 272]])) + '"/>',
+      moodCallout(362, 430, ["Point of maximum", "financial risk"], 400, 160), moodCallout(745, 195, ["Point of maximum", "financial opportunity"], 245, 452)];
+    MOOD_CHART.forEach(function(s){
+      var on = s[0] === now ? " now" : "";
+      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
+      out.push('<text class="mood-lab' + on + '" x="' + (s[1] + s[4]) + '" y="' + (s[2] + s[5]) + '" text-anchor="' + s[6] + '">' + s[0].toUpperCase() + '</text>');
     });
-    return '<svg class="emo-curve" viewBox="0 0 340 200" role="img" aria-label="The market emotions cycle, seven feelings from optimism to hope' +
+    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' +
       (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
   }
+  function moodInfo(){
+    return '<h4>Her mood</h4>' + facts([
+      "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
+      "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor\u2019s euphoria is not another\u2019s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.",
+      "The chart, its stages and their heights are the cycle of market emotions\u2019, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren\u2019s call; the three months are Claude\u2019s default.",
+      "Desire and Horizon are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast."
+    ]) + srcBlock(MOOD_SRC);
+  }
+  function moodCard(d){
+    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+    return hiCard("She\u2019s in " + d.word, "", "Her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) +
+      " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and consumer confidence " + r(d.confidence) +
+      ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".");
+  }
   function insightMood(){
-    var d = diagnoseToday(), rec = whatFollowed(), now = d && d.stage, months = 0, higher = 0;
-    Object.keys(rec.cells).forEach(function(k){ if (k.split("|")[0] === now){ months += rec.cells[k].months; higher += rec.cells[k].higher; } });
-    var intro = lede('Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial ' +
-      'risk, then down through anxiety and fear to capitulation and despondency, the point of most opportunity, and back through hope.');
-    var cards = [intro, '<figure class="emo-fig">' + emotionCurveSvg(now) + '</figure>'];
-    if (months) cards.push(hiCard("She\u2019s in " + now, FEELING_STATE[now], (d.carried ? "No rule names this month, so the last feeling named holds. " : "") +
-      "Since " + monthLabel(rec.from) + ", a year after she felt " + now + " the S&amp;P 500 was higher " + Math.round(higher / months * 100) + "% of the time."));
-    return highlightsHtml(cards, "", "");
+    var d = moodToday();
+    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor\u2019s euphoria is not another\u2019s.");
+    if (!d || !d.word) return highlightsHtml([intro], "", "");
+    return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo()));
   }
   var PAIR_ART = {
     "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },

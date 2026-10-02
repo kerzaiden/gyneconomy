@@ -1012,17 +1012,17 @@
   .hi-name.good{ color:var(--good); } .hi-name.warning{ color:var(--warning-ink); }
   .hi-name.serious{ color:var(--serious-ink); } .hi-name.critical{ color:var(--critical-ink); }
   .hi-card p{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
-  .emo-fig{ margin:0; padding:12px 0 4px; border-bottom:1px solid var(--border); }
-  .emo-curve{ display:block; width:100%; max-width:420px; margin:0 auto; overflow:visible; }
-  .emo-line{ fill:none; stroke:var(--border-strong); stroke-width:2; stroke-linecap:round; }
-  .emo-dot{ fill:var(--surface); stroke:var(--text-secondary); stroke-width:1.6; }
-  .emo-dot.now{ stroke:var(--surface); stroke-width:2.5; }
-  .emo-dot.now.good{ fill:var(--good); } .emo-dot.now.warning{ fill:var(--warning); }
-  .emo-dot.now.serious{ fill:var(--serious); } .emo-dot.now.critical{ fill:var(--critical); }
-  .emo-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-meta); fill:var(--text-primary); }
-  .emo-lab.now{ font-weight:700; }
-  .emo-lab.now.good{ fill:var(--good-ink); } .emo-lab.now.warning{ fill:var(--warning-ink); }
-  .emo-lab.now.serious{ fill:var(--serious-ink); } .emo-lab.now.critical{ fill:var(--critical-ink); }
+  .mood-fig{ margin:0; padding:10px 0 6px; border-bottom:1px solid var(--border); }
+  .mood-curve{ display:block; width:100%; overflow:visible; --emo-cream:#efe7c6; --emo-amber:#f8b333; --emo-orange:#f27b23; --emo-red:#ec1c2e; --emo-wine:#6d0b26; --emo-slate:#4b5966; }
+  .mood-line{ fill:none; stroke:#a7a8ab; stroke-width:12; stroke-linecap:round; }
+  .mood-dot{ stroke:var(--surface); stroke-width:3; }
+  .mood-dot.cream{ fill:var(--emo-cream); } .mood-dot.amber{ fill:var(--emo-amber); } .mood-dot.orange{ fill:var(--emo-orange); }
+  .mood-dot.red{ fill:var(--emo-red); } .mood-dot.wine{ fill:var(--emo-wine); } .mood-dot.slate{ fill:var(--emo-slate); }
+  .mood-dot.now{ stroke:var(--text-primary); stroke-width:6; }
+  .mood-lab{ font-family:"Public Sans",sans-serif; font-size:calc(var(--type-meta) * 2.1); fill:var(--text-muted); letter-spacing:0.02em; }
+  .mood-lab.now{ font-weight:700; fill:var(--text-primary); }
+  .mood-call{ font-family:"Public Sans",sans-serif; font-size:calc(var(--type-interface) * 2.15); fill:var(--emo-red); }
+  .mood-arrow{ fill:none; stroke:#a7a8ab; stroke-width:3; }
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;

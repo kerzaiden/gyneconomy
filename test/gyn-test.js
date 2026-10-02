@@ -516,7 +516,7 @@ async function openPage(p, url, sheet) {
           st.webkitTapHighlightColor === 'rgba(0, 0, 0, 0)'; }, cat);
       await p.click('#topbar-back'); await settle(p);
     }
-    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Horizon+Consumer confidence' &&
+    (!lists.mood.heads && !lists.energy.heads && lists.mood.names === 'Shiller CAPE+Buffett indicator+Volatility+Desire+Consumer confidence' &&
      lists.energy.names === 'Federal debt+Interest payments+Federal budget+Households+Unemployment rate+Productivity growth+Industrial output')
       ? ok('a category page lists its cards without headings', lists.mood.names + ' · ' + lists.energy.names)
       : bad('a category page lists its cards without headings', JSON.stringify(lists));
@@ -529,16 +529,17 @@ async function openPage(p, url, sheet) {
         head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
     });
     await click(p, '#diagnosis .trend-card'); await settle(p);
-    const curve = await p.evaluate(() => {
-      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .emo-curve');
-      return s && { labels: [...s.querySelectorAll('.emo-lab')].map(t => t.textContent).join('+'),
-        now: [...s.querySelectorAll('.emo-lab.now')].map(t => t.textContent) };
+    const cyc = await p.evaluate(() => {
+      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .mood-curve'), card = document.querySelector('#sheet-cat-mood:not([hidden]) .hi-card .hi-name');
+      return s && { labels: [...s.querySelectorAll('.mood-lab')].map(t => t.textContent).join('+'), calls: s.querySelectorAll('.mood-call').length,
+        now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent };
     });
     await p.click('#topbar-back'); await settle(p);
-    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && curve &&
-     curve.labels === 'Optimism+Euphoria+Anxiety+Fear+Capitulation+Despondency+Hope' && curve.now.length === 1 && curve.now[0] === feel.stage)
-      ? ok('the trend card and the emotions curve read today\u2019s feeling', feel.head + ' \u00b7 ' + curve.labels)
-      : bad('the trend card and the emotions curve read today\u2019s feeling', JSON.stringify({ feel, curve }));
+    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
+     cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
+     cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0])
+      ? ok('the trend card opens the cycle of market emotions, today\u2019s stage lit and named', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('the trend card opens the cycle of market emotions, today\u2019s stage lit and named', JSON.stringify({ feel, cyc }));
     await click(p, '.season-wheel-hub-detail .who'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');
