@@ -255,7 +255,7 @@
   var sp500AnnualReturnSource = [
     {t:"S&P Dow Jones Indices — S&P 500 (index originator; total-return figures)", u:"https://www.spglobal.com/spdji/en/indices/equity/sp-500/"},
     {t:"S&P 500 total returns by year (Slickcharts' compilation of S&P DJI's figures)", u:"https://www.slickcharts.com/sp500/returns"},
-    {t:"NYU Stern (Damodaran) — Historical returns on stocks, bonds and bills, 1928– (independent cross-check)", u:"https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"}
+    {t:"NYU Stern (Damodaran) — Historical returns on stocks, bonds and bills, 1928– (the record before 1990, and an independent cross-check after)", u:"https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"}
   ];
   // ---- The S&P 500, year by year ----
   var sp500Years = Object.keys(sp500AnnualReturns).map(function(y){ return { y:+y, v:sp500AnnualReturns[y] }; });
@@ -294,9 +294,39 @@
 
   var marketCycles = [
     {
-      from:1948, to:1953,
+      from:1928, to:1932,
+      name:"Crash Cycle",
+      story:"The Roaring Twenties ended in the crash of October 1929, and bank failures, tight money and a tariff war turned it into the Great Depression. Mrs. Market fell from Euphoria into the deepest Despair in the record, four bear years in a row.",
+      blurb:"The last boom year of the Twenties, then the crash of 1929 and three more years of falling prices, failing banks and lost jobs. It ends in 1932, at the bottom of the Great Depression."
+    },
+    {
+      from:1933, to:1934,
+      name:"New Deal Cycle",
+      story:"Roosevelt closed the banks, took the dollar off gold and launched the New Deal, and 1933 became one of the best years in the record. Mrs. Market leapt from Depression to Hope in a few months, then lost her nerve in 1934 as the recovery came slowly.",
+      blurb:"The New Deal: the bank holiday, the dollar off gold and the first relief programmes. It ends in 1934, a flat year after the leap of 1933."
+    },
+    {
+      from:1935, to:1937,
+      name:"Recovery Cycle",
+      story:"Output climbed back toward its 1929 level, until the Fed raised reserve requirements and Washington cut spending in 1937. Mrs. Market grew Optimistic too soon and fell back into Fear in the recession of 1937–38.",
+      blurb:"Two strong years of recovery, then the policy turn of 1937 and a sharp recession inside the Depression. It ends in 1937, one of the worst years in the record."
+    },
+    {
+      from:1938, to:1941,
+      name:"War Clouds Cycle",
+      story:"The market bounced in 1938, but war in Europe, the fall of France and then Pearl Harbor kept it falling for three years. Mrs. Market lived in Anxiety and Fear, even as war orders put the factories back to work.",
+      blurb:"A rebound year, then three bear years as the war in Europe spreads and America is drawn in. It ends in 1941, the year of Pearl Harbor."
+    },
+    {
+      from:1942, to:1946,
+      name:"Victory Cycle",
+      story:"After Midway the tide of the war turned, and war production with price controls carried four rising years to victory in 1945. Mrs. Market went from Hope to Euphoria, until controls ended in 1946, prices jumped and she fell back into Anxiety.",
+      blurb:"The war economy at full stretch, from the turn of 1942 to victory in 1945. It ends in 1946, when price controls lift and inflation surges."
+    },
+    {
+      from:1947, to:1953,
       name:"Postwar Cycle",
-      story:"Home from the war, the country spent what it had saved, and the Korean War kept the factories busy. Mrs. Market climbed from Depression into a steady Optimism that held for five years, until the war’s end and the 1953 recession brought her first Anxiety.",
+      story:"Home from the war, the country spent what it had saved, and the Korean War kept the factories busy. Mrs. Market climbed out of the postwar slump into a steady Optimism that held for six years, until the war’s end and the 1953 recession brought her first Anxiety.",
       blurb:"The peacetime economy finds its feet: returning soldiers, new households and years of pent-up demand, carried on through the Korean War. It ends in 1953, the year the war ended and the first postwar recession began."
     },
     {

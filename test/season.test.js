@@ -57,6 +57,8 @@ ok('a CPI slope just over 0.02 is rising',    readSeason(at(0.0201), gdp(2, 0.05
 ok('a CPI slope of exactly -0.02 is steady',  readSeason(at(-0.02), gdp(2, 0.05)).cpiDirection, 'steady');
 ok('a growth slope of exactly 0.025 is flat', readSeason(cpi(2.0, 0), at(0.025), null).growthTrend, 'flat');
 ok('a growth slope just over 0.025 rises',    readSeason(cpi(2.0, 0), at(0.0251), null).growthTrend, 'rising');
+ok('an annual growth slope of exactly 0.1 a year is flat', readSeason(cpi(2.0, 0), [{ v:0 }, { v:0.1 }], null, 4).growthTrend, 'flat');
+ok('an annual growth slope just over 0.1 a year rises', readSeason(cpi(2.0, 0), [{ v:0 }, { v:0.1004 }], null, 4).growthTrend, 'rising');
 ok('a growth slope of exactly -0.025 is flat', readSeason(cpi(2.0, 0), at(-0.025), null).growthTrend, 'flat');
 
 ok('3.0 in an expansion is spring',    season(cpi(3.0, 0.05), gdp(2, 0.05)),   'spring');
@@ -74,7 +76,7 @@ ok('only the open cycle has no end', cycles.filter(c => c.to == null).length, 1)
 ok('no cycle ends before it starts', cycles.every(c => c.to == null || c.to >= c.from), true);
 const seams = cycles.slice(0, -1).map((c, i) => cycles[i + 1].from - c.to);
 ok('cycles meet with no gap and no overlap', seams.join(','), seams.map(() => 1).join(','));
-ok('the board reaches back to 1948', cycles[0].from, 1948);
+ok('the board reaches back to 1928', cycles[0].from, 1928);
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed');
 process.exit(fail ? 1 : 0);

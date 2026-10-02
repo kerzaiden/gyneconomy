@@ -495,7 +495,7 @@
     var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
     return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
   }
-  function fmtSigned(v, dp){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(dp); }
+  function fmtSigned(v, dp){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }
   var GROWTH_SHOWN = { expansion:"expanding", contraction:"contracting", steady:"steady" };
   function growthShown(reg){ return GROWTH_SHOWN[reg] || reg; }
   function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
