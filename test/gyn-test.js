@@ -115,7 +115,7 @@ async function openPage(p, url, sheet) {
   await p.goto('file://' + url); await ready(p);
   const READINGS_ON_SCREEN = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')]
     .map(c => [c.dataset.open, c.querySelector('.ci-name').textContent.trim()]));
-  const tall = {}, notes = {};
+  const tall = {}, notes = {}, gaps = {};
   const searchFigs = await p.evaluate(() => [...document.querySelectorAll('#search-list .ind-row[data-open]')].map(r => {
     const fig = ((r.querySelector('.ind-fig') || {}).textContent || '').trim();
     const card = document.querySelector('.cat-item[data-open="' + r.dataset.open + '"] .ci-value');
@@ -153,6 +153,8 @@ async function openPage(p, url, sheet) {
         above: (() => { const bar = mp.querySelector('.hist-bar');
           return bar ? [...mp.querySelectorAll('.card-head, .metric-row')].filter(e => e.compareDocumentPosition(bar) & 4).length : 0; })(),
         boxes: mp.querySelectorAll('.highlights').length,
+        gap: (() => { const bar = mp.querySelector('.hist-bar'), top = document.querySelector('.wrap > .topbar');
+          return bar && top ? Math.round(bar.getBoundingClientRect().top - top.getBoundingClientRect().bottom) : null; })(),
       };
     }, hid);
     const miss = [];
@@ -163,7 +165,7 @@ async function openPage(p, url, sheet) {
     if (!r.mark) miss.push('the head\u2019s mark'); if (!r.chip) miss.push('the timing chip');
     if (r.above) miss.push('the bar first (a card head sits above it)'); if (r.boxes > 1) miss.push('a single Insights box (' + r.boxes + ')');
     miss.length ? bad('page ' + label, 'missing ' + miss.join(', ')) : ok('page ' + label, r.title);
-    tall[label] = r.tall;
+    tall[label] = r.tall; gaps[label] = r.gap;
     pills[label] = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle');
       if (!b) return document.querySelector('#metric-page .trendpill.none') ? 'unavailable' : 'no button';
@@ -204,6 +206,10 @@ async function openPage(p, url, sheet) {
     (lines.length >= 12 && !dead.length)
       ? ok('every trend button draws its line', lines.length + ' lines · unavailable under eight points: ' + Object.keys(pills).filter(k => pills[k] === 'unavailable').join(', '))
       : bad('every trend button draws its line', JSON.stringify(pills));
+    const gs = [...new Set(Object.values(gaps))];
+    (gs.length === 1 && gs[0] > 0)
+      ? ok('every page opens with its bar at one distance under the top bar', gs[0] + 'px on ' + Object.keys(gaps).length + ' pages (Keren, V674)')
+      : bad('every page opens with its bar at one distance under the top bar', JSON.stringify(gaps));
     const hs = Object.values(tall);
     (hs.length === READINGS_ON_SCREEN.length - NO_HISTORY.length && Math.min(...hs) >= 330 && Math.max(...hs) - Math.min(...hs) <= 5)
       ? ok('every history draws at one height', hs.length + ' pages, ' + Math.min(...hs) + '\u2013' + Math.max(...hs) + 'px')
@@ -263,15 +269,17 @@ async function openPage(p, url, sheet) {
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => h.textContent.trim()),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
                    symptoms: [...d.querySelectorAll('.dx-k')].filter(k => /Symptoms/.test(k.textContent)).length,
-                   analyses: [...d.querySelectorAll('.dx-sys[class*="cat-"]')].map(s => [...s.querySelectorAll('.dx-k')].map(k => k.textContent).join()),
+                   analyses: [...d.querySelectorAll('.dx-cat')].map(s => s.querySelectorAll('.dx-k').length + ':' + !!s.querySelector('.dx-v')),
+                   frame: (() => { const c = d.querySelector('.dx-cat'), s = c && c.closest('.dx-sys');
+                     return s ? s.querySelector('.dx-sys-head').textContent.trim() + ':' + !!s.querySelector('.dx-sys-head .dx-mark svg') : ''; })(),
                    cards: document.querySelectorAll('.cat-row').length } : null;
     });
     const today = await read();
-    const onlyAnalysis = d => d && d.symptoms === 0 && d.analyses.length === 4 && d.analyses.every(a => a === 'Analysis');
+    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Analysis:true' && d.analyses.length === 4 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^She\u2019s in (Hope|Optimism|Euphoria|Anxiety|Fear|Capitulation|Despondency)$/;
     (today && today.visible && FEEL.test(today.title) && today.cards === 0 &&
-     today.heads.join() === 'History,Weather,Mood,Circulation,Energy,Assessment' &&
+     today.heads.join() === 'History,Analysis,Weather,Mood,Circulation,Energy,Assessment' &&
      today.doors.join() === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
       : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
@@ -291,8 +299,8 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     (onlyAnalysis(today) && onlyAnalysis(past))
-      ? ok('each Diagnosis system reads its Analysis only, today and at a close')
-      : bad('each Diagnosis system reads its Analysis only, today and at a close', JSON.stringify([today, past]));
+      ? ok('the Diagnosis reads its systems under one Analysis head, unlabelled, today and at a close', 'Keren, V674')
+      : bad('the Diagnosis reads its systems under one Analysis head, unlabelled, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
@@ -304,7 +312,7 @@ async function openPage(p, url, sheet) {
     (Object.keys(KEREN).every(n => pastFigs.some(f => f.name === n)) && !figOff.length)
       ? ok('a closed cycle\u2019s figures read like today\u2019s cards', pastFigs.map(f => f.fig).join(' \u00b7 '))
       : bad('a closed cycle\u2019s figures read like today\u2019s cards', JSON.stringify(figOff.length ? figOff : pastFigs));
-    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 6)
+    (past && past.visible && /^She closed in /.test(past.title) && past.heads.length === 7)
       ? ok('a closed cycle reads its own diagnosis, at its close', past.title)
       : bad('a closed cycle reads its own diagnosis, at its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);

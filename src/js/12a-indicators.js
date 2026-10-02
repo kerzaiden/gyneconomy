@@ -36,7 +36,7 @@
   }
   function momentumPage(){
     var r = momentumReading;
-    return { goodAbove:true, line:"No change", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight, info:r.info,
+    return { goodAbove:true, line:"Standing still", series:momentumSeries(), src:MOMENTUM_SRC, insight:momentumInsight, info:r.info,
       fmt:function(v){ return momentumPct(v / 100); },
       row:{ sub:r.metricSub, note:r.caption, flagState:r.tag.state } };
   }
@@ -190,9 +190,9 @@
   }
   function momentumInsight(){
     var r = momentumReading;
-    return [lede('Momentum investors judge a stock by how fast its price has moved over the last three to twelve months. ' +
-        'Read the same way, the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is gathering speed or losing it.'),
-      hiCard("The pace", r.tag.state, momentumPaces(r.windows) + " " + r.says)];
+    return [lede('A speedometer does not say how far you have driven; it says how fast you are going now. Read the same way, ' +
+        'the S&amp;P 500 is Mrs. Market’s own price, and the question is whether she is moving fast or slow.'),
+      hiCard("The speedometer", r.tag.state, momentumDrive(r.drive))];
   }
   function interestInsight(s){
     var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];

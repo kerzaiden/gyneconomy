@@ -861,16 +861,17 @@
   }
   function dxRow(label, html, asList){
     return '<div class="dx-row"><span class="dx-k">' + label + '</span>' +
-      (asList ? '<ul class="dx-list">' + html + '</ul>' : '<p class="dx-v">' + html + '</p>') + '</div>';
+      (asList ? '<ul class="dx-list">' + html + '</ul>' : dxText(html)) + '</div>';
   }
+  function dxText(html){ return '<p class="dx-v">' + html + '</p>'; }
   function dxSection(head, body, cls){ return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + '</section>'; }
   function systemHtml(c, analysis){
-    return dxSection(dxHead(c.title, c), dxRow("Analysis", analysis), "cat-" + c.key);
+    return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + '</div>';
   }
-  function dxHead(title, c){
+  function dxHead(title, c, mark){
     var tag = c ? 'button type="button"' : "div";
     return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
-      (c ? '<span class="dx-mark" aria-hidden="true">' + c.mark() + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+      (c || mark ? '<span class="dx-mark" aria-hidden="true">' + (c ? c.mark() : mark) + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
   }
   function postureLine(d, more){
     return dxRow("Posture", '<b class="dx-word ' + POSTURE_STATE[d.posture] + '">' + d.posture + '</b>' + expandBtn(diagnosisInfo(d)) +
@@ -906,7 +907,8 @@
         '<p class="dx-sub">' + seasonTitle(wheelMeta[d.season]) + " \u00b7 the " + d.half + " half \u00b7 " + d.posture + '</p>' +
         '<p class="dx-body">' + BODY_SAYS[d.season] + '</p></header>' +
       dxSection(dxHead("History"), dxRow("Record", history)) +
-      categoriesShown().map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") +
+      dxSection(dxHead("Analysis", null, stethoscopeSvg()),
+        categoriesShown().map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("")) +
       dxSection(dxHead("Assessment"), assessmentFor(d, closed));
   }
   function renderDiagnosis(m){
