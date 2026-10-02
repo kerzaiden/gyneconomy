@@ -46,14 +46,24 @@ function oecdRows(csv) {
   return [...seen.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([m, x]) => ({ m, v: Math.round(x * 100) / 100 }));
 }
 
+const OECD_HEAD = { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)', accept: 'text/csv' };
+
+async function oecdGet(path, start) {
+  const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + path + '?startPeriod=' + start + '&format=csvfile', { headers: OECD_HEAD });
+  return { ok: r.ok, status: r.status, text: await r.text() };
+}
+
 async function oecdConfidence(start) {
   const tried = [];
   for (const path of OECD_CCI) {
-    const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + path + '?startPeriod=' + start + '&format=csvfile');
-    if (r.ok) { say('  OECD from ' + path); return oecdRows(await r.text()); }
-    tried.push(path + ' → HTTP ' + r.status + ' ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 200));
+    const r = await oecdGet(path, start);
+    if (r.ok) { say('  OECD from ' + path); return oecdRows(r.text); }
+    tried.push(path + ' → HTTP ' + r.status + ' ' + r.text.replace(/\s+/g, ' ').slice(0, 160));
   }
-  throw new Error('OECD CCI: ' + tried.join(' || '));
+  const all = await oecdGet('OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M........', '2026-01');
+  const head = all.text.split(/\r?\n/)[0].split(','), mi = head.indexOf('MEASURE');
+  const measures = mi < 0 ? all.text.slice(0, 300) : [...new Set(all.text.split(/\r?\n/).slice(1).map(l => l.split(',')[mi]))].join(' ');
+  throw new Error('OECD CCI: ' + tried.join(' || ') + ' || every US measure in DF_CLI → HTTP ' + all.status + ': ' + measures);
 }
 
 const VOL_JOIN = '1990-01';
