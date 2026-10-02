@@ -27,8 +27,8 @@ async function fredSeries(series, start) {
   return obs;
 }
 
-const OECD_CCI = 'https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.CCICP......'
-  + '?dimensionAtObservation=AllDimensions&format=csvfile&startPeriod=';
+const OECD_CCI = ['OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.CCICP......', 'OECD.SDD.STES,DSD_STES@DF_CLI,/USA.M.CCICP......',
+  'OECD.SDD.STES,DSD_STES@DF_CLI,4.1/USA.M.CCICP.......'];
 
 function oecdRows(csv) {
   const lines = csv.trim().split(/\r?\n/), head = lines[0].split(',');
@@ -47,9 +47,13 @@ function oecdRows(csv) {
 }
 
 async function oecdConfidence(start) {
-  const r = await fetch(OECD_CCI + start, { headers: { accept: 'application/vnd.sdmx.data+csv' } });
-  if (!r.ok) throw new Error('OECD CCI: HTTP ' + r.status);
-  return oecdRows(await r.text());
+  const tried = [];
+  for (const path of OECD_CCI) {
+    const r = await fetch('https://sdmx.oecd.org/public/rest/data/' + path + '?startPeriod=' + start + '&format=csvfile');
+    if (r.ok) { say('  OECD from ' + path); return oecdRows(await r.text()); }
+    tried.push(path + ' → HTTP ' + r.status + ' ' + (await r.text()).replace(/\s+/g, ' ').slice(0, 200));
+  }
+  throw new Error('OECD CCI: ' + tried.join(' || '));
 }
 
 const VOL_JOIN = '1990-01';
