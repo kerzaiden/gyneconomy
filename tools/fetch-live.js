@@ -18,7 +18,13 @@ async function getText(url, label) {
   if (!r.ok) throw new Error(label + ': HTTP ' + r.status);
   return r.text();
 }
+async function getHtml(url, label) {
+  const r = await fetch(url, { headers: { 'accept': 'text/html' }, signal: AbortSignal.timeout(30000) });
+  if (!r.ok) throw new Error(label + ': HTTP ' + r.status);
+  return r.text();
+}
 
+const FOMC_URL = 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm';
 const FOMC_DECISIONS = [
   '2025-01-29', '2025-03-19', '2025-05-07', '2025-06-18', '2025-07-30', '2025-09-17', '2025-10-29', '2025-12-10',
   '2026-01-28', '2026-03-18', '2026-04-29', '2026-06-17', '2026-07-29', '2026-09-16', '2026-10-28', '2026-12-09'
@@ -47,6 +53,71 @@ function fedMove(obs, today, calendar) {
     asOf: dayLabel(decided),
     next: next ? dayLabel(next) : ''
   };
+}
+
+const MONTH_INDEX = m => MONTHS.findIndex(x => x.toLowerCase() === String(m).trim().slice(0, 3).toLowerCase());
+const plainText = h => h.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&ndash;|&#8211;|\u2013/g, '-')
+  .replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const isoDay = (y, m, d) => y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+
+function fomcMeetingEnd(year, monthText, dateText) {
+  if (/unscheduled|notation|conference call/i.test(monthText + ' ' + dateText)) return null;
+  const days = dateText.match(/^(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s*\*?$/);
+  if (!days) return null;
+  const months = monthText.split('/').map(MONTH_INDEX);
+  if (!months.length || months.some(i => i < 0)) return null;
+  const first = Number(days[1]), last = Number(days[2] || days[1]);
+  let m = months[months.length - 1], y = year;
+  if (months.length === 1 && last < first) m++;
+  if (m > 11) { m = 0; y++; }
+  if (last < 1 || last > 31) return null;
+  return isoDay(y, m, last);
+}
+
+function fomcFromHtml(html) {
+  const text = String(html || '');
+  const heads = [...text.matchAll(/(\d{4})\s+FOMC\s+Meetings/g)];
+  const out = new Set();
+  heads.forEach((h, k) => {
+    const part = text.slice(h.index, k + 1 < heads.length ? heads[k + 1].index : text.length);
+    const rows = part.matchAll(/fomc-meeting__month[^>]*>([\s\S]*?)<\/div>\s*<div[^>]*fomc-meeting__date[^>]*>([\s\S]*?)<\/div>/g);
+    for (const r of rows) {
+      const d = fomcMeetingEnd(Number(h[1]), plainText(r[1]), plainText(r[2]));
+      if (d) out.add(d);
+    }
+  });
+  return [...out].sort();
+}
+
+function fomcCalendar(fetched, fallback, year, log) {
+  const warn = log || say;
+  const got = (fetched || []).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d));
+  const thisYear = got.filter(d => d.slice(0, 4) === String(year)).length;
+  if (thisYear < 4) {
+    warn('WARNING: FOMC calendar from federalreserve.gov gave ' + thisYear + ' decision dates for ' + year
+      + ' (fewer than 4), using the hand list FOMC_DECISIONS instead');
+    return [...new Set(fallback)].sort();
+  }
+  const years = new Set(got.map(d => d.slice(0, 4)));
+  return [...new Set(got.concat(fallback.filter(d => !years.has(d.slice(0, 4)))))].sort();
+}
+
+function fomcRunsOut(calendar, today, days) {
+  const until = new Date(Date.parse(today + 'T00:00:00Z') + (days || 60) * 86400000).toISOString().slice(0, 10);
+  return !calendar.some(d => d > today && d <= until);
+}
+
+async function fomcLive(today, log) {
+  const warn = log || say;
+  let fetched = [];
+  try { fetched = fomcFromHtml(await getHtml(FOMC_URL, 'FOMC calendar')); }
+  catch (e) { warn('WARNING: FOMC calendar fetch failed (' + e.message + ')'); }
+  const calendar = fomcCalendar(fetched, FOMC_DECISIONS, Number(today.slice(0, 4)), warn);
+  if (fomcRunsOut(calendar, today, 60)) {
+    warn('WARNING: the FOMC calendar has run out, no decision date in the 60 days after ' + today
+      + '; it needs the next year\'s dates (add them to FOMC_DECISIONS in tools/fetch-live.js)');
+  }
+  return calendar;
 }
 
 function assemble(prev, fresh) {
@@ -211,7 +282,7 @@ async function shillerSheet(parse) {
   throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS }; }
+if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
 else (async () => {
   const out = {};
   const failed = [];
@@ -227,11 +298,12 @@ else (async () => {
     const [hi, lo, upper] = await Promise.all([fredLatest('DFEDTARU'), fredLatest('DFEDTARL'), fredRecent('DFEDTARU', 1500)]);
     if (hi.value < 0 || hi.value > 25 || lo.value > hi.value) throw new Error('target range out of band');
     let move = {};
-    try { move = fedMove(upper, new Date().toISOString().slice(0, 10), FOMC_DECISIONS); }
+    const today = new Date().toISOString().slice(0, 10);
+    try { move = fedMove(upper, today, await fomcLive(today)); }
     catch (e) { failed.push('fedFunds last move: ' + e.message); }
     out.fedFunds = Object.assign({ kind: 'object', lo: lo.value, hi: hi.value }, move);
     say('fedFunds    ' + lo.value + '-' + hi.value + '%  ' + hi.date + '  last move ' + (move.lastMove || '?') + ' on ' + (move.asOf || '?')
-        + (move.next ? ', next ' + move.next : ', next decision not in FOMC_DECISIONS'));
+        + (move.next ? ', next ' + move.next : ', next decision not in the FOMC calendar'));
   } catch (e) { failed.push('fedFunds: ' + e.message); }
 
   let vix = null;

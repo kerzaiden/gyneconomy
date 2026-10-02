@@ -11,7 +11,7 @@ true is in git history (`git show v632-component-page:docs/ARCHIVE.md` for the r
 A published artifact cannot call an external host; its only route in is its own database, which a Claude
 session writes and the page reads with `claude.use("db")`. The hosted site has a second route, a JSON file
 the Data workflow commits. Both end at one intake, `receive`, and one contract, the `READINGS` registry
-in `js/02-live.js` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
+in `js/live.js` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
 described under "How the live layer works" below; the decisions are these:
 
 - **The literal in the file is the floor, not a duplicate.** It renders first; the database and the
@@ -33,7 +33,7 @@ Six of the nine rows have a writer today; see Open questions.
 
 ### How the live layer works
 
-Moved here from the code comments of `js/02-live.js` at V650, when the source lost its comments. Keren's
+Moved here from the code comments of `js/live.js` at V650, when the source lost its comments. Keren's
 decisions are cited as she made them.
 
 #### The cache
@@ -112,7 +112,7 @@ stays empty.
 #### The roster
 
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
-dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/07b-roster.js`,
+dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.js`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
 and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems, the timing chips
 and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
@@ -228,7 +228,7 @@ with no handler is recorded, which makes the suite able to see it.
 | **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
-| **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/03b-history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
+| **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
 | **Tag workflow** (`tag.yml`, V647) | a `v6NN-name` tag for each version commit on `main` that has none | every push to `main` | the repo's history |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
@@ -245,10 +245,15 @@ refresh is a diff, and a run where only the timestamp moved commits nothing. Bec
 `main`, data cannot reach the site without passing the suite.
 
 **The Fed's last move is read from the target's own history (V694).** `fedMove` walks DFEDTARU back to its
-last change and dates it by the FOMC decision in `FOMC_DECISIONS` (federalreserve.gov's calendar) just before
-the day it took effect, or the day before when no meeting matches. The same calendar gives the next decision.
-**The calendar ends at December 2026**: add 2027's dates when the Fed publishes them, and until then the page
-leaves out "Next decision" rather than showing a date already past. A vote belongs to its meeting, so a move
+last change and dates it by the FOMC decision just before the day it took effect, or the day before when no
+meeting matches. The same calendar gives the next decision. **The calendar is read from the Fed's own page**
+(`fomccalendars.htm`, parsed by `fomcFromHtml`) on every Data run (`test/fixtures/fomccalendars.html` is written
+to the page's markup as Claude knew it, not captured: the container cannot reach federalreserve.gov, so the first
+Data run is its proof); the fetched dates win for every year the page
+covers, and the hand list `FOMC_DECISIONS` (ends December 2026) fills the rest. When the page fails or gives fewer
+than 4 dates for the current year, the run uses the hand list alone and logs a WARNING. Whatever the source, a
+calendar with no decision in the 60 days after the run logs a WARNING that it has run out; until it is fed, the
+page leaves out "Next decision" rather than showing a date already past. A vote belongs to its meeting, so a move
 with a new date drops the literal's vote; a document with a new range and no move hides the direction and date.
 
 **The running quarter is not a quarter (V694).** The Backfill marks it `partial`; Horizon's verdict reads the
@@ -289,10 +294,22 @@ cloud or scheduled session reads and cannot push.
 ## Why there is a build step
 
 The Artifact and the service worker need one self-contained file, and a person cannot hold a
-fifteen-thousand-line one. So the source is split and the deliverable is assembled by concatenation, and
-nothing cleverer, because the script is one IIFE sharing one closure. The first build reproduced the old
-file byte for byte, which is what made the split provable; since V548 a comment strip follows the join
-(44% of the deliverable was comment), and the proof became `npm run snap`: every DOM state identical (38 since V654, each page's notes included).
+fifteen-thousand-line one. **Since V695 the script is ES modules** (`src/js/*.js`, one concern each), bundled by
+esbuild (`tools/bundle.js`) into one IIFE in `main.js`'s place in the manifest, then comment-stripped. Before V695
+it was seventeen parts joined into one closure, so any part could read or write any name and the only order was
+the manifest's; now each module says what it imports.
+
+- **A module's top level is declarations and values that need nothing else.** Whatever runs at load and reads
+  another module sits in that module's `boot…()`, and `main.js` calls the boots in the old manifest order. **The
+  boot order is the semantics** (it was the manifest order); `tools/load-order.js` follows every statement that
+  runs at load, boots included, and fails on a value read before it is set.
+- **An import is read-only, so a module that owns a value exports its setter** (`setSentiment`, `setCpiYoYHistory`);
+  a write from outside goes through it. `grep 'export function set'` lists them.
+- **The import graph is dense**: most modules import most others, as the one closure allowed. It is legal (every
+  cross-module read at load is inside a boot), and untangling it is later work, not a rule.
+- `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
+
+The conversion was proved by the snapshot (every state identical) and the browser suite, before and after.
 
 ---
 
@@ -319,7 +336,7 @@ Rules that shape the pages:
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
   budget · Households). The split pages are
-  built by one builder, `src/js/12a-indicators.js` (the roster row plus its `splitPages` entry, joined by
+  built by one builder, `src/js/indicators.js` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
@@ -428,7 +445,7 @@ Rules that shape the pages:
 
 ## Data model
 
-**The generated histories** (`js/03b-history-fred.js`, written by the backfill from FRED; never hand-edited):
+**The generated histories** (`js/history-fred.js`, written by the backfill from FRED; never hand-edited):
 
 | Variable | Series | What it is |
 |---|---|---|
@@ -551,8 +568,8 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
   cut-offs, `lastFeeling`'s carrying, the Diagnosis (i)) are retired; the V685 commit is the last copy with them.
-- **Her story this cycle** (V686, V688; `cycleStory` in 08-model, `moodCard`, `storyBeats` and `storyText` in
-  12-pages-nav): the text of the Mood page's "She's in …" card, for the cycle on screen (`eraOpen`, else
+- **Her story this cycle** (V686, V688; `cycleStory` in model, `moodCard`, `storyBeats` and `storyText` in
+  pages-nav): the text of the Mood page's "She's in …" card, for the cycle on screen (`eraOpen`, else
   `currentEra`): the `moodTrack` months inside its years, the first, the highest and lowest `pct`, the last (today's
   `moodToday` for the open cycle), told in month order, with the high or low folded into the opening or closing
   beat when they share a month, and the two emotions with the most months. `eraShow` runs `replaceInsights` on
@@ -566,7 +583,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
 - **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) names today's feeling in today's season
   (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
-  market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in 08-model
+  market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
   that month (`rankIn`, over `rankToDate`) and averages the three; `moodTrack` keeps every month since all three can
   rank, and `moodRead` ranks each against the months before it and takes its change over `MOOD_TURN` months;
@@ -574,7 +591,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   Optimism is on the chart twice, so both dots light. The mood describes, it does not forecast, so it is not the
   composite that failed out of sample. `repaintDiagnosis` repaints every category's Insights after a live reading
   lands, so the lit stage moves with the VIX.
-- **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in 03-data, a split
+- **Consumer confidence** (V679) is a row reading like Productivity growth: `confidenceReading` in data, a split
   page against the OECD's 100 line, and its history `confidenceHistory` (the OECD's own SDMX API, dataflow `DSD_STES@DF_CLI`,
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
@@ -589,7 +606,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
   every `onDial` category. Weather's Insights open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
-  barometer. The S&P 500 card is a row reading (`marketReading` in 07-forms) whose series `sp500Years` is the same
+  barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
   calendar years through the page option `at`.
 
@@ -646,7 +663,7 @@ the row is today and the plate is an average, and without the words the two read
 (the levels folded into Horizon's menu); the survey was dropped at her choice and is at tag v638-fewer-words.
 The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat in Mood until V685, was
 Circulation's own Horizon card for V685–V687, and since V688 is Pressure's second ⋯ group, Treasury spreads
-(Keren). One state, `pressureView` ("yield" or "spread", in 08-model beside `spreadPick`), picks what the page
+(Keren). One state, `pressureView` ("yield" or "spread", in model beside `spreadPick`), picks what the page
 draws: `drawPressure` shows one chart shell (`showPressureView`), draws that view (`drawYlm` or the spread view
 `drawSpreadView`, set by `renderHorizonPage`), and writes its Insights into the one `#pressure-insights` box, so
 the page keeps one Insights box; `pressureHead` builds the title, both menu groups and the note. Both views share
@@ -673,7 +690,7 @@ with no reading, by Keren's decision.** Desire has a bare range bar and no mode 
 - **The trend pill is one handler and one line** (V671). Its click is caught on `#metric-page`, which
   travels to whichever tab opened it, so a page opened from Search or a past cycle toggles exactly like one
   opened from the Cycle tab (until V671 the handler sat on the Cycle panel, and every pill opened from Search
-  was dead). Every chart behind a button draws its `<g class="fit">` through `fitLine` (`06-charts.js`),
+  was dead). Every chart behind a button draws its `<g class="fit">` through `fitLine` (`charts.js`),
   over the same window its pill measures; the suite presses every pill and fails on one that draws nothing.
   Under eight points the pill is not a button at all (Keren's "unavailable", V437): the annual series
   (CAPE, Interest payments, Federal budget) reach it inside the current AI Cycle (at most four years, from
@@ -799,9 +816,9 @@ Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook
 the one date to edit; `sp500AnnualReturns` gets the open year's year-to-date return; `gdpQuarterlyYoY`
 appends after each BEA release (revising the prior few, **never dropping or restarting**);
 `cpiYoYHistory` appends the newest month, never drops one; `deficitHistory` appends a fiscal year only
-when FRED carries the closed year, never a projection; the FRED histories in `js/03b-history-fred.js` are
+when FRED carries the closed year, never a projection; the FRED histories in `js/history-fred.js` are
 generated by `backfill.yml`, never hand-edited — since V648 that includes the seven Treasury quarterly
-histories, which `03-data.js` only names. **If a primary source is unreachable, leave the figure and
+histories, which `data.js` only names. **If a primary source is unreachable, leave the figure and
 its date and say so — never substitute a secondary.** Fixed and editorial content — every band,
 `wheelMeta`, `seasonRules`, `seasonReading`, `cycleEndReadings`, era names and blurbs, the `*_STOPS`
 lists — is never touched by a refresh. **`currentSeason` is computed — never set it.** Productivity growth's figure, quarter and record range are read
@@ -825,7 +842,12 @@ figure that moves with the data is compared, never written in. What is Keren's d
 (the tab order, the categories, the card order, the tokens, the verdict words). Static facts belong in the
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are
 hygiene's `PINNED`. The model's rules are tool tests (`test/cycle.test.js` lifts the functions from
-08-model with fixture data, so each window is tested at its edge), and the words that state a rule are
+model with fixture data, so each window is tested at its edge). **The unit tests (V695, `npm run test:unit`, in
+`check`, about 3 s)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
+`page-body.html` with the network refused, so every figure is its literal fallback. They draw every page at four
+widths (no NaN, undefined or Infinity; every history chart in `histFrame`), run the model over every cycle on the
+real record, and pin the pure functions at their edges. A rule that needs a browser (layout, focus, clicks) stays
+in the suite; one that needs only the DOM's text goes here. The words that state a rule are
 tested against the rule (each feeling's cut-offs, growth's window). Every note on every reading page (the
 history head's and each More details) is read, and none may call a band a "normal range" unless it says it
 is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,
@@ -932,7 +954,7 @@ Every hover has a tap equivalent. Nothing colour-alone. Order the DOM, not the p
 where a heading is lost.
 
 **One keyboard layer stack.** Every closable layer registers with `layer(rank, {open, close, box})`
-(`01-refresh-season.js`), and one document `keydown` reads them in rank order: the head ⋯ menu (0), the (i)
+(`refresh-season.js`), and one document `keydown` reads them in rank order: the head ⋯ menu (0), the (i)
 modal (1), a menu sheet (2), the menu (3), a reading page (4). Escape closes only the topmost open one; Tab
 loops inside the topmost one that has a `box` (the modal, a sheet, the menu). A new overlay registers here,
 never with its own Escape listener, or one key press closes two layers. Focus follows the layer: a dialog

@@ -1,66 +1,42 @@
 #!/usr/bin/env python3
-import io, os, re, sys, subprocess, datetime
+import io, os, re, sys, subprocess, datetime, json
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "docs", "MAP.md")
+SRC = os.path.join(HERE, "src")
+JS = os.path.join(SRC, "js")
+ENTRY = "main.js"
 
-import json as _json
-_SRCDIR = os.path.join(HERE, "src")
-_manifest = _json.load(io.open(os.path.join(_SRCDIR, "manifest.json"), encoding="utf-8"))
-_parts = [io.open(os.path.join(_SRCDIR, n), encoding="utf-8").read() for n in _manifest]
-PART_AT = []
-_at = 1
-for _n, _t in zip(_manifest, _parts):
-    PART_AT.append((_at, _n))
-    _at += _t.count("\n") + 1
+def read(p):
+    return io.open(p, encoding="utf-8").read()
 
-def part_of(line):
-    name = PART_AT[0][1]
-    for start, n in PART_AT:
-        if line >= start: name = n
-        else: break
-    return name
+manifest = json.load(io.open(os.path.join(SRC, "manifest.json"), encoding="utf-8"))
+pages = [n for n in manifest if not n.endswith(".js")]
+booted = re.findall(r'from "\./([\w-]+\.js)"', read(os.path.join(JS, ENTRY)))
+present = sorted(f for f in os.listdir(JS) if f.endswith(".js") and f != ENTRY)
+modules = [f for f in booted if f in present] + [f for f in present if f not in booted] + [ENTRY]
 
-_joined = "\n".join(_parts)
-SRC_BYTES = len(_joined.encode("utf-8"))
-lines = _joined.split("\n")
-N = len(lines)
-
-def find(pat, lo=0, hi=None):
-    rx = re.compile(pat)
-    for i in range(lo, hi if hi is not None else N):
-        if rx.search(lines[i]):
-            return i + 1
-    return None
-
-style_open = find(r"^<style>")
-style_close = find(r"^</style>")
-script_open = find(r"^<script>")
-script_close = find(r"^</script>")
-assert style_open and style_close and script_open and script_close, "regions not found"
-
-REGIONS = [
-    ("Boot", 1, 4, "doctype, meta, and a tiny inline stylesheet that sets the page colour "
-                   "before the real tokens exist — mirrors `--page` on purpose, so hex literals here are deliberate"),
-    ("Styles", style_open, style_close, "the whole stylesheet, every token and rule"),
-    ("Markup", style_close + 1, script_open - 1, "the static DOM: tabs, cards, sheet hosts, slots the renderers fill"),
-    ("Script", script_open, script_close, "one IIFE containing everything: data, model, renderers, wiring"),
-    ("Close", script_close + 1, N, "</body></html>"),
-]
+text = {n: read(os.path.join(SRC, n)) for n in pages}
+for m in modules:
+    text["js/" + m] = read(os.path.join(JS, m))
+lines = {n: t.split("\n") for n, t in text.items()}
+SRC_BYTES = sum(len(t.encode("utf-8")) for t in text.values())
+N = sum(len(l) for l in lines.values())
 
 BANNER = re.compile(r"^\s*(?://|/\*)\s*-{3,}\s*(.*?)\s*(?:-{3,}\s*(?:\*/)?)?\s*$")
+FN = re.compile(r"^(export )?function ([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
+VAR = re.compile(r"^(export )?var ([A-Za-z_$][A-Za-z0-9_$]*)\s*=")
+BOOT = re.compile(r"^export function (boot[A-Z]\w*)\s*\(")
 
-def banners(lo, hi):
+def banners(name):
     out = []
-    for i in range(lo - 1, min(hi, N)):
-        m = BANNER.match(lines[i])
+    for i, l in enumerate(lines[name]):
+        m = BANNER.match(l)
         if not m:
             continue
-        t = m.group(1).strip().rstrip("-").strip()
-        t = re.sub(r"\s+", " ", t)
-        if len(t) < 3:
-            continue
-        out.append((i + 1, t[:150]))
+        t = re.sub(r"\s+", " ", m.group(1).strip().rstrip("-").strip())
+        if len(t) >= 3:
+            out.append((i + 1, t[:150]))
     return out
 
 def section_of(ln, secs):
@@ -72,72 +48,63 @@ def section_of(ln, secs):
             break
     return cur
 
-FN = re.compile(r"^  function ([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
-VAR = re.compile(r"^  var ([A-Za-z_$][A-Za-z0-9_$]*)\s*=")
-IIFE = re.compile(r"^  \(function\s*\(")
-VIIFE = re.compile(r"^  var ([A-Za-z_$][A-Za-z0-9_$]*)\s*=\s*\(function\s*\(")
-CLOSE = re.compile(r"^  \}\)\(\);")
+def block_end(name, start):
+    ls = lines[name]
+    for j in range(start, len(ls)):
+        if ls[j] == "}":
+            return j + 1
+    return None
 
-fns, vars_, iifes = [], [], []
-for i in range(script_open, script_close - 1):
-    ln, text = i + 1, lines[i]
-    if IIFE.match(text) or VIIFE.match(text):
-        end = None
-        for j in range(i + 1, script_close - 1):
-            if CLOSE.match(lines[j]):
-                end = j + 1
-                break
-        m = VIIFE.match(text)
-        iifes.append((ln, end, m.group(1) if m else None))
-        continue
-    m = FN.match(text)
-    if m:
-        fns.append((ln, m.group(1)))
-        continue
-    m = VAR.match(text)
-    if m:
-        vars_.append((ln, m.group(1)))
+decls, boots = {}, []
+for m in modules:
+    n = "js/" + m
+    rows = []
+    for i, l in enumerate(lines[n]):
+        b = BOOT.match(l)
+        if b:
+            boots.append((n, i + 1, block_end(n, i + 1), b.group(1)))
+            continue
+        f = FN.match(l)
+        if f:
+            rows.append((i + 1, f.group(2), "function %s(" % f.group(2), bool(f.group(1))))
+            continue
+        v = VAR.match(l)
+        if v:
+            rows.append((i + 1, v.group(2), "var %s =" % v.group(2), bool(v.group(1))))
+    decls[n] = rows
 
-script_secs = banners(script_open, script_close)
-style_secs = banners(style_open, style_close)
-markup_secs = banners(style_close + 1, script_open - 1)
+def imports_of(n):
+    return sorted(set(re.findall(r'from "\./([\w-]+)\.js"', text[n])))
 
-def registry(pat, lo=None, hi=None):
+def registry(pat):
     rx = re.compile(pat)
     keys = {}
-    for i in range(lo or 0, hi or N):
-        for k in rx.findall(lines[i]):
-            keys.setdefault(k, i + 1)
+    for m in modules:
+        n = "js/" + m
+        for i, l in enumerate(lines[n]):
+            for k in rx.findall(l):
+                keys.setdefault(k, (n, i + 1))
     return sorted(keys.items())
 
 renderers = registry(r'sheetRenderers\["([^"]+)"\]')
 page_ranges = registry(r'pageRange\["([^"]+)"\]')
 
-hh = find(r"var HIST_HEAD = \{")
-hist_head = []
-if hh:
-    for i in range(hh, min(hh + 40, N)):
-        if re.match(r"^\s*\};", lines[i]):
-            break
-        m = re.match(r'^\s*"([^"]+)":', lines[i])
-        if m:
-            hist_head.append((m.group(1), i + 1))
-
-ids = []
-seen = set()
-for i in range(style_close, script_open - 1):
-    for k in re.findall(r'id="([A-Za-z0-9_-]+)"', lines[i]):
+ids, seen = [], set()
+for i, l in enumerate(lines["page-body.html"]):
+    for k in re.findall(r'id="([A-Za-z0-9_-]+)"', l):
         if k not in seen:
             seen.add(k)
             ids.append((k, i + 1))
 
 def sha():
     try:
-        return subprocess.check_output(
-            ["git", "-C", HERE, "rev-parse", "--short", "HEAD"],
-            stderr=subprocess.DEVNULL).decode().strip()
+        return subprocess.check_output(["git", "-C", HERE, "rev-parse", "--short", "HEAD"],
+                                       stderr=subprocess.DEVNULL).decode().strip()
     except Exception:
         return "unknown"
+
+def num(x):
+    return "{:,}".format(x)
 
 o = []
 w = o.append
@@ -145,74 +112,90 @@ w("# Map of the source")
 w("")
 w("**Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).")
 w("")
-w("The source is **%s lines**, about %d KB, roughly **%d thousand tokens**. No session can read it"
-  % ("{:,}".format(N), SRC_BYTES // 1024, SRC_BYTES / 3600))
-w("whole, so this file exists to get you to the right two hundred lines.")
+w("The source is **%s lines** in %d files, about %d KB, roughly **%d thousand tokens**. No session can"
+  % (num(N), len(text), SRC_BYTES // 1024, SRC_BYTES / 3600))
+w("read it whole, so this file exists to get you to the right two hundred lines.")
 w("")
-w("> **Line numbers go stale; anchors do not.** Every insertion shifts every number below it. Use the")
-w("> **anchor** column with grep — `grep -rn 'function curveVerdict(' src/` — and treat the line")
-w("> number as rough orientation only. If a number is off by a hundred, the map is doing its job and")
-w("> just needs regenerating; if an anchor misses, something was renamed and that IS worth knowing.")
+w("> **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —")
+w("> `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.")
 w("")
 w("Generated from commit `%s` on %s." % (sha(), datetime.date.today().isoformat()))
 w("")
-w("## The five regions")
+w("## The page")
 w("")
-w("| Region | Lines | What |")
+w("`src/manifest.json` joins these parts into `index.html`. The `.js` entry is bundled by esbuild")
+w("(`tools/bundle.js`) into one script in its place.")
+w("")
+w("| Part | Lines | What |")
 w("|---|---|---|")
-for name, lo, hi, what in REGIONS:
-    w("| **%s** | %s–%s | %s |" % (name, "{:,}".format(lo), "{:,}".format(hi), what))
+WHAT = {
+    "page-head.html": "doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist",
+    "styles.css": "the whole stylesheet, every token and rule",
+    "page-body.html": "the static DOM: tabs, cards, sheet hosts, slots the renderers fill",
+    "page-tail.html": "the bundle's closing tag, the service-worker registration, </body></html>",
+}
+for n in manifest:
+    if n.endswith(".js"):
+        w("| `%s` | %s modules | the entry: imports every module and calls their boots in order |"
+          % (n, len(modules)))
+    else:
+        w("| `%s` | %s | %s |" % (n, num(len(lines[n])), WHAT.get(n, "")))
 w("")
-w("Counts: **%d** top-level functions, **%d** top-level vars, **%d** top-level IIFEs in the script."
-  % (len(fns), len(vars_), len(iifes)))
+w("Counts: **%d** modules, **%d** top-level functions, **%d** top-level vars, **%d** exported names, **%d** boots."
+  % (len(modules), sum(1 for r in decls.values() for x in r if x[2].startswith("function")),
+     sum(1 for r in decls.values() for x in r if x[2].startswith("var")),
+     sum(1 for r in decls.values() for x in r if x[3]) + len(boots), len(boots)))
 w("")
 
-w("## Script, section by section")
+w("## Modules, in boot order")
 w("")
-w("The script's own banner comments are its spine. Each declaration is listed under the section it")
-w("falls in, so you can navigate by concept rather than by name.")
+w("| Module | Lines | Declarations | Imports from |")
+w("|---|---|---|---|")
+for m in modules:
+    n = "js/" + m
+    w("| `%s` | %s | %d | %s |" % (n, num(len(lines[n])), len(decls[n]),
+                                  ", ".join("`%s`" % i for i in imports_of(n)) or "—"))
 w("")
-by_sec = {}
-order = []
-for ln, name in [(l, n) for l, n in fns] + [(l, n) for l, n in vars_]:
-    s = section_of(ln, script_secs) or "(before the first banner)"
-    if s not in by_sec:
-        by_sec[s] = []
-        order.append(s)
-    by_sec[s].append((ln, name))
-sec_line = {t: l for l, t in script_secs}
-sec_line.setdefault("(before the first banner)", script_open)
-for s in sorted(order, key=lambda t: sec_line.get(t, 0)):
-    items = sorted(by_sec[s])
-    w("### %s" % s)
-    w("")
-    w("_line %s_ · %d declaration%s" % ("{:,}".format(sec_line.get(s, 0)), len(items), "" if len(items) == 1 else "s"))
-    w("")
-    w("| Line | Name | Anchor |")
-    w("|---|---|---|")
-    for ln, name in items:
-        kind = "function %s(" % name if any(n == name and l == ln for l, n in fns) else "var %s =" % name
-        w("| %s | `%s` | `%s` |" % ("{:,}".format(ln), name, kind))
-    w("")
 
-n_side = sum(1 for _, _, nm in iifes if not nm)
-n_val = len(iifes) - n_side
-w("## The top-level IIFEs")
+w("## The boots")
 w("")
-w("**%d render at load** (side effect only) and **%d compute a value**, %d in all. They run in source"
-  % (n_side, n_val, len(iifes)))
-w("order and there is **no boot or re-render function** \u2014 which is why a derived value cannot be")
-w("repainted, and why the live-data cache has to apply itself above every consumer instead. See")
-w("`ARCHITECTURE.md` \u2192 the cache section. **These counts are measured here, so this table is the")
-w("authority for them** and the working document quotes it.")
+w("A module's top level holds only declarations and values that need nothing else. Whatever runs")
+w("at load and reads another module sits in its `boot…()` function, and `js/main.js` calls them in")
+w("this order. `tools/load-order.js` proves no shared value is read before something sets it.")
 w("")
-w("| Lines | Assigns to | Section it sits in |")
+w("| Order | Boot | Lines |")
 w("|---|---|---|")
-for ln, end, name in iifes:
-    w("| %s–%s | %s | %s |" % ("{:,}".format(ln), "{:,}".format(end) if end else "?",
-                                   ("`%s`" % name) if name else "_(side effect only)_",
-                                   section_of(ln, script_secs) or "—"))
+for k, (n, ln, end, name) in enumerate(boots):
+    w("| %d | `%s` | `%s:%s`–%s |" % (k + 1, name, n, num(ln), num(end) if end else "?"))
 w("")
+
+w("## Script, module by module")
+w("")
+w("Each module's banner comments are its spine. Each declaration is listed under the section it")
+w("falls in. **export** marks a name other modules import.")
+w("")
+for m in modules:
+    n = "js/" + m
+    if not decls[n]:
+        continue
+    secs = banners(n)
+    w("### `%s`" % n)
+    w("")
+    by_sec, order = {}, []
+    for row in decls[n]:
+        s = section_of(row[0], secs) or "(before the first banner)"
+        if s not in by_sec:
+            by_sec[s] = []
+            order.append(s)
+        by_sec[s].append(row)
+    for s in order:
+        w("#### %s" % s)
+        w("")
+        w("| Line | Name | Anchor |")
+        w("|---|---|---|")
+        for ln, name, anchor, exp in by_sec[s]:
+            w("| %s | `%s`%s | `%s` |" % (num(ln), name, " · export" if exp else "", anchor))
+        w("")
 
 w("## Registries — the lookup tables that route behaviour")
 w("")
@@ -221,45 +204,44 @@ w("")
 for title, rows, note in [
     ("`sheetRenderers`", renderers, "which function draws an inner page, called with the measured width when the page opens"),
     ("`pageRange`", page_ranges, "the window a page's range control starts on"),
-    ("`HIST_HEAD`", hist_head, "each history page's badge, title and ⋯ menu — the card head component reads this and no page passes a title"),
 ]:
     w("### %s" % title)
     w("")
-    w("%s" % note)
+    w(note)
     w("")
     if not rows:
         w("_none found — if that is wrong, the pattern in `tools/make-map.py` needs updating._")
         w("")
         continue
-    w("| Key | Line |")
+    w("| Key | Where |")
     w("|---|---|")
-    for k, ln in rows:
-        w("| `%s` | %s |" % (k, "{:,}".format(ln)))
+    for k, (n, ln) in rows:
+        w("| `%s` | `%s:%s` |" % (k, n, num(ln)))
     w("")
 
 w("## Stylesheet, section by section")
 w("")
 w("| Line | Section |")
 w("|---|---|")
-for ln, t in style_secs:
-    w("| %s | %s |" % ("{:,}".format(ln), t))
+for ln, t in banners("styles.css"):
+    w("| %s | %s |" % (num(ln), t))
 w("")
 
 w("## Markup landmarks")
 w("")
-w("Banner comments:")
+w("Banner comments in `page-body.html`:")
 w("")
 w("| Line | Section |")
 w("|---|---|")
-for ln, t in markup_secs:
-    w("| %s | %s |" % ("{:,}".format(ln), t))
+for ln, t in banners("page-body.html"):
+    w("| %s | %s |" % (num(ln), t))
 w("")
 w("Every `id` in the static DOM (%d), which is what the renderers fill:" % len(ids))
 w("")
 w("| Line | id |")
 w("|---|---|")
 for k, ln in sorted(ids, key=lambda x: x[1]):
-    w("| %s | `%s` |" % ("{:,}".format(ln), k))
+    w("| %s | `%s` |" % (num(ln), k))
 w("")
 
 w("## Finding things fast")
@@ -267,28 +249,28 @@ w("")
 w("| To find | grep for |")
 w("|---|---|")
 for a, b in [
-    ("a figure's literal value", "`var <name> = ` — the data objects are all top-level vars in the DATA section"),
+    ("a figure's literal value", "`var <name> = ` — the data objects are top-level vars in `js/data.js` and `js/refresh-season.js`"),
+    ("a reading's declaration", "`ROSTER` in `js/roster.js` — one row per reading"),
     ("what a history page draws", "`HIST_HEAD` for its head, then `sheetRenderers[\"<id>\"]` for its renderer"),
     ("where a band comes from", "the constant name, then read its `(i)` text — every band states its provenance"),
     ("a season decision", "`readSeason(`, `seasonTrackAll`, `cycleModel(`"),
+    ("who may change a shared value", "`export function set` — a module's setters are the only writes from outside it"),
     ("why something looks the way it does", "`docs/DECISIONS.md` for Keren's decisions, `docs/ARCHITECTURE.md` for the reasons, `git log -S` for the history"),
     ("a live-data wiring", "`LIVE(\"` — one line per document, each directly under its literal"),
-    ("a CSS rule's only home", "the class name; rules under `.detail-modal`, `.metric-sheet`, `.sign-detail` are scoped and must be restated for a new host"),
 ]:
     w("| %s | %s |" % (a, b))
 w("")
 
-text = "\n".join(o) + "\n"
+out = "\n".join(o) + "\n"
 
 if "--check" in sys.argv:
-    cur = io.open(OUT, encoding="utf-8").read() if os.path.exists(OUT) else ""
+    cur = read(OUT) if os.path.exists(OUT) else ""
     strip = lambda s: re.sub(r"Generated from commit .*", "", s)
-    if strip(cur) == strip(text):
+    if strip(cur) == strip(out):
         print("MAP.md is current")
         sys.exit(0)
     print("MAP.md is OUT OF DATE — run: npm run map")
     sys.exit(1)
 
-io.open(OUT, "w", encoding="utf-8").write(text)
-print("wrote %s — %d lines, from %s lines of src/" % (
-    os.path.relpath(OUT, HERE), text.count("\n") + 1, "{:,}".format(N)))
+io.open(OUT, "w", encoding="utf-8").write(out)
+print("wrote %s — %d lines, from %s lines of src/" % (os.path.relpath(OUT, HERE), out.count("\n") + 1, num(N)))

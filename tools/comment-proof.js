@@ -1,20 +1,35 @@
 #!/usr/bin/env node
-const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
+const fs = require('fs'), os = require('os'), path = require('path'), { execFileSync } = require('child_process');
 const { strip } = require('./strip');
+const { bundle } = require('./bundle');
 
 const ROOT = path.join(__dirname, '..');
 const arg = process.argv.slice(2);
 const base = (arg.find(a => a.startsWith('--base=')) || '--base=HEAD').slice(7);
 const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 << 20 });
 
-const manifest = JSON.parse(git('show', base + ':src/manifest.json'));
-const baseText = manifest.map(p => git('show', base + ':src/' + p));
-const work = p => fs.readFileSync(path.join(ROOT, 'src', p), 'utf8');
+const listed = s => s.split('\n').filter(Boolean).filter(f => !f.endsWith('/package.json') || f.startsWith('src/js/')).map(f => f.slice(4));
+const baseFiles = listed(git('ls-tree', '-r', '--name-only', base, 'src'));
+const workFiles = listed(git('ls-files', '--cached', '--others', '--exclude-standard', 'src'));
+const baseText = new Map(baseFiles.map(f => [f, git('show', base + ':src/' + f)]));
+const work = f => fs.readFileSync(path.join(ROOT, 'src', f), 'utf8');
 
 let named = arg.filter(a => !a.startsWith('--'));
 const all = !named.length;
-if (all) named = manifest.filter((p, i) => work(p) !== baseText[i]);
-for (const p of named) if (!manifest.includes(p)) { console.error('not a part in the manifest: ' + p); process.exit(2); }
+const layout = baseText.get('manifest.json') !== work('manifest.json');
+if (all) named = workFiles.filter(f => f !== 'manifest.json' && baseText.has(f) && work(f) !== baseText.get(f));
+if (layout) console.log('  the manifest changed since ' + base + ': only the whole page can be compared');
+if (layout) named = [];
+for (const p of named) if (!baseText.has(p)) { console.error('not a file of src/ at ' + base + ': ' + p); process.exit(2); }
+
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'comment-proof-'));
+let run = 0;
+function page(tree) {
+  const dir = path.join(TMP, String(run++));
+  tree.forEach((text, f) => { fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true }); fs.writeFileSync(path.join(dir, f), text); });
+  const manifest = JSON.parse(tree.get('manifest.json'));
+  return strip(manifest.map(p => /\.js$/.test(p) && /^(import|export) /m.test(tree.get(p)) ? bundle(path.join(dir, p)) : tree.get(p)).join('\n'));
+}
 
 const lines = s => s.split('\n').length;
 function verdict(a, b, markup) {
@@ -29,23 +44,23 @@ function where(a, b) {
 }
 
 (async () => {
-  const want = await strip(baseText.join('\n'));
+  const want = await page(baseText);
   let bad = 0;
   for (const p of named) {
-    const i = manifest.indexOf(p);
-    const mixed = baseText.slice(); mixed[i] = work(p);
-    const got = await strip(mixed.join('\n'));
+    const mixed = new Map(baseText); mixed.set(p, work(p));
+    const got = await page(mixed);
     const v = verdict(want, got, !p.endsWith('.js'));
     if (v === 'DIFFERENT') bad++;
-    console.log('  ' + v.padEnd(16) + p.padEnd(26) + String(lines(baseText[i])).padStart(6) + ' → '
-                + String(lines(mixed[i])).padStart(5) + ' source lines' + (v === 'DIFFERENT' ? where(want, got) : ''));
+    console.log('  ' + v.padEnd(16) + p.padEnd(26) + String(lines(baseText.get(p))).padStart(6) + ' → '
+                + String(lines(mixed.get(p))).padStart(5) + ' source lines' + (v === 'DIFFERENT' ? where(want, got) : ''));
   }
-  if (all && named.length > 1) {
-    const got = await strip(manifest.map(work).join('\n'));
+  if (all && (named.length > 1 || layout)) {
+    const got = await page(new Map(workFiles.map(f => [f, work(f)])));
     const v = verdict(want, got, true);
     if (v === 'DIFFERENT') bad++;
-    console.log('  ' + v.padEnd(16) + 'all parts together' + (v === 'DIFFERENT' ? where(want, got) : ''));
+    console.log('  ' + v.padEnd(16) + 'all files together' + (v === 'DIFFERENT' ? where(want, got) : ''));
   }
-  if (!named.length) console.log('  nothing differs from ' + base);
+  if (!named.length && !layout) console.log('  nothing differs from ' + base);
+  fs.rmSync(TMP, { recursive: true, force: true });
   process.exit(bad ? 1 : 0);
-})().catch(e => { console.error('FAILED: ' + e.message); process.exit(1); });
+})().catch(e => { console.error('FAILED: ' + e.message); fs.rmSync(TMP, { recursive: true, force: true }); process.exit(1); });

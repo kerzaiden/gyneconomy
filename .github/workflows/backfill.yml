@@ -50,16 +50,16 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           msg="Backfill: Fed funds, the VIX and VXO, the OMB fiscal series, the Treasury quarters, productivity, OECD consumer confidence, and GDP, CPI and S&P returns before 1990, from FRED, the OECD and Damodaran (fetched $(date -u +%F))"
-          files="src/js/03b-history-fred.js index.html docs/MAP.md docs/COMPONENTS.md"
+          files="src/js/history-fred.js index.html docs/MAP.md docs/COMPONENTS.md"
           git add $files
           git commit -m "$msg"
           for attempt in 1 2 3; do
             if git push origin "HEAD:${GITHUB_REF_NAME}"; then echo "pushed on attempt $attempt"; break; fi
             [ "$attempt" = 3 ] && { echo "::error::could not push after 3 attempts"; exit 1; }
             echo "push rejected — rebuilding the new histories on top of the remote and retrying"
-            cp src/js/03b-history-fred.js "$RUNNER_TEMP/03b.js"
+            cp src/js/history-fred.js "$RUNNER_TEMP/history-fred.js"
             git fetch origin "$GITHUB_REF_NAME" && git reset --hard "origin/$GITHUB_REF_NAME"
-            cp "$RUNNER_TEMP/03b.js" src/js/03b-history-fred.js
+            cp "$RUNNER_TEMP/history-fred.js" src/js/history-fred.js
             npm run build && npm run map && npm run check || exit 1
             if git diff --quiet; then echo "the remote already has these histories"; exit 0; fi
             git add $files
@@ -70,7 +70,7 @@ jobs:
           {
             echo "### Backfill committed"
             echo ""
-            grep -E '^  var ' src/js/03b-history-fred.js | cut -c1-160 || true
+            grep -E '^export var ' src/js/history-fred.js | cut -c1-160 || true
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Deploy the site with the new histories

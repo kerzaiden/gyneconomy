@@ -1159,6 +1159,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   show a stale move or a past meeting; CAPE's file figure is Shiller's own monthly reading, the source the live
   figure comes from, so one card never shows two sources. (V694)
 
+- **The script is ES modules, bundled into the one file, and the app is unit-tested in Node; documentation and
+  tests stay lean and efficient.** Keren, on Claude's 7/10 review: "build a robust version with everything you
+  recommended. make this app a nine", then "Make sure the documentation and the testing is lean and efficient."
+  Claude chose esbuild as the bundler and jsdom for the unit tests (each a dev dependency only, never shipped), and
+  left the manual artifact republish as it is: only a session can publish. (V695)
+
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)
 - **There are no comments in `src/`, the tools, the tests, the service worker or the workflows, except
@@ -1210,7 +1216,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
-- **A reading is declared once, in the roster (`ROSTER`, `src/js/07b-roster.js`): its page, name, category, group,
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.js`): its page, name, category, group,
   timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the

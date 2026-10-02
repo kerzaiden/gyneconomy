@@ -48,16 +48,15 @@ rules below are the ones that matter most.
 - **Band provenance.** Every range on screen is sourced or explicitly Keren's call, and the (i) says
   which. A target is never relabelled "normal".
 - **One figure, one number.** Computed in one place, read everywhere else.
-- **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/07b-roster.js`): its name, category, card order,
+- **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/roster.js`): its name, category, card order,
   timing, mark, group, history and card date. The cards, category pages, Search, the Diagnosis, past cycles and
   history heads all read it; a new reading is one row there plus its page renderer. `checkRoster` keeps it in
   step with the live registry.
-- **Edit `src/`, never `index.html`.** The build is a join of the parts in `src/manifest.json` plus a
-  comment strip; **the manifest order is the semantics** (module vars are assigned between parts).
-  The generated data (`js/03b-history-fred.js`) loads first, right after the wrapper opens, so every part
-  can read it (V647). `npm run check` proves the order holds: `tools/load-order.js` follows every
-  statement that runs at load, through the functions it calls, and fails if any shared value is read
-  before something sets it (V654; it found the CAPE verdict computed before its fair value existed).
+- **Edit `src/`, never `index.html`.** The script is ES modules in `src/js/`, bundled by esbuild into the one
+  file (V695). A module's top level holds only declarations; whatever runs at load and reads another module
+  goes in its `boot…()`, and **`js/main.js`'s boot order is the semantics**. An import is read-only: change
+  another module's value through the setter it exports. `tools/load-order.js` (in `check`) fails if any shared
+  value is read at load before something sets it (V654).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
 - **No comments in the code** (Keren, V650 and V652): not in `src/`, `tools/`, `test/`, `sw.js` or the
   workflows. The one exception is a one-line section title in `src/` (`// ---- Title ----`), which builds
@@ -89,9 +88,10 @@ rules below are the ones that matter most.
 
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
-npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool checks
+npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool and unit tests
 npm run check:all        # plus the browser suite (about 100 checks, ~40 s) and axe — what CI runs
 npm test                 # the browser suite alone; it waits on the app, never on a clock
+npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~3 s
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
@@ -102,6 +102,7 @@ npm run sources          # regenerate sources.html from the app's own Sources sc
 npm run classify         # measure each step's kind (check/derive/wire/render/build/mixed/live)
 ```
 
-A change the suite does not cover needs its own probe, and a probe worth keeping goes into the suite.
+A change the tests do not cover needs its own probe; a probe worth keeping goes into the unit tests, or the
+suite when it needs a real browser.
 The step registry, the reading registry and the repaint layer are documented in `docs/ARCHITECTURE.md`,
 under "How the live layer works".

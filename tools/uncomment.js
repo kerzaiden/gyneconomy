@@ -5,9 +5,9 @@ const { minify } = require('terser');
 
 const ROOT = path.join(__dirname, '..'), SRC = path.join(ROOT, 'src');
 const CHECK = process.argv.includes('--check');
-const manifest = JSON.parse(fs.readFileSync(path.join(SRC, 'manifest.json'), 'utf8'));
-const scripts = () => ['tools', 'test'].flatMap(d => fs.readdirSync(path.join(ROOT, d))
-  .filter(f => f.endsWith('.js')).map(f => d + '/' + f)).concat(['sw.js']);
+const { pageParts, scriptModules } = require('./source');
+const scripts = () => ['tools', 'test', 'test/unit'].flatMap(d => fs.readdirSync(path.join(ROOT, d))
+  .filter(f => /\.m?js$/.test(f)).map(f => d + '/' + f)).concat(['sw.js']);
 
 const TITLE = /^\s*-{3,}\s*(.*?)\s*-*\s*$/;
 function title(c) {
@@ -32,8 +32,8 @@ function cssComments(body, from, out) {
     i++;
   }
 }
-function jsComments(code, from, out) {
-  acorn.parse(code, { ecmaVersion: 'latest', allowHashBang: true, allowReturnOutsideFunction: true,
+function jsComments(code, from, out, module) {
+  acorn.parse(code, { ecmaVersion: 'latest', sourceType: module ? 'module' : 'script', allowHashBang: true, allowReturnOutsideFunction: !module,
     onComment: (block, value, s, e) => { if (!code.startsWith('#!', s)) out.push({ start: from + s, end: from + e, kind: block ? 'block' : 'line', value }); } });
 }
 
@@ -76,12 +76,17 @@ function srcComments(text) {
 const plain = code => minify(code, { compress: false, mangle: false, format: { comments: false, beautify: true } }).then(r => r.code);
 
 (async () => {
-  const text = manifest.map(p => fs.readFileSync(path.join(SRC, p), 'utf8'));
-  const inSrc = srcComments(text);
-  const files = scripts().map(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), list = []; jsComments(s, 0, list); return { f, s, list }; });
+  const pages = pageParts(), mods = scriptModules();
+  const names = pages.map(p => p.name).concat(mods.map(m => m.name));
+  const text = pages.map(p => p.text).concat(mods.map(m => m.text));
+  const inSrc = srcComments(pages.map(p => p.text)).concat(...mods.map((m, k) => {
+    const list = []; jsComments(m.text, 0, list, true);
+    return list.map(c => Object.assign(c, { part: pages.length + k }));
+  }));
+  const files = scripts().map(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), list = []; jsComments(s, 0, list, f.endsWith('.mjs')); return { f, s, list }; });
 
   if (CHECK) {
-    const bad = inSrc.filter(c => !tidyTitle(c)).map(c => 'src/' + manifest[c.part] + ':' + text[c.part].slice(0, c.start).split('\n').length)
+    const bad = inSrc.filter(c => !tidyTitle(c)).map(c => 'src/' + names[c.part] + ':' + text[c.part].slice(0, c.start).split('\n').length)
       .concat(files.filter(x => x.list.length).map(x => x.f + ':' + x.s.slice(0, x.list[0].start).split('\n').length));
     if (bad.length) {
       console.error('comments in the code — it keeps none but one-line section titles in src/. First: ' + bad[0] + '\n  run: npm run uncomment');
@@ -92,7 +97,7 @@ const plain = code => minify(code, { compress: false, mangle: false, format: { c
   }
 
   let removed = 0, kept = 0, touched = 0;
-  manifest.forEach((p, i) => {
+  names.forEach((p, i) => {
     const list = inSrc.filter(c => c.part === i && !tidyTitle(c));
     if (!list.length) return;
     const r = remove(text[i], list, true);

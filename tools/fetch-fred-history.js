@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const OUT = path.join(__dirname, '..', 'src', 'js', '03b-history-fred.js');
+const OUT = path.join(__dirname, '..', 'src', 'js', 'history-fred.js');
 const KEY = process.env.FRED_API_KEY;
 
 const say = m => console.log(m);
@@ -159,43 +159,41 @@ function fiscalYears(rows, lo, hi) {
 function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early) {
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return `  var fedFundsHistory = [${rows(fedFunds)}];
-  var volatilityHistory = [${rows(volatility)}];
+  return `export var fedFundsHistory = [${rows(fedFunds)}];
+export var volatilityHistory = [${rows(volatility)}];
 ` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
-    (productivity ? '\n  var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
-    (sp500 ? '\n  var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '') +
-    (confidence ? '\n  var confidenceHistory = [' + rows(confidence) + '];\n' : '') + earlyBlock(early);
+    (productivity ? 'export var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
+    (sp500 ? 'export var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '') +
+    (confidence ? 'export var confidenceHistory = [' + rows(confidence) + '];\n' : '') + earlyBlock(early);
 }
 
 function earlyBlock(e) {
   e = e || { gdp: [], cpi: [], returns: {}, growth: {} };
   const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return '\n  var gdpYoYBefore = [' + qrows(e.gdp) + '];\n  var cpiYoYBefore = [' + rows(e.cpi) + '];\n' +
-    '  var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n' +
-    '  var gdpGrowthBefore = {' + Object.keys(e.growth || {}).map(y => y + ':' + e.growth[y]).join(',') + '};\n';
+  return 'export var gdpYoYBefore = [' + qrows(e.gdp) + '];\nexport var cpiYoYBefore = [' + rows(e.cpi) + '];\n' +
+    'export var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n' +
+    'export var gdpGrowthBefore = {' + Object.keys(e.growth || {}).map(y => y + ':' + e.growth[y]).join(',') + '};\n';
 }
 
 function treasuryBlock(t) {
   const rows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + (d.partial ? ',partial:true' : '') + '}').join(',');
-  return `
-  var treasuryQuarterly = {
-${Object.keys(t).map(k => '    ' + k + ':[' + rows(t[k]) + ']').join(',\n')}
-  };
+  return `export var treasuryQuarterly = {
+${Object.keys(t).map(k => '  ' + k + ':[' + rows(t[k]) + ']').join(',\n')}
+};
 `;
 }
 
 function fiscalBlock(f) {
   const yrows = a => a.map(d => '{y:' + d.y + ',v:' + d.v + '}').join(',');
   const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return `
-  var fiscalHistory = {
-    gross:[${yrows(f.gross)}],
-    held:[${yrows(f.held)}],
-    interest:[${yrows(f.interest)}],
-    budget:[${yrows(f.budget)}]
-  };
-  var grossDebtQuarterly = [${qrows(f.grossQ)}];
+  return `export var fiscalHistory = {
+  gross:[${yrows(f.gross)}],
+  held:[${yrows(f.held)}],
+  interest:[${yrows(f.interest)}],
+  budget:[${yrows(f.budget)}]
+};
+export var grossDebtQuarterly = [${qrows(f.grossQ)}];
 `;
 }
 
