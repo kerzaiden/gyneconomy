@@ -14,6 +14,9 @@ var ASSETS: Asset[] = [
   { key:"stocks", name:"Stocks", from:0 }, { key:"bonds", name:"Bonds", from:0 }, { key:"baa", name:"Corp.", from:0 },
   { key:"bills", name:"Cash", from:0 }, { key:"gold", name:"Gold", from:1972 }, { key:"estate", name:"Homes", from:0 }
 ];
+var ASSET_INK: Record<string, string> = { stocks:"--ovulate", bonds:"--ff-deep", baa:"--ff-blue", bills:"--ylm-3m", gold:"--season-autumn", estate:"--season-spring" };
+var ASSET_FULL: Record<string, string> = { stocks:"Stocks", bonds:"Treasury bonds", baa:"Corporate bonds", bills:"Cash", gold:"Gold", estate:"Homes" };
+var MIX_FROM = 1950;
 var ASSET_LONG: Record<string, string> = { stocks:"stocks have", bonds:"Treasury bonds have", baa:"corporate bonds have", bills:"cash has", gold:"gold has", estate:"homes have" };
 var CLOCK_SEASONS: Season[] = ["winter", "spring", "springdeflation", "summer", "autumn", "lateautumn"];
 var CLOCK_SRC: Src[] = [
@@ -42,6 +45,7 @@ function mid(vs: number[]){
   var s = vs.slice().sort(function(a, b){ return a - b; }), n = s.length;
   return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
 }
+var closeOf: Record<number, Season> = {};
 function seasonOfYears(){
   var weight: Record<number, Record<string, number>> = {}, out: Record<number, Season> = {};
   marketCycles.forEach(function(c){
@@ -49,6 +53,7 @@ function seasonOfYears(){
       if (seg.isNow) return;
       var y = +seg.q.slice(0, 4), w = weight[y] = weight[y] || {};
       w[seg.season] = (w[seg.season] || 0) + seg.to - seg.from;
+      closeOf[y] = seg.season;
     });
   });
   Object.keys(weight).forEach(function(y){
@@ -83,6 +88,61 @@ function grid(){
     });
   });
   return (gridCache = out);
+}
+var yearsCache: { real: Record<string, Record<number, number>>; season: Record<number, Season> } | null = null;
+function seasonRecord(){ return yearsCache || (yearsCache = { real:realOf(), season:seasonOfYears() }); }
+function mixFor(s: Season, before: number){
+  var rec = seasonRecord(), years = Object.keys(rec.season).map(Number).filter(function(y){ return y < before && rec.season[y] === s && rec.real.stocks[y] != null; });
+  var held = ASSETS.filter(function(a){
+    if (a.from > before - 1) return false;
+    var vs = years.filter(function(y){ return rec.real[a.key][y] != null; }).map(function(y){ return rec.real[a.key][y]; });
+    return vs.length * 2 < years.length || !years.length || mid(vs) > 0;
+  });
+  var w: Record<string, number> = {};
+  held.forEach(function(a){ w[a.key] = 1 / held.length; });
+  return w;
+}
+type Track = { name: string; cagr: number; worst: number; fall: number };
+function walk(name: string, weights: (y: number) => Record<string, number>): Track {
+  var rec = seasonRecord(), g = 1, peak = 1, fall = 0, worst = Infinity, n = 0;
+  for (var y = MIX_FROM; rec.real.stocks[y] != null; y++){
+    var w = weights(y), r = 0;
+    Object.keys(w).forEach(function(k){ r += w[k] * (rec.real[k][y] || 0); });
+    g *= 1 + r / 100; peak = Math.max(peak, g); fall = Math.min(fall, g / peak - 1); worst = Math.min(worst, r); n++;
+  }
+  return { name:name, cagr:(Math.pow(g, 1 / n) - 1) * 100, worst:worst, fall:fall * 100 };
+}
+var tracksCache: Track[] | null = null;
+function tracks(){
+  return tracksCache || (tracksCache = [
+    walk("Season Mix", function(y){ seasonOfYears(); return mixFor(closeOf[y - 1], y); }),
+    walk("Equal parts, no season", function(y){ var w: Record<string, number> = {}, on = ASSETS.filter(function(x){ return x.from < y; }); on.forEach(function(x){ w[x.key] = 1 / on.length; }); return w; }),
+    walk("All Seasons", function(y): Record<string, number> { return y >= 1973 ? { stocks:0.3, bonds:0.55, gold:0.15 } : { stocks:0.3, bonds:0.55, bills:0.15 }; }),
+    walk("Stocks only", function(){ return { stocks:1 }; })
+  ]);
+}
+function mixDetail(){
+  return '<h4>How the mix reads</h4>' + facts([
+    "The Season Mix holds, in equal parts, every asset that has beaten inflation in the current season on the record: the median of its returns after inflation, in the years that season held, is above zero. An asset with too little record in a season, fewer than half its years, is kept rather than dropped.",
+    "Equal parts is the plainest diversification there is, and the season only decides who is in the room. Ray Dalio\u2019s point stands behind it: assets that do not move together cut the depth of a fall more than any one choice can lift the return.",
+    "The track record is walked forward with no hindsight: each January from " + MIX_FROM + ", the mix is set from the season at the close of the year before and from the record up to then only. The All Seasons line uses 30% stocks, 55% Treasury bonds and 15% gold (cash before 1973), the nearest the record allows.",
+    "Homes are home prices, without rent; gold counts from 1972. Rebalancing costs and taxes are left out. This is the record and a rule, not a forecast or advice."
+  ]) + srcBlock(CLOCK_SRC.slice(0, 1));
+}
+function mixHtml(){
+  var now = nowModel.season, w = mixFor(now, 9999), keys = ASSETS.filter(function(a){ return w[a.key]; });
+  var bar = '<div class="strip" role="img" aria-label="' + keys.map(function(a){ return ASSET_FULL[a.key] + " " + Math.round(w[a.key] * 100) + "%"; }).join(", ") + '">' +
+    keys.map(function(a){ return '<span class="strip-run" style="flex:' + w[a.key] + ' 1 0;--season:var(' + ASSET_INK[a.key] + ')"></span>'; }).join("") + '</div>';
+  var rows = ASSETS.map(function(a){
+    return auxStat({ label:'<span class="season-sw" style="--season:var(' + (w[a.key] ? ASSET_INK[a.key] : "--border") + ')"></span>' + ASSET_FULL[a.key], value:w[a.key] ? Math.round(w[a.key] * 100) + "%" : "out" });
+  }).join("");
+  var t = tracks();
+  var track = t.map(function(x){ return auxStat({ label:x.name, value:fmtSigned(x.cagr, 1) + "% · fall " + fmtSigned(Math.round(x.fall), 0) + "%" }); }).join("");
+  var names = keys.map(function(a){ return ASSET_FULL[a.key].toLowerCase(); });
+  return '<div class="cat-analysis cat-mood"><div class="ca-name">Season Mix</div>' +
+    '<p class="ca-say">In ' + seasonTitle(wheelMeta[now]) + ', ' + names.slice(0, -1).join(", ") + (names.length > 1 ? " and " : "") + names[names.length - 1] + ' have beaten inflation on the record. The mix holds them in equal parts and rebalances when the season turns.</p>' +
+    bar + rows + '<p class="ca-note">Rebalanced each January since ' + MIX_FROM + ', with no hindsight: a year after inflation, and the deepest fall:</p>' + track +
+    moreRow(mixDetail()) + '</div>';
 }
 function counts(s: Season, a: Asset){ var g = grid()[s]; return g[a.key].n * 2 >= g.stocks.n; }
 function leader(s: Season){
@@ -161,6 +221,6 @@ function seasonsHtml(r: ModelReading){
 }
 function buildPortfolio(){
   var host = need("panel-portfolio"), r = nowModel.reading;
-  host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml() + seasonsHtml(r) + '</div>';
+  host.innerHTML = '<div class="dx" id="portfolio">' + mixHtml() + clockHtml() + seasonsHtml(r) + '</div>';
 }
 export function bootPortfolio(){ buildPortfolio(); }

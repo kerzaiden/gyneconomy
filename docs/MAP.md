@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,212 lines** in 35 files, about 603 KB, roughly **171 thousand tokens**. No session can
+The source is **9,272 lines** in 35 files, about 608 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `2f6ba8d` on 2026-10-03.
+Generated from commit `300470d` on 2026-10-03.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `2f6ba8d` on 2026-10-03.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **592** top-level functions, **103** top-level vars, **343** exported names, **19** boots.
+Counts: **31** modules, **598** top-level functions, **104** top-level vars, **343** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -42,7 +42,7 @@ Counts: **31** modules, **592** top-level functions, **103** top-level vars, **3
 | `js/diagnosis.ts` | 80 | 12 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
 | `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
-| `js/portfolio.ts` | 167 | 17 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/portfolio.ts` | 227 | 24 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
@@ -84,7 +84,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:76`–79 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
 | 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
-| 16 | `bootPortfolio` | `js/portfolio.ts:166`–? |
+| 16 | `bootPortfolio` | `js/portfolio.ts:226`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
 | 18 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 19 | `bootRepaint` | `js/repaint.ts:65`–81 |
@@ -730,23 +730,30 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 27 | `ALL_SEASONS` | `var ALL_SEASONS =` |
-| 34 | `WEATHER` | `var WEATHER =` |
-| 41 | `mid` | `function mid(` |
-| 45 | `seasonOfYears` | `function seasonOfYears(` |
-| 61 | `realOf` | `function realOf(` |
-| 72 | `grid` | `function grid(` |
-| 87 | `counts` | `function counts(` |
-| 88 | `leader` | `function leader(` |
-| 92 | `wedge` | `function wedge(` |
-| 96 | `seasonClock` | `function seasonClock(` |
-| 115 | `heat` | `function heat(` |
-| 120 | `gridHtml` | `function gridHtml(` |
-| 128 | `clockDetail` | `function clockDetail(` |
-| 138 | `clockHtml` | `function clockHtml(` |
-| 145 | `seasonsDetail` | `function seasonsDetail(` |
-| 153 | `seasonsHtml` | `function seasonsHtml(` |
-| 162 | `buildPortfolio` | `function buildPortfolio(` |
+| 19 | `MIX_FROM` | `var MIX_FROM =` |
+| 30 | `ALL_SEASONS` | `var ALL_SEASONS =` |
+| 37 | `WEATHER` | `var WEATHER =` |
+| 44 | `mid` | `function mid(` |
+| 49 | `seasonOfYears` | `function seasonOfYears(` |
+| 66 | `realOf` | `function realOf(` |
+| 77 | `grid` | `function grid(` |
+| 93 | `seasonRecord` | `function seasonRecord(` |
+| 94 | `mixFor` | `function mixFor(` |
+| 106 | `walk` | `function walk(` |
+| 116 | `tracks` | `function tracks(` |
+| 124 | `mixDetail` | `function mixDetail(` |
+| 132 | `mixHtml` | `function mixHtml(` |
+| 147 | `counts` | `function counts(` |
+| 148 | `leader` | `function leader(` |
+| 152 | `wedge` | `function wedge(` |
+| 156 | `seasonClock` | `function seasonClock(` |
+| 175 | `heat` | `function heat(` |
+| 180 | `gridHtml` | `function gridHtml(` |
+| 188 | `clockDetail` | `function clockDetail(` |
+| 198 | `clockHtml` | `function clockHtml(` |
+| 205 | `seasonsDetail` | `function seasonsDetail(` |
+| 213 | `seasonsHtml` | `function seasonsHtml(` |
+| 222 | `buildPortfolio` | `function buildPortfolio(` |
 
 ### `js/pages-nav.ts`
 
