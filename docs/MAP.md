@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,732 lines** in 31 files, about 571 KB, roughly **162 thousand tokens**. No session can
+The source is **8,733 lines** in 31 files, about 571 KB, roughly **162 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `6c473cf` on 2026-10-03.
+Generated from commit `4942428` on 2026-10-03.
 
 ## The page
 
@@ -32,7 +32,7 @@ Counts: **27** modules, **538** top-level functions, **98** top-level vars, **33
 | `js/dom.ts` | 145 | 18 | `format` |
 | `js/live.ts` | 196 | 20 | `format` |
 | `js/refresh-season.ts` | 39 | 4 | `format`, `history-fred` |
-| `js/data.ts` | 555 | 74 | `format`, `history-fred`, `live` |
+| `js/data.ts` | 556 | 74 | `format`, `history-fred`, `live` |
 | `js/model.ts` | 344 | 44 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 470 | 38 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 810 | 69 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
@@ -69,7 +69,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:187`–189 |
 | 3 | `bootLive` | `js/live.ts:190`–195 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–38 |
-| 5 | `bootData` | `js/data.ts:503`–554 |
+| 5 | `bootData` | `js/data.ts:504`–555 |
 | 6 | `bootModel` | `js/model.ts:297`–343 |
 | 7 | `bootHistory` | `js/history.ts:446`–469 |
 | 8 | `bootReadings` | `js/readings.ts:636`–705 |
@@ -188,90 +188,90 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 88 | `UNINV_FROM` | `var UNINV_FROM =` |
 | 89 | `uninvLagToday` · export | `var uninvLagToday =` |
-| 124 | `labRow` · export | `function labRow(` |
-| 125 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
+| 125 | `labRow` · export | `function labRow(` |
+| 126 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
 
 #### Consumer confidence
 
 | Line | Name | Anchor |
 |---|---|---|
-| 127 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
+| 128 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
 
 #### Desire: real spending on durable goods
 
 | Line | Name | Anchor |
 |---|---|---|
-| 129 | `DESIRE_LINE` · export | `var DESIRE_LINE =` |
+| 130 | `DESIRE_LINE` · export | `var DESIRE_LINE =` |
 
 #### Desire: the equity risk premium
 
 | Line | Name | Anchor |
 |---|---|---|
-| 131 | `PREMIUM_LINE` · export | `var PREMIUM_LINE =` |
+| 132 | `PREMIUM_LINE` · export | `var PREMIUM_LINE =` |
 
 #### The deficit, year by year
 
 | Line | Name | Anchor |
 |---|---|---|
-| 134 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
-| 135 | `deficitHistory` · export | `var deficitHistory =` |
-| 136 | `DEF_MEAN` · export | `var DEF_MEAN =` |
-| 139 | `checkDeficitHistory` | `function checkDeficitHistory(` |
-| 144 | `fedFundsRange` · export | `function fedFundsRange(` |
-| 148 | `buffettHistory` · export | `var buffettHistory =` |
-| 165 | `syncGrossDebt` | `function syncGrossDebt(` |
-| 175 | `stressOf` | `function stressOf(` |
-| 179 | `deriveStress` | `function deriveStress(` |
-| 180 | `checkGrossDebt` | `function checkGrossDebt(` |
-| 190 | `curveAt` · export | `function curveAt(` |
-| 194 | `curveNeed` | `function curveNeed(` |
-| 195 | `curveSpread` · export | `function curveSpread(` |
-| 196 | `policyDirection` · export | `function policyDirection(` |
-| 199 | `capeAsOf` · export | `function capeAsOf(` |
-| 200 | `syncCapeHistory` · export | `function syncCapeHistory(` |
-| 204 | `valRow` · export | `function valRow(` |
-| 208 | `fileRow` · export | `function fileRow(` |
-| 209 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
-| 210 | `m2vHistory` · export | `var m2vHistory =` |
-| 211 | `m2vPre` | `var m2vPre =` |
-| 212 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
-| 213 | `PULSE_STEADY_LO` · export | `var PULSE_STEADY_LO =` |
-| 214 | `PULSE_FLOOR` · export | `var PULSE_FLOOR =` |
-| 231 | `checkVelocityHistory` | `function checkVelocityHistory(` |
-| 236 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
-| 237 | `m2Level` | `var m2Level =` |
-| 238 | `m2Yoy` · export | `var m2Yoy =` |
-| 239 | `m2Ref` | `var m2Ref =` |
-| 240 | `M2_PACE_LO` · export | `var M2_PACE_LO =` |
-| 241 | `M2_NORM` · export | `var M2_NORM =` |
-| 242 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
-| 243 | `unempHistory` · export | `var unempHistory =` |
-| 247 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
-| 255 | `SAHM_TRIGGER` · export | `var SAHM_TRIGGER =` |
-| 256 | `unempSahm` · export | `var unempSahm =` |
-| 257 | `avg3` | `function avg3(` |
-| 261 | `sahmAt` | `function sahmAt(` |
-| 266 | `sahmOf` · export | `function sahmOf(` |
-| 270 | `NROU_NOW` · export | `var NROU_NOW =` |
-| 271 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
-| 278 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
-| 279 | `CPI_TARGET` · export | `var CPI_TARGET =` |
-| 280 | `TEMP_BAND_LO` · export | `var TEMP_BAND_LO =` |
-| 281 | `GDP_NORM` · export | `var GDP_NORM =` |
-| 282 | `checkMoneyStock` | `function checkMoneyStock(` |
-| 345 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 346 | `dsrHistory` · export | `var dsrHistory =` |
-| 347 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
-| 348 | `savHistory` · export | `var savHistory =` |
-| 349 | `SAV_THIN` · export | `var SAV_THIN =` |
-| 350 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 358 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 359 | `dsrNow` · export | `var dsrNow =` |
-| 360 | `savNow` · export | `var savNow =` |
-| 361 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 362 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 373 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 495 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 135 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
+| 136 | `deficitHistory` · export | `var deficitHistory =` |
+| 137 | `DEF_MEAN` · export | `var DEF_MEAN =` |
+| 140 | `checkDeficitHistory` | `function checkDeficitHistory(` |
+| 145 | `fedFundsRange` · export | `function fedFundsRange(` |
+| 149 | `buffettHistory` · export | `var buffettHistory =` |
+| 166 | `syncGrossDebt` | `function syncGrossDebt(` |
+| 176 | `stressOf` | `function stressOf(` |
+| 180 | `deriveStress` | `function deriveStress(` |
+| 181 | `checkGrossDebt` | `function checkGrossDebt(` |
+| 191 | `curveAt` · export | `function curveAt(` |
+| 195 | `curveNeed` | `function curveNeed(` |
+| 196 | `curveSpread` · export | `function curveSpread(` |
+| 197 | `policyDirection` · export | `function policyDirection(` |
+| 200 | `capeAsOf` · export | `function capeAsOf(` |
+| 201 | `syncCapeHistory` · export | `function syncCapeHistory(` |
+| 205 | `valRow` · export | `function valRow(` |
+| 209 | `fileRow` · export | `function fileRow(` |
+| 210 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
+| 211 | `m2vHistory` · export | `var m2vHistory =` |
+| 212 | `m2vPre` | `var m2vPre =` |
+| 213 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
+| 214 | `PULSE_STEADY_LO` · export | `var PULSE_STEADY_LO =` |
+| 215 | `PULSE_FLOOR` · export | `var PULSE_FLOOR =` |
+| 232 | `checkVelocityHistory` | `function checkVelocityHistory(` |
+| 237 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
+| 238 | `m2Level` | `var m2Level =` |
+| 239 | `m2Yoy` · export | `var m2Yoy =` |
+| 240 | `m2Ref` | `var m2Ref =` |
+| 241 | `M2_PACE_LO` · export | `var M2_PACE_LO =` |
+| 242 | `M2_NORM` · export | `var M2_NORM =` |
+| 243 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
+| 244 | `unempHistory` · export | `var unempHistory =` |
+| 248 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
+| 256 | `SAHM_TRIGGER` · export | `var SAHM_TRIGGER =` |
+| 257 | `unempSahm` · export | `var unempSahm =` |
+| 258 | `avg3` | `function avg3(` |
+| 262 | `sahmAt` | `function sahmAt(` |
+| 267 | `sahmOf` · export | `function sahmOf(` |
+| 271 | `NROU_NOW` · export | `var NROU_NOW =` |
+| 272 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
+| 279 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
+| 280 | `CPI_TARGET` · export | `var CPI_TARGET =` |
+| 281 | `TEMP_BAND_LO` · export | `var TEMP_BAND_LO =` |
+| 282 | `GDP_NORM` · export | `var GDP_NORM =` |
+| 283 | `checkMoneyStock` | `function checkMoneyStock(` |
+| 346 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
+| 347 | `dsrHistory` · export | `var dsrHistory =` |
+| 348 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
+| 349 | `savHistory` · export | `var savHistory =` |
+| 350 | `SAV_THIN` · export | `var SAV_THIN =` |
+| 351 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 359 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 360 | `dsrNow` · export | `var dsrNow =` |
+| 361 | `savNow` · export | `var savNow =` |
+| 362 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 363 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 374 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 496 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/model.ts`
 

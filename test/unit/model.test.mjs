@@ -23,8 +23,11 @@ test('every cycle reads a season, and its track runs without a gap', () => {
 });
 
 test('a closed cycle\'s season strip spans its own years, so a season sits under its year', () => {
-  for (const c of marketCycles.filter(c => !c.ongoing)) assert.equal(seasonStripHtml(c).done, (c.to - c.from + 1) * 4, c.name);
-  assert.match(seasonStripHtml(marketCycles[0]).strip, /no season read before Q1 1931/);
+  for (const c of marketCycles.filter(c => !c.ongoing)) {
+    const s = seasonStripHtml(c);
+    assert.equal(s.done, (c.to - c.from + 1) * 4, c.name);
+    assert.equal(/no season read before/.test(s.strip), cycleModel(c).track[0].from > 0, c.name);
+  }
 });
 
 test('only the open cycle reaches today, and it ends on now', () => {

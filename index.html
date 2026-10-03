@@ -1549,7 +1549,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.2.2 (715)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.4.0 (715)</span></p>
     </div>
   </div>
 
@@ -27959,6 +27959,9 @@
   }, {
     t: "BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)",
     u: "https://fred.stlouisfed.org/series/A191RL1A225NBEA"
+  }, {
+    t: "MeasuringWorth (Johnston and Williamson) — What Was the U.S. GDP Then?, real GDP before 1930",
+    u: "https://www.measuringworth.com/datasets/usgdp/"
   } ];
   var labPanel = [ {
     sub: "gross federal debt ÷ GDP",
@@ -36927,7 +36930,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
