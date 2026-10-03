@@ -48,7 +48,8 @@ const KEYED = [
   ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
   ['series.json', 'capeHistory',             'y',  55, [4, 60]],
 ];
-const TODAY = new Date();
+const COMPILED = /DATA_COMPILED = new Date\((\d+), (\d+), (\d+)\)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src', 'js', 'refresh-season.js'), 'utf8'));
+const TODAY = new Date(Date.UTC(+COMPILED[1], +COMPILED[2], +COMPILED[3]));
 const NOW = { m: TODAY.getUTCFullYear() * 12 + TODAY.getUTCMonth() + 1,
               q: TODAY.getUTCFullYear() * 4 + Math.floor(TODAY.getUTCMonth() / 3) + 1,
               y: TODAY.getUTCFullYear() };
@@ -65,7 +66,7 @@ for (const [file, name, key, floor, [lo, hi], lag] of KEYED) {
   const breaks = [];
   for (let i = 1; i < n.length; i++) if (n[i] - n[i - 1] !== 1) breaks.push(keys[i - 1] + ' -> ' + keys[i]);
   ok(name + ': periods are consecutive', breaks.join(', ') || 'none', KNOWN_GAPS[name] || 'none');
-  if (lag) ok(name + ': no more than ' + lag + ' periods behind today', NOW[key] - n[n.length - 1] <= lag, true);
+  if (lag) ok(name + ': no more than ' + lag + ' periods behind the data date', NOW[key] - n[n.length - 1] <= lag, true);
 }
 
 const BARE = [

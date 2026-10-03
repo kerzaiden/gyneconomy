@@ -1186,6 +1186,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   (DFEDTARU): a move after the other direction reads "First hike since 2023" (the year of the previous move the
   same way); a run reads "Cuts in a row: 2 since Sep 2024". "One more signalled" is gone: it came from the dot
   plot, which nothing fetches. (V698)
+- **The tests check the important things once, and the code is typed; types override the no-comments rule.**
+  Keren: "Make sure we are not over-tested in the app ... only the important stuff", "I do want the architecture
+  to have the best structure. If that is typesetting, then do it. and override the comments uh, rule", and "Fix
+  everything you mentioned in the review". Claude chose: a browser check only for what needs a real browser
+  (what the unit tests already prove left them); the phone's Back steps out of pages one at a time instead of
+  leaving the app; a stored figure older than the file's own is never applied; types as TypeScript syntax, not
+  comments, so the no-comments rule still holds for prose. (V701, V702)
 
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)

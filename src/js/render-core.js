@@ -3,7 +3,7 @@ import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, pu
 import { GYN } from "./live.js";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.js";
 import { dataCompiledLabel } from "./refresh-season.js";
-import { curveAsOf, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.js";
+import { curveAsOf, curveAt, curveSpread, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.js";
 import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.js";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.js";
 import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.js";
@@ -18,11 +18,20 @@ export function metricSheet(id){
 }
 export var sheetRenderers = {};
 export function drawsPage(id, draw){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
+function levelHeadings(body){
+  var box = body.closest(".detail-modal");
+  box.removeAttribute("aria-labelledby");
+  Array.prototype.forEach.call(body.querySelectorAll("h4"), function(h, i){
+    h.setAttribute("aria-level", i ? "3" : "2");
+    if (!i){ h.id = "detail-modal-title"; box.setAttribute("aria-labelledby", h.id); }
+  });
+}
 function wireDetailModal(){
   var backdrop = byId('detail-backdrop');
   var body = byId('detail-modal-body');
   function openFrom(idx, btn){
     body.innerHTML = detailTexts[idx];
+    levelHeadings(body);
     var sheet = btn && btn.closest && btn.closest(".metric-sheet");
     var chip = sheet && sheet.querySelector(".timing-row");
     if (chip) body.appendChild(chip.cloneNode(true));
@@ -140,11 +149,10 @@ export function cardDetailHtml(ind, opts){
 var CURVE_KEY = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
 function latestYieldPoint(){
   var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
-  var at = function(k){ var h = now.yieldCurve.filter(function(d){ return d.m === k; })[0]; return h && h.y != null ? h.y : null; };
   var v = {}, all = !!mm;
-  Object.keys(CURVE_KEY).forEach(function(c){ v[c] = at(CURVE_KEY[c]); if (v[c] == null) all = false; });
+  Object.keys(CURVE_KEY).forEach(function(c){ v[c] = curveAt(CURVE_KEY[c]); if (v[c] == null) all = false; });
   if (!all) return null;
-  return { q:mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3), label:fmtAsOf(iso), v:v, spread:at("10Y") - at("3M") };
+  return { q:mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3), label:fmtAsOf(iso), v:v, spread:curveSpread() };
 }
 function withLatestPoint(base, pt){
   var data = base.slice(), last = data[data.length - 1];

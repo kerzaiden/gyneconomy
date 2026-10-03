@@ -1,7 +1,6 @@
 import { byIdMaybe, put, ui } from "./dom.js";
 import { checkLiveCoverage, exposeLive, fetchSiteData, GYN, onLive, refreshLiveData } from "./live.js";
-import { calendarTodayY } from "./refresh-season.js";
-import { capeHistory, fedFundsRange, now, valRow } from "./data.js";
+import { fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.js";
 import { forgetMood, nowModel } from "./model.js";
 import { desireRow, policyFactRows, riskMatrixBlock, volatilityRing, volatilityTag } from "./readings.js";
 import { CATEGORIES, paintWhen } from "./roster.js";
@@ -56,11 +55,7 @@ function repaintDesire(){
     el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
   });
 }
-function syncCapeHistory(){
-  var last = capeHistory[capeHistory.length - 1], now = valRow("cape").meter.value;
-  if (last.y === calendarTodayY) last.v = now; else capeHistory.push({ y:calendarTodayY, v:now });
-  forgetMood();
-}
+function syncCape(){ syncCapeHistory(); forgetMood(); }
 function repaintValuationRow(){
   var row = valRow("cape");
   if (!row) return;
@@ -68,9 +63,7 @@ function repaintValuationRow(){
 }
 function repaintPolicy(){
   put("policy-facts", policyFactRows());
-  var dir = /^\+/.test(now.fedFunds.lastMove) ? "Tightening"
-          : /^[-−]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
-  paintReading("sheet-sign-hormones", fedFundsRange(), { text:dir });
+  paintReading("sheet-sign-hormones", fedFundsRange(), { text:policyDirection() });
 }
 function repaintDiagnosis(){
   if (!ui.eraOpen) renderDiagnosis(nowModel);
@@ -85,7 +78,7 @@ export function bootRepaint(){
   onLive("vixClose", repaintVolatility);
   onLive("hyOasNow", repaintDesire);
   onLive("capeValue", repaintValuationRow);
-  onLive("capeValue", syncCapeHistory);
+  onLive("capeValue", syncCape);
   onLive("capeValue", repaintDesire);
   onLive("*", repaintDiagnosis);
   exposeLive();

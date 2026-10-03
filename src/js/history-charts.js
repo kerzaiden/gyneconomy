@@ -1,4 +1,4 @@
-import { atMonth, atQuarter, qAtIndex } from "./format.js";
+import { atMonth, atQuarter, fmtSigned, qAtIndex } from "./format.js";
 import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.js";
 import { fedFundsHistory } from "./history-fred.js";
 import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
@@ -40,7 +40,7 @@ export function deficitChart(Wpx, from, to){
   for (var g = Math.ceil(LO / step) * step; g <= HI + 1e-9; g += step)
     defTicks.push(Math.abs(g) < 1e-9 ? 0 : g);
   out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(at){ return (at > 0 ? "+" : "") + (step < 1 ? at.toFixed(1) : Math.round(at)) + "%"; } }));
+    fmt:function(at){ return fmtSigned(at, step < 1 ? 1 : 0) + "%"; } }));
   var steps = [1, 2, 5, 10, 20, 25], yrStep = 25, si, yy, cnt;
   for (si = 0; si < steps.length; si++){
     cnt = 0;
@@ -62,13 +62,13 @@ export function deficitChart(Wpx, from, to){
   out.push(crossLine(T, B));
   var dfAvg = vals.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
   publishGeom("deficitChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return "FY" + (y0 + i); },
-                   fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
+                   fmt:function(v){ return fmtSigned(v, 1) + "%"; },
                    refs:[{ label:"Average", v:dfAvg },
                          { label:"1983 level", v:DEF_1983, dash:true }],
                    vals:vals.map(function(v){ return { v:v }; }) });
   out.push(avgRule(L, R, f(Y(dfAvg))));
   if (defFit && defFit.n > 1)
-    out.push(fitGroup({ fit:defFit, fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; } },
+    out.push(fitGroup({ fit:defFit, fmt:function(v){ return fmtSigned(v, 1) + "%"; } },
                       X(0), X(n - 1), Y, R, L, 0));
   return vhOpen(W, H) +
     'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + ' to ' + y1 +
@@ -437,7 +437,7 @@ export function m2GrowthChart(Wpx, from, to){
   out.push(zeroRule(L, R, zero));
   out.push(crossLine(T, B));
   publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
-                   fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
+                   fmt:function(v){ return fmtSigned(v, 1) + "%"; },
                    refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
                    vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
   out.push(fitLine(vals.filter(function(v){ return v != null; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));

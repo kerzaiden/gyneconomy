@@ -26,7 +26,9 @@ export function liveIsoOf(name){
   try { return JSON.parse(liveApplied[name] || "{}").asOf || ""; } catch (e) { return ""; }
 }
 export function liveInto(name){
-  var d = LIVE_CACHE[name];
+  var d = LIVE_CACHE[name], r = READINGS[name];
+  var file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
+  if (got < file) return false;
   return docOk(name, d) && landLive(name, docValue(d), d);
 }
 function landLive(name, value, d){

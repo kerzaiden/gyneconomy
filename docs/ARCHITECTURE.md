@@ -72,6 +72,9 @@ blank the app on every later visit):
   figures.
 - **Applied, not cached, decides a repaint.** `receive` compares a document with what this page load applied
   (`liveApplied`), never with storage, so an unchanged value that was never applied still lands.
+- **An older document never beats the file (V701).** A reading may declare `fileAsOf()`, the date of the
+  file's own figure; `liveInto` skips a cached document dated before it, so an offline visit after a new build
+  shows the build's figure, not last month's cache.
 - **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
   `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
 - **A card's date is its figure's date.** Pressure, Volatility and Desire date their cards from the applied
@@ -1005,6 +1008,11 @@ transition, so opening is instant), which takes it out of the tab order and the 
 `prefers-reduced-motion` rule makes every transition and animation effectively instant (0.01ms, so
 `transitionend` and `getAnimations()` still settle). Every history chart is a focusable group whose
 Left/Right/Home/End step the same readout the pointer drives (`histKeysWire`), said in a polite live region. The live region and the label are re-made on every redraw (V699), and Horizon is a history chart like the rest: it publishes its geometry and is wired by `attachHistory`, with no hover code of its own. The window controls are tablists with one tab stop each (`tabSegs`; arrows step and select, Home/End); the cycle picker opens with Down and its options step with Up/Down. A redraw puts focus back on the control that caused it (`controlKeys`).
+The (i) dialog is named by its first heading, and its headings take levels 2 and 3 (`aria-level`), so the
+same note can sit in a page under an `h4` and still read in order inside the dialog (V701). The browser's and
+the phone's Back step out of reading pages one at a time (`backPush` on open, `popstate` closes); the app's own
+back arrow calls `history.back()` so both routes run through one handler, and closing to the cycle unwinds the
+pages it pushed (`backClear`), so Back never leaves the app from a page (V701).
 The service worker never reloads a page someone is looking at: an update swaps in when the tab is hidden and no
 text field holds a draft, and never on a first visit (V694).
 

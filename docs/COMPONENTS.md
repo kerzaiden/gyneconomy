@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `55c0ada` on 2026-10-03. **81 components**, **38 shared patterns**.
+Generated from commit `67d2bf2` on 2026-10-03. **81 components**, **39 shared patterns**.
 
 ## analysis.js
 
@@ -169,7 +169,7 @@ Generated from commit `55c0ada` on 2026-10-03. **81 components**, **38 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`renderSeasonRows`** | `.cell` `.cold` `.hot` `.meta` `.range-bar` `.range-cell` | `tabs-menu.js:bootTabsMenu` |
-| **`wireContactForm`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.js:bootTabsMenu` |
+| **`wireMenu`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.js:bootTabsMenu` |
 
 ## Vocabulary
 
@@ -180,7 +180,7 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`byId`** | dom.js | 49 places |
 | **`put`** | dom.js | 23 places |
-| **`fmtSigned`** | format.js | 13 places |
+| **`fmtSigned`** | format.js | 16 places |
 | **`histFrame`** | charts.js | 12 places |
 | **`publishGeom`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
@@ -225,6 +225,7 @@ renderer speaks. Listed most-used first.
 | **`refitHistory`** | history.js | 4 places |
 | **`seasonGroup`** | model.js | 4 places |
 | **`byIdMaybe`** | dom.js | 3 places |
+| **`curveAsOf`** | data.js | 3 places |
 | **`cycleQtrIdx`** | model.js | 3 places |
 | **`desireRow`** | readings.js | 3 places |
 | **`docValue`** | live.js | 3 places |
@@ -258,6 +259,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | Class | Places | Written by |
 |---|---|---|
 | `.caption` | 20 | `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `readings.js:activityInfoHtml`, `readings.js:confidenceInfoHtml`, `readings.js:desireInfoHtml`, `readings.js:dsrInfoHtml`, `readings.js:growthInfoHtml`, `readings.js:horizonInfoHtml`, `readings.js:marketInfoHtml`, `readings.js:productivityInfoHtml`, `readings.js:pulseInfoHtml`, `readings.js:riskMatrixBlock`, `readings.js:savInfoHtml`, `readings.js:temperatureInfoHtml`, `readings.js:volumeInfoHtml`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
+| `.follow` | 16 | `readings.js:activityInfoHtml`, `readings.js:confidenceInfoHtml`, `readings.js:desireInfoHtml`, `readings.js:dsrInfoHtml`, `readings.js:growthInfoHtml`, `readings.js:horizonInfoHtml`, `readings.js:marketInfoHtml`, `readings.js:productivityInfoHtml`, `readings.js:pulseInfoHtml`, `readings.js:riskMatrixBlock`, `readings.js:savInfoHtml`, `readings.js:temperatureInfoHtml`, `readings.js:volumeInfoHtml`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
 | `.page-chart` | 12 | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:pulseBlock`, `readings.js:riskMatrixBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:cardDetailHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | `.hi-lede` | 10 | `format.js:lede`, `inner-pages.js:gdpHighlights`, `inner-pages.js:householdsHighlights`, `inner-pages.js:tempHighlights`, `inner-pages.js:valuationHighlights`, `insights.js:insightCirculation`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
 | `.hcol` | 8 | `charts.js:divergeChart`, `history-charts.js:cpiHistoryChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:fedFundsHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:unempHistoryChart`, `history-charts.js:velocityHistoryChart` |
