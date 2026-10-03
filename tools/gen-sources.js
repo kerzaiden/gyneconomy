@@ -26,15 +26,15 @@ const esc = s => String(s)
   const errs = [];
   p.on('pageerror', e => errs.push(String(e).slice(0, 140)));
   await p.goto('file://' + APP);
-  await p.waitForTimeout(1500);
+  await p.waitForFunction(() => window.__GYN && document.getElementById('diagnosis'));
 
   await p.evaluate(() => { const m = document.querySelector('.menu-btn'); if (m) m.click(); });
-  await p.waitForTimeout(400);
+  await p.waitForSelector('.menu-row[data-sheet="sources"]', { state: 'attached' });
   await p.evaluate(() => {
     const r = document.querySelector('.menu-row[data-sheet="sources"]');
     if (r) r.click();
   });
-  await p.waitForTimeout(800);
+  await p.waitForFunction(() => { const h = document.getElementById('sources-groups'); return h && h.children.length > 0; }, null, { timeout: 10000 }).catch(() => null);
 
   const read = await p.evaluate(() => {
     const host = document.getElementById('sources-groups');

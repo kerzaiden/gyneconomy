@@ -29,8 +29,7 @@ function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
   ROSTER.forEach(function(R){ var v = R.head == null ? undefined : of(R); if (v !== undefined) o[R.hk || R.id] = v; });
   return o;
 }
-export function keyed(h: HistSpec | (() => Keyed[])): Keyed[] {
-  if (typeof h === "function") return h();
+export function keyed(h: HistSpec): Keyed[] {
   return (h.s as readonly (number | null | Point)[]).map(function(d, i){
     return h.k === "qi" ? { k:qAtIndex(h.y0, i), v:d as number | null } : h.k === "yi" ? { k:String(h.y0 + i), v:d as number | null }
          : { k:h.k === "y" ? String((d as Point).y) : (d as Point)[h.k] as string, v:(d as Point).v };

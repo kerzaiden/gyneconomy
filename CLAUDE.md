@@ -90,7 +90,7 @@ rules below are the ones that matter most.
 ```sh
 npm i && npm run setup   # once; setup fetches Chromium (skip setup in the Anthropic sandbox)
 npm run check            # the gate before every commit: build, email, hygiene, map, ledger, tool and unit tests
-npm run check:all        # plus the browser suite (about 100 checks, ~40 s) and axe — what CI runs
+npm run check:all        # plus the browser suite (about 110 checks, ~40 s) and axe — what CI runs
 npm test                 # the browser suite alone; it waits on the app, never on a clock
 npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~3 s
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing

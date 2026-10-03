@@ -102,7 +102,7 @@ function renderSignsList(){
   convertLeadingSigns();
   orderMetricSheets();
 }
-/* ---- THE ROSTER'S OWN PIECES ---- */
+// ---- THE ROSTER'S OWN PIECES ----
 function partsOf(el: Element | null, unitSel: string){
   if (!el) return { v:"", u:"", w:"", s:"" };
   var c = el.cloneNode(true) as Element, u = c.querySelector(unitSel), t = c.querySelector(".tag");
@@ -172,7 +172,7 @@ function indCategoryHtml(c: ReturnType<typeof categoriesShown>[number], find: Re
   return '<section class="ind-cat ind-card cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
     '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button>' + rows.join("") + '</section>';
 }
-/* ---- THE NAVIGATION CONTROLLER ---- */
+// ---- THE NAVIGATION CONTROLLER ----
 var NAV: { open: OpenPage | null; panel: HTMLElement | null } = { open: null, panel: null };
 var BACK = { depth: 0, skip: false };
 function backPush(){ try { history.pushState({ gyn: BACK.depth + 1 }, ""); BACK.depth++; } catch (e) {} }
@@ -273,7 +273,7 @@ function buildNav(){
   NAV.open = openMetricPage;
   NAV.panel = analysisPanel;
 }
-/* ---- ALL INDICATORS ---- */
+// ---- ALL INDICATORS ----
 function buildSearch(){
   var host = need("search-list"), input = byId("search-input") as HTMLInputElement | null; if (!host || !input) return; var field: HTMLInputElement = input;
   var IND_TABS = [{ key:"all", label:"All" }].concat(IND_ORDER.map(function(k){ return { key:k as string, label:TIMING[k].label }; }));

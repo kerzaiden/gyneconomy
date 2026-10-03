@@ -30,7 +30,6 @@ export function bootRefreshSeason(){
   // ---- REFRESH: the one date to edit ----
   DATA_COMPILED = new Date(2026, 8, 25);
   dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
-  /* ---- Live data without a render refactor ---- */
   cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
   gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
   // ---- Daily Feeling/Energy readout (Cycle tab) ----

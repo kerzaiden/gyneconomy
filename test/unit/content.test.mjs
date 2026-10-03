@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
 import { ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
-import { now, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
+import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
@@ -170,6 +170,7 @@ test('a live CAPE reaches the Valuations card, and a high-yield spread left in t
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-01' }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
   assert.equal(value('sheet-metric-valuation'), '35.2×');
   assert.equal(value('sheet-sign-desire'), desire);
+  assert.equal(capeHistory[capeHistory.length - 1].v, 35.2, 'the CAPE history takes the live figure too');
   assert.deepEqual(errors, []);
 });
 
@@ -255,6 +256,17 @@ test('a boot failure with no stored documents is not swallowed', () => {
   assert.throws(() => forgetLive(new Error('boot')), /boot/);
 });
 
+test('a cycle older than a record leaves that card blank and says why', () => {
+  document.querySelector('#cycle-list .era-row[data-era="1928"]').click();
+  const items = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => ({
+    open: n.dataset.open, val: n.querySelector('.ci-value').textContent.trim(), word: (n.querySelector('.ci-word') || {}).textContent || '' }));
+  const blank = items.filter(i => i.val === '\u2014');
+  ui.eraPageBack();
+  assert.ok(blank.length > 0 && blank.some(i => i.open === 'sheet-sign-confidence'), JSON.stringify(blank));
+  assert.ok(blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)), JSON.stringify(blank));
+  assert.deepEqual(errors, []);
+});
+
 test('a past cycle shows its own record on the cards and the Diagnosis, and Back restores today', () => {
   const temp = () => document.querySelector('.cat-sheet .cat-item[data-open="sheet-metric-temp"]').textContent;
   const today = temp(), head = document.querySelector('#diagnosis .trend-head').textContent;
@@ -267,4 +279,21 @@ test('a past cycle shows its own record on the cards and the Diagnosis, and Back
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, head);
   assert.equal(temp(), today);
   assert.deepEqual(errors, []);
+});
+
+test('a live figure repaints exactly the cards whose roster row declares it', async () => {
+  const cards = () => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')]
+    .map(n => [n.dataset.open, n.querySelector('.ci-value').textContent]));
+  const docs = {
+    fedFunds: { ...FED, lo: 4.25, hi: 4.5, lastMove: '+0.50', asOf: 'Dec 9, 2026' },
+    yieldCurve: { kind: 'series', rows: now.yieldCurve.map(r => r.m === '10Y' ? { ...r, y: 4.77 } : r), asOf: '2026-12-09' },
+    vixClose: { kind: 'scalar', value: 41.3, asOf: '2026-12-09' },
+    capeValue: { kind: 'scalar', value: 22.2, asOf: '2026-12-01' }
+  };
+  for (const [name, doc] of Object.entries(docs)) {
+    const was = cards();
+    await deliver({ [name]: doc });
+    const got = cards(), moved = Object.keys(got).filter(k => got[k] !== was[k]).sort();
+    assert.deepEqual(moved, ROSTER.filter(R => (R.live || []).includes(name)).map(R => R.id).filter(id => id in got).sort(), name);
+  }
 });
