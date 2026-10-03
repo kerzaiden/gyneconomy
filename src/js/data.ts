@@ -220,6 +220,7 @@ export function valRow(k: string): Row | null {
   return null;
 }
 export var PULSE_PRE2008 = 1.857;
+export var PULSE_STEADY_LO = 0.95, PULSE_STEADY_HI = 1.10;
 export var M2V_FROM_YEAR = 1959;
 export var m2vHistory = SERIES.m2vHistory.map(function(n){ return n / 1000; });
 export var PRODUCTIVITY_SRC: Src[] = [
@@ -263,6 +264,7 @@ function checkFedFundsHistory(){
 }
 export var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
 export var CPI_TARGET = 2;
+export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
 export var GDP_NORM = 2.6;
 function checkMoneyStock(){
   var g = m2Yoy.filter(function(x){ return x != null; });

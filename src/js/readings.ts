@@ -3,8 +3,8 @@ import { byId, expandBtn, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
 import { confidenceHistory, productivityHistory } from "./history-fred.ts";
-import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -92,7 +92,8 @@ export var coincident: Indicator[] = [
            chart:function(ind){ return pulseBlock(ind.meter.value!, PULSE_PRE2008, ind); } },
     tag:{text:"Recovering", state:"warning"},
     metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
-    meter:{min:1.126, max:2.192, value:1.415, optimal:{from:1.7, to:2.19, label:"1.7–2.2×"},
+    meter:{min:1.126, max:2.192, value:1.415, optimal:{from:PULSE_PRE2008 * PULSE_STEADY_LO, to:PULSE_PRE2008 * PULSE_STEADY_HI,
+           label:(PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + "\u2013" + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + "\u00d7"},
            ends:{ low:"Slow · hoarding", zone:"Pre-2008", high:"Fast · spending" }},
     shortCaption:"Recovering off an all-time low, but still circulating well under her pre-2008 pace.",
     caption:"Her literal pulse — not a mood, a tempo: how many times the same dollar changes hands in a year (nominal GDP ÷ M2), independent of how anxious or calm she feels. The parallel is arithmetic rather than poetic. A heart's output is its rate times the volume it moves per beat; an economy's nominal output is its velocity times the money it holds. Those are the same equation wearing two sets of names — M2 is the stroke volume, velocity is the pulse rate, and nominal GDP is what the two of them together deliver. Which is also why the spectrum runs the way it does: money sitting still is a body at rest or stalled, money changing hands quickly is a body working hard, and past a point, running hot. One honest caveat — unlike a pulse, this is not measured directly. It is computed, nominal GDP divided by M2, so it can never tell you anything those two have not already said; that is why the post-2008 collapse in velocity surprised a monetary tradition that had assumed it was stable. Steadily recovering off the all-time low set during 2020's stimulus (1.13×), but still running well under the 1.7–2.2× pace that held from the 1960s through the mid-2000s — a slower circulation than her long-run norm, consistent with a system still holding more cash and credit per transaction than it used to.",
@@ -316,10 +317,24 @@ export function growthInfoHtml(){
 function velocityVerdict(v: number): Tag {
   var r = v / PULSE_PRE2008;
   return r < 0.75 ? { text:"Very slow", state:"serious" }
-       : r < 0.95 ? { text:"Slow",      state:"warning" }
-       : r < 1.10 ? { text:"Steady",    state:"good" }
+       : r < PULSE_STEADY_LO ? { text:"Slow",      state:"warning" }
+       : r <= PULSE_STEADY_HI ? { text:"Steady",    state:"good" }
        : r < 1.25 ? { text:"Fast",      state:"warning" }
                   : { text:"Very fast", state:"serious" };
+}
+export function laborWord(v: number): Tag {
+  return v < ACT_BAND_LO ? { text:"Tight", state:"warning" } : { text: v <= ACT_BAND_HI ? "Solid" : "Slack", state: unempState(v) };
+}
+export function temperatureWord(v: number): Tag {
+  return v > TEMP_BAND_HI ? { text:"Running hot", state:"warning" }
+       : v < TEMP_BAND_LO ? { text:"Running cold", state:"warning" }
+                          : { text:"Warm", state:"good" };
+}
+function deriveLaggingTags(){
+  var u = unempHistory.filter(function(d){ return d.v != null; }), c = cpiYoYHistory[cpiYoYHistory.length - 1];
+  var act = lagging.filter(function(x){ return x.bodyTerm === "Activity"; })[0], temp = lagging.filter(function(x){ return x.bodyTerm === "Temperature"; })[0];
+  if (act) act.tag = laborWord(u[u.length - 1].v!);
+  if (temp) temp.tag = temperatureWord(c.v);
 }
 function derivePulseTag(){
   var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
@@ -329,7 +344,7 @@ export var lagging: Indicator[] = [
   {
     bodyTerm:"Activity", econTerm:"Labor market",
     page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
-    tag:{text:"Solid", state:"good"},
+    tag:null,
     metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
     meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:ACT_BAND_LO + "\u2013" + ACT_BAND_HI + "%"},
            ends:{ low:"Tight", zone:"Normal", high:"Slack" }},
@@ -345,9 +360,9 @@ export var lagging: Indicator[] = [
   {
     bodyTerm:"Temperature", econTerm:"Inflation",
     page:{ bare:true, seat:seatTemperature },
-    tag:{text:"Running hot", state:"warning"},
+    tag:null,
     get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"CPI, YoY, Aug 2026",
-    meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
+    meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:TEMP_BAND_LO,to:TEMP_BAND_HI, label:TEMP_BAND_LO + "\u2013" + TEMP_BAND_HI + "%"},
            ends:{ low:"Cold", high:"Hot" }},
     shortCaption:"",
     caption:"Basal body temperature rises only after ovulation has already happened — CPI works the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
@@ -628,7 +643,7 @@ export function indPeriod(R: { term?: string }){
 
 
 export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
-var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, Meter>;
+var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 export function bootReadings(){
   /* ---- Productivity growth is not in this panel ---- */
@@ -684,6 +699,8 @@ export function bootReadings(){
   gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
   GYN.step("derivePulseTag", derivePulseTag, "derive");
   derivePulseTag();
+  GYN.step("deriveLaggingTags", deriveLaggingTags, "derive");
+  deriveLaggingTags();
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
   tempInfo = '<h4>Temperature</h4>' +
     ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") +
@@ -697,12 +714,8 @@ export function bootReadings(){
   GYN.step("deriveHorizon", deriveHorizon, "derive");
   deriveHorizon();
   HZN_METERS = {
-    "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
-            optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
-    "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max,
-            value:(function(){ var p = function(m: string){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y! : 0; };
-                               return p("10Y") - p("2Y"); })(),
-            optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }
+    "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max },
+    "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max }
   };
   householdsNow = householdsWord(dsrNow, savNow);
   marketReading = (function(h: YearPoint[]){
@@ -726,11 +739,15 @@ export function bootReadings(){
   })(sp500Years);
 }
 function isNum(x: unknown): x is number { return typeof x === "number" && isFinite(x); }
-function rowsOk(rows: ({ meter?: Meter | null; key?: string; bodyTerm?: string } | null)[] | undefined, need?: string[]){
-  return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){
-    var m = r && typeof r === "object" && r.meter;
-    return !!m && isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max;
-  }) && (need || []).every(function(k){ return rows.some(function(r){ return r!.key === k || r!.bodyTerm === k; }); });
+type LiveRow = { meter?: Meter | null; key?: string; marker?: string; bodyTerm?: string } & Record<string, unknown>;
+function rowId(r: LiveRow){ return r.key || r.marker || r.bodyTerm || ""; }
+function rowLike(r: LiveRow | null, f: LiveRow){
+  var m = r && typeof r === "object" && r.meter;
+  if (!r || !m || rowId(r) !== rowId(f) || !(isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max)) return false;
+  return Object.keys(f).every(function(k){ var t = typeof f[k]; return (t !== "string" && t !== "number") || typeof r![k] === t; });
+}
+function rowsOk(rows: (LiveRow | null)[] | undefined, file: readonly object[]){
+  return Array.isArray(rows) && rows.length === file.length && (file as LiveRow[]).every(function(f, i){ return rowLike(rows[i], f); });
 }
 function deriveHorizon(){
   var sp = curveSpread();
@@ -769,12 +786,12 @@ export function bootReadingRegistry(){
     },
     sentiment:  {
       kind: "object",
-      ok: function(v: Partial<typeof now.sentiment>){ return v.rows === undefined || rowsOk(v.rows); },
+      ok: function(v: Partial<typeof now.sentiment>){ return v.rows === undefined || rowsOk(v.rows, now.sentiment.rows); },
       set: function(v: Partial<typeof now.sentiment>){ now.sentiment = merge(now.sentiment, v); now.vixRow = now.sentiment.rows[0]; }, onOpen: true
     },
     valuation:  {
       kind: "object",
-      ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, ["cape"]); },
+      ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, now.valuation.rows); },
       set: function(v: Partial<typeof now.valuation>){
         now.valuation = merge(now.valuation, v);
         if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape")!.meter.value!);
@@ -782,7 +799,7 @@ export function bootReadingRegistry(){
     },
     coincident: {
       kind: "series",
-      ok: function(v: Indicator[]){ return rowsOk(v, ["Desire", "Pulse", "Volume"]); },
+      ok: function(v: Indicator[]){ return rowsOk(v as unknown as LiveRow[], coincident); },
       set: function(v: Indicator[]){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
       onOpen: true
     },

@@ -18,6 +18,7 @@ for (const k of ['window', 'document', 'navigator', 'localStorage', 'sessionStor
   'Event', 'KeyboardEvent', 'CustomEvent', 'MutationObserver', 'DOMParser'])
   Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true });
 
+w.sessionStorage.setItem('gyn.forgot', '1');
 await import('../../src/js/main.ts');
 export const bootWarnings = warnings.slice();
 export { w as window };

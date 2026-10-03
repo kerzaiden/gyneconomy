@@ -243,7 +243,7 @@ function registerFlowPages(){
   })();
 }
 function renderPressureRow(){
-  var y10 = (now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+  var y10 = curveAt("10Y");
   put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
     '<span class="unit">10-year Treasury</span>');
   var rowSay = byId("subj-say-pressure");
@@ -457,7 +457,7 @@ function renderPressurePage(){
 /* ---- Pressure's Insights ---- */
 function renderPressureInsights(){
   var ins = byId("pressure-insights"); if (!ins || !t10yYieldHistory.length) return;
-  var y10 = (now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+  var y10 = curveAt("10Y");
   var seen = t10yYieldHistory.filter(function(d){ return d.v != null; });
   var hi = seen.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var lo = seen.reduce(function(a, d){ return d.v < a.v ? d : a; });
