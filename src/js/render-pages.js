@@ -77,7 +77,7 @@ function renderSpreadHistory(){
     var data = s.data;
     if (from != null) data = data.slice(from, to == null ? undefined : to);
     if (data.length < 2) data = s.data;
-    var shell = svg.parentNode;
+    var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
     innerW = W - padL - padR; innerH = H - padT - padB;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -128,7 +128,7 @@ function renderSpreadHistory(){
     svg.appendChild(hoverDot);
     var hit = el("rect", { x:padL, y:0, width:innerW, height:H, class:"hero-hit" });
     svg.appendChild(hit);
-    var shell = byId("spread-history-shell");
+    shell = byId("spread-history-shell");
     if (shell){
       shell.__geom = { vals:data, n:data.length, W:W, T:yTop, B:yBot,
                        L:x(0, data.length), R:x(data.length - 1, data.length),
@@ -145,8 +145,8 @@ function renderSpreadHistory(){
     function showAt(i){
       var d = data[i];
       var px = x(i,data.length);
-      crosshair.setAttribute("x1", px); crosshair.setAttribute("x2", px); crosshair.setAttribute("opacity", 1);
-      hoverDot.setAttribute("opacity", 0);
+      crosshair.setAttribute("x1", String(px)); crosshair.setAttribute("x2", String(px)); crosshair.setAttribute("opacity", "1");
+      hoverDot.setAttribute("opacity", "0");
       svg.classList.add("hovering");
       if (onCol) onCol.classList.remove("on");
       onCol = svg.querySelectorAll(".hcol")[i];
@@ -154,7 +154,7 @@ function renderSpreadHistory(){
       if (shell) histReadFill(shell, d, i);
     }
     function hide(){
-      crosshair.setAttribute("opacity", 0); hoverDot.setAttribute("opacity", 0);
+      crosshair.setAttribute("opacity", "0"); hoverDot.setAttribute("opacity", "0");
       svg.classList.remove("hovering");
       if (onCol){ onCol.classList.remove("on"); onCol = null; }
       if (shell) histReadFill(shell, null);

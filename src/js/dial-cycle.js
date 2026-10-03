@@ -228,7 +228,7 @@ function renderCycleDial(){
   dial.addEventListener("mouseleave", reset);
   dial.addEventListener("touchstart", function(e){ if (scrubbing) return; if (readTarget(e.target)) e.stopPropagation(); }, {passive:true});
   document.addEventListener("click", function(e){
-    if (dial.contains(e.target) || hub.contains(e.target)) return;
+    if (!(e.target instanceof Node) || dial.contains(e.target) || hub.contains(e.target)) return;
     if (!scrubbing && dialState && dialState.parked != null){ shown = false; goTo(-1); return; }
     reset();
   });
@@ -385,11 +385,11 @@ export function settleStrips(){
     });
     for (var pass = 0; pass < runs.length; pass++){
       var worst = null;
-      runs.forEach(function(r){
-        if (r.classList.contains("settled")) return;
+      for (var r of runs){
+        if (r.classList.contains("settled")) continue;
         var b = r.getBoundingClientRect();
         if (b.width < b.height * STRIP_MIN_RATIO && (!worst || b.width < worst.w)) worst = { el:r, w:b.width };
-      });
+      }
       if (!worst) break;
       if (!worst.el.getAttribute("data-flex")) worst.el.setAttribute("data-flex", worst.el.style.flex);
       worst.el.classList.add("settled");

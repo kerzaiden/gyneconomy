@@ -580,7 +580,7 @@ function marketInfoHtml(f){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading, marketReading]); }
+export function rowReadings(){ return [].concat(coincident, lagging, [productivityReading, confidenceReading, marketReading]); }
 export function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },

@@ -2,11 +2,7 @@ import { fmtAsOf } from "./format.js";
 
 export var liveAsOf = {}, liveApplied = {};
 export function merge(base, over){
-  var o = {};
-  if (base && typeof base === "object" && !Array.isArray(base))
-    for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
-  for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
-  return o;
+  return Object.assign({}, base && typeof base === "object" && !Array.isArray(base) ? base : {}, over);
 }
 function docValue(d){
   if (!d || typeof d !== "object") return null;

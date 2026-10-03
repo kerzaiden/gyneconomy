@@ -2061,12 +2061,7 @@
   var liveAsOf = {};
   var liveApplied = {};
   function merge(base, over) {
-    var o = {};
-    if (base && typeof base === "object" && !Array.isArray(base)) {
-      for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
-    }
-    for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
-    return o;
+    return Object.assign({}, base && typeof base === "object" && !Array.isArray(base) ? base : {}, over);
   }
   function docValue(d) {
     if (!d || typeof d !== "object") return null;
@@ -22904,7 +22899,7 @@
   function moodWord(pct2, change) {
     if (pct2 == null || change == null) return null;
     return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s) {
-      return Math.abs(s[1] - pct2) < Math.abs(a[1] - pct2) ? s : a;
+      return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
     })[0];
   }
   function moodRead(x, before) {
@@ -23181,7 +23176,7 @@
       });
       return out;
     }();
-    cycleYtdFraction = (DATA_COMPILED - new Date(calendarTodayY, 0, 1)) / (new Date(calendarTodayY + 1, 0, 1) - new Date(calendarTodayY, 0, 1));
+    cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
     nowModel = cycleModel(currentEra);
     readingNow = nowModel.reading;
     cpiNow = readingNow.cpiNow;
@@ -24862,7 +24857,7 @@
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + " in " + f.now.y + (f.open ? " so far" : "") + ", " + f.wordSays + ". The record, year by year, runs " + f.span + '.</p><p class="caption" style="margin-top:10px;"><b>The zero line is the definition, not a band</b>: a year the index ends higher, dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial’s inner band colours, so the card, this chart and the cycle read one number.' + (f.open ? " " + f.now.y + " is still open, so its bar is the year so far." : "") + "</p>" + srcBlock(sp500AnnualReturnSource);
   }
   function rowReadings() {
-    return coincident.concat(lagging, [ productivityReading, confidenceReading, marketReading ]);
+    return [].concat(coincident, lagging, [ productivityReading, confidenceReading, marketReading ]);
   }
   function indOf(R) {
     return rowReadings().filter(function(x) {
@@ -27118,7 +27113,7 @@
       return padT + innerH - (v - minV) / (maxV - minV) * innerH;
     }
     function render() {
-      var shell = svg.parentNode;
+      var shell = svg.parentElement;
       F = histFrame(shell && shell.clientWidth);
       W = F.W;
       H = F.H;
@@ -27193,7 +27188,7 @@
         class: "hero-hit"
       });
       svg.appendChild(hit);
-      var shell = byId("ylm-shell");
+      shell = byId("ylm-shell");
       attachHistory(shell, "ylm-tooltip", "ylm");
     }
     var matPick = "10y";
@@ -27543,7 +27538,7 @@
       var data = s.data;
       if (from != null) data = data.slice(from, to == null ? void 0 : to);
       if (data.length < 2) data = s.data;
-      var shell = svg.parentNode;
+      var shell = svg.parentElement;
       F = histFrame(shell && shell.clientWidth);
       W = F.W;
       H = F.H;
@@ -27628,7 +27623,7 @@
         class: "hero-hit"
       });
       svg.appendChild(hit);
-      var shell = byId("spread-history-shell");
+      shell = byId("spread-history-shell");
       if (shell) {
         shell.__geom = {
           vals: data,
@@ -27661,10 +27656,10 @@
       function showAt(i) {
         var d = data[i];
         var px = x(i, data.length);
-        crosshair.setAttribute("x1", px);
-        crosshair.setAttribute("x2", px);
-        crosshair.setAttribute("opacity", 1);
-        hoverDot.setAttribute("opacity", 0);
+        crosshair.setAttribute("x1", String(px));
+        crosshair.setAttribute("x2", String(px));
+        crosshair.setAttribute("opacity", "1");
+        hoverDot.setAttribute("opacity", "0");
         svg.classList.add("hovering");
         if (onCol) onCol.classList.remove("on");
         onCol = svg.querySelectorAll(".hcol")[i];
@@ -27672,8 +27667,8 @@
         if (shell) histReadFill(shell, d, i);
       }
       function hide() {
-        crosshair.setAttribute("opacity", 0);
-        hoverDot.setAttribute("opacity", 0);
+        crosshair.setAttribute("opacity", "0");
+        hoverDot.setAttribute("opacity", "0");
         svg.classList.remove("hovering");
         if (onCol) {
           onCol.classList.remove("on");
@@ -28024,7 +28019,7 @@
   }
   function kT(k) {
     var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-    return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
   }
   function upTo(list, k) {
     var t = kT(k) + 1e-6;
@@ -28481,7 +28476,7 @@
       passive: true
     });
     document.addEventListener("click", function(e) {
-      if (dial.contains(e.target) || hub.contains(e.target)) return;
+      if (!(e.target instanceof Node) || dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null) {
         shown = false;
         goTo(-1);
@@ -28685,21 +28680,21 @@
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip) {
       if (!strip.clientWidth || strip.closest(".cyc-scale")) return;
       var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
-      runs.forEach(function(r) {
-        r.classList.remove("settled");
-        r.style.flex = r.getAttribute("data-flex") || r.style.flex;
-        r.style.width = "";
+      runs.forEach(function(r2) {
+        r2.classList.remove("settled");
+        r2.style.flex = r2.getAttribute("data-flex") || r2.style.flex;
+        r2.style.width = "";
       });
       for (var pass = 0; pass < runs.length; pass++) {
         var worst = null;
-        runs.forEach(function(r) {
-          if (r.classList.contains("settled")) return;
+        for (var r of runs) {
+          if (r.classList.contains("settled")) continue;
           var b = r.getBoundingClientRect();
           if (b.width < b.height * STRIP_MIN_RATIO && (!worst || b.width < worst.w)) worst = {
             el: r,
             w: b.width
           };
-        });
+        }
         if (!worst) break;
         if (!worst.el.getAttribute("data-flex")) worst.el.setAttribute("data-flex", worst.el.style.flex);
         worst.el.classList.add("settled");
@@ -28859,13 +28854,13 @@
   }
   function moodCycleSvg(now2) {
     var pts = MOOD_CHART.map(function(s) {
-      return [ s[1], s[2] ];
+      return [ +s[1], +s[2] ];
     });
     var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
     MOOD_CHART.forEach(function(s) {
       var on = s[0] === now2 ? " now" : "";
       out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
-      out.push('<text class="mood-lab' + on + '" x="' + (s[1] + s[4]) + '" y="' + (s[2] + s[5]) + '" text-anchor="' + s[6] + '">' + s[0].toUpperCase() + "</text>");
+      out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + "</text>");
     });
     return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
   }
@@ -29189,14 +29184,14 @@
           state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
         };
         var best = null;
-        r.seen.forEach(function(d) {
-          if (+d.k.slice(0, 4) !== y) return;
+        for (var d of r.seen) {
+          if (+d.k.slice(0, 4) !== y) continue;
           var gap = Math.abs(r.place(d.v) - now2);
           if (!best || gap < best.gap) best = {
             d: d,
             gap: gap
           };
-        });
+        }
         if (!best) return {
           y: y,
           state: "na"
@@ -29610,6 +29605,443 @@
       return d.v > s.mid;
     }).length;
     return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has already used, paid again every year."), hiCard("Against the record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now2.toFixed(1) + "% " + (now2 > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The last actual year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
+  }
+  function actCycleMonths(c) {
+    var to = c.to || calendarTodayY, a = -1, b = -1;
+    unempHistory.forEach(function(d, i) {
+      var y = parseInt(d.m.slice(0, 4), 10);
+      if (y >= c.from && y <= to) {
+        if (a === -1) a = i;
+        b = i + 1;
+      }
+    });
+    return a === -1 ? null : [ a, b ];
+  }
+  function householdsHighlights() {
+    var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
+    var offPeak = (1 - dsrNow / peak) * 100;
+    var lower = savHistory.map(function(v, i) {
+      return {
+        v: v,
+        i: i
+      };
+    }).filter(function(d) {
+      return d.v <= savNow && d.i < savHistory.length - 1;
+    });
+    var run = lower.filter(function(d) {
+      var y = SAV_FROM_YEAR + Math.floor(d.i / 4);
+      return y >= 2005 && y <= 2008;
+    });
+    var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
+    var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left after. The bill is the load the body carries; the cushion is what it has stored against a month that goes wrong.</p>';
+    var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " + DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " + peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
+    var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length + " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length + " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
+    return highlightsHtml([ hhLede, hiCard("The bill", "", billTxt), hiCard("The cushion", householdsNow.state, keptTxt) ]);
+  }
+  function redrawSheet(id) {
+    var h = byId("metric-page"), d = sheetRenderers[id];
+    if (d) d(h && h.clientWidth ? h.clientWidth : 340);
+  }
+  function registerTempGdpPages() {
+    sheetRenderers["sheet-metric-temp"] = function(W) {
+      var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
+      put("temp-rangebar", histControls("sheet-metric-temp", {
+        series: cpiYoYHistory
+      }));
+      put("temp-head", histHead("sheet-metric-temp"));
+      var hist = byId("temp-history");
+      hist.hidden = false;
+      var win;
+      if (cyc) {
+        var span = cycleMonths(cyc);
+        win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
+        hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0, {
+          to: span ? span[1] : void 0,
+          cycle: true
+        });
+        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
+        put("temp-trend", trendPill(trendOf(win.map(function(d) {
+          return d.v;
+        }), "points", "month"), null, true, {
+          rising: "heating",
+          falling: "cooling"
+        }));
+      } else {
+        var from = mWindowFrom(cpiYoYHistory.length, r);
+        win = cpiYoYHistory.slice(from);
+        hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
+        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
+        put("temp-trend", trendPill(trendOf(win.map(function(d) {
+          return d.v;
+        }), "points", "month"), null, true, {
+          rising: "heating",
+          falling: "cooling"
+        }));
+      }
+      var tri = totalRiseIn(win);
+      headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
+    };
+    sheetRenderers["sheet-metric-gdp"] = function(W) {
+      var r = page.range["sheet-metric-gdp"];
+      put("gdp-rangebar", histControls("sheet-metric-gdp", {
+        series: gdpQuarterlyYoY
+      }));
+      put("gdp-head", histHead("sheet-metric-gdp"));
+      histNote("sheet-metric-gdp", growthInfoHtml());
+      var hist = byId("gdp-history");
+      hist.hidden = false;
+      var gCyc = pageCycle("sheet-metric-gdp");
+      var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
+      var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
+      var gTo = gSpan ? gSpan[1] : void 0;
+      var win = gdpQuarterlyYoY.slice(gFrom, gTo);
+      hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, {
+        to: gTo,
+        cycle: !!gSpan
+      });
+      attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
+      var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
+      headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
+      put("gdp-trend", trendPill(trendOf(win.map(function(d) {
+        return d.v;
+      }), "points", "quarter"), null, true, {
+        rising: "quickening",
+        falling: "slowing"
+      }));
+    };
+  }
+  function registerActivityPowerDeficitPages() {
+    sheetRenderers["sheet-sign-activity"] = function(W) {
+      var id = "sheet-sign-activity", bar = byId("act-rangebar");
+      if (!bar) return;
+      bar.innerHTML = histControls(id, {
+        series: unempHistory
+      });
+      var hist = byId("act-history");
+      if (!hist) return;
+      var cyc = pageCycle(id);
+      var span = cyc ? actCycleMonths(cyc) : null;
+      var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
+      var to = span ? span[1] : void 0;
+      hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, {
+        to: to,
+        cycle: !!span
+      });
+      attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
+      var win = unempHistory.slice(from, to).filter(function(d) {
+        return d.v != null;
+      });
+      put("act-trend", trendPill(trendOf(win.map(function(d) {
+        return d.v;
+      }), "points", "month"), null, true, {
+        rising: "loosening",
+        falling: "tightening"
+      }));
+    };
+    sheetRenderers["sheet-marker-deficit"] = function(W) {
+      var sheet = byId("sheet-marker-deficit");
+      if (!sheet) return;
+      if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
+      sheetRenderers["deficit-range"](W);
+    };
+    sheetRenderers["deficit-range"] = function(W) {
+      var host = byId("deficit-record");
+      if (!host) return;
+      var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
+      var defIdx = defCyc ? [ Math.max(0, defCyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
+      var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : void 0;
+      var bar = put("deficit-rangebar", histControls("deficit-range", {
+        depth: deficitHistory.length
+      }));
+      host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
+      put("deficit-records", "");
+      attachHistory(host, "deficit-hist-tooltip", "deficitChart");
+      put("deficit-trend", trendPill(trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true, {
+        rising: "improving",
+        falling: "widening"
+      }));
+    };
+  }
+  function registerHouseholdsValuationPages() {
+    sheetRenderers["sheet-metric-households"] = function(W) {
+      var id = "sheet-metric-households";
+      var hhCyc = pageCycle(id, DSR_FROM_YEAR);
+      var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
+      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]);
+      var to = idx ? idx[1] : dsrHistory.length;
+      var host = byId("households-chart");
+      if (!host) return;
+      histNote(id, dsrInfoHtml() + savInfoHtml());
+      host.innerHTML = histBar(histControls(id, {
+        depth: Math.floor(dsrHistory.length / 4)
+      }, DSR_FROM_YEAR)) + '<div class="page-chart">' + histHead(id) + householdsChart(W, from, to) + trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, {
+        rising: "keeping more",
+        falling: "keeping less"
+      }) + histTip("households-hist-tooltip") + "</div>";
+      var box = host.querySelector(".page-chart");
+      refitHistory(box, function(w) {
+        return householdsChart(w, from, to);
+      });
+      attachHistory(box, "households-hist-tooltip", "householdsChart");
+      var hl = put("households-highlights", householdsHighlights());
+    };
+    sheetRenderers["sheet-metric-valuation"] = function(W) {
+      var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
+      var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
+      var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
+      var capeTrend = trendOf(vals.map(function(d) {
+        return d.v;
+      }), "×", "year");
+      put("valuation-chart", histBar(histControls("sheet-metric-valuation", {
+        series: capeHistory
+      })) + '<div class="page-chart">' + histHead("sheet-metric-valuation") + divergeChart({
+        vals: vals,
+        mid: CAPE_FAIR,
+        midLabel: "fair value, " + CAPE_FAIR + "×",
+        fmt: capeFmt1,
+        tickFmt: function(v) {
+          return v + "×";
+        },
+        fit: capeTrend.fit,
+        alt: "Shiller CAPE against its long-run fair value, each January" + (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") + ", with the fitted trend across the readings in view"
+      }, W) + trendPill(capeTrend, null, true) + histTip("valuation-hist-tooltip") + "</div>");
+      var vBox = document.querySelector("#valuation-chart .page-chart");
+      refitHistory(vBox, function(w) {
+        return divergeChart({
+          vals: vals,
+          mid: CAPE_FAIR,
+          midLabel: "fair value, " + CAPE_FAIR + "×",
+          fmt: capeFmt1,
+          tickFmt: function(v) {
+            return v + "×";
+          },
+          fit: capeTrend.fit,
+          alt: "Shiller CAPE against its long-run fair value, each January"
+        }, w);
+      });
+      attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
+    };
+  }
+  function wireMetricPageControls() {
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest) return;
+      var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
+      if (id && e.target.closest("[data-picker-toggle]")) {
+        pickerOpen[id] = !pickerOpen[id];
+        redrawSheet(id);
+        return;
+      }
+      var opt = e.target.closest(".cycsel-opt");
+      if (id && opt && id in page.cycles) {
+        page.cycles[id] = opt.getAttribute("data-cycle");
+        pickerOpen[id] = false;
+        redrawSheet(id);
+        return;
+      }
+      for (var k in pickerOpen) if (pickerOpen[k] && k !== id) {
+        pickerOpen[k] = false;
+        redrawSheet(k);
+      }
+    });
+    document.addEventListener("click", function(e) {
+      var seg = e.target.closest && e.target.closest(".range-seg");
+      if (!seg) return;
+      var mid = seg.parentNode.getAttribute("data-mode-for");
+      if (mid && mid in page.mode) {
+        page.mode[mid] = seg.getAttribute("data-mode");
+        var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
+        if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
+        return;
+      }
+      var id = seg.parentNode.getAttribute("data-range-for");
+      if (!(id in page.range)) return;
+      page.range[id] = seg.getAttribute("data-range");
+      var host = byId("metric-page");
+      var draw = sheetRenderers[id];
+      if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
+    });
+  }
+  function valuationHighlights(capeNow, buffNow) {
+    var vs = capeHistory.map(function(d) {
+      return d.v;
+    });
+    var richer = capeHistory.filter(function(d) {
+      return d.v > capeNow;
+    });
+    var cards = [];
+    cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ten years. Paying far above the long-run price is appetite running ahead of what the body is actually producing.</p>');
+    cards.push(hiCard("Shiller CAPE", now.valuation.tag.state, richer.length === 0 ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "." : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y + " — only " + richer.map(function(d) {
+      return d.y + " (" + capeFmt1(d.v) + ")";
+    }).join(" and ") + " ran higher."));
+    put("valuation-highlights", highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(now.valuation.impression))));
+  }
+  function tempHighlights(tempInd, r) {
+    var cyc = nowModel.cpi, hot = cyc.filter(function(d) {
+      return d.v > 3;
+    }).length;
+    var peak = cyc.reduce(function(a, b) {
+      return b.v > a.v ? b : a;
+    });
+    var cards = [ '<p class="hi-lede">A temperature is the one number that says whether something inside is running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only means anything measured against the level the system is meant to hold.</p>' ];
+    cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning", "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot + " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
+    cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning", "The current cycle’s average is " + mean(cyc.map(function(d) {
+      return d.v;
+    })).toFixed(1) + "%, against a 2% target. Today’s " + r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1–3% range."));
+    put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + function() {
+      var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
+      return rest ? factsFrom(rest) : "";
+    }())));
+  }
+  function gdpHighlights(r, gq) {
+    var cycAvg = mean(gq.map(function(d) {
+      return d.v;
+    }));
+    var contractions = gq.filter(function(d) {
+      return d.v < 0;
+    }).length;
+    var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than last. A body spends the first half of its cycle building something it has not used yet, and an economy does the same with output.</p>' ];
+    cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
+    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the trend as " + r.regime + "."));
+    put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
+  }
+  function renderMetricPages(ctx) {
+    registerTempGdpPages();
+    registerActivityPowerDeficitPages();
+    registerHouseholdsValuationPages();
+    wireMetricPageControls();
+    valuationHighlights(ctx.capeNow, ctx.buffNow);
+    tempHighlights(ctx.tempInd, ctx.r);
+    gdpHighlights(ctx.r, ctx.gq);
+  }
+  var PAIR_ART = {
+    "sheet-sign-pulse": function(ind) {
+      return {
+        pulse: {
+          rate: ind.meter.value,
+          ref: PULSE_PRE2008
+        }
+      };
+    },
+    "sheet-sign-volume": function() {
+      return {
+        cols: m2Yoy.filter(function(x) {
+          return x != null;
+        }),
+        colBase: 0,
+        colRule: true,
+        colClass: function(v) {
+          return "m2-col " + m2Step(v);
+        }
+      };
+    }
+  };
+  function placeSignPair() {
+    var pair = ROSTER.filter(function(R) {
+      return R.door === "pair";
+    }).map(function(R) {
+      var ind = indOf(R);
+      if (!ind) return "";
+      var card = PAIR_ART[R.id](ind);
+      card.value = ind.metric;
+      card.word = ind.tag.text;
+      card.state = ind.tag.state;
+      return peekOf(R.id, card);
+    }).join("");
+    if (!pair) return;
+    var after = byId("sheet-sign-sentiment");
+    if (!after || !after.parentNode) return;
+    var row = document.createElement("div");
+    row.className = "peek-row";
+    row.id = "peek-row-signs";
+    row.innerHTML = pair;
+    after.parentNode.insertBefore(row, after.nextSibling);
+    var horm = document.querySelector('.sign-row[data-subject="hormones"]');
+    var hormSheet = byId("sheet-sign-hormones");
+    if (horm && hormSheet && horm.parentNode === row.parentNode) {
+      row.parentNode.insertBefore(horm, row);
+      horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
+    }
+  }
+  function swapSentimentActivity() {
+    var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
+    var act = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
+    var sentSheet = byId("sheet-sign-sentiment");
+    var actSheet = byId("sheet-sign-activity");
+    if (!sent || !act || !sentSheet || !actSheet) return;
+    var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
+    sent.parentNode.insertBefore(mSent, sent);
+    act.parentNode.insertBefore(mAct, act);
+    mSent.parentNode.insertBefore(act, mSent);
+    act.parentNode.insertBefore(actSheet, act.nextSibling);
+    mAct.parentNode.insertBefore(sent, mAct);
+    sent.parentNode.insertBefore(sentSheet, sent.nextSibling);
+    mSent.parentNode.removeChild(mSent);
+    mAct.parentNode.removeChild(mAct);
+  }
+  function buildCategories() {
+    var host = byId("today-analysis");
+    if (!host) return;
+    CATEGORIES.forEach(function(c) {
+      var sheet = catSheet("sheet-cat-" + c.key, c.key);
+      var items = document.createElement("div");
+      items.className = "cat-list";
+      appendPicks(items, catPicks(c), c.key);
+      sheet.appendChild(items);
+      var tog = INSIGHT[c.key] ? INSIGHT[c.key]() : "";
+      if (tog) sheet.insertAdjacentHTML("beforeend", tog);
+      host.appendChild(sheet);
+    });
+    [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
+      var el = byId(id);
+      if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
+    });
+  }
+  function renderPeekAndCategories() {
+    var host = byId("peek-row");
+    if (!host) return null;
+    var tempInd = indOf(ROSTER_BY["sheet-metric-temp"]);
+    var r = nowModel.reading, era = nowModel.era;
+    var gq = gdpQuarterlyYoY.filter(function(d) {
+      return parseInt(d.q.slice(0, 4), 10) >= era.from;
+    });
+    var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
+    var capeLast = capeHistory[capeHistory.length - 1];
+    if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({
+      y: calendarTodayY,
+      v: capeNow
+    });
+    host.innerHTML = tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) + peekOf("sheet-metric-valuation", {
+      value: capeNow.toFixed(1) + "×",
+      word: now.valuation.tag.text,
+      state: now.valuation.tag.state,
+      cols: capeHistory.map(function(d) {
+        return d.v;
+      }),
+      colBase: CAPE_FAIR,
+      colClass: function(v) {
+        return "dv-bar " + (v > CAPE_FAIR ? "over" : "under");
+      }
+    }) + peekOf("sheet-metric-households", {
+      value: dsrNow.toFixed(1) + "/" + savNow.toFixed(1),
+      word: householdsNow.word,
+      state: householdsNow.state,
+      cols: savHistory.slice(SAV_OFFSET),
+      colBase: 0,
+      colClass: function() {
+        return "hh-col";
+      }
+    }) + indicatorPeeks();
+    placeSignPair();
+    swapSentimentActivity();
+    buildCategories();
+    return {
+      host: host,
+      tempInd: tempInd,
+      r: r,
+      gq: gq,
+      capeNow: capeNow,
+      buffNow: buffNow
+    };
   }
   function convertLeadingSigns() {
     ROSTER.filter(function(R) {
@@ -30063,443 +30495,6 @@
     };
     apply();
   }
-  var PAIR_ART = {
-    "sheet-sign-pulse": function(ind) {
-      return {
-        pulse: {
-          rate: ind.meter.value,
-          ref: PULSE_PRE2008
-        }
-      };
-    },
-    "sheet-sign-volume": function() {
-      return {
-        cols: m2Yoy.filter(function(x) {
-          return x != null;
-        }),
-        colBase: 0,
-        colRule: true,
-        colClass: function(v) {
-          return "m2-col " + m2Step(v);
-        }
-      };
-    }
-  };
-  function placeSignPair() {
-    var pair = ROSTER.filter(function(R) {
-      return R.door === "pair";
-    }).map(function(R) {
-      var ind = indOf(R);
-      if (!ind) return "";
-      var card = PAIR_ART[R.id](ind);
-      card.value = ind.metric;
-      card.word = ind.tag.text;
-      card.state = ind.tag.state;
-      return peekOf(R.id, card);
-    }).join("");
-    if (!pair) return;
-    var after = byId("sheet-sign-sentiment");
-    if (!after || !after.parentNode) return;
-    var row = document.createElement("div");
-    row.className = "peek-row";
-    row.id = "peek-row-signs";
-    row.innerHTML = pair;
-    after.parentNode.insertBefore(row, after.nextSibling);
-    var horm = document.querySelector('.sign-row[data-subject="hormones"]');
-    var hormSheet = byId("sheet-sign-hormones");
-    if (horm && hormSheet && horm.parentNode === row.parentNode) {
-      row.parentNode.insertBefore(horm, row);
-      horm.parentNode.insertBefore(hormSheet, horm.nextSibling);
-    }
-  }
-  function swapSentimentActivity() {
-    var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
-    var act = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
-    var sentSheet = byId("sheet-sign-sentiment");
-    var actSheet = byId("sheet-sign-activity");
-    if (!sent || !act || !sentSheet || !actSheet) return;
-    var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
-    sent.parentNode.insertBefore(mSent, sent);
-    act.parentNode.insertBefore(mAct, act);
-    mSent.parentNode.insertBefore(act, mSent);
-    act.parentNode.insertBefore(actSheet, act.nextSibling);
-    mAct.parentNode.insertBefore(sent, mAct);
-    sent.parentNode.insertBefore(sentSheet, sent.nextSibling);
-    mSent.parentNode.removeChild(mSent);
-    mAct.parentNode.removeChild(mAct);
-  }
-  function buildCategories() {
-    var host = byId("today-analysis");
-    if (!host) return;
-    CATEGORIES.forEach(function(c) {
-      var sheet = catSheet("sheet-cat-" + c.key, c.key);
-      var items = document.createElement("div");
-      items.className = "cat-list";
-      appendPicks(items, catPicks(c), c.key);
-      sheet.appendChild(items);
-      var tog = INSIGHT[c.key] ? INSIGHT[c.key]() : "";
-      if (tog) sheet.insertAdjacentHTML("beforeend", tog);
-      host.appendChild(sheet);
-    });
-    [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
-      var el = byId(id);
-      if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
-    });
-  }
-  function renderPeekAndCategories() {
-    var host = byId("peek-row");
-    if (!host) return null;
-    var tempInd = indOf(ROSTER_BY["sheet-metric-temp"]);
-    var r = nowModel.reading, era = nowModel.era;
-    var gq = gdpQuarterlyYoY.filter(function(d) {
-      return parseInt(d.q.slice(0, 4), 10) >= era.from;
-    });
-    var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
-    var capeLast = capeHistory[capeHistory.length - 1];
-    if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({
-      y: calendarTodayY,
-      v: capeNow
-    });
-    host.innerHTML = tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) + peekOf("sheet-metric-valuation", {
-      value: capeNow.toFixed(1) + "×",
-      word: now.valuation.tag.text,
-      state: now.valuation.tag.state,
-      cols: capeHistory.map(function(d) {
-        return d.v;
-      }),
-      colBase: CAPE_FAIR,
-      colClass: function(v) {
-        return "dv-bar " + (v > CAPE_FAIR ? "over" : "under");
-      }
-    }) + peekOf("sheet-metric-households", {
-      value: dsrNow.toFixed(1) + "/" + savNow.toFixed(1),
-      word: householdsNow.word,
-      state: householdsNow.state,
-      cols: savHistory.slice(SAV_OFFSET),
-      colBase: 0,
-      colClass: function() {
-        return "hh-col";
-      }
-    }) + indicatorPeeks();
-    placeSignPair();
-    swapSentimentActivity();
-    buildCategories();
-    return {
-      host: host,
-      tempInd: tempInd,
-      r: r,
-      gq: gq,
-      capeNow: capeNow,
-      buffNow: buffNow
-    };
-  }
-  function actCycleMonths(c) {
-    var to = c.to || calendarTodayY, a = -1, b = -1;
-    unempHistory.forEach(function(d, i) {
-      var y = parseInt(d.m.slice(0, 4), 10);
-      if (y >= c.from && y <= to) {
-        if (a === -1) a = i;
-        b = i + 1;
-      }
-    });
-    return a === -1 ? null : [ a, b ];
-  }
-  function householdsHighlights() {
-    var peak = Math.max.apply(null, dsrHistory), peakAt = qAtIndex(DSR_FROM_YEAR, dsrHistory.indexOf(peak));
-    var offPeak = (1 - dsrNow / peak) * 100;
-    var lower = savHistory.map(function(v, i) {
-      return {
-        v: v,
-        i: i
-      };
-    }).filter(function(d) {
-      return d.v <= savNow && d.i < savHistory.length - 1;
-    });
-    var run = lower.filter(function(d) {
-      var y = SAV_FROM_YEAR + Math.floor(d.i / 4);
-      return y >= 2005 && y <= 2008;
-    });
-    var years = SAV_FROM_YEAR + Math.floor((savHistory.length - 1) / 4) - SAV_FROM_YEAR;
-    var hhLede = '<p class="hi-lede">Two halves of one household: what it owes every month, and what is left after. The bill is the load the body carries; the cushion is what it has stored against a month that goes wrong.</p>';
-    var billTxt = "Households pay " + dsrNow.toFixed(1) + "% of what they take home to service debt, against " + DSR_MEAN.toFixed(1) + "% on average since " + DSR_FROM_YEAR + " and a peak of " + peak.toFixed(1) + "% in " + peakAt + ". That is " + offPeak.toFixed(0) + "% below the peak, and flat for two years.";
-    var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length + " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length + " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
-    return highlightsHtml([ hhLede, hiCard("The bill", "", billTxt), hiCard("The cushion", householdsNow.state, keptTxt) ]);
-  }
-  function redrawSheet(id) {
-    var h = byId("metric-page"), d = sheetRenderers[id];
-    if (d) d(h && h.clientWidth ? h.clientWidth : 340);
-  }
-  function registerTempGdpPages() {
-    sheetRenderers["sheet-metric-temp"] = function(W) {
-      var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
-      put("temp-rangebar", histControls("sheet-metric-temp", {
-        series: cpiYoYHistory
-      }));
-      put("temp-head", histHead("sheet-metric-temp"));
-      var hist = byId("temp-history");
-      hist.hidden = false;
-      var win;
-      if (cyc) {
-        var span = cycleMonths(cyc);
-        win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
-        hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0, {
-          to: span ? span[1] : void 0,
-          cycle: true
-        });
-        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-        put("temp-trend", trendPill(trendOf(win.map(function(d) {
-          return d.v;
-        }), "points", "month"), null, true, {
-          rising: "heating",
-          falling: "cooling"
-        }));
-      } else {
-        var from = mWindowFrom(cpiYoYHistory.length, r);
-        win = cpiYoYHistory.slice(from);
-        hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
-        attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
-        put("temp-trend", trendPill(trendOf(win.map(function(d) {
-          return d.v;
-        }), "points", "month"), null, true, {
-          rising: "heating",
-          falling: "cooling"
-        }));
-      }
-      var tri = totalRiseIn(win);
-      headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
-    };
-    sheetRenderers["sheet-metric-gdp"] = function(W) {
-      var r = page.range["sheet-metric-gdp"];
-      put("gdp-rangebar", histControls("sheet-metric-gdp", {
-        series: gdpQuarterlyYoY
-      }));
-      put("gdp-head", histHead("sheet-metric-gdp"));
-      histNote("sheet-metric-gdp", growthInfoHtml());
-      var hist = byId("gdp-history");
-      hist.hidden = false;
-      var gCyc = pageCycle("sheet-metric-gdp");
-      var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
-      var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
-      var gTo = gSpan ? gSpan[1] : void 0;
-      var win = gdpQuarterlyYoY.slice(gFrom, gTo);
-      hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, {
-        to: gTo,
-        cycle: !!gSpan
-      });
-      attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
-      var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
-      headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
-      put("gdp-trend", trendPill(trendOf(win.map(function(d) {
-        return d.v;
-      }), "points", "quarter"), null, true, {
-        rising: "quickening",
-        falling: "slowing"
-      }));
-    };
-  }
-  function registerActivityPowerDeficitPages() {
-    sheetRenderers["sheet-sign-activity"] = function(W) {
-      var id = "sheet-sign-activity", bar = byId("act-rangebar");
-      if (!bar) return;
-      bar.innerHTML = histControls(id, {
-        series: unempHistory
-      });
-      var hist = byId("act-history");
-      if (!hist) return;
-      var cyc = pageCycle(id);
-      var span = cyc ? actCycleMonths(cyc) : null;
-      var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
-      var to = span ? span[1] : void 0;
-      hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, {
-        to: to,
-        cycle: !!span
-      });
-      attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
-      var win = unempHistory.slice(from, to).filter(function(d) {
-        return d.v != null;
-      });
-      put("act-trend", trendPill(trendOf(win.map(function(d) {
-        return d.v;
-      }), "points", "month"), null, true, {
-        rising: "loosening",
-        falling: "tightening"
-      }));
-    };
-    sheetRenderers["sheet-marker-deficit"] = function(W) {
-      var sheet = byId("sheet-marker-deficit");
-      if (!sheet) return;
-      if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
-      sheetRenderers["deficit-range"](W);
-    };
-    sheetRenderers["deficit-range"] = function(W) {
-      var host = byId("deficit-record");
-      if (!host) return;
-      var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
-      var defIdx = defCyc ? [ Math.max(0, defCyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
-      var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : void 0;
-      var bar = put("deficit-rangebar", histControls("deficit-range", {
-        depth: deficitHistory.length
-      }));
-      host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
-      put("deficit-records", "");
-      attachHistory(host, "deficit-hist-tooltip", "deficitChart");
-      put("deficit-trend", trendPill(trendOf(deficitHistory.slice(from, defTo), "points", "year"), null, true, {
-        rising: "improving",
-        falling: "widening"
-      }));
-    };
-  }
-  function registerHouseholdsValuationPages() {
-    sheetRenderers["sheet-metric-households"] = function(W) {
-      var id = "sheet-metric-households";
-      var hhCyc = pageCycle(id, DSR_FROM_YEAR);
-      var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]);
-      var to = idx ? idx[1] : dsrHistory.length;
-      var host = byId("households-chart");
-      if (!host) return;
-      histNote(id, dsrInfoHtml() + savInfoHtml());
-      host.innerHTML = histBar(histControls(id, {
-        depth: Math.floor(dsrHistory.length / 4)
-      }, DSR_FROM_YEAR)) + '<div class="page-chart">' + histHead(id) + householdsChart(W, from, to) + trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"), "Saving", true, {
-        rising: "keeping more",
-        falling: "keeping less"
-      }) + histTip("households-hist-tooltip") + "</div>";
-      var box = host.querySelector(".page-chart");
-      refitHistory(box, function(w) {
-        return householdsChart(w, from, to);
-      });
-      attachHistory(box, "households-hist-tooltip", "householdsChart");
-      var hl = put("households-highlights", householdsHighlights());
-    };
-    sheetRenderers["sheet-metric-valuation"] = function(W) {
-      var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
-      var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
-      var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
-      var capeTrend = trendOf(vals.map(function(d) {
-        return d.v;
-      }), "×", "year");
-      put("valuation-chart", histBar(histControls("sheet-metric-valuation", {
-        series: capeHistory
-      })) + '<div class="page-chart">' + histHead("sheet-metric-valuation") + divergeChart({
-        vals: vals,
-        mid: CAPE_FAIR,
-        midLabel: "fair value, " + CAPE_FAIR + "×",
-        fmt: capeFmt1,
-        tickFmt: function(v) {
-          return v + "×";
-        },
-        fit: capeTrend.fit,
-        alt: "Shiller CAPE against its long-run fair value, each January" + (r === "max" ? " since " + capeHistory[0].y : " of the last " + timelineSpan(r) + " years") + ", with the fitted trend across the readings in view"
-      }, W) + trendPill(capeTrend, null, true) + histTip("valuation-hist-tooltip") + "</div>");
-      var vBox = document.querySelector("#valuation-chart .page-chart");
-      refitHistory(vBox, function(w) {
-        return divergeChart({
-          vals: vals,
-          mid: CAPE_FAIR,
-          midLabel: "fair value, " + CAPE_FAIR + "×",
-          fmt: capeFmt1,
-          tickFmt: function(v) {
-            return v + "×";
-          },
-          fit: capeTrend.fit,
-          alt: "Shiller CAPE against its long-run fair value, each January"
-        }, w);
-      });
-      attachHistory(vBox, "valuation-hist-tooltip", "divergeChart");
-    };
-  }
-  function wireMetricPageControls() {
-    document.addEventListener("click", function(e) {
-      if (!e.target.closest) return;
-      var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
-      if (id && e.target.closest("[data-picker-toggle]")) {
-        pickerOpen[id] = !pickerOpen[id];
-        redrawSheet(id);
-        return;
-      }
-      var opt = e.target.closest(".cycsel-opt");
-      if (id && opt && id in page.cycles) {
-        page.cycles[id] = opt.getAttribute("data-cycle");
-        pickerOpen[id] = false;
-        redrawSheet(id);
-        return;
-      }
-      for (var k in pickerOpen) if (pickerOpen[k] && k !== id) {
-        pickerOpen[k] = false;
-        redrawSheet(k);
-      }
-    });
-    document.addEventListener("click", function(e) {
-      var seg = e.target.closest && e.target.closest(".range-seg");
-      if (!seg) return;
-      var mid = seg.parentNode.getAttribute("data-mode-for");
-      if (mid && mid in page.mode) {
-        page.mode[mid] = seg.getAttribute("data-mode");
-        var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
-        if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
-        return;
-      }
-      var id = seg.parentNode.getAttribute("data-range-for");
-      if (!(id in page.range)) return;
-      page.range[id] = seg.getAttribute("data-range");
-      var host = byId("metric-page");
-      var draw = sheetRenderers[id];
-      if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
-    });
-  }
-  function valuationHighlights(capeNow, buffNow) {
-    var vs = capeHistory.map(function(d) {
-      return d.v;
-    });
-    var richer = capeHistory.filter(function(d) {
-      return d.v > capeNow;
-    });
-    var cards = [];
-    cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ten years. Paying far above the long-run price is appetite running ahead of what the body is actually producing.</p>');
-    cards.push(hiCard("Shiller CAPE", now.valuation.tag.state, richer.length === 0 ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "." : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y + " — only " + richer.map(function(d) {
-      return d.y + " (" + capeFmt1(d.v) + ")";
-    }).join(" and ") + " ran higher."));
-    put("valuation-highlights", highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(now.valuation.impression))));
-  }
-  function tempHighlights(tempInd, r) {
-    var cyc = nowModel.cpi, hot = cyc.filter(function(d) {
-      return d.v > 3;
-    }).length;
-    var peak = cyc.reduce(function(a, b) {
-      return b.v > a.v ? b : a;
-    });
-    var cards = [ '<p class="hi-lede">A temperature is the one number that says whether something inside is running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only means anything measured against the level the system is meant to hold.</p>' ];
-    cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning", "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot + " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
-    cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning", "The current cycle’s average is " + mean(cyc.map(function(d) {
-      return d.v;
-    })).toFixed(1) + "%, against a 2% target. Today’s " + r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1–3% range."));
-    put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + function() {
-      var rest = dropWhatIsShown(tempCaptionFull, tempLeadShown);
-      return rest ? factsFrom(rest) : "";
-    }())));
-  }
-  function gdpHighlights(r, gq) {
-    var cycAvg = mean(gq.map(function(d) {
-      return d.v;
-    }));
-    var contractions = gq.filter(function(d) {
-      return d.v < 0;
-    }).length;
-    var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than last. A body spends the first half of its cycle building something it has not used yet, and an economy does the same with output.</p>' ];
-    cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the trend as " + r.regime + "."));
-    put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
-  }
-  function renderMetricPages(ctx) {
-    registerTempGdpPages();
-    registerActivityPowerDeficitPages();
-    registerHouseholdsValuationPages();
-    wireMetricPageControls();
-    valuationHighlights(ctx.capeNow, ctx.buffNow);
-    tempHighlights(ctx.tempInd, ctx.r);
-    gdpHighlights(ctx.r, ctx.gq);
-  }
   function renderPagesAndNav() {
     var ctx = renderPeekAndCategories();
     if (!ctx) return;
@@ -30517,7 +30512,7 @@
     renderPagesAndNav();
     window.__sources = {
       all: allSources,
-      cards: coincident.concat(lagging).map(function(c) {
+      cards: [].concat(coincident, lagging).map(function(c) {
         return {
           name: c.bodyTerm,
           src: c.src
@@ -30732,7 +30727,7 @@
       }), rest = [];
       items.forEach(function(x) {
         for (var i = 0; i < groups.length; i++) {
-          if (groups[i][1].test(x.u)) {
+          if (String(x.u).search(groups[i][1]) >= 0) {
             buckets[i].push(x);
             return;
           }

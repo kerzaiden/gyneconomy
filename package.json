@@ -1,6 +1,6 @@
 {
   "name": "gyneconomy",
-  "version": "696.0.0",
+  "version": "697.0.0",
   "private": true,
   "description": "Gyneconomy — a single-file reading companion to the book Mrs. Market.",
   "scripts": {
@@ -24,19 +24,21 @@
     "comp": "node tools/components.js",
     "comp:check": "node tools/components.js --check",
     "comp:bless": "node tools/components.js --bless",
-    "check": "npm run build:check && npm run email && node tools/uncomment.js --check && node tools/load-order.js && node tools/hygiene.js && npm run map:check && npm run comp:check && npm run test:tools && npm run test:unit",
+    "check": "npm run build:check && npm run email && node tools/uncomment.js --check && node tools/load-order.js && node tools/hygiene.js && npm run typecheck && npm run map:check && npm run comp:check && npm run test:tools && npm run test:unit",
     "check:slow": "npm test && npm run a11y:check",
     "check:all": "npm run check && npm run check:slow",
     "uncomment": "node tools/uncomment.js",
     "order": "node tools/load-order.js",
-    "test:unit": "node --test test/unit/*.test.mjs"
+    "test:unit": "node --test --experimental-test-coverage --test-coverage-include='src/js/**' --test-coverage-lines=88 test/unit/*.test.mjs",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",
     "esbuild": "^0.28.2",
     "jsdom": "^26.1.0",
     "playwright": "^1.49.0",
-    "terser": "^5.51.2"
+    "terser": "^5.51.2",
+    "typescript": "^5.9.3"
   },
   "optionalDependencies": {
     "xlsx": "^0.18.5"

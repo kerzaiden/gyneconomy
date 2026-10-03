@@ -358,7 +358,7 @@ function renderPressurePage(){
 
 
   function render(){
-    var shell = svg.parentNode;
+    var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
     innerW = W - padL - padR; innerH = H - padT - padB;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -394,7 +394,7 @@ function renderPressurePage(){
     var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
     svg.appendChild(hit);
 
-    var shell = byId("ylm-shell");
+    shell = byId("ylm-shell");
     attachHistory(shell, "ylm-tooltip", "ylm");
   }
 

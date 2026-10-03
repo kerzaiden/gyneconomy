@@ -1167,6 +1167,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The modules are layered: each imports only from those below it, and no two import each other.** Keren, on
   "the modules lean on each other heavily. Untangling them is the next step": "do it". Claude chose the layers
   (from `format` and `dom` up to `repaint` and `main`) and folded `components.js` and `forms.js` into them. (V696)
+- **Shared values live in owned stores, figures live in JSON, and the modules are type-checked.** Keren, on
+  Claude's re-rating at V696: "make all of your recommendations." Claude chose: three stores (`now`, `ui`, `page`)
+  in place of thirty setters; live redraws as subscriptions (`onLive`) declared by the repaint layer; the series
+  in `src/data/*.json`; navigation split into `inner-pages` and `cycle-tab`; TypeScript by inference only, since
+  the no-comments rule rules out annotations; a live document refused if any of its text carries `<`, `>` or `"`;
+  content tests of what the pages say, with an 88% line-coverage floor. (V697)
 
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)

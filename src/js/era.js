@@ -18,7 +18,7 @@ export function readDoor(open){
 export function rosterRows(){ return readingRoster().byId; }
 export function kT(k){
   var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-  return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+  return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
 }
 export function upTo(list, k){ var t = kT(k) + 1e-6; return list.filter(function(d){ return d.v != null && kT(d.k) <= t; }); }
 export function pairAt(r, k){ var p = r.pair ? upTo(r.pair, k).pop() : null; return p ? p.v : null; }

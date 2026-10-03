@@ -173,11 +173,11 @@ function cycleSymptoms(cyc, years){
     var cells = years.map(function(y){
       if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return { y:y, state:y === calendarTodayY && cyc.ongoing ? "now" : "ahead" };
       var best = null;
-      r.seen.forEach(function(d){
-        if (+d.k.slice(0, 4) !== y) return;
+      for (var d of r.seen){
+        if (+d.k.slice(0, 4) !== y) continue;
         var gap = Math.abs(r.place(d.v) - now);
         if (!best || gap < best.gap) best = { d:d, gap:gap };
-      });
+      }
       if (!best) return { y:y, state:"na" };
       measured = true;
       return { y:y, state:best.gap <= ALIKE ? "on" : "off", best:best.d };

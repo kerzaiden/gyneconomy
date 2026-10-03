@@ -156,11 +156,14 @@ no second list names them, because lists kept in step by hand drift:
   band    a scalar's floor and ceiling; a number outside it is refused, never clamped
   ok      an object's own admission test, where it has one beyond being an object
   set     where the value lands. The ONE thing that genuinely differs between readings.
-  paint   what redraws when it moves
-  onOpen  true instead of `paint`: its only display is an inner page, which redraws in full on open
+  onOpen  true when its only display is an inner page, which redraws in full on open
+
+What redraws when a reading moves is a subscription (V697): `bootRepaint` calls `onLive(name, painter)`
+for each painter, and `onLive("*", …)` for the Diagnosis and Insights, which every reading moves. The
+registry states what a reading is; the repaint layer states where it shows, so neither imports the other.
 
 `LIVE_NAMES` is the registry's own key list, so the fetchers cannot ask for a name it does not know.
-`checkLiveCoverage` asserts every row is complete and that `paint` and `onOpen` are exclusive — a
+`checkLiveCoverage` asserts every row is complete and that a reading has a painter or `onOpen`, never both — a
 tenth reading is one row, and an incomplete row fails the suite.
 
 THE SERVICE SEAM. Above this, `receive` is the only door a reading comes in through, and the two
@@ -228,7 +231,7 @@ with no handler is recorded, which makes the suite able to see it.
 | **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
-| **Backfill workflow** (`backfill.yml`) | the FRED histories in `js/history-fred.js`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
+| **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
 | **Tag workflow** (`tag.yml`, V647) | a `v6NN-name` tag for each version commit on `main` that has none | every push to `main` | the repo's history |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
@@ -303,16 +306,25 @@ the manifest's; now each module says what it imports.
   another module sits in that module's `boot…()`, and `main.js` calls the boots in order. **The boot order is the
   semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
   follows every statement that runs at load, boots included, and fails on a value read before it is set.
-- **An import is read-only, so a module that owns a value exports its setter** (`setSentiment`, `setFedFunds`);
-  a write from outside goes through it. `grep 'export function set'` lists them.
+- **An import is read-only, so a value that other modules change lives in its owner's store** (V697): `now` in
+  `data` (the live-fed figures: `now.fedFunds`, `now.yieldCurve`, `now.vixRow`…), `ui` in `dom` (what is open, and
+  the hooks one page leaves for another), `page` in `history` (each history page's mode, window and head). A write
+  is a property assignment (`now.fedFunds = …`), so there are no setters; `tools/load-order.js` follows store
+  properties as it follows variables, and a property declared `undefined` counts as unset until a boot sets it.
+- **Figures are data, not code** (V697). The hand-kept series are `src/data/series.json`; the FRED histories are
+  `src/data/fred.json`, written by the backfill; `data`, `refresh-season` and `history-fred` import them and
+  export each series by name. `test/series.test.js` checks that the code reads exactly the keys each file holds.
+- **The modules are type-checked** (V697, `npm run typecheck`, in `check`): TypeScript reads the JavaScript as it
+  is (`checkJs`, inference only, nothing emitted, `strict` off), since annotations would be comments. The browser
+  names the app adds to `window` and the DOM are declared once, in `src/globals.d.ts`.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
   any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
-  mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (generated), `refresh-season`, `data`
-  (every literal figure and series), `model` (seasons, cycles, mood), `history` (the one history component),
+  mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
+  `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `diagnosis`, `dial-cycle`, `analysis`, `pages-nav` and
-  `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
-  layer at boot (`setHIST_HEAD` from the roster) is still owned below, where it is read.
+  and inner pages), `indicators`, `era`, `insights`, `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
+  `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
+  layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
 
 The conversion was proved by the snapshot (every state identical) and the browser suite, before and after.
@@ -451,7 +463,7 @@ Rules that shape the pages:
 
 ## Data model
 
-**The generated histories** (`js/history-fred.js`, written by the backfill from FRED; never hand-edited):
+**The generated histories** (`src/data/fred.json`, written by the backfill from FRED; never hand-edited):
 
 | Variable | Series | What it is |
 |---|---|---|
@@ -822,7 +834,7 @@ Awaiting Keren: the About-the-book paragraph, `seasonReading[season].fromTheBook
 the one date to edit; `sp500AnnualReturns` gets the open year's year-to-date return; `gdpQuarterlyYoY`
 appends after each BEA release (revising the prior few, **never dropping or restarting**);
 `cpiYoYHistory` appends the newest month, never drops one; `deficitHistory` appends a fiscal year only
-when FRED carries the closed year, never a projection; the FRED histories in `js/history-fred.js` are
+when FRED carries the closed year, never a projection; the FRED histories in `src/data/fred.json` are
 generated by `backfill.yml`, never hand-edited — since V648 that includes the seven Treasury quarterly
 histories, which `data.js` only names. **If a primary source is unreachable, leave the figure and
 its date and say so — never substitute a secondary.** Fixed and editorial content — every band,
@@ -849,11 +861,13 @@ figure that moves with the data is compared, never written in. What is Keren's d
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are
 hygiene's `PINNED`. The model's rules are tool tests (`test/cycle.test.js` lifts the functions from
 model with fixture data, so each window is tested at its edge). **The unit tests (V695, `npm run test:unit`, in
-`check`, about 3 s)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
+`check`, about 6 s)** import the modules in Node: `test/unit/dom.mjs` boots the whole app once in jsdom from
 `page-body.html` with the network refused, so every figure is its literal fallback. They draw every page at four
 widths (no NaN, undefined or Infinity; every history chart in `histFrame`), run the model over every cycle on the
-real record, and pin the pure functions at their edges. A rule that needs a browser (layout, focus, clicks) stays
-in the suite; one that needs only the DOM's text goes here. The words that state a rule are
+real record, and pin the pure functions at their edges. `content.test.mjs` (V697) checks what the pages say: it delivers live documents through the real door and reads
+the cards, the policy facts and the Diagnosis back, refuses one carrying markup or a number outside its band, and
+opens a past cycle and comes back. The run measures line coverage of `src/js` and fails below 88%. A rule that
+needs a browser (layout, focus, clicks) stays in the suite; one that needs only the DOM's text goes here. The words that state a rule are
 tested against the rule (each feeling's cut-offs, growth's window). Every note on every reading page (the
 history head's and each More details) is read, and none may call a band a "normal range" unless it says it
 is not one: a target is never relabelled normal. Proof (V667): of thirteen regressions planted one at a time,

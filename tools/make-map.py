@@ -249,14 +249,14 @@ w("")
 w("| To find | grep for |")
 w("|---|---|")
 for a, b in [
-    ("a figure's literal value", "`var <name> = ` — the data objects are top-level vars in `js/data.js` and `js/refresh-season.js`"),
+    ("a figure's value", "`src/data/series.json` (hand-kept) and `src/data/fred.json` (the backfill's); constants are `var <name> = ` in `js/data.js`"),
     ("a reading's declaration", "`ROSTER` in `js/roster.js` — one row per reading"),
     ("what a history page draws", "`HIST_HEAD` for its head, then `sheetRenderers[\"<id>\"]` for its renderer"),
     ("where a band comes from", "the constant name, then read its `(i)` text — every band states its provenance"),
     ("a season decision", "`readSeason(`, `seasonTrackAll`, `cycleModel(`"),
-    ("who may change a shared value", "`export function set` — a module's setters are the only writes from outside it"),
+    ("who may change a shared value", "the store it lives in: `now` (`js/data.js`), `ui` (`js/dom.js`), `page` (`js/history.js`)"),
     ("why something looks the way it does", "`docs/DECISIONS.md` for Keren's decisions, `docs/ARCHITECTURE.md` for the reasons, `git log -S` for the history"),
-    ("a live-data wiring", "`LIVE(\"` — one line per document, each directly under its literal"),
+    ("a live-data wiring", "`LIVE(\"` where a document lands, `onLive(\"` in `js/repaint.js` for what it redraws"),
 ]:
     w("| %s | %s |" % (a, b))
 w("")

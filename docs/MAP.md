@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,575 lines** in 29 files, about 538 KB, roughly **153 thousand tokens**. No session can
+The source is **8,589 lines** in 31 files, about 538 KB, roughly **153 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `8e860cf` on 2026-10-03.
+Generated from commit `2973ac9` on 2026-10-03.
 
 ## The page
 
@@ -20,17 +20,17 @@ Generated from commit `8e860cf` on 2026-10-03.
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,368 | the whole stylesheet, every token and rule |
 | `page-body.html` | 390 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.js` | 25 modules | the entry: imports every module and calls their boots in order |
+| `js/main.js` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **25** modules, **475** top-level functions, **145** top-level vars, **345** exported names, **17** boots.
+Counts: **27** modules, **475** top-level functions, **145** top-level vars, **347** exported names, **17** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
 | `js/dom.js` | 134 | 21 | `format` |
-| `js/live.js` | 172 | 21 | `format` |
+| `js/live.js` | 168 | 21 | `format` |
 | `js/refresh-season.js` | 40 | 7 | `format`, `history-fred` |
 | `js/data.js` | 495 | 70 | `format`, `history-fred`, `live` |
 | `js/model.js` | 330 | 47 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
@@ -42,15 +42,17 @@ Counts: **25** modules, **475** top-level functions, **145** top-level vars, **3
 | `js/diagnosis.js` | 83 | 17 | `dom`, `era`, `format`, `live`, `marks`, `model`, `refresh-season`, `roster` |
 | `js/dial-cycle.js` | 429 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/analysis.js` | 239 | 21 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
-| `js/pages-nav.js` | 658 | 31 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `indicators`, `insights`, `live`, `model`, `readings`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/pages-nav.js` | 320 | 15 | `cycle-tab`, `data`, `dom`, `format`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.js` | 189 | 4 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-pages` |
 | `js/repaint.js` | 99 | 11 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.js` | 328 | 43 | `format` |
+| `js/cycle-tab.js` | 99 | 5 | `data`, `dom`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.js` | 58 | 12 | `format`, `roster` |
 | `js/format.js` | 57 | 30 | — |
 | `js/history-charts.js` | 461 | 12 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.js` | 15 | 12 | — |
 | `js/indicators.js` | 238 | 29 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
+| `js/inner-pages.js` | 257 | 11 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.js` | 183 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.js` | 61 | 22 | — |
 | `js/main.js` | 35 | 0 | `analysis`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
@@ -64,7 +66,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | Order | Boot | Lines |
 |---|---|---|
 | 1 | `bootDom` | `js/dom.js:124`–133 |
-| 2 | `bootLive` | `js/live.js:166`–171 |
+| 2 | `bootLive` | `js/live.js:162`–167 |
 | 3 | `bootRefreshSeason` | `js/refresh-season.js:30`–39 |
 | 4 | `bootData` | `js/data.js:447`–494 |
 | 5 | `bootModel` | `js/model.js:277`–329 |
@@ -77,7 +79,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 12 | `bootDiagnosis` | `js/diagnosis.js:79`–82 |
 | 13 | `bootDialCycle` | `js/dial-cycle.js:405`–428 |
 | 14 | `bootAnalysis` | `js/analysis.js:234`–238 |
-| 15 | `bootPagesNav` | `js/pages-nav.js:650`–657 |
+| 15 | `bootPagesNav` | `js/pages-nav.js:312`–319 |
 | 16 | `bootTabsMenu` | `js/tabs-menu.js:179`–188 |
 | 17 | `bootRepaint` | `js/repaint.js:80`–98 |
 
@@ -122,30 +124,30 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 3 | `liveAsOf` · export | `var liveAsOf =` |
 | 4 | `merge` · export | `function merge(` |
-| 11 | `docValue` | `function docValue(` |
-| 20 | `docOk` | `function docOk(` |
-| 24 | `plainText` · export | `function plainText(` |
-| 29 | `LIVE` · export | `function LIVE(` |
-| 36 | `liveIsoOf` · export | `function liveIsoOf(` |
-| 39 | `liveInto` · export | `function liveInto(` |
+| 7 | `docValue` | `function docValue(` |
+| 16 | `docOk` | `function docOk(` |
+| 20 | `plainText` · export | `function plainText(` |
+| 25 | `LIVE` · export | `function LIVE(` |
+| 32 | `liveIsoOf` · export | `function liveIsoOf(` |
+| 35 | `liveInto` · export | `function liveInto(` |
 
 #### The first series to come from outside the file
 
 | Line | Name | Anchor |
 |---|---|---|
-| 44 | `repaintLive` · export | `function repaintLive(` |
-| 49 | `shapeOk` | `function shapeOk(` |
-| 55 | `GYN` · export | `var GYN =` |
-| 80 | `painters` | `var painters =` |
-| 81 | `defineReadings` · export | `function defineReadings(` |
-| 85 | `onLive` · export | `function onLive(` |
-| 86 | `exposeLive` · export | `function exposeLive(` |
-| 89 | `KINDS` | `var KINDS =` |
-| 90 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
-| 104 | `receive` | `function receive(` |
-| 120 | `applyLive` | `function applyLive(` |
-| 133 | `refreshLiveData` · export | `function refreshLiveData(` |
-| 150 | `fetchSiteData` · export | `function fetchSiteData(` |
+| 40 | `repaintLive` · export | `function repaintLive(` |
+| 45 | `shapeOk` | `function shapeOk(` |
+| 51 | `GYN` · export | `var GYN =` |
+| 76 | `painters` | `var painters =` |
+| 77 | `defineReadings` · export | `function defineReadings(` |
+| 81 | `onLive` · export | `function onLive(` |
+| 82 | `exposeLive` · export | `function exposeLive(` |
+| 85 | `KINDS` | `var KINDS =` |
+| 86 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
+| 100 | `receive` | `function receive(` |
+| 116 | `applyLive` | `function applyLive(` |
+| 129 | `refreshLiveData` · export | `function refreshLiveData(` |
+| 146 | `fetchSiteData` · export | `function fetchSiteData(` |
 
 ### `js/refresh-season.js`
 
@@ -720,62 +722,36 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 18 | `convertLeadingSigns` | `function convertLeadingSigns(` |
-| 41 | `orderMetricSheets` | `function orderMetricSheets(` |
-| 61 | `renderSignsList` | `function renderSignsList(` |
+| 13 | `convertLeadingSigns` | `function convertLeadingSigns(` |
+| 36 | `orderMetricSheets` | `function orderMetricSheets(` |
+| 56 | `renderSignsList` | `function renderSignsList(` |
 
 #### THE ROSTER'S OWN PIECES
 
 | Line | Name | Anchor |
 |---|---|---|
-| 93 | `partsOf` | `function partsOf(` |
-| 102 | `authored` | `function authored(` |
-| 103 | `registerRoster` | `function registerRoster(` |
-| 124 | `indRow` | `function indRow(` |
-| 128 | `indGroupRow` | `function indGroupRow(` |
-| 133 | `catMembers` | `function catMembers(` |
-| 141 | `indRows` | `function indRows(` |
-| 155 | `indCategoryHtml` | `function indCategoryHtml(` |
+| 88 | `partsOf` | `function partsOf(` |
+| 97 | `authored` | `function authored(` |
+| 98 | `registerRoster` | `function registerRoster(` |
+| 119 | `indRow` | `function indRow(` |
+| 123 | `indGroupRow` | `function indGroupRow(` |
+| 128 | `catMembers` | `function catMembers(` |
+| 136 | `indRows` | `function indRows(` |
+| 150 | `indCategoryHtml` | `function indCategoryHtml(` |
 
 #### THE NAVIGATION CONTROLLER
 
 | Line | Name | Anchor |
 |---|---|---|
-| 163 | `NAV` | `var NAV =` |
-| 164 | `buildNav` | `function buildNav(` |
+| 158 | `NAV` | `var NAV =` |
+| 159 | `buildNav` | `function buildNav(` |
 
 #### ALL INDICATORS
 
 | Line | Name | Anchor |
 |---|---|---|
-| 259 | `buildSearch` | `function buildSearch(` |
-
-#### THE CYCLE TAB: cards and categories
-
-| Line | Name | Anchor |
-|---|---|---|
-| 306 | `PAIR_ART` | `var PAIR_ART =` |
-| 312 | `placeSignPair` | `function placeSignPair(` |
-| 335 | `swapSentimentActivity` | `function swapSentimentActivity(` |
-| 351 | `buildCategories` | `function buildCategories(` |
-| 367 | `renderPeekAndCategories` | `function renderPeekAndCategories(` |
-
-#### THE INNER PAGES
-
-| Line | Name | Anchor |
-|---|---|---|
-| 394 | `actCycleMonths` | `function actCycleMonths(` |
-| 402 | `householdsHighlights` | `function householdsHighlights(` |
-| 421 | `redrawSheet` | `function redrawSheet(` |
-| 425 | `registerTempGdpPages` | `function registerTempGdpPages(` |
-| 470 | `registerActivityPowerDeficitPages` | `function registerActivityPowerDeficitPages(` |
-| 507 | `registerHouseholdsValuationPages` | `function registerHouseholdsValuationPages(` |
-| 554 | `wireMetricPageControls` | `function wireMetricPageControls(` |
-| 584 | `valuationHighlights` | `function valuationHighlights(` |
-| 597 | `tempHighlights` | `function tempHighlights(` |
-| 614 | `gdpHighlights` | `function gdpHighlights(` |
-| 629 | `renderMetricPages` | `function renderMetricPages(` |
-| 638 | `renderPagesAndNav` | `function renderPagesAndNav(` |
+| 254 | `buildSearch` | `function buildSearch(` |
+| 300 | `renderPagesAndNav` | `function renderPagesAndNav(` |
 
 ### `js/tabs-menu.js`
 
@@ -880,6 +856,18 @@ falls in. **export** marks a name other modules import.
 | 318 | `hoverAway` | `var hoverAway =` |
 | 319 | `hoverAwayAdd` | `function hoverAwayAdd(` |
 | 327 | `hoverAwayLive` | `function hoverAwayLive(` |
+
+### `js/cycle-tab.js`
+
+#### THE CYCLE TAB: cards and categories
+
+| Line | Name | Anchor |
+|---|---|---|
+| 12 | `PAIR_ART` | `var PAIR_ART =` |
+| 18 | `placeSignPair` | `function placeSignPair(` |
+| 41 | `swapSentimentActivity` | `function swapSentimentActivity(` |
+| 57 | `buildCategories` | `function buildCategories(` |
+| 73 | `renderPeekAndCategories` · export | `function renderPeekAndCategories(` |
 
 ### `js/era.js`
 
@@ -1016,6 +1004,24 @@ falls in. **export** marks a name other modules import.
 | 214 | `marketInsight` | `function marketInsight(` |
 | 226 | `interestInsight` | `function interestInsight(` |
 
+### `js/inner-pages.js`
+
+#### THE INNER PAGES
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13 | `actCycleMonths` | `function actCycleMonths(` |
+| 21 | `householdsHighlights` | `function householdsHighlights(` |
+| 40 | `redrawSheet` | `function redrawSheet(` |
+| 44 | `registerTempGdpPages` | `function registerTempGdpPages(` |
+| 89 | `registerActivityPowerDeficitPages` | `function registerActivityPowerDeficitPages(` |
+| 126 | `registerHouseholdsValuationPages` | `function registerHouseholdsValuationPages(` |
+| 173 | `wireMetricPageControls` | `function wireMetricPageControls(` |
+| 203 | `valuationHighlights` | `function valuationHighlights(` |
+| 216 | `tempHighlights` | `function tempHighlights(` |
+| 233 | `gdpHighlights` | `function gdpHighlights(` |
+| 248 | `renderMetricPages` · export | `function renderMetricPages(` |
+
 ### `js/insights.js`
 
 #### (before the first banner)
@@ -1079,14 +1085,14 @@ which function draws an inner page, called with the measured width when the page
 
 | Key | Where |
 |---|---|
-| `deficit-range` | `js/pages-nav.js:489` |
+| `deficit-range` | `js/inner-pages.js:108` |
 | `pressure-range` | `js/repaint.js:49` |
-| `sheet-marker-deficit` | `js/pages-nav.js:486` |
-| `sheet-metric-gdp` | `js/pages-nav.js:450` |
-| `sheet-metric-households` | `js/pages-nav.js:508` |
-| `sheet-metric-temp` | `js/pages-nav.js:426` |
-| `sheet-metric-valuation` | `js/pages-nav.js:528` |
-| `sheet-sign-activity` | `js/pages-nav.js:471` |
+| `sheet-marker-deficit` | `js/inner-pages.js:105` |
+| `sheet-metric-gdp` | `js/inner-pages.js:69` |
+| `sheet-metric-households` | `js/inner-pages.js:127` |
+| `sheet-metric-temp` | `js/inner-pages.js:45` |
+| `sheet-metric-valuation` | `js/inner-pages.js:147` |
+| `sheet-sign-activity` | `js/inner-pages.js:90` |
 
 ### `pageRange`
 
@@ -1248,12 +1254,12 @@ Every `id` in the static DOM (109), which is what the renderers fill:
 
 | To find | grep for |
 |---|---|
-| a figure's literal value | `var <name> = ` — the data objects are top-level vars in `js/data.js` and `js/refresh-season.js` |
+| a figure's value | `src/data/series.json` (hand-kept) and `src/data/fred.json` (the backfill's); constants are `var <name> = ` in `js/data.js` |
 | a reading's declaration | `ROSTER` in `js/roster.js` — one row per reading |
 | what a history page draws | `HIST_HEAD` for its head, then `sheetRenderers["<id>"]` for its renderer |
 | where a band comes from | the constant name, then read its `(i)` text — every band states its provenance |
 | a season decision | `readSeason(`, `seasonTrackAll`, `cycleModel(` |
-| who may change a shared value | `export function set` — a module's setters are the only writes from outside it |
+| who may change a shared value | the store it lives in: `now` (`js/data.js`), `ui` (`js/dom.js`), `page` (`js/history.js`) |
 | why something looks the way it does | `docs/DECISIONS.md` for Keren's decisions, `docs/ARCHITECTURE.md` for the reasons, `git log -S` for the history |
-| a live-data wiring | `LIVE("` — one line per document, each directly under its literal |
+| a live-data wiring | `LIVE("` where a document lands, `onLive("` in `js/repaint.js` for what it redraws |
 

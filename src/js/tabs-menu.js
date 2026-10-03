@@ -130,7 +130,7 @@ function wireContactForm(){
     function add(x){ if (!x || seen[x.u]) return; seen[x.u] = true; items.push(x); }
     src.all.forEach(add); src.cards.forEach(function(c){ c.src.forEach(add); }); src.annual.forEach(add); src.gdp.forEach(add);
     var buckets = groups.map(function(){ return []; }), rest = [];
-    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (groups[i][1].test(x.u)){ buckets[i].push(x); return; } } rest.push(x); });
+    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (String(x.u).search(groups[i][1]) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
     if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
     put("sources-groups", groups.map(function(g, i){
       if (!buckets[i].length) return "";

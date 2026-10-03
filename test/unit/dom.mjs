@@ -8,6 +8,7 @@ const dom = new JSDOM('<!doctype html><html lang="en"><head></head><body>' + bod
 const w = dom.window;
 w.matchMedia = q => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.fetch = () => Promise.reject(new Error('offline'));
+w.scrollTo = () => {};
 export const errors = [];
 w.addEventListener('error', e => errors.push(e.message));
 for (const k of ['window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'location', 'history', 'getComputedStyle',

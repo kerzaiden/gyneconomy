@@ -153,7 +153,7 @@ var MOOD_RISING = [["Despair", 0], ["Depression", 5], ["Hope", 24], ["Optimism",
 var MOOD_FALLING = [["Despair", 0], ["Panic", 9], ["Desperation", 30], ["Fear", 52], ["Denial", 74], ["Anxiety", 91], ["Euphoria", 100]];
 function moodWord(pct, change){
   if (pct == null || change == null) return null;
-  return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(s[1] - pct) < Math.abs(a[1] - pct) ? s : a; })[0];
+  return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a; })[0];
 }
 function moodRead(x, before){
   var ago = before[before.length - MOOD_TURN];
@@ -313,7 +313,7 @@ export function bootModel(){
     return out;
   })();
   // ---- One cycle, as the cycle view reads it ----
-  cycleYtdFraction = (DATA_COMPILED - new Date(calendarTodayY, 0, 1)) / (new Date(calendarTodayY + 1, 0, 1) - new Date(calendarTodayY, 0, 1));
+  cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
   nowModel = cycleModel(currentEra);
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;

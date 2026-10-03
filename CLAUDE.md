@@ -54,8 +54,8 @@ rules below are the ones that matter most.
   step with the live registry.
 - **Edit `src/`, never `index.html`.** The script is ES modules in `src/js/`, bundled by esbuild into the one
   file (V695). A module's top level holds only declarations; whatever runs at load and reads another module
-  goes in its `boot…()`, and **`js/main.js`'s boot order is the semantics**. An import is read-only: change
-  another module's value through the setter it exports. `tools/load-order.js` (in `check`) fails if any shared
+  goes in its `boot…()`, and **`js/main.js`'s boot order is the semantics**. An import is read-only: a value other modules
+  change lives in its owner's store (`now`, `ui`, `page`) and is written as a property (V697). `tools/load-order.js` (in `check`) fails if any shared
   value is read at load before something sets it (V654).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
 - **No comments in the code** (Keren, V650 and V652): not in `src/`, `tools/`, `test/`, `sw.js` or the
@@ -95,6 +95,7 @@ npm run test:unit        # the app booted in Node (jsdom): every page drawn, the
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
+npm run typecheck        # TypeScript over the modules, inference only (in check)
 npm run hygiene          # one frame, one type scale, no page-scoped styles, no name branches, nothing unused
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`
 npm run map              # regenerate docs/MAP.md and docs/COMPONENTS.md
