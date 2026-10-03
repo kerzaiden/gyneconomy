@@ -176,7 +176,7 @@ function leaveEra(){
   home.parent.insertBefore(ta, home.next); home.parent.insertBefore(cycleView(), ta);
   ui.eraOpen = null; eraShow(null); showCycle(currentEra); repaintLive();
 }
-/* ---- THE ROSTER AS SERIES ---- */
+// ---- THE ROSTER AS SERIES ----
 // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
 function cycleSymptoms(cyc: Cycle, years: number[]){
   var rows: SymptomRow[] = [], quiet: string[] = [], absent: string[] = [];

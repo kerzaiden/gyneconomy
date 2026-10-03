@@ -9,7 +9,7 @@ import { CATEGORIES, peekOf, ROSTER } from "./roster.ts";
 import { gdpPeek, needInd, tempPeek } from "./render-core.ts";
 import { appendPicks, catPicks, catSheet, indicatorPeeks } from "./indicators.ts";
 import { analysisHtml } from "./category-analysis.ts";
-/* ---- THE CYCLE TAB: cards and categories ---- */
+// ---- THE CYCLE TAB: cards and categories ----
 var PAIR_ART: Record<string, (ind: Indicator) => PeekCardOpts> = {
   "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
   "sheet-sign-volume": function(){

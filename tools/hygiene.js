@@ -32,19 +32,24 @@ function fontSizes(css) {
   return out;
 }
 
-function pageScoped(css) {
-  const out = [];
+function pageScoped(css, pages) {
+  const out = [], own = (pages || []).length ? new RegExp('#(' + pages.join('|') + ')(?![\\w])|#(' + pages.join('|') + ')-') : null;
   css.split('\n').forEach((line, i) => {
-    if (/#sheet-[\w-]+/.test(line.split('{')[0])) out.push('styles.css:' + (i + 1) + ' styles one page by id');
+    const sel = line.split('{')[0];
+    if (/#sheet-[\w-]+|\[data-page\b/.test(sel) || (own && own.test(sel))) out.push('styles.css:' + (i + 1) + ' styles one page by id');
   });
   return out;
 }
 
 function nameBranches(file, src) {
   const out = [];
-  const re = /\bind\.bodyTerm\s*[!=]==/g;
+  const re = /\bind\.bodyTerm\s*[!=]==|\b\w+\.(?:bodyTerm|econTerm|name|marker)\s*[!=]==\s*["']/g;
   let m;
-  while ((m = re.exec(src))) out.push(file + ':' + lineOf(src, m.index) + ' branches on a reading’s name');
+  while ((m = re.exec(src))) {
+    const line = src.split('\n')[lineOf(src, m.index) - 1];
+    if (!/^ind\./.test(m[0]) && /\.(filter|find|findIndex|some)\(/.test(line)) continue;
+    out.push(file + ':' + lineOf(src, m.index) + ' branches on a reading’s name');
+  }
   const px = /font-size:\s*[0-9.]+px/g;
   while ((m = px.exec(src))) out.push(file + ':' + lineOf(src, m.index) + ' font-size in px, not a --type token');
   return out;
@@ -65,10 +70,16 @@ function chartFrames(file, src) {
   return out;
 }
 
-function unused(js, html, css) {
+function unused(js, html, css, files) {
   const all = js + '\n' + html;
-  const count = n => (all.match(new RegExp('\\b' + n.replace(/\$/g, '\\$') + '\\b', 'g')) || []).length;
+  const countIn = (n, t) => (t.match(new RegExp('\\b' + n.replace(/\$/g, '\\$') + '\\b', 'g')) || []).length;
+  const count = n => countIn(n, all);
   const out = [];
+  Object.keys(files || {}).forEach(f => {
+    new Set([...files[f].matchAll(/^function\s+([A-Za-z_$][\w$]*)\s*[<(]/gm)].map(m => m[1])).forEach(n => {
+      if (countIn(n, files[f]) <= 1 && count(n) > 1) out.push('function ' + n + ' in ' + f + ' is never used there');
+    });
+  });
   new Set([...js.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*[<(]/g)].map(m => m[1])).forEach(n => {
     if (count(n) <= 1) out.push('function ' + n + ' is never used');
   });
@@ -133,11 +144,15 @@ function layers(files, order) {
   return out;
 }
 
+function pageWords(roster) {
+  return [...new Set([...roster.matchAll(/\bid:"sheet-(?:sign|metric|marker)-([\w-]+)"/g)].map(m => m[1]))];
+}
+
 function audit(files, html, css, order) {
-  let out = fontSizes(css).concat(pageScoped(css));
+  let out = fontSizes(css).concat(pageScoped(css, pageWords(files['roster.ts'] || '')));
   Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
   const js = Object.values(files).join('\n');
-  return out.concat(cycles(files), order ? layers(files, order) : [], twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
+  return out.concat(cycles(files), order ? layers(files, order) : [], twice(js), unused(js, html, css, files), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
 }
 
 if (require.main === module) {

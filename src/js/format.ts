@@ -15,6 +15,11 @@ export function bandEnds(o: Band | undefined, lo: number, hi: number): [number, 
   if ("from" in o) return [o.from, o.to];
   return "gte" in o ? [o.gte, hi] : [lo, o.lte];
 }
+export function pctl(a: readonly number[], p: number){
+  var s = a.slice().sort(function(x, y){ return x - y; }), h = (s.length - 1) * p, l = Math.floor(h);
+  return s[l] + (s[Math.min(l + 1, s.length - 1)] - s[l]) * (h - l);
+}
+export function round1(v: number){ return Math.round(v * 10) / 10; }
 export function mean(a: number[]){ return a.reduce(function(x: number, y: number){ return x + y; }, 0) / a.length; }
 export function atQuarter(d: { q: string }){ return d.q; }
 export function atMonth(d: { m: string }){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }

@@ -4,7 +4,7 @@ import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondS
 import { peekCard } from "./charts.ts";
 import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
 import { page } from "./history.ts";
 import { indPeriod, vixPct } from "./readings.ts";
 
@@ -29,8 +29,7 @@ function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
   ROSTER.forEach(function(R){ var v = R.head == null ? undefined : of(R); if (v !== undefined) o[R.hk || R.id] = v; });
   return o;
 }
-export function keyed(h: HistSpec | (() => Keyed[])): Keyed[] {
-  if (typeof h === "function") return h();
+export function keyed(h: HistSpec): Keyed[] {
   return (h.s as readonly (number | null | Point)[]).map(function(d, i){
     return h.k === "qi" ? { k:qAtIndex(h.y0, i), v:d as number | null } : h.k === "yi" ? { k:String(h.y0 + i), v:d as number | null }
          : { k:h.k === "y" ? String((d as Point).y) : (d as Point)[h.k] as string, v:(d as Point).v };
@@ -101,7 +100,7 @@ function declareRoster(): RosterRow[] {
       slot:"valuation", head:"Shiller CAPE, Against Fair Value", hist:{ s:capeHistory, k:"y" }, pre:"Jan ", last:"today", mid:CAPE_FAIR,
       when:lastDate, cardUnit:"CAPE", live:["valuation", "capeValue"] },
     { id:"sheet-metric-buffett", name:"Buffett indicator", cat:"mood", group:"Valuations", timing:"structural", mark:diamondSvg, door:"split",
-      head:"Buffett Indicator, Market Value ÷ GDP", hist:{ s:buffettHistory, k:"q" }, mid:80, when:lastDate,
+      head:"Buffett Indicator, Market Value ÷ GDP", hist:{ s:buffettHistory, k:"q" }, mid:BUFFETT_LINE, when:lastDate,
       cardUnit:"of GDP", live:["valuation"] },
     { id:"sheet-sign-sentiment", name:"Volatility", cat:"mood", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, miniSel:".subject-ring > svg",
@@ -116,13 +115,13 @@ function declareRoster(): RosterRow[] {
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
       cardUnit:"OECD index" },
     { id:"sheet-metric-debt", name:"Federal debt", cat:"energy", group:"Stress", timing:"structural", mark:debtSvg, door:"split",
-      head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:70, when:labPeriod, cardUnit:"of GDP" },
+      head:"Gross Federal Debt, Share of GDP", hist:{ s:grossDebtQuarterly, k:"q" }, mid:DEBT_LINE, when:labPeriod, cardUnit:"of GDP" },
     { id:"sheet-metric-interest", name:"Interest payments", cat:"energy", group:"Stress", timing:"structural", mark:interestSvg,
-      door:"split", head:"Net Interest, Share of GDP", hist:{ s:fiscalHistory.interest, k:"y" }, mid:2, when:labPeriod,
+      door:"split", head:"Net Interest, Share of GDP", hist:{ s:fiscalHistory.interest, k:"y" }, mid:INTEREST_LINE, when:labPeriod,
       cardUnit:"of GDP" },
     { id:"sheet-marker-deficit", name:"Federal budget", cat:"energy", group:"Stress", timing:"structural", mark:budgetSvg, door:"split",
       hk:"deficit-range", slot:"deficit", head:"Federal Deficit or Surplus, Share of GDP", hist:{ s:deficitHistory, k:"yi", y0:DEF_FROM_YEAR },
-      flip:true, mid:3.8, when:labPeriod, cardUnit:"deficit, of GDP" },
+      flip:true, mid:DEFICIT_LINE, when:labPeriod, cardUnit:"deficit, of GDP" },
     { id:"sheet-metric-households", name:"Households", cat:"energy", group:"Stress", timing:"structural", mark:houseSvg, door:"peek", slot:"households",
       head:"Debt Service, Share of Income", stops:["5y", "10y", "max"], hist:{ s:dsrHistory, k:"qi", y0:DSR_FROM_YEAR },
       pair:{ s:savHistory, k:"qi", y0:SAV_FROM_YEAR }, peek:"pair", when:lastDate, cardUnit:"% paid / kept" },

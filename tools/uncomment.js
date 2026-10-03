@@ -17,7 +17,7 @@ function title(c) {
   const t = m[1].replace(/\s+/g, ' ').trim();
   return t.length >= 3 ? t : null;
 }
-const tidyTitle = c => title(c) && !c.value.includes('\n') && c.value.trim() === '---- ' + title(c) + ' ----';
+const tidyTitle = c => title(c) && (c.kind === 'line' || c.kind === 'css') && !c.value.includes('\n') && c.value.trim() === '---- ' + title(c) + ' ----';
 
 function cssComments(body, from, out) {
   let i = 0;
@@ -58,7 +58,7 @@ function remove(s, list, keepTitles) {
     const ls = s.lastIndexOf('\n', a - 1) + 1, le = s.indexOf('\n', b), lineEnd = le < 0 ? s.length : le;
     const before = s.slice(ls, a), after = s.slice(b, lineEnd);
     if (keepTitles && title(c)) {
-      s = s.slice(0, a) + (c.kind === 'line' ? '// ---- ' : '/* ---- ') + title(c) + (c.kind === 'line' ? ' ----' : ' ---- */') + s.slice(b);
+      s = s.slice(0, a) + (c.kind === 'css' ? '/* ---- ' : '// ---- ') + title(c) + (c.kind === 'css' ? ' ---- */' : ' ----') + s.slice(b);
       kept++; return;
     }
     removed++;

@@ -12,7 +12,7 @@ function res(body, status) { return { body, status, ok: status >= 200 && status 
 function worker(net) {
   const store = new Map(), on = {};
   const caches = {
-    open: async () => ({ put: async (r, v) => { store.set(typeof r === 'string' ? r : r.url, v); }, add: async () => {} }),
+    open: async () => ({ put: async (r, v) => { store.set(typeof r === 'string' ? r : r.url, v); }, add: async u => { store.set(new URL(u, ORIGIN + '/').href, res('shell ' + u, 200)); } }),
     match: async r => store.get(new URL(typeof r === 'string' ? r : r.url, ORIGIN + '/').href),
     keys: async () => [], delete: async () => true
   };
@@ -20,6 +20,7 @@ function worker(net) {
   vm.runInNewContext(code, { self, caches, fetch: async u => net(u), URL, Promise });
   return {
     store,
+    async install() { let p; on.install({ waitUntil: x => { p = x; } }); await p; },
     async get(p, html) {
       const url = ORIGIN + p, request = { url, method: 'GET', mode: html ? 'navigate' : 'cors', headers: { get: () => '' } };
       let answer;
@@ -31,6 +32,10 @@ function worker(net) {
   };
 }
 (async () => {
+  const fresh0 = worker(() => { throw new Error('offline'); });
+  await fresh0.install();
+  ok('install stores the page the offline fallback serves', fresh0.store.has(ORIGIN + '/index.html'), true);
+  ok('offline, a page never visited falls back to the stored app', await fresh0.get('/elsewhere', true), 'shell ./index.html');
   const page = worker(() => res('page v1', 200));
   await page.get('/index.html', true);
   ok('a good page is stored', page.store.get(ORIGIN + '/index.html').body, 'page v1');

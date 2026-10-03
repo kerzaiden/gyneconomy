@@ -366,6 +366,12 @@ the manifest's; now each module says what it imports.
   TypeScript's own parser, so one inside type syntax or in a `.d.ts` file is caught (V705); the function
   sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
 - **A verdict word is derived from its band (V706).** Pulse reads Steady between `PULSE_STEADY_LO` and `PULSE_STEADY_HI` times the pre-2008 mean, and its shaded zone is that same range. Labor market reads Tight, Solid or Slack against `ACT_BAND_*` (the meter's own end words), and Temperature reads Running cold, Warm or Running hot against `TEMP_BAND_*` (the Temperature info's "hot above the band, warm inside it, cold below"). Both words follow the latest month of their record, and the unit tests pin each edge. These two vocabularies are Claude's call from the app's existing words, and Keren can rename them.
+- **A cut-off is computed from its record, not typed (1.2.0).** Under Keren's rule (DECISIONS, Bands and verdicts) a
+  derived edge is `pctl` or the extreme of the series it reads, evaluated in `data.ts` beside that series: Pulse
+  (`PULSE_*`, 1959–2007), Volume (`M2_PACE_*`, `M2_FLOOD`, 1960–2019), the saving cushion (`SAV_*`), the temperature
+  shades (`heatEdges`, the whole CPI record) and the Sahm rule (`unempSahm`, `sahmOf`). The structural readings'
+  colour comes from `stressOf` (band and record), not from a typed `flagState`. The tool's bands (`BANDS` in
+  `tools/fetch-live.js`) are tested equal to `READINGS`'.
 - **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`DESIRE_LINE`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
@@ -586,7 +592,7 @@ threshold, the bar takes that threshold); editorial and Keren's (Temperature). *
 provenance in the (i), or it does not ship.**
 
 **Temperature's band is the one target in the app.** The Fed publishes a point, 2% on PCE, no band; the
-1–3% edges are Keren's symmetric tolerance around it, read on CPI, which has run 0.39 points higher on
+1–3% edges are Keren's symmetric tolerance around it, the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
 average since 2000. The (i) says both. **Never relabel this band "normal."** Nothing is fetched from the
 Fed; the courier checks monthly that the objective is still 2% and, if it changed, notifies rather than
 moving anything — only Keren moves the band.
@@ -601,7 +607,7 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
-## The category analysis (1.2.0)
+## The category analysis (1.3.0)
 
 Each category page opens on one card, `.cat-analysis`, the first child of its `.cat-list`, built by `analysisHtml`
 in `src/js/category-analysis.ts`. The card is not a door (no `data-open`), so the one-card rule, the card-height test
@@ -616,7 +622,10 @@ and the past-cycle cards (`eraCards`) never see it.
   closed cycle that ran at least as long, each cut to the same number of quarters. `corrOfMoves` correlates the
   quarter-on-quarter changes; `criticalR` turns the two-tailed 5% t table into the correlation a match must pass.
 - **The words** (`sayMove`, `sayMatch`) read the line's first and last quarter, the nearest cycle, and say when the
-  cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`.
+  cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`. It has
+  no readout: it draws several cycles at once, so the readout test leaves `.cat-analysis` out by name.
+  A cycle too short for a composite leaves the card as an empty hidden `.cat-analysis`, so `replaceCategory` finds it
+  again when Back returns to a cycle that has one.
 - **The insights** (`INSIGHT` in `insights.ts`) are no longer a box on the page: they return their cards bare, and
   `detail` puts them first in the card's More details sheet, untitled, with the method after them. Mood's composite
   ends on `moodToday`, so the card and the sheet read the same mood.
@@ -695,7 +704,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
   cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
-  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.2.0) open with `cycleNowNote` (the note the popup used to open with), then
+  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.3.0) open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names
@@ -814,7 +823,11 @@ with no reading, by Keren's decision.**
 **Dead code is removed with proof, never by eye**: `npm run hygiene` names what nothing uses, and the suite
 collects every class rendered on the pages it opens; a class built at run time (its name never written whole
 in the source) must be declared in hygiene's `DYNAMIC_CLASS`, or hygiene would call its style unused and
-invite the prune that took the bull and bear colours in V662. **A maintained figure that nothing reads is a
+invite the prune that took the bull and bear colours in V662. A function that nothing in its own module calls
+is dead even when another module has a namesake (1.2.1: hygiene counts a module's private functions inside
+that module). A branch on any row's name against a literal (`R.name === "Growth"`) is caught as well as
+`ind.bodyTerm`; a lookup that finds a row by name (`filter`, `find`) is not a branch. A style keyed on a page
+attribute or on an id that belongs to one reading's page (`#pulse-record`) counts as page-scoped. **A maintained figure that nothing reads is a
 lost feature, not dead code** — check the refresh contract before deleting data.
 
 **Gone on purpose, don't re-add** (the class and id names among them are in hygiene's `GONE` list, so they
@@ -1043,7 +1056,8 @@ carrying a sentence about the figures above it is Insights. Nothing here is inve
 
 ## Accessibility
 
-Text 4.5:1, graphics 3:1, both themes — measured (`npm run a11y`, zero violations, and the suite reads
+Text 4.5:1, graphics 3:1, both themes — measured (`npm run a11y`: light at phone width, dark at desktop width,
+since 1.2.1, because contrast follows the theme and layout the width; zero violations, and the suite reads
 computed values, not the stylesheet). Touch targets 44px, small marks meeting it with an invisible disc.
 Every hover has a tap equivalent. Nothing colour-alone. Order the DOM, not the paint. Keep an `aria-label`
 where a heading is lost.

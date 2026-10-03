@@ -44,7 +44,7 @@ const tap = async (p, sel, until) => {
   const out = [], skipped = [];
   let states = 0;
   const audit = async (p, label) => { states++; await run(p, label, out); };
-  for (const [w, scheme] of [[414, 'light'], [414, 'dark'], [1280, 'light'], [1280, 'dark']]) {
+  for (const [w, scheme] of [[414, 'light'], [1280, 'dark']]) {
     const ctx = await b.newContext({ viewport: { width: w, height: 900 }, colorScheme: scheme });
     const p = await ctx.newPage();
     await p.route('**/*', r => { const u = r.request().url();

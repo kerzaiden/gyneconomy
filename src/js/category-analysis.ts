@@ -154,7 +154,7 @@ function detail(d: Read){
 }
 export function analysisHtml(key: string){
   var d = analyse(key, ui.eraOpen || currentEra);
-  if (!d) return "";
+  if (!d) return '<div class="cat-analysis" hidden></div>';
   return '<div class="cat-analysis"><div class="ca-name">' + d.title + ' analysis</div>' +
     '<p class="ca-say">' + sayMove(d) + sayMatch(d) + '</p>' + chartHtml(d) + rowsHtml(d) + moreRow(detail(d)) + '</div>';
 }

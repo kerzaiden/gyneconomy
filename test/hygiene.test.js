@@ -16,8 +16,12 @@ ok('calc and em pass', fontSizes('  .a{ font-size:calc(var(--dial) * 0.1); } .b{
 ok('a style aimed at one page is caught', pageScoped('  #sheet-sign-x .dv-bar{ stroke:red; }').length, 1);
 ok('a page id behind an element is caught', pageScoped('  section#sheet-sign-x .dv-bar{ stroke:red; }').length, 1);
 ok('a component class passes', pageScoped('  .dv-bar.good-above{ stroke:red; }'), []);
+ok('a style keyed on a page attribute is caught', pageScoped('  .metric-page[data-page="pulse"] .x{ top:0; }').length, 1);
+ok('an id that belongs to one page is caught', pageScoped('  #pulse-record{ margin:0; }', ['pulse', 'volume']).length, 1);
+ok('a shared id passes', pageScoped('  #metric-page .x{ margin:0; }', ['pulse']), []);
 ok('a branch on a reading’s name is caught', nameBranches('a.js', 'if (ind.bodyTerm === "Desire") x();').length, 1);
 ok('a lookup by name passes', nameBranches('a.js', 'list.filter(function(c){ return c.bodyTerm === "Desire"; })'), []);
+ok('a branch on any row’s name is caught', nameBranches('a.js', '  if (R.name === "Growth") x();').length, 1);
 ok('a px size in a script is caught', nameBranches('a.js', "'font-size:20px'").length, 1);
 ok('the enclosing function is found', enclosing('\nfunction histFrame(W){\n  var H = 1;\n}', 30), 'histFrame');
 ok('a height inside histFrame passes', chartFrames('a.js', '\nexport function histFrame(W){\n  var H = narrow ? 335 : 375;\n}'), []);
@@ -31,6 +35,7 @@ ok('modules that import downward pass', cycles({ 'a.js':'import { x } from "./b.
 ok('a circle written with single quotes is caught', cycles({ 'a.js':"import { x } from './b.js';", 'b.js':"import { y } from './a.js';" }).length, 1);
 ok('modules that import in a circle are caught', cycles({ 'a.js':'import { x } from "./b.js";', 'b.js':'import { y } from "./a.js";' }), ['modules import in a circle: a.js \u2192 b.js \u2192 a.js']);
 ok('a used function passes', unused('function a(){} a();', '', ''), []);
+ok('a dead function hiding behind a namesake in another module is caught', unused('function pick(){}\nfunction pick(){} pick();', '', '', { 'a.ts': 'function pick(){}', 'b.ts': 'function pick(){} pick();' }), ['function pick in a.ts is never used there']);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);
 ok('the bull and bear colours are built at run time', unused('', '', '.mkt-up{ x:1 } .mkt-down{ x:1 }'), []);
