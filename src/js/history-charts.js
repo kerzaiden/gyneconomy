@@ -87,7 +87,7 @@ export function velocityHistoryChart(Wpx, from, to){
   var f = function(v){ return v.toFixed(1); };
   var out = [];
   var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
-  var y1 = M2V_FROM_YEAR + Math.floor((m2vHistory.length - 1) / 4);
+  var y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
 
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
     fmt:function(g){ return g.toFixed(1) + "\u00d7"; } }));

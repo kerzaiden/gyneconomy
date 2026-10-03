@@ -1136,8 +1136,6 @@
 
   .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
-  .curve-dot{ fill:var(--accent); }
-  .curve-dot.end{ fill:var(--accent); stroke:var(--surface); stroke-width:2.5; }
   .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; opacity:0; pointer-events:none; }
   .tooltip{
     position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-115%);
@@ -23392,6 +23390,11 @@
       ticks = [];
       for (var v = Math.ceil(o.lo / step) * step; v <= o.hi + 1e-9; v += step) ticks.push(v);
     }
+    while (ticks.length > 2 && ticks.some(function(t, i) {
+      return i > 0 && o.fmt(t) === o.fmt(ticks[i - 1]);
+    })) ticks = ticks.filter(function(t, i) {
+      return i % 2 === 0;
+    });
     var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
     if (o.top != null && o.bot != null) {
       out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' + (fx1 - fx0).toFixed(1) + '" height="' + (o.bot - o.top).toFixed(1) + '"/>');
@@ -23586,109 +23589,13 @@
     var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
-  function attachHoverTracking(hit, svg, W, padL, innerW, count, onIndex, onHide) {
-    var rect = null, lastTouch = 0, shownIdx = -1, viaTouch = false;
-    function refresh() {
-      rect = svg.getBoundingClientRect();
-    }
-    function indexFromClientX(clientX) {
-      var relX = (clientX - rect.left) / rect.width * W;
-      return Math.max(0, Math.min(count - 1, Math.round((relX - padL) / innerW * (count - 1))));
-    }
-    function hide() {
-      shownIdx = -1;
-      viaTouch = false;
-      onHide();
-    }
-    function recentTouch() {
-      return Date.now() - lastTouch < 800;
-    }
-    hit.addEventListener("mouseenter", function() {
-      if (!recentTouch()) refresh();
-    });
-    hit.addEventListener("mousemove", function(evt) {
-      if (recentTouch()) return;
-      if (!rect) refresh();
-      shownIdx = indexFromClientX(evt.clientX);
-      viaTouch = false;
-      onIndex(shownIdx);
-    });
-    hit.addEventListener("mouseleave", function() {
-      if (!viaTouch) hide();
-    });
-    hit.addEventListener("touchstart", function(evt) {
-      lastTouch = Date.now();
-      refresh();
-      var i = indexFromClientX(evt.touches[0].clientX);
-      if (viaTouch && i === shownIdx) {
-        hide();
-        return;
-      }
-      shownIdx = i;
-      viaTouch = true;
-      onIndex(i);
-    }, {
-      passive: true
-    });
-    hit.addEventListener("touchmove", function(evt) {
-      lastTouch = Date.now();
-      if (!rect) refresh();
-      var i = indexFromClientX(evt.touches[0].clientX);
-      if (i !== shownIdx) {
-        shownIdx = i;
-        viaTouch = true;
-        onIndex(i);
-      }
-    }, {
-      passive: true
-    });
-    hit.addEventListener("touchend", function() {
-      lastTouch = Date.now();
-    }, {
-      passive: true
-    });
-    hoverAwayAdd({
-      hit: hit,
-      touch: function(evt) {
-        if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide();
-      },
-      scroll: function() {
-        if (viaTouch) hide();
-      }
-    });
-  }
-  var hoverAway = null;
-  function hoverAwayAdd(h) {
-    if (!hoverAway) {
-      hoverAway = [];
-      document.addEventListener("touchstart", function(evt) {
-        hoverAwayLive().forEach(function(x) {
-          x.touch(evt);
-        });
-      }, {
-        passive: true
-      });
-      window.addEventListener("scroll", function() {
-        hoverAwayLive().forEach(function(x) {
-          x.scroll();
-        });
-      }, {
-        passive: true
-      });
-    }
-    hoverAway.push(h);
-  }
-  function hoverAwayLive() {
-    return hoverAway = hoverAway.filter(function(x) {
-      return x.hit.isConnected;
-    });
-  }
   var page = {
     mode: void 0,
     cycles: void 0,
     range: void 0,
     stops: void 0,
-    head: void 0
+    head: void 0,
+    y0: void 0
   };
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
@@ -24038,6 +23945,7 @@
     histReadEnsure(host);
     histReadFill(host, null);
     histLegend(host);
+    histLive(host);
     if (host.__hovWired) return;
     host.__hovWired = true;
     var tip = byId(tipId);
@@ -24089,15 +23997,20 @@
     histReadFill(host, d, i);
     return true;
   }
-  function histKeysWire(host, hide) {
-    var live = document.createElement("span");
-    live.className = "sr-only";
-    live.setAttribute("aria-live", "polite");
-    host.appendChild(live);
-    var named = host.querySelector("svg[aria-label]");
+  function histLive(host) {
+    var live = host.querySelector(":scope > .sr-only[aria-live]"), named = host.querySelector("svg[aria-label]");
+    if (!live) {
+      live = document.createElement("span");
+      live.className = "sr-only";
+      live.setAttribute("aria-live", "polite");
+      host.appendChild(live);
+    }
     host.setAttribute("tabindex", "0");
     host.setAttribute("role", "group");
     host.setAttribute("aria-label", (named ? named.getAttribute("aria-label") + ". " : "") + "Left and right arrows read each value.");
+    return live;
+  }
+  function histKeysWire(host, hide) {
     host.addEventListener("blur", function() {
       host.__keyI = null;
       hide();
@@ -24117,7 +24030,7 @@
         var n = read && read.querySelector(s);
         return n ? n.textContent : "";
       };
-      live.textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
+      histLive(host).textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
   function mWindowFrom(len, key) {
@@ -24140,14 +24053,34 @@
     for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
     return 0;
   }
+  function tabSegs(items, active, attr) {
+    var any = items.some(function(t) {
+      return t[0] === active;
+    });
+    return items.map(function(t, i) {
+      var on = t[0] === active;
+      return '<button type="button" class="range-seg' + (on ? " on" : "") + '" role="tab" aria-selected="' + on + '" tabindex="' + (on || !any && !i ? 0 : -1) + '" ' + attr + '="' + t[0] + '">' + t[1] + "</button>";
+    }).join("");
+  }
   function modeBar(id, active, extra) {
-    return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' + [ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ].concat(extra || []).map(function(m) {
-      return '<button type="button" class="range-seg' + (m[0] === active ? " on" : "") + '" role="tab" aria-selected="' + (m[0] === active ? "true" : "false") + '" data-mode="' + m[0] + '">' + m[1] + "</button>";
-    }).join("") + "</div>";
+    return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' + tabSegs([ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ].concat(extra || []), active, "data-mode") + "</div>";
   }
   var pickerOpen = {};
+  function controlKeys(el) {
+    var box = el && el.closest && el.closest("[data-mode-for], [data-range-for], [data-cycles-for]");
+    if (!box) return [];
+    var a = [ "data-mode-for", "data-range-for", "data-cycles-for" ].filter(function(n) {
+      return box.hasAttribute(n);
+    })[0];
+    var b = [ "data-mode", "data-range", "data-cycle", "data-picker-toggle" ].filter(function(n) {
+      return el.hasAttribute(n);
+    })[0];
+    var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
+    return (b ? [ at + "[" + b + '="' + el.getAttribute(b) + '"]' ] : []).concat(a === "data-cycles-for" ? [ at + "[data-picker-toggle]" ] : []);
+  }
   function histControls(id, tl, minYear, extra) {
     var mode = page.mode[id], on = mode === "cycles";
+    if (minYear == null) minYear = page.y0[id];
     var known = mode === "cycles" || mode === "calendar";
     return '<div class="hist-controls">' + modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
       series: tl.series,
@@ -24157,6 +24090,7 @@
   }
   function pageCycle(id, y0) {
     var c = page.mode[id] === "cycles" ? cycleByName(page.cycles[id]) || openCycle() : null;
+    if (y0 == null) y0 = page.y0[id];
     return c && c.from < y0 ? openCycle() : c;
   }
   function cyclePicker(id, picked, minYear) {
@@ -24173,9 +24107,9 @@
   }
   function rangeBar(id, ranges, active) {
     if (!ranges || ranges.length < 2) return "";
-    return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + ranges.map(function(r) {
-      return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" aria-selected="' + (r.key === active ? "true" : "false") + '" data-range="' + r.key + '">' + r.label + "</button>";
-    }).join("") + "</div>";
+    return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + tabSegs(ranges.map(function(r) {
+      return [ r.key, r.label ];
+    }), active, "data-range") + "</div>";
   }
   function headSigma(id, text) {
     var el = byId("bh-sigma-" + id);
@@ -25898,6 +25832,12 @@
         title: R.head
       };
     });
+    page.y0 = pageState(function(R) {
+      var d = R.hist ? keyed(R.hist).filter(function(x) {
+        return x.v != null;
+      })[0] : null;
+      return d ? +String(d.k).slice(0, 4) : void 0;
+    });
     GYN.step("checkRoster", checkRoster, "check");
     checkRoster();
     GYN.ROSTER = ROSTER;
@@ -26027,7 +25967,7 @@
     };
     var out = [];
     var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
-    var y1 = M2V_FROM_YEAR + Math.floor((m2vHistory.length - 1) / 4);
+    var y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
     out.push(chartAxes({
       ticks: sc.ticks,
       y: Y,
@@ -27577,7 +27517,6 @@
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var minV = -2, maxV = 4;
     var el = svgEl;
-    var tooltip = byId("spread-history-tooltip");
     var series = spreadSeries();
     addSources(series["3m"].sources);
     addSources(series["2y"].sources);
@@ -27665,82 +27604,37 @@
       appendSvgMarkup(svg, fitLine(data.map(function(d) {
         return d.v;
       }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
-      var crosshair = el("line", {
+      svg.appendChild(el("line", {
         x1: 0,
         x2: 0,
         y1: padT,
         y2: H - padB,
         class: "hist-cross"
+      }));
+      publishGeom("spreadHistory", {
+        vals: data,
+        n: data.length,
+        W: W,
+        T: yTop,
+        B: yBot,
+        L: x(0, data.length),
+        R: x(data.length - 1, data.length),
+        at: function(d) {
+          return qLabel(d.q);
+        },
+        fmt: pts,
+        refs: [ {
+          label: "NBER recession",
+          swatch: "var(--border-strong)"
+        }, {
+          label: "Normal",
+          swatch: "var(--good)"
+        }, {
+          label: "Inverted",
+          swatch: "var(--critical)"
+        } ]
       });
-      svg.appendChild(crosshair);
-      var hoverDot = el("circle", {
-        r: 4.5,
-        class: "curve-dot end",
-        opacity: 0
-      });
-      svg.appendChild(hoverDot);
-      var hit = el("rect", {
-        x: padL,
-        y: 0,
-        width: innerW,
-        height: H,
-        class: "hero-hit"
-      });
-      svg.appendChild(hit);
-      shell = byId("spread-history-shell");
-      if (shell) {
-        shell.__geom = {
-          vals: data,
-          n: data.length,
-          W: W,
-          T: yTop,
-          B: yBot,
-          L: x(0, data.length),
-          R: x(data.length - 1, data.length),
-          at: function(d) {
-            return qLabel(d.q);
-          },
-          fmt: pts,
-          refs: [ {
-            label: "NBER recession",
-            swatch: "var(--border-strong)"
-          }, {
-            label: "Normal",
-            swatch: "var(--good)"
-          }, {
-            label: "Inverted",
-            swatch: "var(--critical)"
-          } ]
-        };
-        histReadEnsure(shell);
-        histLegend(shell);
-        histReadFill(shell, null);
-      }
-      var onCol = null;
-      function showAt(i) {
-        var d = data[i];
-        var px = x(i, data.length);
-        crosshair.setAttribute("x1", String(px));
-        crosshair.setAttribute("x2", String(px));
-        crosshair.setAttribute("opacity", "1");
-        hoverDot.setAttribute("opacity", "0");
-        svg.classList.add("hovering");
-        if (onCol) onCol.classList.remove("on");
-        onCol = svg.querySelectorAll(".hcol")[i];
-        if (onCol) onCol.classList.add("on");
-        if (shell) histReadFill(shell, d, i);
-      }
-      function hide() {
-        crosshair.setAttribute("opacity", "0");
-        hoverDot.setAttribute("opacity", "0");
-        svg.classList.remove("hovering");
-        if (onCol) {
-          onCol.classList.remove("on");
-          onCol = null;
-        }
-        if (shell) histReadFill(shell, null);
-      }
-      attachHoverTracking(hit, svg, W, padL, innerW, data.length, showAt, hide);
+      attachHistory(byId("spread-history-shell"), "spread-history-tooltip", "spreadHistory");
       ui.spreadDetail = s.detail;
     }
     Object.keys(series).forEach(function(k) {
@@ -29705,8 +29599,15 @@
     return highlightsHtml([ hhLede, hiCard("The bill", "", billTxt), hiCard("The cushion", householdsNow.state, keptTxt) ]);
   }
   function redrawSheet(id) {
-    var h = byId("metric-page"), d = sheetRenderers[id];
+    var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
     if (d) d(h && h.clientWidth ? h.clientWidth : 340);
+    Array.prototype.forEach.call(document.querySelectorAll("#metric-page .trend-on"), function(b) {
+      var p = b.querySelector(".trendpill.can-toggle");
+      if (!p || p.getAttribute("aria-pressed") !== "true") b.classList.remove("trend-on");
+    });
+    keys.some(function(k) {
+      return focusQuiet(document.querySelector(k));
+    });
   }
   function registerTempGdpPages() {
     sheetRenderers["sheet-metric-temp"] = function(W) {
@@ -29915,16 +29816,13 @@
       var mid = seg.parentNode.getAttribute("data-mode-for");
       if (mid && mid in page.mode) {
         page.mode[mid] = seg.getAttribute("data-mode");
-        var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
-        if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
+        redrawSheet(mid);
         return;
       }
       var id = seg.parentNode.getAttribute("data-range-for");
       if (!(id in page.range)) return;
       page.range[id] = seg.getAttribute("data-range");
-      var host = byId("metric-page");
-      var draw = sheetRenderers[id];
-      if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
+      redrawSheet(id);
     });
   }
   function valuationHighlights(capeNow, buffNow) {
@@ -29970,11 +29868,67 @@
     cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads growth as " + growthWord(r) + "."));
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
+  function shutPickers() {
+    var open = Object.keys(pickerOpen).filter(function(k) {
+      return pickerOpen[k];
+    });
+    open.forEach(function(k) {
+      pickerOpen[k] = false;
+      redrawSheet(k);
+    });
+    var btn = open.length && document.querySelector('[data-cycles-for="' + open[0] + '"] [data-picker-toggle]');
+    if (btn) focusQuiet(btn);
+  }
+  function wireControlKeys() {
+    layer(0, {
+      open: function() {
+        return Object.keys(pickerOpen).some(function(k) {
+          return pickerOpen[k];
+        });
+      },
+      close: shutPickers
+    });
+    document.addEventListener("keydown", function(e) {
+      var t = e.target, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
+      var step = {
+        ArrowUp: -1,
+        ArrowDown: 1,
+        ArrowLeft: -1,
+        ArrowRight: 1
+      }[e.key];
+      if (step == null && e.key !== "Home" && e.key !== "End") return;
+      if (sel) {
+        var id = sel.getAttribute("data-cycles-for"), opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
+        if (!pickerOpen[id]) {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            sel.querySelector("[data-picker-toggle]").click();
+            focusQuiet(document.querySelector('[data-cycles-for="' + id + '"] .cycsel-opt.on'));
+          }
+          return;
+        }
+        var i = opts.indexOf(t);
+        var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step));
+        e.preventDefault();
+        focusQuiet(opts[j]);
+        return;
+      }
+      if (!bar || !t.classList.contains("range-seg")) return;
+      var segs = Array.prototype.slice.call(bar.querySelectorAll(".range-seg")), k = segs.indexOf(t);
+      var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step + segs.length) % segs.length;
+      e.preventDefault();
+      if (m !== k) {
+        segs[m].focus();
+        segs[m].click();
+      }
+    });
+  }
   function renderMetricPages(ctx) {
     registerTempGdpPages();
     registerActivityPowerDeficitPages();
     registerHouseholdsValuationPages();
     wireMetricPageControls();
+    wireControlKeys();
     valuationHighlights(ctx.capeNow, ctx.buffNow);
     tempHighlights(ctx.tempInd, ctx.r);
     gdpHighlights(ctx.r, ctx.gq);
@@ -30518,9 +30472,9 @@
         find[e.title] = [ e.title, e.sub, e.metricSub, ROSTER_BY[e.target].group ].join(" ").toLowerCase();
       });
     });
-    host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + IND_TABS.map(function(t, i) {
-      return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + "</button>";
-    }).join("") + '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c) {
+    host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + tabSegs(IND_TABS.map(function(t) {
+      return [ t.key, t.label ];
+    }), IND_TABS[0].key, "data-ind-tab") + '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c) {
       return indCategoryHtml(c, find);
     }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
@@ -30529,6 +30483,7 @@
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
         b.setAttribute("aria-selected", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
       });
       hint.hidden = !TIMING[kind];
       hint.textContent = TIMING[kind] ? TIMING[kind].label + ": " + TIMING[kind].hint + "." : "";
@@ -30728,8 +30683,9 @@
   }
   function wireContactForm() {
     var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
-    var prevOverflow = "";
+    var prevOverflow = "", locked = false;
     function slideIn(el) {
+      if (el.__cancelOut) el.__cancelOut();
       el.hidden = false;
       void el.offsetWidth;
       el.classList.add("in");
@@ -30746,12 +30702,21 @@
         if (done) done();
       }
       el.addEventListener("transitionend", finish);
-      setTimeout(finish, 420);
+      var t = setTimeout(finish, 420);
+      el.__cancelOut = function() {
+        fired = true;
+        clearTimeout(t);
+        el.removeEventListener("transitionend", finish);
+        el.__cancelOut = null;
+      };
     }
     function show() {
       slideIn(menu);
       open.setAttribute("aria-expanded", "true");
-      prevOverflow = document.body.style.overflow;
+      if (!locked) {
+        prevOverflow = document.body.style.overflow;
+        locked = true;
+      }
       document.body.style.overflow = "hidden";
       back.focus();
     }
@@ -30761,6 +30726,7 @@
       open.focus();
       slideOut(menu, function() {
         document.body.style.overflow = prevOverflow;
+        locked = false;
       });
     }
     open.addEventListener("click", show);

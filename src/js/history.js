@@ -10,7 +10,8 @@ export var page = {
   cycles: undefined,
   range: undefined,
   stops: undefined,
-  head: undefined
+  head: undefined,
+  y0: undefined
 };
 /* ---- the history card's head ---- */
 export var HIST_NOTE = {};
@@ -291,6 +292,7 @@ function wireHistHover(host, tipId){
   histReadEnsure(host);
   histReadFill(host, null);
   histLegend(host);
+  histLive(host);
   if (host.__hovWired) return;
   host.__hovWired = true;
   var tip = byId(tipId);
@@ -327,13 +329,14 @@ function histShow(host, svg, i){
   histReadFill(host, d, i);
   return true;
 }
-function histKeysWire(host, hide){
-  var live = document.createElement("span");
-  live.className = "sr-only"; live.setAttribute("aria-live", "polite");
-  host.appendChild(live);
-  var named = host.querySelector("svg[aria-label]");
+function histLive(host){
+  var live = host.querySelector(":scope > .sr-only[aria-live]"), named = host.querySelector("svg[aria-label]");
+  if (!live){ live = document.createElement("span"); live.className = "sr-only"; live.setAttribute("aria-live", "polite"); host.appendChild(live); }
   host.setAttribute("tabindex", "0"); host.setAttribute("role", "group");
   host.setAttribute("aria-label", (named ? named.getAttribute("aria-label") + ". " : "") + "Left and right arrows read each value.");
+  return live;
+}
+function histKeysWire(host, hide){
   host.addEventListener("blur", function(){ host.__keyI = null; hide(); });
   host.addEventListener("keydown", function(e){
     var g = host.__geom, svg = host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
@@ -344,7 +347,7 @@ function histKeysWire(host, hide){
     host.__keyI = i;
     if (!histShow(host, svg, i)) return;
     var read = histReadEnsure(host), part = function(s){ var n = read && read.querySelector(s); return n ? n.textContent : ""; };
-    live.textContent = [part(".hr-label"), part(".hr-value")].filter(Boolean).join(", ");
+    histLive(host).textContent = [part(".hr-label"), part(".hr-value")].filter(Boolean).join(", ");
   });
 }
 export function mWindowFrom(len, key){
@@ -367,16 +370,30 @@ export function hyWindowFrom(key){
   for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
   return 0;
 }
+export function tabSegs(items, active, attr){
+  var any = items.some(function(t){ return t[0] === active; });
+  return items.map(function(t, i){
+    var on = t[0] === active;
+    return '<button type="button" class="range-seg' + (on ? " on" : "") + '" role="tab" aria-selected="' + on +
+      '" tabindex="' + (on || (!any && !i) ? 0 : -1) + '" ' + attr + '="' + t[0] + '">' + t[1] + '</button>';
+  }).join("");
+}
 function modeBar(id, active, extra){
   return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' +
-    [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []).map(function(m){
-      return '<button type="button" class="range-seg' + (m[0] === active ? " on" : "") + '" role="tab" ' +
-        'aria-selected="' + (m[0] === active ? "true" : "false") + '" data-mode="' + m[0] + '">' + m[1] + '</button>';
-    }).join("") + '</div>';
+    tabSegs([["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []), active, "data-mode") + '</div>';
 }
 export var pickerOpen = {};
+export function controlKeys(el){
+  var box = el && el.closest && el.closest("[data-mode-for], [data-range-for], [data-cycles-for]");
+  if (!box) return [];
+  var a = ["data-mode-for", "data-range-for", "data-cycles-for"].filter(function(n){ return box.hasAttribute(n); })[0];
+  var b = ["data-mode", "data-range", "data-cycle", "data-picker-toggle"].filter(function(n){ return el.hasAttribute(n); })[0];
+  var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
+  return (b ? [at + "[" + b + '="' + el.getAttribute(b) + '"]'] : []).concat(a === "data-cycles-for" ? [at + "[data-picker-toggle]"] : []);
+}
 export function histControls(id, tl, minYear, extra){
   var mode = page.mode[id], on = mode === "cycles";
+  if (minYear == null) minYear = page.y0[id];
   var known = mode === "cycles" || mode === "calendar";
   return '<div class="hist-controls">' +
     modeBar(id, mode, extra) +
@@ -386,6 +403,7 @@ export function histControls(id, tl, minYear, extra){
 }
 export function pageCycle(id, y0){
   var c = page.mode[id] === "cycles" ? (cycleByName(page.cycles[id]) || openCycle()) : null;
+  if (y0 == null) y0 = page.y0[id];
   return c && c.from < y0 ? openCycle() : c;
 }
 function cyclePicker(id, picked, minYear){
@@ -409,10 +427,8 @@ function cyclePicker(id, picked, minYear){
 }
 export function rangeBar(id, ranges, active){
   if (!ranges || ranges.length < 2) return "";
-  return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + ranges.map(function(r){
-    return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" ' +
-      'aria-selected="' + (r.key === active ? "true" : "false") + '" data-range="' + r.key + '">' + r.label + '</button>';
-  }).join("") + '</div>';
+  return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' +
+    tabSegs(ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range") + '</div>';
 }
 export function headSigma(id, text){
   var el = byId("bh-sigma-" + id); if (!el) return;

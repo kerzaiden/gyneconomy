@@ -4,6 +4,7 @@ import { GYN } from "./live.js";
 import { gdpSrc, sp500AnnualReturnSource } from "./data.js";
 import { coincident, lagging, rowReadings } from "./readings.js";
 import { categoriesShown, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
+import { tabSegs } from "./history.js";
 import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.js";
 import { cycleViewEl, setTopbar } from "./render-pages.js";
 import { groupId } from "./indicators.js";
@@ -260,10 +261,7 @@ function buildSearch(){
   }); });
   host.innerHTML =
     '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' +
-      IND_TABS.map(function(t, i){
-        return '<button type="button" class="range-seg' + (i ? "" : " on") + '" role="tab" ' +
-          'aria-selected="' + (i ? "false" : "true") + '" data-ind-tab="' + t.key + '">' + t.label + '</button>';
-      }).join("") +
+      tabSegs(IND_TABS.map(function(t){ return [t.key, t.label]; }), IND_TABS[0].key, "data-ind-tab") +
     '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c){ return indCategoryHtml(c, find); }).join("") +
     '<p class="search-none" hidden>No reading matches.</p>';
   function apply(){
@@ -272,6 +270,7 @@ function buildSearch(){
       var on = b.getAttribute("data-ind-tab") === kind;
       b.classList.toggle("on", on);
       b.setAttribute("aria-selected", on ? "true" : "false");
+      b.tabIndex = on ? 0 : -1;
     });
     hint.hidden = !TIMING[kind];
     hint.textContent = TIMING[kind] ? TIMING[kind].label + ": " + TIMING[kind].hint + "." : "";

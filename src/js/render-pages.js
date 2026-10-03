@@ -1,12 +1,12 @@
 import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.js";
 import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl, ui } from "./dom.js";
 import { GYN } from "./live.js";
-import { attachHoverTracking, AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.js";
+import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.js";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.js";
 import { calendarTodayY } from "./refresh-season.js";
 import { curveNoteFull, fedFundsRange, now, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
 import { cycleQtrIdx, cycleSlice } from "./model.js";
-import { attachHistory, HIST_NOTE, histControls, histHead, histLegend, histNote, histReadEnsure, histReadFill, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
+import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
 import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.js";
 import { fedFundsHistoryChart } from "./history-charts.js";
 import { drawsPage, spreadPick } from "./render-core.js";
@@ -62,7 +62,6 @@ function renderSpreadHistory(){
   var innerW = W - padL - padR, innerH = H - padT - padB;
   var minV = -2, maxV = 4;
   var el = svgEl;
-  var tooltip = byId("spread-history-tooltip");
 
   var series = spreadSeries();
   addSources(series["3m"].sources); addSources(series["2y"].sources);
@@ -122,44 +121,15 @@ function renderSpreadHistory(){
     });
     appendSvgMarkup(svg, fitLine(data.map(function(d){ return d.v; }), "quarter", pts, x(0, data.length), x(data.length - 1, data.length), y, W, padL, padR));
 
-    var crosshair = el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" });
-    svg.appendChild(crosshair);
-    var hoverDot = el("circle", { r:4.5, class:"curve-dot end", opacity:0 });
-    svg.appendChild(hoverDot);
-    var hit = el("rect", { x:padL, y:0, width:innerW, height:H, class:"hero-hit" });
-    svg.appendChild(hit);
-    shell = byId("spread-history-shell");
-    if (shell){
-      shell.__geom = { vals:data, n:data.length, W:W, T:yTop, B:yBot,
-                       L:x(0, data.length), R:x(data.length - 1, data.length),
-                       at:function(d){ return qLabel(d.q); },
-                       fmt:pts,
-                       refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
-                             { label:"Normal",         swatch:"var(--good)" },
-                             { label:"Inverted",       swatch:"var(--critical)" }] };
-      histReadEnsure(shell);
-      histLegend(shell);
-      histReadFill(shell, null);
-    }
-    var onCol = null;
-    function showAt(i){
-      var d = data[i];
-      var px = x(i,data.length);
-      crosshair.setAttribute("x1", String(px)); crosshair.setAttribute("x2", String(px)); crosshair.setAttribute("opacity", "1");
-      hoverDot.setAttribute("opacity", "0");
-      svg.classList.add("hovering");
-      if (onCol) onCol.classList.remove("on");
-      onCol = svg.querySelectorAll(".hcol")[i];
-      if (onCol) onCol.classList.add("on");
-      if (shell) histReadFill(shell, d, i);
-    }
-    function hide(){
-      crosshair.setAttribute("opacity", "0"); hoverDot.setAttribute("opacity", "0");
-      svg.classList.remove("hovering");
-      if (onCol){ onCol.classList.remove("on"); onCol = null; }
-      if (shell) histReadFill(shell, null);
-    }
-    attachHoverTracking(hit, svg, W, padL, innerW, data.length, showAt, hide);
+    svg.appendChild(el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" }));
+    publishGeom("spreadHistory", { vals:data, n:data.length, W:W, T:yTop, B:yBot,
+                     L:x(0, data.length), R:x(data.length - 1, data.length),
+                     at:function(d){ return qLabel(d.q); },
+                     fmt:pts,
+                     refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
+                           { label:"Normal",         swatch:"var(--good)" },
+                           { label:"Inverted",       swatch:"var(--critical)" }] });
+    attachHistory(byId("spread-history-shell"), "spread-history-tooltip", "spreadHistory");
 
     ui.spreadDetail = s.detail;
   }

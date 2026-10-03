@@ -1,10 +1,10 @@
 import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, yearOf } from "./format.js";
-import { byId, byIdMaybe, moreRow, put } from "./dom.js";
+import { byId, byIdMaybe, focusQuiet, layer, moreRow, put } from "./dom.js";
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.js";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.js";
 import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.js";
-import { attachHistory, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
+import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
 import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.js";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.js";
 import { sheetRenderers } from "./render-core.js";
@@ -38,8 +38,13 @@ function householdsHighlights(){
                          hiCard("The cushion", householdsNow.state, keptTxt)]);
 }
 function redrawSheet(id){
-  var h = byId("metric-page"), d = sheetRenderers[id];
+  var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
   if (d) d(h && h.clientWidth ? h.clientWidth : 340);
+  Array.prototype.forEach.call(document.querySelectorAll("#metric-page .trend-on"), function(b){
+    var p = b.querySelector(".trendpill.can-toggle");
+    if (!p || p.getAttribute("aria-pressed") !== "true") b.classList.remove("trend-on");
+  });
+  keys.some(function(k){ return focusQuiet(document.querySelector(k)); });
 }
 function registerTempGdpPages(){
   sheetRenderers["sheet-metric-temp"] = function(W){
@@ -188,15 +193,13 @@ function wireMetricPageControls(){
     var mid = seg.parentNode.getAttribute("data-mode-for");
     if (mid && (mid in page.mode)){
       page.mode[mid] = seg.getAttribute("data-mode");
-      var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
-      if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
+      redrawSheet(mid);
       return;
     }
     var id = seg.parentNode.getAttribute("data-range-for");
     if (!(id in page.range)) return;
     page.range[id] = seg.getAttribute("data-range");
-    var host = byId("metric-page");
-    var draw = sheetRenderers[id]; if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
+    redrawSheet(id);
   });
 
 }
@@ -245,11 +248,37 @@ function gdpHighlights(r, gq){
     growthWord(r) + "."));
   put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
 }
+function shutPickers(){
+  var open = Object.keys(pickerOpen).filter(function(k){ return pickerOpen[k]; });
+  open.forEach(function(k){ pickerOpen[k] = false; redrawSheet(k); });
+  var btn = open.length && document.querySelector("[data-cycles-for=\"" + open[0] + "\"] [data-picker-toggle]");
+  if (btn) focusQuiet(btn);
+}
+function wireControlKeys(){
+  layer(0, { open:function(){ return Object.keys(pickerOpen).some(function(k){ return pickerOpen[k]; }); }, close:shutPickers });
+  document.addEventListener("keydown", function(e){
+    var t = e.target, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
+    var step = { ArrowUp:-1, ArrowDown:1, ArrowLeft:-1, ArrowRight:1 }[e.key];
+    if (step == null && e.key !== "Home" && e.key !== "End") return;
+    if (sel){
+      var id = sel.getAttribute("data-cycles-for"), opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
+      if (!pickerOpen[id]){ if (e.key === "ArrowDown"){ e.preventDefault(); sel.querySelector("[data-picker-toggle]").click(); focusQuiet(document.querySelector("[data-cycles-for=\"" + id + "\"] .cycsel-opt.on")); } return; }
+      var i = opts.indexOf(t);
+      var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step));
+      e.preventDefault(); focusQuiet(opts[j]); return;
+    }
+    if (!bar || !t.classList.contains("range-seg")) return;
+    var segs = Array.prototype.slice.call(bar.querySelectorAll(".range-seg")), k = segs.indexOf(t);
+    var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step + segs.length) % segs.length;
+    e.preventDefault(); if (m !== k){ segs[m].focus(); segs[m].click(); }
+  });
+}
 export function renderMetricPages(ctx){
   registerTempGdpPages();
   registerActivityPowerDeficitPages();
   registerHouseholdsValuationPages();
   wireMetricPageControls();
+  wireControlKeys();
   valuationHighlights(ctx.capeNow, ctx.buffNow);
   tempHighlights(ctx.tempInd, ctx.r);
   gdpHighlights(ctx.r, ctx.gq);

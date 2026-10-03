@@ -116,6 +116,8 @@ export function chartAxes(o){
     ticks = [];
     for (var v = Math.ceil(o.lo / step) * step; v <= o.hi + 1e-9; v += step) ticks.push(v);
   }
+  while (ticks.length > 2 && ticks.some(function(t, i){ return i > 0 && o.fmt(t) === o.fmt(ticks[i - 1]); }))
+    ticks = ticks.filter(function(t, i){ return i % 2 === 0; });
   var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
   if (o.top != null && o.bot != null){
     out.push('<rect class="bt-frame" x="' + fx0.toFixed(1) + '" y="' + (+o.top).toFixed(1) + '" width="' +
@@ -284,44 +286,3 @@ export function vitalRingSvg(pct, state, label, cls){
       'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' +
   '</svg>';
 }
-export function attachHoverTracking(hit, svg, W, padL, innerW, count, onIndex, onHide){
-  var rect = null, lastTouch = 0, shownIdx = -1, viaTouch = false;
-  function refresh(){ rect = svg.getBoundingClientRect(); }
-  function indexFromClientX(clientX){
-    var relX = (clientX - rect.left) / rect.width * W;
-    return Math.max(0, Math.min(count - 1, Math.round(((relX - padL) / innerW) * (count - 1))));
-  }
-  function hide(){ shownIdx = -1; viaTouch = false; onHide(); }
-  function recentTouch(){ return Date.now() - lastTouch < 800; }
-  hit.addEventListener("mouseenter", function(){ if (!recentTouch()) refresh(); });
-  hit.addEventListener("mousemove", function(evt){
-    if (recentTouch()) return;
-    if (!rect) refresh();
-    shownIdx = indexFromClientX(evt.clientX); viaTouch = false; onIndex(shownIdx);
-  });
-  hit.addEventListener("mouseleave", function(){ if (!viaTouch) hide(); });
-  hit.addEventListener("touchstart", function(evt){
-    lastTouch = Date.now(); refresh();
-    var i = indexFromClientX(evt.touches[0].clientX);
-    if (viaTouch && i === shownIdx){ hide(); return; }
-    shownIdx = i; viaTouch = true; onIndex(i);
-  }, {passive:true});
-  hit.addEventListener("touchmove", function(evt){
-    lastTouch = Date.now(); if (!rect) refresh();
-    var i = indexFromClientX(evt.touches[0].clientX);
-    if (i !== shownIdx){ shownIdx = i; viaTouch = true; onIndex(i); }
-  }, {passive:true});
-  hit.addEventListener("touchend", function(){ lastTouch = Date.now(); }, {passive:true});
-  hoverAwayAdd({ hit:hit, touch:function(evt){ if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide(); },
-                 scroll:function(){ if (viaTouch) hide(); } });
-}
-var hoverAway = null;
-function hoverAwayAdd(h){
-  if (!hoverAway){
-    hoverAway = [];
-    document.addEventListener("touchstart", function(evt){ hoverAwayLive().forEach(function(x){ x.touch(evt); }); }, {passive:true});
-    window.addEventListener("scroll", function(){ hoverAwayLive().forEach(function(x){ x.scroll(); }); }, {passive:true});
-  }
-  hoverAway.push(h);
-}
-function hoverAwayLive(){ return (hoverAway = hoverAway.filter(function(x){ return x.hit.isConnected; })); }

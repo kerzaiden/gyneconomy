@@ -1143,8 +1143,6 @@
 
   .chart-shell{ position:relative; margin:10px -6px 4px; }
   .chart-shell svg{ width:100%; height:auto; display:block; overflow:visible; }
-  .curve-dot{ fill:var(--accent); }
-  .curve-dot.end{ fill:var(--accent); stroke:var(--surface); stroke-width:2.5; }
   .crosshair{ stroke:var(--text-muted); stroke-width:1; stroke-dasharray:3 3; opacity:0; pointer-events:none; }
   .tooltip{
     position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-115%);
