@@ -48,7 +48,7 @@ const KEYED = [
   ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
   ['series.json', 'capeHistory',             'y',  55, [4, 60]],
 ];
-const COMPILED = /DATA_COMPILED = new Date\((\d+), (\d+), (\d+)\)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src', 'js', 'refresh-season.js'), 'utf8'));
+const COMPILED = /DATA_COMPILED = new Date\((\d+), (\d+), (\d+)\)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src', 'js', 'refresh-season.ts'), 'utf8'));
 const TODAY = new Date(Date.UTC(+COMPILED[1], +COMPILED[2], +COMPILED[3]));
 const NOW = { m: TODAY.getUTCFullYear() * 12 + TODAY.getUTCMonth() + 1,
               q: TODAY.getUTCFullYear() * 4 + Math.floor(TODAY.getUTCMonth() / 3) + 1,
@@ -85,7 +85,7 @@ for (const [file, name, floor, [lo, hi]] of BARE) {
   ok(name + ': stays in band', min >= lo && max <= hi, true);
 }
 
-const JS = fs.readdirSync(path.join(__dirname, '..', 'src/js')).filter(f => f.endsWith('.js')).map(f => fs.readFileSync(path.join(__dirname, '..', 'src/js', f), 'utf8')).join('\n');
+const JS = fs.readdirSync(path.join(__dirname, '..', 'src/js')).filter(f => f.endsWith('.ts')).map(f => fs.readFileSync(path.join(__dirname, '..', 'src/js', f), 'utf8')).join('\n');
 for (const [file, alias] of [['series.json', 'SERIES'], ['fred.json', 'FRED']]) {
   const keys = Object.keys(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src/data', file), 'utf8'))).sort();
   const read = [...new Set([...JS.matchAll(new RegExp('\\b' + alias + '\\.(\\w+)', 'g'))].map(m => m[1]))].sort();

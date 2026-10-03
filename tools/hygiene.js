@@ -72,7 +72,7 @@ function unused(js, html, css) {
   new Set([...js.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1])).forEach(n => {
     if (count(n) <= 1) out.push('function ' + n + ' is never used');
   });
-  new Set([...js.matchAll(/\bvar\s+([A-Za-z_$][\w$]*)\s*=/g)].map(m => m[1])).forEach(n => {
+  new Set([...js.matchAll(/\bvar\s+([A-Za-z_$][\w$]*)\s*[:=]/g)].map(m => m[1])).forEach(n => {
     if (count(n) <= 1) out.push('var ' + n + ' is never used');
   });
   new Set([...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/\.([a-zA-Z][\w-]*)/g)].map(m => m[1])).forEach(c => {
@@ -104,7 +104,7 @@ function pinned(js) {
 
 function cycles(files) {
   const deps = {};
-  Object.keys(files).forEach(f => { deps[f] = [...files[f].matchAll(/from ["']\.\/([\w-]+\.js)["']/g)].map(m => m[1]).filter(d => d in files); });
+  Object.keys(files).forEach(f => { deps[f] = [...files[f].matchAll(/from ["']\.\/([\w-]+\.[jt]s)["']/g)].map(m => m[1]).filter(d => d in files); });
   const state = {}, out = [];
   const visit = (f, trail) => {
     if (state[f] === 2) return;
@@ -127,7 +127,7 @@ function audit(files, html, css) {
 if (require.main === module) {
   const dir = path.join(ROOT, 'src', 'js');
   const files = {};
-  fs.readdirSync(dir).filter(f => f.endsWith('.js'))
+  fs.readdirSync(dir).filter(f => /\.[jt]s$/.test(f))
     .forEach(f => { files[f] = fs.readFileSync(path.join(dir, f), 'utf8'); });
   const out = audit(files, fs.readFileSync(path.join(ROOT, 'src', 'page-body.html'), 'utf8'),
                     fs.readFileSync(path.join(ROOT, 'src', 'styles.css'), 'utf8'));

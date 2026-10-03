@@ -1,16 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
-import { ui } from '../../src/js/dom.js';
-import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.js';
-import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.js';
-import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.js';
-import { rowReadings, volumeVerdict } from '../../src/js/readings.js';
-import { ROSTER } from '../../src/js/roster.js';
-import { grossDebtQuarterly, productivityHistory, confidenceHistory } from '../../src/js/history-fred.js';
-import { HIST_NOTE } from '../../src/js/history.js';
-import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.js';
-import { seasonName } from '../../src/js/format.js';
+import { ui } from '../../src/js/dom.ts';
+import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.ts';
+import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.ts';
+import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
+import { rowReadings, volumeVerdict } from '../../src/js/readings.ts';
+import { ROSTER } from '../../src/js/roster.ts';
+import { grossDebtQuarterly, productivityHistory, confidenceHistory } from '../../src/js/history-fred.ts';
+import { HIST_NOTE } from '../../src/js/history.ts';
+import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.ts';
+import { seasonName } from '../../src/js/format.ts';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
 const value = sheet => card(sheet).querySelector('.ci-value').firstChild.nodeValue;

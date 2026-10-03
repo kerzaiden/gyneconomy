@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, bootWarnings } from './dom.mjs';
-import { sheetRenderers } from '../../src/js/render-core.js';
-import { ROSTER } from '../../src/js/roster.js';
-import { page, pickerOpen } from '../../src/js/history.js';
-import { cycleByName } from '../../src/js/model.js';
-import { histFrame } from '../../src/js/charts.js';
-import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/history-charts.js';
+import { sheetRenderers } from '../../src/js/render-core.ts';
+import { ROSTER } from '../../src/js/roster.ts';
+import { page, pickerOpen } from '../../src/js/history.ts';
+import { cycleByName } from '../../src/js/model.ts';
+import { histFrame } from '../../src/js/charts.ts';
+import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/history-charts.ts';
 
 const BROKEN = ['NaN', 'undefined', 'Infinity', '[object Object]'];
 const broken = html => BROKEN.filter(b => html.includes(b));

@@ -1,14 +1,25 @@
-import { facts, fmtSigned, ledeHtml, monthLabel, qAtIndex, qPretty, srcBlock } from "./format.js";
-import { byId, expandBtn, ui } from "./dom.js";
-import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.js";
-import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.js";
-import { confidenceHistory, productivityHistory } from "./history-fred.js";
-import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
-import { cpiNow, growthWord } from "./model.js";
-import { HIST_NOTE, histHead, histNote } from "./history.js";
+import { facts, fmtSigned, ledeHtml, monthLabel, qAtIndex, qPretty, srcBlock } from "./format.ts";
+import { byId, expandBtn, ui } from "./dom.ts";
+import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
+import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
+import { confidenceHistory, productivityHistory } from "./history-fred.ts";
+import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { cpiNow, growthWord } from "./model.ts";
+import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
-function productivityWord(v){
+export type SeriesRecord<P> = { now: P; lo: P; hi: P };
+type WordReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage };
+export type ProductivityReading = WordReading & { wordWhy: string };
+export type ConfidenceReading = WordReading & { wordSays: string };
+export type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
+type HznPoint = { v: number | null; partial?: boolean };
+type HznAt = { i: number; v: number };
+export type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
+type RiskBand = { key: string; label: string; at: (v: number) => boolean };
+type WordOf = { state: State; text: string; says: string; why?: string };
+
+function productivityWord(v: number): WordOf {
   if (v >= PRODUCTIVITY_TREND) return { state:"good", text:"Above trend",
     says:"running above the slowdown-era average and at or above the long-run trend",
     why:"clears both lines, so the word is above trend" };
@@ -19,7 +30,7 @@ function productivityWord(v){
     says:"running below even the slowdown-era average",
     why:"is below both lines, so the word is below the slowdown" };
 }
-function confidenceWord(v){
+function confidenceWord(v: number): WordOf {
   if (v >= CONFIDENCE_LINE) return { state:"good", text:"Confident",
     says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
   return { state:"warning", text:"Pessimistic",
@@ -61,11 +72,11 @@ export function deficitBlock(){
     '<div id="deficit-records"></div>' +
     '<div id="deficit-trend"></div></div>';
 }
-export var coincident = [
+export var coincident: Indicator[] = [
   {
     bodyTerm:"Desire", econTerm:"Risk tolerance (credit)",
     page:{ bare:true, noMark:true, deferHighlights:true,
-           after:function(ind){ return desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value); } },
+           after:function(ind){ return desireBlock(ind) + riskMatrixBlock(ind.meter.value!, valRow("cape")!.meter.value!); } },
     tag:{text:"High appetite", state:"good"},
     metric:"2.80%", metricSub:"high-yield OAS, Sep 24 2026",
     meter:{min:2.41,max:21.82,value:2.80,optimal:{from:HY_NORM_LO, to:HY_NORM_HI, label:HY_NORM_LO + "\u2013" + HY_NORM_HI + "%"},
@@ -78,7 +89,7 @@ export var coincident = [
   {
     bodyTerm:"Pulse", econTerm:"Money velocity",
     page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
-           chart:function(ind){ return pulseBlock(ind.meter.value, PULSE_PRE2008, ind); } },
+           chart:function(ind){ return pulseBlock(ind.meter.value!, PULSE_PRE2008, ind); } },
     tag:{text:"Recovering", state:"warning"},
     metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
     meter:{min:1.126, max:2.192, value:1.415, optimal:{from:1.7, to:2.19, label:"1.7–2.2×"},
@@ -102,18 +113,18 @@ export var coincident = [
 ];
 function deriveVolumeTag(){
   var vol = coincident.filter(function(c){ return c.bodyTerm === "Volume"; })[0];
-  if (vol) vol.tag = volumeVerdict(vol.meter.value);
+  if (vol) vol.tag = volumeVerdict(vol.meter.value!);
 }
-export function meterFlagged(m){
-  var o = m.optimal || {};
-  if (o.from != null) return m.value < o.from || m.value > o.to;
-  if (o.gte != null) return m.value < o.gte;
-  if (o.lte != null) return m.value > o.lte;
+export function meterFlagged(m: Meter){
+  var o: Partial<Band> = m.optimal || {};
+  if (o.from != null) return m.value! < o.from || m.value! > o.to!;
+  if (o.gte != null) return m.value! < o.gte;
+  if (o.lte != null) return m.value! > o.lte;
   return false;
 }
-function desireInfoHtml(ind){
+function desireInfoHtml(ind: Indicator){
   return '<h4>Risk tolerance (credit)</h4>' +
-    '<p class="caption">The reading is <b>' + ind.tag.text + '</b>. The figure is the ICE BofA US High Yield ' +
+    '<p class="caption">The reading is <b>' + ind.tag!.text + '</b>. The figure is the ICE BofA US High Yield ' +
       'Index option-adjusted spread \u2014 the extra yield investors demand to lend to companies rated below ' +
       'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
       'stripped out (' + ind.metricSub + ').</p>' +
@@ -134,7 +145,7 @@ function desireInfoHtml(ind){
       {t:"CME Group \u2014 how Fed policy moves corporate bond spreads", u:"https://www.cmegroup.com/openmarkets/interest-rates/2025/How-Fed-Policy-Can-Impact-Corporate-Bond-Spreads.html"}
     ]);
 }
-function volumeInfoHtml(ind){
+function volumeInfoHtml(ind: Indicator){
   return '<h4>' + ind.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
       'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
@@ -148,7 +159,7 @@ function volumeInfoHtml(ind){
     '<p class="caption follow">Volume and Pulse are two halves of one number \u2014 nominal output ' +
       'is the money stock times its velocity \u2014 so neither means much read alone.</p>';
 }
-function pulseInfoHtml(ind){
+function pulseInfoHtml(ind: Indicator){
   return '<h4>' + ind.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
       'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
@@ -161,7 +172,7 @@ function pulseInfoHtml(ind){
       'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
       'is a busy economy and, past a point, an inflationary one.</p>';
 }
-function confidenceInfoHtml(f){
+function confidenceInfoHtml(f: ConfidenceReading){
   return '<h4>' + f.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
@@ -173,7 +184,7 @@ function confidenceInfoHtml(f){
       'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
     srcBlock(CONFIDENCE_SRC);
 }
-function productivityInfoHtml(f){
+function productivityInfoHtml(f: ProductivityReading){
   return '<h4>' + f.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
       'business sector, against the same quarter a year earlier (' + f.metricSub + '). The record for that ' +
@@ -187,7 +198,7 @@ function productivityInfoHtml(f){
       'each one, and only the second kind compounds.</p>' +
     srcBlock(PRODUCTIVITY_SRC);
 }
-function activityInfoHtml(ind){
+function activityInfoHtml(ind: Indicator){
   return '<h4>' + ind.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
       'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
@@ -206,7 +217,7 @@ function activityInfoHtml(ind){
       {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
     ]);
 }
-function temperatureInfoHtml(ind){
+function temperatureInfoHtml(ind: Indicator){
   return '<h4>' + ind.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
       'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
@@ -237,7 +248,7 @@ function temperatureInfoHtml(ind){
       {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
     ]);
 }
-function desireBlock(ind){
+function desireBlock(ind: Indicator){
   histNote("desire-range", function(){ return desireInfoHtml(ind); });
   return histBar("", "desire-timeline") +
     '<div class="page-chart pulsebox">' +
@@ -247,7 +258,7 @@ function desireBlock(ind){
     '<div id="desire-trend"></div>' +
   '</div>';
 }
-function volumeBlock(ind){
+function volumeBlock(ind: Indicator){
   histNote("volume-range", volumeInfoHtml(ind));
   return histBar("", "volume-timeline") +
     '<div class="page-chart pulsebox">' +
@@ -257,7 +268,7 @@ function volumeBlock(ind){
     '<div id="volume-trend"></div>' +
     '</div>';
 }
-function velocityRecordBlock(pulseInd){
+function velocityRecordBlock(pulseInd: Indicator | undefined){
   if (pulseInd) histNote("pulse-range", pulseInfoHtml(pulseInd));
   return histBar("", "pulse-timeline") +
     '<div class="page-chart pulsebox">' +
@@ -267,14 +278,14 @@ function velocityRecordBlock(pulseInd){
     '<div id="pulse-trend"></div>' +
     '</div>';
 }
-export function volumeVerdict(g){
+export function volumeVerdict(g: number): Tag {
   return g < 0     ? { text:"Draining", state:"serious" }
        : g < M2_PACE_LO ? { text:"Thin",     state:"warning" }
        : g < M2_PACE_HI ? { text:"Steady",   state:"good" }
        : g < 16    ? { text:"Filling",  state:"warning" }
                    : { text:"Flooding", state:"serious" };
 }
-export function unempState(v){
+export function unempState(v: number){
   return v < ACT_BAND_LO ? "tight"
        : v <= ACT_BAND_HI ? "good"
        : v < 6.5 ? "warning"
@@ -302,7 +313,7 @@ export function growthInfoHtml(){
       {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"}
     ]);
 }
-function velocityVerdict(v){
+function velocityVerdict(v: number): Tag {
   var r = v / PULSE_PRE2008;
   return r < 0.75 ? { text:"Very slow", state:"serious" }
        : r < 0.95 ? { text:"Slow",      state:"warning" }
@@ -312,9 +323,9 @@ function velocityVerdict(v){
 }
 function derivePulseTag(){
   var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
-  if (pulse) pulse.tag = velocityVerdict(pulse.meter.value);
+  if (pulse) pulse.tag = velocityVerdict(pulse.meter.value!);
 }
-export var lagging = [
+export var lagging: Indicator[] = [
   {
     bodyTerm:"Activity", econTerm:"Labor market",
     page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
@@ -327,7 +338,7 @@ export var lagging = [
     aux:{label:"Initial jobless claims (wk of Sep 12)", value:"196K"},
     get peek(){
       var seen = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
-      return colPeek(seen, function(v){ return "unemp-col " + unempState(v); });
+      return colPeek(seen, function(v: number){ return "unemp-col " + unempState(v); });
     },
     src:[{t:"BLS — The Employment Situation, August 2026", u:"https://www.bls.gov/news.release/empsit.nr0.htm"},{t:"DOL — Unemployment Insurance Weekly Claims", u:"https://www.dol.gov/ui/data.pdf"},{t:"BLS via FRED — Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"},{t:"Census Bureau — Historical Statistics of the United States, Colonial Times to 1970 (Series D 85–86, unemployment 1890–1970)", u:"https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html"}]
   },
@@ -345,8 +356,8 @@ export var lagging = [
     src:[{t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
   }
 ];
-export function volatilityTag(){
-  var v = now.vixRow.meter.value;
+export function volatilityTag(): Tag {
+  var v = now.vixRow.meter.value!;
   return v < VIX_CALM ? { text:"Calm", state:"good" }
        : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
                        : { text:"Fearful", state:"critical" };
@@ -356,12 +367,12 @@ export function fearCurve(){
   if (typeof near !== "number" || typeof now.vix3mClose !== "number" || !(now.vix3mClose > 0)) return null;
   return Math.round((near / now.vix3mClose) * 1000) / 1000;
 }
-export function curveVerdict(r){
+export function curveVerdict(r: number | null): Tag {
   return r == null   ? { text:"No reading", state:"norm" }
        : r >= 1      ? { text:"Inverted",   state:"serious" }
                      : { text:"Normal",     state:"good" };
 }
-export function valuationVerdict(v){
+export function valuationVerdict(v: number): Tag {
   var r = v / CAPE_FAIR;
   return r < 0.75 ? { text:"Highly undervalued", state:"warning" }
        : r < 0.95 ? { text:"Undervalued",        state:"good" }
@@ -375,26 +386,26 @@ var PRESSURE_ZONES = [
   { key:"normal",   label:"Normal",   from:0,   to:2.5 },
   { key:"steep",    label:"Steep",    from:2.5, to:4 }
 ];
-export function pressureZone(v){
+export function pressureZone(v: number){
   for (var i = 0; i < PRESSURE_ZONES.length; i++){
     if (v < PRESSURE_ZONES[i].to || i === PRESSURE_ZONES.length - 1) return PRESSURE_ZONES[i];
   }
   return PRESSURE_ZONES[PRESSURE_ZONES.length - 1];
 }
 var HZN_BACK = 4;
-function hznLast(a){ for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return { i:i, v:a[i].v }; return null; }
-function hznRecord(a){
-  var vs = a.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
+function hznLast(a: HznPoint[]): HznAt | null { for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return { i:i, v:a[i].v! }; return null; }
+function hznRecord(a: HznPoint[]){
+  var vs = a.filter(function(d){ return d.v != null; }).map(function(d){ return d.v as number; });
   return { min:Math.min.apply(null, vs), max:Math.max.apply(null, vs) };
 }
-function hznBack(a, from, back){ for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
-function horizonWord(sp, dLong, dShort, dSpread){
+function hznBack(a: HznPoint[], from: number, back: number): number | null { for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
+function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number){
   if (sp < -0.10) return { word:"Pessimistic", state:"critical" };
   if (sp <  0.25) return { word:"Undecided",   state:"warning" };
   if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
   return dLong >= -dShort ? { word:"Optimistic", state:"good" } : { word:"Hopeful", state:"good" };
 }
-export function horizonInfoHtml(pick){
+export function horizonInfoHtml(pick: string){
   var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
   return '<h4>10-year minus ' + shortLeg + '</h4>' +
     '<p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a ' +
@@ -415,18 +426,18 @@ export function horizonInfoHtml(pick){
       'which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' +
     String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
-var RISK_REWARD = [
+var RISK_REWARD: RiskBand[] = [
   { key:"low",  label:"Low",      at:function(v){ return v < 4; } },
   { key:"mod",  label:"Moderate", at:function(v){ return v >= 4 && v <= 10; } },
   { key:"high", label:"High",     at:function(v){ return v > 10; } }
 ];
-var RISK_RISK = [
+var RISK_RISK: RiskBand[] = [
   { key:"low",  label:"Low",      at:function(v){ return v < 20; } },
   { key:"mod",  label:"Moderate", at:function(v){ return v >= 20 && v <= 30; } },
   { key:"high", label:"High",     at:function(v){ return v > 30; } }
 ];
-function riskCell(bands, v){ var i = 0; bands.forEach(function(b, k){ if (b.at(v)) i = k; }); return i; }
-export function riskMatrixBlock(oas, cape){
+function riskCell(bands: RiskBand[], v: number){ var i = 0; bands.forEach(function(b, k){ if (b.at(v)) i = k; }); return i; }
+export function riskMatrixBlock(oas: number, cape: number){
   var wi = riskCell(RISK_REWARD, oas), ri = riskCell(RISK_RISK, cape);
   var ylabs = [], cells = [];
   for (var r = RISK_RISK.length - 1; r >= 0; r--){
@@ -480,11 +491,11 @@ var riskMatrixNote =
     'would be to shade each cell by what followed historically, as the un-inversion panel on the Pressure page ' +
     'does; that needs a long spread history, and FRED now serves this series on a rolling three-year window, ' +
     'so the past years cannot be binned.</p>';
-function pulseBlock(rate, ref, ind){
+function pulseBlock(rate: number, ref: number, ind?: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
   var title = ind
     ? '<div class="spread-history-head"><h4>' + ind.econTerm + '</h4>' +
-      '<span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>'
+      '<span class="tag ' + ind.tag!.state + '">' + ind.tag!.text + '</span></div>'
     : "";
   return velocityRecordBlock(ind) + '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
     '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + '× a year</span></div>' +
@@ -496,7 +507,7 @@ function pulseBlock(rate, ref, ind){
     '% less often than she did across 1959–2007.</p>' +
   '</div></div>';
 }
-function householdsWord(bill, kept){
+function householdsWord(bill: number, kept: number){
   var heavy = bill > DSR_MEAN;
   if (kept < 3)   return { word:heavy ? "Overstretched" : "Stretched",  state:"serious" };
   if (kept < 4.5) return { word:heavy ? "Stretched"     : "Thin cover", state:"warning" };
@@ -537,13 +548,13 @@ export function savInfoHtml(){
       {t:"BEA via FRED \u2014 Personal Saving Rate (PSAVERT)", u:"https://fred.stlouisfed.org/series/PSAVERT"}
     ]);
 }
-export function vixPct(v){
+export function vixPct(v: number | null | undefined){
   var m = now.vixRow.meter;
   return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
 }
 export function volatilityRing(){
   var m = now.vixRow.meter;
-  return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value.toFixed(2) + ", between its record low of " +
+  return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value!.toFixed(2) + ", between its record low of " +
     m.min + " and its record high of " + m.max);
 }
 export function volatilityDetailHtml(){
@@ -560,12 +571,12 @@ export function volatilityDetailHtml(){
     'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
   ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
 }
-export function marketWord(v){
+export function marketWord(v: number): WordOf {
   if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
   return { state:"serious", text:"Bear year", says:"a negative total return, which the dial draws as a bear year" };
 }
-export function marketCol(v){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
-function marketInfoHtml(f){
+export function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
+function marketInfoHtml(f: MarketReading){
   return '<h4>' + f.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
       'The record, year by year, runs ' + f.span + '.</p>' +
@@ -574,24 +585,24 @@ function marketInfoHtml(f){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(){ return [].concat(coincident, lagging, [productivityReading, confidenceReading, marketReading]); }
-export function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, confidenceReading, marketReading]); }
+export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
   now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
                                       (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
   now.fedFunds.lastMove && now.fedFunds.turnLabel ? { label:now.fedFunds.turnLabel, value:now.fedFunds.turnValue, wordy:true } : null,
   now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? { label:"Next decision", value:now.fedFunds.next } : null
-].filter(Boolean); }
+].filter(Boolean) as AuxFact[]; }
 export function policyFactRows(){
   return policyFacts().map(function(f){
     return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
            f.value + '</b></div>';
   }).join("");
 }
-export function growthShownCap(r){ var w = growthWord(r); return w.charAt(0).toUpperCase() + w.slice(1); }
-export function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
-function activityStackHtml(ind){
+export function growthShownCap(r: Parameters<typeof growthWord>[0]){ var w = growthWord(r); return w.charAt(0).toUpperCase() + w.slice(1); }
+export function phaseClass(regime: string){ return regime === "contraction" ? "phase-down" : "phase-up"; }
+function activityStackHtml(ind: Indicator){
   histNote("sheet-sign-activity", activityInfoHtml(ind));
   return histBar("", "act-rangebar") +
     '<div class="page-chart">' +
@@ -601,23 +612,23 @@ function activityStackHtml(ind){
       '<div id="act-trend"></div>' +
     '</div>';
 }
-function seatTemperature(ind, d){
+function seatTemperature(ind: Indicator, d: HTMLElement){
   HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
-  tempCaptionFull = ind.caption;
+  tempCaptionFull = ind.caption!;
   tempLeadShown = ind.lead || ind.shortCaption || "";
-  var sheet = byId("sheet-metric-temp"), fresh = d.querySelector(".sign-detail");
+  var sheet = byId("sheet-metric-temp"), fresh = d.querySelector(".sign-detail")!;
   var prev = sheet.querySelector(":scope > .sign-detail");
   if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
 }
 export var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
-export function indPeriod(R){
+export function indPeriod(R: { term?: string }){
   var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
   return m ? m[2] : "";
 }
 
 
-export var productivityReading, confidenceRecord, confidenceReading, tempInfo, horizonRead, householdsNow, marketReading;
-var productivityRecord, gdpNowQ, HZN_METERS;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
+var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, Meter>;
 
 export function bootReadings(){
   /* ---- Productivity growth is not in this panel ---- */
@@ -633,7 +644,7 @@ export function bootReadings(){
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
       page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
-      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
+      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why!,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
               ends:{ low:"Falling" } },
       span:span,
@@ -664,7 +675,7 @@ export function bootReadings(){
         ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
     };
   })(confidenceRecord);
-  now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
+  now.valuation.tag = valuationVerdict(valRow("cape")!.meter.value!);
   liveInto("capeValue");
   liveInto("coincident");
   liveInto("hyOasNow");
@@ -689,12 +700,12 @@ export function bootReadings(){
     "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
     "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max,
-            value:(function(){ var p = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : 0; };
+            value:(function(){ var p = function(m: string){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y! : 0; };
                                return p("10Y") - p("2Y"); })(),
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }
   };
   householdsNow = householdsWord(dsrNow, savNow);
-  marketReading = (function(h){
+  marketReading = (function(h: YearPoint[]){
     var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
     var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
     var span = fmtSigned(lo.v, 1) + "% (" + lo.y + ") to " + fmtSigned(hi.v, 1) + "% (" + hi.y + ")";
@@ -714,24 +725,24 @@ export function bootReadings(){
     };
   })(sp500Years);
 }
-function isNum(x){ return typeof x === "number" && isFinite(x); }
-function rowsOk(rows, need){
+function isNum(x: unknown): x is number { return typeof x === "number" && isFinite(x); }
+function rowsOk(rows: ({ meter?: Meter | null; key?: string; bodyTerm?: string } | null)[] | undefined, need?: string[]){
   return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){
     var m = r && typeof r === "object" && r.meter;
     return !!m && isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max;
-  }) && (need || []).every(function(k){ return rows.some(function(r){ return r.key === k || r.bodyTerm === k; }); });
+  }) && (need || []).every(function(k){ return rows.some(function(r){ return r!.key === k || r!.bodyTerm === k; }); });
 }
 function deriveHorizon(){
   var sp = curveSpread();
   var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
   var tN2 = hznLast(t10y2yHistory);
-  var dSpread = sN.v - hznBack(t10y3mHistory, sN.i, HZN_BACK);
-  var dLong   = lN.v - hznBack(t10yYieldHistory, lN.i, HZN_BACK);
-  var dShort  = tN.v - hznBack(t3mYieldHistory, tN.i, HZN_BACK);
+  var dSpread = sN!.v - hznBack(t10y3mHistory, sN!.i, HZN_BACK)!;
+  var dLong   = lN!.v - hznBack(t10yYieldHistory, lN!.i, HZN_BACK)!;
+  var dShort  = tN!.v - hznBack(t3mYieldHistory, tN!.i, HZN_BACK)!;
   var w = horizonWord(sp, dLong, dShort, dSpread);
-  horizonRead = { spread:sp, q:sN, q2:tN2, dSpread:dSpread, dLong:dLong, dShort:dShort,
-    was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
-    d2:tN2.v - hznBack(t10y2yHistory, tN2.i, HZN_BACK),
+  horizonRead = { spread:sp, q:sN!, q2:tN2!, dSpread:dSpread, dLong:dLong, dShort:dShort,
+    was:hznBack(t10y3mHistory, sN!.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2!.i, HZN_BACK),
+    d2:tN2!.v - hznBack(t10y2yHistory, tN2!.i, HZN_BACK)!,
     word:w.word, state:w.state };
 }
 export function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
@@ -740,8 +751,8 @@ export function bootReadingRegistry(){
   defineReadings({
     fedFunds: {
       kind: "object", fileAsOf: function(){ return now.fedFunds.asOf; },
-      ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
-      set: function(v){
+      ok: function(v: Partial<FedFunds>){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
+      set: function(v: Partial<FedFunds>){
         if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"", next:"" });
         if (v.lastMove !== undefined && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge(v, { turnLabel:"", turnValue:"" });
         if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
@@ -750,44 +761,44 @@ export function bootReadingRegistry(){
     },
     yieldCurve: {
       kind: "series", fileAsOf: curveAsOf,
-      ok: function(v){
-        var has = function(m){ return v.some(function(r){ return r.m === m && r.y !== null; }); };
+      ok: function(v: CurvePoint[]){
+        var has = function(m: string){ return v.some(function(r){ return r.m === m && r.y !== null; }); };
         return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || (isNum(r.y) && r.y >= 0 && r.y <= 20)); }) && has("10Y") && has("3M");
       },
-      set: function(v){ now.yieldCurve = v; deriveUninvLag(); if (horizonRead) deriveHorizon(); }
+      set: function(v: CurvePoint[]){ now.yieldCurve = v; deriveUninvLag(); if (horizonRead) deriveHorizon(); }
     },
     sentiment:  {
       kind: "object",
-      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
-      set: function(v){ now.sentiment = merge(now.sentiment, v); now.vixRow = now.sentiment.rows[0]; }, onOpen: true
+      ok: function(v: Partial<typeof now.sentiment>){ return v.rows === undefined || rowsOk(v.rows); },
+      set: function(v: Partial<typeof now.sentiment>){ now.sentiment = merge(now.sentiment, v); now.vixRow = now.sentiment.rows[0]; }, onOpen: true
     },
     valuation:  {
       kind: "object",
-      ok: function(v){ return v.rows === undefined || rowsOk(v.rows, ["cape"]); },
-      set: function(v){
+      ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, ["cape"]); },
+      set: function(v: Partial<typeof now.valuation>){
         now.valuation = merge(now.valuation, v);
-        if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
+        if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape")!.meter.value!);
       }
     },
     coincident: {
       kind: "series",
-      ok: function(v){ return rowsOk(v, ["Desire", "Pulse", "Volume"]); },
-      set: function(v){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
+      ok: function(v: Indicator[]){ return rowsOk(v, ["Desire", "Pulse", "Volume"]); },
+      set: function(v: Indicator[]){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
       onOpen: true
     },
     vixClose: {
       kind: "scalar", band: [5, 100], fileAsOf: function(){ return now.sentiment.rows[0].sub; },
-      set: function(v){
+      set: function(v: number){
         var row = now.sentiment.rows[0];
         row.meter.value = v;
         row.flagValue = v.toFixed(1);
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       }
     },
-    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ now.vix3mClose = v; }, onOpen: true },
+    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
     hyOasNow: {
-      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").pop(); },
-      set: function(v){
+      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").pop()!; },
+      set: function(v: number){
         var row = desireRow();
         row.meter.value = v;
         row.metric = v.toFixed(2) + "%";
@@ -796,8 +807,8 @@ export function bootReadingRegistry(){
     },
     capeValue: {
       kind: "scalar", band: [4, 60],
-      set: function(v){
-        var row = valRow("cape");
+      set: function(v: number){
+        var row = valRow("cape")!;
         row.meter.value = v;
         row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
         if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;

@@ -1,11 +1,13 @@
-import { srcBlock } from "./format.js";
-import { byId, expandBtn, layer, put, rovingKeys, ui } from "./dom.js";
-import { GYN } from "./live.js";
-import { wheelMeta } from "./refresh-season.js";
-import { frameworkRows } from "./data.js";
-import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.js";
-import { cycleViewEl } from "./render-pages.js";
-import { settleStrips, showCycle } from "./dial-cycle.js";
+import { srcBlock } from "./format.ts";
+import { byId, expandBtn, layer, put, rovingKeys, ui } from "./dom.ts";
+import { GYN } from "./live.ts";
+import { wheelMeta } from "./refresh-season.ts";
+import { frameworkRows } from "./data.ts";
+import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.ts";
+import { cycleViewEl } from "./render-pages.ts";
+import { settleStrips, showCycle } from "./dial-cycle.ts";
+
+type SourceGroup = [string, RegExp | null];
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function renderSeasonRows(){
@@ -18,17 +20,17 @@ function renderSeasonRows(){
     {key:"autumn",          growth:"Slowing",     temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
     {key:"lateautumn",      growth:"Slowing",     temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
   ];
-  function rangePos(v){
+  function rangePos(v: number){
     if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
     if (v <= 3) return 0.28 + 0.40 * (v - 1) / 2;
     return 0.68 + 0.32 * Math.min(1, (v - 3) / 4);
   }
   var SNOWFLAKE = '<svg class="cold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/><path d="M12 2l-2.5 2.5M12 2l2.5 2.5M12 22l-2.5-2.5M12 22l2.5-2.5M2 12l2.5-2.5M2 12l2.5 2.5M22 12l-2.5-2.5M22 12l-2.5 2.5"/></svg>';
   var FLAME = '<svg class="hot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4.4 0 7-2.9 7-6.6 0-3.2-2-5.3-3.6-7.2-.6 1.4-1.4 2.2-2.4 2.6.3-3-1-6.3-4-8.8-.2 3-1.6 4.6-3 6.3C4.6 10.1 5 12 5 15.4 5 19.1 7.6 22 12 22z"/><path d="M12 22c-1.9 0-3-1.4-3-3 0-1.5.9-2.4 1.8-3.4.6 1 1.4 1.5 2.2 1.7.4-1 .3-2.1.1-3.1 1.5 1.3 1.9 2.7 1.9 4.2 0 1.8-1.1 3.6-3 3.6z"/></svg>';
-  function rangeBarHtml(zones, dotValue){
+  function rangeBarHtml(zones: { below?: number; within?: number; above?: number }, dotValue: number | null){
     return '<span class="range-bar">' +
       ["below","within","above"].map(function(z){
-        var w = zones[z] || 0;
+        var w = zones[z as keyof typeof zones] || 0;
         return '<b class="' + z + (w ? ' on' : '') + '"></b>';
       }).join("") +
       (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : '') +
@@ -36,7 +38,7 @@ function renderSeasonRows(){
   }
   put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
     seasonRules.map(function(r){
-      var m = wheelMeta[r.key], now = r.key === currentSeason;
+      var m = wheelMeta[r.key as Season], now = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
         '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
@@ -68,32 +70,32 @@ function renderTopbar(){
         return;
       }
       btns.forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
-      panels.forEach(function(p){ p.hidden = true; });
+      panels.forEach(function(p: HTMLElement){ p.hidden = true; });
       btn.classList.add("active");
       btn.setAttribute("aria-selected", "true");
-      var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
+      var tab = btn.getAttribute("data-tab"), target = document.querySelector<HTMLElement>('.tab-panel[data-tab="' + tab + '"]');
       if (target) target.hidden = false;
       if (ui.metricPageReset) ui.metricPageReset();
       if (ui.calendarReset) ui.calendarReset();
-      topTitle.textContent = tabTitles[tab] || "Gyneconomy";
+      topTitle.textContent = tabTitles[tab as keyof typeof tabTitles] || "Gyneconomy";
       ui.topbarBack = null;
       byId("topbar-back").hidden = true;
-      if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); showCycle(currentEra); }
+      if (tab === "cycle"){ target!.insertBefore(cycleViewEl!, byId("today-analysis")); showCycle(currentEra); }
       if (tab === "analysis") settleStrips();
       window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
   });
 }
-function wireTabKeys(){ rovingKeys(document.querySelector(".tabbar"), ".tab-btn", "aria-selected"); }
+function wireTabKeys(){ rovingKeys(document.querySelector(".tabbar")!, ".tab-btn", "aria-selected"); }
 // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
 function wireMenu(){
   var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
   var prevOverflow = "", locked = false;
-  function slideIn(el){ if (el.__cancelOut) el.__cancelOut(); el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
-  function slideOut(el, done){
+  function slideIn(el: HTMLElement){ if (el.__cancelOut) el.__cancelOut(); el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
+  function slideOut(el: HTMLElement, done?: () => void){
     el.classList.remove("in");
     var fired = false;
-    function finish(e){
+    function finish(e?: TransitionEvent){
       if (e && e.propertyName && e.propertyName !== "transform") return;
       if (fired) return; fired = true;
       el.removeEventListener("transitionend", finish); el.hidden = true; if (done) done();
@@ -116,7 +118,7 @@ function wireMenu(){
 
   // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
   var built = false;
-  var groups = [
+  var groups: SourceGroup[] = [
     ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|eurostat|ftportfolios|fisherinvestments|yardeni/],
     ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
     ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
@@ -126,11 +128,11 @@ function wireMenu(){
     ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
   ];
   function buildSources(){
-    var src = window.__sources, seen = {}, items = [];
-    function add(x){ if (!x || seen[x.u]) return; seen[x.u] = true; items.push(x); }
+    var src = window.__sources, seen: Record<string, boolean> = {}, items: Src[] = [];
+    function add(x: Src){ if (!x || seen[x.u]) return; seen[x.u] = true; items.push(x); }
     src.all.forEach(add); src.cards.forEach(function(c){ c.src.forEach(add); }); src.annual.forEach(add); src.gdp.forEach(add);
-    var buckets = groups.map(function(){ return []; }), rest = [];
-    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (String(x.u).search(groups[i][1]) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
+    var buckets = groups.map(function(): Src[] { return []; }), rest: Src[] = [];
+    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (String(x.u).search(groups[i][1]!) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
     if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
     put("sources-groups", groups.map(function(g, i){
       if (!buckets[i].length) return "";
@@ -141,12 +143,12 @@ function wireMenu(){
     }).join(""));
     built = true;
   }
-  var openSheet = null, openRow = null;
-  function showSheet(name, row){
+  var openSheet: HTMLElement | null = null, openRow: HTMLElement | null = null;
+  function showSheet(name: string, row: HTMLElement){
     var el = byId("sheet-" + name); if (!el) return;
     if (name === "sources" && !built) buildSources();
     el.scrollTop = 0; slideIn(el); openSheet = el; openRow = row;
-    var b = el.querySelector("[data-sheet-back]"); if (b) b.focus();
+    var b = el.querySelector<HTMLElement>("[data-sheet-back]"); if (b) b.focus();
   }
   function hideSheet(){
     if (!openSheet) return;
@@ -154,8 +156,8 @@ function wireMenu(){
     if (row) row.focus();
     slideOut(el);
   }
-  menu.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".menu-row[data-sheet]"); if (row) showSheet(row.getAttribute("data-sheet"), row); });
-  document.addEventListener("click", function(e){ if (e.target.closest && e.target.closest("[data-sheet-back]")) hideSheet(); });
+  menu.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>(".menu-row[data-sheet]"); if (row) showSheet(row.getAttribute("data-sheet")!, row); });
+  document.addEventListener("click", function(e){ if ((e.target as Element).closest && (e.target as Element).closest("[data-sheet-back]")) hideSheet(); });
   layer(2, { open:function(){ return !!openSheet; }, close:hideSheet, box:function(){ return openSheet; } });
   layer(3, { open:function(){ return !menu.hidden && menu.classList.contains("in"); }, close:hide, box:function(){ return menu; } });
 
@@ -165,7 +167,7 @@ function wireMenu(){
     var parts = ["kerzaiden", "gmail", "com"];
     form.addEventListener("submit", function(e){
       e.preventDefault();
-      var title = byId("contact-title").value.trim(), msg = byId("contact-message").value.trim();
+      var title = (byId("contact-title") as HTMLInputElement).value.trim(), msg = (byId("contact-message") as HTMLTextAreaElement).value.trim();
       if (!msg){ hint.textContent = "Write a message first."; hint.classList.add("err"); byId("contact-message").focus(); return; }
       hint.classList.remove("err"); hint.textContent = "Opening your mail app\u2026";
       var to = parts[0] + "@" + parts[1] + "." + parts[2];

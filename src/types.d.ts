@@ -1,0 +1,160 @@
+type Src = { t: string; u: string };
+type State = string;
+type Tag = { text: string; state?: State };
+type Band = { lte?: number; gte?: number; from?: number; to?: number; label: string };
+type Meter = {
+  min: number;
+  max: number;
+  value: number | null;
+  optimal?: Band;
+  ends?: { zone?: string; high?: string; low?: string };
+};
+type Row = {
+  key?: string;
+  marker?: string;
+  sub: string;
+  meter: Meter;
+  shortNote: string;
+  note: string;
+  noteTpl?: string;
+  direction?: string;
+  flagValue: string;
+  flagState: State;
+  id?: string;
+};
+type Panel = {
+  kicker: string;
+  hint: string;
+  tag: Tag | null;
+  rows: Row[];
+  shortImpression: string;
+  impression: string;
+  src: Src[];
+};
+type FedFunds = {
+  lo: number;
+  hi: number;
+  lastMove: string;
+  lastMoveLabel?: string;
+  asOf: string;
+  vote?: string;
+  next?: string;
+  turnLabel?: string;
+  turnValue?: string;
+};
+type CurvePoint = { m: string; y: number | null };
+type MonthPoint = { m: string; v: number };
+type QuarterPoint = { q: string; v: number };
+type YearPoint = { y: number; v: number };
+type Point = { y?: number; m?: string; q?: string; v: number | null };
+type Cycle = {
+  from: number;
+  to: number | null;
+  ongoing?: boolean;
+  name: string;
+  story: string;
+  blurb: string;
+};
+type Season = "summer" | "autumn" | "lateautumn" | "winter" | "springdeflation" | "spring";
+type Html = string;
+type ChartRef = { label: string; v?: number | null; dash?: boolean; cls?: string; swatch?: string };
+type ChartGeom = {
+  src?: string;
+  L: number;
+  R: number;
+  T: number;
+  B: number;
+  W: number;
+  n: number;
+  vals: ({ v: number | null; [k: string]: unknown } | null)[];
+  at: (d: any, i: number) => string;
+  fmt?: (v: number) => string;
+  refs?: ChartRef[];
+  [k: string]: unknown;
+};
+type AuxFact = { label: string; value: string; wordy?: boolean };
+type IndicatorPage = {
+  bare?: boolean;
+  noMark?: boolean;
+  noHead?: boolean;
+  chartFirst?: boolean;
+  peeked?: boolean;
+  deferHighlights?: boolean;
+  bloodCard?: boolean;
+  after?: (ind: Indicator) => string;
+  chart?: (ind: Indicator) => string;
+  seat?: (ind: Indicator, d: HTMLElement) => void;
+};
+type Indicator = {
+  bodyTerm: string;
+  econTerm: string;
+  page?: IndicatorPage;
+  tag: Tag | null;
+  metric: string;
+  metricSub: string;
+  meter: Meter;
+  shortCaption?: string;
+  caption?: string;
+  lead?: string;
+  facts?: AuxFact[];
+  aux?: AuxFact | AuxFact[];
+  peek?: string;
+  info?: () => string;
+  src?: Src[];
+  key?: string;
+};
+type TimingEntry = {
+  title: string;
+  target: string;
+  icon: string;
+  metric: string;
+  sub?: string;
+  metricSub?: string;
+  unit?: string;
+  word?: string;
+  state?: string;
+  tag?: Tag | null;
+};
+type LiveDoc = { kind?: unknown; asOf?: string; value?: unknown; rows?: unknown; [k: string]: unknown };
+type LiveReadingCommon = { onOpen?: boolean; fileAsOf?: () => string };
+type LiveReading =
+  | (LiveReadingCommon & { kind: "scalar"; band: [number, number]; set(v: number): void; ok?: undefined })
+  | (LiveReadingCommon & { kind: "series"; band?: undefined; set(v: unknown[]): void; ok?(v: unknown[]): boolean })
+  | (LiveReadingCommon & { kind: "object"; band?: undefined; set(v: Record<string, unknown>): void; ok?(v: Record<string, unknown>): boolean });
+type Keyed = { k: string; v: number | null };
+type HistSpec =
+  | { s: readonly (number | null)[]; k: "qi" | "yi"; y0: number }
+  | { s: readonly Point[]; k: "y" | "m" | "q"; y0?: undefined };
+type RosterTiming = "structural" | "leading" | "coincident" | "lagging";
+type RosterRow = {
+  id: string;
+  name: string;
+  cat: string;
+  timing: RosterTiming;
+  mark: () => string;
+  door: "peek" | "row" | "subject" | "pair" | "split";
+  head: string;
+  hist: HistSpec | (() => Keyed[]);
+  when?: (R: RosterRow) => string;
+  slot?: string;
+  term?: string;
+  hk?: string;
+  group?: string;
+  cardUnit?: string;
+  eraUnit?: string;
+  live?: string[];
+  stops?: string[];
+  range?: string;
+  cycles?: boolean;
+  mid?: number;
+  rule?: boolean;
+  pulse?: number;
+  pre?: string;
+  last?: string;
+  ring?: (v: number | null | undefined) => number;
+  miniSel?: string;
+  flip?: boolean;
+  pair?: HistSpec;
+  peek?: "pair" | (() => Keyed[]);
+};
+type PeekCardOpts = { value?: string; word?: string; state?: State; ring?: number | null; pulse?: { rate: number | null; ref: number | null }; meter?: Meter; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };

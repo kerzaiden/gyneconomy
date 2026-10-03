@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 const fs = require('fs'), path = require('path');
+const { plainJs } = require('../tools/source');
 
 function lift(file, names) {
-  const src = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const src = plainJs(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'));
   let out = '';
   for (const n of names) {
     const found = new RegExp('^(?:export )?function ' + n + '\\(', 'm').exec(src);
@@ -17,7 +18,7 @@ function lift(file, names) {
   }
   return new Function(out + 'return { ' + names.join(', ') + ' };')();
 }
-const { slopeOf, readSeason, cpiTrend } = lift('src/js/model.js', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
+const { slopeOf, readSeason, cpiTrend } = lift('src/js/model.ts', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -68,8 +69,8 @@ ok('a growth slope of exactly -0.025 is flat', readSeason(cpi(2.0, 0), at(-0.025
 ok('3.0 in an expansion is spring',    season(cpi(3.0, 0.05), gdp(2, 0.05)),   'spring');
 ok('3.001 in an expansion is summer',  season(cpi(3.001, 0.05), gdp(2, 0.05)), 'summer');
 
-const src = fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8');
-const lit = src.slice(src.indexOf('var marketCycles = ['));
+const src = plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/data.ts'), 'utf8'));
+const lit = src.slice(src.search(/var marketCycles\s*=\s*\[/));
 const cycles = new Function('return ' + lit.slice(lit.indexOf('['), lit.indexOf('\n];') + 3))();
 
 ok('every cycle has a name', cycles.every(c => typeof c.name === 'string' && c.name.length > 3), true);

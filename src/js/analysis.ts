@@ -1,22 +1,30 @@
-import { CHEV, facts, fmtSigned } from "./format.js";
-import { addSources, byId, detailSlot, ui } from "./dom.js";
-import { GYN, repaintLive } from "./live.js";
-import { colPeek, pulsePeek, vitalRingSvg } from "./charts.js";
-import { calendarTodayY } from "./refresh-season.js";
-import { marketCycles, sp500AnnualReturns, sp500AnnualReturnSource, typicalCycleSrc } from "./data.js";
-import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.js";
-import { page } from "./history.js";
-import { CATEGORIES } from "./roster.js";
-import { cycleViewEl, setTopbar } from "./render-pages.js";
-import { eraFig, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, upTo } from "./era.js";
-import { replaceInsights } from "./insights.js";
-import { marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.js";
+import { CHEV, facts, fmtSigned } from "./format.ts";
+import { addSources, byId, detailSlot, ui } from "./dom.ts";
+import { GYN, repaintLive } from "./live.ts";
+import { colPeek, pulsePeek, vitalRingSvg } from "./charts.ts";
+import { calendarTodayY } from "./refresh-season.ts";
+import { marketCycles, sp500AnnualReturns, sp500AnnualReturnSource, typicalCycleSrc } from "./data.ts";
+import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.ts";
+import { page } from "./history.ts";
+import { CATEGORIES } from "./roster.ts";
+import { cycleViewEl, setTopbar } from "./render-pages.ts";
+import { eraFig, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, upTo } from "./era.ts";
+import { replaceInsights } from "./insights.ts";
+import { marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.ts";
+
+type Strip = ReturnType<typeof seasonStripHtml>;
+type EraRow = ReturnType<typeof readingRoster>[number];
+type EraPoint = EraRow["seen"][number];
+type EraNone = { none: true; word: string };
+type EraSeen = { none?: undefined; v: number; raw: number; lo: number; hi: number; when: string; second: number | null; peek: number[] };
+type SymptomCell = { y: number; state: string; best?: EraPoint };
+type SymptomRow = { r: EraRow; cells: SymptomCell[]; hits: SymptomCell[] };
 
 // ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
 var CYCLE_DATA_KEY = "gyn.cycleData", YEAR_W = 36, ALIKE = 5;
 function cycleDataOn(){ try { return localStorage.getItem(CYCLE_DATA_KEY) === "1"; } catch (e) { return false; } }
-function cycleRowsHtml(on){
-  var strips = {};
+function cycleRowsHtml(on: boolean){
+  var strips: Record<number, Strip> = {};
   marketCycles.forEach(function(c){ strips[c.from] = seasonStripHtml(c); });
   return marketCycles.slice().reverse().map(function(cyc){
     var total = eraMarketTotal(cyc), strip = strips[cyc.from];
@@ -35,9 +43,9 @@ function cycleRowsHtml(on){
           '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
   }).join('');
 }
-function wireCycleData(list){
+function wireCycleData(list: HTMLElement){
   var btn = byId("cycle-data"), legend = byId("cycle-legend");
-  function apply(on){
+  function apply(on: boolean){
     if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
     list.innerHTML = cycleRowsHtml(on);
     if (legend){ legend.hidden = !on; legend.innerHTML = on ? symptomLegend() : ""; }
@@ -55,7 +63,7 @@ function renderCycleList(){
   wireCycleData(list);
   var PREVIEW_CYCLES = 99;
   (function(){
-    var rows = [].slice.call(list.querySelectorAll(".era-row"));
+    var rows: HTMLElement[] = [].slice.call(list.querySelectorAll(".era-row"));
     var btn = byId("cycle-more"), label = byId("cycle-more-label");
     if (!btn || rows.length <= PREVIEW_CYCLES){ if (btn) btn.hidden = true; return; }
     var extra = rows.slice(PREVIEW_CYCLES), open = false;
@@ -69,11 +77,11 @@ function renderCycleList(){
   })();
 
   var listWrap = byId("calendar-list"), detail = byId("calendar-cycle");
-  function open(from){
+  function open(from: number){
     var era = marketCycles.filter(function(c){ return c.from === from; })[0];
     if (!era) return;
     if (era.ongoing){
-      var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
+      var tab = document.querySelector<HTMLElement>('.tab-btn[data-tab="cycle"]');
       if (tab){ tab.click(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
     }
     enterEra(era, detail);
@@ -86,14 +94,14 @@ function renderCycleList(){
     setTopbar("Analysis", null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
-  list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
+  list.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest(".era-row:not(.data), .era-open"); if (row) open(parseInt(row.getAttribute("data-era")!, 10)); });
+  list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && (e.target as Element).classList.contains("era-row")){ e.preventDefault(); open(parseInt((e.target as Element).getAttribute("data-era")!, 10)); } });
   ui.calendarReset = function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; ui.topbarBack = null; byId("topbar-back").hidden = true; };
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }
 // ---- A closed cycle, shown on the Cycle tab's own page ----
-var taHome = null, modeHome = null;
-function eraReading(r, era){
+var taHome: { parent: ParentNode; next: ChildNode | null } | null = null, modeHome: NonNullable<typeof page.mode> | null = null;
+function eraReading(r: EraRow, era: Cycle): EraNone | EraSeen {
   var from = era.from, to = era.to || calendarTodayY;
   var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= from && y <= to; });
   if (!span.length) return { none:true, word:"Not measured before " + prettyK(r, r.first.k) };
@@ -101,78 +109,78 @@ function eraReading(r, era){
   var second = r.pair ? upTo(r.pair, end.k).pop() : null;
   return { v:sign * end.v, raw:end.v, lo:Math.min.apply(null, vs), hi:Math.max.apply(null, vs), when:prettyK(r, end.k),
            second:second && kT(second.k) >= from ? second.v : null,
-           peek:upTo(r.peek || r.seen, end.k).map(function(d){ return sign * d.v; }) };
+           peek:upTo(r.peek || r.seen, end.k).map(function(d){ return sign * d.v!; }) };
 }
-function eraValue(val, t, r, e){
+function eraValue(val: Element, t: TodaySnapshot, r: EraRow, e: EraSeen){
   val.innerHTML = t.value;
   var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
-  val.firstChild.nodeValue = eraFig(t.text)(surplus ? -e.v : e.v, r.pair ? e.second : null);
-  if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
+  val.firstChild!.nodeValue = eraFig(t.text!)(surplus ? -e.v : e.v, r.pair ? e.second : null);
+  if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit as string;
 }
-function eraRange(t, r, e){
+function eraRange(t: TodaySnapshot, r: EraRow, e: EraSeen){
   if (e.lo === e.hi) return "Flat all cycle";
-  var f = eraFig(t.text), pc = r.pair ? "%" : "";
+  var f = eraFig(t.text!), pc = r.pair ? "%" : "";
   return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
 }
-function eraMini(t, r, e){
+function eraMini(t: TodaySnapshot, r: EraRow, e: EraSeen){
   if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
   if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
   return colPeek(e.peek, function(){ return "era-col"; }, r.mid, r.rule);
 }
-function eraCard(item, r, era){
-  var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
+function eraCard(item: Element, r: EraRow | undefined, era: Cycle | null){
+  var val = item.querySelector(".ci-value")!, when = item.querySelector(".ci-when")!, mini = item.querySelector(".ci-mini");
   var word = item.querySelector(".ci-word");
-  if (!item.__today) item.__today = { value:val.innerHTML, text:val.firstChild.nodeValue, word:word ? word.innerHTML : null,
-                                      when:when.textContent, mini:mini ? mini.innerHTML : "" };
-  var t = item.__today;
+  if (!item.__today) item.__today = { value:val.innerHTML, text:val.firstChild!.nodeValue, word:word ? word.innerHTML : null,
+                                      when:when.textContent!, mini:mini ? mini.innerHTML : "" };
+  var t = item.__today!;
   if (!era){
     val.innerHTML = t.value; when.textContent = t.when; item.__today = null;
     if (mini) mini.innerHTML = t.mini;
-    if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
+    if (word && t.word == null) word.parentNode!.removeChild(word); else if (word) word.innerHTML = t.word!;
     return;
   }
-  var e = r ? eraReading(r, era) : { none:true, word:"No history in the app" };
-  if (!word){ word = document.createElement("span"); word.className = "ci-word"; val.parentNode.appendChild(word); }
+  var e: EraNone | EraSeen = r ? eraReading(r, era) : { none:true, word:"No history in the app" };
+  if (!word){ word = document.createElement("span"); word.className = "ci-word"; val.parentNode!.appendChild(word); }
   when.textContent = e.none ? "" : e.when;
-  if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r, e);
+  if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r!, e);
   if (e.none){ val.innerHTML = "\u2014"; word.textContent = e.word; return; }
-  eraValue(val, t, r, e); word.textContent = eraRange(t, r, e);
+  eraValue(val, t, r!, e); word.textContent = eraRange(t, r!, e);
 }
-function eraCards(era){
+function eraCards(era: Cycle | null){
   var rows = rosterRows();
-  Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item){
-    eraCard(item, rows[item.getAttribute("data-preview") || item.getAttribute("data-open")], era);
+  Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item: Element){
+    eraCard(item, rows[(item.getAttribute("data-preview") || item.getAttribute("data-open"))!], era);
   });
 }
-function eraShow(era){
+function eraShow(era: Cycle | null){
   eraCards(era);
-  if (era && !modeHome){ modeHome = {}; for (var k in page.mode) modeHome[k] = page.mode[k]; }
-  for (var id in page.cycles){ page.cycles[id] = era ? era.name : null; page.mode[id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode[id]; }
+  if (era && !modeHome){ modeHome = {}; for (var k in page.mode) modeHome[k] = page.mode![k]; }
+  for (var id in page.cycles){ page.cycles![id] = era ? era.name : null; page.mode![id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode![id]; }
   if (!era) modeHome = null;
   CATEGORIES.forEach(replaceInsights);
 }
-function enterEra(era, page){
+function enterEra(era: Cycle, page: HTMLElement){
   var ta = byId("today-analysis");
-  if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
+  if (!taHome) taHome = { parent:ta.parentNode!, next:ta.nextSibling };
   ui.eraOpen = era; showCycle(era);
-  page.appendChild(cycleViewEl); page.appendChild(ta);
+  page.appendChild(cycleViewEl!); page.appendChild(ta);
   eraShow(era);
 }
 function leaveEra(){
   if (!ui.eraOpen) return;
   var ta = byId("today-analysis");
-  taHome.parent.insertBefore(ta, taHome.next); taHome.parent.insertBefore(cycleViewEl, ta);
+  taHome!.parent.insertBefore(ta, taHome!.next); taHome!.parent.insertBefore(cycleViewEl!, ta);
   ui.eraOpen = null; eraShow(null); showCycle(currentEra); repaintLive();
 }
 /* ---- THE ROSTER AS SERIES ---- */
 // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
-function cycleSymptoms(cyc, years){
-  var rows = [], quiet = [], absent = [];
+function cycleSymptoms(cyc: Cycle, years: number[]){
+  var rows: SymptomRow[] = [], quiet: string[] = [], absent: string[] = [];
   readingRoster().forEach(function(r){
     var now = r.place(r.now.v), measured = false;
-    var cells = years.map(function(y){
+    var cells = years.map(function(y): SymptomCell {
       if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return { y:y, state:y === calendarTodayY && cyc.ongoing ? "now" : "ahead" };
-      var best = null;
+      var best: { d: EraPoint; gap: number } | null = null;
       for (var d of r.seen){
         if (+d.k.slice(0, 4) !== y) continue;
         var gap = Math.abs(r.place(d.v) - now);
@@ -190,26 +198,26 @@ function cycleSymptoms(cyc, years){
     (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
   return { rows:rows, foot:foot.trim() };
 }
-function placeWords(r, v){
+function placeWords(r: EraRow, v: number){
   var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
   return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
 }
-function symptomNote(cyc, row){
+function symptomNote(cyc: Cycle, row: SymptomRow){
   var r = row.r;
   return '<h4>' + r.name + ' \u00b7 ' + cyc.name + '</h4>' +
     '<p>Now ' + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + ' (' + (r.last || prettyK(r, r.now.k)) + '), ' + placeWords(r, r.now.v) + '. ' +
     'A year is marked when a reading taken in it sat within ' + ALIKE + ' points of that place in the same record.</p>' +
-    facts(row.hits.map(function(c){ return prettyK(r, c.best.k) + ': ' + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ', ' + placeWords(r, c.best.v); }));
+    facts(row.hits.map(function(c){ return prettyK(r, c.best!.k) + ': ' + pastFigure(r, c.best!.v, pairAt(r, c.best!.k)) + ', ' + placeWords(r, c.best!.v); }));
 }
-function symptomRow(cyc, row, cols){
+function symptomRow(cyc: Cycle, row: SymptomRow, cols: string){
   var r = row.r;
   return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) +
     '" aria-label="' + r.name + ': alike in ' + row.hits.map(function(c){ return c.y; }).join(", ") + '">' +
     row.cells.map(function(c){ return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>'; }).join("") +
     '<b>' + r.name + '</b></button>';
 }
-function cycleTrack(cyc, strip, bands){
-  var years = [];
+function cycleTrack(cyc: Cycle, strip: Strip, bands: string){
+  var years: number[] = [];
   for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
   var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
   var cols = 'grid-template-columns:repeat(' + years.length + ',' + YEAR_W + 'px) minmax(96px,1fr)';

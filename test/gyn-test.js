@@ -80,7 +80,7 @@ async function openPage(p, url, sheet) {
 
   const SRC_DIR = path.join(__dirname, '..', 'src');
   const code = fs.existsSync(path.join(SRC_DIR, 'manifest.json'))
-    ? fs.readdirSync(path.join(SRC_DIR, 'js')).filter(n => n.endsWith('.js') && n !== 'history-fred.js')
+    ? fs.readdirSync(path.join(SRC_DIR, 'js')).filter(n => n.endsWith('.ts') && n !== 'history-fred.ts')
         .map(n => fs.readFileSync(path.join(SRC_DIR, 'js', n), 'utf8')).join('\n') + fs.readFileSync(path.join(SRC_DIR, 'page-body.html'), 'utf8')
     : null;
   const lastRule = (() => { const css = [...src.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m => m[1]).pop() || '';

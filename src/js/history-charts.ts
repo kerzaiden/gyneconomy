@@ -1,13 +1,14 @@
-import { atMonth, atQuarter, fmtSigned, qAtIndex } from "./format.js";
-import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.js";
-import { fedFundsHistory } from "./history-fred.js";
-import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
-import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyAt, hyLabel, hyOas, M2_FROM_YEAR, M2_NORM, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, unempHistory } from "./data.js";
-import { quarterRegime } from "./model.js";
-import { windowScale } from "./history.js";
-import { unempState } from "./readings.js";
+type HistOpts = { to?: number | null; cycle?: boolean };
+import { atMonth, atQuarter, fmtSigned, qAtIndex } from "./format.ts";
+import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
+import { fedFundsHistory } from "./history-fred.ts";
+import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyAt, hyLabel, hyOas, M2_FROM_YEAR, M2_NORM, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, unempHistory } from "./data.ts";
+import { quarterRegime } from "./model.ts";
+import { windowScale } from "./history.ts";
+import { unempState } from "./readings.ts";
 
-export function deficitChart(Wpx, from, to){
+export function deficitChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
@@ -17,13 +18,13 @@ export function deficitChart(Wpx, from, to){
   var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
   var pad = Math.max(0.6, (hi - lo) * 0.10), LO = lo - pad, HI = hi + pad;
   var slot = (R - L) / Math.max(1, n);
-  var X = function(i){ return L + slot * (i + 0.5); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0), sw = Math.max(1.5, Math.min(26, slot * 0.6));
+  var X = function(i: number){ return L + slot * (i + 0.5); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0), sw = Math.max(1.5, Math.min(26, slot * 0.6));
   var defFit = trendOf(vals, "points", "year").fit;
 
-  var run = null;
+  var run: number | null = null;
   for (var k = 0; k <= n; k++){
     var inRec = k < n && DEF_RECESSION_FY[y0 + k];
     if (inRec && run === null) run = k;
@@ -36,11 +37,11 @@ export function deficitChart(Wpx, from, to){
   }
   var raw = (HI - LO) / 5, p10 = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), nn = raw / p10;
   var step = (nn < 1.5 ? 1 : nn < 3 ? 2 : nn < 7 ? 5 : 10) * p10;
-  var defTicks = [];
+  var defTicks: number[] = [];
   for (var g = Math.ceil(LO / step) * step; g <= HI + 1e-9; g += step)
     defTicks.push(Math.abs(g) < 1e-9 ? 0 : g);
   out.push(chartAxes({ ticks:defTicks, y:Y, x0:L, x1:R, base:Y(0), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(at){ return fmtSigned(at, step < 1 ? 1 : 0) + "%"; } }));
+    fmt:function(at: number){ return fmtSigned(at, step < 1 ? 1 : 0) + "%"; } }));
   var steps = [1, 2, 5, 10, 20, 25], yrStep = 25, si, yy, cnt;
   for (si = 0; si < steps.length; si++){
     cnt = 0;
@@ -61,36 +62,36 @@ export function deficitChart(Wpx, from, to){
   out.push(meanRule(L, R, y83));
   out.push(crossLine(T, B));
   var dfAvg = vals.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-  publishGeom("deficitChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return "FY" + (y0 + i); },
-                   fmt:function(v){ return fmtSigned(v, 1) + "%"; },
+  publishGeom("deficitChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d: unknown, i: number){ return "FY" + (y0 + i); },
+                   fmt:function(v: number){ return fmtSigned(v, 1) + "%"; },
                    refs:[{ label:"Average", v:dfAvg },
                          { label:"1983 level", v:DEF_1983, dash:true }],
-                   vals:vals.map(function(v){ return { v:v }; }) });
+                   vals:vals.map(function(v: number){ return { v:v }; }) });
   out.push(avgRule(L, R, f(Y(dfAvg))));
   if (defFit && defFit.n > 1)
-    out.push(fitGroup({ fit:defFit, fmt:function(v){ return fmtSigned(v, 1) + "%"; } },
+    out.push(fitGroup({ fit:defFit, fmt:function(v: number){ return fmtSigned(v, 1) + "%"; } },
                       X(0), X(n - 1), Y, R, L, 0));
   return vhOpen(W, H) +
     'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + ' to ' + y1 +
     ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + '</svg>';
 }
-export function velocityHistoryChart(Wpx, from, to){
+export function velocityHistoryChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
   var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
   var sc = windowScale(ser, [PULSE_PRE2008]);
   var LO = sc.lo, HI = sc.hi;
-  var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));
+  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
     return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [];
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [];
   var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
   var y1 = M2V_FROM_YEAR + Math.floor((from + n - 1) / 4);
 
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return g.toFixed(1) + "\u00d7"; } }));
+    fmt:function(g: number){ return g.toFixed(1) + "\u00d7"; } }));
   windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
     var i = (yr - M2V_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
     out.unshift(vGrid(X(i), T, B));
@@ -102,11 +103,11 @@ export function velocityHistoryChart(Wpx, from, to){
   out.push('<path class="vh-mean" d="M' + f(X(0)) + ',' + f(Y(PULSE_PRE2008)) + 'H' + f(meanTo) + '"/>');
   out.push(crossLine(T, B));
   var pAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-  publishGeom("velocityHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2V_FROM_YEAR, from + i); },
-                   fmt:function(v){ return v.toFixed(3) + "\u00d7"; },
+  publishGeom("velocityHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n, at:function(d: unknown, i: number){ return qAtIndex(M2V_FROM_YEAR, from + i); },
+                   fmt:function(v: number){ return v.toFixed(3) + "\u00d7"; },
                    refs:[{ label:"Average", v:pAvg },
                          { label:"Pre-2008 mean", v:PULSE_PRE2008, dash:true }],
-                   vals:ser.map(function(v){ return { v:v }; }) });
+                   vals:ser.map(function(v: number){ return { v:v }; }) });
   out.push(avgRule(f(X(0)), f(X(n - 1)), f(Y(pAvg))));
 
   var pSlot = (R - L) / Math.max(1, n), pSw = colWidth(pSlot);
@@ -118,28 +119,28 @@ export function velocityHistoryChart(Wpx, from, to){
       pSw.toFixed(2) + '" d="' + colPath(X(i), pMidY, y1, pSw) + '"/>');
   });
 
-  out.push(fitLine(ser, "quarter", function(v){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(ser, "quarter", function(v: number){ return v.toFixed(2) + "\u00d7"; }, X(0), X(n - 1), Y, R, L, 0));
 
   return vhOpen(W, H) +
     'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
     ', against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
     out.join("") + '</svg>';
 }
-export function desireHistoryChart(Wpx, from){
+export function desireHistoryChart(Wpx: number, from: number){
   var F = histFrame(Wpx), W = F.W, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
   var ser = hyOas.slice(from), n = ser.length;
   var sc = windowScale(ser, [0, HY_NORM_LO]);
   var LO = sc.lo, HI = sc.hi;
-  var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));
+  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
     return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [];
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [];
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return g.toFixed(1) + "%"; } }));
-  var y0 = hyAt(from).y, seen = {};
+    fmt:function(g: number){ return g.toFixed(1) + "%"; } }));
+  var y0 = hyAt(from).y, seen: Record<number, number> = {};
   for (var gi = 0; gi < n; gi++){
     var yr = hyAt(from + gi).y;
     if (seen[yr] || yr === y0){ seen[yr] = 1; continue; }
@@ -150,10 +151,10 @@ export function desireHistoryChart(Wpx, from){
   out.push(crossLine(T, B));
   var hyAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
   publishGeom("desireHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n,
-                   at:function(d, i){ return hyLabel(from + i); },
-                   fmt:function(v){ return v.toFixed(2) + "%"; },
+                   at:function(d: unknown, i: number){ return hyLabel(from + i); },
+                   fmt:function(v: number){ return v.toFixed(2) + "%"; },
                    refs:[{ label:"Average", v:hyAvg, cls:"hy-avg" }],
-                   vals:ser.map(function(v){ return { v:v }; }) });
+                   vals:ser.map(function(v: number){ return { v:v }; }) });
   out.push('<path class="hy-avg" d="M' + f(X(0)) + ',' + f(Y(hyAvg)) + 'H' + f(X(n - 1)) + '"/>');
   var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
   ser.forEach(function(v, i){
@@ -161,12 +162,12 @@ export function desireHistoryChart(Wpx, from){
     out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
       '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
   });
-  out.push(fitLine(ser, "day", function(v){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(ser, "day", function(v: number){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   return vhOpen(W, H) +
     'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
     ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';
 }
-function yearTicks(out, vals, w, X, T, B, f){
+function yearTicks(out: string[], vals: { m: string }[], w: { y0: number; y1: number; cycle?: boolean; narrow: boolean }, X: (i: number) => number, T: number, B: number, f: (v: number) => string){
   var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
   if (w.cycle){
     var stepY = Math.max(1, Math.ceil((w.y1 - w.y0 + 1) / (w.narrow ? 4 : 6)));
@@ -181,7 +182,7 @@ function yearTicks(out, vals, w, X, T, B, f){
     out.push(xLabel(f(X(i)), yr, B + 17));
   });
 }
-export function unempHistoryChart(Wpx, from, o){
+export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -194,12 +195,12 @@ export function unempHistoryChart(Wpx, from, o){
   var sc = windowScale(seen.map(function(d){ return d.v; }), [0, NROU_NOW]);
   var LO = sc.lo, HI = sc.hi;
   var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
+  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
   vals.forEach(function(d, i){
@@ -207,9 +208,9 @@ export function unempHistoryChart(Wpx, from, o){
     out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) +
       '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
   });
-  var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
+  var avgV = seen.reduce(function(a, d){ return a + d.v!; }, 0) / seen.length;
   out.push(avgRule(L, R, f(Y(avgV))));
-  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   out.push(zeroRule(L, R, zero));
   out.push(meanRule(L, R, Y(NROU_NOW)));
   out.push(crossLine(T, B));
@@ -217,12 +218,12 @@ export function unempHistoryChart(Wpx, from, o){
   publishGeom("unempHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                    refs:[{ label:"Average", v:avgV },
                          { label:"CBO estimate", v:NROU_NOW, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
+                   fmt:function(v: number){ return v.toFixed(1) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
     ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
 }
-export function fedFundsHistoryChart(Wpx, from, o){
+export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -235,18 +236,18 @@ export function fedFundsHistoryChart(Wpx, from, o){
   var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);
   var LO = sc.lo, HI = sc.hi;
   var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
+  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
     top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
   var seenV = seen.map(function(d){ return d.v; });
   var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
-  var step = function(v){
+  var step = function(v: number){
     if (!(vHi > vLo)) return 5;
     return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
   };
@@ -257,17 +258,17 @@ export function fedFundsHistoryChart(Wpx, from, o){
   });
   var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
   out.push(avgRule(L, R, f(Y(avgV))));
-  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v: number){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   out.push(zeroRule(L, R, zero));
   out.push(crossLine(T, B));
   out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
   publishGeom("fedFundsHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                    refs:[{ label:"Average", v:avgV }],
-                   fmt:function(v){ return v.toFixed(2) + "%"; } });
+                   fmt:function(v: number){ return v.toFixed(2) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
 }
-export function householdsChart(Wpx, from, to){
+export function householdsChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
@@ -277,15 +278,15 @@ export function householdsChart(Wpx, from, to){
   var n = bill.length;
   var sc = windowScale(bill.concat(kept), [0]);
   var LO = sc.lo, HI = sc.hi;
-  var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));
+  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
     return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [];
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [];
   var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
   var y1 = DSR_FROM_YEAR + Math.floor((hi - 1) / 4);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return g.toFixed(0) + "%"; } }));
+    fmt:function(g: number){ return g.toFixed(0) + "%"; } }));
   windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
     var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
     out.unshift(vGrid(X(i), T, B));
@@ -301,18 +302,18 @@ export function householdsChart(Wpx, from, to){
       '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
     '</g>');
   });
-  out.push(fitLine(kept, "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(kept, "quarter", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   var hovAt = 0;
   publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
     refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
-    at:function(d, i){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
-    fmt:function(v){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
-    vals:bill.map(function(v){ return { v:v }; }) });
+    at:function(d: unknown, i: number){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
+    fmt:function(v: number){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
+    vals:bill.map(function(v: number){ return { v:v }; }) });
   return '<svg class="hist-svg vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
     'aria-label="Household debt service and the personal saving rate, both as a share of disposable ' +
     'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
 }
-export function cpiHistoryChart(Wpx, from, o){
+export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -323,12 +324,12 @@ export function cpiHistoryChart(Wpx, from, o){
   var sc = windowScale(vals.map(function(d){ return d.v; }), [0, CPI_TARGET]);
   var LO = sc.lo, HI = sc.hi;
   var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0), avgShown = null;
+  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0), avgShown = null;
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
   var sw = colWidth((R - L) / n);
   vals.forEach(function(d, i){
@@ -340,7 +341,7 @@ export function cpiHistoryChart(Wpx, from, o){
     out.push(avgRule(L, R, f(avgY)));
     avgShown = avgV;
   }
-  out.push(fitLine(vals.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(vals.map(function(d){ return d.v; }), "month", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   out.push(zeroRule(L, R, zero));
   out.push(meanRule(L, R, Y(CPI_TARGET)));
   out.push(crossLine(T, B));
@@ -348,12 +349,12 @@ export function cpiHistoryChart(Wpx, from, o){
   publishGeom("cpiHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
                    refs:[{ label:"Average", v:avgShown },
                          { label:"Fed target", v:CPI_TARGET, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
+                   fmt:function(v: number){ return v.toFixed(1) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="Consumer prices year over year, every month from ' + y0 + ' to ' + y1 +
     ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + '</svg>';
 }
-export function gdpHistoryChart(Wpx, from, o){
+export function gdpHistoryChart(Wpx: number, from: number, o?: HistOpts){
   o = o || {};
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
@@ -364,12 +365,12 @@ export function gdpHistoryChart(Wpx, from, o){
   var sc = windowScale(vals.map(function(d){ return d.v; }), [0, GDP_NORM]);
   var LO = sc.lo, HI = sc.hi;
   var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
+  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   if (o.cycle){
     var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
     for (var cyr = y0; cyr <= y1; cyr += stepY){
@@ -389,7 +390,7 @@ export function gdpHistoryChart(Wpx, from, o){
   });
   var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
   out.push(avgRule(L, R, f(Y(gAvg))));
-  out.push(fitLine(vals.map(function(d){ return d.v; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(vals.map(function(d){ return d.v; }), "quarter", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   out.push(zeroRule(L, R, zero));
   out.push(meanRule(L, R, Y(GDP_NORM)));
   out.push(crossLine(T, B));
@@ -397,13 +398,13 @@ export function gdpHistoryChart(Wpx, from, o){
   publishGeom("gdpHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atQuarter,
                    refs:[{ label:"Average", v:gAvg },
                          { label:"Long-run", v:GDP_NORM, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
+                   fmt:function(v: number){ return v.toFixed(1) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
     ', against the long-run average of ' + GDP_NORM + ' per cent; quarters of quickening growth in gold, of slowing growth in periwinkle">' +
     out.join("") + '</svg>';
 }
-export function m2GrowthChart(Wpx, from, to){
+export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
@@ -413,12 +414,12 @@ export function m2GrowthChart(Wpx, from, to){
   var sc = windowScale(vals, [0, M2_NORM]);
   var LO = sc.lo, HI = sc.hi;
   var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
+  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
+  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var f = function(v: number){ return v.toFixed(1); };
+  var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
+    fmt:function(g: number){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
   windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
     var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
     out.unshift(vGrid(X(i), T, B));
@@ -436,21 +437,21 @@ export function m2GrowthChart(Wpx, from, to){
   out.push(avgRule(L, R, f(Y(vAvg))));
   out.push(zeroRule(L, R, zero));
   out.push(crossLine(T, B));
-  publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
-                   fmt:function(v){ return fmtSigned(v, 1) + "%"; },
+  publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d: unknown, i: number){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
+                   fmt:function(v: number){ return fmtSigned(v, 1) + "%"; },
                    refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
                    vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
-  out.push(fitLine(vals.filter(function(v){ return v != null; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
+  out.push(fitLine(vals.filter(function(v){ return v != null; }), "quarter", function(v: number){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
   out.push(meanRule(L, R, Y(M2_NORM)));
   return vhOpen(W, H) +
     'aria-label="Money stock growth year over year, every quarter from ' + y0 + ' to ' + y1 +
     ', against the long-run norm of ' + M2_NORM + ' per cent">' +
     out.join("") + '</svg>';
 }
-export function m2Step(v){
+export function m2Step(v: number){
   return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
 }
-export function heatStep(v){
+export function heatStep(v: number){
   if (v < 1) return "s0";
   return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
 }

@@ -1,30 +1,23 @@
 interface Window {
-  claude: any;
-  __GYN: any;
-  __sources: any;
-  __CAT_SNAP: any;
-  __histRead: any;
+  claude?: { use(name: string): Promise<any> };
+  __GYN: unknown;
+  __sources: { all: Src[]; cards: { src: Src[] }[]; annual: Src[]; gdp: Src[] };
+  __CAT_SNAP: Record<string, Node>;
+  __histRead: unknown;
   __paintMiss: string[];
   __actMiss: string[];
   __elMiss: Record<string, number>;
-  __geomMiss: any[];
+  __geomMiss: string[];
 }
-interface EventTarget {
-  closest(selectors: string): Element | null;
-  getAttribute(name: string): string | null;
-  readonly classList: DOMTokenList;
-}
+type TodaySnapshot = { value: string; text: string | null; word: string | null; when: string; mini: string };
 interface Element {
-  hidden: boolean;
-  click(): void;
-  focus(options?: FocusOptions): void;
-  __mark?: any;
-}
-interface HTMLElement {
-  value: string;
-  disabled: boolean;
-  __geom?: any;
-}
-interface Event {
-  readonly key: string;
+  __today?: TodaySnapshot | null;
+  __mark?: () => string;
+  __geom?: ChartGeom | null;
+  __readEl?: HTMLElement;
+  __placed?: boolean;
+  __hovWired?: boolean;
+  __onCol?: Element | null;
+  __keyI?: number | null;
+  __cancelOut?: (() => void) | null;
 }

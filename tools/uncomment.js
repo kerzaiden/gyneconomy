@@ -80,7 +80,7 @@ const plain = code => minify(code, { compress: false, mangle: false, format: { c
   const names = pages.map(p => p.name).concat(mods.map(m => m.name));
   const text = pages.map(p => p.text).concat(mods.map(m => m.text));
   const inSrc = srcComments(pages.map(p => p.text)).concat(...mods.map((m, k) => {
-    const list = []; jsComments(m.text, 0, list, true);
+    const list = []; jsComments(m.plain, 0, list, true);
     return list.map(c => Object.assign(c, { part: pages.length + k }));
   }));
   const files = scripts().map(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), list = []; jsComments(s, 0, list, f.endsWith('.mjs')); return { f, s, list }; });

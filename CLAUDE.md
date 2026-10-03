@@ -48,13 +48,13 @@ rules below are the ones that matter most.
 - **Band provenance.** Every range on screen is sourced or explicitly Keren's call, and the (i) says
   which. A target is never relabelled "normal".
 - **One figure, one number.** Computed in one place, read everywhere else.
-- **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/roster.js`): its name, category, card order,
+- **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/roster.ts`): its name, category, card order,
   timing, mark, group, history and card date. The cards, category pages, Search, the Diagnosis, past cycles and
   history heads all read it; a new reading is one row there plus its page renderer. `checkRoster` keeps it in
   step with the live registry.
-- **Edit `src/`, never `index.html`.** The script is ES modules in `src/js/`, bundled by esbuild into the one
-  file (V695). A module's top level holds only declarations; whatever runs at load and reads another module
-  goes in its `boot…()`, and **`js/main.js`'s boot order is the semantics**. An import is read-only: a value other modules
+- **Edit `src/`, never `index.html`.** The script is strict TypeScript modules in `src/js/` (V702), bundled by
+  esbuild into the one file (V695); types are syntax, never comments, and erasable only. A module's top level holds only declarations; whatever runs at load and reads another module
+  goes in its `boot…()`, and **`js/main.ts`'s boot order is the semantics**. An import is read-only: a value other modules
   change lives in its owner's store (`now`, `ui`, `page`) and is written as a property (V697). `tools/load-order.js` (in `check`) fails if any shared
   value is read at load before something sets it (V654).
   Never hand-edit a large region: write each edit as a script that asserts its anchor first.
@@ -95,7 +95,7 @@ npm run test:unit        # the app booted in Node (jsdom): every page drawn, the
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
 npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
-npm run typecheck        # TypeScript over the modules, inference only (in check)
+npm run typecheck        # strict TypeScript over the modules (in check)
 npm run hygiene          # one frame, one type scale, no page-scoped styles, no name branches, nothing unused
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`
 npm run map              # regenerate docs/MAP.md and docs/COMPONENTS.md

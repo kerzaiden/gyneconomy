@@ -1173,8 +1173,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Shared values live in owned stores, figures live in JSON, and the modules are type-checked.** Keren, on
   Claude's re-rating at V696: "make all of your recommendations." Claude chose: three stores (`now`, `ui`, `page`)
   in place of thirty setters; live redraws as subscriptions (`onLive`) declared by the repaint layer; the series
-  in `src/data/*.json`; navigation split into `inner-pages` and `cycle-tab`; TypeScript by inference only, since
-  the no-comments rule rules out annotations; a live document refused if any of its text carries `<`, `>` or `"`;
+  in `src/data/*.json`; navigation split into `inner-pages` and `cycle-tab`; type checking (strict TypeScript since
+  V702, below); a live document refused if any of its text carries `<`, `>` or `"`;
   content tests of what the pages say, with an 88% line-coverage floor. (V697)
 - **A first visit and a returning visit show the same figures, and a figure the bots update is never typed.**
   Keren chose "Fix all" on Claude's V697 review. Claude chose: cached documents load through the readings' own

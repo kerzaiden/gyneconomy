@@ -1,20 +1,25 @@
-import { CHEV } from "./format.js";
-import { allSources, byId, elFrom, focusQuiet, layer, put, ui } from "./dom.js";
-import { GYN } from "./live.js";
-import { gdpSrc, sp500AnnualReturnSource } from "./data.js";
-import { coincident, lagging, rowReadings } from "./readings.js";
-import { categoriesShown, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
-import { tabSegs } from "./history.js";
-import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.js";
-import { cycleViewEl, setTopbar } from "./render-pages.js";
-import { groupId } from "./indicators.js";
-import { renderMetricPages } from "./inner-pages.js";
-import { renderPeekAndCategories } from "./cycle-tab.js";
+import { CHEV } from "./format.ts";
+import { allSources, byId, elFrom, focusQuiet, layer, put, ui } from "./dom.ts";
+import { GYN } from "./live.ts";
+import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
+import { coincident, lagging, rowReadings } from "./readings.ts";
+import { categoriesShown, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
+import { tabSegs } from "./history.ts";
+import { cardDetailHtml, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.ts";
+import { cycleViewEl, setTopbar } from "./render-pages.ts";
+import { groupId } from "./indicators.ts";
+import { renderMetricPages } from "./inner-pages.ts";
+import { renderPeekAndCategories } from "./cycle-tab.ts";
+
+type TimingKey = keyof typeof TIMING;
+type IndGroup = { title: string; icon: string; kinds: Record<string, number>; terms: string[] };
+type OpenPage = (el: HTMLElement | null, title: string | null, returning?: boolean, homeKey?: string | null) => void;
+type PageHome = { panel: HTMLElement; bar: () => [string, (() => void) | null]; hide: () => (HTMLElement | null | undefined)[] };
 
 function convertLeadingSigns(){
   ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
     var key = R.id.replace("sheet-sign-", ""), det = document.querySelector('.subject[data-subject="' + key + '"]'); if (!det) return;
-    var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
+    var sum = det.querySelector(".subject-summary")!, body = det.querySelector(".subject-body")!;
     var id = R.id;
     var row = document.createElement("div");
     row.className = "subject sign-row";
@@ -29,9 +34,9 @@ function convertLeadingSigns(){
     var sheet = metricSheet(id);
     sheet.innerHTML = timingPill(R.timing);
     while (body.firstChild) sheet.appendChild(body.firstChild);
-    det.parentNode.insertBefore(row, det);
-    det.parentNode.insertBefore(sheet, det);
-    det.parentNode.removeChild(det);
+    det.parentNode!.insertBefore(row, det);
+    det.parentNode!.insertBefore(sheet, det);
+    det.parentNode!.removeChild(det);
   });
 }
 function orderMetricSheets(){
@@ -39,7 +44,7 @@ function orderMetricSheets(){
   slotted.forEach(function(R){ put(R.slot + "-timing", timingPill(R.timing)); });
   slotted.forEach(function(R){
     var sheet = byId(R.id); if (!sheet) return;
-    function rank(el){
+    function rank(el: Element){
       var k = el.id || "";
       if (/-timing$/.test(k)) return 0;
       if (/-head$/.test(k)) return 1;
@@ -50,30 +55,30 @@ function orderMetricSheets(){
     Array.prototype.slice.call(sheet.children)
       .map(function(el, i){ return { el:el, r:rank(el), i:i }; })
       .sort(function(a, b){ return a.r - b.r || a.i - b.i; })
-      .forEach(function(x){ sheet.appendChild(x.el); });
+      .forEach(function(x){ sheet!.appendChild(x.el); });
   });
   Array.prototype.forEach.call(document.querySelectorAll(".metric-sheet"), seatPageFoot);
 }
 function renderSignsList(){
-  var host = byId("signs-list");
-  function signSubject(ind){
-    var R = rosterFor(ind), id = R.id, key = id.replace("sheet-sign-", ""), pg = ind.page || {}, timing = R.timing;
+  var host = byId("signs-list")!;
+  function signSubject(ind: Indicator){
+    var R = rosterFor(ind), id = R.id, key = id.replace("sheet-sign-", ""), pg: IndicatorPage = ind.page || {}, timing = R.timing;
     var svg = R.mark();
     var row = elFrom(subjectRow({
       subject:"sign-" + key, open:id, title:R.name,
-      icon: subjectIcon(ind.tag.state, svg),
+      icon: subjectIcon(ind.tag!.state!, svg),
       text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
             '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
-            '<div class="subject-verdict"><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>' +
+            '<div class="subject-verdict"><span class="tag ' + ind.tag!.state + '">' + ind.tag!.text + '</span></div>' +
             (ind.peek || "")
-    }));
+    }))!;
     var d = metricSheet(id);
     d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
-    d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
+    d.querySelector(".sign-detail")!.innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
       (function(){ var h = ui.heldHighlights; ui.heldHighlights = ""; return h; })();
     registerTiming(timing, {
       title:R.name, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
-      tag:ind.tag, icon:subjectIcon(ind.tag.state, svg),
+      tag:ind.tag, icon:subjectIcon(ind.tag!.state!, svg),
       target:id
     });
     if (pg.peeked){ host.appendChild(d); return d; }
@@ -86,16 +91,16 @@ function renderSignsList(){
   orderMetricSheets();
 }
 /* ---- THE ROSTER'S OWN PIECES ---- */
-function partsOf(el, unitSel){
+function partsOf(el: Element | null, unitSel: string){
   if (!el) return { v:"", u:"", w:"", s:"" };
-  var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-  var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
+  var c = el.cloneNode(true) as Element, u = c.querySelector(unitSel), t = c.querySelector(".tag");
+  var unit = u ? u.textContent!.trim() : "", word = t ? t.textContent!.trim() : "";
   var st = t ? (t.className.match(/good|warning|serious|critical/) || [""])[0] : "";
-  if (u) u.parentNode.removeChild(u);
-  if (t) t.parentNode.removeChild(t);
-  return { v:c.textContent.trim(), u:unit, w:word, s:st };
+  if (u) u.parentNode!.removeChild(u);
+  if (t) t.parentNode!.removeChild(t);
+  return { v:c.textContent!.trim(), u:unit, w:word, s:st };
 }
-function authored(sel, key){ return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] || null; }
+function authored(sel: string, key: string): Element | null { return document.querySelector(sel) || (window.__CAT_SNAP || {})[key] as Element || null; }
 function registerRoster(){
   ROSTER.filter(function(R){ return R.door === "peek" && !R.term; }).forEach(function(R){
     var card = authored('.peek[data-open="' + R.id + '"]', R.id); if (!card) return;
@@ -103,41 +108,41 @@ function registerRoster(){
     var st = (card.className.match(/good|warning|serious|critical/) || [""])[0];
     registerTiming(R.timing, {
       title:R.name, metric:pv.v, unit:pv.u,
-      word:(card.querySelector(".peek-word") || {}).textContent || "",
+      word:(card.querySelector(".peek-word") || {} as { textContent?: string | null }).textContent || "",
       state:st, icon:subjectIcon(st || "norm", R.mark()), target:R.id
     });
   });
   ROSTER.filter(function(R){ return R.door === "subject"; }).forEach(function(R){
     var row = authored('.sign-row[data-open="' + R.id + '"]', R.id); if (!row) return;
     var rv = partsOf(row.querySelector(".subject-value"), ".unit");
-    var say = ((row.querySelector(".subject-say") || {}).textContent || "").trim();
+    var say = ((row.querySelector(".subject-say") || {} as { textContent?: string | null }).textContent || "").trim();
     registerTiming(R.timing, {
       title:R.name, sub:R.name, metric:rv.v, unit:rv.u,
       word:rv.w || say, state:rv.s, icon:subjectIcon(rv.s || "norm", R.mark()), target:R.id
     });
   });
 }
-function indRow(e, kind){
+function indRow(e: TimingEntry, kind: string){
   return subjectRow({ cls:"ind-row kind-" + kind, open:e.target, title:e.title, icon:e.icon,
     text:'<div class="ind-line"><span class="ind-name">' + e.title + '</span><span class="subject-value ind-fig">' + e.metric + '</span></div>' });
 }
-function indGroupRow(groups, rows, item, e, kind, find){
-  var grp = item.parentNode.getAttribute("data-group"), gm = item.parentNode.__mark;
+function indGroupRow(groups: Record<string, IndGroup>, rows: (string | IndGroup)[], item: Element, e: TimingEntry, kind: string, find: Record<string, string>){
+  var grp = (item.parentNode as Element).getAttribute("data-group")!, gm = (item.parentNode as Element).__mark;
   if (!groups[grp]){ groups[grp] = { title:grp, icon:gm ? subjectIcon("norm", gm()) : e.icon, kinds:{}, terms:[grp] }; rows.push(groups[grp]); }
   groups[grp].kinds[kind] = 1; groups[grp].terms.push(find[e.title]);
 }
-function catMembers(sheet){
-  var out = [];
+function catMembers(sheet: Element){
+  var out: Element[] = [];
   Array.prototype.forEach.call(sheet.querySelectorAll(".cat-item[data-open]"), function(card){
     var grp = card.hasAttribute("data-preview") && byId(card.getAttribute("data-open"));
     out.push.apply(out, grp ? [].slice.call(grp.querySelectorAll(".cat-item[data-open]")) : [card]);
   });
   return out;
 }
-function indRows(sheet, find){
-  var rows = [], groups = {};
+function indRows(sheet: Element, find: Record<string, string>){
+  var rows: (string | IndGroup)[] = [], groups: Record<string, IndGroup> = {};
   catMembers(sheet).forEach(function(item){
-    var target = item.getAttribute("data-open"), inGroup = item.parentNode.hasAttribute("data-group");
+    var target = item.getAttribute("data-open"), inGroup = (item.parentNode as Element).hasAttribute("data-group");
     IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
       if (e.target === target) inGroup ? indGroupRow(groups, rows, item, e, kind, find) : rows.push(indRow(e, kind));
     }); });
@@ -148,7 +153,7 @@ function indRows(sheet, find){
     return indRow({ target:groupId(r.title), title:r.title, icon:r.icon, metric:"" }, Object.keys(r.kinds).join(" kind-") + " ind-grp");
   });
 }
-function indCategoryHtml(c, find){
+function indCategoryHtml(c: ReturnType<typeof categoriesShown>[number], find: Record<string, string>){
   var key = c.key, sheet = byId("sheet-cat-" + key);
   if (!sheet) return "";
   var rows = indRows(sheet, find);
@@ -156,33 +161,33 @@ function indCategoryHtml(c, find){
     '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button>' + rows.join("") + '</section>';
 }
 /* ---- THE NAVIGATION CONTROLLER ---- */
-var NAV = { open: null, panel: null };
+var NAV: { open: OpenPage | null; panel: HTMLElement | null } = { open: null, panel: null };
 var BACK = { depth: 0, skip: false };
 function backPush(){ try { history.pushState({ gyn: BACK.depth + 1 }, ""); BACK.depth++; } catch (e) {} }
 function backClear(){ if (!BACK.depth) return; BACK.skip = true; history.go(-BACK.depth); BACK.depth = 0; }
 function backPopped(){ if (BACK.skip){ BACK.skip = false; return false; } if (!BACK.depth) return false; BACK.depth--; return true; }
 function buildNav(){
   // ---- The metric page ----
-  var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
-  var analysisPanel = document.querySelector('.tab-panel[data-tab="analysis"]');
+  var cyclePanel = document.querySelector<HTMLElement>('.tab-panel[data-tab="cycle"]')!;
+  var analysisPanel = document.querySelector<HTMLElement>('.tab-panel[data-tab="analysis"]')!;
   var metricPage = document.createElement("div");
   metricPage.id = "metric-page"; metricPage.hidden = true;
   cyclePanel.appendChild(metricPage);
-  var PAGE_HOME = {
+  var PAGE_HOME: Record<string, PageHome> = {
     cycle:    { panel:cyclePanel,    bar:function(){ return ["Current Cycle", null]; },
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
     analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Analysis", null]; },
                 hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), bar:function(){ return ["Search", null]; },
+    search:   { panel:document.querySelector<HTMLElement>('.tab-panel[data-tab="search"]')!, bar:function(){ return ["Search", null]; },
                 hide:function(){ return [byId("search-home")]; } }
   };
   var homeCtx = PAGE_HOME.cycle;
-  var openSheet = null, openHome = null, returnScroll = 0;
-  var pageStack = [], openers = [];
+  var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;
+  var pageStack: { id: string; title: string | null; scroll: number }[] = [], openers: (HTMLElement | SVGElement | null)[] = [];
 
-  function homeFromPage(keepScroll){
+  function homeFromPage(keepScroll?: boolean){
     if (!openSheet) return;
-    openHome.appendChild(openSheet); openSheet.hidden = true;
+    openHome!.appendChild(openSheet); openSheet.hidden = true;
     openSheet = null; openHome = null;
     metricPage.hidden = true;
     homeCtx.hide().forEach(function(n){ if (n) n.hidden = false; });
@@ -192,14 +197,14 @@ function buildNav(){
     window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
   }
   function closeMetricPage(){ backClear(); pageStack.length = 0; openers.length = 0; homeFromPage(); }
-  function backFromPage(popped){
+  function backFromPage(popped?: boolean){
     if (popped !== true && BACK.depth){ history.back(); return; }
     var prev = pageStack.pop(), from = openers.pop();
     if (!prev) closeMetricPage();
     else {
       homeFromPage(true);
       openMetricPage(byId(prev.id), prev.title, true);
-      window.requestAnimationFrame(function(){ window.scrollTo({ top:prev.scroll, behavior:"auto" }); });
+      window.requestAnimationFrame(function(){ window.scrollTo({ top:prev!.scroll, behavior:"auto" }); });
     }
     if (!focusQuiet(from)) focusQuiet(byId("topbar-title"));
   }
@@ -207,42 +212,42 @@ function buildNav(){
   window.addEventListener("popstate", function(){ if (backPopped() && openSheet) backFromPage(true); });
   ui.metricPageReset = closeMetricPage;
 
-  function openMetricPage(el, title, returning, homeKey){
+  function openMetricPage(el: HTMLElement | null, title: string | null, returning?: boolean, homeKey?: string | null){
     if (!el) return;
     seatPageFoot(el);
-    if (!returning && openSheet !== el){ openers.push(document.activeElement); backPush(); }
+    if (!returning && openSheet !== el){ openers.push(document.activeElement as HTMLElement | null); backPush(); }
     if (!returning && openSheet && openSheet !== el)
-      pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
+      pageStack.push({ id:openSheet.id, title:byId("topbar-title")!.textContent, scroll:window.scrollY || 0 });
     var wasOpen = !!openSheet;
     homeFromPage(true);
     if (!wasOpen) returnScroll = window.scrollY || 0;
     if (!wasOpen && !returning){
-      homeCtx = PAGE_HOME[homeKey] || PAGE_HOME.cycle;
+      homeCtx = PAGE_HOME[homeKey as string] || PAGE_HOME.cycle;
       homeCtx.panel.appendChild(metricPage);
     }
     openSheet = el; openHome = el.parentNode;
     homeCtx.hide().forEach(function(n){ if (n) n.hidden = true; });
     el.hidden = false; metricPage.appendChild(el); metricPage.hidden = false;
-    setTopbar(title, function(){ backFromPage(); });
+    setTopbar(title!, function(){ backFromPage(); });
     if (!returning) window.scrollTo({ top:0, behavior:"auto" });
     var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
     collapseEmptyBlocks(el);
     if (!returning) focusQuiet(byId("topbar-title"));
   }
-  [cyclePanel, byId("detail-modal-body")].forEach(function(host){ host.addEventListener("click", function(e){
-    var btn = e.target.closest && e.target.closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl.closest(".tab-panel").getAttribute("data-tab"); if (!btn) return;
-    if (detailClose) detailClose(); openMetricPage(byId(btn.getAttribute("data-open")), btn.getAttribute("data-title"), false, tab);
+  [cyclePanel, byId("detail-modal-body")!].forEach(function(host){ host.addEventListener("click", function(e){
+    var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"), tab = host === cyclePanel ? "cycle" : cycleViewEl!.closest(".tab-panel")!.getAttribute("data-tab"); if (!btn) return;
+    if (detailClose) detailClose(); openMetricPage(byId(btn.getAttribute("data-open")!), btn.getAttribute("data-title"), false, tab);
   }); });
   ["analysis", "search"].forEach(function(key){
-    var panel = PAGE_HOME[key].panel, go = function(el){ openMetricPage(byId(el.getAttribute("data-open")), el.getAttribute("data-title"), false, key); };
-    panel.addEventListener("click", function(e){ var btn = e.target.closest && e.target.closest("[data-open]"); if (btn) go(btn); });
+    var panel = PAGE_HOME[key].panel, go = function(el: Element){ openMetricPage(byId(el.getAttribute("data-open")!), el.getAttribute("data-title"), false, key); };
+    panel.addEventListener("click", function(e){ var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"); if (btn) go(btn); });
     panel.addEventListener("keydown", function(e){
-      var row = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-open]");
+      var row = (e.key === "Enter" || e.key === " ") && (e.target as Element).closest && (e.target as Element).closest("[data-open]");
       if (row){ e.preventDefault(); go(row); }
     });
   });
   metricPage.addEventListener("click", function(e){
-    var btn = e.target.closest && e.target.closest(".trendpill.can-toggle"); if (!btn) return;
+    var btn = (e.target as Element).closest && (e.target as Element).closest(".trendpill.can-toggle"); if (!btn) return;
     var box = btn.closest(".page-chart, .spread-history"); if (!box) return;
     var on = btn.getAttribute("aria-pressed") !== "true";
     btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -250,18 +255,18 @@ function buildNav(){
   });
   cyclePanel.addEventListener("keydown", function(e){
     if (e.key !== "Enter" && e.key !== " ") return;
-    var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]"); if (!row) return;
+    var row = (e.target as Element).closest && (e.target as Element).closest(".sign-row, tr[data-open]"); if (!row) return;
     e.preventDefault();
-    openMetricPage(byId(row.getAttribute("data-open")), row.getAttribute("data-title"));
+    openMetricPage(byId(row.getAttribute("data-open")!), row.getAttribute("data-title"));
   });
   NAV.open = openMetricPage;
   NAV.panel = analysisPanel;
 }
 /* ---- ALL INDICATORS ---- */
 function buildSearch(){
-  var host = byId("search-list"), input = byId("search-input"); if (!host || !input) return;
-  var IND_TABS = [{ key:"all", label:"All" }].concat(IND_ORDER.map(function(k){ return { key:k, label:TIMING[k].label }; }));
-  var find = {}, state = { kind:"all", q:"" };
+  var host = byId("search-list"), input = byId("search-input") as HTMLInputElement | null; if (!host || !input) return;
+  var IND_TABS = [{ key:"all", label:"All" }].concat(IND_ORDER.map(function(k){ return { key:k as string, label:TIMING[k].label }; }));
+  var find: Record<string, string> = {}, state = { kind:"all", q:"" };
   IND_ORDER.forEach(function(kind){ timingMembers[kind].forEach(function(e){
     find[e.title] = [e.title, e.sub, e.metricSub, ROSTER_BY[e.target].group].join(" ").toLowerCase();
   }); });
@@ -271,15 +276,15 @@ function buildSearch(){
     '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c){ return indCategoryHtml(c, find); }).join("") +
     '<p class="search-none" hidden>No reading matches.</p>';
   function apply(){
-    var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
+    var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint") as HTMLElement;
     Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b){
       var on = b.getAttribute("data-ind-tab") === kind;
       b.classList.toggle("on", on);
       b.setAttribute("aria-selected", on ? "true" : "false");
       b.tabIndex = on ? 0 : -1;
     });
-    hint.hidden = !TIMING[kind];
-    hint.textContent = TIMING[kind] ? TIMING[kind].label + ": " + TIMING[kind].hint + "." : "";
+    hint.hidden = !TIMING[kind as TimingKey];
+    hint.textContent = TIMING[kind as TimingKey] ? TIMING[kind as TimingKey].label + ": " + TIMING[kind as TimingKey].hint + "." : "";
     Array.prototype.forEach.call(host.querySelectorAll(".ind-cat"), function(c){
       var cat = c.querySelector(".ind-cat-name").textContent.toLowerCase().indexOf(q) === 0;
       Array.prototype.forEach.call(c.querySelectorAll(".ind-row"), function(r){
@@ -288,17 +293,17 @@ function buildSearch(){
       });
       c.hidden = !c.querySelector(".ind-row:not([hidden])");
     });
-    host.querySelector(".search-none").hidden = !!host.querySelector(".ind-row:not([hidden])");
+    (host.querySelector(".search-none") as HTMLElement).hidden = !!host.querySelector(".ind-row:not([hidden])");
   }
   host.addEventListener("click", function(e){
-    var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"); if (!b) return;
-    state.kind = b.getAttribute("data-ind-tab"); apply();
+    var b = (e.target as Element).closest && (e.target as Element).closest(".ind-tabs .range-seg"); if (!b) return;
+    state.kind = b.getAttribute("data-ind-tab")!; apply();
   });
-  input.addEventListener("input", function(){ state.q = input.value.trim().toLowerCase(); apply(); });
-  ui.openIndicatorsPage = function(tab){
-    var btn = document.querySelector('.tab-btn[data-tab="search"]');
+  input.addEventListener("input", function(){ state.q = input!.value.trim().toLowerCase(); apply(); });
+  ui.openIndicatorsPage = function(tab: string | null){
+    var btn = document.querySelector<HTMLElement>('.tab-btn[data-tab="search"]');
     if (btn && !btn.classList.contains("active")) btn.click();
-    input.value = ""; state.q = ""; state.kind = tab || "all"; apply();
+    input!.value = ""; state.q = ""; state.kind = tab || "all"; apply();
   };
   apply();
 }
@@ -312,13 +317,13 @@ function renderPagesAndNav(){
 }
 // ---- The Diagnosis: under the dial, today or at a cycle's close ----
 
-var IND_ORDER;
+var IND_ORDER: TimingKey[];
 
 export function bootPagesNav(){
   GYN.step("renderSignsList", renderSignsList, "build");
   renderSignsList();
-  IND_ORDER = Object.keys(TIMING);
+  IND_ORDER = Object.keys(TIMING) as TimingKey[];
   GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
   renderPagesAndNav();
-  window.__sources = { all: allSources, cards: [].concat(coincident, lagging).map(function(c){ return {name:c.bodyTerm, src:c.src}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
+  window.__sources = { all: allSources, cards: ([] as Indicator[]).concat(coincident, lagging).map(function(c){ return {name:c.bodyTerm, src:c.src!}; }), annual: sp500AnnualReturnSource, gdp: gdpSrc };
 }
