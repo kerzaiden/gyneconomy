@@ -1,16 +1,18 @@
-import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, yearOf } from "./format.js";
-import { byId, byIdMaybe, focusQuiet, layer, moreRow, put } from "./dom.js";
-import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.js";
-import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
-import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.js";
-import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.js";
-import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
-import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.js";
-import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.js";
-import { sheetRenderers } from "./render-core.js";
-import { growthDetail } from "./dial-cycle.js";
+import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, yearOf } from "./format.ts";
+import { byId, byIdMaybe, focusQuiet, layer, moreRow, put } from "./dom.ts";
+import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
+import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
+import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.ts";
+import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.ts";
+import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.ts";
+import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.ts";
+import { sheetRenderers } from "./render-core.ts";
+import { growthDetail } from "./dial-cycle.ts";
+
+export type MetricCtx = { capeNow: number; buffNow: number | null; tempInd: Indicator | undefined; r: typeof nowModel.reading; gq: QuarterPoint[] };
 /* ---- THE INNER PAGES ---- */
-function actCycleMonths(c){
+function actCycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
   unempHistory.forEach(function(d, i){
     var y = parseInt(d.m.slice(0, 4), 10);
@@ -37,14 +39,14 @@ function householdsHighlights(){
   return highlightsHtml([hhLede, hiCard("The bill", "", billTxt),
                          hiCard("The cushion", householdsNow.state, keptTxt)]);
 }
-function redrawSheet(id){
+function redrawSheet(id: string){
   var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
   if (d) d(h && h.clientWidth ? h.clientWidth : 340);
   Array.prototype.forEach.call(document.querySelectorAll("#metric-page .trend-on"), function(b){
     var p = b.querySelector(".trendpill.can-toggle");
     if (!p || p.getAttribute("aria-pressed") !== "true") b.classList.remove("trend-on");
   });
-  keys.some(function(k){ return focusQuiet(document.querySelector(k)); });
+  keys.some(function(k){ return focusQuiet(document.querySelector<HTMLElement>(k)); });
 }
 function registerTempGdpPages(){
   sheetRenderers["sheet-metric-temp"] = function(W){
@@ -56,14 +58,14 @@ function registerTempGdpPages(){
     if (cyc){
       var span = cycleMonths(cyc);
       win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
+      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W!, span ? span[0] : 0,
                                        { to:span ? span[1] : undefined, cycle:true });
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                   { rising:"heating", falling:"cooling" }));
     } else {
       var from = mWindowFrom(cpiYoYHistory.length, r); win = cpiYoYHistory.slice(from);
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
+      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W!, from);
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                   { rising:"heating", falling:"cooling" }));
@@ -82,7 +84,7 @@ function registerTempGdpPages(){
     var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
     var gTo = gSpan ? gSpan[1] : undefined;
     var win = gdpQuarterlyYoY.slice(gFrom, gTo);
-    hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
+    hist.innerHTML = gdpHistoryChart(hist.clientWidth || W!, gFrom, { to:gTo, cycle:!!gSpan });
     attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
     var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
     headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
@@ -101,7 +103,7 @@ function registerActivityPowerDeficitPages(){
     var span = cyc ? actCycleMonths(cyc) : null;
     var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
     var to = span ? span[1] : undefined;
-    hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
+    hist.innerHTML = unempHistoryChart(hist.clientWidth || W!, from, { to:to, cycle:!!span });
     attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
     var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
     put("act-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
@@ -120,7 +122,7 @@ function registerActivityPowerDeficitPages(){
     var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
     put("deficit-rangebar", histControls("deficit-range",
       { depth:deficitHistory.length }));
-    host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
+    host.innerHTML = deficitChart(host.clientWidth || W!, from, defTo);
     put("deficit-records", "");
     attachHistory(host, "deficit-hist-tooltip", "deficitChart");
     put("deficit-trend", trendPill(
@@ -140,11 +142,11 @@ function registerHouseholdsValuationPages(){
     host.innerHTML =
       histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR)) +
       '<div class="page-chart">' + histHead(id) +
-      householdsChart(W, from, to) +
+      householdsChart(W!, from, to) +
       trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
                 "Saving", true, { rising:"keeping more", falling:"keeping less" }) +
       histTip("households-hist-tooltip") + '</div>';
-    var box = host.querySelector(".page-chart");
+    var box = host.querySelector<HTMLElement>(".page-chart");
     refitHistory(box, function(w){ return householdsChart(w, from, to); });
     attachHistory(box, "households-hist-tooltip", "householdsChart");
     put("households-highlights", householdsHighlights());
@@ -166,7 +168,7 @@ function registerHouseholdsValuationPages(){
       }, W) +
       trendPill(capeTrend, null, true) +
       histTip("valuation-hist-tooltip") + '</div>');
-    var vBox = document.querySelector("#valuation-chart .page-chart");
+    var vBox = document.querySelector<HTMLElement>("#valuation-chart .page-chart");
     refitHistory(vBox, function(w){
       return divergeChart({ vals:vals, mid:CAPE_FAIR, midLabel:"fair value, " + CAPE_FAIR + "\u00d7",
                             fmt:capeFmt1, tickFmt:function(v){ return v + "\u00d7"; }, fit:capeTrend.fit,
@@ -177,10 +179,10 @@ function registerHouseholdsValuationPages(){
 }
 function wireMetricPageControls(){
   document.addEventListener("click", function(e){
-    if (!e.target.closest) return;
-    var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
-    if (id && e.target.closest("[data-picker-toggle]")){ pickerOpen[id] = !pickerOpen[id]; redrawSheet(id); return; }
-    var opt = e.target.closest(".cycsel-opt");
+    if (!(e.target as Element).closest) return;
+    var sel = (e.target as Element).closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
+    if (id && (e.target as Element).closest("[data-picker-toggle]")){ pickerOpen[id] = !pickerOpen[id]; redrawSheet(id); return; }
+    var opt = (e.target as Element).closest(".cycsel-opt");
     if (id && opt && (id in page.cycles)){
       page.cycles[id] = opt.getAttribute("data-cycle");
       pickerOpen[id] = false;
@@ -189,42 +191,42 @@ function wireMetricPageControls(){
     for (var k in pickerOpen) if (pickerOpen[k] && k !== id){ pickerOpen[k] = false; redrawSheet(k); }
   });
   document.addEventListener("click", function(e){
-    var seg = e.target.closest && e.target.closest(".range-seg"); if (!seg) return;
-    var mid = seg.parentNode.getAttribute("data-mode-for");
+    var seg = (e.target as Element).closest && (e.target as Element).closest(".range-seg"); if (!seg) return;
+    var mid = (seg.parentNode as Element).getAttribute("data-mode-for");
     if (mid && (mid in page.mode)){
-      page.mode[mid] = seg.getAttribute("data-mode");
+      page.mode[mid] = seg.getAttribute("data-mode")!;
       redrawSheet(mid);
       return;
     }
-    var id = seg.parentNode.getAttribute("data-range-for");
+    var id = (seg.parentNode as Element).getAttribute("data-range-for")!;
     if (!(id in page.range)) return;
-    page.range[id] = seg.getAttribute("data-range");
+    page.range[id] = seg.getAttribute("data-range")!;
     redrawSheet(id);
   });
 
 }
-function valuationHighlights(capeNow, buffNow){
-  var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
+function valuationHighlights(capeNow: number, buffNow: number | null){
+  var richer = capeHistory.filter(function(d){ return d.v! > capeNow; });
   var cards = [];
   cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
     'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
     'producing.</p>');
-  cards.push(hiCard("Shiller CAPE", now.valuation.tag.state, richer.length === 0
+  cards.push(hiCard("Shiller CAPE", now.valuation.tag!.state!, richer.length === 0
     ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
     : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
-      " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
+      " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v!) + ")"; }).join(" and ") + " ran higher."));
   put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(now.valuation.impression))));
 }
-function tempHighlights(tempInd, r){
+function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.reading){
   var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;
   var peak = cyc.reduce(function(a, b){ return b.v > a.v ? b : a; });
   var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
     'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
     'means anything measured against the level the system is meant to hold.</p>'];
-  cards.push(hiCard("Temperature", tempInd ? tempInd.tag.state : "warning",
+  cards.push(hiCard("Temperature", tempInd ? tempInd.tag!.state! : "warning",
     "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
     " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
-  cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag.state : "warning",
+  cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag!.state! : "warning",
     "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
     r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
   put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
@@ -232,7 +234,7 @@ function tempHighlights(tempInd, r){
       return rest ? factsFrom(rest) : "";
     })())));
 }
-function gdpHighlights(r, gq){
+function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
   var cycAvg = mean(gq.map(function(d){ return d.v; }));
   var contractions = gq.filter(function(d){ return d.v < 0; }).length;
   var cards = ['<p class="hi-lede">Growth is the build-up: how much more the economy made this year than ' +
@@ -250,29 +252,29 @@ function gdpHighlights(r, gq){
 function shutPickers(){
   var open = Object.keys(pickerOpen).filter(function(k){ return pickerOpen[k]; });
   open.forEach(function(k){ pickerOpen[k] = false; redrawSheet(k); });
-  var btn = open.length && document.querySelector("[data-cycles-for=\"" + open[0] + "\"] [data-picker-toggle]");
+  var btn = open.length && document.querySelector<HTMLElement>("[data-cycles-for=\"" + open[0] + "\"] [data-picker-toggle]");
   if (btn) focusQuiet(btn);
 }
 function wireControlKeys(){
   layer(0, { open:function(){ return Object.keys(pickerOpen).some(function(k){ return pickerOpen[k]; }); }, close:shutPickers });
   document.addEventListener("keydown", function(e){
-    var t = e.target, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
+    var t = e.target as HTMLElement, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
     var step = { ArrowUp:-1, ArrowDown:1, ArrowLeft:-1, ArrowRight:1 }[e.key];
     if (step == null && e.key !== "Home" && e.key !== "End") return;
     if (sel){
-      var id = sel.getAttribute("data-cycles-for"), opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
-      if (!pickerOpen[id]){ if (e.key === "ArrowDown"){ e.preventDefault(); sel.querySelector("[data-picker-toggle]").click(); focusQuiet(document.querySelector("[data-cycles-for=\"" + id + "\"] .cycsel-opt.on")); } return; }
+      var id = sel.getAttribute("data-cycles-for")!, opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
+      if (!pickerOpen[id]){ if (e.key === "ArrowDown"){ e.preventDefault(); sel.querySelector<HTMLElement>("[data-picker-toggle]")!.click(); focusQuiet(document.querySelector<HTMLElement>("[data-cycles-for=\"" + id + "\"] .cycsel-opt.on")); } return; }
       var i = opts.indexOf(t);
-      var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step));
+      var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step!));
       e.preventDefault(); focusQuiet(opts[j]); return;
     }
     if (!bar || !t.classList.contains("range-seg")) return;
     var segs = Array.prototype.slice.call(bar.querySelectorAll(".range-seg")), k = segs.indexOf(t);
-    var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step + segs.length) % segs.length;
+    var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step! + segs.length) % segs.length;
     e.preventDefault(); if (m !== k){ segs[m].focus(); segs[m].click(); }
   });
 }
-export function renderMetricPages(ctx){
+export function renderMetricPages(ctx: MetricCtx){
   registerTempGdpPages();
   registerActivityPowerDeficitPages();
   registerHouseholdsValuationPages();

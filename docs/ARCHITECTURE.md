@@ -313,13 +313,13 @@ cloud or scheduled session reads and cannot push.
 ## Why there is a build step
 
 The Artifact and the service worker need one self-contained file, and a person cannot hold a
-fifteen-thousand-line one. **Since V695 the script is ES modules** (`src/js/*.js`, one concern each), bundled by
-esbuild (`tools/bundle.js`) into one IIFE in `main.js`'s place in the manifest, then comment-stripped. Before V695
+fifteen-thousand-line one. **Since V695 the script is ES modules** (`src/js/*.ts` since V702, one concern each), bundled by
+esbuild (`tools/bundle.js`) into one IIFE in `main.ts`'s place in the manifest, then comment-stripped. Before V695
 it was seventeen parts joined into one closure, so any part could read or write any name and the only order was
 the manifest's; now each module says what it imports.
 
 - **A module's top level is declarations and values that need nothing else.** Whatever runs at load and reads
-  another module sits in that module's `boot…()`, and `main.js` calls the boots in order. **The boot order is the
+  another module sits in that module's `boot…()`, and `main.ts` calls the boots in order. **The boot order is the
   semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
   follows every statement that runs at load, boots included, and fails on a value read before it is set.
 - **An import is read-only, so a value that other modules change lives in its owner's store** (V697): `now` in
@@ -330,10 +330,17 @@ the manifest's; now each module says what it imports.
 - **Figures are data, not code** (V697). The hand-kept series are `src/data/series.json`; the FRED histories are
   `src/data/fred.json`, written by the backfill; `data`, `refresh-season` and `history-fred` import them and
   export each series by name. `test/series.test.js` checks that the code reads exactly the keys each file holds.
-- **The modules are type-checked** (V697, `npm run typecheck`, in `check`): TypeScript reads the JavaScript as it
-  is (`checkJs`, inference only, nothing emitted, `strict` off), since annotations would be comments. The browser
-  names the app adds to `window` and the DOM are declared once, in `src/globals.d.ts`. Since V700 the rules that need no annotation are on (`noUnusedLocals`, `noImplicitReturns`, `strictBindCallApply`, `noImplicitThis` and the rest in `tsconfig.json`). `noImplicitAny` and `strictNullChecks` stay off: every untyped parameter is an implicit `any`, and only an annotation, which is a comment, could type it.
-- **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.js` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
+- **The modules are TypeScript, strict** (V702, Keren: "If that is typesetting, then do it"). `src/js/*.ts` uses
+  only erasable syntax (`erasableSyntaxOnly`): annotations, `!`, `as`, generics and type declarations, never an enum
+  or a namespace. So esbuild bundles it by dropping the types, and Node runs it as it is (type stripping), which is
+  how the unit tests import it. V702 was proved by the bundle: the shipped `index.html` was byte-identical before
+  and after the types went in. `npm run typecheck` (in `check`) runs `tsc` with `strict` on. The app's shared shapes
+  (a row, a meter, a point, a cycle, a reading, a chart's geometry) are global types in `src/types.d.ts`; what the
+  app adds to `window` and to DOM elements is in `src/globals.d.ts`; a type only one module uses stays in that module.
+  Types are syntax, not comments, so the no-comments rule holds. The tools that read the source (`load-order`,
+  `uncomment`) parse it after `stripTypeScriptTypes`, which blanks the types and keeps every position; the function
+  sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
+- **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
   any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,

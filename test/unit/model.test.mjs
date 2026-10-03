@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
-import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, seasonGroup } from '../../src/js/model.js';
-import { marketCycles } from '../../src/js/data.js';
-import { sp500MonthlyHistory } from '../../src/js/history-fred.js';
+import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, seasonGroup } from '../../src/js/model.ts';
+import { marketCycles } from '../../src/js/data.ts';
+import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];

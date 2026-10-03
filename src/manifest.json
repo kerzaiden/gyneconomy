@@ -2,6 +2,6 @@
  "page-head.html",
  "styles.css",
  "page-body.html",
- "js/main.js",
+ "js/main.ts",
  "page-tail.html"
 ]

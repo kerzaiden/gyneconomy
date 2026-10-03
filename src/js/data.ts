@@ -1,13 +1,18 @@
 import SERIES from "../data/series.json" with { type: "json" };
-import { MONTHS_SHORT } from "./format.js";
-import { GYN, liveInto, liveIsoOf, merge } from "./live.js";
-import { calendarTodayY } from "./refresh-season.js";
-import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.js";
+import { MONTHS_SHORT } from "./format.ts";
+import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
+import { calendarTodayY } from "./refresh-season.ts";
+import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
+
+export type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
+export type SeasonReading = { body: string; economy: string; next: string; watch: string[]; fromTheBook: { text: string; title?: string }[] };
+export type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
+export type FrameworkRow = { indicator: string; body: string; economy: string; category: string };
 
 export var CAPE_FAIR = 17;
 export var VIX_CALM = 20, VIX_FEAR = 30;
 
-export var now = {
+export var now: NowStore = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
     asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
@@ -50,7 +55,7 @@ export var now = {
   impression:"Two independent measures of the same thing, both at or near the richest readings ever recorded: capital is worth 2.5 times the economy that produces it, and prices are 41 times a decade of earnings. Valuations are close to useless as a timing signal \u2014 they have been stretched for years and the market kept rising. What it reliably says is what the next decade's returns are likely to look like from here, and that a shock arriving at this price has further to fall before anything looks cheap.",
   src:[{t:"Federal Reserve Z.1 via FRED \u2014 Nonfinancial corporate equities, market value (NCBEILQ027S)", u:"https://fred.stlouisfed.org/series/NCBEILQ027S"},{t:"BEA via FRED \u2014 Gross Domestic Product, nominal (GDP)", u:"https://fred.stlouisfed.org/series/GDP"},{t:"Robert Shiller \u2014 U.S. stock market data and CAPE ratio since 1871 (Yale)", u:"https://shillerdata.com/"}]
 },
-  vixRow: undefined,
+  vixRow: undefined as unknown as Row,
   vix3mClose: 17.61
 };
 // ---- DATA (single source of truth — edit here on refresh) ----
@@ -58,7 +63,7 @@ var YIELD_CURVE_ASOF = "2026-09-24";
 export function curveAsOf(){
   return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
 }
-function monthsToCurve(ym){
+function monthsToCurve(ym: string){
   var a = curveAsOf();
   return (+a.slice(0, 4) - +ym.slice(0, 4)) * 12 + (+a.slice(5, 7) - +ym.slice(5, 7));
 }
@@ -74,7 +79,7 @@ export var t10y3mRecessions = [
   {from:"2020 Q1", to:"2020 Q2", label:"2020"}
 ];
 // ---- Un-inversion → recession lag, computed from actual history (not a forecasting model or a survey) ----
-export var uninvLagCycles = [
+export var uninvLagCycles: UninvLagCycle[] = [
   {cycle:"1989–91", uninv:"Sep 1989 – Jan 1990", recession:"Jul 1990", lag:"6–10 mo"},
   {cycle:"2001", uninv:"Jan–Feb 2001", recession:"Mar 2001", lag:"1–2 mo"},
   {cycle:"2007–09", uninv:"Jun–Aug 2007", recession:"Dec 2007", lag:"4–6 mo"},
@@ -85,9 +90,9 @@ export var uninvLagToday = {
   months: 0, altMonths: 0, altFrom: "September 2025",
   meter: { value: 0, min: 0, max: 26, optimal: {from: 1, to: 10, label: "1–10 mo (past cycles)"} }
 };
-export var gdpSrc = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)", u:"https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"},
+export var gdpSrc: Src[] = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)", u:"https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"},
   {t:"BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)", u:"https://fred.stlouisfed.org/series/A191RL1A225NBEA"}];
-var labPanel = [
+var labPanel: Row[] = [
   {
     sub:"gross federal debt ÷ GDP",
     meter:{min:0, max:125.9, value:null, optimal:{lte:70, label:"\u2264 70%"},
@@ -116,7 +121,7 @@ var labPanel = [
     id:"sheet-marker-deficit"
   }
 ];
-export function labRow(id){ return labPanel.filter(function(r){ return r.id === id; })[0]; }
+export function labRow(id: string): Row { return labPanel.filter(function(r){ return r.id === id; })[0]; }
 export var PRODUCTIVITY_TREND = 2.1, PRODUCTIVITY_SLOWDOWN = 1.3;
 // ---- Consumer confidence ----
 export var CONFIDENCE_LINE = 100;
@@ -125,7 +130,7 @@ export var CONFIDENCE_LINE = 100;
 export var DEF_FROM_YEAR = 1946;
 export var deficitHistory = SERIES.deficitHistory;
 export var DEF_MEAN = deficitHistory.reduce(function(a, b){ return a + b; }, 0) / deficitHistory.length;
-export var DEF_RECESSION_FY = {1949:1,1950:1,1954:1,1958:1,1960:1,1961:1,1970:1,1971:1,1974:1,1975:1,
+export var DEF_RECESSION_FY: Record<number, number> = {1949:1,1950:1,1954:1,1958:1,1960:1,1961:1,1970:1,1971:1,1974:1,1975:1,
                         1980:1,1981:1,1982:1,1983:1,1990:1,1991:1,2001:1,2002:1,2008:1,2009:1,2020:1};
 function checkDeficitHistory(){
   var hi = Math.max.apply(null, deficitHistory), lo = Math.min.apply(null, deficitHistory);
@@ -147,14 +152,14 @@ function checkDesireWindow(){
   if (hi.toFixed(2) !== "4.61" || lo.toFixed(2) !== "2.59")
     console.warn("Desire: window extremes moved — expected 4.61 / 2.59, got " + hi + " / " + lo);
 }
-export function hyAt(i){
+export function hyAt(i: number){
   var t = hyDates[i];
   return { y:2000 + +t.slice(0, 2), m:+t.slice(2, 4), d:+t.slice(4, 6) };
 }
-export function hyLabel(i){ var t = hyAt(i); return MONTHS_SHORT[t.m - 1] + " " + t.d + " " + t.y; }
-export function hyNum(i){ var a = hyAt(i); return a.y * 10000 + a.m * 100 + a.d; }
+export function hyLabel(i: number){ var t = hyAt(i); return MONTHS_SHORT[t.m - 1] + " " + t.d + " " + t.y; }
+export function hyNum(i: number){ var a = hyAt(i); return a.y * 10000 + a.m * 100 + a.d; }
 export function hyQuarters(){
-  var out = [];
+  var out: { k: string; v: number }[] = [];
   hyDates.forEach(function(t, i){
     var a = hyAt(i), k = a.y + " Q" + Math.ceil(a.m / 3), last = out[out.length - 1];
     if (last && last.k === k) last.v = hyOas[i]; else out.push({ k:k, v:hyOas[i] });
@@ -162,8 +167,8 @@ export function hyQuarters(){
   return out;
 }
 export function hyQuarterEnds(){ return hyQuarters().map(function(o){ return o.v; }); }
-export var capeHistory = SERIES.capeHistory;
-export var longCycleSrc = [
+export var capeHistory: { y: number; v: number | null }[] = SERIES.capeHistory;
+export var longCycleSrc: Src[] = [
   {t:"CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)", u:"https://www.cbo.gov/publication/62105"},
   {t:"Treasury and BEA via FRED — Total public debt, % of GDP, quarterly, 1966– (GFDEGDQ188S; today's reading)", u:"https://fred.stlouisfed.org/series/GFDEGDQ188S"},
   {t:"OMB via FRED — Gross federal debt, % of GDP, FY1939– (GFDGDPA188S; the record and the band)", u:"https://fred.stlouisfed.org/series/GFDGDPA188S"},
@@ -181,48 +186,48 @@ export var longCycleSrc = [
 function syncGrossDebt(){
   var row = labRow("sheet-metric-debt"), last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
   var ww2 = fiscalHistory.gross.filter(function(d){ return d.y === 1946; })[0].v, v = Math.round(last.v * 10) / 10;
-  var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill = { q:q, v:v.toFixed(1), ww2:ww2.toFixed(1), x:(v / row.meter.optimal.lte).toFixed(2) };
+  var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill: Record<string, string> = { q:q, v:v.toFixed(1), ww2:ww2.toFixed(1), x:(v / row.meter.optimal!.lte!).toFixed(2) };
   row.meter.value = v;
   row.flagValue = fill.v + "%";
   row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
   row.noteTpl = row.noteTpl || row.note;
-  row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m, k){ return fill[k] != null ? fill[k] : m; });
+  row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m: string, k: string){ return fill[k] != null ? fill[k] : m; });
 }
 function checkGrossDebt(){
   if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
-  var row = labRow("sheet-metric-debt"), by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
-  var g = by(fiscalHistory.gross), bad = [];
+  var row = labRow("sheet-metric-debt"), by = function(a: { y: number; v: number }[]){ var o: Record<number, number> = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
+  var g = by(fiscalHistory.gross), bad: string[] = [];
   var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
   if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
   var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
-  if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
+  if (n !== 50 || Math.round(sum / n) !== row.meter.optimal!.lte) bad.push("band " + row.meter.optimal!.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
   if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
 }
-export function curveAt(m){
+export function curveAt(m: string): number | null {
   var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0];
   return h && h.y != null ? h.y : null;
 }
-export function curveSpread(){ return curveAt("10Y") - curveAt("3M"); }
+export function curveSpread(){ return curveAt("10Y")! - curveAt("3M")!; }
 export function policyDirection(){
   return /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
 }
 export function syncCapeHistory(){
-  var last = capeHistory[capeHistory.length - 1], v = valRow("cape").meter.value;
+  var last = capeHistory[capeHistory.length - 1], v = valRow("cape")!.meter.value;
   if (last.y === calendarTodayY) last.v = v; else capeHistory.push({ y:calendarTodayY, v:v });
 }
-export function valRow(k){
+export function valRow(k: string): Row | null {
   for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
   return null;
 }
 export var PULSE_PRE2008 = 1.857;
 export var M2V_FROM_YEAR = 1959;
 export var m2vHistory = SERIES.m2vHistory.map(function(n){ return n / 1000; });
-export var PRODUCTIVITY_SRC = [
+export var PRODUCTIVITY_SRC: Src[] = [
   {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
   {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
   {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
 ];
-export var CONFIDENCE_SRC = [
+export var CONFIDENCE_SRC: Src[] = [
   {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},
   {t:"OECD Data Explorer \u2014 Composite leading indicators: consumer confidence (CCICP), United States, monthly", u:"https://data-explorer.oecd.org/vis?df[ds]=DisseminateFinalDMZ&df[id]=DSD_STES%40DF_CLI&df[ag]=OECD.SDD.STES"}
 ];
@@ -241,7 +246,7 @@ export var unempHistory = SERIES.unempHistory.map(function(t, i){
   return { m:y + "-" + ("0" + mo).slice(-2), v:t };
 });
 function checkUnemploymentHistory(){
-  var vs = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
+  var vs = unempHistory.filter(function(d): d is { m: string; v: number } { return d.v != null; }).map(function(d){ return d.v; });
   var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
   if (unempHistory.length !== 944 || Math.abs(hi - 14.8) > 1e-9 || Math.abs(lo - 2.5) > 1e-9 ||
       unempHistory[0].m !== "1948-01" || unempHistory[unempHistory.length - 1].m !== "2026-08")
@@ -265,7 +270,7 @@ function checkMoneyStock(){
   if (m2Level.length !== 271 || Math.abs(hi - 25.61) > 0.02 || Math.abs(lo + 4.64) > 0.02)
     console.warn("m2Level failed its check", m2Level.length, hi.toFixed(2), lo.toFixed(2));
 }
-export var seasonReading = {
+export var seasonReading: Record<Season, SeasonReading> = {
   summer: {
     body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
     economy: "Overheat. Growth is still running but inflation sits above target, so the central bank is leaning against it.",
@@ -309,7 +314,7 @@ export var seasonReading = {
     fromTheBook: []
   }
 };
-export var frameworkRows = [
+export var frameworkRows: FrameworkRow[] = [
   {indicator:"Hormones", body:"Rising estrogen / LH surge", economy:"Credit — money supply, lending growth", category:"Leading"},
   {indicator:"Cervical fluid", body:"Cervical mucus change", economy:"Credit spreads / yield curve", category:"Leading"},
   {indicator:"Psychology", body:"Emotional state", economy:"Investor sentiment, asset valuations", category:"Leading"},
@@ -318,7 +323,7 @@ export var frameworkRows = [
   {indicator:"Activity", body:"Physical activity", economy:"Labor / employment", category:"Lagging"},
   {indicator:"Temperature", body:"Basal body temperature", economy:"Inflation", category:"Lagging"}
 ];
-export var VIX_CONVENTION = [
+export var VIX_CONVENTION: Src[] = [
   {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
   {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
 ];
@@ -350,12 +355,12 @@ export var curveNoteFull = "The 30-day VIX divided by the 3-month VIX \u2014 the
   "wrong. Both legs are Cboe indices carried by FRED and published daily; the ratio is computed here from " +
   "the same VIX this page prints.";
 export var VOL_JOIN = "1990-01";
-export var sp500AnnualReturnSource = [
+export var sp500AnnualReturnSource: Src[] = [
   {t:"S&P Dow Jones Indices — S&P 500 (index originator; total-return figures)", u:"https://www.spglobal.com/spdji/en/indices/equity/sp-500/"},
   {t:"S&P 500 total returns by year (Slickcharts' compilation of S&P DJI's figures)", u:"https://www.slickcharts.com/sp500/returns"},
   {t:"NYU Stern (Damodaran) — Historical returns on stocks, bonds and bills, 1928– (the record before 1990, and an independent cross-check after)", u:"https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"}
 ];
-export var marketCycles = [
+export var marketCycles: Cycle[] = [
   {
     from:1928, to:1932,
     name:"Great Depression Cycle",
@@ -472,12 +477,12 @@ export var marketCycles = [
   }
 ];
 export var typicalCycleYears = 6;
-export var typicalCycleSrc = [
+export var typicalCycleSrc: Src[] = [
   {t:"First Trust — History of U.S. Bear & Bull Markets since 1942 (bull 51.0 months, bear 11.1, 1962–2022)", u:"https://www.ftportfolios.com/Commentary/MarketCommentary/2019/6/4/history-of-us-bear--bull-markets"},
   {t:"Fisher Investments — Stock Market Cycles (bull about 61 months, bear about 16, 1946–2018)", u:"https://www.fisherinvestments.com/en-us/resource-library/market-cycles"}
 ];
 
-export var t10y3mHistory, t10y2yHistory, t3mYieldHistory, t2yYieldHistory, t5yYieldHistory, t10yYieldHistory, t30yYieldHistory, usRealGdpGrowth, DEF_1983, sp500AnnualReturns, sp500Years;
+export var t10y3mHistory: QuarterPoint[], t10y2yHistory: QuarterPoint[], t3mYieldHistory: QuarterPoint[], t2yYieldHistory: QuarterPoint[], t5yYieldHistory: QuarterPoint[], t10yYieldHistory: QuarterPoint[], t30yYieldHistory: { q: string; v: number | null }[], usRealGdpGrowth: Record<string, number>, DEF_1983: number, sp500AnnualReturns: Record<string, number>, sp500Years: YearPoint[];
 
 export function bootData(){
   liveInto("yieldCurve");

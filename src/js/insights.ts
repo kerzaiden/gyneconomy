@@ -1,10 +1,15 @@
-import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.js";
-import { moreRow, ui } from "./dom.js";
-import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.js";
-import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.js";
-import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.js";
-import { indOf } from "./readings.js";
-import { ROSTER_BY } from "./roster.js";
+import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.ts";
+import { moreRow, ui } from "./dom.ts";
+import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.ts";
+import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
+import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.ts";
+import { indOf } from "./readings.ts";
+import { ROSTER_BY } from "./roster.ts";
+import type { CycleModel, Mood } from "./model.ts";
+
+type WeatherRow = { name: string; from: number; closed: boolean; g: number; p: number; gap: number };
+type Story = NonNullable<ReturnType<typeof cycleStory>>;
+type StoryBeat = { x: Mood; verb: string; tag?: string };
 
 function insightCirculation(){
   var vel = m2vHistory, n = vel.length;
@@ -17,13 +22,13 @@ function insightCirculation(){
   var offLow = (vel[n - 1] / lo - 1) * 100;
   var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
   if (!volInd || !volInd.meter) return "";
-  var volPct = volInd.meter.value;
+  var volPct = volInd.meter.value!;
   var up = volPct > 0, vup = velChg > 0;
   var name = up && vup  ? "Growing and moving faster"
            : up && !vup ? "Added faster than it is used"
            : !up && vup ? "Circulating faster on a smaller stock"
                         : "Draining and slowing";
-  var f1 = function(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
+  var f1 = function(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(1) + "%"; };
   var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they ' +
     'are cardiac output — how much money there is times how hard each unit works. Pressure is the ' +
     'resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
@@ -47,13 +52,13 @@ function insightWeather(){
     var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
     if (!g || !p) return null;
     return { name:c.name, from:c.from, closed:!c.ongoing, g:g.total, p:p.total, gap:p.total - g.total };
-  }).filter(Boolean);
+  }).filter(Boolean) as WeatherRow[];
   if (rows.length < 3) return "";
   var now = rows[rows.length - 1];
   var past = rows.slice(0, -1);
   if (!past.length) return "";
-  var f1 = function(v){ return v.toFixed(1) + "%"; };
-  var absGap = function(r){ return Math.abs(r.gap); };
+  var f1 = function(v: number){ return v.toFixed(1) + "%"; };
+  var absGap = function(r: WeatherRow){ return Math.abs(r.gap); };
   var tightest = past.reduce(function(a, b){ return absGap(b) < absGap(a) ? b : a; });
   var widest = rows.reduce(function(a, b){ return absGap(b) > absGap(a) ? b : a; });
   var GAP_BAND = 1.5;
@@ -61,7 +66,7 @@ function insightWeather(){
   for (var i = rows.length - 1; i >= 0; i--){ if (rows[i].gap > GAP_BAND) run++; else break; }
   var ORD = ["", "", "second", "third", "fourth", "fifth", "sixth"];
   var NUM = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-  var spell = function(n){ return NUM[n] || String(n); };
+  var spell = function(n: number){ return NUM[n] || String(n); };
   var lead = now.gap > GAP_BAND ? "Prices are running ahead of output"
            : now.gap < -GAP_BAND ? "The economy is growing into its prices"
                                  : "Prices and output are keeping pace";
@@ -79,19 +84,19 @@ function insightWeather(){
   return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
          lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + '</section>';
 }
-function seasonCards(m){
+function seasonCards(m: CycleModel){
   var r = seasonReading[m.season] || {};
   return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") +
     (r.body ? hiCard("In the body", "", r.body) : "") +
     (r.next ? hiCard("What usually comes next", "", r.next) : "");
 }
-function marketCycleCard(m){
-  var years = sp500Years.filter(function(d){ return d.y >= m.era.from && d.y <= m.endYear; });
+function marketCycleCard(m: CycleModel){
+  var years = sp500Years.filter(function(d: YearPoint){ return d.y >= m.era.from && d.y <= m.endYear; });
   if (!years.length) return "";
-  var bear = years.filter(function(d){ return d.v < 0; }), before = sp500Years.filter(function(d){ return d.y < m.era.from && d.v < 0; }).pop();
-  var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d){
+  var bear = years.filter(function(d: YearPoint){ return d.v < 0; }), before = sp500Years.filter(function(d: YearPoint){ return d.y < m.era.from && d.v < 0; }).pop();
+  var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d: YearPoint){
     return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%"; }).join(", ");
-  var n = function(k, what){ return (k ? (["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][k - 1] || k) : "no") + " " + what + (k === 1 || !k ? " year" : " years"); };
+  var n = function(k: number, what: string){ return (k ? (["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][k - 1] || k) : "no") + " " + what + (k === 1 || !k ? " year" : " years"); };
   var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
   return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
     ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
@@ -109,19 +114,19 @@ var MOOD_SRC = [
   {t:"CNN Business \u2014 Fear &amp; Greed Index: one 0\u2013100 reading from extreme fear to extreme greed", u:"https://www.cnn.com/markets/fear-and-greed"},
   {t:"Russell Investments \u2014 the cycle of market emotions", u:"https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"}
 ];
-function curvePath(pts){
-  var f = function(p){ return p[0].toFixed(1) + "," + p[1].toFixed(1); };
+function curvePath(pts: number[][]){
+  var f = function(p: number[]){ return p[0].toFixed(1) + "," + p[1].toFixed(1); };
   return pts.map(function(p, i){
     if (!i) return "M" + f(p);
     var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
     return "C" + f([b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6]) + " " + f([p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6]) + " " + f(p);
   }).join("");
 }
-function moodCallout(x, y, lines, from, to){
+function moodCallout(x: number, y: number, lines: string[], from: number, to: number){
   return '<path class="mood-arrow" d="M' + x + ',' + from + 'V' + to + 'M' + (x - 7) + ',' + (to + (to < from ? 12 : -12)) + 'L' + x + ',' + to + 'L' + (x + 7) + ',' + (to + (to < from ? 12 : -12)) + '"/>' +
     lines.map(function(t, i){ return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + '</text>'; }).join("");
 }
-function moodCycleSvg(now){
+function moodCycleSvg(now: string){
   var pts = MOOD_CHART.map(function(s){ return [+s[1], +s[2]]; });
   var out = ['<path class="mood-line" d="' + curvePath([[156, 322]].concat(pts, [[995, 272]])) + '"/>',
     moodCallout(362, 430, ["Point of maximum", "financial risk"], 400, 160), moodCallout(745, 195, ["Point of maximum", "financial opportunity"], 245, 452)];
@@ -133,7 +138,7 @@ function moodCycleSvg(now){
   return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' +
     (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
 }
-function moodInfo(d){
+function moodInfo(d: Mood){
   return '<h4>Her mood</h4>' + facts([moodFigures(d),
     "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
     "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor\u2019s euphoria is not another\u2019s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.",
@@ -142,13 +147,13 @@ function moodInfo(d){
     "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month."
   ]) + srcBlock(MOOD_SRC);
 }
-function moodFigures(d){
-  var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+function moodFigures(d: Mood){
+  var r = Math.round, ago = d.ago ? ", " + (d.change! > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
   return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) +
-    " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) +
+    " that ranks " + r(d.pct!) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) +
     ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
 }
-function moodCard(d){
+function moodCard(d: Mood){
   var c = ui.eraOpen || currentEra, s = cycleStory(c);
   return hiCard("She\u2019s in " + d.word, "", s ? c.name + ", " + c.from + "\u2013" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
 }
@@ -158,9 +163,9 @@ function insightMood(){
   if (!d || !d.word) return highlightsHtml([intro], "", "");
   return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo(d)));
 }
-function storyBeats(s, open){
-  var ev = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
-  [[s.hi, "her high"], [s.lo, "her low"]].forEach(function(p){
+function storyBeats(s: Story, open: boolean | undefined){
+  var ev: StoryBeat[] = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
+  ([[s.hi, "her high"], [s.lo, "her low"]] as [Mood, string][]).forEach(function(p){
     var same = ev.filter(function(e){ return e.x.m === p[0].m; })[0];
     if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1];
     else ev.push({ x:p[0], verb:p[0] === s.hi ? "rose to" : "fell to", tag:p[1] });
@@ -169,14 +174,14 @@ function storyBeats(s, open){
   var parts = ev.map(function(e){ return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")"; });
   return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
 }
-function storyText(s, open){
+function storyText(s: Story, open: boolean | undefined){
   return storyBeats(s, open) + " Most of it she spent in " +
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
-export var INSIGHT = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
-export function replaceInsights(c){
-  var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
+export var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
+export function replaceInsights(c: { key: string }){
+  var boxes: Element[] = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
   if (!boxes.length || !INSIGHT[c.key]) return;
-  boxes.slice(1).forEach(function(b){ b.parentNode.removeChild(b); });
+  boxes.slice(1).forEach(function(b){ b.parentNode!.removeChild(b); });
   boxes[0].outerHTML = INSIGHT[c.key]();
 }

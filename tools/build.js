@@ -18,11 +18,11 @@ const { bundle, modules } = require('./bundle');
 const parts = manifest.map(name => {
   const p = path.join(SRC, name);
   if (!fs.existsSync(p)) { console.error('missing part: src/' + name); process.exit(2); }
-  return /\.js$/.test(name) ? bundle(p) : fs.readFileSync(p, 'utf8');
+  return /\.ts$/.test(name) ? bundle(p) : fs.readFileSync(p, 'utf8');
 });
 
 const joined = parts.join('\n');
-const sources = manifest.filter(n => !/\.js$/.test(n)).map(n => ({ name: n, text: fs.readFileSync(path.join(SRC, n), 'utf8') }))
+const sources = manifest.filter(n => !/\.ts$/.test(n)).map(n => ({ name: n, text: fs.readFileSync(path.join(SRC, n), 'utf8') }))
   .concat(modules().map(f => ({ name: 'js/' + path.basename(f), text: fs.readFileSync(f, 'utf8') })));
 
 const leak = joined.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g);

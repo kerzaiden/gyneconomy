@@ -1,18 +1,20 @@
-import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.js";
-import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl, ui } from "./dom.js";
-import { GYN } from "./live.js";
-import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.js";
-import { fedFundsHistory, volatilityHistory } from "./history-fred.js";
-import { calendarTodayY } from "./refresh-season.js";
-import { curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
-import { cycleQtrIdx, cycleSlice } from "./model.js";
-import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
-import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.js";
-import { fedFundsHistoryChart } from "./history-charts.js";
-import { drawsPage, spreadPick } from "./render-core.js";
+import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.ts";
+import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl, ui } from "./dom.ts";
+import { GYN } from "./live.ts";
+import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
+import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
+import { calendarTodayY } from "./refresh-season.ts";
+import { curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { cycleQtrIdx, cycleSlice } from "./model.ts";
+import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.ts";
+import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.ts";
+import { fedFundsHistoryChart } from "./history-charts.ts";
+import { drawsPage, spreadPick } from "./render-core.ts";
+type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
+type VolPoint = (typeof volatilityHistory)[number];
 
 // ---- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----
-function spreadSeries(){
+function spreadSeries(): Record<string, SpreadSeries>{
   return {
     "3m": {
       title: "10-Year minus 3-Month spread since 2005",
@@ -66,12 +68,12 @@ function renderSpreadHistory(){
   var series = spreadSeries();
   addSources(series["3m"].sources); addSources(series["2y"].sources);
 
-  function qIndex(data, q){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
-  function x(i, n){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
-  function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
-  function pts(v){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; }
+  function qIndex(data: typeof t10y3mHistory, q: string){ for (var i=0;i<data.length;i++){ if (data[i].q === q) return i; } return -1; }
+  function x(i: number, n: number){ var h = innerW / (2 * Math.max(1, n)); return padL + h + (innerW - 2 * h) * i / (n - 1); }
+  function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
+  function pts(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2) + " pts"; }
 
-  function draw(key, from, to){
+  function draw(key: string, from?: number, to?: number){
     var s = series[key];
     var data = s.data;
     if (from != null) data = data.slice(from, to == null ? undefined : to);
@@ -92,7 +94,7 @@ function renderSpreadHistory(){
     appendSvgMarkup(svg, chartAxes({
       x0:padL, x1:xR, top:(yTop - AXIS.LEG - AXIS.READ), bot:yBot, y:y, noGridAt:0,
       ticks:[-2, -1, 0, 1, 2, 3, 4],
-      fmt:function(v){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; }
+      fmt:function(v: number){ return (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(v) + "%"; }
     }));
     svg.appendChild(el("line", { x1:padL - AXIS.L, x2:xR + AXIS.R, y1:y(0), y2:y(0), class:"spread-history-zero" }));
 
@@ -124,7 +126,7 @@ function renderSpreadHistory(){
     svg.appendChild(el("line", { x1:0, x2:0, y1:padT, y2:H - padB, class:"hist-cross" }));
     publishGeom("spreadHistory", { vals:data, n:data.length, W:W, T:yTop, B:yBot,
                      L:x(0, data.length), R:x(data.length - 1, data.length),
-                     at:function(d){ return qLabel(d.q); },
+                     at:function(d: { q: string }){ return qLabel(d.q); },
                      fmt:pts,
                      refs:[{ label:"NBER recession", swatch:"var(--border-strong)" },
                            { label:"Normal",         swatch:"var(--good)" },
@@ -143,7 +145,7 @@ function renderSpreadHistory(){
     btn.addEventListener("click", function(){
       document.querySelectorAll(".spread-toggle-btn").forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
       btn.classList.add("active"); btn.setAttribute("aria-selected","true");
-      draw(btn.getAttribute("data-series"));
+      draw(btn.getAttribute("data-series")!);
     });
   });
 
@@ -191,7 +193,7 @@ function renderHorizonPage(){
     if (ui.drawSpreadWindow) ui.drawSpreadWindow(spreadPick, from, to);
     var tr = byId("ylm-trend");
     if (tr){
-      var w = [];
+      var w: number[] = [];
       data.slice(from, to).forEach(function(d){ if (d.v != null) w.push(d.v); });
       tr.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
         { rising:"steepening", falling:"flattening" });
@@ -202,7 +204,7 @@ function renderHorizonPage(){
 }
 function spreadInsights(){
   var r = horizonRead;
-  var sgn = function(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); };
+  var sgn = function(v: number){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2); };
   var fromLong = r.dLong >= -r.dShort;
   var cards = [];
   cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects ' +
@@ -210,7 +212,7 @@ function spreadInsights(){
     'forecast of its own next season — a mood, not a measurement taken off it.</p>');
   cards.push(hiCard(r.word, r.state,
     "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
-    " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " +
+    " points over four quarters, from " + sgn(r.was!) + " to " + sgn(r.q.v) + " — the 10-year " +
     (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " +
     (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
     (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
@@ -230,7 +232,7 @@ function spreadInsights(){
 }
 // ---- RENDER: Valuation (slow) ----
 function renderValuationTag(){
-  var cape = valRow("cape");
+  var cape = valRow("cape")!;
   histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
   addSources(now.valuation.src);
 }
@@ -238,7 +240,7 @@ function renderValuationTag(){
 function renderHormones(){
   var host = byId("hormones-history"); if (!host || !fedFundsHistory.length) return;
   var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
-  function ffCycleMonths(c){
+  function ffCycleMonths(c: Cycle){
     var to = c.to || calendarTodayY, a = -1, b = -1;
     fedFundsHistory.forEach(function(d, i){
       var y = parseInt(d.m.slice(0, 4), 10);
@@ -262,8 +264,8 @@ function renderHormones(){
       '<div id="hormones-trend"></div></div>';
     put("hormones-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"),
                                     null, true, { rising:"tightening", falling:"easing" }));
-    var box = bar.querySelector(".page-chart");
-    refitHistory(box, function(w){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
+    var box = bar.querySelector<HTMLElement>(".page-chart");
+    refitHistory(box, function(w: number){ return fedFundsHistoryChart(w, from, { to:to, cycle:!!span }); });
     attachHistory(box, "hormones-hist-tooltip", "fedFundsHistoryChart");
   }
   drawsPage("sheet-sign-hormones", draw);
@@ -286,7 +288,7 @@ function renderHormones(){
 
   /* ---- Keren, V609: "can you put that into insights? The hormones page doesn't have an insight section. ---- */
   function ffPeaks(){
-    var out = [], mode = "up", ext = fedFundsHistory[0];
+    var out: typeof fedFundsHistory = [], mode = "up", ext = fedFundsHistory[0];
     fedFundsHistory.forEach(function(d){
       if (mode === "up"){
         if (d.v > ext.v) ext = d;
@@ -298,7 +300,7 @@ function renderHormones(){
     });
     return out;
   }
-  var pk = ffPeaks(), yOf = function(d){ return d.m.slice(0, 4); };
+  var pk = ffPeaks(), yOf = function(d: { m: string }){ return d.m.slice(0, 4); };
   var ins = byId("hormones-insights");
   if (ins && pk.length > 2){
     var last = pk[pk.length - 1], prev = pk[pk.length - 2];
@@ -345,10 +347,10 @@ function renderVolatility(){
     var line = VIX_CALM;
     function opts(){
       return { vals:vals, mid:line, midLabel:"calm below " + line,
-        fmt:function(v){ return v.toFixed(1); },
-        tickFmt:function(v){ return String(Math.round(v)); },
-        at:function(d){ return atMonth(d) + (d.m < VOL_JOIN ? " \u00b7 VXO" : ""); },
-        xLabel:function(d){
+        fmt:function(v: number){ return v.toFixed(1); },
+        tickFmt:function(v: number){ return String(Math.round(v)); },
+        at:function(d: VolPoint){ return atMonth(d) + (d.m < VOL_JOIN ? " \u00b7 VXO" : ""); },
+        xLabel:function(d: VolPoint){
           var y = parseInt(d.m.slice(0, 4), 10);
           return (d.m.slice(5) === "01" && years.indexOf(y) !== -1) ? "\u2019" + String(y).slice(2) : "";
         },
@@ -365,8 +367,8 @@ function renderVolatility(){
       histTip("fear-hist-tooltip") +
       '<div id="fear-trend"></div></div>';
     put("fear-trend", trendPill(fit, null, true));
-    var box = host.querySelector(".page-chart");
-    refitHistory(box, function(w){ return divergeChart(opts(), w); });
+    var box = host.querySelector<HTMLElement>(".page-chart");
+    refitHistory(box, function(w: number){ return divergeChart(opts(), w); });
     attachHistory(box, "fear-hist-tooltip", "divergeChart");
     volatilityHighlights(VOL_Y0);
   }
@@ -374,9 +376,9 @@ function renderVolatility(){
   drawVolatility();
   addSources(now.sentiment.src.concat(VIX_CONVENTION));
 }
-function volatilityHighlights(y0){
+function volatilityHighlights(y0: number){
   var hl = byId("curve-highlights"); if (!hl || !volatilityHistory.length) return;
-  var m = now.vixRow.meter, v = m.value, tag = volatilityTag();
+  var m = now.vixRow!.meter, v = m.value!, tag = volatilityTag();
   var top = volatilityHistory.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var vixOnly = volatilityHistory.filter(function(d){ return d.m >= VOL_JOIN; });
   var vixTop = vixOnly.reduce(function(a, d){ return d.v > a.v ? d : a; }, vixOnly[0]);
@@ -398,15 +400,15 @@ function volatilityHighlights(y0){
         ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like \u2014 and inversions cluster near bottoms."
         : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
   hl.innerHTML = highlightsHtml([lede,
-    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow.note)), tag.state, nowTxt),
+    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow!.note)), tag.state!, nowTxt),
     hiCard("Against the record", "", recTxt),
-    hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt)]);
+    hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state!, shapeTxt)]);
 }
 // ---- RENDER: Analysis subjects — one headline figure per collapsible section ----
 function renderSubjectRows(){
-  function spark(key, html){ put("subj-spark-" + key, html || ""); }
-  function say(key, text){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
-  function set(key, valueHtml, contextHtml){
+  function spark(key: string, html: string){ put("subj-spark-" + key, html || ""); }
+  function say(key: string, text: string){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
+  function set(key: string, valueHtml: string, contextHtml: string){
     put("subj-value-" + key, valueHtml);
     var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
   }
@@ -415,7 +417,7 @@ function renderSubjectRows(){
 
   put("subj-ring-sentiment", volatilityRing());
   var volTag = volatilityTag();
-  set("sentiment", now.vixRow.flagValue +
+  set("sentiment", now.vixRow!.flagValue +
     '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + '</span>', "");
   say("sentiment", "");
   spark("sentiment", "");
@@ -423,13 +425,13 @@ function renderSubjectRows(){
 
 }
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
-export function setTopbar(title, onBack){
-  byId("topbar-title").textContent = title;
+export function setTopbar(title: string, onBack?: (() => void) | null){
+  byId("topbar-title")!.textContent = title;
   ui.topbarBack = onBack || null;
-  byId("topbar-back").hidden = !onBack;
+  byId("topbar-back")!.hidden = !onBack;
 }
 
-export var cycleViewEl;
+export var cycleViewEl: HTMLElement | null;
 
 export function bootRenderPages(){
   GYN.step("renderSpreadHistory", renderSpreadHistory, "mixed");
@@ -447,5 +449,5 @@ export function bootRenderPages(){
   GYN.step("renderSubjectRows", renderSubjectRows, "build");
   renderSubjectRows();
   cycleViewEl = byId("cycle-view");
-  byId("topbar-back").addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
+  byId("topbar-back")!.addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
 }

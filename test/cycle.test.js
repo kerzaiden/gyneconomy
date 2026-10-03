@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 const fs = require('fs'), path = require('path');
+const { plainJs } = require('../tools/source');
 
-const SRC = fs.readFileSync(path.join(__dirname, '..', 'src/js/model.js'), 'utf8');
+const SRC = plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/model.ts'), 'utf8'));
 function lift(names, env) {
-  const win = /\n(?:export )?(var GROWTH_WINDOW = [^\n]*;)/.exec(SRC);
-  if (!win) throw new Error('the growth window is not in model.js');
+  const win = /\n(?:export )?(var GROWTH_WINDOW\s*= [^\n]*;)/.exec(SRC);
+  if (!win) throw new Error('the growth window is not in model.ts');
   let out = win[1] + '\n' + Object.keys(env || {}).map(k => 'var ' + k + ' = __env.' + k + ';\n').join('');
   for (const n of names) {
     const found = new RegExp('^(?:export )?function ' + n + '\\(', 'm').exec(SRC);
     const start = found ? SRC.indexOf('function ', found.index) : -1;
-    if (start < 0) throw new Error('not found in model.js: ' + n);
+    if (start < 0) throw new Error('not found in model.ts: ' + n);
     let i = SRC.indexOf('{', start), depth = 0, j = i;
     for (; j < SRC.length; j++) {
       if (SRC[j] === '{') depth++;
@@ -71,8 +72,8 @@ console.log('\nThe growth window is said one way\n');
 }
 console.log('\nProductivity\u2019s word follows the two BLS lines its note cites\n');
 {
-  const consts = /\n(?:export )?(var PRODUCTIVITY_TREND = [^\n]*;)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8'))[1];
-  const DATA = fs.readFileSync(path.join(__dirname, '..', 'src/js/readings.js'), 'utf8');
+  const consts = /\n(?:export )?(var PRODUCTIVITY_TREND\s*= [^\n]*;)/.exec(plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/data.ts'), 'utf8')))[1];
+  const DATA = plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/readings.ts'), 'utf8'));
   const start = DATA.indexOf('function productivityWord(');
   let i = DATA.indexOf('{', start), d = 0, j = i;
   for (; j < DATA.length; j++) { if (DATA[j] === '{') d++; else if (DATA[j] === '}') { d--; if (!d) break; } }
@@ -91,7 +92,7 @@ console.log('\nmoodAt \u2014 each reading ranked against its own past, turned to
   const env = { QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' },
     capeHistory: ramp(30, i => ({ y: 1985 + i, v: i })), buffettHistory: ramp(80, i => ({ q: (1990 + Math.floor(i / 4)) + ' Q' + (i % 4 + 1), v: i })),
     volatilityHistory: months(24).map(d => Object.assign({}, d, { v: 24 - d.v })), confidenceHistory: months(24), sp500MonthlyHistory: months(24), moodLists: null, moodCache: null };
-  for (const v of ['MOOD_TURN', 'MOOD_RISING', 'MOOD_FALLING']) env[v] = new Function('return ' + new RegExp('var ' + v + ' = ([^;]*);').exec(SRC)[1])();
+  for (const v of ['MOOD_TURN', 'MOOD_RISING', 'MOOD_FALLING']) env[v] = new Function('return ' + new RegExp('var ' + v + '\\s*= ([^;]*);').exec(SRC)[1])();
   const M = lift(['rankToDate', 'rankIn', 'moodSeries', 'moodAt', 'moodWord', 'moodRead', 'moodTrack'], env);
   const top = M.moodAt('2001-12');
   ok('rising valuations and confidence and a falling VIX all rank at the top', [top.valuations, top.calm, top.confidence, top.score], [100, 100, 100, 100]);
@@ -105,7 +106,7 @@ console.log('\nmoodAt \u2014 each reading ranked against its own past, turned to
   const before = Array.from({ length: 12 }, (_, i) => ({ m: 'm' + i, score: i * 5 })), x = M.moodRead({ score: 30 }, before);
   ok('a month is ranked against her moods before it, and turns against three months back', [x.pct, x.change, x.ago.m, x.word], [50, -15, 'm9', 'Fear']);
 }
-function GROWTH_WINDOW_OF(src) { return +/var GROWTH_WINDOW = (\d+);/.exec(src)[1]; }
+function GROWTH_WINDOW_OF(src) { return +/var GROWTH_WINDOW\s*= (\d+);/.exec(src)[1]; }
 
 console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

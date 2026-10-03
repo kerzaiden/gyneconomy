@@ -1,30 +1,36 @@
-import { fmtSigned, monthLabel, qLabel, yearOf } from "./format.js";
-import { addSources } from "./dom.js";
-import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.js";
-import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.js";
-import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.js";
+import { fmtSigned, monthLabel, qLabel, yearOf } from "./format.ts";
+import { addSources } from "./dom.ts";
+import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
+import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
+export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; growthSlopeQ: number; growthTrend: string; gdpLatest: QuarterPoint; annual: boolean };
+type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
+export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
+export type MarketMonths = { sp: typeof sp500MonthlyHistory; spAt: Record<string, number> };
+type MoodPoint = { k: string; v: number | null };
+export type Mood = { m: string; valuations: number; calm: number; confidence: number; market: number; score: number; pct?: number | null; change?: number | null; ago?: Mood | null; word?: string | null };
+import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
 
 // ---- The season, computed ----
-function slopeOf(vals){
+function slopeOf(vals: number[]){
   var n = vals.length, mx = (n - 1) / 2, my = vals.reduce(function(a, b){ return a + b; }, 0) / n, num = 0, den = 0;
   vals.forEach(function(v, i){ num += (i - mx) * (v - my); den += (i - mx) * (i - mx); });
   return den ? num / den : 0;
 }
-function monthIndex(k){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)); }
-function cpiTrend(points){
+function monthIndex(k: string){ return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)); }
+function cpiTrend(points: MonthPoint[]){
   if (!points.every(function(d){ return typeof d.m === "string"; })) return slopeOf(points.map(function(d){ return d.v; }));
   var xs = points.map(function(d){ return monthIndex(d.m); }), n = xs.length;
   var mx = xs.reduce(function(a, b){ return a + b; }, 0) / n, my = points.reduce(function(a, d){ return a + d.v; }, 0) / n, num = 0, den = 0;
   points.forEach(function(d, i){ num += (xs[i] - mx) * (d.v - my); den += (xs[i] - mx) * (xs[i] - mx); });
   return den ? num / den : 0;
 }
-function cpiYear(endMonth){
+function cpiYear(endMonth: string){
   var to = monthIndex(endMonth);
   return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
 }
 var GROWTH_WINDOW = 8;
 export function growthWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW); }
-function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
+function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: string, quartersPerStep?: number): ModelReading {
   var cpiNow = cpi12[cpi12.length - 1].v;
   var cpiSlope = cpiTrend(cpi12);
   var cpiDirection = cpiSlope > 0.02 ? "rising" : cpiSlope < -0.02 ? "falling" : "steady";
@@ -32,7 +38,7 @@ function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
   var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
   var growthTrend = growthSlopeQ > 0.025 ? "rising" : growthSlopeQ < -0.025 ? "falling" : "flat";
   var regime = growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : (prevRegime || "expansion");
-  var cooling = cpiDirection === "falling", season;
+  var cooling = cpiDirection === "falling", season: Season;
   if (regime === "expansion"){
     if (cpiHot) season = "summer";
     else season = cooling ? "springdeflation" : "spring";
@@ -43,16 +49,16 @@ function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
   return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, cpiHot:cpiHot, cpiCold:cpiCold,
            growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1], annual:quartersPerStep === 4 };
 }
-export var QUARTER_END_MONTH = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
+export var QUARTER_END_MONTH: Record<string, string> = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
 var SEASON_YEARS = 2;
-function closingReading(endYear){
+function closingReading(endYear: number){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
   return e ? e.reading : null;
 }
-export function quarterRegime(d){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
-export function seasonTitle(meta){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
-export function cycleReturns(from, to){
-  var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
+export function quarterRegime(d: QuarterPoint){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
+export function seasonTitle(meta: { name: string; theme?: string | null }){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
+export function cycleReturns(from: number, to: number){
+  var level = 1, peakRet = -Infinity, peakYear: number | null = null, cumByYear: Record<string, number> = {};
   for (var py = from; py <= to; py++){
     var pr = sp500AnnualReturns[py]; if (pr == null) continue;
     level *= 1 + pr / 100;
@@ -61,11 +67,11 @@ export function cycleReturns(from, to){
   }
   return { peakYear:peakYear, cumByYear:cumByYear };
 }
-export function cycleModel(era){
+export function cycleModel(era: Cycle){
   var ongoing = !!era.ongoing;
-  var endYear = ongoing ? calendarTodayY : era.to;
-  var elapsedYears = ongoing ? (calendarTodayY - era.from) + cycleYtdFraction : (era.to - era.from + 1);
-  var yearIndex = ongoing ? Math.floor(elapsedYears) + 1 : (era.to - era.from + 1);
+  var endYear = ongoing ? calendarTodayY : era.to!;
+  var elapsedYears = ongoing ? (calendarTodayY - era.from) + cycleYtdFraction : (era.to! - era.from + 1);
+  var yearIndex = ongoing ? Math.floor(elapsedYears) + 1 : (era.to! - era.from + 1);
   var dialYears = Math.max(typicalCycleYears, Math.ceil(elapsedYears));
   var endMonth = ongoing ? cpiYoYHistory[cpiYoYHistory.length - 1].m : era.to + "-12";
   var cpi = cpiYoYHistory.filter(function(c){ return c.m >= era.from + "-01" && c.m <= endMonth; });
@@ -75,12 +81,12 @@ export function cycleModel(era){
   var prevEntry = seasonTrackAll[gdpEnd - 1];
   var reading = ongoing
     ? readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime)
-    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear) : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
+    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear)! : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
   var season = (ongoing && seasonOverride) || reading.season;
-  var track = [];
+  var track: TrackSeg[] = [];
   seasonTrack.forEach(function(entry){
     if (entry.y < era.from || entry.y > endYear) return;
-    var qi = {Q1:0, Q2:1, Q3:2, Q4:3}[entry.qn];
+    var qi = ({Q1:0, Q2:1, Q3:2, Q4:3} as Record<string, number>)[entry.qn];
     track.push({ q:entry.q, season:entry.reading.season, from:(entry.y - era.from) + qi / 4, to:(entry.y - era.from) + (qi + 1) / 4, reading:entry.reading });
   });
   var last = track[track.length - 1];
@@ -92,7 +98,7 @@ export function cycleModel(era){
   return { era:era, ongoing:ongoing, endYear:endYear, elapsedYears:elapsedYears, yearIndex:yearIndex, dialYears:dialYears, peakYear:years.peakYear, cumByYear:years.cumByYear,
            endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
 }
-var seasonRuleSentence = {
+var seasonRuleSentence: Record<Season, string> = {
   spring:"Quickening growth with prices heating, within or below the range, is reflation — Spring.",
   springdeflation:"Quickening growth with prices cooling, within or below the range, is Spring — deflation.",
   summer:"Quickening growth with prices above the range — hot — is inflation, Summer.",
@@ -100,16 +106,16 @@ var seasonRuleSentence = {
   lateautumn:"Slowing growth with prices heating or steady, within or above the range, is Autumn — stagflation.",
   winter:"Slowing growth with prices below the range — cold — is deflation, Winter."
 };
-function seasonWhyFor(m){
+function seasonWhyFor(m: CycleModel){
   var r = m.reading, was = m.ongoing ? "is" : "was";
   return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) +
     "growth " + was + " " + growthWord(r) + " (real GDP " +
     r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " " + growthWindowWord() + " quarters, ") + fmtSigned(r.growthSlopeQ * 4, 1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
 }
-export function growthWord(r){
+export function growthWord(r: ModelReading){
   return r.gdpLatest && r.gdpLatest.v < 0 ? "contracting" : r.growthTrend === "rising" ? "quickening" : r.growthTrend === "falling" ? "slowing" : "steady";
 }
-export function cycleNowNote(m){
+export function cycleNowNote(m: CycleModel){
   var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
   var years = (["Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years"][n] || n + " years");
   var growth = { contracting:"the economy is shrinking", slowing:"growth is still positive but slowing", quickening:"growth is picking up", steady:"growth is holding steady" }[w];
@@ -117,21 +123,21 @@ export function cycleNowNote(m){
     (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
   return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
 }
-export function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
+export function seasonGroup(key: string){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 // ---- The diagnosis: how she feels, and what has followed ----
-function rankToDate(prior, v){
+function rankToDate(prior: (number | null)[], v: number | null | undefined){
   if (v == null || prior.length < 12) return null;
-  return 100 * prior.filter(function(x){ return x < v; }).length / prior.length;
+  return 100 * prior.filter(function(x){ return x! < v!; }).length / prior.length;
 }
-var marketCache = null;
+var marketCache: MarketMonths | null = null;
 export function marketMonths(){
   if (marketCache) return marketCache;
-  var spAt = {};
+  var spAt: Record<string, number> = {};
   sp500MonthlyHistory.forEach(function(d, i){ spAt[d.m] = i; });
   marketCache = { sp:sp500MonthlyHistory, spAt:spAt };
   return marketCache;
 }
-export function yearAfter(S, m){
+export function yearAfter(S: MarketMonths, m: string){
   var i = S.spAt[m];
   return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
 }
@@ -140,57 +146,57 @@ export function diagnoseToday(){
   return x && x.word ? { stage:x.word, season:currentSeason, month:x.m } : null;
 }
 // ---- Her mood: one range from Depression to Mania ----
-function rankIn(list, m, v){
+function rankIn(list: MoodPoint[], m: string, v?: number | null){
   var i = -1;
   list.forEach(function(d, j){ if (d.k <= m) i = j; });
   return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d){ return d.v; }), v != null ? v : list[i].v);
 }
-var moodLists = null;
+var moodLists: { cape: MoodPoint[]; buffett: MoodPoint[]; vix: MoodPoint[]; confidence: MoodPoint[] } | null = null;
 function moodSeries(){
   if (moodLists) return moodLists;
-  var monthly = function(h){ return h.map(function(d){ return { k:d.m, v:d.v }; }); };
+  var monthly = function(h: MonthPoint[]){ return h.map(function(d){ return { k:d.m, v:d.v }; }); };
   moodLists = { cape:capeHistory.map(function(d){ return { k:d.y + "-01", v:d.v }; }),
     buffett:buffettHistory.map(function(d){ return { k:d.q.slice(0, 4) + "-" + QUARTER_END_MONTH[d.q.slice(5)], v:d.v }; }),
     vix:monthly(volatilityHistory), confidence:monthly(confidenceHistory) };
   return moodLists;
 }
-function moodAt(m, vixNow){
+function moodAt(m: string, vixNow?: number | null): Mood | null {
   var L = moodSeries(), cape = rankIn(L.cape, m), buf = rankIn(L.buffett, m), vix = rankIn(L.vix, m, vixNow), conf = rankIn(L.confidence, m);
   if (cape == null || buf == null || vix == null || conf == null) return null;
   var val = (cape + buf) / 2, calm = 100 - vix;
   return { m:m, valuations:val, calm:calm, confidence:conf, market:(val + calm) / 2, score:(val + calm + conf) / 3 };
 }
 export var MOOD_TURN = 3;
-var MOOD_RISING = [["Despair", 0], ["Depression", 5], ["Hope", 24], ["Optimism", 51], ["Excitement", 75], ["Thrill", 92], ["Euphoria", 100]];
-var MOOD_FALLING = [["Despair", 0], ["Panic", 9], ["Desperation", 30], ["Fear", 52], ["Denial", 74], ["Anxiety", 91], ["Euphoria", 100]];
-function moodWord(pct, change){
+var MOOD_RISING: [string, number][] = [["Despair", 0], ["Depression", 5], ["Hope", 24], ["Optimism", 51], ["Excitement", 75], ["Thrill", 92], ["Euphoria", 100]];
+var MOOD_FALLING: [string, number][] = [["Despair", 0], ["Panic", 9], ["Desperation", 30], ["Fear", 52], ["Denial", 74], ["Anxiety", 91], ["Euphoria", 100]];
+function moodWord(pct: number | null, change: number | null){
   if (pct == null || change == null) return null;
   return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a; })[0];
 }
-function moodRead(x, before){
+function moodRead(x: Mood, before: Mood[]){
   var ago = before[before.length - MOOD_TURN];
   x.pct = rankToDate(before.map(function(p){ return p.score; }), x.score);
   x.change = ago ? x.score - ago.score : null; x.ago = ago || null;
   x.word = moodWord(x.pct, x.change);
   return x;
 }
-var moodCache = null;
+var moodCache: Mood[] | null = null;
 export function moodTrack(){
   if (moodCache) return moodCache;
-  var t = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; });
+  var t = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; }) as Mood[];
   moodCache = t.map(function(x, i){ return moodRead(x, t.slice(0, i)); });
   return moodCache;
 }
 export function moodToday(){
-  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow.meter.value);
-  return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
+  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow!.meter.value);
+  return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x!.m; }));
 }
-export function cycleStory(c){
-  var from = c.from + "-01", to = c.to ? c.to + "-12" : "9999-12", count = {};
+export function cycleStory(c: Cycle){
+  var from = c.from + "-01", to = c.to ? c.to + "-12" : "9999-12", count: Record<string, number> = {};
   var t = moodTrack().filter(function(x){ return x.word && x.m >= from && x.m <= to; });
   if (t.length < 2) return null;
   var hi = t[0], lo = t[0];
-  t.forEach(function(x){ if (x.pct > hi.pct) hi = x; if (x.pct < lo.pct) lo = x; count[x.word] = (count[x.word] || 0) + 1; });
+  t.forEach(function(x){ if (x.pct! > hi.pct!) hi = x; if (x.pct! < lo.pct!) lo = x; count[x.word!] = (count[x.word!] || 0) + 1; });
   var most = Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).slice(0, 2);
   var now = c.ongoing && moodToday();
   return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
@@ -199,7 +205,7 @@ export function cycleStory(c){
 export function cycleSpanYears(){
   return (currentEra && currentEra.from) ? (calendarTodayY - currentEra.from + 1) : 5;
 }
-export function cycleByName(nm){
+export function cycleByName(nm: string | null | undefined){
   for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
   return null;
 }
@@ -207,7 +213,7 @@ export function openCycle(){
   for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].ongoing) return marketCycles[i];
   return marketCycles[marketCycles.length - 1];
 }
-export function cycleSlice(series, c){
+export function cycleSlice(series: Point[], c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
   series.forEach(function(d, i){
     var y = yearOf(d);
@@ -215,15 +221,15 @@ export function cycleSlice(series, c){
   });
   return a === -1 ? null : [a, b];
 }
-export function totalGrowthYears(y0, y1){
-  var years = [], rates = [];
+export function totalGrowthYears(y0: number, y1: number){
+  var years: number[] = [], rates: number[] = [];
   for (var y = y0; y <= y1; y++)
     if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined){ years.push(y); rates.push(usRealGdpGrowth[y]); }
   if (!years.length) return null;
   var factor = rates.reduce(function(fa, g){ return fa * (1 + g / 100); }, 1);
   return { years:years, total:(factor - 1) * 100 };
 }
-export function cycleMonths(c){
+export function cycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
   cpiYoYHistory.forEach(function(d, i){
     var y = parseInt(d.m.slice(0, 4), 10);
@@ -231,17 +237,17 @@ export function cycleMonths(c){
   });
   return a === -1 ? null : [a, b];
 }
-export function cycLabel(c){
+export function cycLabel(c: Cycle){
   return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),
            years:c.from + "\u2013" + (c.to || "Today") };
 }
-export function cycleQtrIdx(y0, cyc, len){
+export function cycleQtrIdx(y0: number, cyc: Cycle, len: number){
   var to = cyc.to || calendarTodayY;
   var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len, (to - y0 + 1) * 4);
   return b > a ? [a, b] : null;
 }
-export function totalRiseIn(vals){
-  var years = [], rates = [];
+export function totalRiseIn(vals: MonthPoint[]){
+  var years: number[] = [], rates: number[] = [];
   vals.forEach(function(d){
     var y = parseInt(d.m.slice(0, 4), 10);
     if (y !== calendarTodayY && d.m.slice(5) === "12"){ years.push(y); rates.push(d.v); }
@@ -250,8 +256,8 @@ export function totalRiseIn(vals){
   var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
   return { years:years, total:(factor - 1) * 100 };
 }
-export function eraInflation(cyc){
-  var years = [], rates = [];
+export function eraInflation(cyc: Cycle){
+  var years: number[] = [], rates: number[] = [];
   for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
     if (y === calendarTodayY) continue;
     var dec = cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
@@ -260,8 +266,8 @@ export function eraInflation(cyc){
   var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
   return { years:years, rates:rates, total:(factor - 1) * 100 };
 }
-export function eraGrowth(cyc){
-  var years = [];
+export function eraGrowth(cyc: Cycle){
+  var years: number[] = [];
   for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
     if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined) years.push(y);
   }
@@ -276,20 +282,21 @@ export function eraGrowth(cyc){
   var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
   return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
 }
-export function eraMarketTotal(cyc){
-  var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
+export function eraMarketTotal(cyc: Cycle){
+  var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to!).cumByYear, years = Object.keys(cum);
   return years.length ? cum[years[years.length - 1]] : null;
 }
 
 export function forgetMood(){ moodLists = null; moodCache = null; }
 
-export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy, currentEra;
-var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow;
+export type CycleModel = ReturnType<typeof cycleModel>;
+export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
+var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, readingNow: ModelReading;
 
 export function bootModel(){
   currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
   seasonTrackAll = (function(){
-    var out = [], prevRegime;
+    var out: TrackEntry[] = [], prevRegime: string | undefined;
     gdpQuarterlyYoY.forEach(function(d, i){
       if (i < GROWTH_WINDOW - 1) return;
       var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
@@ -303,7 +310,7 @@ export function bootModel(){
     return out;
   })();
   seasonTrackYears = (function(){
-    var first = seasonTrackAll.filter(Boolean)[0], out = [], prevRegime;
+    var first = seasonTrackAll.filter(Boolean)[0], out: TrackEntry[] = [], prevRegime: string | undefined;
     Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b){ return a - b; }).forEach(function(y){
       if (y > first.y) return;
       var g = [];
@@ -320,7 +327,7 @@ export function bootModel(){
   })();
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
   regimeByQ = (function(){
-    var out = {};
+    var out: Record<string, string> = {};
     seasonTrack.forEach(function(e){ if (e) out[e.q] = e.reading.regime; });
     return out;
   })();

@@ -1,6 +1,6 @@
 import SERIES from "../data/series.json" with { type: "json" };
-import { MONTHS_SHORT } from "./format.js";
-import { cpiYoYBefore, gdpYoYBefore } from "./history-fred.js";
+import { MONTHS_SHORT } from "./format.ts";
+import { cpiYoYBefore, gdpYoYBefore } from "./history-fred.ts";
 
 // ---- Layers: Escape closes only the topmost open layer; Tab stays inside a dialog ----
 export function hubTodayHtml(){
@@ -12,7 +12,7 @@ export function asOfLabel(){
   return "Today, " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
 }
 // ---- SEASON ----
-export var wheelMeta = {
+export var wheelMeta: Record<Season, { name: string; theme: string; altName: string | null }> = {
   summer:{name:"Summer", theme:"Inflation", altName:"Ovulation"},
   autumn:{name:"Autumn", theme:"Disinflation", altName:null},
   lateautumn:{name:"Autumn", theme:"Stagflation", altName:null},
@@ -20,11 +20,11 @@ export var wheelMeta = {
   springdeflation:{name:"Spring", theme:"Deflation", altName:null},
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
-export var seasonOverride = null;
+export var seasonOverride: Season | null = null;
 export var cpiYoYHistory = SERIES.cpiYoYHistory;
 export var gdpQuarterlyYoY = SERIES.gdpQuarterlyYoY;
 
-export var DATA_COMPILED, dataCompiledLabel, calendarTodayY;
+export var DATA_COMPILED: Date, dataCompiledLabel: string, calendarTodayY: number;
 
 export function bootRefreshSeason(){
   // ---- REFRESH: the one date to edit ----

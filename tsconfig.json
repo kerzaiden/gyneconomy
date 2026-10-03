@@ -1,23 +1,19 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
     "noEmit": true,
-    "strict": false,
-    "alwaysStrict": true,
-    "noImplicitThis": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "useUnknownInCatchVariables": true,
+    "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": false,
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2022", "dom", "dom.iterable"],
     "skipLibCheck": true
   },
-  "include": ["src/js/*.js", "src/globals.d.ts"]
+  "include": ["src/js/*.ts", "src/globals.d.ts", "src/types.d.ts"]
 }

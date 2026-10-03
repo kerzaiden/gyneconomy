@@ -3,11 +3,11 @@ const path = require('path');
 const esbuild = require('esbuild');
 
 const JS = path.join(__dirname, '..', 'src', 'js');
-const ENTRY = path.join(JS, 'main.js');
+const ENTRY = path.join(JS, 'main.ts');
 
 function modules(dir) {
   dir = dir || JS;
-  return fs.readdirSync(dir).filter(f => /\.js$/.test(f)).sort().map(f => path.join(dir, f));
+  return fs.readdirSync(dir).filter(f => /\.ts$/.test(f)).sort().map(f => path.join(dir, f));
 }
 
 function bundle(entry) {

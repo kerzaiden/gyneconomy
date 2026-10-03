@@ -3,7 +3,7 @@ export function interestSvg(){ return markSvg('<path d="M18.5 5.5 5.5 18.5" stro
   '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>'); }
 export function budgetSvg(){ return markSvg('<path d="M12 4v16M8 20h8M4.5 8h15" stroke-width="1.8"/>' +
   '<path d="M4.5 8 2.5 13.5h4zM19.5 8l-2 5.5h4z" stroke-width="1.6"/>'); }
-function dropSvg(sw){ return markSvg(
+function dropSvg(sw?: number){ return markSvg(
   '<path d="M12 3.2C12 3.2 6.5 10.8 6.5 14.9A5.5 5.5 0 0 0 17.5 14.9C17.5 10.8 12 3.2 12 3.2Z" stroke-width="' + (sw || 1.7) + '"/>'); }
 export function gaugeSvg(){ return markSvg(
   '<circle cx="12" cy="11.2" r="7.6" stroke-width="1.7"/>' +
@@ -21,7 +21,7 @@ export function sproutSvg(){
     '<path d="M12 14.3 C11.9 11.4 9.9 9.5 6.3 9.4 C6.2 12.9 8.7 14.3 12 14.3"/>' +
   '</svg>';
 }
-function markSvg(body, extra){
+function markSvg(body: string, extra?: string){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
 }
 export function heartSvg(){ return markSvg(

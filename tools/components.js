@@ -63,17 +63,21 @@ function wiring() {
 }
 
 function sizes() {
-  const out = {};
-  for (const file of fs.readdirSync(SRC).sort()) {
-    const lines = fs.readFileSync(path.join(SRC, file), 'utf8').split('\n');
-    let name = null, start = 0;
-    lines.forEach((l, i) => {
-      const m = FN.exec(l);
-      if (m) { name = m[1]; start = i; }
-      else if (name && l === '}') { out[name] = i - start + 1; name = null; }
-    });
+  const ts = require('typescript');
+  const out = {}, loose = [];
+  for (const file of fs.readdirSync(SRC).filter(f => f.endsWith('.ts')).sort()) {
+    const sf = ts.createSourceFile(file, fs.readFileSync(path.join(SRC, file), 'utf8'), ts.ScriptTarget.Latest, true);
+    const line = p => sf.getLineAndCharacterOfPosition(p).line;
+    (function walk(n) {
+      if (ts.isFunctionLike(n) && n.body) {
+        const len = line(n.end) - line(n.getStart(sf)) + 1;
+        if (ts.isFunctionDeclaration(n) && n.name && n.parent === sf) out[n.name.text] = len;
+        else loose.push({ at: file + ':' + (line(n.getStart(sf)) + 1), len });
+      }
+      ts.forEachChild(n, walk);
+    })(sf);
   }
-  return out;
+  return { named: out, loose };
 }
 
 function callers(name) {
@@ -171,7 +175,7 @@ if (arg === '--doc-check') {
 }
 
 if (arg === '--bless') {
-  const out = { '#functions': sizes() };
+  const out = { '#functions': sizes().named };
   for (const [c, v] of shared) out[c] = v.size;
   fs.writeFileSync(LEDGER, JSON.stringify(out, null, 2) + '\n');
   console.log(`recorded ${shared.length} shared classes -> test/components.json`);
@@ -197,7 +201,8 @@ if (arg === '--check') {
     process.exit(1);
   }
   const FN_MAX = 150;
-  const caps = past['#functions'] || {}, now = sizes(), longer = [];
+  const caps = past['#functions'] || {}, all = sizes(), now = all.named, longer = [];
+  all.loose.filter(f => f.len > FN_MAX).forEach(f => longer.push('the function at ' + f.at + ' is ' + f.len + ' lines; no function may pass ' + FN_MAX));
   for (const [fn, n] of Object.entries(now)) {
     if (n > FN_MAX) longer.push(fn + ' is ' + n + ' lines; no function may pass ' + FN_MAX);
     else if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');

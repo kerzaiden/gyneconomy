@@ -1,16 +1,16 @@
-import { byIdMaybe, put, ui } from "./dom.js";
-import { checkLiveCoverage, exposeLive, fetchSiteData, GYN, onLive, refreshLiveData } from "./live.js";
-import { fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.js";
-import { forgetMood, nowModel } from "./model.js";
-import { desireRow, policyFactRows, riskMatrixBlock, volatilityRing, volatilityTag } from "./readings.js";
-import { CATEGORIES, paintWhen } from "./roster.js";
-import { sheetRenderers } from "./render-core.js";
-import { replaceInsights } from "./insights.js";
-import { renderDiagnosis } from "./diagnosis.js";
+import { byIdMaybe, put, ui } from "./dom.ts";
+import { checkLiveCoverage, exposeLive, fetchSiteData, GYN, onLive, refreshLiveData } from "./live.ts";
+import { fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.ts";
+import { forgetMood, nowModel } from "./model.ts";
+import { desireRow, policyFactRows, riskMatrixBlock, volatilityRing, volatilityTag } from "./readings.ts";
+import { CATEGORIES, paintWhen } from "./roster.ts";
+import { sheetRenderers } from "./render-core.ts";
+import { replaceInsights } from "./insights.ts";
+import { renderDiagnosis } from "./diagnosis.ts";
 
-function paintReading(sheet, value, tag){
+function paintReading(sheet: string, value: string | number, tag: Tag | null){
   var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
-  Array.prototype.forEach.call(doors, function(d){
+  Array.prototype.forEach.call(doors, function(d: Element){
     if (d.__today){ painted++; return; }
     var v = d.querySelector(".ci-value, .subject-value");
     if (v && v.firstChild && v.firstChild.nodeType === 3){ v.firstChild.nodeValue = String(value); painted++; }
@@ -22,12 +22,12 @@ function paintReading(sheet, value, tag){
   return painted;
 }
 function repaintVolatilityRing(){
-  Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d: Element){
     var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
     if (m) m.innerHTML = volatilityRing();
   });
 }
-function paintTag(d, tag){
+function paintTag(d: Element, tag: Tag){
   var t = d.querySelector(".tag") || d.querySelector(".ci-word");
   if (!t) return;
   t.textContent = tag.text;
@@ -36,7 +36,7 @@ function paintTag(d, tag){
 }
 function repaintVolatility(){
   repaintVolatilityRing();
-  paintReading("sheet-sign-sentiment", now.vixRow.flagValue, volatilityTag());
+  paintReading("sheet-sign-sentiment", now.vixRow!.flagValue, volatilityTag());
 }
 function repaintPressureRow(){
   var h = now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0];
@@ -51,8 +51,8 @@ function repaintDesire(){
   var row = desireRow(), cape = valRow("cape");
   if (!row || !cape) return;
   paintReading("sheet-sign-desire", row.metric, null);
-  Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el){
-    el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
+  Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el: Element){
+    el.outerHTML = riskMatrixBlock(row.meter.value!, cape!.meter.value!);
   });
 }
 function syncCape(){ syncCapeHistory(); forgetMood(); }

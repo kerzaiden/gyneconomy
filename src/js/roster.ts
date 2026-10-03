@@ -1,68 +1,69 @@
-import { MONTHS_SHORT, prettyKey, qAtIndex } from "./format.js";
-import { GYN, LIVE_NAMES, liveIsoOf } from "./live.js";
-import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.js";
-import { peekCard } from "./charts.js";
-import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.js";
-import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.js";
-import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.js";
-import { page } from "./history.js";
-import { desireRow, indPeriod, vixPct } from "./readings.js";
+import { MONTHS_SHORT, prettyKey, qAtIndex } from "./format.ts";
+import { GYN, LIVE_NAMES, liveIsoOf } from "./live.ts";
+import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
+import { peekCard } from "./charts.ts";
+import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { page } from "./history.ts";
+import { desireRow, indPeriod, vixPct } from "./readings.ts";
 
 // ---- The roster: every reading, declared once ----
-export var TIMING = {
+export type Category = { key: string; title: string; shown: number; onDial?: boolean; inTrend?: boolean };
+export var TIMING: Record<RosterTiming, { label: string; hint: string }> = {
   structural: { label:"Structural", hint:"the slow ground a cycle moves on" },
   leading:    { label:"Leading",    hint:"moves before the cycle turns" },
   coincident: { label:"Coincident", hint:"turns with the cycle" },
   lagging:    { label:"Lagging",    hint:"confirms a turn after it has happened" }
 };
-export var CATEGORIES = [
+export var CATEGORIES: Category[] = [
   { key:"weather", title:"Weather", shown:0, onDial:true },
   { key:"circulation", title:"Circulation", shown:2 },
   { key:"mood", title:"Mood", shown:1, inTrend:true },
   { key:"energy", title:"Energy", shown:3 }
 ];
-export var GROUP_MARK = { "Stress":boltSvg };
-export var ROSTER_BY = {};
-function pageState(of){
-  var o = {};
+export var GROUP_MARK: Record<string, () => string> = { "Stress":boltSvg };
+export var ROSTER_BY: Record<string, RosterRow> = {};
+function pageState<T>(of: (R: RosterRow) => T | undefined): Record<string, T> {
+  var o: Record<string, T> = {};
   ROSTER.forEach(function(R){ var v = R.head == null ? undefined : of(R); if (v !== undefined) o[R.hk || R.id] = v; });
   return o;
 }
-export function keyed(h){
+export function keyed(h: HistSpec | (() => Keyed[])): Keyed[] {
   if (typeof h === "function") return h();
-  return h.s.map(function(d, i){
-    return h.k === "qi" ? { k:qAtIndex(h.y0, i), v:d } : h.k === "yi" ? { k:String(h.y0 + i), v:d }
-         : { k:h.k === "y" ? String(d.y) : d[h.k], v:d.v };
+  return (h.s as readonly (number | null | Point)[]).map(function(d, i){
+    return h.k === "qi" ? { k:qAtIndex(h.y0, i), v:d as number | null } : h.k === "yi" ? { k:String(h.y0 + i), v:d as number | null }
+         : { k:h.k === "y" ? String((d as Point).y) : (d as Point)[h.k] as string, v:(d as Point).v };
   });
 }
-function hyMonths(){
+function hyMonths(): Keyed[] {
   return hyOas.map(function(v, i){ var a = hyAt(i); return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
 }
-function lastDate(R){ var h = keyed(R.hist); return prettyKey(h[h.length - 1].k); }
+function lastDate(R: RosterRow){ var h = keyed(R.hist); return prettyKey(h[h.length - 1].k); }
 function compiledDay(){ return dataCompiledLabel; }
-function isoLabel(iso){
+function isoLabel(iso: string | null | undefined){
   var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
   return m ? MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1] : "";
 }
-export function paintWhen(sheet){
+export function paintWhen(sheet: string){
   var R = ROSTER_BY[sheet], when = cardDate(R);
   if (!when) return;
-  Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w){ w.textContent = when; });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w: Element){ w.textContent = when; });
 }
 function desireWhen(){
-  var m = /(\w{3}) (\d{1,2}),? (\d{4})$/.exec(String((desireRow() || {}).metricSub || ""));
+  var m = /(\w{3}) (\d{1,2}),? (\d{4})$/.exec(String((desireRow() || {} as Partial<Indicator>).metricSub || ""));
   return isoLabel(liveIsoOf("hyOasNow")) || (m ? m[1] + " " + m[2] + ", " + m[3] : "");
 }
-function labPeriod(R){ return periodOf(labRow(R.id)); }
-export function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
-export function peekOf(id, o){
+function labPeriod(R: RosterRow){ return periodOf(labRow(R.id)); }
+export function rosterFor(ind: { bodyTerm: string }): RosterRow { return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
+export function peekOf(id: string, o: PeekCardOpts){
   var R = ROSTER_BY[id];
   o.kicker = R.name; o.mark = R.mark(); o.unit = R.cardUnit; o.target = id;
   return peekCard(o);
 }
-export function cardDate(R){ return R && R.when ? R.when(R) : ""; }
+export function cardDate(R: RosterRow | null | undefined): string { return R && R.when ? R.when(R) : ""; }
 function checkRoster(){
-  var bad = [], seen = {}, live = {}, groups = [];
+  var bad: string[] = [], seen: Record<string, number> = {}, live: Record<string, number> = {}, groups: string[] = [];
   ROSTER.forEach(function(R, i){
     var prev = ROSTER[i - 1];
     if (seen[R.id]) bad.push(R.id + ": declared twice");
@@ -79,10 +80,10 @@ function checkRoster(){
   LIVE_NAMES.forEach(function(n){ if (!live[n]) bad.push(n + ": arrives live and no reading shows it"); });
   if (bad.length && window.console) console.warn("roster: " + bad.join(", "));
 }
-export function periodOf(row){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
+export function periodOf(row: { shortNote?: string }){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
 export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
-export var ROSTER;
+export var ROSTER: RosterRow[];
 
 export function bootRoster(){
   ROSTER = [

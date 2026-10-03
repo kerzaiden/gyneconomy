@@ -28,7 +28,7 @@ function page(tree) {
   const dir = path.join(TMP, String(run++));
   tree.forEach((text, f) => { fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true }); fs.writeFileSync(path.join(dir, f), text); });
   const manifest = JSON.parse(tree.get('manifest.json'));
-  return strip(manifest.map(p => /\.js$/.test(p) && /^(import|export) /m.test(tree.get(p)) ? bundle(path.join(dir, p)) : tree.get(p)).join('\n'));
+  return strip(manifest.map(p => /\.[jt]s$/.test(p) && /^(import|export) /m.test(tree.get(p)) ? bundle(path.join(dir, p)) : tree.get(p)).join('\n'));
 }
 
 const lines = s => s.split('\n').length;
@@ -49,7 +49,7 @@ function where(a, b) {
   for (const p of named) {
     const mixed = new Map(baseText); mixed.set(p, work(p));
     const got = await page(mixed);
-    const v = verdict(want, got, !p.endsWith('.js'));
+    const v = verdict(want, got, !/\.[jt]s$/.test(p));
     if (v === 'DIFFERENT') bad++;
     console.log('  ' + v.padEnd(16) + p.padEnd(26) + String(lines(baseText.get(p))).padStart(6) + ' → '
                 + String(lines(mixed.get(p))).padStart(5) + ' source lines' + (v === 'DIFFERENT' ? where(want, got) : ''));

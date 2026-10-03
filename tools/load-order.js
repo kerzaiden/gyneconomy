@@ -12,7 +12,7 @@ function analyze(mods, bootOrder) {
     n.start += by; n.end += by;
     for (const k in n) { const v = n[k]; if (Array.isArray(v)) v.forEach(x => shift(x, by)); else if (v && typeof v.type === 'string') shift(v, by); }
   }
-  const bodies = mods.map((m, i) => { const a = acorn.parse(m.text, { ecmaVersion: 'latest', sourceType: 'module' }); shift(a, bases[i]); return a; }).map(a => a.body
+  const bodies = mods.map((m, i) => { const a = acorn.parse(m.plain || m.text, { ecmaVersion: 'latest', sourceType: 'module' }); shift(a, bases[i]); return a; }).map(a => a.body
     .filter(s => s.type !== 'ImportDeclaration')
     .map(s => s.type === 'ExportNamedDeclaration' && s.declaration ? s.declaration : s));
   const bootOf = new Map();
@@ -183,7 +183,7 @@ if (require.main === module) {
   try {
     const mods = scriptModules(), order = evalOrder();
     mods.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
-    const main = mods.find(m => m.name === 'js/main.js');
+    const main = mods.find(m => m.name === 'js/main.ts');
     const boots = [...main.text.matchAll(/^(boot[A-Z]\w*)\(\);$/gm)].map(m => m[1]);
     r = analyze(mods, boots);
   }

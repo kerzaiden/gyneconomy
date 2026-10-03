@@ -5,15 +5,15 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "docs", "MAP.md")
 SRC = os.path.join(HERE, "src")
 JS = os.path.join(SRC, "js")
-ENTRY = "main.js"
+ENTRY = "main.ts"
 
 def read(p):
     return io.open(p, encoding="utf-8").read()
 
 manifest = json.load(io.open(os.path.join(SRC, "manifest.json"), encoding="utf-8"))
-pages = [n for n in manifest if not n.endswith(".js")]
-booted = re.findall(r'from "\./([\w-]+\.js)"', read(os.path.join(JS, ENTRY)))
-present = sorted(f for f in os.listdir(JS) if f.endswith(".js") and f != ENTRY)
+pages = [n for n in manifest if not n.endswith(".ts")]
+booted = re.findall(r'from "\./([\w-]+\.ts)"', read(os.path.join(JS, ENTRY)))
+present = sorted(f for f in os.listdir(JS) if f.endswith(".ts") and f != ENTRY)
 modules = [f for f in booted if f in present] + [f for f in present if f not in booted] + [ENTRY]
 
 text = {n: read(os.path.join(SRC, n)) for n in pages}
@@ -74,7 +74,7 @@ for m in modules:
     decls[n] = rows
 
 def imports_of(n):
-    return sorted(set(re.findall(r'from "\./([\w-]+)\.js"', text[n])))
+    return sorted(set(re.findall(r'from "\./([\w-]+)\.ts"', text[n])))
 
 def registry(pat):
     rx = re.compile(pat)
@@ -135,7 +135,7 @@ WHAT = {
     "page-tail.html": "the bundle's closing tag, the service-worker registration, </body></html>",
 }
 for n in manifest:
-    if n.endswith(".js"):
+    if n.endswith(".ts"):
         w("| `%s` | %s modules | the entry: imports every module and calls their boots in order |"
           % (n, len(modules)))
     else:
@@ -160,7 +160,7 @@ w("")
 w("## The boots")
 w("")
 w("A module's top level holds only declarations and values that need nothing else. Whatever runs")
-w("at load and reads another module sits in its `boot…()` function, and `js/main.js` calls them in")
+w("at load and reads another module sits in its `boot…()` function, and `js/main.ts` calls them in")
 w("this order. `tools/load-order.js` proves no shared value is read before something sets it.")
 w("")
 w("| Order | Boot | Lines |")
@@ -249,14 +249,14 @@ w("")
 w("| To find | grep for |")
 w("|---|---|")
 for a, b in [
-    ("a figure's value", "`src/data/series.json` (hand-kept) and `src/data/fred.json` (the backfill's); constants are `var <name> = ` in `js/data.js`"),
-    ("a reading's declaration", "`ROSTER` in `js/roster.js` — one row per reading"),
+    ("a figure's value", "`src/data/series.json` (hand-kept) and `src/data/fred.json` (the backfill's); constants are `var <name> = ` in `js/data.ts`"),
+    ("a reading's declaration", "`ROSTER` in `js/roster.ts` — one row per reading"),
     ("what a history page draws", "`HIST_HEAD` for its head, then `sheetRenderers[\"<id>\"]` for its renderer"),
     ("where a band comes from", "the constant name, then read its `(i)` text — every band states its provenance"),
     ("a season decision", "`readSeason(`, `seasonTrackAll`, `cycleModel(`"),
-    ("who may change a shared value", "the store it lives in: `now` (`js/data.js`), `ui` (`js/dom.js`), `page` (`js/history.js`)"),
+    ("who may change a shared value", "the store it lives in: `now` (`js/data.ts`), `ui` (`js/dom.ts`), `page` (`js/history.ts`)"),
     ("why something looks the way it does", "`docs/DECISIONS.md` for Keren's decisions, `docs/ARCHITECTURE.md` for the reasons, `git log -S` for the history"),
-    ("a live-data wiring", "`LIVE(\"` where a document lands, `onLive(\"` in `js/repaint.js` for what it redraws"),
+    ("a live-data wiring", "`LIVE(\"` where a document lands, `onLive(\"` in `js/repaint.ts` for what it redraws"),
 ]:
     w("| %s | %s |" % (a, b))
 w("")

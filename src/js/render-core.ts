@@ -1,25 +1,30 @@
-import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock } from "./format.js";
-import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl, ui } from "./dom.js";
-import { GYN } from "./live.js";
-import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.js";
-import { dataCompiledLabel } from "./refresh-season.js";
-import { curveAsOf, curveAt, curveSpread, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.js";
-import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.js";
-import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.js";
-import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.js";
-import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.js";
-import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
+import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock } from "./format.ts";
+import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl, ui } from "./dom.ts";
+import { GYN } from "./live.ts";
+import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
+import { dataCompiledLabel } from "./refresh-season.ts";
+import { curveAsOf, curveAt, curveSpread, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
+import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.ts";
+import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.ts";
+import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
+import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
+import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
+import type { ModelReading } from "./model.ts";
+export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
+type YieldPt = { q: string; v: number | null; latest?: boolean };
+type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string; base?: YieldPt[] };
+type Plot = (i: number) => number;
 
 // ---- RENDER: range bars + card helpers ----
-export function metricSheet(id){
+export function metricSheet(id: string){
   var sheet = document.createElement("div");
   sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
   return sheet;
 }
-export var sheetRenderers = {};
-export function drawsPage(id, draw){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
-function levelHeadings(body){
-  var box = body.closest(".detail-modal");
+export var sheetRenderers: Record<string, (W?: number) => void> = {};
+export function drawsPage(id: string, draw: () => void){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
+function levelHeadings(body: HTMLElement){
+  var box = body.closest(".detail-modal")!;
   box.removeAttribute("aria-labelledby");
   Array.prototype.forEach.call(body.querySelectorAll("h4"), function(h, i){
     h.setAttribute("aria-level", i ? "3" : "2");
@@ -27,46 +32,46 @@ function levelHeadings(body){
   });
 }
 function wireDetailModal(){
-  var backdrop = byId('detail-backdrop');
-  var body = byId('detail-modal-body');
-  function openFrom(idx, btn){
-    body.innerHTML = detailTexts[idx];
+  var backdrop = byId('detail-backdrop')!;
+  var body = byId('detail-modal-body')!;
+  function openFrom(idx: string | null, btn: HTMLElement){
+    body.innerHTML = detailTexts[idx as unknown as number];
     levelHeadings(body);
     var sheet = btn && btn.closest && btn.closest(".metric-sheet");
     var chip = sheet && sheet.querySelector(".timing-row");
     if (chip) body.appendChild(chip.cloneNode(true));
     if (!backdrop.classList.contains('show')) opener = btn;
     backdrop.classList.add('show');
-    byId('detail-modal-close').focus({ preventScroll:true });
+    byId('detail-modal-close')!.focus({ preventScroll:true });
   }
-  var opener = null;
+  var opener: HTMLElement | null = null;
   function close(){
     if (!backdrop.classList.contains('show')) return;
     backdrop.classList.remove('show'); body.innerHTML = "";
     var from = opener; opener = null;
-    if (from && !onScreen(from) && from.closest) from = from.closest('.bh-more-wrap') && from.closest('.bh-more-wrap').querySelector('.bh-more');
+    if (from && !onScreen(from) && from.closest) from = from.closest('.bh-more-wrap') && from.closest('.bh-more-wrap')!.querySelector<HTMLElement>('.bh-more');
     focusQuiet(from);
   }
   detailClose = close;
   layer(1, { open:function(){ return backdrop.classList.contains('show'); }, close:close,
              box:function(){ return backdrop.querySelector('.detail-modal'); } });
   document.addEventListener('click', function(e){
-    var btn = e.target.closest && e.target.closest('.expand-btn, .details-link, .more-row, .bh-opt, .sx-row');
+    var btn = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>('.expand-btn, .details-link, .more-row, .bh-opt, .sx-row');
     if (btn){ if (btn.closest('summary')) e.preventDefault();
       openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
     if (e.target === backdrop) close();
   });
-  byId('detail-modal-close').addEventListener('click', close);
+  byId('detail-modal-close')!.addEventListener('click', close);
   document.addEventListener('click', function(e){
-    var chip = e.target.closest && e.target.closest('.timing[data-ind-tab]'); if (!chip) return;
+    var chip = (e.target as Element).closest && (e.target as Element).closest('.timing[data-ind-tab]'); if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     close();
     if (ui.openIndicatorsPage) ui.openIndicatorsPage(chip.getAttribute('data-ind-tab'));
   });
 }
-export var detailClose = null;
+export var detailClose: (() => void) | null = null;
 /* ---- THE SUBJECT ROW ---- */
-export function subjectRow(o){
+export function subjectRow(o: SubjectRowOpts){
   return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
     (o.subject ? ' data-subject="' + o.subject + '"' : '') +
     ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '">' +
@@ -76,8 +81,8 @@ export function subjectRow(o){
       '<div class="subject-more">' + CHEV + '</div>' +
     '</div></div>';
 }
-export function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
-function timingMark(kind){
+export function subjectIcon(state: string, svg: string){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
+function timingMark(kind: string){
   var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
   return '<svg viewBox="0 0 20 12" aria-hidden="true">' +
     '<path class="tm-line" d="M2.6,6 H17.4"/><path class="tm-now" d="M10,2 V10"/>' +
@@ -85,15 +90,15 @@ function timingMark(kind){
                            : '<circle class="tm-dot" cx="' + cx + '" cy="6" r="2.7"/>') +
     '</svg>';
 }
-export function timingPill(kind){
-  var t = TIMING[kind]; if (!t) return "";
+export function timingPill(kind: string){
+  var t = TIMING[kind as keyof typeof TIMING]; if (!t) return "";
   return '<div class="timing-row">' +
     '<button type="button" class="timing ' + kind + '" data-ind-tab="' + kind + '" ' +
       'aria-label="Show the ' + t.label.toLowerCase() + ' readings">' +
       timingMark(kind) + '<b>' + t.label + '</b>' + CHEV +
     '</button></div>';
 }
-export function collapseEmptyBlocks(sheet){
+export function collapseEmptyBlocks(sheet: HTMLElement | null){
   if (!sheet || sheet.hidden || !sheet.offsetHeight) return;
   Array.prototype.forEach.call(sheet.children, function(kid){
     if (kid.classList.contains("page-foot")) return;
@@ -101,7 +106,7 @@ export function collapseEmptyBlocks(sheet){
     else if (kid.style.display === "none") kid.style.display = "";
   });
 }
-export function seatPageFoot(sheet){
+export function seatPageFoot(sheet: HTMLElement | null){
   if (!sheet) return;
   var chip = sheet.querySelector(".timing-row"); if (!chip) return;
   var foot = sheet.querySelector(".page-foot");
@@ -112,16 +117,16 @@ export function seatPageFoot(sheet){
   if (more && more.parentNode !== home) home.appendChild(more);
   if (sheet.lastElementChild !== foot) sheet.appendChild(foot);
 }
-export var timingMembers = {};
-export function registerTiming(kind, entry){ if (timingMembers[kind]) timingMembers[kind].push(entry); }
-function headHtml(ind, noMark){
+export var timingMembers: Record<string, TimingEntry[]> = {};
+export function registerTiming(kind: string, entry: TimingEntry){ if (timingMembers[kind]) timingMembers[kind].push(entry); }
+function headHtml(ind: Indicator, noMark?: boolean){
   var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
     rosterFor(ind).mark() + '</span></span>';
-  return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>';
+  return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag!.state + '">' + ind.tag!.text + '</span></div>';
 }
-export function cardDetailHtml(ind, opts){
+export function cardDetailHtml(ind: Indicator, opts?: IndicatorPage){
   opts = opts || {};
-  var facts = [].concat(ind.facts || [], ind.aux || []);
+  var facts = ([] as AuxFact[]).concat(ind.facts || [], ind.aux || []);
   var chartHtml = opts.chart ? opts.chart(ind) : '';
   var bloodTest = opts.bare ? '' :
     ((opts.noHead ? '' : headHtml(ind, opts.noMark) +
@@ -146,20 +151,20 @@ export function cardDetailHtml(ind, opts){
     })();
 }
 // ---- RENDER: Pressure — U.S. Treasury yields, one maturity at a time ----
-var CURVE_KEY = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
+var CURVE_KEY: Record<string, string> = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
 function latestYieldPoint(){
   var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
-  var v = {}, all = !!mm;
+  var v: Record<string, number | null> = {}, all = !!mm;
   Object.keys(CURVE_KEY).forEach(function(c){ v[c] = curveAt(CURVE_KEY[c]); if (v[c] == null) all = false; });
   if (!all) return null;
-  return { q:mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3), label:fmtAsOf(iso), v:v, spread:curveSpread() };
+  return { q:mm![1] + " Q" + Math.ceil(Number(mm![2]) / 3), label:fmtAsOf(iso), v:v, spread:curveSpread() };
 }
-function withLatestPoint(base, pt){
+function withLatestPoint(base: YieldPt[], pt: YieldPt | null){
   var data = base.slice(), last = data[data.length - 1];
   if (pt && last.q === pt.q) data[data.length - 1] = pt; else if (pt && pt.q > last.q) data.push(pt);
   return data;
 }
-function pressureMaturities(){
+function pressureMaturities(): Maturity[]{
   return [
     {code:"3m", name:"3-Month", data: t3mYieldHistory, on:true,
       detail: '<h4>3-Month Treasury</h4>' +
@@ -232,7 +237,7 @@ function registerFlowPages(){
   }
   drawsPage("sheet-sign-desire", drawDesireRecord);
   (function(){
-    var t; window.addEventListener("resize", function(){
+    var t: ReturnType<typeof setTimeout> | undefined; window.addEventListener("resize", function(){
       clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); drawDesireRecord(); }, 150);
     });
   })();
@@ -245,12 +250,12 @@ function renderPressureRow(){
   if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
                                          function(){ return "yl-col normal"; }, 0, true);
 }
-function ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB){
+function ylmYearMarks(svg: Element, quarters: string[], ylmFrom: number, ylmTo: number, x: Plot, padT: number, H: number, padB: number){
   var el = svgEl;
   var firstYear = parseInt(quarters[ylmFrom].slice(0, 4), 10);
   var lastYear = parseInt(quarters[ylmTo - 1].slice(0, 4), 10);
   var step = Math.max(1, Math.round((lastYear - firstYear) / 4));
-  var xLabelYears = [];
+  var xLabelYears: number[] = [];
   for (var yv = firstYear + (ylmFrom ? step : 0); yv <= lastYear; yv += step) xLabelYears.push(yv);
   quarters.forEach(function(q, i){
     if (i < ylmFrom || i >= ylmTo) return;
@@ -264,9 +269,9 @@ function ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB){
     }
   });
 }
-function ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colW, latestSpread){
+function ylmColumns(svg: Element, maturities: Maturity[], quarters: string[], ylmFrom: number, ylmTo: number, x: Plot, y: Plot, colW: number, latestSpread: number | null){
   var el = svgEl;
-  var spreadAt = {};
+  var spreadAt: Record<string, number | null> = {};
   t10y3mHistory.forEach(function(d){ spreadAt[d.q] = d.v; });
   var lastCol = maturities[0].data[quarters.length - 1];
   if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;
@@ -284,8 +289,8 @@ function ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colW, lates
     });
   });
 }
-function ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR){
-  var fitVals = [];
+function ylmFitLine(svg: Element, maturities: Maturity[], ylmFrom: number, ylmTo: number, x: Plot, y: Plot, W: number, padL: number, padR: number){
+  var fitVals: number[] = [];
   maturities.forEach(function(m){
     if (!m.on) return;
     m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) fitVals.push(d.v); });
@@ -293,15 +298,15 @@ function ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR){
   var ylmFit = trendOf(fitVals, "points", "quarter").fit;
   if (ylmFit && ylmFit.n > 1)
     svg.insertAdjacentHTML("beforeend", fitGroup(
-      { fit:ylmFit, fmt:function(v){ return v.toFixed(2) + "%"; } },
+      { fit:ylmFit, fmt:function(v: number){ return v.toFixed(2) + "%"; } },
       x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
 }
-function pressureHead(maturities, mat, title, note){
+function pressureHead(maturities: Maturity[], mat: Maturity | undefined, title: string, note: string){
   var H = page.head["pressure-range"], spread = pressureView === "spread";
   H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
   H.menu = function(){
     return [
-      { key:"levels", label:"Treasury yields", on:!spread, value:(mat || {}).name || "",
+      { key:"levels", label:"Treasury yields", on:!spread, value:(mat || {} as Partial<Maturity>).name || "",
         rows:maturities.map(function(m){
           return headPickRow(!spread && mat === m, "data-ylm-mat", m.code, m.name);
         }).join("") },
@@ -314,13 +319,13 @@ function pressureHead(maturities, mat, title, note){
   HIST_NOTE["pressure-range"] = spread ? horizonInfoHtml(spreadPick) : note;
   put("pressure-head", histHead("pressure-range"));
 }
-function showPressureView(spread){
-  [["ylm-shell", !spread], ["spread-history-shell", spread]].forEach(function(p){
+function showPressureView(spread: boolean){
+  ([["ylm-shell", !spread], ["spread-history-shell", spread]] as [string, boolean][]).forEach(function(p){
     var e = byId(p[0]); if (e) e.hidden = !p[1];
   });
 }
 function renderPressurePage(){
-  var svg = byId("ylm-svg");
+  var svg = byId("ylm-svg")!;
   var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
   var innerW = W - padL - padR, innerH = H - padT - padB;
   var el = svgEl;
@@ -329,15 +334,15 @@ function renderPressurePage(){
 
   var maturities = pressureMaturities();
 
-  var latestLabel = "", latestSpread = null;
+  var latestLabel = "", latestSpread: number | null = null;
   maturities.forEach(function(m){ m.base = m.data; });
   function withLatest(){
     var L = latestYieldPoint();
     latestLabel = L ? L.label : ""; latestSpread = L ? L.spread : null;
-    maturities.forEach(function(m){ m.data = withLatestPoint(m.base, L && { q:L.q, v:L.v[m.code], latest:true }); });
+    maturities.forEach(function(m){ m.data = withLatestPoint(m.base!, L && { q:L.q, v:L.v[m.code], latest:true }); });
     quarters = maturities[0].data.map(function(d){ return d.q; });
   }
-  function colLabel(i){ var d = maturities[0].data[i]; return d && d.latest ? latestLabel : quarters[i]; }
+  function colLabel(i: number){ var d = maturities[0].data[i]; return d && d.latest ? latestLabel : quarters[i]; }
 
   addSources([
     {t:"FRED — 5-Year Treasury Rate (GS5)", u:"https://fred.stlouisfed.org/series/GS5"},
@@ -346,13 +351,13 @@ function renderPressurePage(){
 
   var ylmFrom = 0, ylmTo = quarters.length;
   function ylmCount(){ return ylmTo - ylmFrom; }
-  function x(i){
+  function x(i: number){
     var half = innerW / (2 * Math.max(1, ylmCount()));
     return padL + half + ((innerW - 2 * half) * (i - ylmFrom)) / ((ylmCount() - 1) || 1);
   }
-  var minV, maxV;
+  var minV: number, maxV: number;
   function computeScale(){
-    var vals = [];
+    var vals: number[] = [];
     maturities.forEach(function(m){
       if (!m.on) return;
       m.data.forEach(function(d, i){ if (i >= ylmFrom && i < ylmTo && d.v != null) vals.push(d.v); });
@@ -362,7 +367,7 @@ function renderPressurePage(){
     maxV = Math.ceil(Math.max.apply(null, vals) / 1) * 1;
     if (maxV <= minV) maxV = minV + 1;
   }
-  function y(v){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
+  function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
 
   function render(){
@@ -376,14 +381,14 @@ function renderPressurePage(){
     var steps = maxV - minV <= 6 ? (maxV - minV) : 6, ylmTicks = [];
     for (var s = 0; s <= steps; s++) ylmTicks.push(minV + ((maxV - minV) * s) / steps);
     svg.insertAdjacentHTML("beforeend", chartAxes({ ticks:ylmTicks, y:y, x0:padL, x1:(W - padR), top:(padT - AXIS.LEG - AXIS.READ), bot:(H - padB),
-      base:y(0), noGridAt:0, fmt:function(v){ return v.toFixed(0) + "%"; } }));
+      base:y(0), noGridAt:0, fmt:function(v: number){ return v.toFixed(0) + "%"; } }));
     svg.classList.add("hist-svg");
     svg.insertAdjacentHTML("beforeend",
       crossLine(padT, (H - padB)));
     var picked = matOf(matPick);
     publishGeom("ylm", { L:x(ylmFrom), R:x(ylmTo - 1), T:padT, B:(H - padB), W:W,
-                     n:ylmCount(), at:function(d, i){ return colLabel(ylmFrom + i); },
-                     fmt:function(v){ return v.toFixed(2) + "%"; },
+                     n:ylmCount(), at:function(d: unknown, i: number){ return colLabel(ylmFrom + i); },
+                     fmt:function(v: number){ return v.toFixed(2) + "%"; },
                      refs:[{ label:"Inverted", swatch:"var(--critical)" },
                            { label:"Normal",   swatch:"var(--season-autumn)" },
                            { label:"Steep",    swatch:"var(--good)" }],
@@ -407,14 +412,14 @@ function renderPressurePage(){
   }
 
   var matPick = "10y";
-  GYN.on("pickSeries", function(bar, code){
+  GYN.on("pickSeries", function(bar: unknown, code: string){
     matPick = code; pressureView = "yield"; maturities.forEach(function(m){ m.on = (m.code === matPick); });
     drawPressure();
   });
-  GYN.on("pickSpread", function(code){ spreadPick = code; pressureView = "spread"; drawPressure(); });
+  GYN.on("pickSpread", function(code: string){ spreadPick = code; pressureView = "spread"; drawPressure(); });
   registerFlowPages();
 
-  function matOf(code){ return maturities.filter(function(m){ return m.code === code; })[0]; }
+  function matOf(code: string){ return maturities.filter(function(m){ return m.code === code; })[0]; }
   function matTitle(){ var m = matOf(matPick); return (m ? m.name : "") + " U.S. Treasury"; }
   function matDetail(){ var m = matOf(matPick); return m ? m.detail : ""; }
 
@@ -430,7 +435,7 @@ function renderPressurePage(){
     render();
     var yTrend = byId("ylm-trend");
     if (yTrend){
-      var w = [], mt = matOf(matPick);
+      var w: number[] = [], mt = matOf(matPick);
       if (mt) mt.data.slice(ylmFrom, ylmTo).forEach(function(d){ if (d.v != null) w.push(d.v); });
       yTrend.innerHTML = trendPill(trendOf(w, "points", "quarter"), null, true,
         { rising:"climbing", falling:"easing" });
@@ -440,7 +445,7 @@ function renderPressurePage(){
   function drawPressure(){
     var spread = pressureView === "spread" && ui.drawSpreadView;
     showPressureView(!!spread);
-    if (spread) ui.drawSpreadView(); else { drawYlm(); renderPressureInsights(); }
+    if (spread) ui.drawSpreadView!(); else { drawYlm(); renderPressureInsights(); }
     drawPressureHead();
   }
   drawsPage("sheet-sign-pressure", drawPressure);
@@ -459,7 +464,7 @@ function renderPressureInsights(){
   var cyc = openCycle(), span = cycleSlice(t10yYieldHistory, cyc);
   var inCycle = span ? t10yYieldHistory.slice(span[0], span[1]).filter(function(d){ return d.v != null; }) : [];
   var cycAvg = inCycle.length ? mean(inCycle.map(function(d){ return d.v; })) : null;
-  var pct = function(v){ return v.toFixed(2) + "%"; };
+  var pct = function(v: number){ return v.toFixed(2) + "%"; };
   var cards = [];
   cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' +
     'downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one ' +
@@ -485,29 +490,29 @@ function renderPressureInsights(){
     "relief; a low level with a steep curve is one at rest that expects to work."));
   ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '</section>';
 }
-export function catList(html){ return '<div class="cat-list">' + html + '</div>'; }
-export function marketPeek(y, from){
+export function catList(html: string){ return '<div class="cat-list">' + html + '</div>'; }
+export function marketPeek(y: number, from: number){
   var v = sp500AnnualReturns[y], w = v == null ? null : marketWord(v);
   return w && peekOf("sheet-sign-market", { value:fmtSigned(v, 1) + "%", word:w.text, state:w.state, colBase:0, colRule:true,
     cols:sp500Years.filter(function(d){ return d.y >= from && d.y <= y; }).map(function(d){ return d.v; }), colClass:marketCol });
 }
 export var spreadPick = "3m", pressureView = "yield";
 var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
-function spreadLabel(key){
+function spreadLabel(key: string){
   var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
   return r ? r.label : HZN_SPREADS[0].label;
 }
-function peekArt(src){ return src.querySelector(".peek-chart"); }
-export function catItem(src, key){
-  var open = src.getAttribute("data-open");
+function peekArt(src: Element){ return src.querySelector(".peek-chart"); }
+export function catItem(src: Element, key: string){
+  var open = src.getAttribute("data-open")!;
   var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
   (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
   var item = catCard(src, cardDate(ROSTER_BY[open]));
   if (src.parentNode) src.parentNode.removeChild(src);
   return item;
 }
-export function catCard(src, when){
-  var open = src.getAttribute("data-open"), item = document.createElement("button");
+export function catCard(src: Element, when: string){
+  var open = src.getAttribute("data-open")!, item = document.createElement("button");
   item.type = "button"; item.className = "cat-item";
   item.setAttribute("data-open", open);
   item.setAttribute("data-title", src.getAttribute("data-title") || "");
@@ -517,7 +522,7 @@ export function catCard(src, when){
   head.appendChild(holder);
   var nm = document.createElement("span"); nm.className = "ci-name";
   var kick = src.querySelector(".peek-kicker");
-  nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
+  nm.textContent = kick ? kick.textContent!.replace(/\s+/g, " ").trim()
                         : (src.getAttribute("data-title") || "");
   head.appendChild(nm);
   var body = document.createElement("div"); body.className = "ci-body";
@@ -526,7 +531,7 @@ export function catCard(src, when){
   if (val){
     var unit = val.querySelector(".peek-unit, .unit");
     if (unit){
-      var m = DATED_UNIT.exec(unit.textContent.trim());
+      var m = DATED_UNIT.exec(unit.textContent!.trim());
       if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
     }
     val.className = "ci-value";
@@ -534,7 +539,7 @@ export function catCard(src, when){
     read.appendChild(val);
   }
   var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-  if (!word || !word.textContent.trim()) word = (val && val.querySelector(".tag")) || document.createElement("span");
+  if (!word || !word.textContent!.trim()) word = (val && val.querySelector(".tag")) || document.createElement("span");
   word.classList.add("ci-word"); read.appendChild(word);
   body.appendChild(read);
   var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
@@ -544,27 +549,27 @@ export function catCard(src, when){
   head.appendChild(wh);
   var chev = document.createElement("span");
   chev.innerHTML = CHEV;
-  head.appendChild(chev.firstChild);
+  head.appendChild(chev.firstChild!);
   item.appendChild(head); item.appendChild(body);
   return item;
 }
-export function tempPeek(r, value, cpi){
+export function tempPeek(r: ModelReading, value: string, cpi: MonthPoint[]){
   var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +
     (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
   return peekOf("sheet-metric-temp", { value:value, word:word, state:heatStep(r.cpiNow),
-    cols:cpi.map(function(d){ return d.v; }), colClass:function(v){ return "temp-col " + heatStep(v); } });
+    cols:cpi.map(function(d){ return d.v; }), colClass:function(v: number){ return "temp-col " + heatStep(v); } });
 }
-export function gdpPeek(r, gq){
+export function gdpPeek(r: ModelReading, gq: QuarterPoint[]){
   return peekOf("sheet-metric-gdp", { value:fmtSigned(r.gdpLatest.v, 1) + "%",
     word:growthShownCap(r), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
-    colClass:function(v, i){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
+    colClass:function(v: number, i: number){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
 }
 
 export function bootRenderCore(){
   GYN.step("wireDetailModal", wireDetailModal, "wire");
   wireDetailModal();
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----
-  byId("asof-text").textContent = "Data compiled " + dataCompiledLabel;
+  byId("asof-text")!.textContent = "Data compiled " + dataCompiledLabel;
   Object.keys(TIMING).forEach(function(k){ timingMembers[k] = []; });
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();
