@@ -4,6 +4,7 @@ import { errors } from './dom.mjs';
 import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday } from '../../src/js/model.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
+import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
@@ -19,6 +20,11 @@ test('every cycle reads a season, and its track runs without a gap', () => {
     m.track.forEach(p => assert.ok(SEASONS.includes(p.season), label + ' ' + p.q + ' ' + p.season));
     assert.ok(m.track[m.track.length - 1].to <= m.elapsedYears + 1e-9, label + ' track ends inside the cycle');
   }
+});
+
+test('a closed cycle\'s season strip spans its own years, so a season sits under its year', () => {
+  for (const c of marketCycles.filter(c => !c.ongoing)) assert.equal(seasonStripHtml(c).done, (c.to - c.from + 1) * 4, c.name);
+  assert.match(seasonStripHtml(marketCycles[0]).strip, /no season read before Q1 1931/);
 });
 
 test('only the open cycle reaches today, and it ends on now', () => {
