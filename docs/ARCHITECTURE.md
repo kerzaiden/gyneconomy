@@ -617,8 +617,11 @@ and the past-cycle cards (`eraCards`) never see it.
   quarter-on-quarter changes; `criticalR` turns the two-tailed 5% t table into the correlation a match must pass.
 - **The words** (`sayMove`, `sayMatch`) read the line's first and last quarter, the nearest cycle, and say when the
   cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`.
-- **A past cycle**: `eraShow` calls `replaceCategory`, which replaces the Insights and the analysis together, so the card
-  reads the closed cycle across its whole length against the cycles at least as long.
+- **The insights** (`INSIGHT` in `insights.ts`) are no longer a box on the page: they return their cards bare, and
+  `detail` puts them first in the card's More details sheet, untitled, with the method after them. Mood's composite
+  ends on `moodToday`, so the card and the sheet read the same mood.
+- **Repainting**: `eraShow` and `repaintDiagnosis` call `replaceCategory`, which rebuilds the card (and so its sheet),
+  so a past cycle reads across its whole length and a live VIX moves Mood's line and story together.
 
 ## The Diagnosis (V664, under the dial since V665)
 
@@ -692,7 +695,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
   cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
-  every `onDial` category. Weather's Insights open with `cycleNowNote` (the note the popup used to open with), then
+  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.2.0) open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names

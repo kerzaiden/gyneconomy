@@ -1089,6 +1089,7 @@
   .ca-line.near{ stroke-opacity:.8; stroke-width:2.5; }
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
+  .cat-analysis .more-row{ margin-top:20px; }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }

@@ -3,17 +3,17 @@ import { moreRow, ui } from "./dom.ts";
 import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { fedFundsHistory, grossDebtQuarterly, productivityHistory, sp500MonthlyHistory } from "./history-fred.ts";
 import { M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, marketCycles, unempHistory } from "./data.ts";
-import { currentEra, moodTrack, QUARTER_END_MONTH, rankToDate } from "./model.ts";
+import { currentEra, moodToday, moodTrack, QUARTER_END_MONTH, rankToDate } from "./model.ts";
 import { AXIS, chartAxes, histFrame, vGrid, vhOpen, xLabel } from "./charts.ts";
 import { CATEGORIES, ROSTER } from "./roster.ts";
-import { replaceInsights } from "./insights.ts";
+import { INSIGHT } from "./insights.ts";
 
 // ---- Category analysis: one composite per category, against past cycles ----
 type Pt = { k: string; v: number | null };
 type Member = { up: boolean; what: string; points: () => Pt[] };
 type Track = Record<number, number>;
 type Match = { c: Cycle; p: number[]; r: number };
-type Read = { title: string; era: Cycle; cur: number[]; rows: Match[]; crit: number; since: number; made: string[] };
+type Read = { key: string; title: string; era: Cycle; cur: number[]; rows: Match[]; crit: number; since: number; made: string[] };
 
 var QM = ["03", "06", "09", "12"];
 function months(h: { m: string; v: number | null }[]): Pt[]{ return h.map(function(d){ return { k:d.m, v:d.v }; }); }
@@ -39,7 +39,8 @@ var MEMBERS: Record<string, Member> = {
 };
 var SCORES: Record<string, { what: string; points: () => Pt[] }> = {
   mood:{ what:"her mood score: valuations, calm (the VIX upside down) and confidence, the Mood page’s own reading", points:function(){
-    return moodTrack().map(function(x){ return { k:x.m, v:x.score }; }); } }
+    var today = moodToday();
+    return moodTrack().map(function(x){ return { k:x.m, v:x.score }; }).concat(today ? [{ k:today.m, v:today.score }] : []); } }
 };
 function qIndex(k: string){ return +k.slice(0, 4) * 4 + Math.floor((+k.slice(5, 7) - 1) / 3); }
 function rankTrack(pts: Pt[], up: boolean): Track {
@@ -61,7 +62,7 @@ function membersOf(key: string){ return ROSTER.filter(function(R){ return R.cat 
 var trackCache: Record<string, Track> = {};
 function composite(key: string): Track {
   if (trackCache[key]) return trackCache[key];
-  if (SCORES[key]) return (trackCache[key] = plainTrack(SCORES[key].points()));
+  if (SCORES[key]) return plainTrack(SCORES[key].points());
   var tracks = membersOf(key).map(function(m){ return rankTrack(m.points(), m.up); }), out: Track = {};
   if (!tracks.length) return (trackCache[key] = out);
   Object.keys(tracks[0]).forEach(function(q){
@@ -101,7 +102,7 @@ function analyse(key: string, era: Cycle): Read | null {
   rows.sort(function(a, b){ return b.r - a.r; });
   var since = Math.floor(Math.min.apply(null, Object.keys(t).map(Number)) / 4);
   var made = SCORES[key] ? [SCORES[key].what] : membersOf(key).map(function(m){ return m.what; });
-  return { title:cat.title, era:era, cur:cur, rows:rows, crit:criticalR(k - 1), since:since, made:made };
+  return { key:key, title:cat.title, era:era, cur:cur, rows:rows, crit:criticalR(k - 1), since:since, made:made };
 }
 function sayMove(d: Read){
   var a = Math.round(d.cur[0]), b = Math.round(d.cur[d.cur.length - 1]);
@@ -143,7 +144,7 @@ function rowsHtml(d: Read){
   }).join("");
 }
 function detail(d: Read){
-  return '<h4>' + d.title + ' analysis</h4>' + facts([
+  return (INSIGHT[d.key] ? INSIGHT[d.key]() : "") + '<h4>How the analysis reads</h4>' + facts([
     "The line is " + d.title + " as one reading, from " + d.since + ": " + d.made.join(", ") + ".",
     "Each reading is ranked against its own record up to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more of what the category measures, and the ranks are averaged. It is the method of her mood score.",
     "Every cycle is drawn from the quarter it opened, so the lines share a start. The " + d.era.name + " is set against every other cycle that ran at least as long and has the record to draw it.",
@@ -158,7 +159,6 @@ export function analysisHtml(key: string){
     '<p class="ca-say">' + sayMove(d) + sayMatch(d) + '</p>' + chartHtml(d) + rowsHtml(d) + moreRow(detail(d)) + '</div>';
 }
 export function replaceCategory(c: { key: string }){
-  replaceInsights(c);
   var box = document.querySelector("#sheet-cat-" + c.key + " .cat-analysis");
   if (box) box.outerHTML = analysisHtml(c.key);
 }

@@ -8,7 +8,6 @@ import { m2Step } from "./history-charts.ts";
 import { CATEGORIES, peekOf, ROSTER } from "./roster.ts";
 import { gdpPeek, needInd, tempPeek } from "./render-core.ts";
 import { appendPicks, catPicks, catSheet, indicatorPeeks } from "./indicators.ts";
-import { INSIGHT } from "./insights.ts";
 import { analysisHtml } from "./category-analysis.ts";
 /* ---- THE CYCLE TAB: cards and categories ---- */
 var PAIR_ART: Record<string, (ind: Indicator) => PeekCardOpts> = {
@@ -63,8 +62,6 @@ function buildCategories(){
     var items = document.createElement("div"); items.className = "cat-list"; items.innerHTML = analysisHtml(c.key);
     appendPicks(items, catPicks(c), c.key);
     sheet.appendChild(items);
-    var tog = INSIGHT[c.key as keyof typeof INSIGHT] ? INSIGHT[c.key as keyof typeof INSIGHT]() : "";
-    if (tog) sheet.insertAdjacentHTML("beforeend", tog);
     host.appendChild(sheet);
   });
   ["peek-row", "peek-row-signs", "signs-list"].forEach(function(id){

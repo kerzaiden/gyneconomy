@@ -1083,6 +1083,7 @@
   .ca-line.near{ stroke-opacity:.8; stroke-width:2.5; }
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
+  .cat-analysis .more-row{ margin-top:20px; }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -34675,7 +34676,7 @@
       var oc = openCycle();
       txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
     }
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + circLede + hiCard(name, "", txt) + "</section>";
+    return circLede + hiCard(name, "", txt);
   }
   function insightWeather() {
     var rows = marketCycles.map(function(c) {
@@ -34724,7 +34725,7 @@
       return absGap(r).toFixed(1);
     }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
     if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
+    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt);
   }
   function seasonCards(m) {
     var r = seasonReading[m.season] || {};
@@ -34804,8 +34805,8 @@
   function insightMood() {
     var d = moodToday();
     var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
-    if (!d || !isRead(d)) return highlightsHtml([ intro ], "", "");
-    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo(d)));
+    if (!d || !isRead(d)) return intro;
+    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
   }
   function storyBeats(s, open) {
     var ev = [ {
@@ -34843,14 +34844,6 @@
     circulation: insightCirculation,
     mood: insightMood
   };
-  function replaceInsights(c) {
-    var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
-    if (!boxes.length || !INSIGHT[c.key]) return;
-    boxes.slice(1).forEach(function(b) {
-      b.remove();
-    });
-    boxes[0].outerHTML = INSIGHT[c.key]();
-  }
   var QM = [ "03", "06", "09", "12" ];
   function months(h) {
     return h.map(function(d) {
@@ -34951,12 +34944,16 @@
     mood: {
       what: "her mood score: valuations, calm (the VIX upside down) and confidence, the Mood page’s own reading",
       points: function() {
+        var today = moodToday();
         return moodTrack().map(function(x) {
           return {
             k: x.m,
             v: x.score
           };
-        });
+        }).concat(today ? [ {
+          k: today.m,
+          v: today.score
+        } ] : []);
       }
     }
   };
@@ -34990,7 +34987,7 @@
   var trackCache = {};
   function composite(key) {
     if (trackCache[key]) return trackCache[key];
-    if (SCORES[key]) return trackCache[key] = plainTrack(SCORES[key].points());
+    if (SCORES[key]) return plainTrack(SCORES[key].points());
     var tracks = membersOf(key).map(function(m) {
       return rankTrack(m.points(), m.up);
     }), out = {};
@@ -35065,6 +35062,7 @@
       return m.what;
     });
     return {
+      key: key,
       title: cat.title,
       era: era,
       cur: cur,
@@ -35139,7 +35137,7 @@
     }).join("");
   }
   function detail(d) {
-    return "<h4>" + d.title + " analysis</h4>" + facts([ "The line is " + d.title + " as one reading, from " + d.since + ": " + d.made.join(", ") + ".", "Each reading is ranked against its own record up to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more of what the category measures, and the ranks are averaged. It is the method of her mood score.", "Every cycle is drawn from the quarter it opened, so the lines share a start. The " + d.era.name + " is set against every other cycle that ran at least as long and has the record to draw it.", "Two cycles are matched on their moves quarter by quarter (the correlation of the changes), so two cycles that merely both rose do not count as alike. A match is close when it passes the standard test at 5% significance for that many quarters (" + d.crit.toFixed(2) + " here); below it, it is loose.", "The other cycles are drawn only as far as this one has run. This is a description of the record, not a forecast." ]);
+    return (INSIGHT[d.key] ? INSIGHT[d.key]() : "") + "<h4>How the analysis reads</h4>" + facts([ "The line is " + d.title + " as one reading, from " + d.since + ": " + d.made.join(", ") + ".", "Each reading is ranked against its own record up to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more of what the category measures, and the ranks are averaged. It is the method of her mood score.", "Every cycle is drawn from the quarter it opened, so the lines share a start. The " + d.era.name + " is set against every other cycle that ran at least as long and has the record to draw it.", "Two cycles are matched on their moves quarter by quarter (the correlation of the changes), so two cycles that merely both rose do not count as alike. A match is close when it passes the standard test at 5% significance for that many quarters (" + d.crit.toFixed(2) + " here); below it, it is loose.", "The other cycles are drawn only as far as this one has run. This is a description of the record, not a forecast." ]);
   }
   function analysisHtml(key) {
     var d = analyse(key, ui.eraOpen || currentEra);
@@ -35147,7 +35145,6 @@
     return '<div class="cat-analysis"><div class="ca-name">' + d.title + ' analysis</div><p class="ca-say">' + sayMove(d) + sayMatch(d) + "</p>" + chartHtml(d) + rowsHtml(d) + moreRow(detail(d)) + "</div>";
   }
   function replaceCategory(c) {
-    replaceInsights(c);
     var box = document.querySelector("#sheet-cat-" + c.key + " .cat-analysis");
     if (box) box.outerHTML = analysisHtml(c.key);
   }
@@ -36370,8 +36367,6 @@
       items.innerHTML = analysisHtml(c.key);
       appendPicks(items, catPicks(c), c.key);
       sheet.appendChild(items);
-      var tog = INSIGHT[c.key] ? INSIGHT[c.key]() : "";
-      if (tog) sheet.insertAdjacentHTML("beforeend", tog);
       host.appendChild(sheet);
     });
     [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
@@ -37348,7 +37343,7 @@
   }
   function repaintDiagnosis() {
     if (!ui.eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(replaceInsights);
+    CATEGORIES.forEach(replaceCategory);
   }
   function bootRepaint() {
     onLive("fedFunds", repaintPolicy);

@@ -260,6 +260,12 @@ test('each category page opens on its analysis, which follows the cycle on scree
     assert.ok(box.querySelector('svg .ca-line.now'), key);
     assert.match(say(key), /^Since the AI Cycle opened, .+ out of 100\./);
   }
+  assert.equal(document.querySelectorAll('.cat-sheet .insights, .cat-sheet .hi-head').length, 0);
+  document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
+  const body = document.getElementById('detail-modal-body');
+  assert.match(body.textContent, /She\u2019s in /);
+  assert.match(body.textContent, /How the analysis reads/);
+  document.getElementById('detail-modal-close').click();
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.match(say('energy'), /^Across the Big Tech Cycle, /);
   ui.eraPageBack();

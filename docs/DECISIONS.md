@@ -53,9 +53,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   totals pulling apart say which way the weather is going. (V468)
 - **The policy-rate chart is titled "Federal Funds Rate", and its note says it plots the effective rate.**
   "Effective" was doing the note's job in the title. (V608)
-- **A section of sentences about the figures above it is called Insights, on every page, a category's combined
-  reading included.** The app had two names for one component and Keren chose one; Insights has been her word
-  for it since V379. (V453, V604)
+- **A section of sentences about the figures above it is called Insights, on every reading's page.** The app had
+  two names for one component and Keren chose one; Insights has been her word for it since V379. A category's
+  combined reading is the exception since 1.2.0: it sits behind its analysis card's More details, untitled (see
+  Search and the category pages). (V453, V604, 1.2.0)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
@@ -201,7 +202,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "doesn't really inform me all that much besides taking up space"; Keren asked for something that "take[s] all the
   parameters inside that category" together, preferred trends to text ("text can only go so far", after Apple Health's
   Trends), then the category's composite set against past cycles; "just say weather analysis … I don't need the titles,
-  trends, and readings. Just put the containers one on top of the other." The Insights box stays under the cards. (1.2.0)
+  trends, and readings. Just put the containers one on top of the other." (1.2.0)
+- **A category's insights open from its analysis card's More details, with no Insights title, and the page has no
+  Insights box; the method of the analysis follows them in the same sheet.** Keren: "insights is important and it
+  should be visible for some prominent place, but I hardly doubt it that someone will scroll all the way to see the
+  insights. So when you click on more details, we can just show the insights without even calling it insights." Mood's
+  own figures, which had a More details of their own, now follow her story in that sheet. The button sits as far
+  from the rows above it as from the card's foot ("the padding … is uneven"). (1.2.0)
 - **The analysis is the category as one reading through the cycle on screen, drawn over every other cycle from the
   quarter each opened and matched on its quarter-by-quarter moves.** Keren: "the composite parameter comprised of all
   the subcategories of that category can be more informative if it correlates with past cycles". The composite averages
@@ -1134,7 +1141,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **The Mood page has one Insights box: the cycle of market emotions, then "She's in …" with the cycle on screen
+- **The Mood page has one Insights box (since 1.2.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
   and two more details buttons … she's in optimism and her story this cycle it's pretty much the same thing"

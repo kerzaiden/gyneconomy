@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `dab887c` on 2026-10-03. **82 components**, **36 shared patterns**.
+Generated from commit `da8450d` on 2026-10-03. **82 components**, **36 shared patterns**.
 
 ## analysis.ts
 
@@ -81,7 +81,7 @@ Generated from commit `dab887c` on 2026-10-03. **82 components**, **36 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `dial-cycle.ts:quarterSheet`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightMood`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `dial-cycle.ts:quarterSheet`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `render-core.ts:cardDetailHtml` |
 
 ## format.ts
 
@@ -89,7 +89,7 @@ Generated from commit `dab887c` on 2026-10-03. **82 components**, **36 shared pa
 |---|---|---|
 | **`facts`** | `.facts` | `analysis.ts:symptomNote`, `category-analysis.ts:detail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `readings.ts:bootReadings`, `readings.ts:deficitBlock`, `readings.ts:volatilityDetailHtml` |
 | **`hiCard`** | `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:confidenceInsight`, `indicators.ts:debtInsight`, `indicators.ts:desireInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:premiumInsight`, `indicators.ts:productivityInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
-| **`highlightsHtml`** | `.peek-chev` | `indicators.ts:mountSplit`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightMood`, `render-pages.ts:volatilityHighlights` |
+| **`highlightsHtml`** | `.peek-chev` | `indicators.ts:mountSplit`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `render-pages.ts:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
 | **`ledeHtml`** | `.lede` | `dial-cycle.ts:bootDialCycle`, `readings.ts:bootReadings`, `readings.ts:deficitBlock` |
 | **`srcBlock`** | `.src` | `dial-cycle.ts:bootDialCycle`, `dial-cycle.ts:renderCycleKicker`, `indicators.ts:splitInfo`, `insights.ts:moodInfo`, `readings.ts:activityInfoHtml`, `readings.ts:confidenceInfoHtml`, `readings.ts:desireInfoHtml`, `readings.ts:dsrInfoHtml`, `readings.ts:growthInfoHtml`, `readings.ts:marketInfoHtml`, `readings.ts:premiumInfoHtml`, `readings.ts:productivityInfoHtml`, `readings.ts:savInfoHtml`, `readings.ts:temperatureInfoHtml`, `readings.ts:volatilityDetailHtml`, `render-core.ts:pressureMaturities`, `render-pages.ts:deriveUninversionDetail`, `render-pages.ts:spreadSeries`, `tabs-menu.ts:renderSeasonRows` |
@@ -224,6 +224,7 @@ renderer speaks. Listed most-used first.
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`mean`** | format.ts | 4 places |
+| **`moodToday`** | model.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
@@ -243,7 +244,6 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | readings.ts | 3 places |
 | **`keyed`** | roster.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
@@ -272,13 +272,13 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.hi-lede` | 10 | `format.ts:lede`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | `.page-chart` | 10 | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-core.ts:cardDetailHtml`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | `.hcol` | 7 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
-| `.highlights` | 7 | `format.ts:highlightsHtml`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
-| `.hi-head` | 7 | `format.ts:highlightsHtml`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.marker-sub` | 6 | `dial-cycle.ts:quarterPopup`, `format.ts:popHead`, `indicators.ts:splitInfo`, `readings.ts:volatilityDetailHtml`, `render-core.ts:cardDetailHtml`, `render-pages.ts:renderValuationTag` |
-| `.insights` | 6 | `format.ts:highlightsHtml`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.tag` | 6 | `pages-nav.ts:renderSignsList`, `readings.ts:pulseBlock`, `render-core.ts:headHtml`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows`, `repaint.ts:paintTag` |
 | `.unit` | 5 | `analysis.ts:cycleRowsHtml`, `pages-nav.ts:renderSignsList`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows` |
+| `.highlights` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
+| `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
+| `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |

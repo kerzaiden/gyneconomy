@@ -1,5 +1,5 @@
-import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.ts";
-import { moreRow, ui } from "./dom.ts";
+import { facts, fmtSigned, hiCard, lede, monthLabel, srcBlock } from "./format.ts";
+import { ui } from "./dom.ts";
 import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.ts";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
 import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.ts";
@@ -42,8 +42,7 @@ function insightCirculation(){
       (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") +
       " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
   }
-  return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-         circLede + hiCard(name, "", txt) + '</section>';
+  return circLede + hiCard(name, "", txt);
 }
 function insightWeather(){
   var rows = marketCycles.map(function(c){
@@ -82,8 +81,7 @@ function insightWeather(){
       " \u2014 the economy costing more faster than it is growing bigger.";
   else
     txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-  return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-         lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + '</section>';
+  return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt);
 }
 function seasonCards(m: CycleModel){
   var r = seasonReading[m.season] || {};
@@ -162,8 +160,8 @@ function moodCard(d: MoodRead){
 function insightMood(){
   var d = moodToday();
   var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor\u2019s euphoria is not another\u2019s.");
-  if (!d || !isRead(d)) return highlightsHtml([intro], "", "");
-  return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo(d)));
+  if (!d || !isRead(d)) return intro;
+  return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>' + moodCard(d) + moodInfo(d);
 }
 function storyBeats(s: Story, open: boolean | undefined){
   var ev: StoryBeat[] = [{ x:s.first, verb:"opened in" }, { x:s.last, verb:open ? "is now in" : "closed in" }];
@@ -181,9 +179,3 @@ function storyText(s: Story, open: boolean | undefined){
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
 export var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
-export function replaceInsights(c: { key: string }){
-  var boxes: Element[] = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
-  if (!boxes.length || !INSIGHT[c.key]) return;
-  boxes.slice(1).forEach(function(b){ b.remove(); });
-  boxes[0].outerHTML = INSIGHT[c.key]();
-}
