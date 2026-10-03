@@ -13,6 +13,9 @@ if (!Array.isArray(manifest) || !manifest.length) {
   console.error('src/manifest.json is empty or not a list'); process.exit(2);
 }
 
+const V = require('./version');
+const stamped = CHECK ? false : V.stamp();
+
 const { bundle, modules } = require('./bundle');
 
 const parts = manifest.map(name => {
@@ -57,16 +60,16 @@ if (escapes.length) {
   process.exit(1);
 }
 
-const V = require('./version');
 function versionCheck() {
-  const want = V.major(), have = V.swMajor();
-  if (have !== want) {
-    console.error('sw.js is OUT OF DATE — its VERSION is gyn-' + have + ', package.json says ' + want + '. Run: npm run build');
+  const want = V.read();
+  if (V.swBuild() !== want.build || V.bodyLabel() !== V.label(want)) {
+    console.error('the stamped version is OUT OF DATE — sw.js says gyn-' + V.swBuild() + ', the menu says ' + V.bodyLabel()
+      + ', package.json says ' + V.label(want) + '. Run: npm run build');
     return false;
   }
-  const tag = V.newestTag();
-  if (tag !== null && want <= tag)
-    console.warn('note: package.json is at ' + want + ' and v' + tag + ' is already tagged — run `npm run bump` before committing the next version');
+  const tags = V.newestTags();
+  if (tags.build !== null && want.build <= tags.build)
+    console.warn('note: build ' + want.build + ' is already tagged — run `npm run bump major|minor|patch` before committing the next version');
   return true;
 }
 
@@ -75,7 +78,7 @@ strip(joined).then(built => {
 
   if (CHECK) {
     const swOk = versionCheck();
-    if (current === built && swOk) { console.log('index.html matches src/ (' + manifest.length + ' parts), sw.js is stamped gyn-' + V.major()); process.exit(0); }
+    if (current === built && swOk) { console.log('index.html matches src/ (' + manifest.length + ' parts), version ' + V.label(V.read()) + ' is stamped'); process.exit(0); }
     if (current === built) process.exit(1);
     if (current === null) { console.error('index.html does not exist — run: npm run build'); process.exit(1); }
     const at = [...current].findIndex((c, i) => c !== built[i]);
@@ -86,8 +89,7 @@ strip(joined).then(built => {
     process.exit(1);
   }
 
-  const stamped = V.stamp();
-  if (stamped) console.log('stamped sw.js at gyn-' + V.major());
+  if (stamped) console.log('stamped version ' + V.label(V.read()));
   if (current === built) { console.log('index.html already current (' + manifest.length + ' parts)'); process.exit(0); }
   fs.writeFileSync(OUT, built);
   const lines = built.split('\n').length;

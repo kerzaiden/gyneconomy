@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 const V = require('./version');
 
-const arg = process.argv[2];
-const tag = V.newestTag();
-let n;
-if (arg !== undefined) {
-  n = Number(arg);
-  if (!Number.isInteger(n) || n <= 0) { console.error('bump: not a version number: ' + arg); process.exit(2); }
-} else {
-  n = Math.max(V.major(), tag || 0) + 1;
+const kind = process.argv[2];
+const was = V.read();
+const version = kind && V.next(was.version, kind);
+if (!version) {
+  console.error('bump: say which number moves — npm run bump major | minor | patch (or an exact 1.2.3). The rule is in docs/DECISIONS.md, under Versions.');
+  process.exit(2);
 }
-
-const was = V.major();
-if (n < was) console.error('bump: ' + n + ' is BELOW the current ' + was + ' — going backwards on purpose?');
-V.setPackage(n);
+const tags = V.newestTags();
+if (tags.version && V.compare(version, tags.version) <= 0)
+  console.error('bump: ' + version + ' is not above the newest tag v' + tags.version + ' — going backwards on purpose?');
+const now = { version, build: Math.max(was.build, tags.build || 0) + 1 };
+V.setPackage(now);
 V.stamp();
-console.log('version ' + was + ' → ' + n + '  (package.json and sw.js)' + (tag !== null ? '   newest tag: v' + tag : ''));
+console.log('version ' + V.label(was) + ' → ' + V.label(now) + '  (package.json, sw.js, the menu)');

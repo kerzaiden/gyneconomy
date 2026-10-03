@@ -256,7 +256,7 @@ not hooks.
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 | **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
-| **Tag workflow** (`tag.yml`, V647) | a `v6NN-name` tag for each version commit on `main` that has none | every push to `main` | the repo's history |
+| **Tag workflow** (`tag.yml`, V647) | a `v1.4.0` tag (build and name in its message) for each version commit on `main` that has none | every push to `main` | the repo's history |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
 two surfaces cannot disagree about a number. A document missing from the file is the pipeline failing;

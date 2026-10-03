@@ -17,8 +17,9 @@ rules below are the ones that matter most.
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
   before grepping; the source is ~7,000 lines of TypeScript and ~1,400 of CSS.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
-- `git log` — every version is a commit `V6NN — Short Name` and an annotated tag. The history lives here,
-  not in the code. The code has no comments since V650 (the app) and V652 (tools, tests, workflows);
+- `git log` — every version is a commit `1.4.0 — Short Name` and an annotated tag `v1.4.0` (before 1.0.0:
+  `V6NN — Short Name`, tag `v6NN-short-name`). The history lives here, not in the code. The code has no
+  comments since V650 (the app) and V652 (tools, tests, workflows);
   `git show v651-daily-deploy:<file>` is the last commented copy, `v648-treasury-quarters` the last with its
   full history.
 
@@ -70,18 +71,18 @@ rules below are the ones that matter most.
 - **Finish a piece of work by committing it.** Two assistants work here (a Claude session with the
   project attached, and Claude Code in this folder); the repo is the only handoff.
 - **Every change goes on a branch and reaches `main` through a pull request** Keren merges (V642). A
-  push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump` before
-  every version commit; `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
+  push to `main` deploys the site, so her review sits in front of every deploy. `npm run bump major|minor|patch`
+  before every version commit (the rule for which is in `docs/DECISIONS.md`, Versions); `git pull --rebase` before pushing — the Data workflow commits `data/live.json`
   to `main` on weekdays and the Backfill workflow commits the FRED histories on the 3rd of each month; those
   two bots are the only things allowed to push there directly, and each starts the site deploy itself.
-- **One version, one commit on `main`: squash-merge** (V647). Title the merge `V6NN — Short Name`, so
+- **One version, one commit on `main`: squash-merge** (V647). Title the merge `1.4.0 — Short Name`, so
   `main` reads as one commit per version. Then move the working branch to the new `main` before the
   next change. **Tags are the Tag workflow's job** (`tag.yml`): cloud sessions cannot push tags, so the
-  workflow tags each version when it lands. `npm run bump` counts from `package.json` as well as the
-  newest tag, so a tag that has not been made yet cannot send the number backwards.
+  workflow tags each version when it lands. `npm run bump` takes the build number from `package.json` as well
+  as the newest tag, so a tag that has not been made yet cannot send it backwards.
 - **`main` and the artifact are the same version, always.** Whoever merges to `main` republishes the
   artifact from that commit, in the same sitting (rules 1, 4 and 5 above), with `label` = the version
-  name. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
+  and build, `1.4.0 (712)`. Only a session with the `Artifact` tool can do it; a GitHub Action cannot. If a merge lands and
   nobody can publish, say so rather than leaving the two apart.
 
 ## Commands
@@ -94,7 +95,7 @@ npm test                 # the browser suite alone; it waits on the app, never o
 npm run test:unit        # the app booted in Node (jsdom): every page drawn, the model on the real record, ~3 s
 npm run snap             # 48-state DOM snapshot, every page's and tab's notes included; snap:diff proves a refactor changed nothing
 npm run build            # assemble index.html and stamp sw.js from package.json
-npm run bump             # next version number (newest tag + 1, or `npm run bump 640`)
+npm run bump minor       # next version: major | minor | patch, or exact (`npm run bump 1.4.0`); build + 1
 npm run typecheck        # strict TypeScript over the modules (in check)
 npm run hygiene          # one frame, one type scale, no page-scoped styles, no name branches, nothing unused
 npm run uncomment        # remove comments from the code; `node tools/uncomment.js --check` is in `check`

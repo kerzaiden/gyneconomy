@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,803 lines** in 31 files, about 574 KB, roughly **163 thousand tokens**. No session can
+The source is **8,805 lines** in 31 files, about 574 KB, roughly **163 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `475001f` on 2026-10-03.
+Generated from commit `78edf2c` on 2026-10-03.
 
 ## The page
 
@@ -18,8 +18,8 @@ Generated from commit `475001f` on 2026-10-03.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,367 | the whole stylesheet, every token and rule |
-| `page-body.html` | 390 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `styles.css` | 1,368 | the whole stylesheet, every token and rule |
+| `page-body.html` | 391 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
@@ -1106,29 +1106,29 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | Line | Section |
 |---|---|
 | 140 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
-| 234 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
-| 270 | season strip |
-| 296 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
-| 360 | tab bar (app-style segmented navigation) |
-| 395 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
-| 410 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 483 | journal (editorial content tab) |
-| 489 | content tab: reading companion |
-| 538 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 732 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 807 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 880 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,049 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,064 | The symptoms: a cycle's years against today |
-| 1,141 | hero: yield curve |
-| 1,171 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,190 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,217 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,225 | long cycle (structural layer) |
-| 1,232 | indicator grid |
-| 1,258 | info icon + popover (progressive disclosure for longer notes) |
-| 1,272 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,357 | footer |
+| 235 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
+| 271 | season strip |
+| 297 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
+| 361 | tab bar (app-style segmented navigation) |
+| 396 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
+| 411 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
+| 484 | journal (editorial content tab) |
+| 490 | content tab: reading companion |
+| 539 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 733 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 808 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 881 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,050 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,065 | The symptoms: a cycle's years against today |
+| 1,142 | hero: yield curve |
+| 1,172 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,191 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,218 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,226 | long cycle (structural layer) |
+| 1,233 | indicator grid |
+| 1,259 | info icon + popover (progressive disclosure for longer notes) |
+| 1,273 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,358 | footer |
 
 ## Markup landmarks
 
@@ -1137,7 +1137,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (109), which is what the renderers fill:
+Every `id` in the static DOM (110), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1229,27 +1229,28 @@ Every `id` in the static DOM (109), which is what the renderers fill:
 | 211 | `menu-back` |
 | 225 | `sources-open` |
 | 233 | `appearance-current` |
-| 239 | `sheet-howto` |
-| 282 | `sheet-book` |
-| 313 | `seasons-kicker` |
-| 315 | `seasons-rows` |
-| 318 | `framework-kicker` |
-| 321 | `framework-rows` |
-| 331 | `sheet-appearance` |
-| 339 | `theme-toggle` |
-| 346 | `sheet-contact` |
-| 355 | `contact-form` |
-| 356 | `contact-title` |
-| 357 | `contact-message` |
-| 359 | `contact-hint` |
-| 360 | `contact-send` |
-| 366 | `sheet-sources` |
-| 369 | `sources-back` |
-| 374 | `asof-text` |
-| 375 | `sources-groups` |
-| 381 | `detail-backdrop` |
-| 383 | `detail-modal-close` |
-| 384 | `detail-modal-body` |
+| 236 | `app-version` |
+| 240 | `sheet-howto` |
+| 283 | `sheet-book` |
+| 314 | `seasons-kicker` |
+| 316 | `seasons-rows` |
+| 319 | `framework-kicker` |
+| 322 | `framework-rows` |
+| 332 | `sheet-appearance` |
+| 340 | `theme-toggle` |
+| 347 | `sheet-contact` |
+| 356 | `contact-form` |
+| 357 | `contact-title` |
+| 358 | `contact-message` |
+| 360 | `contact-hint` |
+| 361 | `contact-send` |
+| 367 | `sheet-sources` |
+| 370 | `sources-back` |
+| 375 | `asof-text` |
+| 376 | `sources-groups` |
+| 382 | `detail-backdrop` |
+| 384 | `detail-modal-close` |
+| 385 | `detail-modal-body` |
 
 ## Finding things fast
 
