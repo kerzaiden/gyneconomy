@@ -3,6 +3,9 @@ import { MONTHS_SHORT } from "./format.js";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.js";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.js";
 
+export var CAPE_FAIR = 17;
+export var VIX_CALM = 20, VIX_FEAR = 30;
+
 export var now = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
     asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
@@ -17,7 +20,7 @@ export var now = {
   tag:{text:"Greedy", state:"serious"},
   rows:[
     { marker:"CBOE VIX", sub:"Sep 22 2026",
-      meter:{min:9.14,max:82.69,value:14.21,optimal:{lte:20, label:"below 20"}, ends:{zone:"Calm", high:"Elevated"}},
+      meter:{min:9.14,max:82.69,value:14.21,optimal:{lte:VIX_CALM, label:"below " + VIX_CALM}, ends:{zone:"Calm", high:"Elevated"}},
       shortNote:"Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
       note:"The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike \u2014 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 \u2014 still well below the ~19\u201320 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does \u2014 spreads widened through 2007 while the VIX stayed calm \u2014 so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
       direction:"up", flagValue:"14.2", flagState:"warning" }
@@ -37,7 +40,7 @@ export var now = {
       note:"Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) \u2014 the same definition the widely quoted charts use. At \u2248256% this is the highest reading in the 80-year record, clear of the 2021 peak (\u2248219%) and the dot-com peak (\u2248163%); the record low is \u224832% (Q2 1982).",
       direction:"up", flagValue:"\u2248256%", flagState:"serious" },
     { key:"cape", marker:"Shiller CAPE", sub:"cyclically-adjusted P/E ratio",
-      meter:{min:4.78,max:44.19,value:40.58,optimal:{lte:17, label:"\u2264 17\u00d7"}, ends:{zone:"Long-run mean", high:"Rich"}},
+      meter:{min:4.78,max:44.19,value:40.58,optimal:{lte:CAPE_FAIR, label:"\u2264 " + CAPE_FAIR + "\u00d7"}, ends:{zone:"Long-run mean", high:"Rich"}},
       shortNote:"Among the richest readings on record, just shy of the dot-com peak.",
       note:"Cyclically-adjusted P/E (Shiller's own series, September 2026) vs. its ~17\u00d7 long-run average \u2014 among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999). The band ends at 17\u00d7, which is that series' own long-run mean (17.42) rather than a target \u2014 there is no level a market ought to trade at.",
       direction:"up", flagValue:"40.6\u00d7", flagState:"serious" }
@@ -122,6 +125,7 @@ export function fedFundsRange(){
 }
 export var buffettHistory = SERIES.buffettHistory;
 export var HY_NORM_LO = 3.5, HY_NORM_HI = 6;
+export var M2_PACE_LO = 3.5, M2_PACE_HI = 10;
 export var hyDates = SERIES.hyDates;
 export var hyOas = SERIES.hyOas;
 function checkDesireWindow(){
@@ -174,7 +178,7 @@ function syncGrossDebt(){
 function checkGrossDebt(){
   if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
   var row = labRow("sheet-metric-debt"), by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
-  var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
+  var g = by(fiscalHistory.gross), bad = [];
   var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
   if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
   var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
@@ -185,7 +189,6 @@ export function valRow(k){
   for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
   return null;
 }
-export var CAPE_FAIR = 17;
 export var PULSE_PRE2008 = 1.857;
 export var M2V_FROM_YEAR = 1959;
 export var m2vHistory = SERIES.m2vHistory.map(function(n){ return n / 1000; });
@@ -290,7 +293,6 @@ export var frameworkRows = [
   {indicator:"Activity", body:"Physical activity", economy:"Labor / employment", category:"Lagging"},
   {indicator:"Temperature", body:"Basal body temperature", economy:"Inflation", category:"Lagging"}
 ];
-export var VIX_CALM = 20, VIX_FEAR = 30;
 export var VIX_CONVENTION = [
   {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
   {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}

@@ -118,7 +118,7 @@ function registerActivityPowerDeficitPages(){
     var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
                            Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
     var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
-    var bar = put("deficit-rangebar", histControls("deficit-range",
+    put("deficit-rangebar", histControls("deficit-range",
       { depth:deficitHistory.length }));
     host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
     put("deficit-records", "");
@@ -147,7 +147,7 @@ function registerHouseholdsValuationPages(){
     var box = host.querySelector(".page-chart");
     refitHistory(box, function(w){ return householdsChart(w, from, to); });
     attachHistory(box, "households-hist-tooltip", "householdsChart");
-    var hl = put("households-highlights", householdsHighlights());
+    put("households-highlights", householdsHighlights());
   };
   sheetRenderers["sheet-metric-valuation"] = function(W){
     var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
@@ -204,7 +204,6 @@ function wireMetricPageControls(){
 
 }
 function valuationHighlights(capeNow, buffNow){
-  var vs = capeHistory.map(function(d){ return d.v; });
   var richer = capeHistory.filter(function(d){ return d.v > capeNow; });
   var cards = [];
   cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +

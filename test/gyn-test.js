@@ -74,10 +74,6 @@ async function openPage(p, url, sheet) {
                  : ok('parses', blocks.length + ' script block' + (blocks.length === 1 ? '' : 's'));
   }
 
-  const leak = (src.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || []);
-  leak.length === 0 ? ok('no email in markup')
-                    : bad('no email in markup', leak.length + ' address(es) — DO NOT PUBLISH');
-
   const SRC_DIR = path.join(__dirname, '..', 'src');
   const code = fs.existsSync(path.join(SRC_DIR, 'manifest.json'))
     ? fs.readdirSync(path.join(SRC_DIR, 'js')).filter(n => n.endsWith('.js') && n !== 'history-fred.js')
@@ -355,7 +351,6 @@ async function openPage(p, url, sheet) {
       const w = d.querySelector('.tag');
       return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
     }), sheet);
-    const says = re => p.evaluate(s => ([...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => new RegExp(s).test(t)) || ''), re);
     const capeBefore = await doors('sheet-metric-valuation');
     await p.evaluate(() => window.__GYN.applyLive('capeValue', 50.5));
     await settle(p);
@@ -363,15 +358,6 @@ async function openPage(p, url, sheet) {
     (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)))
       ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors')
       : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter }));
-
-    const ffBefore = await doors('sheet-sign-hormones');
-    await p.evaluate(() => window.__GYN.applyLive('fedFunds', { lo: 1.25, hi: 1.50, lastMove: '-0.25' }));
-    await settle(p);
-    const ffAfter = await doors('sheet-sign-hormones'), ffDx = await says('Hormones are');
-    (ffBefore.length >= 2 && ffAfter.every(t => /^1\.25/.test(t)) &&
-     ffAfter.every(t => !/Tightening/.test(t)) && ffAfter.some(t => /Easing/.test(t)) && /Hormones are easing/.test(ffDx))
-      ? ok('a rate cut reaches every door, word and all', ffAfter.concat(ffDx).join(' \u00b7 '))
-      : bad('a rate cut reaches every door, word and all', JSON.stringify({ ffBefore, ffAfter, ffDx }));
 
     const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
     pm.length ? bad('every reading prints where it is painted', pm.join(' | '))

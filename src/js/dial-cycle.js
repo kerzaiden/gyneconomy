@@ -305,10 +305,9 @@ function dialSay(){
 // ---- the whole view, for one cycle ----
 export function renderCycleView(m){
   drawDial(m);
-  shownEraModel = m; ui.shownEra = m.era;
+  ui.shownEra = m.era;
   renderDiagnosis(m);
 }
-var shownEraModel = null;
 export function showCycle(era){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----
 var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };

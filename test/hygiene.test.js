@@ -14,6 +14,7 @@ ok('the token definitions themselves pass', fontSizes('    --type-label:11px; --
 ok('the dial draws in its own units', fontSizes('  .cycle-dial .x{ font-size:4.2px; }'), []);
 ok('calc and em pass', fontSizes('  .a{ font-size:calc(var(--dial) * 0.1); } .b{ font-size:0.8em; }'), []);
 ok('a style aimed at one page is caught', pageScoped('  #sheet-sign-x .dv-bar{ stroke:red; }').length, 1);
+ok('a page id behind an element is caught', pageScoped('  section#sheet-sign-x .dv-bar{ stroke:red; }').length, 1);
 ok('a component class passes', pageScoped('  .dv-bar.good-above{ stroke:red; }'), []);
 ok('a branch on a reading’s name is caught', nameBranches('a.js', 'if (ind.bodyTerm === "Desire") x();').length, 1);
 ok('a lookup by name passes', nameBranches('a.js', 'list.filter(function(c){ return c.bodyTerm === "Desire"; })'), []);
@@ -27,6 +28,7 @@ ok('an unused function is caught', unused('function lonely(){}', '', ''), ['func
 ok('a function declared twice is caught', twice('function trendOf(a){}\nexport function trendOf(b){}\n'), ['function trendOf is declared 2 times; the last one silently replaces the others']);
 ok('an inner function of the same name is not a second declaration', twice('function draw(){}\n  function draw(){}\n'), []);
 ok('modules that import downward pass', cycles({ 'a.js':'import { x } from "./b.js";', 'b.js':'import { y } from "./c.js";', 'c.js':'' }), []);
+ok('a circle written with single quotes is caught', cycles({ 'a.js':"import { x } from './b.js';", 'b.js':"import { y } from './a.js';" }).length, 1);
 ok('modules that import in a circle are caught', cycles({ 'a.js':'import { x } from "./b.js";', 'b.js':'import { y } from "./a.js";' }), ['modules import in a circle: a.js \u2192 b.js \u2192 a.js']);
 ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);

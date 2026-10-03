@@ -329,7 +329,8 @@ the manifest's; now each module says what it imports.
   export each series by name. `test/series.test.js` checks that the code reads exactly the keys each file holds.
 - **The modules are type-checked** (V697, `npm run typecheck`, in `check`): TypeScript reads the JavaScript as it
   is (`checkJs`, inference only, nothing emitted, `strict` off), since annotations would be comments. The browser
-  names the app adds to `window` and the DOM are declared once, in `src/globals.d.ts`.
+  names the app adds to `window` and the DOM are declared once, in `src/globals.d.ts`. Since V700 the rules that need no annotation are on (`noUnusedLocals`, `noImplicitReturns`, `strictBindCallApply`, `noImplicitThis` and the rest in `tsconfig.json`). `noImplicitAny` and `strictNullChecks` stay off: every untyped parameter is an implicit `any`, and only an annotation, which is a comment, could type it.
+- **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.js` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
   any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,

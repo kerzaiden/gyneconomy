@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `1c12778` on 2026-10-03. **81 components**, **39 shared patterns**.
+Generated from commit `55c0ada` on 2026-10-03. **81 components**, **38 shared patterns**.
 
 ## analysis.js
 
@@ -68,7 +68,7 @@ Generated from commit `1c12778` on 2026-10-03. **81 components**, **39 shared pa
 | **`hubSet`** | `.hub-chev` `.hub-stage` | `dial-cycle.js:hubShowDefault`, `dial-cycle.js:hubShowQuarter` |
 | **`quarterCards`** | `.cat-sheet` `.cat-weather` | `dial-cycle.js:quarterSheet` |
 | **`quarterPopup`** | `.reading-block` `.reading-book` `.reading-watch` | `dial-cycle.js:quarterSheet` |
-| **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-rows` `.season-sw` `.ytd` | `dial-cycle.js:bootDialCycle` |
+| **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-row` `.legend-rows` `.season-sw` `.ytd` | `dial-cycle.js:bootDialCycle` |
 
 ## dom.js
 
@@ -278,7 +278,6 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.vh-svg` | 2 | `charts.js:vhOpen`, `history-charts.js:householdsChart` |
 | `.cat-list` | 2 | `cycle-tab.js:buildCategories`, `render-core.js:catList` |
 | `.dx-mark` | 2 | `diagnosis.js:dxHead`, `diagnosis.js:moodDoor` |
-| `.legend-row` | 2 | `dial-cycle.js:renderCycleKicker`, `readings.js:deficitBlock` |
 | `.expand-btn` | 2 | `dial-cycle.js:renderCycleKicker`, `dom.js:expandBtn` |
 | `.strip-run` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
 | `.strip-dots` | 2 | `dial-cycle.js:marketStripHtml`, `dial-cycle.js:seasonStripHtml` |
