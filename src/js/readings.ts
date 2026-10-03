@@ -528,7 +528,7 @@ function policyFacts(){ return [
 export function policyFactRows(){
   return policyFacts().map(auxStat).join("");
 }
-export function growthShownCap(r: Parameters<typeof growthWord>[0]){ var w = growthWord(r); return w.charAt(0).toUpperCase() + w.slice(1); }
+export function growthShownCap(r: Parameters<typeof growthWord>[0]){ return growthWord(r) === "contracting" ? "Contraction" : "Expansion"; }
 export function phaseClass(regime: string){ return regime === "contraction" ? "phase-down" : "phase-up"; }
 function activityStackHtml(ind: Indicator){
   histNote("sheet-sign-activity", activityInfoHtml(ind));

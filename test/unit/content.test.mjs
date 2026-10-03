@@ -246,9 +246,9 @@ test('the policy facts say how the latest move sits in the run of moves', async 
 
 test('Growth’s word and Weather’s opening line follow the model', () => {
   const w = growthWord(nowModel.reading);
-  assert.equal(word('sheet-metric-gdp').toLowerCase(), w);
-  assert.ok(nowModel.reading.gdpLatest.v < 0 || w !== 'contracting');
-  assert.match(cycleNowNote(nowModel), new RegExp({ contracting: 'shrinking', slowing: 'slowing', quickening: 'picking up', steady: 'steady' }[w]));
+  assert.equal(word('sheet-metric-gdp').toLowerCase(), nowModel.reading.regime);
+  assert.equal(w, nowModel.reading.regime === 'contraction' ? 'contracting' : 'expanding');
+  assert.match(cycleNowNote(nowModel), new RegExp({ contracting: 'contracting', expanding: 'expanding' }[w]));
 });
 
 test('a boot failure with no stored documents is not swallowed', () => {

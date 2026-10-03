@@ -89,7 +89,7 @@ function registerTempGdpPages(){
     var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
     headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
     put("gdp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "quarter"), null, true,
-                { rising:"quickening", falling:"slowing" }));
+                { rising:"expanding", falling:"contracting" }));
   };
 
 }
@@ -245,7 +245,7 @@ function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
   cards.push(hiCard("The latest quarter", phaseClass(r.regime),
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
-    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads growth as " +
+    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the economy as " +
     growthWord(r) + "."));
   put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
 }
