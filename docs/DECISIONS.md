@@ -1246,6 +1246,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   in git and in this register; the build number orders them with the 0.x releases. Before 1.0.0, anything new
   moves the middle number (0.1.0, 0.2.0 …), a redesign included, and a fix or wording change moves the last.
   `npm run bump major` refuses on 0.x; 1.0.0 is given exactly, `npm run bump 1.0.0`. (0.0.9)
+- **A version is recorded as a git tag and a GitHub Release, not a changelog file.** Keren asked for the GitHub
+  convention; Claude recommended, and she accepted: Semantic Versioning, an annotated `vX.Y.Z` tag on each
+  version's merge commit, and a GitHub Release built on that tag, its notes taken from the merge. The Tag workflow
+  makes both. The tags 1.0.0 to 1.8.0 stay on their commits but get no Release, so the Releases page starts at
+  0.0.9. "Next version, 0.0.9 ships as it is, and the fix comes at 0.1.0." (0.1.0)
 - **Which number moves:**
   - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
     a category or tab added or removed, the book's framework changed.
