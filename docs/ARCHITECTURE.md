@@ -559,6 +559,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | Buffett Indicator | 32% Q2 1982 – 256% Q2 2026; Fed Z.1 NCBEILQ027S ÷ FRED GDP | ≤ 80%, his 2001 *Fortune* figure |
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
 | Durable goods spending (Desire) | the monthly record since 1960, BEA via FRED DDURRA3M086SBEA | ≥ 0, definitional (more or less than a year earlier) |
+| Equity risk premium (Desire) | the monthly record since 1928, Shiller's Excess CAPE Yield | ≥ 0, definitional (stocks earn more or less than bonds); no word |
 | ISM Manufacturing PMI | 29.4 May 1980 – 77.5 Jul 1950 | ≥ 50, definitional |
 | Unemployment | 2.5% May–Jun 1953 (FRED UNRATE) – 24.9% 1933 (Census) | 3.5–5%, bracketing CBO's NROU ~4.2%; the (i) says which half is sourced |
 | CPI YoY | −15.8% Jun 1921 – 23.7% Jun 1920, BLS | 1–3%, a TARGET |
@@ -570,7 +571,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 **What each band is**, and the (i) says which: computed from the app's own series (Pulse's pre-2008 range,
 deliberately not "normal"); the 10th–90th percentile where no published norm exists and the series is long
 enough to speak, **and the window is free of a policy floor** (79 years of saving qualifies; the Treasury
-series does not); cited to an outside authority (CAPE, Buffett); definitional (PMI 50, Horizon's and Desire's
+series does not); cited to an outside authority (CAPE, Buffett); definitional (PMI 50, Horizon's, Desire's and the premium's
 zero); bracketed around a published estimate; read one-sided against CBO's 50-year averages (a two-sided
 band would flag the healthy end); against its own mean (debt service — when a verdict already contains a
 threshold, the bar takes that threshold); editorial and Keren's (Temperature). **A band ships with its
@@ -651,6 +652,11 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
   measure `CCICP`, monthly from 1960) through the Backfill. FRED's copy (CSCICP03USM665S) stopped at Jan 2024 when the OECD
   rebuilt its database, so the Backfill reads the OECD directly. Neither is reachable from a cloud session, so the series
   lands by running the Backfill.
+- **The equity risk premium** (1.1.0) is a row reading in the Desire group: `premiumReading` in readings, a split
+  page against zero, and its history `premiumHistory`, Shiller's Excess CAPE Yield in percent, read by the Backfill
+  (`premiumFromRows`) from the workbook `shillerSheet` already fetches for the S&P 500. Shiller publishes it as a
+  fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
+  empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
 - **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
   head is today's feeling in today's season, or "Cycle story" on a past cycle, beside a book mark (a cycle is told whole, never by its
   close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).

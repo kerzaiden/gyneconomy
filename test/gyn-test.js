@@ -460,7 +460,7 @@ async function openPage(p, url, sheet) {
       };
     });
     (list.title === 'Search' && list.cats.join(' ') === 'Weather Mood Circulation Energy' && list.rows === list.titles &&
-     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Stress>sheet-grp-stress' && list.tabs === 'All Structural Leading Coincident Lagging')
+     list.doors && list.figs && list.grps === 'Valuations>sheet-grp-valuations,Desire>sheet-grp-desire,Stress>sheet-grp-stress' && list.tabs === 'All Structural Leading Coincident Lagging')
       ? ok('search lists every reading by category', list.rows + ' readings in ' + list.cats.join(', '))
       : bad('search lists every reading by category', JSON.stringify(list));
     const shown = async (kind, q) => {
@@ -473,7 +473,7 @@ async function openPage(p, url, sheet) {
       }));
     };
     const st = await shown('structural'), le = await shown('leading'), al = await shown('all');
-    (st.rows.sort().join() === 'Productivity growth,Stress,Valuations' &&
+    (st.rows.sort().join() === 'Desire,Productivity growth,Stress,Valuations' &&
      st.cats.join() === 'Mood,Energy' && le.rows.length > 0 && le.cats.join() === 'Weather,Mood,Circulation' && al.rows.length === list.rows && al.cats.length === 4)
       ? ok('the timing filter narrows the categories', 'structural ' + st.rows.length + ', leading ' + le.rows.length + ', all ' + al.rows.length)
       : bad('the timing filter narrows the categories', JSON.stringify({ st, le, al }));
@@ -493,7 +493,7 @@ async function openPage(p, url, sheet) {
     (head.title === 'Mood' && head.open && head.home && after.title === 'Search' && after.list)
       ? ok('a category heading opens its page and back returns to Search')
       : bad('a category heading opens its page and back returns to Search', JSON.stringify({ head, after }));
-    await p.click('#search-list .ind-row[data-open="sheet-sign-desire"]'); await settle(p);
+    await p.click('#search-list .ind-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromSearch = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
       b.click(); const box = b.closest('.page-chart, .spread-history'), fit = box.querySelector('.fit');
@@ -665,7 +665,7 @@ async function openPage(p, url, sheet) {
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
     (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
-     got.length === 18 && live.length >= 16 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
+     got.length === 19 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
       : bad('a closed cycle opens on the Cycle page itself', JSON.stringify({ view, got }));
@@ -673,7 +673,7 @@ async function openPage(p, url, sheet) {
     const eraSig = await sig();
     const drift = Object.keys(todaySig).filter(k => eraSig[k].val !== '\u2014' &&
       (eraSig[k].art !== todaySig[k].art || eraSig[k].unit !== todaySig[k].unit || eraSig[k].val === todaySig[k].val));
-    (Object.keys(todaySig).length === 18 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
+    (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
@@ -823,7 +823,8 @@ async function openPage(p, url, sheet) {
     const roster = await g.evaluate(() => {
       const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
       if (!R || !step) return null;
-      const cards = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(c => c.dataset.open);
+      const cards = [...document.querySelectorAll('.cat-sheet:not([id^="sheet-grp-"]) .cat-item[data-open]')].flatMap(c => c.hasAttribute('data-preview')
+        ? [...document.getElementById(c.dataset.open).querySelectorAll('.cat-item[data-open]')] : [c]).map(c => c.dataset.open);
       const warned = [], warn = console.warn;
       console.warn = m => warned.push(String(m));
       R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));

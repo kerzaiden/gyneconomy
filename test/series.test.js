@@ -37,6 +37,7 @@ const KEYED = [
   ['fred.json',   'sp500MonthlyHistory',     'm', 900, [5, 50000], 6],
   ['fred.json',   'confidenceHistory',       'm', 790, [50, 150], 6],
   ['fred.json',   'durablesHistory',         'm', 790, [-60, 80], 6],
+  ['fred.json',   'premiumHistory',          'm', 1180, [-5, 20], 6],
   ['fred.json',   'grossDebtQuarterly',      'q', 235, [10, 200], 4],
   ['fred.json',   'fiscalHistory.gross',     'y',  85, [10, 200], 2],
   ['fred.json',   'fiscalHistory.held',      'y',  85, [10, 200], 2],

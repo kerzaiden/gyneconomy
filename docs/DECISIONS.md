@@ -185,8 +185,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   name, in the category's colour and without an icon, heads the card on a light wash of that colour, and its
   readings are listed below it. Keren: "categories to not have icons… one container for weather and below its
   subcategories… make it beautiful." (V692)
-- **In Search, readings that form a group are one row (Valuations, Stress) that opens a page holding
-  their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660)
+- **In Search, readings that form a group are one row (Valuations, Desire, Stress) that opens a page holding
+  their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660, 1.1.0)
 - **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
   as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
   cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
@@ -521,6 +521,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
   spread, went with it. Keren: "use appetite as the keyword". (V709)
+- **Desire is a group of two cards, Consumer demand (the durables reading above, its card renamed) and the Equity
+  risk premium, with Consumer demand first and its figure as the group's preview.** Keren: "I think it actually
+  belongs in desire because risk taking is connected to desire and demand for stocks"; she chose "Group" over a ⋯
+  menu on Desire's page, since a menu is for variants of one reading (Pressure's maturities), not two readings.
+  Claude had recommended Valuations; her placement stands. The premium is Robert Shiller's Excess CAPE Yield (the
+  CAPE's earnings yield less the real 10-year Treasury yield), monthly from 1928, from the workbook CAPE already
+  comes from, through the Backfill: the Fed model needs proprietary forward earnings that are themselves forecasts,
+  Damodaran's implied premium builds in projected growth, and a TIPS version begins only in 2003. Claude's calls,
+  for Keren to overturn: zero is the only line (stocks earning no more than bonds), the reading carries no word
+  until she sets where words begin (a thin premium is a strong appetite, so the scale runs backwards to Desire's),
+  its bars are green above zero and red below as a premium paid or not, its timing is Structural like the CAPE whose
+  yield it shares, and the two cards share Desire's flame. It stays out of the mood score, as Desire does, and
+  because valuations already count its earnings yield. (1.1.0)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
