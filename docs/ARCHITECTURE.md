@@ -151,7 +151,7 @@ stays empty.
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
 dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
-and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems, the timing chips
+and their groups (`catPicks`), Search's heads and groups, the timing chips
 and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
 dates (`when`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
@@ -506,9 +506,9 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against. **Every other past figure takes the same format** (V670, Keren: one
-  format per reading): the Diagnosis at a close and Show data's notes print through `pastFigure`, which applies
+  format per reading): Show data's notes print through `pastFigure`, which applies
   `eraFig` to today's card (`readDoor`, which reads the card as it stood today even while a cycle is shown) and
-  adds the card's unit where the figure carries no % or ×, as today's Diagnosis does. The Federal budget is the
+  adds the card's unit where the figure carries no % or ×. The Federal budget is the
   one reading printed with a word (deficit or surplus), and its rank in the notes is read the same way.
 - **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
   read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
@@ -649,27 +649,18 @@ Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … ba
 Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
 then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
-under its cycle view. In clinical order: the trend card (the emotion in its season, since V681), then each **System** (a category;
-its heading is the door to the category page) with its one **Analysis** line (what the readings tell the doctor).
-Feeling and season (V684) left in V686; the Mood page tells her story by cycle instead. There are no Symptoms lists since V672 (Keren: the
-category page behind each heading already shows every reading).
-Since V686 the Diagnosis is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend
-card and a `.dx-sys` card for the systems the dial and the trend card do not already show (`!c.onDial && !c.inTrend`,
-so today Circulation and Energy, named in its head); every `.dx-k`
-title sits on its own line. The systems card ends, for the open cycle only, on **Across the cycle** (`acrossCycle`):
-the Fed funds rate and unemployment from the cycle's first month to today, read through `eraEnds`, the same ends
-`eraMove` gives a closed cycle's lines, so the two never disagree; a closed cycle's ends on **Followed**, the S&P 500
-a year after the close.
-**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`; today and a closed cycle go through the same
-`analysisFor`, which takes the closed era or null): the
-season and the emotion at the closing month, the Analysis as the movement across the cycle, and what actually
-followed a year later. The systems are `CATEGORIES` in `shown` order.
+under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card (the emotion in its
+season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year from
+the cycle's first year to its last (`yearByYear`). A row reads the year's seasons from `m.track`, the first and last
+`moodTrack` words in its months (today's `moodToday` for the year in progress) and `sp500AnnualReturns`, and is a
+`details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
+sits below both so neither imports the other. A closed cycle's card ends on **After**, the S&P 500 a year after
+the close. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
+left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
+**A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`): the
+emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
+(`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **The work-up reads, never recomputes.** Every word the Analysis lines use is taken from the card the app already prints for it
-  (`readDoor` on `.cat-item[data-open]`). Because it reads every door, every live reading repaints it:
-  `applyLive` runs `repaintDiagnosis` after the reading's own painters, so no reading needs to list it (V665:
-  it sat on the VIX's list alone, and CAPE, which lands after the VIX, stayed a day behind on every load). A
-  past cycle's Diagnosis is its close and is left as it is.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their

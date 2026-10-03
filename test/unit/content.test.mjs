@@ -132,14 +132,13 @@ test('the Diagnosis names the model’s season', () => {
   assert.match(head, new RegExp(' in ' + seasonName(seasonGroup(nowModel.season)) + '$'));
 });
 
-test('a live Fed cut reaches every door, its tag, the Diagnosis and the policy facts', async () => {
+test('a live Fed cut reaches every door, its tag and the policy facts', async () => {
   await deliver({ fedFunds: { ...FED, lo: 3.5, hi: 3.75, lastMove: '-0.25', lastMoveLabel: 'cut a quarter point' } });
   assert.equal(now.fedFunds.lo, 3.5);
   const doors = [...document.querySelectorAll('[data-open="sheet-sign-hormones"]')];
   assert.ok(doors.length >= 2);
   doors.forEach(d => assert.match(d.textContent, /3\.50–3\.75%/));
   assert.equal(tag('sheet-sign-hormones'), 'Easing');
-  assert.ok([...document.querySelectorAll('#diagnosis .dx-v')].some(v => /Hormones are easing/.test(v.textContent)));
   assert.match(document.getElementById('policy-facts').textContent, /3\.50–3\.75%/);
 });
 

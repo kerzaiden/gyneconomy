@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `52e0698` on 2026-10-03. **81 components**, **35 shared patterns**.
+Generated from commit `3316929` on 2026-10-03. **81 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -60,10 +60,10 @@ Generated from commit `52e0698` on 2026-10-03. **81 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`buildDiagnosis`** | `.dx` | `diagnosis.ts:bootDiagnosis` |
-| **`dxRow`** | `.dx-k` `.dx-row` | `diagnosis.ts:acrossCycle`, `diagnosis.ts:diagnosisHtml` |
-| **`dxText`** | `.dx-v` | — |
 | **`moodDoor`** | `.cat-mood` `.trend-card` `.trend-head` | `diagnosis.ts:diagnosisHtml` |
 | **`trendText`** | `.trend-text` | `diagnosis.ts:diagnosisHtml` |
+| **`yearByYear`** | `.dx-sys` `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
+| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -234,7 +234,6 @@ renderer speaks. Listed most-used first.
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
-| **`prettyK`** | era.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
@@ -254,6 +253,7 @@ renderer speaks. Listed most-used first.
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
 | **`popHead`** | format.ts | 3 places |
+| **`prettyK`** | era.ts | 3 places |
 | **`qIndex`** | category-analysis.ts | 3 places |
 | **`qPretty`** | format.ts | 3 places |
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
@@ -295,7 +295,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
-| `.dx-mark` | 2 | `diagnosis.ts:dxHead`, `diagnosis.ts:moodDoor` |
+| `.dx-mark` | 2 | `diagnosis.ts:moodDoor`, `diagnosis.ts:yearByYear` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |
 | `.strip-run` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.strip` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
