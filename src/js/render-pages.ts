@@ -236,7 +236,7 @@ function renderValuationTag(){
   histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
   addSources(now.valuation.src);
 }
-/* ---- RENDER: Hormones ---- */
+// ---- RENDER: Hormones ----
 function renderHormones(){
   var host = byId("hormones-history"); if (!host || !fedFundsHistory.length) return;
   var FF_Y0 = parseInt(fedFundsHistory[0].m.slice(0, 4), 10);
@@ -286,7 +286,6 @@ function renderHormones(){
     "both is the reason this one stands on zero rather than on its own minimum. " +
     "Source: Federal Reserve H.15 via FRED, series FEDFUNDS."); };
 
-  /* ---- Keren, V609: "can you put that into insights? The hormones page doesn't have an insight section. ---- */
   function ffPeaks(){
     var out: typeof fedFundsHistory = [], mode = "up", ext = fedFundsHistory[0];
     fedFundsHistory.forEach(function(d){
@@ -413,15 +412,12 @@ function renderSubjectRows(){
     var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
   }
 
-
-
   put("subj-ring-sentiment", volatilityRing());
   var volTag = volatilityTag();
   set("sentiment", now.vixRow!.flagValue +
     '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + '</span>', "");
   say("sentiment", "");
   spark("sentiment", "");
-
 
 }
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----

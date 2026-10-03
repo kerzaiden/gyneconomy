@@ -798,7 +798,11 @@ with no reading, by Keren's decision.**
 **Dead code is removed with proof, never by eye**: `npm run hygiene` names what nothing uses, and the suite
 collects every class rendered on the pages it opens; a class built at run time (its name never written whole
 in the source) must be declared in hygiene's `DYNAMIC_CLASS`, or hygiene would call its style unused and
-invite the prune that took the bull and bear colours in V662. **A maintained figure that nothing reads is a
+invite the prune that took the bull and bear colours in V662. A function that nothing in its own module calls
+is dead even when another module has a namesake (1.2.1: hygiene counts a module's private functions inside
+that module). A branch on any row's name against a literal (`R.name === "Growth"`) is caught as well as
+`ind.bodyTerm`; a lookup that finds a row by name (`filter`, `find`) is not a branch. A style keyed on a page
+attribute or on an id that belongs to one reading's page (`#pulse-record`) counts as page-scoped. **A maintained figure that nothing reads is a
 lost feature, not dead code** — check the refresh contract before deleting data.
 
 **Gone on purpose, don't re-add** (the class and id names among them are in hygiene's `GONE` list, so they
@@ -1027,7 +1031,8 @@ carrying a sentence about the figures above it is Insights. Nothing here is inve
 
 ## Accessibility
 
-Text 4.5:1, graphics 3:1, both themes — measured (`npm run a11y`, zero violations, and the suite reads
+Text 4.5:1, graphics 3:1, both themes — measured (`npm run a11y`: light at phone width, dark at desktop width,
+since 1.2.1, because contrast follows the theme and layout the width; zero violations, and the suite reads
 computed values, not the stylesheet). Touch targets 44px, small marks meeting it with an invisible disc.
 Every hover has a tap equivalent. Nothing colour-alone. Order the DOM, not the paint. Keep an `aria-label`
 where a heading is lost.

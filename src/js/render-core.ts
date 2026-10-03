@@ -73,7 +73,7 @@ function wireDetailModal(){
   });
 }
 export var detailClose: (() => void) | null = null;
-/* ---- THE SUBJECT ROW ---- */
+// ---- THE SUBJECT ROW ----
 export function subjectRow(o: SubjectRowOpts){
   return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
     (o.subject ? ' data-subject="' + o.subject + '"' : '') +
@@ -357,7 +357,6 @@ function renderPressurePage(){
   }
   function y(v: number){ return padT + innerH - ((v - minV) / (maxV - minV)) * innerH; }
 
-
   function render(){
     var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
@@ -441,7 +440,7 @@ function renderPressurePage(){
 
   renderPressureRow();
 }
-/* ---- Pressure's Insights ---- */
+// ---- Pressure's Insights ----
 function renderPressureInsights(){
   var ins = byId("pressure-insights"); if (!ins || !t10yYieldHistory.length) return;
   var y10 = curveAt("10Y");

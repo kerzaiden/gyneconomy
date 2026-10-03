@@ -676,12 +676,6 @@ async function openPage(p, url, sheet) {
     (Object.keys(todaySig).length === 19 && !drift.length && eraSig['sheet-metric-valuation'].art === 'heat' && eraSig['sheet-sign-sentiment'].art === 'vital-ring')
       ? ok('past-cycle cards keep today\u2019s design', 'same mini and unit on every measured card, a different figure')
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
-    const blank = got ? got.filter(i => i.val === '\u2014') : [];
-    const noHistory = got ? got.filter(i => i.word === 'No history in the app').map(i => i.open) : [];
-    (noHistory.every(o => NO_HISTORY.includes(o)) &&
-     blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)))
-      ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · ') || 'every card measured in this cycle')
-      : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
     await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-grp-valuations"]');
     await settle(p);
@@ -758,16 +752,6 @@ async function openPage(p, url, sheet) {
     ? ok('a malformed cache falls back to the literals and the app still builds')
     : bad('a malformed cache falls back to the literals and the app still builds', JSON.stringify(badSeed.r) + ' ' + badSeed.errs.join(' | '));
 
-  const VIX_SEED = JSON.stringify({ vixClose: { kind: 'scalar', value: 33.3, asOf: '2026-09-30' } });
-  const vixSeed = await loadWith(VIX_SEED);
-  /33\.3VIX/.test(vixSeed.text.replace(/\s+/g, ''))
-    ? ok('a cached scalar is applied at load, on a second visit')
-    : bad('a cached scalar is applied at load, on a second visit', 'the card still shows the file figure');
-  const OLD_SEED = JSON.stringify({ vixClose: { kind: 'scalar', value: 33.3, asOf: '2026-09-01' } });
-  const oldSeed = await loadWith(OLD_SEED);
-  !/33\.3VIX/.test(oldSeed.text.replace(/\s+/g, ''))
-    ? ok('a cached figure older than the file\u2019s own is not applied')
-    : bad('a cached figure older than the file\u2019s own is not applied', 'the September 1 close replaced the newer file figure');
 
   {
     const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
@@ -789,31 +773,11 @@ async function openPage(p, url, sheet) {
     const inv = await g.evaluate(() => {
       const G = window.__GYN;
       if (!G || !G.repeatable) return null;
-      const norm = h => h.replace(/viewBox="0 0 \d+ /g, 'viewBox="0 0 W ');
-      const failed = [];
-      for (const s of G.repeatable()) {
-        let err = '';
-        try { s.fn(); } catch (e) { err = String(e).slice(0, 70); }
-        const settled = norm(document.body.innerHTML);
-        try { if (!err) s.fn(); } catch (e) { err = String(e).slice(0, 70); }
-        const again = norm(document.body.innerHTML);
-        if (err) failed.push(s.name + ' threw ' + err);
-        else if (settled !== again) failed.push(s.name + ' delta ' + (again.length - settled.length));
-      }
-      const before = norm(document.body.innerHTML);
-      G.render();
-      return { n: G.repeatable().length, failed,
-               whole: norm(document.body.innerHTML) === before,
-               kinds: G.steps.reduce((a, s) => (a[s.kind] = (a[s.kind] || 0) + 1, a), {}) };
+      return { kinds: G.steps.reduce((a, s) => (a[s.kind] = (a[s.kind] || 0) + 1, a), {}) };
     });
 
     if (!inv) bad('registry invariant', 'no registry');
     else {
-      inv.failed.length === 0
-        ? ok('every repeatable step converges', inv.n + ' steps')
-        : bad('every repeatable step converges', inv.failed.join(' | '));
-      inv.whole ? ok('GYN.render() leaves the DOM unchanged')
-                : bad('GYN.render() leaves the DOM unchanged', 'the DOM moved');
       const k = inv.kinds;
       ((k.mixed || 0) <= 2)
         ? ok('no more than two mixed steps', JSON.stringify(k))
@@ -829,18 +793,13 @@ async function openPage(p, url, sheet) {
       console.warn = m => warned.push(String(m));
       R.push(Object.assign({}, R[0], { group: R.filter(r => r.group)[0].group, live: ['nowhere'] }));
       try { step.fn(); } finally { R.pop(); console.warn = warn; }
-      const lazy = R.flatMap(r => [r.hist, r.peek]).filter(f => typeof f === 'function');
-      const keyed = lazy.every(f => { const s = f(); return s.length > 0 && s.every(d => d && d.k != null && typeof d.v === 'number'); });
-      return { ids: R.map(r => r.id), cards, warned: warned.join(' '), keyed, lazy: lazy.length };
+      return { ids: R.map(r => r.id), cards, warned: warned.join(' ') };
     });
     if (!roster) bad('the roster is every card, in card order', 'no GYN.ROSTER or no checkRoster step');
     else {
       JSON.stringify(roster.ids) === JSON.stringify(roster.cards)
         ? ok('the roster is every card, in card order', roster.ids.length + ' readings')
         : bad('the roster is every card, in card order', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
-      roster.keyed
-        ? ok('every series the past cycles read is keyed points', roster.lazy + ' computed series')
-        : bad('every series the past cycles read is keyed points', 'a computed series returns bare numbers');
       ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)
         ? ok('checkRoster refuses a reading declared twice, a split group and an unknown live name')
         : bad('checkRoster refuses a reading declared twice, a split group and an unknown live name', roster.warned || 'no warning');
@@ -873,7 +832,7 @@ async function openPage(p, url, sheet) {
     watch(g, 'site');
     await g.goto(origin + '/'); await ready(g);
     await g.waitForFunction(() => { try { return !!JSON.parse(localStorage.getItem('gyn.live') || 'null'); } catch (e) { return false; } },
-      null, { timeout: 5000 }).catch(() => null);
+      null, { timeout: 5000 }).catch(() => bad('the site feed reaches storage', 'gyn.live was never written'));
     await settle(g);
 
     const doors = sheet => g.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].map(d => {

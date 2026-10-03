@@ -129,8 +129,7 @@ export var CONFIDENCE_LINE = 100;
 export var DESIRE_LINE = 0;
 // ---- Desire: the equity risk premium ----
 export var PREMIUM_LINE = 0;
-/* ---- Institutional trust is not in this panel ---- */
-/* ---- The deficit, year by year ---- */
+// ---- The deficit, year by year ----
 export var DEF_FROM_YEAR = 1946;
 export var deficitHistory = SERIES.deficitHistory;
 export var DEF_MEAN = deficitHistory.reduce(function(a, b){ return a + b; }, 0) / deficitHistory.length;

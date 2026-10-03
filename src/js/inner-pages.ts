@@ -11,7 +11,7 @@ import { sheetRenderers } from "./render-core.ts";
 import { growthDetail } from "./dial-cycle.ts";
 
 export type MetricCtx = { capeNow: number; buffNow: number | null; tempInd: Indicator | undefined; r: typeof nowModel.reading; gq: QuarterPoint[] };
-/* ---- THE INNER PAGES ---- */
+// ---- THE INNER PAGES ----
 function actCycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
   unempHistory.forEach(function(d, i){

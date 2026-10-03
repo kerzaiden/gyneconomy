@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { errors, bootWarnings } from './dom.mjs';
+import { errors, bootWarnings, window } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { ROSTER } from '../../src/js/roster.ts';
 import { page, pickerOpen } from '../../src/js/history.ts';
@@ -94,4 +94,33 @@ test('Escape closes only the cycle picker, and arrow keys move along the window 
   assert.deepEqual(segs().map(s => s.tabIndex).filter(t => t === 0).length, 1);
   key('keydown', 'ArrowRight', segs()[at]);
   assert.equal(page.range[id], segs()[(at + 1) % segs().length].getAttribute('data-range'));
+});
+
+test('every repeatable step converges, and GYN.render() leaves the page as it found it', () => {
+  const G = window.__GYN, norm = h => h.replace(/viewBox="0 0 \d+ /g, 'viewBox="0 0 W '), failed = [];
+  for (const s of G.repeatable()) {
+    let err = '';
+    try { s.fn(); } catch (e) { err = String(e).slice(0, 70); }
+    const settled = norm(document.body.innerHTML);
+    try { if (!err) s.fn(); } catch (e) { err = String(e).slice(0, 70); }
+    if (err) failed.push(s.name + ' threw ' + err);
+    else if (settled !== norm(document.body.innerHTML)) failed.push(s.name + ' moved');
+  }
+  const before = norm(document.body.innerHTML);
+  G.render();
+  assert.deepEqual(failed, []);
+  assert.equal(norm(document.body.innerHTML), before);
+});
+
+test('every history chart is attached to its readout, so hover and keys reach it', () => {
+  let seen = 0;
+  const loose = Object.keys(sheetRenderers).flatMap(id => {
+    sheetRenderers[id](390);
+    const svgs = [...document.querySelectorAll('svg.vh-svg')];
+    seen += svgs.length;
+    return svgs.filter(svg => { for (let n = svg.parentElement; n; n = n.parentElement) if (n.__geom) return false; return true; })
+      .map(svg => id + ': ' + svg.getAttribute('aria-label').slice(0, 40));
+  });
+  assert.ok(seen > 10, seen + ' charts');
+  assert.deepEqual(loose, []);
 });
