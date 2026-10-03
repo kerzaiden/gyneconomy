@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,181 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
+The source is **9,183 lines** in 35 files, about 602 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `20e55df` on 2026-10-03.
+Generated from commit `bcb6e8c` on 2026-10-03.
 
 ## The page
 
@@ -42,7 +42,7 @@ Counts: **31** modules, **589** top-level functions, **103** top-level vars, **3
 | `js/diagnosis.ts` | 80 | 12 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
 | `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
-| `js/portfolio.ts` | 146 | 14 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/portfolio.ts` | 147 | 14 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
@@ -53,7 +53,7 @@ Counts: **31** modules, **589** top-level functions, **103** top-level vars, **3
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 79 | 37 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 17 | 14 | — |
+| `js/history-fred.ts` | 18 | 14 | — |
 | `js/indicators.ts` | 283 | 34 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 181 | 16 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -84,7 +84,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:76`–79 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
 | 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
-| 16 | `bootPortfolio` | `js/portfolio.ts:145`–? |
+| 16 | `bootPortfolio` | `js/portfolio.ts:146`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
 | 18 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 19 | `bootRepaint` | `js/repaint.ts:65`–81 |
@@ -1057,10 +1057,10 @@ falls in. **export** marks a name other modules import.
 | 10 | `confidenceHistory` · export | `var confidenceHistory =` |
 | 11 | `durablesHistory` · export | `var durablesHistory =` |
 | 12 | `premiumHistory` · export | `var premiumHistory =` |
-| 13 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
-| 14 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
-| 15 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
-| 16 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
+| 14 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
+| 15 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
+| 16 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
+| 17 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
 
 ### `js/indicators.ts`
 

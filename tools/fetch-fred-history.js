@@ -182,6 +182,40 @@ function damodaranReturns(html, from, to) {
   return out;
 }
 
+const ASSET_COLUMNS = { stocks: /s&(amp;)?p/i, bills: /bill/i, bonds: /t\.?\s*bond/i, baa: /baa/i, estate: /estate/i, gold: /gold/i };
+
+function damodaranAssets(html, from) {
+  const rows = html.split(/<tr[\s>]/i).slice(1).map(row => [...row.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m => m[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()));
+  const head = rows.findIndex(r => r.some(c => ASSET_COLUMNS.bills.test(c)) && r.some(c => ASSET_COLUMNS.gold.test(c)));
+  if (head === -1) throw new Error('Damodaran: no header naming bills and gold; first rows ' + JSON.stringify(rows.slice(0, 4)));
+  const col = {};
+  for (const k of Object.keys(ASSET_COLUMNS)) {
+    const i = rows[head].findIndex(c => ASSET_COLUMNS[k].test(c));
+    if (i === -1) throw new Error('Damodaran: no ' + k + ' column in ' + JSON.stringify(rows[head]));
+    col[k] = i - (rows[head].length - rows.find((r, j) => j > head && /^\d{4}$/.test(r[0])).length);
+  }
+  say('Damodaran header ' + JSON.stringify(rows[head]) + ' → columns ' + JSON.stringify(col));
+  const out = {};
+  for (const k of Object.keys(col)) out[k] = [];
+  const seen = new Set();
+  for (const r of rows.slice(head + 1)) {
+    if (!/^\d{4}$/.test(r[0])) { if (seen.size) break; continue; }
+    const y = Number(r[0]);
+    if (seen.has(y)) break;
+    seen.add(y);
+    if (y < from) continue;
+    for (const k of Object.keys(col)) {
+      const v = Number(String(r[col[k]]).replace(/[%,\s]/g, ''));
+      if (!band(v, -60, 200)) throw new Error('Damodaran ' + k + ' ' + y + ': ' + r[col[k]]);
+      out[k].push({ y, v: Math.round(v * 100) / 100 });
+    }
+  }
+  const n = out.stocks.length;
+  if (n < 90 || out.stocks[0].y !== from) throw new Error('Damodaran: expected annual returns from ' + from + ', got ' + n + ' rows');
+  say('Asset returns ' + n + ' years, ' + from + ' → ' + out.stocks[n - 1].y + ' (Damodaran: ' + Object.keys(col).join(', ') + '); last row ' + JSON.stringify(Object.keys(col).map(k => out[k][n - 1].v)));
+  return out;
+}
+
 function worthLevels(html, from, to) {
   const out = {};
   for (const row of html.split(/<tr[\s>]/i).slice(1)) {
@@ -226,6 +260,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (confidence) out.confidenceHistory = m(confidence);
   if (durables) out.durablesHistory = m(durables);
   if (premium) out.premiumHistory = m(premium);
+  if (e.assets) out.assetReturns = e.assets;
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -315,7 +350,13 @@ async function earlySeasons() {
   say('CPIAUCSL YoY  ' + sa.length + ' months, ' + sa[0].m + ' → ' + sa[sa.length - 1].m + ' (before ' + CPI_JOIN + ')');
   const r = await fetch(DAMODARAN, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
   if (!r.ok) throw new Error('Damodaran: HTTP ' + r.status);
-  const returns = damodaranReturns(await r.text(), RETURNS_FROM, RETURNS_JOIN);
+  const html = await r.text();
+  const returns = damodaranReturns(html, RETURNS_FROM, RETURNS_JOIN);
+  const assets = damodaranAssets(html, RETURNS_FROM);
+  for (let y = RETURNS_FROM; y < RETURNS_JOIN; y++) {
+    const a = assets.stocks.find(d => d.y === y);
+    if (!a || Math.abs(a.v - returns[y]) > 0.01) throw new Error('Damodaran: the stocks column does not match the S&P returns in ' + y);
+  }
   say('S&P returns   ' + Object.keys(returns).length + ' years, ' + RETURNS_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (Damodaran, dividends included)');
   const growth = {};
   fiscalYears(await fredSeries('A191RL1A225NBEA', GROWTH_FROM + '-01-01'), -15, 25).filter(d => d.y < RETURNS_JOIN).forEach(d => { growth[d.y] = d.v; });
@@ -327,11 +368,11 @@ async function earlySeasons() {
   if (Math.abs(worth[GROWTH_FROM] - growth[GROWTH_FROM]) > 0.5) throw new Error('MeasuringWorth ' + GROWTH_FROM + ' growth ' + worth[GROWTH_FROM] + ' does not meet BEA ' + growth[GROWTH_FROM]);
   for (let y = WORTH_FROM + 1; y < GROWTH_FROM; y++) growth[y] = worth[y];
   say('Real GDP      ' + (WORTH_FROM + 1) + ' → ' + (GROWTH_FROM - 1) + ' (MeasuringWorth, ' + JSON.stringify(levels) + '; ' + GROWTH_FROM + ' meets BEA at ' + worth[GROWTH_FROM] + ')');
-  return { gdp, cpi, returns, growth };
+  return { gdp, cpi, returns, growth, assets };
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { premiumFromRows, damodaranReturns, damodaranAssets, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

@@ -1,7 +1,7 @@
 import { auxStat, facts, fmtSigned, srcBlock } from "./format.ts";
 import { moreRow, need } from "./dom.ts";
 import { cpiYoYHistory } from "./refresh-season.ts";
-import { fedFundsHistory, sp500MonthlyHistory } from "./history-fred.ts";
+import { assetReturns, fedFundsHistory, sp500MonthlyHistory } from "./history-fred.ts";
 import { marketCycles } from "./data.ts";
 import { cycleModel, nowModel, QUARTER_END_MONTH } from "./model.ts";
 import type { ModelReading } from "./model.ts";
@@ -141,5 +141,6 @@ function seasonsHtml(r: ModelReading){
 function buildPortfolio(){
   var host = need("panel-portfolio"), r = nowModel.reading;
   host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml(r) + seasonsHtml(r) + '</div>';
+  host.dataset.assets = String(Object.keys(assetReturns).filter(function(k){ return assetReturns[k].length; }).length);
 }
 export function bootPortfolio(){ buildPortfolio(); }

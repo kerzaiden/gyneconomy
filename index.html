@@ -24881,6 +24881,14 @@
       m: "2026-09",
       v: 1.01
     } ],
+    assetReturns: {
+      stocks: [],
+      bills: [],
+      bonds: [],
+      baa: [],
+      estate: [],
+      gold: []
+    },
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -27699,6 +27707,7 @@
   var confidenceHistory = fred_default.confidenceHistory;
   var durablesHistory = fred_default.durablesHistory;
   var premiumHistory = fred_default.premiumHistory;
+  var assetReturns = fred_default.assetReturns;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
@@ -35971,6 +35980,9 @@
   function buildPortfolio() {
     var host = need("panel-portfolio"), r = nowModel.reading;
     host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml(r) + seasonsHtml(r) + "</div>";
+    host.dataset.assets = String(Object.keys(assetReturns).filter(function(k) {
+      return assetReturns[k].length;
+    }).length);
   }
   function bootPortfolio() {
     buildPortfolio();
