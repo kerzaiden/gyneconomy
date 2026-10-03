@@ -1,10 +1,10 @@
-import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
+import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -713,6 +713,14 @@ function rowLike(r: LiveRow | null, f: LiveRow){
   if (!r || !m || rowId(r) !== rowId(f) || !(isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max)) return false;
   return Object.keys(f).every(function(k){ var t = typeof f[k]; return (t !== "string" && t !== "number") || typeof r![k] === t; });
 }
+function overRows<T extends object>(file: T[], rows: readonly object[]): T[] {
+  return file.map(function(f, i){
+    var r = rows[i] as LiveRow, o = Object.assign({}, f) as T & LiveRow, m = r.meter as Meter;
+    Object.keys(f).forEach(function(k){ var t = typeof (f as LiveRow)[k]; if (t === "string" || t === "number") (o as LiveRow)[k] = r[k]; });
+    o.meter = merge(o.meter, { value:m.value, min:m.min, max:m.max });
+    return o;
+  });
+}
 function rowsOk(rows: (LiveRow | null)[] | undefined, file: readonly object[]){
   return Array.isArray(rows) && rows.length === file.length && (file as LiveRow[]).every(function(f, i){ return rowLike(rows[i], f); });
 }
@@ -729,6 +737,12 @@ function deriveHorizon(){
     d2:hznDelta(t10y2yHistory, tN2),
     word:w.word, state:w.state };
 }
+function vixAsOf(){ return String(now.sentiment.rows[0].sub || ""); }
+function coincidentAsOf(){ return coincident.map(function(c){ return periodIso(String(c.metricSub || "")); }).sort().pop() || ""; }
+function periodIso(sub: string){
+  var q = /Q([1-4]) (\d{4})$/.exec(sub), m = /([A-Z][a-z]{2}) (\d{4})$/.exec(sub), i = m ? MONTHS_SHORT.indexOf(m[1]) : -1;
+  return q ? q[2] + "-" + ("0" + ((+q[1] - 1) * 3 + 1)).slice(-2) + "-01" : m && i >= 0 ? m[2] + "-" + ("0" + (i + 1)).slice(-2) + "-01" : "";
+}
 export function bootReadingRegistry(){
   /* ---- THE READING REGISTRY ---- */
   defineReadings({
@@ -736,9 +750,9 @@ export function bootReadingRegistry(){
       kind: "object", fileAsOf: function(){ return now.fedFunds.asOf; },
       ok: function(v: Partial<FedFunds>){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
       set: function(v: Partial<FedFunds>){
-        if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"", next:"" });
-        if (v.lastMove !== undefined && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge(v, { turnLabel:"", turnValue:"" });
-        if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
+        if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge({ lastMove:"", lastMoveLabel:"", asOf:"", next:"" }, v);
+        if (v.lastMove !== undefined && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge({ turnLabel:"", turnValue:"" }, v);
+        if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge({ vote:"" }, v);
         now.fedFunds = merge(now.fedFunds, v);
       }
     },
@@ -751,26 +765,29 @@ export function bootReadingRegistry(){
       set: function(v: CurvePoint[]){ now.yieldCurve = v; deriveUninvLag(); if (horizonRead) deriveHorizon(); }
     },
     sentiment:  {
-      kind: "object",
+      kind: "object", fileAsOf: vixAsOf,
       ok: function(v: Partial<typeof now.sentiment>){ return v.rows === undefined || rowsOk(v.rows, now.sentiment.rows); },
-      set: function(v: Partial<typeof now.sentiment>){ now.sentiment = merge(now.sentiment, v); now.vixRow = now.sentiment.rows[0]; }, onOpen: true
+      set: function(v: Partial<typeof now.sentiment>){
+        now.sentiment = merge(now.sentiment, v.rows ? merge(v, { rows: overRows(now.sentiment.rows, v.rows) }) : v);
+        now.vixRow = now.sentiment.rows[0];
+      }, onOpen: true
     },
     valuation:  {
-      kind: "object",
+      kind: "object", fileAsOf: capeAsOf,
       ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, now.valuation.rows); },
       set: function(v: Partial<typeof now.valuation>){
-        now.valuation = merge(now.valuation, v);
+        now.valuation = merge(now.valuation, v.rows ? merge(v, { rows: overRows(now.valuation.rows, v.rows) }) : v);
         var cape = valRow("cape"); if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
       }
     },
     coincident: {
-      kind: "series",
+      kind: "series", fileAsOf: coincidentAsOf,
       ok: function(v: Indicator[]){ return rowsOk(v as unknown as LiveRow[], coincident); },
-      set: function(v: Indicator[]){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
+      set: function(v: Indicator[]){ coincident = overRows(coincident, v); deriveVolumeTag(); derivePulseTag(); },
       onOpen: true
     },
     vixClose: {
-      kind: "scalar", band: [5, 100], fileAsOf: function(){ return now.sentiment.rows[0].sub; },
+      kind: "scalar", band: [5, 100], fileAsOf: vixAsOf,
       set: function(v: number){
         var row = now.sentiment.rows[0];
         row.meter.value = v;
@@ -778,9 +795,9 @@ export function bootReadingRegistry(){
         if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
       }
     },
-    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
+    vix3mClose: { kind: "scalar", band: [5, 100], fileAsOf: vixAsOf, set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
     capeValue: {
-      kind: "scalar", band: [4, 60],
+      kind: "scalar", band: [4, 60], fileAsOf: capeAsOf,
       set: function(v: number){
         var row = fileRow("cape");
         row.meter.value = v;
