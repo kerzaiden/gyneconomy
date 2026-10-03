@@ -1179,12 +1179,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
   V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
   symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
-- **The Diagnosis is two separate cards at the cycle's width: the emotion in its season, then Circulation and
-  Energy.** Keren: "I want to break the analysis container to three separate containers. That would be at the
+- **The Diagnosis is three separate cards at the cycle's width: the emotion in its season, the cycle year by
+  year, then Circulation and Energy.** Keren: "I want to break the analysis container to three separate containers. That would be at the
   width of the current cycle"; the third, Feeling and season, left in V686 (the Mood page tells her story by cycle).
   The second card is headed by its systems' names with the stethoscope, and its systems carry no "Analysis" label
   (Keren, V674: "it just takes up space"). A closed cycle's card ends on what followed: the S&P 500 a year after
   the close. (V674, V682, V686)
+- **The cycle reads year by year under its story, one line a year, and each year opens its quarter's sheet.**
+  Keren: "I need to turn the dial all the way back and click on the button … what I would want is some kind of a
+  very brief summary of the cycle by years … it correlates pretty well with the story of the cycle." A year reads
+  its seasons in order, Mrs. Market's emotion at its first and last month (one word when they agree; none before
+  her mood can be read) and the S&P 500's return for the year ("so far" for the year in progress), all from the
+  app's own record, nothing written by hand. The year opens the sheet of its last quarter, the one the dial's
+  centre opens. Circulation and Energy stay until Keren decides. (1.8.0)
 - **Circulation and Energy close on one combined line, "Across the cycle": the Fed funds rate and the unemployment
   rate from the month the cycle opened to now.** Keren: "the next combined metrics I want is something to do with
   circulation and energy so figure it out". Claude chose the pair as the cycle's policy and its result (money's

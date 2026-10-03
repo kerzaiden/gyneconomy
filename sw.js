@@ -1,4 +1,4 @@
-var VERSION = 'gyn-722';
+var VERSION = 'gyn-724';
 var SHELL = [
   './',
   './index.html',

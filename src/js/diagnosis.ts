@@ -1,9 +1,11 @@
-import { CHEV, seasonName } from "./format.ts";
-import { addSources, byId } from "./dom.ts";
+import { CHEV, fmtSigned, seasonName } from "./format.ts";
+import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { bookSvg, stethoscopeSvg } from "./marks.ts";
-import { calendarTodayY } from "./refresh-season.ts";
-import { diagnoseToday, marketMonths, nowModel, seasonGroup, yearAfter } from "./model.ts";
+import { bookSvg, calendarSvg, stethoscopeSvg } from "./marks.ts";
+import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
+import { sp500AnnualReturns } from "./data.ts";
+import { quarterSheet } from "./quarter-sheet.ts";
+import { diagnoseToday, marketMonths, moodToday, moodTrack, nowModel, seasonGroup, yearAfter } from "./model.ts";
 import { CATEGORIES, categoriesShown } from "./roster.ts";
 import { pairAt, pastFigure, prettyK, readDoor, rosterRows } from "./era.ts";
 import type { CycleModel } from "./model.ts";
@@ -39,19 +41,18 @@ function analysisFor(key: string, d: DxView | null, era: EraSpan | null){
 function dxRow(label: string, html: string){ return '<div class="dx-row"><span class="dx-k">' + label + '</span>' + dxText(html) + '</div>'; }
 function dxText(html: string){ return '<p class="dx-v">' + html + '</p>'; }
 function dxSection(head: string, body: string, cls?: string){ return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + '</section>'; }
-function systemHtml(c: Category, analysis: string){
-  return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + '</div>';
-}
-function dxHead(title: string, c?: Category | null, mark?: string){
-  var tag = c ? 'button type="button"' : "div";
-  return '<' + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + '>' +
-    (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + title + (c ? CHEV : "") + '</' + (c ? "button" : "div") + '>';
+function systemHtml(c: Category, analysis: string){ return dxItem(dxHead(c.title, c), analysis, " cat-" + c.key); }
+function dxItem(head: string, text: string, cls?: string){ return '<div class="dx-cat' + (cls || "") + '">' + head + dxText(text) + '</div>'; }
+function dxHead(title: string | number, c?: Category | null, mark?: string, sheet?: string){
+  var link = !!c || sheet != null, tag = link ? "button" : "div", attrs = c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : sheet != null ? ' data-detail-idx="' + detailSlot(sheet) + '"' : "";
+  return '<' + tag + (link ? ' type="button"' : "") + ' class="dx-sys-head' + (sheet != null ? " details-link" : "") + '"' + attrs + '>' +
+    (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' : "") + title + (link ? CHEV : "") + '</' + tag + '>';
 }
 function diagnosisHtml(m: CycleModel){
   var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;
   if (!d) return "";
   var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-  return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
+  return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m) +
     dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
       systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
       d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
@@ -62,6 +63,25 @@ function acrossCycle(era: Cycle){
   if (!fed || !job) return "";
   return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to +
     ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
+}
+function yearByYear(m: CycleModel){
+  var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
+  for (var y = m.era.from; y <= m.endYear; y++){
+    var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), line = yearLine(m, y, inYear);
+    if (!line) continue;
+    rows.push(dxItem(dxHead(y, null, undefined, inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined), line));
+  }
+  return rows.length ? dxSection(dxHead("Year by year", null, calendarSvg()), rows.join("")) : "";
+}
+function yearLine(m: CycleModel, y: number, inYear: CycleModel["track"]){
+  var ytd = m.ongoing && y === calendarTodayY, seasons: string[] = [], ret = sp500AnnualReturns[y];
+  inYear.forEach(function(seg){ var n = wheelMeta[seg.season].name; if (seasons[seasons.length - 1] !== n) seasons.push(n); });
+  var moods = moodTrack().filter(function(x){ return !!x.word && +x.m.slice(0, 4) === y; }).map(function(x){ return x.word as string; });
+  var today = ytd ? moodToday() : null;
+  if (today && today.word) moods.push(today.word);
+  var parts = [seasons.join(", then "), moods.length ? (moods[0] === moods[moods.length - 1] ? moods[0] : moods[0] + " to " + moods[moods.length - 1]) : "",
+    ret != null ? "S&amp;P 500 <b>" + fmtSigned(ret, 1) + "%</b>" + (ytd ? " so far" : "") : ""];
+  return parts.filter(function(p){ return p; }).join(" \u00b7 ");
 }
 function moodDoor(head: string, body: string){
   var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
