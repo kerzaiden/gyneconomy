@@ -126,9 +126,8 @@ test('a live yield curve moves the 10-year figure on the Pressure card', async (
   assert.equal(value('sheet-sign-pressure'), '4.44%');
 });
 
-test('a live CAPE and high-yield spread reach the Valuations and Desire cards', async () => {
-  await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-01' }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
-  assert.equal(value('sheet-metric-valuation'), '35.2×');
+test('a live high-yield spread reaches the Desire card', async () => {
+  await deliver({ hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
   assert.equal(value('sheet-sign-desire'), '4.10%');
   assert.deepEqual(errors, []);
 });
@@ -158,11 +157,13 @@ test('a live document that would break the page is refused and not kept', async 
   assert.ok(!/CBOE VIX"\}\]/.test(localStorage.getItem('gyn.live') || ''));
 });
 
-test('a live CAPE repaints the Valuations verdict word', async () => {
+test('a live CAPE reaches every Valuations door with its verdict word', async () => {
+  const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
   await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
   assert.equal(word('sheet-metric-valuation'), 'Fairly valued');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
   assert.equal(word('sheet-metric-valuation'), 'Highly overvalued');
+  assert.ok(doors().length >= 1 && doors().every(t => /^35\.2/.test(t)), JSON.stringify(doors()));
 });
 
 test('a new Fed range without its move clears the old move and the next date, and the note follows', async () => {

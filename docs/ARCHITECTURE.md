@@ -11,7 +11,7 @@ true is in git history (`git show v632-component-page:docs/ARCHIVE.md` for the r
 A published artifact cannot call an external host; its only route in is its own database, which a Claude
 session writes and the page reads with `claude.use("db")`. The hosted site has a second route, a JSON file
 the Data workflow commits. Both end at one intake, `receive`, and one contract, the `READINGS` registry
-in `js/live.js` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
+in `js/live.ts` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
 described under "How the live layer works" below; the decisions are these:
 
 - **The literal in the file is the floor, not a duplicate.** It renders first; the database and the
@@ -39,7 +39,7 @@ Six of the nine rows have a writer today; see Open questions.
 
 ### How the live layer works
 
-Moved here from the code comments of `js/live.js` at V650, when the source lost its comments. Keren's
+Moved here from the code comments of `js/live.ts` at V650, when the source lost its comments. Keren's
 decisions are cited as she made them.
 
 #### The cache
@@ -128,7 +128,7 @@ stays empty.
 #### The roster
 
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
-dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.js`,
+dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
 and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems, the timing chips
 and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
@@ -322,6 +322,8 @@ the manifest's; now each module says what it imports.
   another module sits in that module's `boot…()`, and `main.ts` calls the boots in order. **The boot order is the
   semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
   follows every statement that runs at load, boots included, and fails on a value read before it is set.
+  It reads the boot list from `main.ts`'s syntax tree and fails if it finds none (V705: from V698 to V704 a
+  line pattern missed the boots inside `try` and the gate checked nothing).
 - **An import is read-only, so a value that other modules change lives in its owner's store** (V697): `now` in
   `data` (the live-fed figures: `now.fedFunds`, `now.yieldCurve`, `now.vixRow`…), `ui` in `dom` (what is open, and
   the hooks one page leaves for another), `page` in `history` (each history page's mode, window and head). A write
@@ -337,12 +339,13 @@ the manifest's; now each module says what it imports.
   and after the types went in. `npm run typecheck` (in `check`) runs `tsc` with `strict` on. The app's shared shapes
   (a row, a meter, a point, a cycle, a reading, a chart's geometry) are global types in `src/types.d.ts`; what the
   app adds to `window` and to DOM elements is in `src/globals.d.ts`; a type only one module uses stays in that module.
-  Types are syntax, not comments, so the no-comments rule holds. The tools that read the source (`load-order`,
-  `uncomment`) parse it after `stripTypeScriptTypes`, which blanks the types and keeps every position; the function
+  Types are syntax, not comments, so the no-comments rule holds. `load-order` parses the source after
+  `stripTypeScriptTypes`, which blanks the types and keeps every position; `uncomment` reads comments with
+  TypeScript's own parser, so one inside type syntax or in a `.d.ts` file is caught (V705); the function
   sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
 - **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
-- **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
-  any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
+- **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
+  the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
@@ -378,7 +381,7 @@ Rules that shape the pages:
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
   budget · Households). The split pages are
-  built by one builder, `src/js/indicators.js` (the roster row plus its `splitPages` entry, joined by
+  built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):

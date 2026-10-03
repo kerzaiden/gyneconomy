@@ -37,6 +37,20 @@ function jsComments(code, from, out, module) {
     onComment: (block, value, s, e) => { if (!code.startsWith('#!', s)) out.push({ start: from + s, end: from + e, kind: block ? 'block' : 'line', value }); } });
 }
 
+function tsComments(code, out) {
+  const ts = require('typescript'), seen = new Set();
+  const take = r => { if (seen.has(r.pos)) return; seen.add(r.pos);
+    const block = r.kind === ts.SyntaxKind.MultiLineCommentTrivia;
+    out.push({ start: r.pos, end: r.end, kind: block ? 'block' : 'line', value: code.slice(r.pos + 2, block ? r.end - 2 : r.end) }); };
+  const f = ts.createSourceFile('m.ts', code, ts.ScriptTarget.Latest, true);
+  (function walk(n) {
+    (ts.getLeadingCommentRanges(code, n.pos) || []).forEach(take);
+    (ts.getTrailingCommentRanges(code, n.end) || []).forEach(take);
+    n.getChildren(f).forEach(walk);
+  })(f);
+  return out;
+}
+
 function remove(s, list, keepTitles) {
   let removed = 0, kept = 0;
   list.slice().sort((a, b) => b.start - a.start).forEach(c => {
@@ -76,11 +90,12 @@ function srcComments(text) {
 const plain = code => minify(code, { compress: false, mangle: false, format: { comments: false, beautify: true } }).then(r => r.code);
 
 (async () => {
-  const pages = pageParts(), mods = scriptModules();
+  const decls = fs.readdirSync(SRC).filter(f => f.endsWith('.d.ts')).map(f => ({ name: f, text: fs.readFileSync(path.join(SRC, f), 'utf8') }));
+  const pages = pageParts(), mods = scriptModules().concat(decls);
   const names = pages.map(p => p.name).concat(mods.map(m => m.name));
   const text = pages.map(p => p.text).concat(mods.map(m => m.text));
   const inSrc = srcComments(pages.map(p => p.text)).concat(...mods.map((m, k) => {
-    const list = []; jsComments(m.plain, 0, list, true);
+    const list = tsComments(m.text, []);
     return list.map(c => Object.assign(c, { part: pages.length + k }));
   }));
   const files = scripts().map(f => { const s = fs.readFileSync(path.join(ROOT, f), 'utf8'), list = []; jsComments(s, 0, list, f.endsWith('.mjs')); return { f, s, list }; });

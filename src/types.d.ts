@@ -56,7 +56,6 @@ type Cycle = {
   blurb: string;
 };
 type Season = "summer" | "autumn" | "lateautumn" | "winter" | "springdeflation" | "spring";
-type Html = string;
 type ChartRef = { label: string; v?: number | null; dash?: boolean; cls?: string; swatch?: string };
 type ChartGeom = {
   src?: string;
