@@ -1,6 +1,6 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
 import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
-import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
+import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
 import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
@@ -75,16 +75,18 @@ export function deficitChart(Wpx: number, from: number, to?: number | null){
     'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + ' to ' + y1 +
     ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + '</svg>';
 }
+function colScale(F: HistFrame, n: number, lo: number, hi: number){
+  var h = (F.R - F.L) / (2 * Math.max(1, n));
+  return { X:function(i: number){ return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1); },
+           Y:function(v: number){ return F.B - (F.B - F.T) * (v - lo) / (hi - lo); } };
+}
 export function velocityHistoryChart(Wpx: number, from: number, to?: number | null){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
   var ser = m2vHistory.slice(from, to == null ? undefined : to), n = ser.length;
   var sc = windowScale(ser, [PULSE_PRE2008]);
-  var LO = sc.lo, HI = sc.hi;
-  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
-    return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [];
   var y0 = M2V_FROM_YEAR + Math.floor(from / 4);
@@ -152,10 +154,7 @@ export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
   if (!seen.length) return "";
   var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
   var sc = windowScale(seen.map(function(d){ return d.v; }), [0, NROU_NOW]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
@@ -193,10 +192,7 @@ export function fedFundsHistoryChart(Wpx: number, from: number, o?: HistOpts){
   if (!seen.length) return "";
   var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
   var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
@@ -236,10 +232,7 @@ export function householdsChart(Wpx: number, from: number, to?: number | null){
   var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
   var n = bill.length;
   var sc = windowScale(bill.concat(kept), [0]);
-  var LO = sc.lo, HI = sc.hi;
-  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
-    return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [];
   var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
@@ -281,10 +274,7 @@ export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   if (!n) return "";
   var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
   var sc = windowScale(vals.map(function(d){ return d.v; }), [0, CPI_TARGET]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0), avgShown = null;
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
@@ -322,10 +312,7 @@ export function gdpHistoryChart(Wpx: number, from: number, o?: HistOpts){
   if (!n) return "";
   var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
   var sc = windowScale(vals.map(function(d){ return d.v; }), [0, GDP_NORM]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
@@ -371,10 +358,7 @@ export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
   var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
   var y1 = M2_FROM_YEAR + 1 + Math.floor(((to == null ? all.length : to) - 1) / 4);
   var sc = windowScale(vals, [0, M2_NORM]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i: number){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
+  var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
   var f = function(v: number){ return v.toFixed(1); };
   var out: string[] = [], zero = Y(0);
   out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
