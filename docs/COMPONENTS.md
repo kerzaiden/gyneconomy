@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9e9cd4c` on 2026-10-03. **81 components**, **39 shared patterns**.
+Generated from commit `3ec139b` on 2026-10-03. **81 components**, **39 shared patterns**.
 
 ## analysis.ts
 
@@ -211,6 +211,7 @@ renderer speaks. Listed most-used first.
 | **`meanRule`** | charts.ts | 5 places |
 | **`paintReading`** | repaint.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`curveAt`** | data.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`expandBtn`** | dom.ts | 4 places |
@@ -245,6 +246,7 @@ renderer speaks. Listed most-used first.
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`tabSegs`** | history.ts | 3 places |
+| **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 

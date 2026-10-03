@@ -2098,11 +2098,13 @@
       return "";
     }
   }
+  function olderThanFile(name, d) {
+    var r = READINGS[name], file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
+    return got < file;
+  }
   function liveInto(name) {
-    var d = LIVE_CACHE[name], r = READINGS[name];
-    var file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
-    if (got < file) return false;
-    return docOk(name, d) && landLive(name, docValue(d), d);
+    var d = LIVE_CACHE[name];
+    return !olderThanFile(name, d) && docOk(name, d) && landLive(name, docValue(d), d);
   }
   function landLive(name, value, d) {
     var r = READINGS[name], was = liveApplied[name], asOf = liveAsOf[name];
@@ -2215,7 +2217,7 @@
   }
   function receive(next, mode) {
     var names = Object.keys(next).filter(function(n) {
-      return docOk(n, next[n]);
+      return docOk(n, next[n]) && !olderThanFile(n, next[n]);
     });
     if (!names.length) return 0;
     var fresh = {}, moved = 0;
@@ -2299,6 +2301,11 @@
       throw e;
     }
     window.location.reload();
+  }
+  function bootDone() {
+    try {
+      window.sessionStorage.removeItem("gyn.forgot");
+    } catch (e) {}
   }
   function bootLive() {
     LIVE_CACHE = function() {
@@ -22251,6 +22258,8 @@
     return null;
   }
   var PULSE_PRE2008 = 1.857;
+  var PULSE_STEADY_LO = .95;
+  var PULSE_STEADY_HI = 1.1;
   var M2V_FROM_YEAR = 1959;
   var m2vHistory = series_default.m2vHistory.map(function(n) {
     return n / 1e3;
@@ -22310,6 +22319,8 @@
   var ACT_BAND_LO = 3.5;
   var ACT_BAND_HI = 5;
   var CPI_TARGET = 2;
+  var TEMP_BAND_LO = 1;
+  var TEMP_BAND_HI = 3;
   var GDP_NORM = 2.6;
   function checkMoneyStock() {
     var g = m2Yoy.filter(function(x) {
@@ -24314,9 +24325,9 @@
       max: 2.192,
       value: 1.415,
       optimal: {
-        from: 1.7,
-        to: 2.19,
-        label: "1.7–2.2×"
+        from: PULSE_PRE2008 * PULSE_STEADY_LO,
+        to: PULSE_PRE2008 * PULSE_STEADY_HI,
+        label: (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + "–" + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + "×"
       },
       ends: {
         low: "Slow · hoarding",
@@ -24484,10 +24495,10 @@
     return r < .75 ? {
       text: "Very slow",
       state: "serious"
-    } : r < .95 ? {
+    } : r < PULSE_STEADY_LO ? {
       text: "Slow",
       state: "warning"
-    } : r < 1.1 ? {
+    } : r <= PULSE_STEADY_HI ? {
       text: "Steady",
       state: "good"
     } : r < 1.25 ? {
@@ -24497,6 +24508,36 @@
       text: "Very fast",
       state: "serious"
     };
+  }
+  function laborWord(v) {
+    return {
+      text: v < ACT_BAND_LO ? "Tight" : v <= ACT_BAND_HI ? "Solid" : "Slack",
+      state: unempState(v)
+    };
+  }
+  function temperatureWord(v) {
+    return v > TEMP_BAND_HI ? {
+      text: "Running hot",
+      state: "warning"
+    } : v < TEMP_BAND_LO ? {
+      text: "Running cold",
+      state: "warning"
+    } : {
+      text: "Warm",
+      state: "good"
+    };
+  }
+  function deriveLaggingTags() {
+    var u = unempHistory.filter(function(d) {
+      return d.v != null;
+    }), c = cpiYoYHistory[cpiYoYHistory.length - 1];
+    var act = lagging.filter(function(x) {
+      return x.bodyTerm === "Activity";
+    })[0], temp = lagging.filter(function(x) {
+      return x.bodyTerm === "Temperature";
+    })[0];
+    if (act) act.tag = laborWord(u[u.length - 1].v);
+    if (temp) temp.tag = temperatureWord(c.v);
   }
   function derivePulseTag() {
     var pulse = coincident.filter(function(c) {
@@ -24513,10 +24554,7 @@
       deferHighlights: true,
       after: activityStackHtml
     },
-    tag: {
-      text: "Solid",
-      state: "good"
-    },
+    tag: null,
     metric: "4.1%",
     metricSub: "unemployment rate, Aug 2026",
     meter: {
@@ -24570,10 +24608,7 @@
       bare: true,
       seat: seatTemperature
     },
-    tag: {
-      text: "Running hot",
-      state: "warning"
-    },
+    tag: null,
     get metric() {
       return cpiNow.toFixed(1) + "%";
     },
@@ -24583,9 +24618,9 @@
       max: 23.7,
       value: 3.4,
       optimal: {
-        from: 1,
-        to: 3,
-        label: "1–3%"
+        from: TEMP_BAND_LO,
+        to: TEMP_BAND_HI,
+        label: TEMP_BAND_LO + "–" + TEMP_BAND_HI + "%"
       },
       ends: {
         low: "Cold",
@@ -25043,6 +25078,8 @@
     gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
     GYN.step("derivePulseTag", derivePulseTag, "derive");
     derivePulseTag();
+    GYN.step("deriveLaggingTags", deriveLaggingTags, "derive");
+    deriveLaggingTags();
     tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
     liveInto("vix3mClose");
     GYN.step("deriveHorizon", deriveHorizon, "derive");
@@ -25050,35 +25087,11 @@
     HZN_METERS = {
       "3m": {
         min: hznRecord(t10y3mHistory).min,
-        max: hznRecord(t10y3mHistory).max,
-        value: horizonRead.spread,
-        optimal: {
-          gte: 0,
-          label: "0 and above"
-        },
-        ends: {
-          low: "Inverted"
-        }
+        max: hznRecord(t10y3mHistory).max
       },
       "2y": {
         min: hznRecord(t10y2yHistory).min,
-        max: hznRecord(t10y2yHistory).max,
-        value: function() {
-          var p = function(m) {
-            var h = now.yieldCurve.filter(function(d) {
-              return d.m === m;
-            })[0];
-            return h ? h.y : 0;
-          };
-          return p("10Y") - p("2Y");
-        }(),
-        optimal: {
-          gte: 0,
-          label: "0 and above"
-        },
-        ends: {
-          low: "Inverted"
-        }
+        max: hznRecord(t10y2yHistory).max
       }
     };
     householdsNow = householdsWord(dsrNow, savNow);
@@ -25139,14 +25152,20 @@
   function isNum(x) {
     return typeof x === "number" && isFinite(x);
   }
-  function rowsOk(rows, need) {
-    return Array.isArray(rows) && rows.length > 0 && rows.every(function(r) {
-      var m = r && typeof r === "object" && r.meter;
-      return !!m && isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max;
-    }) && (need || []).every(function(k) {
-      return rows.some(function(r) {
-        return r.key === k || r.bodyTerm === k;
-      });
+  function rowId(r) {
+    return r.key || r.marker || r.bodyTerm || "";
+  }
+  function rowLike(r, f) {
+    var m = r && typeof r === "object" && r.meter;
+    if (!r || !m || rowId(r) !== rowId(f) || !(isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max)) return false;
+    return Object.keys(f).every(function(k) {
+      var t = typeof f[k];
+      return t !== "string" && t !== "number" || typeof r[k] === t;
+    });
+  }
+  function rowsOk(rows, file) {
+    return Array.isArray(rows) && rows.length === file.length && file.every(function(f, i) {
+      return rowLike(rows[i], f);
     });
   }
   function deriveHorizon() {
@@ -25225,7 +25244,7 @@
       sentiment: {
         kind: "object",
         ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows);
+          return v.rows === void 0 || rowsOk(v.rows, now.sentiment.rows);
         },
         set: function(v) {
           now.sentiment = merge(now.sentiment, v);
@@ -25236,7 +25255,7 @@
       valuation: {
         kind: "object",
         ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows, [ "cape" ]);
+          return v.rows === void 0 || rowsOk(v.rows, now.valuation.rows);
         },
         set: function(v) {
           now.valuation = merge(now.valuation, v);
@@ -25246,7 +25265,7 @@
       coincident: {
         kind: "series",
         ok: function(v) {
-          return rowsOk(v, [ "Desire", "Pulse", "Volume" ]);
+          return rowsOk(v, coincident);
         },
         set: function(v) {
           coincident = v;
@@ -26971,9 +26990,7 @@
     })();
   }
   function renderPressureRow() {
-    var y10 = (now.yieldCurve.filter(function(d) {
-      return d.m === "10Y";
-    })[0] || {}).y;
+    var y10 = curveAt("10Y");
     put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") + '<span class="unit">10-year Treasury</span>');
     var rowSay = byId("subj-say-pressure");
     if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d) {
@@ -27294,9 +27311,7 @@
   function renderPressureInsights() {
     var ins = byId("pressure-insights");
     if (!ins || !t10yYieldHistory.length) return;
-    var y10 = (now.yieldCurve.filter(function(d) {
-      return d.m === "10Y";
-    })[0] || {}).y;
+    var y10 = curveAt("10Y");
     var seen = t10yYieldHistory.filter(function(d) {
       return d.v != null;
     });
@@ -30942,11 +30957,9 @@
     paintReading("sheet-sign-sentiment", now.vixRow.flagValue, volatilityTag());
   }
   function repaintPressureRow() {
-    var h = now.yieldCurve.filter(function(d) {
-      return d.m === "10Y";
-    })[0];
-    if (!h || h.y == null) return;
-    paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
+    var y10 = curveAt("10Y");
+    if (y10 == null) return;
+    paintReading("sheet-sign-pressure", y10.toFixed(2) + "%", null);
   }
   function repaintPressureChart() {
     var s = byIdMaybe("sheet-sign-pressure");
@@ -31016,6 +31029,7 @@
     bootAnalysis();
     bootTabsMenu();
     bootRepaint();
+    bootDone();
   } catch (e) {
     forgetLive(e);
   }
