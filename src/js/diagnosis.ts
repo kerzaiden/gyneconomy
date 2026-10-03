@@ -80,7 +80,7 @@ function yearLine(m: CycleModel, y: number, inYear: CycleModel["track"]){
   var today = ytd ? moodToday() : null;
   if (today && today.word) moods.push(today.word);
   var parts = [seasons.join(", then "), moods.length ? (moods[0] === moods[moods.length - 1] ? moods[0] : moods[0] + " to " + moods[moods.length - 1]) : "",
-    ret != null ? "S&amp;P 500 <b>" + fmtSigned(ret, 1) + "%</b>" + (ytd ? " so far" : "") : ""];
+    ret != null ? "S&amp;P&nbsp;500 <b>" + fmtSigned(ret, 1) + "%</b>" + (ytd ? " so far" : "") : ""];
   return parts.filter(function(p){ return p; }).join(" \u00b7 ");
 }
 function moodDoor(head: string, body: string){
