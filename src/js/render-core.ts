@@ -1,18 +1,19 @@
-import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock } from "./format.ts";
-import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl, ui } from "./dom.ts";
+import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock, tagFor } from "./format.ts";
+import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { dataCompiledLabel } from "./refresh-season.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.ts";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.ts";
-import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
+import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
 import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import type { ModelReading } from "./model.ts";
+export var catSnap: Record<string, Node> = {};
 export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
 type YieldPt = { q: string; v: number | null; latest?: boolean };
-type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string; base?: YieldPt[] };
+type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
 type Plot = (i: number) => number;
 
 // ---- RENDER: range bars + card helpers ----
@@ -23,17 +24,19 @@ export function metricSheet(id: string){
 }
 export var sheetRenderers: Record<string, (W?: number) => void> = {};
 export function drawsPage(id: string, draw: () => void){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
+export function needInd(id: string): Indicator { var ind = indOf(ROSTER_BY[id]); if (!ind) throw new Error("no reading for " + id); return ind; }
+export function openOf(src: Element): string { var o = src.getAttribute("data-open"); if (o == null) throw new Error("a card with no data-open"); return o; }
 function levelHeadings(body: HTMLElement){
-  var box = body.closest(".detail-modal")!;
+  var box = body.closest(".detail-modal"); if (!box) return;
   box.removeAttribute("aria-labelledby");
   Array.prototype.forEach.call(body.querySelectorAll("h4"), function(h, i){
     h.setAttribute("aria-level", i ? "3" : "2");
-    if (!i){ h.id = "detail-modal-title"; box.setAttribute("aria-labelledby", h.id); }
+    if (!i && box){ h.id = "detail-modal-title"; box.setAttribute("aria-labelledby", h.id); }
   });
 }
 function wireDetailModal(){
-  var backdrop = byId('detail-backdrop')!;
-  var body = byId('detail-modal-body')!;
+  var backdrop = need('detail-backdrop');
+  var body = need('detail-modal-body');
   function openFrom(idx: string | null, btn: HTMLElement){
     body.innerHTML = detailTexts[idx as unknown as number];
     levelHeadings(body);
@@ -42,14 +45,14 @@ function wireDetailModal(){
     if (chip) body.appendChild(chip.cloneNode(true));
     if (!backdrop.classList.contains('show')) opener = btn;
     backdrop.classList.add('show');
-    byId('detail-modal-close')!.focus({ preventScroll:true });
+    need('detail-modal-close').focus({ preventScroll:true });
   }
   var opener: HTMLElement | null = null;
   function close(){
     if (!backdrop.classList.contains('show')) return;
     backdrop.classList.remove('show'); body.innerHTML = "";
     var from = opener; opener = null;
-    if (from && !onScreen(from) && from.closest) from = from.closest('.bh-more-wrap') && from.closest('.bh-more-wrap')!.querySelector<HTMLElement>('.bh-more');
+    if (from && !onScreen(from) && from.closest){ var wrap = from.closest('.bh-more-wrap'); from = wrap && wrap.querySelector<HTMLElement>('.bh-more'); }
     focusQuiet(from);
   }
   detailClose = close;
@@ -61,12 +64,12 @@ function wireDetailModal(){
       openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
     if (e.target === backdrop) close();
   });
-  byId('detail-modal-close')!.addEventListener('click', close);
+  need('detail-modal-close').addEventListener('click', close);
   document.addEventListener('click', function(e){
     var chip = (e.target as Element).closest && (e.target as Element).closest('.timing[data-ind-tab]'); if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     close();
-    if (ui.openIndicatorsPage) ui.openIndicatorsPage(chip.getAttribute('data-ind-tab'));
+    GYN.fire("openIndicatorsPage", chip.getAttribute('data-ind-tab'));
   });
 }
 export var detailClose: (() => void) | null = null;
@@ -122,7 +125,7 @@ export function registerTiming(kind: string, entry: TimingEntry){ if (timingMemb
 function headHtml(ind: Indicator, noMark?: boolean){
   var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
     rosterFor(ind).mark() + '</span></span>';
-  return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag!.state + '">' + ind.tag!.text + '</span></div>';
+  return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>';
 }
 export function cardDetailHtml(ind: Indicator, opts?: IndicatorPage){
   opts = opts || {};
@@ -156,8 +159,8 @@ function latestYieldPoint(){
   var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
   var v: Record<string, number | null> = {}, all = !!mm;
   Object.keys(CURVE_KEY).forEach(function(c){ v[c] = curveAt(CURVE_KEY[c]); if (v[c] == null) all = false; });
-  if (!all) return null;
-  return { q:mm![1] + " Q" + Math.ceil(Number(mm![2]) / 3), label:fmtAsOf(iso), v:v, spread:curveSpread() };
+  if (!all || !mm) return null;
+  return { q:mm[1] + " Q" + Math.ceil(Number(mm[2]) / 3), label:fmtAsOf(iso), v:v, spread:curveSpread() };
 }
 function withLatestPoint(base: YieldPt[], pt: YieldPt | null){
   var data = base.slice(), last = data[data.length - 1];
@@ -325,7 +328,7 @@ function showPressureView(spread: boolean){
   });
 }
 function renderPressurePage(){
-  var svg = byId("ylm-svg")!;
+  var svg = need("ylm-svg");
   var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
   var innerW = W - padL - padR, innerH = H - padT - padB;
   var el = svgEl;
@@ -335,11 +338,11 @@ function renderPressurePage(){
   var maturities = pressureMaturities();
 
   var latestLabel = "", latestSpread: number | null = null;
-  maturities.forEach(function(m){ m.base = m.data; });
+  var bases = maturities.map(function(m){ return m.data; });
   function withLatest(){
     var L = latestYieldPoint();
     latestLabel = L ? L.label : ""; latestSpread = L ? L.spread : null;
-    maturities.forEach(function(m){ m.data = withLatestPoint(m.base!, L && { q:L.q, v:L.v[m.code], latest:true }); });
+    maturities.forEach(function(m, i){ m.data = withLatestPoint(bases[i], L && { q:L.q, v:L.v[m.code], latest:true }); });
     quarters = maturities[0].data.map(function(d){ return d.q; });
   }
   function colLabel(i: number){ var d = maturities[0].data[i]; return d && d.latest ? latestLabel : quarters[i]; }
@@ -443,9 +446,9 @@ function renderPressurePage(){
   }
   function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())); }
   function drawPressure(){
-    var spread = pressureView === "spread" && ui.drawSpreadView;
-    showPressureView(!!spread);
-    if (spread) ui.drawSpreadView!(); else { drawYlm(); renderPressureInsights(); }
+    var spread = pressureView === "spread" && GYN.has("drawSpreadView");
+    showPressureView(spread);
+    if (spread) GYN.fire("drawSpreadView"); else { drawYlm(); renderPressureInsights(); }
     drawPressureHead();
   }
   drawsPage("sheet-sign-pressure", drawPressure);
@@ -504,15 +507,15 @@ function spreadLabel(key: string){
 }
 function peekArt(src: Element){ return src.querySelector(".peek-chart"); }
 export function catItem(src: Element, key: string){
-  var open = src.getAttribute("data-open")!;
+  var open = openOf(src);
   var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
-  (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
+  catSnap[open] = src.cloneNode(true);
   var item = catCard(src, cardDate(ROSTER_BY[open]));
   if (src.parentNode) src.parentNode.removeChild(src);
   return item;
 }
 export function catCard(src: Element, when: string){
-  var open = src.getAttribute("data-open")!, item = document.createElement("button");
+  var open = openOf(src), item = document.createElement("button");
   item.type = "button"; item.className = "cat-item";
   item.setAttribute("data-open", open);
   item.setAttribute("data-title", src.getAttribute("data-title") || "");
@@ -549,7 +552,7 @@ export function catCard(src: Element, when: string){
   head.appendChild(wh);
   var chev = document.createElement("span");
   chev.innerHTML = CHEV;
-  head.appendChild(chev.firstChild!);
+  var mark = chev.firstChild; if (mark) head.appendChild(mark);
   item.appendChild(head); item.appendChild(body);
   return item;
 }
@@ -569,7 +572,7 @@ export function bootRenderCore(){
   GYN.step("wireDetailModal", wireDetailModal, "wire");
   wireDetailModal();
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----
-  byId("asof-text")!.textContent = "Data compiled " + dataCompiledLabel;
+  need("asof-text").textContent = "Data compiled " + dataCompiledLabel;
   Object.keys(TIMING).forEach(function(k){ timingMembers[k] = []; });
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();

@@ -1,10 +1,10 @@
-import { facts, fmtSigned, ledeHtml, monthLabel, qAtIndex, qPretty, srcBlock } from "./format.ts";
-import { byId, expandBtn, ui } from "./dom.ts";
+import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
+import { expandBtn, need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
 import { confidenceHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -19,7 +19,7 @@ export type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number
 type RiskBand = { key: string; label: string; at: (v: number) => boolean };
 type WordOf = { state: State; text: string; says: string; why?: string };
 
-function productivityWord(v: number): WordOf {
+function productivityWord(v: number): WordOf & { why: string } {
   if (v >= PRODUCTIVITY_TREND) return { state:"good", text:"Above trend",
     says:"running above the slowdown-era average and at or above the long-run trend",
     why:"clears both lines, so the word is above trend" };
@@ -76,7 +76,7 @@ export var coincident: Indicator[] = [
   {
     bodyTerm:"Desire", econTerm:"Risk tolerance (credit)",
     page:{ bare:true, noMark:true, deferHighlights:true,
-           after:function(ind){ return desireBlock(ind) + riskMatrixBlock(ind.meter.value!, valRow("cape")!.meter.value!); } },
+           after:function(ind){ return desireBlock(ind) + riskMatrixBlock(metered(ind.meter), metered(fileRow("cape").meter)); } },
     tag:{text:"High appetite", state:"good"},
     metric:"2.80%", metricSub:"high-yield OAS, Sep 24 2026",
     meter:{min:2.41,max:21.82,value:2.80,optimal:{from:HY_NORM_LO, to:HY_NORM_HI, label:HY_NORM_LO + "\u2013" + HY_NORM_HI + "%"},
@@ -89,7 +89,7 @@ export var coincident: Indicator[] = [
   {
     bodyTerm:"Pulse", econTerm:"Money velocity",
     page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
-           chart:function(ind){ return pulseBlock(ind.meter.value!, PULSE_PRE2008, ind); } },
+           chart:function(ind){ return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); } },
     tag:{text:"Recovering", state:"warning"},
     metric:"1.42×", metricSub:"M2 velocity, Q2 2026",
     meter:{min:1.126, max:2.192, value:1.415, optimal:{from:PULSE_PRE2008 * PULSE_STEADY_LO, to:PULSE_PRE2008 * PULSE_STEADY_HI,
@@ -114,18 +114,15 @@ export var coincident: Indicator[] = [
 ];
 function deriveVolumeTag(){
   var vol = coincident.filter(function(c){ return c.bodyTerm === "Volume"; })[0];
-  if (vol) vol.tag = volumeVerdict(vol.meter.value!);
+  if (vol) vol.tag = volumeVerdict(metered(vol.meter));
 }
 export function meterFlagged(m: Meter){
-  var o: Partial<Band> = m.optimal || {};
-  if (o.from != null) return m.value! < o.from || m.value! > o.to!;
-  if (o.gte != null) return m.value! < o.gte;
-  if (o.lte != null) return m.value! > o.lte;
-  return false;
+  var ends = bandEnds(m.optimal, -Infinity, Infinity);
+  return m.value != null && (m.value < ends[0] || m.value > ends[1]);
 }
 function desireInfoHtml(ind: Indicator){
   return '<h4>Risk tolerance (credit)</h4>' +
-    '<p class="caption">The reading is <b>' + ind.tag!.text + '</b>. The figure is the ICE BofA US High Yield ' +
+    '<p class="caption">The reading is <b>' + tagFor(ind).text + '</b>. The figure is the ICE BofA US High Yield ' +
       'Index option-adjusted spread \u2014 the extra yield investors demand to lend to companies rated below ' +
       'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
       'stripped out (' + ind.metricSub + ').</p>' +
@@ -338,7 +335,7 @@ function deriveLaggingTags(){
 }
 function derivePulseTag(){
   var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
-  if (pulse) pulse.tag = velocityVerdict(pulse.meter.value!);
+  if (pulse) pulse.tag = velocityVerdict(metered(pulse.meter));
 }
 export var lagging: Indicator[] = [
   {
@@ -372,7 +369,7 @@ export var lagging: Indicator[] = [
   }
 ];
 export function volatilityTag(): Tag {
-  var v = now.vixRow.meter.value!;
+  var v = metered(now.vixRow.meter);
   return v < VIX_CALM ? { text:"Calm", state:"good" }
        : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
                        : { text:"Fearful", state:"critical" };
@@ -408,13 +405,15 @@ export function pressureZone(v: number){
   return PRESSURE_ZONES[PRESSURE_ZONES.length - 1];
 }
 var HZN_BACK = 4;
-function hznLast(a: HznPoint[]): HznAt | null { for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return { i:i, v:a[i].v! }; return null; }
+function hznLast(a: HznPoint[]): HznAt | null { for (var i = a.length - 1; i >= 0; i--){ var d = a[i]; if (d.v != null && !d.partial) return { i:i, v:d.v }; } return null; }
+function hznNeed(a: HznPoint[]): HznAt { var at = hznLast(a); if (!at) throw new Error("a horizon series has no settled reading"); return at; }
+function hznDelta(a: HznPoint[], at: HznAt): number { var was = hznBack(a, at.i, HZN_BACK); if (was == null) throw new Error("a horizon series has no reading " + HZN_BACK + " back"); return at.v - was; }
 function hznRecord(a: HznPoint[]){
   var vs = a.filter(function(d){ return d.v != null; }).map(function(d){ return d.v as number; });
   return { min:Math.min.apply(null, vs), max:Math.max.apply(null, vs) };
 }
 function hznBack(a: HznPoint[], from: number, back: number): number | null { for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
-function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number){
+function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number): { word: string; state: State } {
   if (sp < -0.10) return { word:"Pessimistic", state:"critical" };
   if (sp <  0.25) return { word:"Undecided",   state:"warning" };
   if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
@@ -510,7 +509,7 @@ function pulseBlock(rate: number, ref: number, ind?: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
   var title = ind
     ? '<div class="spread-history-head"><h4>' + ind.econTerm + '</h4>' +
-      '<span class="tag ' + ind.tag!.state + '">' + ind.tag!.text + '</span></div>'
+      '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>'
     : "";
   return velocityRecordBlock(ind) + '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
     '<div class="pt-head"><span class="pt-k">Now</span><span class="pt-v mono">' + rate.toFixed(2) + '× a year</span></div>' +
@@ -522,7 +521,7 @@ function pulseBlock(rate: number, ref: number, ind?: Indicator){
     '% less often than she did across 1959–2007.</p>' +
   '</div></div>';
 }
-function householdsWord(bill: number, kept: number){
+function householdsWord(bill: number, kept: number): { word: string; state: State } {
   var heavy = bill > DSR_MEAN;
   if (kept < 3)   return { word:heavy ? "Overstretched" : "Stretched",  state:"serious" };
   if (kept < 4.5) return { word:heavy ? "Stretched"     : "Thin cover", state:"warning" };
@@ -569,7 +568,7 @@ export function vixPct(v: number | null | undefined){
 }
 export function volatilityRing(){
   var m = now.vixRow.meter;
-  return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value!.toFixed(2) + ", between its record low of " +
+  return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + metered(m).toFixed(2) + ", between its record low of " +
     m.min + " and its record high of " + m.max);
 }
 export function volatilityDetailHtml(){
@@ -629,9 +628,9 @@ function activityStackHtml(ind: Indicator){
 }
 function seatTemperature(ind: Indicator, d: HTMLElement){
   HIST_NOTE["sheet-metric-temp"] = temperatureInfoHtml(ind);
-  tempCaptionFull = ind.caption!;
+  tempCaptionFull = ind.caption || "";
   tempLeadShown = ind.lead || ind.shortCaption || "";
-  var sheet = byId("sheet-metric-temp"), fresh = d.querySelector(".sign-detail")!;
+  var sheet = need("sheet-metric-temp"), fresh = d.querySelector(".sign-detail"); if (!fresh) return;
   var prev = sheet.querySelector(":scope > .sign-detail");
   if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
 }
@@ -659,7 +658,7 @@ export function bootReadings(){
       bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
       page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
       econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
-      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why!,
+      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
       meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
               ends:{ low:"Falling" } },
       span:span,
@@ -690,7 +689,7 @@ export function bootReadings(){
         ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
     };
   })(confidenceRecord);
-  now.valuation.tag = valuationVerdict(valRow("cape")!.meter.value!);
+  now.valuation.tag = valuationVerdict(metered(fileRow("cape").meter));
   liveInto("capeValue");
   liveInto("coincident");
   liveInto("hyOasNow");
@@ -751,15 +750,15 @@ function rowsOk(rows: (LiveRow | null)[] | undefined, file: readonly object[]){
 }
 function deriveHorizon(){
   var sp = curveSpread();
-  var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
-  var tN2 = hznLast(t10y2yHistory);
-  var dSpread = sN!.v - hznBack(t10y3mHistory, sN!.i, HZN_BACK)!;
-  var dLong   = lN!.v - hznBack(t10yYieldHistory, lN!.i, HZN_BACK)!;
-  var dShort  = tN!.v - hznBack(t3mYieldHistory, tN!.i, HZN_BACK)!;
+  var sN = hznNeed(t10y3mHistory), lN = hznNeed(t10yYieldHistory), tN = hznNeed(t3mYieldHistory);
+  var tN2 = hznNeed(t10y2yHistory);
+  var dSpread = hznDelta(t10y3mHistory, sN);
+  var dLong   = hznDelta(t10yYieldHistory, lN);
+  var dShort  = hznDelta(t3mYieldHistory, tN);
   var w = horizonWord(sp, dLong, dShort, dSpread);
-  horizonRead = { spread:sp, q:sN!, q2:tN2!, dSpread:dSpread, dLong:dLong, dShort:dShort,
-    was:hznBack(t10y3mHistory, sN!.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2!.i, HZN_BACK),
-    d2:tN2!.v - hznBack(t10y2yHistory, tN2!.i, HZN_BACK)!,
+  horizonRead = { spread:sp, q:sN, q2:tN2, dSpread:dSpread, dLong:dLong, dShort:dShort,
+    was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
+    d2:hznDelta(t10y2yHistory, tN2),
     word:w.word, state:w.state };
 }
 export function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
@@ -794,7 +793,7 @@ export function bootReadingRegistry(){
       ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, now.valuation.rows); },
       set: function(v: Partial<typeof now.valuation>){
         now.valuation = merge(now.valuation, v);
-        if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape")!.meter.value!);
+        var cape = valRow("cape"); if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
       }
     },
     coincident: {
@@ -814,7 +813,7 @@ export function bootReadingRegistry(){
     },
     vix3mClose: { kind: "scalar", band: [5, 100], set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
     hyOasNow: {
-      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").pop()!; },
+      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").slice(-1)[0]; },
       set: function(v: number){
         var row = desireRow();
         row.meter.value = v;
@@ -825,7 +824,7 @@ export function bootReadingRegistry(){
     capeValue: {
       kind: "scalar", band: [4, 60],
       set: function(v: number){
-        var row = valRow("cape")!;
+        var row = fileRow("cape");
         row.meter.value = v;
         row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
         if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;

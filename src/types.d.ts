@@ -1,7 +1,8 @@
 type Src = { t: string; u: string };
-type State = string;
-type Tag = { text: string; state?: State };
-type Band = { lte?: number; gte?: number; from?: number; to?: number; label: string };
+type State = "good" | "warning" | "serious" | "critical" | "norm" | "na";
+type Tone = State | "" | "tight" | "phase-up" | "phase-down" | `s${0 | 1 | 2 | 3 | 4 | 5}`;
+type Tag = { text: string; state?: Tone };
+type Band = ({ lte: number } | { gte: number } | { from: number; to: number }) & { label: string };
 type Meter = {
   min: number;
   max: number;
@@ -47,14 +48,7 @@ type MonthPoint = { m: string; v: number };
 type QuarterPoint = { q: string; v: number };
 type YearPoint = { y: number; v: number };
 type Point = { y?: number; m?: string; q?: string; v: number | null };
-type Cycle = {
-  from: number;
-  to: number | null;
-  ongoing?: boolean;
-  name: string;
-  story: string;
-  blurb: string;
-};
+type Cycle = { from: number; name: string; story: string; blurb: string } & ({ ongoing: true; to: null } | { ongoing?: false; to: number });
 type Season = "summer" | "autumn" | "lateautumn" | "winter" | "springdeflation" | "spring";
 type ChartRef = { label: string; v?: number | null; dash?: boolean; cls?: string; swatch?: string };
 type ChartGeom = {
@@ -156,4 +150,4 @@ type RosterRow = {
   pair?: HistSpec;
   peek?: "pair" | (() => Keyed[]);
 };
-type PeekCardOpts = { value?: string; word?: string; state?: State; ring?: number | null; pulse?: { rate: number | null; ref: number | null }; meter?: Meter; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };
+type PeekCardOpts = { value?: string; word?: string; state?: Tone; ring?: number | null; pulse?: { rate: number | null; ref: number | null }; meter?: Meter; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };

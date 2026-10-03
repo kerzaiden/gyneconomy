@@ -77,7 +77,7 @@ function paintHeadMenus(){
     var btn = heads[i].querySelector(".bh-more"), menu = heads[i].querySelector<HTMLElement>(".bh-menu");
     if (!btn || !menu) continue;
     var on = btn.getAttribute("data-head-more") === headMenuFor;
-    if (on) menu.innerHTML = headMenuHtml(headMenuFor!);
+    if (on && headMenuFor !== null) menu.innerHTML = headMenuHtml(headMenuFor);
     menu.hidden = !on;
     btn.setAttribute("aria-expanded", on ? "true" : "false");
   }
@@ -87,7 +87,7 @@ function headMoreBtn(id: string | null): HTMLElement | undefined {
     return b.getAttribute("data-head-more") === id && onScreen(b); })[0];
 }
 function headMenuFirst(){
-  var b = headMoreBtn(headMenuFor), menu = b && b.closest(".bh-more-wrap")!.querySelector<HTMLElement>(".bh-menu");
+  var b = headMoreBtn(headMenuFor), wrap = b && b.closest(".bh-more-wrap"), menu = wrap && wrap.querySelector<HTMLElement>(".bh-menu");
   focusQuiet(menu && menu.querySelector("button"));
 }
 function headMenuShut(refocus: boolean){
@@ -162,21 +162,21 @@ export function histReadEnsure(host: HTMLElement){
   host.__readEl = el;
   return el;
 }
+function geomFmt(g: ChartGeom){ return function(v: number){ return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); }; }
+function attrNum(el: Element, name: string){ return parseFloat(el.getAttribute(name) || ""); }
 export function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: number){
   var g = host.__geom, el = host.__readEl;
   if (!g || !el) return;
-  var fmt = function(v: number){
-    return String(g!.fmt ? g!.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212");
-  };
+  var fmt = geomFmt(g);
   var atRest = !d || d.v == null;
   if (atRest){
     var vv = g.vals || [];
     for (var k = vv.length - 1; k >= 0; k--)
-      if (vv[k] && vv[k]!.v != null && isFinite(vv[k]!.v!)){ d = vv[k]; i = k; break; }
-    if (!d || d.v == null){ el.classList.remove("on"); host.classList.remove("resting"); return; }
+    { var c = vv[k]; if (c && c.v != null && isFinite(c.v)){ d = c; i = k; break; } }
   }
+  if (!d || d.v == null || i == null){ el.classList.remove("on"); host.classList.remove("resting"); return; }
   host.classList.toggle("resting", atRest);
-  var lab = g.at(d, i!), val = fmt(d!.v!);
+  var lab = g.at(d, i), val = fmt(d.v);
   var plate = el.firstElementChild as HTMLElement | null;
   if (!plate) return;
   plate.children[0].textContent = lab;
@@ -189,19 +189,19 @@ export function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: numb
   var scale = sb.width / g.W || 1;
   var cross = svg.querySelector(".hist-cross");
   if (cross){
-    var cx = (g.L + (g.R - g.L) * i! / Math.max(1, g.n - 1)).toFixed(1);
+    var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
     cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
   }
   var fr = svg.querySelector(".bt-frame");
-  var frTop = fr ? parseFloat(fr.getAttribute("y")!) : g.T - AXIS.LEG;
+  var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
   var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
   var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
-  var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i! / Math.max(1, g.n - 1)) * scale;
+  var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
   plate.classList.remove("compact");
   var w = plate.offsetWidth;
   if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
-  var fx0 = fr ? parseFloat(fr.getAttribute("x")!) : g.L;
-  var fx1 = fr ? fx0 + parseFloat(fr.getAttribute("width")!) : g.R;
+  var fx0 = fr ? attrNum(fr, "x") : g.L;
+  var fx1 = fr ? fx0 + attrNum(fr, "width") : g.R;
   var lo = (sb.left - eb.left) + (fx0 + AXIS.L) * scale, hi = (sb.left - eb.left) + (fx1 - AXIS.R) * scale;
   var mx = i === 0 ? lo
          : i === g.n - 1 ? hi - w
@@ -214,7 +214,7 @@ export function histReadFill(host: HTMLElement, d: GeomVal | undefined, i?: numb
 }
 function histAxisEnds(svg: SVGSVGElement, fr: Element | null){
   if (!fr || !svg.getBBox) return;
-  var x0 = parseFloat(fr.getAttribute("x")!), x1 = x0 + parseFloat(fr.getAttribute("width")!);
+  var x0 = attrNum(fr, "x"), x1 = x0 + attrNum(fr, "width");
   Array.prototype.forEach.call(svg.querySelectorAll(".bt-xl"), function(t: SVGTextElement){
     var bb;
     try { bb = t.getBBox(); } catch (e) { return; }
@@ -228,21 +228,21 @@ export function histLegend(host: HTMLElement){
   var svg = host.querySelector<SVGSVGElement>("svg.hist-svg") || host.querySelector<SVGSVGElement>("svg.vh-svg") || host.querySelector("svg");
   if (!svg) return;
   var old = svg.querySelector(".hist-legend");
-  if (old) old.parentNode!.removeChild(old);
+  if (old) old.remove();
   histAxisEnds(svg, svg.querySelector(".bt-frame"));
   if (!g || g.B == null) return;
   var refs = (g.refs || []).filter(function(r){ return r && (r.v == null || isFinite(r.v)); });
   if (!refs.length) return;
-  var fmt = function(v: number){ return String(g!.fmt ? g!.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); };
+  var fmt = geomFmt(g);
   var NS: "http://www.w3.org/2000/svg" = "http://www.w3.org/2000/svg";
   var grp = document.createElementNS(NS, "g");
   grp.setAttribute("class", "hist-legend");
   grp.setAttribute("aria-hidden", "true");
   var fr = svg.querySelector(".bt-frame");
   var INSET = 6, PLATE_H = 15, PAD_X = 6;
-  var frTop = fr ? parseFloat(fr.getAttribute("y")!) : g.T - AXIS.LEG;
-  var frRight = fr ? parseFloat(fr.getAttribute("x")!) + parseFloat(fr.getAttribute("width")!) : g.R;
-  var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items: { t: SVGTextElement; m: SVGRectElement | SVGLineElement; w?: number }[] = [];
+  var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
+  var frRight = fr ? attrNum(fr, "x") + attrNum(fr, "width") : g.R;
+  var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items: { t: SVGTextElement; m: SVGRectElement | SVGLineElement; w: number }[] = [];
   var plate = document.createElementNS(NS, "rect");
   plate.setAttribute("class", "chart-label-plate");
   plate.setAttribute("rx", "5");
@@ -263,13 +263,13 @@ export function histLegend(host: HTMLElement){
     if (r.swatch) m.setAttribute("y", (y - 4.5).toFixed(1));
     else { m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1)); }
     grp.appendChild(m);
-    items.push({ t:t, m:m });
+    items.push({ t:t, m:m, w:0 });
   });
   svg.appendChild(grp);
   var total = 0;
   items.forEach(function(it){
     it.w = MARK + PAD + (it.t.getComputedTextLength ? it.t.getComputedTextLength() : it.t.textContent!.length * 5);
-    total += it.w!;
+    total += it.w;
   });
   total += GAP * (items.length - 1);
   var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
@@ -279,7 +279,7 @@ export function histLegend(host: HTMLElement){
     if (it.m.tagName === "rect") it.m.setAttribute("x", (x + 1.5).toFixed(1));
     else { it.m.setAttribute("x1", x.toFixed(1)); it.m.setAttribute("x2", (x + MARK).toFixed(1)); }
     it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
-    x += it.w! + GAP;
+    x += it.w + GAP;
   });
 }
 export function refitHistory(box: Element | null, build: (w: number) => string){
@@ -326,7 +326,7 @@ function wireHistHover(host: HTMLElement, tipId: string){
   histKeysWire(host, hide);
 }
 function histShow(host: HTMLElement, svg: Element, i: number){
-  var d = host.__geom!.vals[i]; if (!d) return false;
+  var g = host.__geom, d = g && g.vals[i]; if (!d) return false;
   host.classList.add("hovering");
   if (host.__onCol) host.__onCol.classList.remove("on");
   var col = svg.querySelectorAll(".hcol")[i];
@@ -345,10 +345,10 @@ function histKeysWire(host: HTMLElement, hide: () => void){
   host.addEventListener("blur", function(){ host.__keyI = null; hide(); });
   host.addEventListener("keydown", function(e){
     var g = host.__geom, svg = host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
-    var step = ({ ArrowLeft:-1, ArrowRight:1 } as Record<string, number>)[e.key], i = host.__keyI == null ? g && g.n - 1 : host.__keyI;
+    var step = ({ ArrowLeft:-1, ArrowRight:1 } as Record<string, number>)[e.key];
     if (!g || !svg || (step == null && e.key !== "Home" && e.key !== "End")) return;
     e.preventDefault();
-    i = e.key === "Home" ? 0 : e.key === "End" ? g.n - 1 : Math.max(0, Math.min(g.n - 1, i! + (host.__keyI == null ? 0 : step)));
+    var i = e.key === "Home" ? 0 : e.key === "End" ? g.n - 1 : Math.max(0, Math.min(g.n - 1, host.__keyI == null ? g.n - 1 : host.__keyI + step));
     host.__keyI = i;
     if (!histShow(host, svg, i)) return;
     var read = histReadEnsure(host), part = function(s: string){ var n = read && read.querySelector(s); return n ? n.textContent : ""; };
@@ -390,11 +390,13 @@ function modeBar(id: string, active: string | undefined, extra?: string[][]){
 export var pickerOpen: Record<string, boolean> = {};
 export function controlKeys(el: Element | null): string[] {
   var box = el && el.closest && el.closest("[data-mode-for], [data-range-for], [data-cycles-for]");
-  if (!box) return [];
-  var a = ["data-mode-for", "data-range-for", "data-cycles-for"].filter(function(n){ return box!.hasAttribute(n); })[0];
-  var b = ["data-mode", "data-range", "data-cycle", "data-picker-toggle"].filter(function(n){ return el!.hasAttribute(n); })[0];
-  var at = "[" + a + '="' + box.getAttribute(a!) + '"] ';
-  return (b ? [at + "[" + b + '="' + el!.getAttribute(b) + '"]'] : []).concat(a === "data-cycles-for" ? [at + "[data-picker-toggle]"] : []);
+  return box && el ? controlKeysIn(box, el) : [];
+}
+function controlKeysIn(box: Element, el: Element): string[] {
+  var a = ["data-mode-for", "data-range-for", "data-cycles-for"].filter(function(n){ return box.hasAttribute(n); })[0];
+  var b = ["data-mode", "data-range", "data-cycle", "data-picker-toggle"].filter(function(n){ return el.hasAttribute(n); })[0];
+  var at = "[" + a + '="' + box.getAttribute(a) + '"] ';
+  return (b ? [at + "[" + b + '="' + el.getAttribute(b) + '"]'] : []).concat(a === "data-cycles-for" ? [at + "[data-picker-toggle]"] : []);
 }
 export function histControls(id: string, tl: TimelineSource, minYear?: number | null, extra?: string[][]){
   var mode = page.mode[id], on = mode === "cycles";
@@ -409,7 +411,7 @@ export function histControls(id: string, tl: TimelineSource, minYear?: number | 
 export function pageCycle(id: string, y0?: number | null){
   var c = page.mode[id] === "cycles" ? (cycleByName(page.cycles[id]) || openCycle()) : null;
   if (y0 == null) y0 = page.y0[id];
-  return c && c.from < y0! ? openCycle() : c;
+  return c && y0 != null && c.from < y0 ? openCycle() : c;
 }
 function cyclePicker(id: string, picked: string | null | undefined, minYear?: number | null){
   var rows = marketCycles.slice().reverse()
@@ -451,7 +453,6 @@ export function attachHistory(host: HTMLElement | null, tipId?: string | null, e
 }
 
 export function bootHistory(){
-  window.__histRead = function(host: HTMLElement | null, d: GeomVal, i: number){ if (host) histReadFill(host, d, i); };
   layer(0, { open:function(){ return headMenuFor !== null; }, close:function(){ headMenuShut(true); } });
   document.addEventListener("click", function(e){
     var pick = (e.target as Element).closest && (e.target as Element).closest(".bh-pick");
@@ -469,7 +470,7 @@ export function bootHistory(){
     var btn = (e.target as Element).closest && (e.target as Element).closest("[data-head-more]");
     if (!btn){ if (headMenuFor !== null) headMenuShut(false); return; }
     var id = btn.getAttribute("data-head-more");
-    headMenuFor = (headMenuFor === id || !HIST_NOTE[id!]) ? null : id;
+    headMenuFor = (headMenuFor === id || id === null || !HIST_NOTE[id]) ? null : id;
     headSubFor = null;
     paintHeadMenus();
     if (headMenuFor) headMenuFirst();

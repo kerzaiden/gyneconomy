@@ -53,7 +53,7 @@ export var QUARTER_END_MONTH: Record<string, string> = {Q1:"03", Q2:"06", Q3:"09
 var SEASON_YEARS = 2;
 function closingReading(endYear: number){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
-  return e ? e.reading : null;
+  if (!e) throw new Error("no season reading by " + endYear); return e.reading;
 }
 export function quarterRegime(d: QuarterPoint){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
 export function seasonTitle(meta: { name: string; theme?: string | null }){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
@@ -69,9 +69,9 @@ export function cycleReturns(from: number, to: number){
 }
 export function cycleModel(era: Cycle){
   var ongoing = !!era.ongoing;
-  var endYear = ongoing ? calendarTodayY : era.to!;
-  var elapsedYears = ongoing ? (calendarTodayY - era.from) + cycleYtdFraction : (era.to! - era.from + 1);
-  var yearIndex = ongoing ? Math.floor(elapsedYears) + 1 : (era.to! - era.from + 1);
+  var endYear = era.ongoing ? calendarTodayY : era.to;
+  var elapsedYears = era.ongoing ? (calendarTodayY - era.from) + cycleYtdFraction : (era.to - era.from + 1);
+  var yearIndex = era.ongoing ? Math.floor(elapsedYears) + 1 : (era.to - era.from + 1);
   var dialYears = Math.max(typicalCycleYears, Math.ceil(elapsedYears));
   var endMonth = ongoing ? cpiYoYHistory[cpiYoYHistory.length - 1].m : era.to + "-12";
   var cpi = cpiYoYHistory.filter(function(c){ return c.m >= era.from + "-01" && c.m <= endMonth; });
@@ -81,7 +81,7 @@ export function cycleModel(era: Cycle){
   var prevEntry = seasonTrackAll[gdpEnd - 1];
   var reading = ongoing
     ? readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime)
-    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear)! : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
+    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear) : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
   var season = (ongoing && seasonOverride) || reading.season;
   var track: TrackSeg[] = [];
   seasonTrack.forEach(function(entry){
@@ -127,7 +127,7 @@ export function seasonGroup(key: string){ return key === "springdeflation" ? "sp
 // ---- The diagnosis: how she feels, and what has followed ----
 function rankToDate(prior: (number | null)[], v: number | null | undefined){
   if (v == null || prior.length < 12) return null;
-  return 100 * prior.filter(function(x){ return x! < v!; }).length / prior.length;
+  return 100 * prior.filter(function(x){ return x != null && x < v; }).length / prior.length;
 }
 var marketCache: MarketMonths | null = null;
 export function marketMonths(){
@@ -189,14 +189,15 @@ export function moodTrack(){
 }
 export function moodToday(){
   var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow!.meter.value);
-  return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x!.m; }));
+  return x && moodSince(x);
 }
+function moodSince(x: Mood){ return moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; })); }
 export function cycleStory(c: Cycle){
   var from = c.from + "-01", to = c.to ? c.to + "-12" : "9999-12", count: Record<string, number> = {};
-  var t = moodTrack().filter(function(x){ return x.word && x.m >= from && x.m <= to; });
+  var t = moodTrack().filter(function(x): x is Mood & { word: string; pct: number } { return !!x.word && x.pct != null && x.m >= from && x.m <= to; });
   if (t.length < 2) return null;
   var hi = t[0], lo = t[0];
-  t.forEach(function(x){ if (x.pct! > hi.pct!) hi = x; if (x.pct! < lo.pct!) lo = x; count[x.word!] = (count[x.word!] || 0) + 1; });
+  t.forEach(function(x){ if (x.pct > hi.pct) hi = x; if (x.pct < lo.pct) lo = x; count[x.word] = (count[x.word] || 0) + 1; });
   var most = Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).slice(0, 2);
   var now = c.ongoing && moodToday();
   return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
