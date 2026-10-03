@@ -323,7 +323,7 @@ function velocityVerdict(v: number): Tag {
                   : { text:"Very fast", state:"serious" };
 }
 export function laborWord(v: number): Tag {
-  return { text: v < ACT_BAND_LO ? "Tight" : v <= ACT_BAND_HI ? "Solid" : "Slack", state: unempState(v) };
+  return v < ACT_BAND_LO ? { text:"Tight", state:"warning" } : { text: v <= ACT_BAND_HI ? "Solid" : "Slack", state: unempState(v) };
 }
 export function temperatureWord(v: number): Tag {
   return v > TEMP_BAND_HI ? { text:"Running hot", state:"warning" }

@@ -24510,8 +24510,11 @@
     };
   }
   function laborWord(v) {
-    return {
-      text: v < ACT_BAND_LO ? "Tight" : v <= ACT_BAND_HI ? "Solid" : "Slack",
+    return v < ACT_BAND_LO ? {
+      text: "Tight",
+      state: "warning"
+    } : {
+      text: v <= ACT_BAND_HI ? "Solid" : "Slack",
       state: unempState(v)
     };
   }

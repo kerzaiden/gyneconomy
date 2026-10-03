@@ -84,6 +84,7 @@ test('Pulse reads Steady exactly where its band is drawn', () => {
 
 test('the labor and temperature words turn at their bands, and the cards follow the record', () => {
   assert.deepEqual([3.4, 3.5, 5, 5.1].map(v => laborWord(v).text), ['Tight', 'Solid', 'Solid', 'Slack']);
+  assert.deepEqual([3.4, 3.5, 5.1, 9].map(v => laborWord(v).state), ['warning', 'good', 'warning', 'critical']);
   assert.deepEqual([0.9, 1, 3, 3.1].map(v => temperatureWord(v).text), ['Running cold', 'Warm', 'Warm', 'Running hot']);
   const u = unempHistory.filter(d => d.v != null);
   assert.equal(tag('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
