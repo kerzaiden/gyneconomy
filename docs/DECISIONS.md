@@ -520,7 +520,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   asking whether it duplicated Pressure's Treasury spreads (it did not; those are the yield curve). The quantity
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
-  spread, went with it. Keren: "use appetite as the keyword". (V708)
+  spread, went with it. Keren: "use appetite as the keyword". (V709)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
