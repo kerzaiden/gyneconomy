@@ -37,7 +37,7 @@ function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: stri
   var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
   var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
   var growthTrend = growthSlopeQ > 0.025 ? "rising" : growthSlopeQ < -0.025 ? "falling" : "flat";
-  var regime = growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : (prevRegime || "expansion");
+  var regime = gdp8[gdp8.length - 1].v < 0 || growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : (prevRegime || "expansion");
   var cooling = cpiDirection === "falling", season: Season;
   if (regime === "expansion"){
     if (cpiHot) season = "summer";
