@@ -2,9 +2,9 @@ import { MONTHS_SHORT, prettyKey, qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES, liveIsoOf } from "./live.ts";
 import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { peekCard } from "./charts.ts";
-import { confidenceHistory, durablesHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
 import { page } from "./history.ts";
 import { indPeriod, vixPct } from "./readings.ts";
 
@@ -78,8 +78,8 @@ export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b)
 
 export var ROSTER: RosterRow[];
 
-export function bootRoster(){
-  ROSTER = [
+function declareRoster(): RosterRow[] {
+  return [
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",
       head:"CPI", hist:{ s:cpiYoYHistory, k:"m" }, when:lastDate, cardUnit:"CPI, YoY" },
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
@@ -106,9 +106,12 @@ export function bootRoster(){
     { id:"sheet-sign-sentiment", name:"Volatility", cat:"mood", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, miniSel:".subject-ring > svg",
       when:function(){ return isoLabel(liveIsoOf("vixClose")) || compiledDay(); }, live:["sentiment", "vixClose", "vix3mClose"] },
-    { id:"sheet-sign-desire", name:"Desire", cat:"mood", timing:"coincident", mark:flameSvg, door:"row", term:"Desire",
+    { id:"sheet-sign-desire", name:"Consumer demand", cat:"mood", group:"Desire", timing:"coincident", mark:flameSvg, door:"row", term:"Desire",
       head:"Consumer Demand", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE, when:lastDate,
       cardUnit:"demand, YoY" },
+    { id:"sheet-sign-premium", name:"Equity risk premium", cat:"mood", group:"Desire", timing:"structural", mark:flameSvg, door:"row",
+      term:"Equity risk premium", head:"Shiller Excess CAPE Yield", hist:{ s:premiumHistory, k:"m" }, mid:PREMIUM_LINE, when:lastDate,
+      cardUnit:"over bonds" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
       cardUnit:"OECD index" },
@@ -129,6 +132,9 @@ export function bootRoster(){
       door:"row", term:"Productivity growth", head:"Output per Hour, Year over Year", hist:{ s:productivityHistory, k:"q" },
       mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
+}
+export function bootRoster(){
+  ROSTER = declareRoster();
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
   page.mode = pageState(function(R){ return R.cycles === false ? undefined : "cycles"; });
   page.cycles = pageState(function(R){ return R.cycles === false ? undefined : null; });

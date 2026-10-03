@@ -2,9 +2,9 @@ import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, qAtIndex, qP
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
-import { confidenceHistory, durablesHistory, productivityHistory } from "./history-fred.ts";
+import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -13,6 +13,7 @@ type WordReading = Indicator & { tag: Tag; info: () => string; span: string; lea
 export type ProductivityReading = WordReading & { wordWhy: string };
 export type ConfidenceReading = WordReading & { wordSays: string };
 export type DesireReading = WordReading & { wordSays: string };
+export type PremiumReading = WordReading & { side: string };
 export type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
@@ -162,6 +163,18 @@ function desireInfoHtml(f: DesireReading){
     '<p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
       'year ago; below it her appetite is low. No other band is drawn.</p>' +
     srcBlock(DESIRE_SRC);
+}
+function premiumInfoHtml(f: PremiumReading){
+  return '<h4>' + f.econTerm + '</h4>' +
+    '<p class="caption">' + f.metric + ' (' + f.metricSub + '): ' + f.side + '. ' +
+      'The record, month by month, runs ' + f.span + '.</p>' +
+    '<p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller\u2019s ' +
+      'Excess CAPE Yield: the CAPE\u2019s earnings yield (one over the CAPE, ten years of real earnings against today\u2019s price) less the ' +
+      'real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little ' +
+      'for the risk of owning stocks; a wide one is investors asking a lot.</p>' +
+    '<p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, ' +
+      'and the reading carries no word.</p>' +
+    srcBlock(PREMIUM_SRC);
 }
 function productivityInfoHtml(f: ProductivityReading){
   return '<h4>' + f.econTerm + '</h4>' +
@@ -505,7 +518,7 @@ function marketInfoHtml(f: MarketReading){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, confidenceReading, marketReading]); }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, premiumReading, confidenceReading, marketReading]); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
@@ -547,7 +560,7 @@ export function indPeriod(R: { term?: string }){
 }
 
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
 function deriveFeelingReadings(){
@@ -597,6 +610,30 @@ function deriveFeelingReadings(){
         ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
     };
   })(desireRecord);
+  premiumRecord = (function(){
+    var h = premiumHistory;
+    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
+             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
+  })();
+  premiumReading = (function(R){
+    var at = monthLabel(R.now.m);
+    var side = "stocks earn " + Math.abs(R.now.v).toFixed(1) + " points a year " + (R.now.v >= PREMIUM_LINE ? "more" : "less") + " than bonds after inflation";
+    var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
+    return {
+      bodyTerm:"Equity risk premium", info:function(){ return premiumInfoHtml(premiumReading); },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-premium-chart"></div><div id="sheet-sign-premium-highlights"></div>'; } },
+      econTerm:"Equity risk premium", metricSub:"Excess CAPE Yield, " + at,
+      metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:"norm", text:"" }, side:side,
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PREMIUM_LINE, label:"\u2265 0%"} },
+      span:span,
+      get peek(){
+        return colPeek(premiumHistory.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
+      },
+      lead:"",
+      caption:at + ", Shiller\u2019s Excess CAPE Yield at " + fmtSigned(R.now.v, 1) + "%: " + side +
+        ". The track runs over the monthly record since " + monthLabel(premiumHistory[0].m) + ": " + span + "."
+    };
+  })(premiumRecord);
 }
 export function bootReadings(){
   /* ---- Productivity growth is not in this panel ---- */

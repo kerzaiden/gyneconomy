@@ -7,7 +7,7 @@ import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PA
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
-import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory } from '../../src/js/history-fred.ts';
+import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned, seasonName } from '../../src/js/format.ts';
@@ -39,6 +39,7 @@ test('each card prints the last value of its own record', () => {
     'sheet-sign-activity': r1(last(unempHistory).v) + '%',
     'sheet-sign-productivity-growth': r1(last(productivityHistory).v) + '%',
     'sheet-sign-desire': fmtSigned(last(durablesHistory).v, 1) + '%',
+    'sheet-sign-premium': fmtSigned(last(premiumHistory).v, 1) + '%',
     'sheet-sign-confidence': r1(last(confidenceHistory).v),
     'sheet-metric-debt': r1(last(grossDebtQuarterly).v) + '%'
   };
@@ -47,7 +48,7 @@ test('each card prints the last value of its own record', () => {
 
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
-  Desire: { gte: 0 }, Pulse: { from: 1.857 * 0.95, to: 1.857 * 1.10 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
+  Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.857 * 0.95, to: 1.857 * 1.10 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
 };

@@ -1550,7 +1550,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.0.0 (710)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.1.0 (711)</span></p>
     </div>
   </div>
 
@@ -21270,6 +21270,7 @@
       m: "2026-08",
       v: 4.61
     } ],
+    premiumHistory: [],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -24084,6 +24085,7 @@
   var sp500MonthlyHistory = fred_default.sp500MonthlyHistory;
   var confidenceHistory = fred_default.confidenceHistory;
   var durablesHistory = fred_default.durablesHistory;
+  var premiumHistory = fred_default.premiumHistory;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
@@ -24460,6 +24462,7 @@
   var PRODUCTIVITY_SLOWDOWN = 1.3;
   var CONFIDENCE_LINE = 100;
   var DESIRE_LINE = 0;
+  var PREMIUM_LINE = 0;
   var DEF_FROM_YEAR = 1946;
   var deficitHistory = series_default.deficitHistory;
   var DEF_MEAN = deficitHistory.reduce(function(a, b) {
@@ -24636,6 +24639,10 @@
   }, {
     t: "BEA — Personal income and outlays, the monthly release behind the series",
     u: "https://www.bea.gov/data/income-saving/personal-income"
+  } ];
+  var PREMIUM_SRC = [ {
+    t: "Robert Shiller — Online data, U.S. stock markets since 1871: the Excess CAPE Yield, monthly (ie_data.xls)",
+    u: "https://shillerdata.com/#premium"
   } ];
   var CONFIDENCE_SRC = [ {
     t: "OECD — Consumer confidence index (CCI): amplitude adjusted, long-term average 100",
@@ -26737,6 +26744,9 @@
   function desireInfoHtml(f) {
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow">Durable goods are the BEA’s own category for goods that last three years or more: cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p><p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a year ago; below it her appetite is low. No other band is drawn.</p>' + srcBlock(DESIRE_SRC);
   }
+  function premiumInfoHtml(f) {
+    return "<h4>" + f.econTerm + '</h4><p class="caption">' + f.metric + " (" + f.metricSub + "): " + f.side + ". The record, month by month, runs " + f.span + '.</p><p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller’s Excess CAPE Yield: the CAPE’s earnings yield (one over the CAPE, ten years of real earnings against today’s price) less the real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little for the risk of owning stocks; a wide one is investors asking a lot.</p><p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, and the reading carries no word.</p>' + srcBlock(PREMIUM_SRC);
+  }
   function productivityInfoHtml(f) {
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm business sector, against the same quarter a year earlier (" + f.metricSub + "). The record for that series, quarter by quarter, runs " + f.span + '.</p><p class="caption follow"><b>The 1.3% line is the BLS’s own figure for the slowdown era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than the slowdown</i>, not <i>at trend</i>. Today’s ' + f.metric + " " + f.wordWhy + '.</p><p class="caption follow">This is the reading that says whether capacity is being rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from each one, and only the second kind compounds.</p>' + srcBlock(PRODUCTIVITY_SRC);
   }
@@ -27163,7 +27173,7 @@
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + " in " + f.now.y + (f.open ? " so far" : "") + ", " + f.wordSays + ". The record, year by year, runs " + f.span + '.</p><p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial’s inner band colours, so the card, this chart and the cycle read one number.' + (f.open ? " " + f.now.y + " is still open, so its bar is the year so far." : "") + "</p>" + srcBlock(sp500AnnualReturnSource);
   }
   function rowReadings() {
-    return [].concat(coincident, lagging, [ productivityReading, desireReading, confidenceReading, marketReading ]);
+    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading ]);
   }
   function indOf(R) {
     return rowReadings().filter(function(x) {
@@ -27222,6 +27232,8 @@
   var confidenceReading;
   var desireRecord;
   var desireReading;
+  var premiumRecord;
+  var premiumReading;
   var tempInfo;
   var horizonRead;
   var householdsNow;
@@ -27346,6 +27358,62 @@
         caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
+    premiumRecord = function() {
+      var h = premiumHistory;
+      return {
+        now: h[h.length - 1],
+        lo: h.reduce(function(a, d) {
+          return d.v < a.v ? d : a;
+        }),
+        hi: h.reduce(function(a, d) {
+          return d.v > a.v ? d : a;
+        })
+      };
+    }();
+    premiumReading = function(R) {
+      var at = monthLabel(R.now.m);
+      var side = "stocks earn " + Math.abs(R.now.v).toFixed(1) + " points a year " + (R.now.v >= PREMIUM_LINE ? "more" : "less") + " than bonds after inflation";
+      var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
+      return {
+        bodyTerm: "Equity risk premium",
+        info: function() {
+          return premiumInfoHtml(premiumReading);
+        },
+        page: {
+          bare: true,
+          chart: function() {
+            return '<div id="sheet-sign-premium-chart"></div><div id="sheet-sign-premium-highlights"></div>';
+          }
+        },
+        econTerm: "Equity risk premium",
+        metricSub: "Excess CAPE Yield, " + at,
+        metric: fmtSigned(R.now.v, 1) + "%",
+        tag: {
+          state: "norm",
+          text: ""
+        },
+        side: side,
+        meter: {
+          min: R.lo.v,
+          max: R.hi.v,
+          value: R.now.v,
+          optimal: {
+            gte: PREMIUM_LINE,
+            label: "≥ 0%"
+          }
+        },
+        span: span,
+        get peek() {
+          return colPeek(premiumHistory.map(function(d) {
+            return d.v;
+          }), function(v) {
+            return "dv-bar " + (v > 0 ? "over" : "under");
+          }, 0, true);
+        },
+        lead: "",
+        caption: at + ", Shiller’s Excess CAPE Yield at " + fmtSigned(R.now.v, 1) + "%: " + side + ". The track runs over the monthly record since " + monthLabel(premiumHistory[0].m) + ": " + span + "."
+      };
+    }(premiumRecord);
   }
   function bootReadings() {
     productivityRecord = function() {
@@ -27836,8 +27904,8 @@
     });
   }
   var ROSTER;
-  function bootRoster() {
-    ROSTER = [ {
+  function declareRoster() {
+    return [ {
       id: "sheet-metric-temp",
       name: "Temperature",
       cat: "weather",
@@ -28020,8 +28088,9 @@
       live: [ "sentiment", "vixClose", "vix3mClose" ]
     }, {
       id: "sheet-sign-desire",
-      name: "Desire",
+      name: "Consumer demand",
       cat: "mood",
+      group: "Desire",
       timing: "coincident",
       mark: flameSvg,
       door: "row",
@@ -28034,6 +28103,23 @@
       mid: DESIRE_LINE,
       when: lastDate,
       cardUnit: "demand, YoY"
+    }, {
+      id: "sheet-sign-premium",
+      name: "Equity risk premium",
+      cat: "mood",
+      group: "Desire",
+      timing: "structural",
+      mark: flameSvg,
+      door: "row",
+      term: "Equity risk premium",
+      head: "Shiller Excess CAPE Yield",
+      hist: {
+        s: premiumHistory,
+        k: "m"
+      },
+      mid: PREMIUM_LINE,
+      when: lastDate,
+      cardUnit: "over bonds"
     }, {
       id: "sheet-sign-confidence",
       name: "Confidence",
@@ -28155,6 +28241,9 @@
       mid: PRODUCTIVITY_SLOWDOWN,
       when: lastDate
     } ];
+  }
+  function bootRoster() {
+    ROSTER = declareRoster();
     ROSTER.forEach(function(R) {
       ROSTER_BY[R.id] = R;
     });
@@ -31099,7 +31188,7 @@
     return !!d.word && d.pct != null && d.change != null;
   }
   function moodInfo(d) {
-    return "<h4>Her mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: Desire measures what households spend rather than how they feel, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
+    return "<h4>Her mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
   }
   function moodFigures(d) {
     var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
@@ -31564,6 +31653,7 @@
       },
       "sheet-sign-productivity-growth": productivityPage(tenth),
       "sheet-sign-desire": desirePage(),
+      "sheet-sign-premium": premiumPage(),
       "sheet-sign-confidence": confidencePage(),
       "sheet-sign-market": marketPage()
     };
@@ -31604,6 +31694,29 @@
       },
       src: DESIRE_SRC,
       insight: desireInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function premiumPage() {
+    var r = premiumReading, pct2 = function(v) {
+      return v ? fmtSigned(v, 1) + "%" : "0%";
+    };
+    return {
+      goodAbove: true,
+      line: "No premium",
+      fmt: pct2,
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: PREMIUM_SRC,
+      insight: premiumInsight,
       info: r.info,
       row: {
         sub: r.metricSub,
@@ -31879,6 +31992,19 @@
     }, cross = null;
     for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
     return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
+  }
+  function premiumInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var side = function(d) {
+      return d.v >= s.mid;
+    }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
+    var thinner = h.filter(function(d) {
+      return d.v < last.v;
+    }).length;
+    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
   }
   var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
   function marketInsight(s) {
@@ -32504,7 +32630,7 @@
         open: id,
         title: R.name,
         icon: subjectIcon(tag.state, svg),
-        text: '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + '</div><div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div><div class="subject-verdict"><span class="tag ' + tag.state + '">' + tag.text + "</span></div>" + (ind.peek || "")
+        text: '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + '</div><div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div><div class="subject-verdict">' + (tag.text ? '<span class="tag ' + tag.state + '">' + tag.text + "</span>" : "") + "</div>" + (ind.peek || "")
       }));
       var d = metricSheet(id);
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
