@@ -110,7 +110,7 @@ ok('the early seasons are written as the app reads them',
      { gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }))),
    { gdpYoYBefore: [{ q: '1948 Q1', v: 4.21 }], cpiYoYBefore: [{ m: '1948-01', v: 10.24 }], sp500ReturnsBefore: { 1948: 5.7, 1949: 18.3 }, gdpGrowthBefore: { 1948: 4.1 } });
 ok('durable-goods spending is written as the app reads it',
-   J(emit([], [], null, null, null, null, null, null, [{ q: '2026 Q2', v: 3.1 }])).durablesHistory, [{ q: '2026 Q2', v: 3.1 }]);
+   J(emit([], [], null, null, null, null, null, null, [{ m: '2026-08', v: 3.1 }])).durablesHistory, [{ m: '2026-08', v: 3.1 }]);
 const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
   '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });
