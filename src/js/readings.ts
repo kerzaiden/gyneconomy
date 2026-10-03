@@ -37,9 +37,9 @@ function confidenceWord(v: number): WordOf {
     says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
 }
 function desireWord(v: number): WordOf {
-  if (v >= DESIRE_LINE) return { state:"good", text:"Wanting more",
+  if (v >= DESIRE_LINE) return { state:"good", text:"High appetite",
     says:"above zero: households are buying more of what they could put off than they were a year earlier" };
-  return { state:"warning", text:"Holding back",
+  return { state:"warning", text:"Low appetite",
     says:"below zero: households are buying less of what they could put off than they were a year earlier" };
 }
 export function deficitBlock(){
@@ -162,7 +162,7 @@ function desireInfoHtml(f: DesireReading){
       'cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their ' +
       'spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p>' +
     '<p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
-      'year ago; below it she is holding back. No other band is drawn.</p>' +
+      'year ago; below it her appetite is low. No other band is drawn.</p>' +
     srcBlock(DESIRE_SRC);
 }
 function productivityInfoHtml(f: ProductivityReading){
@@ -571,15 +571,15 @@ function deriveFeelingReadings(){
     return {
       bodyTerm:"Desire", info:function(){ return desireInfoHtml(desireReading); },
       page:{ bare:true, chart:function(){ return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>'; } },
-      econTerm:"Consumer demand", metricSub:"real durable goods spending, YoY, " + at,
+      econTerm:"Consumer demand", metricSub:"consumer demand, YoY, " + at,
       metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
-      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:DESIRE_LINE, label:"\u2265 0%"}, ends:{ low:"Holding back" } },
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:DESIRE_LINE, label:"\u2265 0%"}, ends:{ low:"Low appetite" } },
       span:span,
       get peek(){
         return colPeek(durablesHistory.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
       },
       lead:"",
-      caption:at + ", real spending on durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says +
+      caption:at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says +
         ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
     };
   })(desireRecord);

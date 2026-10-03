@@ -510,13 +510,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   don't re-add "The number you hear quoted" or "What it is and is not"; the caveat stays behind More
   details.** Keren: "Shiller CAPE above the Buffett indicator"; she removed both closing cards. (V365, V494)
 - **Desire is consumer demand: real spending on durable goods (BEA's chain-type quantity index, FRED
-  DDURRA3M086SBEA), year over year, monthly from 1960, read against zero only.** Keren's Trello ticket defined desire as a want beyond need and demand as
+  DDURRA3M086SBEA), year over year, monthly from 1960, read against zero only, in appetite words: High appetite above, Low appetite below.** Keren's Trello ticket defined desire as a want beyond need and demand as
   desire plus the means to pay; she likened it to the appetite for life that comes with ovulation. The
   high-yield spread it replaced is gone from the app, not moved: Keren chose "Durables, spread dropped" after
   asking whether it duplicated Pressure's Treasury spreads (it did not; those are the yield curve). The quantity
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
-  spread, went with it. (V703)
+  spread, went with it. Keren: "use appetite as the keyword". (V703)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it

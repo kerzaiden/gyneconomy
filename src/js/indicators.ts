@@ -229,7 +229,7 @@ function desireInsight(s: SplitSpec){
   var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
   for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
   return [lede('What households spend on the things they could put off: cars, furniture, appliances, electronics. ' +
-      'Real spending against the same month a year earlier, so above the line she wants more, below it she holds back.'),
+      'Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.'),
     hiCard("The latest month", s.row.flagState || "", atMonth(last as MonthPoint) + " ran at " + fmtSigned(last.v, 1) + "%, " +
       (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
     hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " +

@@ -26546,12 +26546,12 @@
   function desireWord(v) {
     if (v >= DESIRE_LINE) return {
       state: "good",
-      text: "Wanting more",
+      text: "High appetite",
       says: "above zero: households are buying more of what they could put off than they were a year earlier"
     };
     return {
       state: "warning",
-      text: "Holding back",
+      text: "Low appetite",
       says: "below zero: households are buying less of what they could put off than they were a year earlier"
     };
   }
@@ -26673,7 +26673,7 @@
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow"><b>The 100 line is the OECD’s own</b>: the index is amplitude adjusted so that 100 is its long-term average. In the OECD’s words, a reading above 100 “signals a boost in the consumers’ confidence towards the future economic situation”, with households “less prone to save, and more inclined to spend money on major purchases in the next 12 months”; below 100 indicates “a pessimistic attitude towards future developments in the economy”.</p><p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and saving, and the OECD publishes it a few months after the month it describes, which is why the card’s date trails the others.</p>' + srcBlock(CONFIDENCE_SRC);
   }
   function desireInfoHtml(f) {
-    return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow">Durable goods are the BEA’s own category for goods that last three years or more: cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p><p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a year ago; below it she is holding back. No other band is drawn.</p>' + srcBlock(DESIRE_SRC);
+    return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow">Durable goods are the BEA’s own category for goods that last three years or more: cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p><p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a year ago; below it her appetite is low. No other band is drawn.</p>' + srcBlock(DESIRE_SRC);
   }
   function productivityInfoHtml(f) {
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm business sector, against the same quarter a year earlier (" + f.metricSub + "). The record for that series, quarter by quarter, runs " + f.span + '.</p><p class="caption follow"><b>The 1.3% line is the BLS’s own figure for the slowdown era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than the slowdown</i>, not <i>at trend</i>. Today’s ' + f.metric + " " + f.wordWhy + '.</p><p class="caption follow">This is the reading that says whether capacity is being rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from each one, and only the second kind compounds.</p>' + srcBlock(PRODUCTIVITY_SRC);
@@ -27212,7 +27212,7 @@
           }
         },
         econTerm: "Consumer demand",
-        metricSub: "real durable goods spending, YoY, " + at,
+        metricSub: "consumer demand, YoY, " + at,
         metric: fmtSigned(R.now.v, 1) + "%",
         tag: {
           state: word.state,
@@ -27228,7 +27228,7 @@
             label: "≥ 0%"
           },
           ends: {
-            low: "Holding back"
+            low: "Low appetite"
           }
         },
         span: span,
@@ -27240,7 +27240,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", real spending on durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
   }
@@ -27938,14 +27938,14 @@
       mark: flameSvg,
       door: "row",
       term: "Desire",
-      head: "Real Spending on Durable Goods",
+      head: "Consumer Demand",
       hist: {
         s: durablesHistory,
         k: "m"
       },
       mid: DESIRE_LINE,
       when: lastDate,
-      cardUnit: "durables, YoY"
+      cardUnit: "demand, YoY"
     }, {
       id: "sheet-sign-confidence",
       name: "Confidence",
@@ -31727,7 +31727,7 @@
       return d.v >= s.mid;
     }, cross = null;
     for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Real spending against the same month a year earlier, so above the line she wants more, below it she holds back."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
+    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
   }
   var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
   function marketInsight(s) {
