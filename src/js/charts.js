@@ -1,184 +1,7 @@
-import { byId, cpiYoYHistory, DATA_COMPILED, MONTHS_SHORT } from "./refresh-season.js";
-import { LIVE } from "./live.js";
-import { t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, usRealGdpGrowth, yieldCurve } from "./data.js";
-import { CAPE_FAIR, refName, sentiment, timelineFor, windowYears, wireHistHover } from "./components.js";
-import { CHEV, marketCycles } from "./forms.js";
-import { PAGE_STOPS, pageCycles, pageMode, pageRange } from "./roster.js";
-import { SPREAD_DETAIL } from "./model.js";
-import { detailSlot, expandBtn, facts, ledeHtml } from "./render-core.js";
+import { CHEV, clampPct } from "./format.js";
 
 // ---- Content tab: reading companion ----
-export var seasonReading = {
-  summer: {
-    body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
-    economy: "Overheat. Growth is still running but inflation sits above target, so the central bank is leaning against it.",
-    next: "Autumn — disinflation. Temperature (CPI) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
-    watch: ["Temperature (CPI) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)"],
-    fromTheBook: []
-  },
-  autumn: {
-    body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-    economy: "Disinflation. Growth is slowing and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
-    next: "Autumn — stagflation, if prices turn back up while growth keeps slowing; or Winter, if prices fall below target first.",
-    watch: ["Activity — unemployment starting to drift up", "Hormones — credit growth and lending standards", "Whether temperature keeps falling or gets stuck above target"],
-    fromTheBook: []
-  },
-  lateautumn: {
-    body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-    economy: "Stagflation. Growth is slowing while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
-    next: "Winter — the bleed. Historically the leading signs have already turned by now (an inverted or un-inverting curve, widening credit spreads); the bleed itself confirms months later in prices and activity.",
-    watch: ["Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — high-yield spreads widening", "Sentiment — cracking (VIX spikes)"],
-    fromTheBook: []
-  },
-  winter: {
-    body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
-    economy: "Deflation, or close to it. Output contracts, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market.",
-    next: "Spring, once policy has loosened enough for credit to begin flowing again and growth turns up — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as growth turns.",
-    watch: ["Hormones — money supply and lending growth turning up", "Cervical fluid — the curve steepening sharply as short rates fall", "The Calendar — the next year closing up after the down year"],
-    fromTheBook: []
-  },
-  springdeflation: {
-    body: "",
-    economy: "",
-    next: "",
-    watch: [],
-    fromTheBook: []
-  },
-  spring: {
-    body: "Follicular. Estrogen rises, the lining rebuilds, and energy returns day by day. Nothing is at its peak yet, but the direction is unmistakable.",
-    economy: "Reflation. Growth is rising and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
-    next: "Summer — inflation, once prices rise through the top of the target range while growth keeps rising.",
-    watch: ["Temperature — inflation approaching the top of its range", "Cervical fluid — the curve steepening as growth is priced in", "Sentiment and valuation starting to stretch"],
-    fromTheBook: []
-  }
-};
-export var frameworkRows = [
-  {indicator:"Hormones", body:"Rising estrogen / LH surge", economy:"Credit — money supply, lending growth", category:"Leading"},
-  {indicator:"Cervical fluid", body:"Cervical mucus change", economy:"Credit spreads / yield curve", category:"Leading"},
-  {indicator:"Psychology", body:"Emotional state", economy:"Investor sentiment, asset valuations", category:"Leading"},
-  {indicator:"Effort", body:"Energy", economy:"Capital — GDP, profits", category:"Coincident"},
-  {indicator:"Desire", body:"Desire / libido", economy:"Risk tolerance", category:"Coincident"},
-  {indicator:"Activity", body:"Physical activity", economy:"Labor / employment", category:"Lagging"},
-  {indicator:"Temperature", body:"Basal body temperature", economy:"Inflation", category:"Lagging"}
-];
-export var VIX_CALM = 20, VIX_FEAR = 30;
-export var VIX_CONVENTION = [
-  {t:"Chase \u2014 What Is the VIX and How To Use It (below 20 stability, above 30 fear and uncertainty)", u:"https://www.chase.com/personal/investments/learning-and-insights/article/what-is-the-vix"},
-  {t:"TD Direct Investing \u2014 Understanding VIX or Volatility Index (the same lines at 20 and 30)", u:"https://www.td.com/ca/en/investing/direct-investing/articles/understanding-vix"}
-];
-export function volatilityTag(){
-  var v = vixRow.meter.value;
-  return v < VIX_CALM ? { text:"Calm", state:"good" }
-       : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
-                       : { text:"Fearful", state:"critical" };
-}
-export function fearCurve(){
-  var near = vixRow && vixRow.meter && vixRow.meter.value;
-  if (typeof near !== "number" || typeof vix3mClose !== "number" || !(vix3mClose > 0)) return null;
-  return Math.round((near / vix3mClose) * 1000) / 1000;
-}
-export function curveVerdict(r){
-  return r == null   ? { text:"No reading", state:"norm" }
-       : r >= 1      ? { text:"Inverted",   state:"serious" }
-                     : { text:"Normal",     state:"good" };
-}
-export function valuationVerdict(v){
-  var r = v / CAPE_FAIR;
-  return r < 0.75 ? { text:"Highly undervalued", state:"warning" }
-       : r < 0.95 ? { text:"Undervalued",        state:"good" }
-       : r < 1.15 ? { text:"Fairly valued",      state:"good" }
-       : r < 1.60 ? { text:"Overvalued",         state:"warning" }
-                  : { text:"Highly overvalued",  state:"serious" };
-}
 // ---- The range bar ----
-function modeBar(id, active, extra){
-  return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' +
-    [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []).map(function(m){
-      return '<button type="button" class="range-seg' + (m[0] === active ? " on" : "") + '" role="tab" ' +
-        'aria-selected="' + (m[0] === active ? "true" : "false") + '" data-mode="' + m[0] + '">' + m[1] + '</button>';
-    }).join("") + '</div>';
-}
-export var pickerOpen = {};
-function cycleByName(nm){
-  for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
-  return null;
-}
-export function openCycle(){
-  for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].ongoing) return marketCycles[i];
-  return marketCycles[marketCycles.length - 1];
-}
-export function cycleSlice(series, c){
-  var to = c.to || calendarTodayY, a = -1, b = -1;
-  series.forEach(function(d, i){
-    var y = yearOf(d);
-    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-  });
-  return a === -1 ? null : [a, b];
-}
-export function totalGrowthYears(y0, y1){
-  var years = [], rates = [];
-  for (var y = y0; y <= y1; y++)
-    if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined){ years.push(y); rates.push(usRealGdpGrowth[y]); }
-  if (!years.length) return null;
-  var factor = rates.reduce(function(fa, g){ return fa * (1 + g / 100); }, 1);
-  return { years:years, total:(factor - 1) * 100 };
-}
-export function cycleMonths(c){
-  var to = c.to || calendarTodayY, a = -1, b = -1;
-  cpiYoYHistory.forEach(function(d, i){
-    var y = parseInt(d.m.slice(0, 4), 10);
-    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
-  });
-  return a === -1 ? null : [a, b];
-}
-export function histControls(id, tl, minYear, extra){
-  var mode = pageMode[id], on = mode === "cycles";
-  var known = mode === "cycles" || mode === "calendar";
-  return '<div class="hist-controls">' +
-    modeBar(id, mode, extra) +
-    (!known ? "" : on ? cyclePicker(id, pageCycles[id], minYear)
-                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:PAGE_STOPS[id] }), pageRange[id])) +
-  '</div>';
-}
-export function pageCycle(id, y0){
-  var c = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
-  return c && c.from < y0 ? openCycle() : c;
-}
-export function cycLabel(c){
-  return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),
-           years:c.from + "\u2013" + (c.to || "Today") };
-}
-export function cycleQtrIdx(y0, cyc, len){
-  var to = cyc.to || calendarTodayY;
-  var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len, (to - y0 + 1) * 4);
-  return b > a ? [a, b] : null;
-}
-function cyclePicker(id, picked, minYear){
-  var rows = marketCycles.slice().reverse()
-    .filter(function(c){ return minYear == null || c.from >= minYear; });
-  var cur = cycleByName(picked) || openCycle();
-  if (rows.indexOf(cur) === -1) cur = rows[0] || cur;
-  var CL = cycLabel(cur), open = !!pickerOpen[id];
-  return '<div class="cycsel' + (open ? " open" : "") + '" data-cycles-for="' + id + '">' +
-    '<button type="button" class="cycsel-btn" data-picker-toggle="1" aria-haspopup="listbox" aria-expanded="' +
-      (open ? "true" : "false") + '"><span class="cycsel-nm">' + CL.name + '</span>' +
-      '<span class="cycsel-yr">' + CL.years + '</span>' + CHEV + '</button>' +
-    '<div class="cycsel-menu" role="listbox"' + (open ? "" : " hidden") + '>' +
-    rows.map(function(c){
-      var sel = c.name === cur.name, L = cycLabel(c);
-      return '<button type="button" class="cycsel-opt' + (sel ? " on" : "") + '" role="option" aria-selected="' +
-        (sel ? "true" : "false") + '" data-cycle="' + c.name + '">' +
-        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + L.name +
-        '</span><span class="cycsel-yr">' + L.years + '</span></button>';
-    }).join("") + '</div></div>';
-}
-export function rangeBar(id, ranges, active){
-  if (!ranges || ranges.length < 2) return "";
-  return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + ranges.map(function(r){
-    return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" ' +
-      'aria-selected="' + (r.key === active ? "true" : "false") + '" data-range="' + r.key + '">' + r.label + '</button>';
-  }).join("") + '</div>';
-}
 export function trendOf(vals, unit, period){
   period = period || "period";
   if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };
@@ -209,40 +32,8 @@ export function trendPill(t, key, toggles, words){
     'aria-label="Show the trend on the chart">' + inner + '</button>';
 }
 // ---- Insights: what the series says about today, computed ----
-export function yearOf(d){ return d.y != null ? d.y : parseInt((d.q || d.m).slice(0, 4), 10); }
-export function mean(a){ return a.reduce(function(x, y){ return x + y; }, 0) / a.length; }
 /* ---- The record rows ---- */
-export function headSigma(id, text){
-  var el = byId("bh-sigma-" + id); if (!el) return;
-  el.textContent = text == null ? "" : "(Σ" + text + ")";
-  el.hidden = text == null;
-}
-export function atQuarter(d){ return d.q; }
-export function atMonth(d){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }
-export function ordinal(n){ var t = n % 100, o = ["th","st","nd","rd"][(t - 20) % 10] || ["th","st","nd","rd"][t] || "th"; return n + o; }
-export function hiCard(name, state, text, body){
-  return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
-}
 // ---- The cycle average component ----
-export function dropWhatIsShown(full, shown){
-  if (!full || !shown) return full || "";
-  var norm = function(x){ return x.replace(/\s+/g, " ").trim(); }, seen = norm(shown);
-  var parts = full.split(/(?<=[.!?])\s+/), i = 0;
-  while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
-  return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
-}
-export function moreRow(fullHtml, label){
-  if (!fullHtml) return "";
-  var idx = detailSlot(fullHtml);
-  return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' +
-    '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
-}
-export var tempCaptionFull = "", tempLeadShown = "";
-export function highlightsHtml(cards, cyclesHtml, moreHtml, head){
-  if (!cards.length && !cyclesHtml && !moreHtml) return "";
-  return '<section class="highlights insights"><div class="hi-head">' + (head || "Insights") + '</div>' + cards.join("") +
-    (cyclesHtml || "") + (moreHtml || "") + '</section>';
-}
 // ---- The inner pages' charts ----
 function xLabelOf(o, d, i, all){
   if (o.xLabel) return o.xLabel(d, i);
@@ -274,14 +65,6 @@ export function fitGroup(o, x0, x1, y, W, padL, padR){
   '</g>';
 }
 /* ---- The history component's axes ---- */
-export function appendSvgMarkup(svg, markup){
-  if (!markup) return;
-  var doc = new DOMParser().parseFromString(
-    '<svg xmlns="http://www.w3.org/2000/svg">' + markup + '</svg>', "image/svg+xml");
-  var root = doc.documentElement;
-  var kids = Array.prototype.slice.call(root.childNodes);
-  for (var i = 0; i < kids.length; i++) svg.appendChild(document.importNode(kids[i], true));
-}
 export function vGrid(x, top, bot){
   return '<path class="bt-vgrid" d="M' + (+x).toFixed(1) + ',' + (+top).toFixed(1) +
          'L' + (+x).toFixed(1) + ',' + (+bot).toFixed(1) + '"/>';
@@ -315,17 +98,8 @@ export function zeroRule(L, R, y){
   return '<path class="m2-zero" d="M' + (L - AXIS.L) + ',' + y.toFixed(1) + 'H' + (R + AXIS.R) + '"/>';
 }
 export function meanRule(L, R, y){ return '<path class="vh-mean" d="M' + L + ',' + y.toFixed(1) + 'H' + R + '"/>'; }
-var pendingGeom = null;
+export var pendingGeom = null;
 export function publishGeom(name, g){ g.src = name; pendingGeom = g; return g; }
-export function attachHistory(host, tipId, expect){
-  if (!host) return null;
-  var g = pendingGeom;
-  if (expect && (!g || g.src !== expect))
-    (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
-  host.__geom = g;
-  if (tipId) wireHistHover(host, tipId);
-  return g;
-}
 export function histBar(inner, id){
   return '<div class="hist-bar"' + (id ? ' id="' + id + '"' : '') + '>' + (inner || '') + '</div>';
 }
@@ -397,13 +171,9 @@ export function divergeChart(o, W){
   return '<div class="dchart"><svg class="hist-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (o.alt || "") + '">' + out.join("") + '</svg></div>';
 }
 // ---- A series' highest reading within a span ----
-export function maxIn(series, from, to){
-  var vs = series.filter(function(d){ var y = yearOf(d); return y >= from && y <= to; });
-  return vs.length ? vs.reduce(function(a, b){ return b.v > a.v ? b : a; }) : null;
-}
 var PEEK_MARKS = 12;
-export var PEEK_W = 80;
-export var PEEK_H = 42;
+var PEEK_W = 80;
+var PEEK_H = 42;
 export function colPeek(all, classOf, base, rule){
   if (!all || !all.length) return "";
   var from = Math.max(0, all.length - PEEK_MARKS), vals = all.slice(from);
@@ -421,7 +191,7 @@ export function colPeek(all, classOf, base, rule){
   });
   return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + '</svg></span>';
 }
-export function meterPeek(m, state){
+function meterPeek(m, state){
   var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
   function at(v){ return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / ((m.max - m.min) || 1))); }
   var o = m.optimal || {};
@@ -437,159 +207,121 @@ export function meterPeek(m, state){
     '<circle class="mp-core ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/>' +
   '</svg></span>';
 }
-var PRESSURE_ZONES = [
-  { key:"inverted", label:"Inverted", from:-2,  to:0 },
-  { key:"normal",   label:"Normal",   from:0,   to:2.5 },
-  { key:"steep",    label:"Steep",    from:2.5, to:4 }
-];
-export function pressureZone(v){
-  for (var i = 0; i < PRESSURE_ZONES.length; i++){
-    if (v < PRESSURE_ZONES[i].to || i === PRESSURE_ZONES.length - 1) return PRESSURE_ZONES[i];
+export function windowYears(fromYear, toYear, want){
+  if (toYear <= fromYear) return [fromYear];
+  var raw = (toYear - fromYear) / Math.max(1, want - 1);
+  var step = [1, 2, 5, 10, 15, 20, 25, 50].filter(function(x){ return x >= raw; })[0] || 50;
+  var out = [], y = Math.ceil(fromYear / step) * step;
+  for (; y <= toYear; y += step) out.push(y);
+  return out.length ? out : [toYear];
+}
+function refName(t){
+  var w = String(t || "Reference").split(",")[0].trim();
+  return w.charAt(0).toUpperCase() + w.slice(1);
+}
+export var PULSE_WINDOW = 5;
+var PULSE_WINDOW_PEEK = 3;
+var pulseClipN = 0;
+function beatPath(x0, x1, y, period, amp){
+  var f = function(n){ return n.toFixed(1); };
+  var d = ["M" + f(x0) + "," + f(y)], x = x0, p = period, A = amp;
+  while (x < x1 + p){
+    d.push("H" + f(x + p * 0.08));
+    d.push("Q" + f(x + p * 0.15) + "," + f(y - A * 0.24) + " " + f(x + p * 0.22) + "," + f(y));
+    d.push("H" + f(x + p * 0.30));
+    d.push("L" + f(x + p * 0.345) + "," + f(y + A * 0.15));
+    d.push("L" + f(x + p * 0.400) + "," + f(y - A));
+    d.push("L" + f(x + p * 0.455) + "," + f(y + A * 0.34));
+    d.push("L" + f(x + p * 0.500) + "," + f(y));
+    d.push("H" + f(x + p * 0.60));
+    d.push("Q" + f(x + p * 0.71) + "," + f(y - A * 0.36) + " " + f(x + p * 0.82) + "," + f(y));
+    x += p;
   }
-  return PRESSURE_ZONES[PRESSURE_ZONES.length - 1];
+  return d.join("");
 }
-var HZN_BACK = 4;
-function hznLast(a){ for (var i = a.length - 1; i >= 0; i--) if (a[i].v != null && !a[i].partial) return { i:i, v:a[i].v }; return null; }
-function hznRecord(a){
-  var vs = a.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
-  return { min:Math.min.apply(null, vs), max:Math.max.apply(null, vs) };
-}
-function hznBack(a, from, back){ for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
-function horizonWord(sp, dLong, dShort, dSpread){
-  if (sp < -0.10) return { word:"Pessimistic", state:"critical" };
-  if (sp <  0.25) return { word:"Undecided",   state:"warning" };
-  if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
-  return dLong >= -dShort ? { word:"Optimistic", state:"good" } : { word:"Hopeful", state:"good" };
-}
-export function horizonInfoHtml(pick){
-  var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
-  return '<h4>10-year minus ' + shortLeg + '</h4>' +
-    '<p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a ' +
-      'forecast rather than a measurement: the long rate is the market’s own average of where it expects the ' +
-      'short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a ' +
-      'market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly ' +
-      'record, ' + m.min.toFixed(2) + ' and +' + m.max.toFixed(2) + ' points; the deepest single DAY of the ' +
-      'last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The line at zero is definitional, not drawn</b> — it is ' +
-      'where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own ' +
-      'recession model is built on, using this exact pair of maturities. That model’s FAQ states that an ' +
-      'inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. ' +
-      'The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p>' +
-    '<p class="caption" style="margin-top:10px;">Read the caution with the signal, because it is the same ' +
-      'source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the ' +
-      'crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever ' +
-      'inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, ' +
-      'which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' +
-    String(SPREAD_DETAIL || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
-}
-var RISK_REWARD = [
-  { key:"low",  label:"Low",      at:function(v){ return v < 4; } },
-  { key:"mod",  label:"Moderate", at:function(v){ return v >= 4 && v <= 10; } },
-  { key:"high", label:"High",     at:function(v){ return v > 10; } }
-];
-var RISK_RISK = [
-  { key:"low",  label:"Low",      at:function(v){ return v < 20; } },
-  { key:"mod",  label:"Moderate", at:function(v){ return v >= 20 && v <= 30; } },
-  { key:"high", label:"High",     at:function(v){ return v > 30; } }
-];
-function riskCell(bands, v){ var i = 0; bands.forEach(function(b, k){ if (b.at(v)) i = k; }); return i; }
-export function riskMatrixBlock(oas, cape){
-  var wi = riskCell(RISK_REWARD, oas), ri = riskCell(RISK_RISK, cape);
-  var ylabs = [], cells = [];
-  for (var r = RISK_RISK.length - 1; r >= 0; r--){
-    ylabs.push('<span class="rm-y' + (r === ri ? " on" : "") + '">' + RISK_RISK[r].label + '</span>');
-    for (var c = 0; c < RISK_REWARD.length; c++){
-      var here = (r === ri && c === wi);
-      cells.push('<span class="rm-c s' + (r + (RISK_REWARD.length - 1 - c)) + (here ? " here" : "") + '" title="' +
-        RISK_RISK[r].label + ' risk · ' + RISK_REWARD[c].label + ' reward">' +
-        (here ? '<i class="rm-mark"></i>' : "") + '</span>');
-    }
-  }
-  var xlabs = RISK_REWARD.map(function(b, i){
-    return '<span class="rm-x' + (i === wi ? " on" : "") + '">' + b.label + '</span>';
+export function pulseTraceSvg(rate, ref, W, H, amp, cls, years){
+  var id = "pulseclip" + (++pulseClipN);
+  var span = years || PULSE_WINDOW;
+  var lanes = ref == null
+    ? [{ r:rate, y:H * 0.52, c:"pt-now" }]
+    : [{ r:ref, y:H * 0.76, c:"pt-ref" }, { r:rate, y:H * 0.30, c:"pt-now" }];
+  var paths = lanes.map(function(L){
+    var beats = Math.max(0.5, L.r * span);
+    return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, W / beats, amp) + '"/>';
   }).join("");
-  return '<div class="page-chart riskmx">' +
-    '<div class="spread-history-head"><h4>Risk / Reward</h4>' + expandBtn(riskMatrixNote) + '</div>' +
-    '<div class="rm-frame"><span class="rm-axis rm-axis-y">Risk</span>' +
-      '<div class="rm-grid">' +
-        '<div class="rm-ylabs">' + ylabs.join("") + '</div>' +
-        '<div class="rm-cells">' + cells.join("") + '</div>' +
-        '<span></span><div class="rm-xlabs">' + xlabs + '</div>' +
-      '</div></div>' +
-    '<div class="rm-axis rm-axis-x">Reward</div>' +
-    '<p class="pt-note"><b>' + RISK_RISK[ri].label + ' risk</b> (CAPE ' + cape.toFixed(1) + '×) · ' +
-      '<b>' + RISK_REWARD[wi].label + ' reward</b> (' + oas.toFixed(2) + '% spread). ' +
-      'Risk: CAPE under 20 / 20–30 / over 30. Reward: spread under 4% / 4–10% / over 10%. ' +
-      'The grid places the two readings against each other. It does not forecast.</p>' +
-  '</div>';
+  return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+    '<defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
+    '<g clip-path="url(#' + id + ')">' + paths + '</g></svg>';
 }
-var riskMatrixNote =
-  '<h4>Risk / Reward</h4>' +
-  '<p class="caption">Two readings already on this board, placed against each other because neither answers the ' +
-    'other’s question alone. <b>Risk</b> is CAPE, from the Valuations page — how much price sits on a decade of ' +
-    'earnings, and so how much there is to give back. <b>Reward</b> is the extra yield demanded to hold junk ' +
-    'debt — Desire’s own figure, read forwards: a wide spread is a lot of compensation for the risk, a tight ' +
-    'one is very little. This is the same figure the card above tags as high appetite, seen from the other ' +
-    'side: <b>high appetite is what a low-reward market looks like from the inside.</b></p>' +
-  '<p class="caption" style="margin-top:10px;">How to read it. The two readings are placed against each ' +
-    'other rather than divided into a single figure, so what you get is a position on two axes rather than one ' +
-    'number. It is also not <b>Value at Risk</b>, which is a different and far more precise measure — the loss ' +
-    'not exceeded with a stated probability over a stated horizon. This grid has no distribution, no ' +
-    'confidence level and no horizon.</p>' +
-  '<p class="caption" style="margin-top:10px;">The bands. A spread under 4% is the euphoric zone (the record ' +
-    'low is 2.41%, June 2007), over 10% the distressed one (the record high 21.82%, December 2008), and ' +
-    'between them is ordinary. CAPE’s 20 and 30 are round numbers sitting close to the terciles of this ' +
-    'app’s own 1970–2026 history (16.9 and 26.5); they split those fifty-seven years twenty-four, ' +
-    'twenty-one and twelve.</p>' +
-  '<p class="caption" style="margin-top:10px;">No cell carries a rating. The wash deepens toward high risk and ' +
-    'low reward because being paid least when there is most to lose is arithmetic about two readings — a ' +
-    'description of where you are standing, not a claim about what happens next. The honest way to say more ' +
-    'would be to shade each cell by what followed historically, as the un-inversion panel on the Pressure page ' +
-    'does; that needs a long spread history, and FRED now serves this series on a rolling three-year window, ' +
-    'so the past years cannot be binned.</p>';
-
-export function setVixRow(v){ vixRow = v; return v; }
-export function setVix3mClose(v){ vix3mClose = v; return v; }
-export function setTempCaptionFull(v){ tempCaptionFull = v; return v; }
-export function setTempLeadShown(v){ tempLeadShown = v; return v; }
-
-export var vixRow, tempInfo, calendarTodayY, vix3mClose, horizonRead;
-var HZN_METERS;
-
-export function bootCharts(){
-  vixRow = sentiment.rows[0];
-  // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
-  tempInfo = '<h4>Temperature</h4>' +
-    ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") +
-    facts([
-      '<b>Hot above the band, warm inside it, cold below</b> \u2014 red, teal, blue.',
-      'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> is this board\u2019s own tolerance around it, drawn on CPI because that is the series most readers know.',
-      'One of the two readings a season is computed from: the level, and the direction of the last twelve months.',
-      'It confirms heat that has already built rather than predicting it.'
-    ]);
-  // ---- Daily Feeling/Energy readout (Cycle tab) ----
-  calendarTodayY = DATA_COMPILED.getFullYear();
-  vix3mClose = LIVE("vix3mClose", 17.61);
-  horizonRead = (function(){
-    var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
-    var sp = pick("10Y") - pick("3M");
-    var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
-    var tN2 = hznLast(t10y2yHistory);
-    var dSpread = sN.v - hznBack(t10y3mHistory, sN.i, HZN_BACK);
-    var dLong   = lN.v - hznBack(t10yYieldHistory, lN.i, HZN_BACK);
-    var dShort  = tN.v - hznBack(t3mYieldHistory, tN.i, HZN_BACK);
-    var w = horizonWord(sp, dLong, dShort, dSpread);
-    return { spread:sp, q:sN, q2:tN2, dSpread:dSpread, dLong:dLong, dShort:dShort,
-             was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
-             d2:tN2.v - hznBack(t10y2yHistory, tN2.i, HZN_BACK),
-             word:w.word, state:w.state };
-  })();
-  HZN_METERS = {
-    "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
-            optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
-    "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max,
-            value:(function(){ var p = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : 0; };
-                               return p("10Y") - p("2Y"); })(),
-            optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }
-  };
+export function pulsePeek(rate, ref){
+  return '<span class="peek-chart pulsepeek">' + pulseTraceSvg(rate, ref, PEEK_W, PEEK_H, 8, "", PULSE_WINDOW_PEEK) + '</span>';
 }
+export function peekCard(o){
+  var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring")
+          : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref)
+          : o.meter ? meterPeek(o.meter, o.state)
+          : o.cols ? colPeek(o.cols, o.colClass, o.colBase, o.colRule)
+          : "";
+  return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target +
+    '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ', ' + o.value + ' ' + o.unit + ' \u2014 open">' +
+    '<span class="peek-text">' +
+      '<span class="peek-kicker">' +
+        (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + '</span>' : '') +
+        o.kicker + CHEV + '</span>' +
+      art +
+      '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span>' +
+      '<span class="peek-word">' + o.word + '</span>' +
+    '</span>' +
+  '</button>';
+}
+export function vitalRingSvg(pct, state, label, cls){
+  var r = 46, c = 2 * Math.PI * r;
+  var offset = c * (1 - clampPct(pct, 0, 100) / 100);
+  return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' +
+    (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
+    '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' +
+    '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' +
+      'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' +
+  '</svg>';
+}
+export function attachHoverTracking(hit, svg, W, padL, innerW, count, onIndex, onHide){
+  var rect = null, lastTouch = 0, shownIdx = -1, viaTouch = false;
+  function refresh(){ rect = svg.getBoundingClientRect(); }
+  function indexFromClientX(clientX){
+    var relX = (clientX - rect.left) / rect.width * W;
+    return Math.max(0, Math.min(count - 1, Math.round(((relX - padL) / innerW) * (count - 1))));
+  }
+  function hide(){ shownIdx = -1; viaTouch = false; onHide(); }
+  function recentTouch(){ return Date.now() - lastTouch < 800; }
+  hit.addEventListener("mouseenter", function(){ if (!recentTouch()) refresh(); });
+  hit.addEventListener("mousemove", function(evt){
+    if (recentTouch()) return;
+    if (!rect) refresh();
+    shownIdx = indexFromClientX(evt.clientX); viaTouch = false; onIndex(shownIdx);
+  });
+  hit.addEventListener("mouseleave", function(){ if (!viaTouch) hide(); });
+  hit.addEventListener("touchstart", function(evt){
+    lastTouch = Date.now(); refresh();
+    var i = indexFromClientX(evt.touches[0].clientX);
+    if (viaTouch && i === shownIdx){ hide(); return; }
+    shownIdx = i; viaTouch = true; onIndex(i);
+  }, {passive:true});
+  hit.addEventListener("touchmove", function(evt){
+    lastTouch = Date.now(); if (!rect) refresh();
+    var i = indexFromClientX(evt.touches[0].clientX);
+    if (i !== shownIdx){ shownIdx = i; viaTouch = true; onIndex(i); }
+  }, {passive:true});
+  hit.addEventListener("touchend", function(){ lastTouch = Date.now(); }, {passive:true});
+  hoverAwayAdd({ hit:hit, touch:function(evt){ if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide(); },
+                 scroll:function(){ if (viaTouch) hide(); } });
+}
+var hoverAway = null;
+function hoverAwayAdd(h){
+  if (!hoverAway){
+    hoverAway = [];
+    document.addEventListener("touchstart", function(evt){ hoverAwayLive().forEach(function(x){ x.touch(evt); }); }, {passive:true});
+    window.addEventListener("scroll", function(){ hoverAwayLive().forEach(function(x){ x.scroll(); }); }, {passive:true});
+  }
+  hoverAway.push(h);
+}
+function hoverAwayLive(){ return (hoverAway = hoverAway.filter(function(x){ return x.hit.isConnected; })); }

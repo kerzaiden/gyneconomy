@@ -1,14 +1,9 @@
-import { cpiYoYHistory, focusQuiet, gdpQuarterlyYoY, layer, onScreen } from "./refresh-season.js";
-import { fedFundsHistory } from "./history-fred.js";
+import { CHEV, yearOf } from "./format.js";
+import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.js";
 import { GYN } from "./live.js";
-import { coincident, HY_NORM_HI, HY_NORM_LO, m2vHistory, PULSE_PRE2008, windowScale, windowYears } from "./components.js";
-import { atMonth, atQuarter, avgRule, AXIS, chartAxes, colPath, colPeek, colWidth, crossLine, fitLine, histBar, histFrame, histTip, meanRule, publishGeom, vGrid, vhOpen, xLabel, zeroRule } from "./charts.js";
-import { CHEV, DSR_FROM_YEAR, dsrHistory, SAV_OFFSET, savHistory } from "./forms.js";
-import { HIST_HEAD } from "./roster.js";
-import { cpiNow, quarterRegime } from "./model.js";
-import { detailTexts, srcBlock } from "./render-core.js";
-import { heatStep, m2Step } from "./dial-cycle.js";
-import { activityStackHtml, seatTemperature } from "./pages-nav.js";
+import { AXIS, pendingGeom } from "./charts.js";
+import { deficitHistory, hyAt, hyDates, hyNum, marketCycles } from "./data.js";
+import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.js";
 
 /* ---- the history card's head ---- */
 export var HIST_NOTE = {};
@@ -88,613 +83,355 @@ function headMenuShut(refocus){
   if (refocus) focusQuiet(headMoreBtn(id));
 }
 export function histNote(head, info){ if (head && info) HIST_NOTE[head] = info; }
-export function meterFlagged(m){
-  var o = m.optimal || {};
-  if (o.from != null) return m.value < o.from || m.value > o.to;
-  if (o.gte != null) return m.value < o.gte;
-  if (o.lte != null) return m.value > o.lte;
-  return false;
-}
-function desireInfoHtml(ind){
-  return '<h4>Risk tolerance (credit)</h4>' +
-    '<p class="caption">The reading is <b>' + ind.tag.text + '</b>. The figure is the ICE BofA US High Yield ' +
-      'Index option-adjusted spread \u2014 the extra yield investors demand to lend to companies rated below ' +
-      'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
-      'stripped out (' + ind.metricSub + ').</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Normal here is ' + HY_NORM_LO + '\u2013' + HY_NORM_HI +
-      '%</b>, and both edges are the credit market\u2019s own breaks rather than a target: below about 3.5% is ' +
-      'read as complacency, above about 6% as stress, and above 8% as distress. The long-run median since the ' +
-      'index began in 1996 is roughly 4.5%, which sits inside the band. An economy has no level it ought to be ' +
-      'at, so none of this is an optimum \u2014 it is where this spread has actually sat.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Tight</b> means lenders are asking little to take credit ' +
-      'risk, so appetite is high; <b>wide</b> means they are asking a lot. That is why the figure flags amber ' +
-      'while the reading stays good: abnormally tight spreads are bullish risk appetite AND a historically ' +
-      'unusual place for compensation to sit. Both are true of the one number. The ends of the scale are the ' +
-      'index\u2019s own record: 2.41% in June 2007 and 21.82% in December 2008.</p>' +
-    srcBlock([
-      {t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index OAS (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},
-      {t:"Trading Economics \u2014 the index\u2019s record high and low since 1996", u:"https://tradingeconomics.com/united-states/bofa-merrill-lynch-us-high-yield-option-adjusted-spread-fed-data.html"},
-      {t:"Convex \u2014 high-yield spread regimes and the long-run median", u:"https://convextrade.com/glossary/hy-spreads"},
-      {t:"CME Group \u2014 how Fed policy moves corporate bond spreads", u:"https://www.cmegroup.com/openmarkets/interest-rates/2025/How-Fed-Policy-Can-Impact-Corporate-Bond-Spreads.html"}
-    ]);
-}
-function volumeInfoHtml(ind){
-  return '<h4>' + ind.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
-      'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
-      '(' + ind.metricSub + ').</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Her pace is 3.5\u201310%</b>, and that is a band computed from ' +
-      'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
-      'year on average (median 6.70%), and the tenth to ninetieth percentile runs 3.3% to 10.3%. So roughly four ' +
-      'quarters in five sat inside this band, and the two ends are what unusual looks like in each direction \u2014 ' +
-      '<b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: \u22124.6% in ' +
-      '2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p>' +
-    '<p class="caption" style="margin-top:10px;">Volume and Pulse are two halves of one number \u2014 nominal output ' +
-      'is the money stock times its velocity \u2014 so neither means much read alone.</p>';
-}
-function pulseInfoHtml(ind){
-  return '<h4>' + ind.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
-      'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
-      'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.7\u20132.2\u00d7 band is the pre-2008 era\u2019s own range</b>, not a ' +
-      'target \u2014 across the 196 quarters from 1959 Q1 to 2007 Q4 velocity averaged 1.857\u00d7 (median 1.808\u00d7) and ' +
-      'ran between 1.652\u00d7 and 2.192\u00d7. It is labelled <b>Pre-2008</b> rather than normal for that reason: the ' +
-      'collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p>' +
-    '<p class="caption" style="margin-top:10px;">The ends mean direction as well as level: <b>slow</b> is money ' +
-      'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
-      'is a busy economy and, past a point, an inflationary one.</p>';
-}
-export var PRODUCTIVITY_SRC = [
-  {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
-  {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
-  {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
+var TIMELINE_STOPS = [
+  { key:"cycle",  label:"Current cycle" },
+  { key:"1y",     label:"1Y",  span:1 },
+  { key:"5y",     label:"5Y",  span:5 },
+  { key:"10y",    label:"10Y", span:10 },
+  { key:"25y",    label:"25Y", span:25 },
+  { key:"max",    label:"Max", span:Infinity },
+  { key:"cycles", label:"Cycles" }
 ];
-export var CONFIDENCE_SRC = [
-  {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},
-  {t:"OECD Data Explorer \u2014 Composite leading indicators: consumer confidence (CCICP), United States, monthly", u:"https://data-explorer.oecd.org/vis?df[ds]=DisseminateFinalDMZ&df[id]=DSD_STES%40DF_CLI&df[ag]=OECD.SDD.STES"}
-];
-export function confidenceInfoHtml(f){
-  return '<h4>' + f.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
-      'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
-      '100 is its long-term average. In the OECD\u2019s words, a reading above 100 \u201csignals a boost in the consumers\u2019 confidence ' +
-      'towards the future economic situation\u201d, with households \u201cless prone to save, and more inclined to spend money on major ' +
-      'purchases in the next 12 months\u201d; below 100 indicates \u201ca pessimistic attitude towards future developments in the economy\u201d.</p>' +
-    '<p class="caption" style="margin-top:10px;">It is built from household surveys of their finances, the economy, unemployment and ' +
-      'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
-    srcBlock(CONFIDENCE_SRC);
+export function timelineSpan(key){
+  if (key === "cycle") return cycleSpanYears();
+  for (var i = 0; i < TIMELINE_STOPS.length; i++) if (TIMELINE_STOPS[i].key === key) return TIMELINE_STOPS[i].span;
+  return null;
 }
-export function productivityInfoHtml(f){
-  return '<h4>' + f.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
-      'business sector, against the same quarter a year earlier (' + f.metricSub + '). The record for that ' +
-      'series, quarter by quarter, runs ' + f.span + '.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
-      'era</b> \u2014 since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year ' +
-      'across 1947\u20132018. So the band says something narrower than it looks: above the line is <i>better than ' +
-      'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' ' + f.wordWhy + '.</p>' +
-    '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' +
-      'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
-      'each one, and only the second kind compounds.</p>' +
-    srcBlock(PRODUCTIVITY_SRC);
+export function timelineFor(o){
+  var ser = o.series || [], n = ser.length;
+  var depth = o.depth != null ? o.depth : (n ? yearOf(ser[n - 1]) - yearOf(ser[0]) + 1 : 0);
+  var hasCycle = o.stops.indexOf("cycle") !== -1;
+  return TIMELINE_STOPS.filter(function(r){
+    if (o.stops.indexOf(r.key) === -1) return false;
+    if (r.span == null || r.span === Infinity) return true;
+    if (hasCycle && r.span === 5) return false;
+    return depth >= r.span;
+  });
 }
-export function activityInfoHtml(ind){
-  return '<h4>' + ind.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
-      'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
-      'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 3.5\u20135% band brackets the CBO\u2019s noncyclical rate of ' +
-      'unemployment</b> \u2014 its estimate of the rate that remains once demand is neither too hot nor too cold, ' +
-      'currently around 4.2%. Be clear about what is sourced and what is not: the CBO\u2019s number is published, ' +
-      'the two edges are round figures set either side of it rather than a computed interval. There is no ' +
-      'official normal range for unemployment, and this is the honest way to draw one.</p>' +
-    '<p class="caption" style="margin-top:10px;">The ends read the opposite way to most bars here: <b>tight</b> ' +
-      'is a hot labour market with few people looking, <b>slack</b> is a cold one. And this reading confirms a ' +
-      'phase rather than calling it \u2014 unemployment is the textbook lagging indicator, usually trailing a turn ' +
-      'by two to three quarters.</p>' +
-    srcBlock([
-      {t:"CBO via FRED \u2014 Noncyclical Rate of Unemployment (NROU)", u:"https://fred.stlouisfed.org/series/NROU"},
-      {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
-    ]);
+export function timelineWindow(series, key){
+  var sp = timelineSpan(key);
+  if (sp == null || sp === Infinity || !series.length) return series;
+  var first = yearOf(series[series.length - 1]) - sp + 1;
+  return series.filter(function(d){ return yearOf(d) >= first; });
 }
-export function temperatureInfoHtml(ind){
-  return '<h4>' + ind.econTerm + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
-      'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
-      'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>1–3% is a target band, not a normal range</b> — the one ' +
-      'band in this app that describes where prices <i>ought</i> to be rather than where they have been. The ' +
-      'Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on ' +
-      'Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the ' +
-      'Fed’s; the two edges are set a point either side of it for this page, and that width is a choice, ' +
-      'not a source. And the months inside it are not evidence that the band is normal — 258 of the 451 ' +
-      'months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed ' +
-      'has hit its target rather than about where prices naturally sit. Widen the window and the band stops ' +
-      'describing anything: the ends of this same track are −15.8% and +23.7%.</p>' +
-    '<p class="caption" style="margin-top:10px;">And the needle is not measured on the same index as the ' +
-      'target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 ' +
-      'has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on ' +
-      'shelter, and reweights annually rather than monthly, so it catches less of the substitution people do ' +
-      'when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: ' +
-      '3.4% here is nearer 3% on the Fed’s own gauge.</p>' +
-    '<p class="caption" style="margin-top:10px;">The two ends are not mirror images. <b>Hot</b> erodes what ' +
-      'money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every ' +
-      'debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero ' +
-      'rather than at it.</p>' +
-    srcBlock([
-      {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"},
-      {t:"Cleveland Fed — The CPI versus the PCE price index", u:"https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"},
-      {t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
-      {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
-    ]);
+export function windowScale(vals, must){
+  var clean = vals.filter(function(v){ return v != null && isFinite(v); });
+  if (!clean.length) return { lo:0, hi:1, ticks:[0, 1] };
+  var lo = Math.min.apply(null, clean), hi = Math.max.apply(null, clean);
+  (must || []).forEach(function(m){ lo = Math.min(lo, m); hi = Math.max(hi, m); });
+  if (hi === lo){ hi += 1; lo -= 1; }
+  var pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  var raw = (hi - lo) / 5, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+  var step = [1, 2, 2.5, 5, 10].map(function(m){ return m * mag; })
+              .filter(function(x){ return x >= raw; })[0] || 10 * mag;
+  var ticks = [], t = Math.ceil(lo / step) * step;
+  for (var guard = 0; t <= hi + step * 1e-9 && guard < 40; t += step, guard++)
+    ticks.push(Math.abs(t) < step * 1e-6 ? 0 : t);
+  return { lo:lo, hi:hi, ticks:ticks };
 }
-export function desireBlock(ind){
-  histNote("desire-range", desireInfoHtml(ind));
-  return histBar("", "desire-timeline") +
-    '<div class="page-chart pulsebox">' +
-    histHead("desire-range") +
-    '<div id="desire-record" class="vh-host"></div>' +
-    histTip("desire-hist-tooltip") +
-    '<div id="desire-trend"></div>' +
+export function histReadEnsure(host){
+  var cont = host.closest(".page-chart, .spread-history") || host.parentNode || host;
+  var el = cont.querySelector(":scope > .hist-read");
+  if (!el){
+    el = document.createElement("div");
+    el.className = "hist-read";
+    el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
+    var svg = cont.querySelector("svg.vh-svg") || cont.querySelector("svg.hist-svg") ||
+              cont.querySelector(".chart-shell > svg") || cont.querySelector(".dchart > svg") ||
+              cont.querySelector("svg");
+    var anchor = svg;
+    while (anchor && anchor.parentNode !== cont) anchor = anchor.parentNode;
+    cont.insertBefore(el, anchor || cont.firstChild);
+    cont.classList.add("has-hist-read");
+  }
+  if (!el.firstElementChild || el.firstElementChild.className !== "hr-plate")
+    el.innerHTML = '<div class="hr-plate"><div class="hr-label"></div><div class="hr-value"></div></div>';
+  host.__readEl = el;
+  return el;
+}
+export function histReadFill(host, d, i){
+  var g = host.__geom, el = host.__readEl;
+  if (!g || !el) return;
+  var fmt = function(v){
+    return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212");
+  };
+  var atRest = !d || d.v == null;
+  if (atRest){
+    var vv = g.vals || [];
+    for (var k = vv.length - 1; k >= 0; k--)
+      if (vv[k] && vv[k].v != null && isFinite(vv[k].v)){ d = vv[k]; i = k; break; }
+    if (!d || d.v == null){ el.classList.remove("on"); host.classList.remove("resting"); return; }
+  }
+  host.classList.toggle("resting", atRest);
+  var lab = g.at(d, i), val = fmt(d.v);
+  var plate = el.firstElementChild;
+  if (!plate) return;
+  plate.children[0].textContent = lab;
+  plate.children[1].innerHTML = val;
+  var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
+  if (!svg){ el.classList.remove("on"); return; }
+  var sb = svg.getBoundingClientRect(), eb = el.getBoundingClientRect();
+  if (!sb.width || !eb.width){ el.classList.remove("on"); return; }
+  el.classList.add("on");
+  var scale = sb.width / g.W || 1;
+  var cross = svg.querySelector(".hist-cross");
+  if (cross){
+    var cx = (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)).toFixed(1);
+    cross.setAttribute("x1", cx); cross.setAttribute("x2", cx);
+  }
+  var fr = svg.querySelector(".bt-frame");
+  var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+  var cp = el.offsetParent ? el.offsetParent.getBoundingClientRect() : eb;
+  var plateTop = sb.top - cp.top + (frTop + AXIS.LEG + 10) * scale;
+  var colX = sb.left - eb.left + (g.L + (g.R - g.L) * i / Math.max(1, g.n - 1)) * scale;
+  plate.classList.remove("compact");
+  var w = plate.offsetWidth;
+  if (w > (g.R - g.L) * scale * 0.6){ plate.classList.add("compact"); w = plate.offsetWidth; }
+  var fx0 = fr ? parseFloat(fr.getAttribute("x")) : g.L;
+  var fx1 = fr ? fx0 + parseFloat(fr.getAttribute("width")) : g.R;
+  var lo = (sb.left - eb.left) + (fx0 + AXIS.L) * scale, hi = (sb.left - eb.left) + (fx1 - AXIS.R) * scale;
+  var mx = i === 0 ? lo
+         : i === g.n - 1 ? hi - w
+         : Math.max(lo, Math.min(hi - w, colX - w / 2));
+  el.style.top = plateTop.toFixed(1) + "px";
+  if (!plate.__placed) plate.style.transition = "none";
+  plate.style.marginLeft = mx.toFixed(1) + "px";
+  if (!plate.__placed){ void plate.offsetWidth; plate.style.transition = ""; plate.__placed = true; }
+
+}
+function histAxisEnds(svg, fr){
+  if (!fr || !svg.getBBox) return;
+  var x0 = parseFloat(fr.getAttribute("x")), x1 = x0 + parseFloat(fr.getAttribute("width"));
+  Array.prototype.forEach.call(svg.querySelectorAll(".bt-xl"), function(t){
+    var bb;
+    try { bb = t.getBBox(); } catch (e) { return; }
+    if (!bb.width) return;
+    if (bb.x < x0){ t.setAttribute("text-anchor", "start"); t.setAttribute("x", x0.toFixed(1)); }
+    else if (bb.x + bb.width > x1){ t.setAttribute("text-anchor", "end"); t.setAttribute("x", x1.toFixed(1)); }
+  });
+}
+export function histLegend(host){
+  var g = host.__geom;
+  var svg = host.querySelector("svg.hist-svg") || host.querySelector("svg.vh-svg") || host.querySelector("svg");
+  if (!svg) return;
+  var old = svg.querySelector(".hist-legend");
+  if (old) old.parentNode.removeChild(old);
+  histAxisEnds(svg, svg.querySelector(".bt-frame"));
+  if (!g || g.B == null) return;
+  var refs = (g.refs || []).filter(function(r){ return r && (r.v == null || isFinite(r.v)); });
+  if (!refs.length) return;
+  var fmt = function(v){ return String(g.fmt ? g.fmt(v) : v.toFixed(1) + "%").replace(/^-/, "\u2212"); };
+  var NS = "http://www.w3.org/2000/svg";
+  var grp = document.createElementNS(NS, "g");
+  grp.setAttribute("class", "hist-legend");
+  grp.setAttribute("aria-hidden", "true");
+  var fr = svg.querySelector(".bt-frame");
+  var INSET = 6, PLATE_H = 15, PAD_X = 6;
+  var frTop = fr ? parseFloat(fr.getAttribute("y")) : g.T - AXIS.LEG;
+  var frRight = fr ? parseFloat(fr.getAttribute("x")) + parseFloat(fr.getAttribute("width")) : g.R;
+  var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+  var plate = document.createElementNS(NS, "rect");
+  plate.setAttribute("class", "chart-label-plate");
+  plate.setAttribute("rx", "5");
+  plate.setAttribute("y", (frTop + INSET).toFixed(1));
+  plate.setAttribute("height", String(PLATE_H));
+  grp.appendChild(plate);
+  refs.forEach(function(r){
+    var t = document.createElementNS(NS, "text");
+    t.setAttribute("class", "hl-lab");
+    t.setAttribute("y", (y + 3.2).toFixed(1));
+    t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
+    grp.appendChild(t);
+    var m = document.createElementNS(NS, r.swatch ? "rect" : "line");
+    if (r.swatch){
+      m.setAttribute("class", "hl-sw"); m.setAttribute("fill", r.swatch);
+      m.setAttribute("width", "9"); m.setAttribute("height", "9"); m.setAttribute("rx", "2");
+    } else m.setAttribute("class", r.cls || (r.dash ? "vh-mean" : "temp-avg"));
+    if (r.swatch) m.setAttribute("y", (y - 4.5).toFixed(1));
+    else { m.setAttribute("y1", y.toFixed(1)); m.setAttribute("y2", y.toFixed(1)); }
+    grp.appendChild(m);
+    items.push({ t:t, m:m });
+  });
+  svg.appendChild(grp);
+  var total = 0;
+  items.forEach(function(it){
+    it.w = MARK + PAD + (it.t.getComputedTextLength ? it.t.getComputedTextLength() : it.t.textContent.length * 5);
+    total += it.w;
+  });
+  total += GAP * (items.length - 1);
+  var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
+  plate.setAttribute("x", (x - PAD_X).toFixed(1));
+  plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
+  items.forEach(function(it){
+    if (it.m.tagName === "rect") it.m.setAttribute("x", (x + 1.5).toFixed(1));
+    else { it.m.setAttribute("x1", x.toFixed(1)); it.m.setAttribute("x2", (x + MARK).toFixed(1)); }
+    it.t.setAttribute("x", (x + MARK + PAD).toFixed(1));
+    x += it.w + GAP;
+  });
+}
+export function refitHistory(box, build){
+  if (!box || !build) return;
+  var svg = box.querySelector("svg.vh-svg, svg.hist-svg");
+  if (!svg) return;
+  var w = Math.round(svg.getBoundingClientRect().width);
+  if (!w) return;
+  var vb = parseFloat((svg.getAttribute("viewBox") || "").split(" ")[2]);
+  if (!(vb > 0) || Math.abs(vb - w) <= 1) return;
+  svg.outerHTML = build(w);
+}
+function wireHistHover(host, tipId){
+  if (!host) return;
+  histReadEnsure(host);
+  histReadFill(host, null);
+  histLegend(host);
+  if (host.__hovWired) return;
+  host.__hovWired = true;
+  var tip = byId(tipId);
+  function hide(){
+    if (tip){ tip.style.opacity = "0"; tip.hidden = true; }
+    host.classList.remove("hovering");
+    if (host.__onCol){ host.__onCol.classList.remove("on"); host.__onCol = null; }
+    histReadFill(host, null);
+  }
+  function at(e){
+    var col0 = host.querySelector(".hcol");
+    var g = host.__geom;
+    var svg = (col0 && col0.ownerSVGElement) || host.querySelector("svg.hist-svg") || host.querySelector("svg");
+    if (!g || !svg || !tip) return;
+    var box = svg.getBoundingClientRect();
+    var scale = box.width / g.W || 1;
+    var x = (e.clientX - box.left) / scale;
+    var hPad = (g.R - g.L) / Math.max(1, 2 * (g.n - 1));
+    if (x < g.L - hPad || x > g.R + hPad){ hide(); return; }
+    var i = Math.round((x - g.L) / Math.max(1, g.R - g.L) * (g.n - 1));
+    histShow(host, svg, Math.max(0, Math.min(g.n - 1, i)));
+  }
+  host.addEventListener("pointermove", at);
+  host.addEventListener("pointerdown", at);
+  host.addEventListener("pointerleave", function(e){ if (e.pointerType !== "touch") hide(); });
+  histKeysWire(host, hide);
+}
+function histShow(host, svg, i){
+  var d = host.__geom.vals[i]; if (!d) return false;
+  host.classList.add("hovering");
+  if (host.__onCol) host.__onCol.classList.remove("on");
+  var col = svg.querySelectorAll(".hcol")[i];
+  if (col){ col.classList.add("on"); host.__onCol = col; }
+  histReadFill(host, d, i);
+  return true;
+}
+function histKeysWire(host, hide){
+  var live = document.createElement("span");
+  live.className = "sr-only"; live.setAttribute("aria-live", "polite");
+  host.appendChild(live);
+  var named = host.querySelector("svg[aria-label]");
+  host.setAttribute("tabindex", "0"); host.setAttribute("role", "group");
+  host.setAttribute("aria-label", (named ? named.getAttribute("aria-label") + ". " : "") + "Left and right arrows read each value.");
+  host.addEventListener("blur", function(){ host.__keyI = null; hide(); });
+  host.addEventListener("keydown", function(e){
+    var g = host.__geom, svg = host.querySelector("svg.hist-svg, svg.vh-svg") || host.querySelector("svg");
+    var step = { ArrowLeft:-1, ArrowRight:1 }[e.key], i = host.__keyI == null ? g && g.n - 1 : host.__keyI;
+    if (!g || !svg || (step == null && e.key !== "Home" && e.key !== "End")) return;
+    e.preventDefault();
+    i = e.key === "Home" ? 0 : e.key === "End" ? g.n - 1 : Math.max(0, Math.min(g.n - 1, i + (host.__keyI == null ? 0 : step)));
+    host.__keyI = i;
+    if (!histShow(host, svg, i)) return;
+    var read = histReadEnsure(host), part = function(s){ var n = read && read.querySelector(s); return n ? n.textContent : ""; };
+    live.textContent = [part(".hr-label"), part(".hr-value")].filter(Boolean).join(", ");
+  });
+}
+export function mWindowFrom(len, key){
+  var sp = timelineSpan(key);
+  return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 12);
+}
+export function qWindowFrom(len, key){
+  var sp = timelineSpan(key);
+  return (sp == null || sp === Infinity) ? 0 : Math.max(0, len - sp * 4);
+}
+export function defFrom(key){
+  var sp = timelineSpan(key);
+  return (sp == null || sp === Infinity) ? 0 : Math.max(0, deficitHistory.length - sp);
+}
+export function hyWindowFrom(key){
+  var sp = timelineSpan(key);
+  if (sp == null || sp === Infinity) return 0;
+  var last = hyAt(hyDates.length - 1);
+  var cut = (last.y - sp) * 10000 + last.m * 100 + last.d;
+  for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
+  return 0;
+}
+function modeBar(id, active, extra){
+  return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' +
+    [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []).map(function(m){
+      return '<button type="button" class="range-seg' + (m[0] === active ? " on" : "") + '" role="tab" ' +
+        'aria-selected="' + (m[0] === active ? "true" : "false") + '" data-mode="' + m[0] + '">' + m[1] + '</button>';
+    }).join("") + '</div>';
+}
+export var pickerOpen = {};
+export function histControls(id, tl, minYear, extra){
+  var mode = pageMode[id], on = mode === "cycles";
+  var known = mode === "cycles" || mode === "calendar";
+  return '<div class="hist-controls">' +
+    modeBar(id, mode, extra) +
+    (!known ? "" : on ? cyclePicker(id, pageCycles[id], minYear)
+                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:PAGE_STOPS[id] }), pageRange[id])) +
   '</div>';
 }
-export function volumeBlock(ind){
-  var g = m2Yoy.filter(function(x){ return x != null; });
-  var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
-  histNote("volume-range", volumeInfoHtml(ind));
-  return histBar("", "volume-timeline") +
-    '<div class="page-chart pulsebox">' +
-    histHead("volume-range") +
-    '<div id="m2-record" class="vh-host"></div>' +
-    histTip("m2-hist-tooltip") +
-    '<div id="volume-trend"></div>' +
-    '</div>';
+export function pageCycle(id, y0){
+  var c = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+  return c && c.from < y0 ? openCycle() : c;
 }
-export function velocityRecordBlock(pulseInd){
-  var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
-  if (pulseInd) histNote("pulse-range", pulseInfoHtml(pulseInd));
-  return histBar("", "pulse-timeline") +
-    '<div class="page-chart pulsebox">' +
-    histHead("pulse-range") +
-    '<div id="pulse-record" class="vh-host"></div>' +
-    histTip("pulse-hist-tooltip") +
-    '<div id="pulse-trend"></div>' +
-    '</div>';
+function cyclePicker(id, picked, minYear){
+  var rows = marketCycles.slice().reverse()
+    .filter(function(c){ return minYear == null || c.from >= minYear; });
+  var cur = cycleByName(picked) || openCycle();
+  if (rows.indexOf(cur) === -1) cur = rows[0] || cur;
+  var CL = cycLabel(cur), open = !!pickerOpen[id];
+  return '<div class="cycsel' + (open ? " open" : "") + '" data-cycles-for="' + id + '">' +
+    '<button type="button" class="cycsel-btn" data-picker-toggle="1" aria-haspopup="listbox" aria-expanded="' +
+      (open ? "true" : "false") + '"><span class="cycsel-nm">' + CL.name + '</span>' +
+      '<span class="cycsel-yr">' + CL.years + '</span>' + CHEV + '</button>' +
+    '<div class="cycsel-menu" role="listbox"' + (open ? "" : " hidden") + '>' +
+    rows.map(function(c){
+      var sel = c.name === cur.name, L = cycLabel(c);
+      return '<button type="button" class="cycsel-opt' + (sel ? " on" : "") + '" role="option" aria-selected="' +
+        (sel ? "true" : "false") + '" data-cycle="' + c.name + '">' +
+        '<span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + L.name +
+        '</span><span class="cycsel-yr">' + L.years + '</span></button>';
+    }).join("") + '</div></div>';
 }
-function checkVelocityHistory(){
-  var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
-  if (m2vHistory.length !== 270 || Math.abs(hi - 2.192) > 1e-9 || Math.abs(lo - 1.126) > 1e-9)
-    console.warn("m2vHistory failed its check", m2vHistory.length, hi, lo);
+export function rangeBar(id, ranges, active){
+  if (!ranges || ranges.length < 2) return "";
+  return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + ranges.map(function(r){
+    return '<button type="button" class="range-seg' + (r.key === active ? " on" : "") + '" role="tab" ' +
+      'aria-selected="' + (r.key === active ? "true" : "false") + '" data-range="' + r.key + '">' + r.label + '</button>';
+  }).join("") + '</div>';
 }
-/* ---- Volume: how much blood there is ---- */
-export var M2_FROM_YEAR = 1959;
-var m2Level = (
-  "286.6 290.1 295.2 296.5 298.2 300.1 304.1 309.5 314.1 319.9 325.6 331.1 337.5 345.5 350.8 357.2 365.2 " +
-  "373.3 381.1 388.3 395.2 401.7 410.1 419.1 427.5 435.5 442.9 452.6 462.0 469.3 470.8 475.7 481.6 492.1 " +
-  "506.3 518.2 527.4 535.7 545.6 557.6 569.3 575.7 579.5 583.4 589.6 588.4 599.1 616.4 633.0 658.4 679.6 " +
-  "698.4 717.7 738.4 759.5 786.9 810.3 819.7 836.5 842.6 859.7 872.9 881.4 893.3 906.3 935.1 975.1 997.8 " +
-  "1026.7 1060.8 1086.3 1125.0 1165.2 1199.6 1226.8 1254.0 1279.7 1300.3 1324.2 1352.4 1371.6 1402.1 1434.8 " +
-  "1460.4 1482.7 1502.2 1545.5 1584.7 1607.0 1659.2 1681.9 1721.7 1770.4 1804.0 1831.6 1869.4 1959.4 2028.9 " +
-  "2064.9 2098.8 2138.0 2192.1 2223.6 2258.4 2332.1 2375.8 2429.6 2467.6 2501.6 2558.1 2626.6 2687.1 2743.3 " +
-  "2767.8 2779.0 2814.7 2846.9 2910.4 2947.2 2965.4 2991.2 3005.5 3052.5 3114.3 3166.3 3201.2 3224.7 3259.2 " +
-  "3287.4 3331.9 3356.2 3360.0 3380.9 3399.2 3393.9 3423.9 3418.9 3410.7 3441.9 3456.9 3474.8 3480.5 3488.1 " +
-  "3484.8 3492.2 3498.2 3567.5 3614.1 3647.4 3696.4 3737.5 3773.4 3834.0 3875.8 3924.9 3992.7 4055.2 4138.9 " +
-  "4205.4 4308.2 4401.7 4459.9 4537.6 4592.9 4666.1 4766.4 4793.4 4871.4 4976.8 5137.9 5212.0 5344.0 5459.6 " +
-  "5501.3 5597.6 5707.3 5811.1 5904.9 6050.4 6070.2 6081.3 6198.5 6292.3 6379.9 6429.9 6461.4 6545.1 6644.0 " +
-  "6728.4 6806.3 6896.1 7002.1 7115.6 7239.9 7321.8 7429.0 7513.6 7711.4 7794.9 7976.3 8284.2 8390.2 8467.3 " +
-  "8489.2 8473.1 8554.3 8642.3 8769.8 8844.5 9033.6 9346.9 9586.2 9753.3 9905.0 10076.0 10294.4 10502.3 " +
-  "10608.9 10743.0 10989.2 11127.5 11276.0 11452.5 11596.5 11806.2 11953.4 12063.5 12228.4 12522.2 12741.9 " +
-  "12907.3 13124.5 13318.9 13520.3 13638.5 13801.5 13902.4 14034.8 14170.0 14257.6 14460.2 14594.0 14882.7 " +
-  "15185.6 15425.0 17064.0 18331.4 18759.9 19375.3 20174.2 20630.0 21164.2 21647.4 21768.4 21649.3 21464.1 " +
-  "21274.0 20758.4 20792.2 20737.5 20835.5 20955.5 21098.8 21336.7 21539.3 21770.8 22025.5 22249.8 22413.4 " +
-  "22756.7 23218.0"
-).split(" ").map(Number);
-export var m2Yoy = m2Level.map(function(v, i){ return i < 4 ? null : (v / m2Level[i - 4] - 1) * 100; });
-export var M2_NORM = 6.80;
-export function volumeVerdict(g){
-  return g < 0     ? { text:"Draining", state:"serious" }
-       : g < 3.5   ? { text:"Thin",     state:"warning" }
-       : g < 10    ? { text:"Steady",   state:"good" }
-       : g < 16    ? { text:"Filling",  state:"warning" }
-                   : { text:"Flooding", state:"serious" };
+export function headSigma(id, text){
+  var el = byId("bh-sigma-" + id); if (!el) return;
+  el.textContent = text == null ? "" : "(Σ" + text + ")";
+  el.hidden = text == null;
 }
-var UNEMP_FROM_YEAR = 1948;
-export var unempHistory = (
-  "3.4 3.8 4.0 3.9 3.5 3.6 3.6 3.9 3.8 3.7 3.8 4.0 4.3 4.7 5.0 5.3 6.1 6.2 6.7 6.8 6.6 7.9 6.4 6.6 6.5 6.4 6.3 5.8 5.5 5.4 5.0 4.5 4.4 4.2 4.2 4.3 3.7 3.4 3.4 3.1 3.0 3.2 3.1 3.1 3.3 3.5 3.5 3.1 3.2 3.1 2.9 2.9 3.0 3.0 3.2 3.4 3.1 3.0 2.8 2.7 2.9 2.6 2.6 2.7 2.5 2.5 2.6 2.7 2.9 3.1 3.5 4.5 4.9 5.2 5.7 5.9 5.9 5.6 5.8 6.0 6.1 5.7 5.3 5.0 4.9 4.7 4.6 4.7 4.3 4.2 4.0 4.2 4.1 4.3 4.2 4.2 4.0 3.9 4.2 4.0 4.3 4.3 4.4 4.1 3.9 3.9 4.3 4.2 4.2 3.9 3.7 3.9 4.1 4.3 4.2 4.1 4.4 4.5 5.1 5.2 5.8 6.4 6.7 7.4 7.4 7.3 7.5 7.4 7.1 6.7 6.2 6.2 6.0 5.9 5.6 5.2 5.1 5.0 5.1 5.2 5.5 5.7 5.8 5.3 5.2 4.8 5.4 5.2 5.1 5.4 5.5 5.6 5.5 6.1 6.1 6.6 6.6 6.9 6.9 7.0 7.1 6.9 7.0 6.6 6.7 6.5 6.1 6.0 5.8 5.5 5.6 5.6 5.5 5.5 5.4 5.7 5.6 5.4 5.7 5.5 5.7 5.9 5.7 5.7 5.9 5.6 5.6 5.4 5.5 5.5 5.7 5.5 5.6 5.4 5.4 5.3 5.1 5.2 4.9 5.0 5.1 5.1 4.8 5.0 4.9 5.1 4.7 4.8 4.6 4.6 4.4 4.4 4.3 4.2 4.1 4.0 4.0 3.8 3.8 3.8 3.9 3.8 3.8 3.8 3.7 3.7 3.6 3.8 3.9 3.8 3.8 3.8 3.8 3.9 3.8 3.8 3.8 4.0 3.9 3.8 3.7 3.8 3.7 3.5 3.5 3.7 3.7 3.5 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.4 3.5 3.5 3.5 3.7 3.7 3.5 3.5 3.9 4.2 4.4 4.6 4.8 4.9 5.0 5.1 5.4 5.5 5.9 6.1 5.9 5.9 6.0 5.9 5.9 5.9 6.0 6.1 6.0 5.8 6.0 6.0 5.8 5.7 5.8 5.7 5.7 5.7 5.6 5.6 5.5 5.6 5.3 5.2 4.9 5.0 4.9 5.0 4.9 4.9 4.8 4.8 4.8 4.6 4.8 4.9 5.1 5.2 5.1 5.1 5.1 5.4 5.5 5.5 5.9 6.0 6.6 7.2 8.1 8.1 8.6 8.8 9.0 8.8 8.6 8.4 8.4 8.4 8.3 8.2 7.9 7.7 7.6 7.7 7.4 7.6 7.8 7.8 7.6 7.7 7.8 7.8 7.5 7.6 7.4 7.2 7.0 7.2 6.9 7.0 6.8 6.8 6.8 6.4 6.4 6.3 6.3 6.1 6.0 5.9 6.2 5.9 6.0 5.8 5.9 6.0 5.9 5.9 5.8 5.8 5.6 5.7 5.7 6.0 5.9 6.0 5.9 6.0 6.3 6.3 6.3 6.9 7.5 7.6 7.8 7.7 7.5 7.5 7.5 7.2 7.5 7.4 7.4 7.2 7.5 7.5 7.2 7.4 7.6 7.9 8.3 8.5 8.6 8.9 9.0 9.3 9.4 9.6 9.8 9.8 10.1 10.4 10.8 10.8 10.4 10.4 10.3 10.2 10.1 10.1 9.4 9.5 9.2 8.8 8.5 8.3 8.0 7.8 7.8 7.7 7.4 7.2 7.5 7.5 7.3 7.4 7.2 7.3 7.3 7.2 7.2 7.3 7.2 7.4 7.4 7.1 7.1 7.1 7.0 7.0 6.7 7.2 7.2 7.1 7.2 7.2 7.0 6.9 7.0 7.0 6.9 6.6 6.6 6.6 6.6 6.3 6.3 6.2 6.1 6.0 5.9 6.0 5.8 5.7 5.7 5.7 5.7 5.4 5.6 5.4 5.4 5.6 5.4 5.4 5.3 5.3 5.4 5.2 5.0 5.2 5.2 5.3 5.2 5.2 5.3 5.3 5.4 5.4 5.4 5.3 5.2 5.4 5.4 5.2 5.5 5.7 5.9 5.9 6.2 6.3 6.4 6.6 6.8 6.7 6.9 6.9 6.8 6.9 6.9 7.0 7.0 7.3 7.3 7.4 7.4 7.4 7.6 7.8 7.7 7.6 7.6 7.3 7.4 7.4 7.3 7.1 7.0 7.1 7.1 7.0 6.9 6.8 6.7 6.8 6.6 6.5 6.6 6.6 6.5 6.4 6.1 6.1 6.1 6.0 5.9 5.8 5.6 5.5 5.6 5.4 5.4 5.8 5.6 5.6 5.7 5.7 5.6 5.5 5.6 5.6 5.6 5.5 5.5 5.6 5.6 5.3 5.5 5.1 5.2 5.2 5.4 5.4 5.3 5.2 5.2 5.1 4.9 5.0 4.9 4.8 4.9 4.7 4.6 4.7 4.6 4.6 4.7 4.3 4.4 4.5 4.5 4.5 4.6 4.5 4.4 4.4 4.3 4.4 4.2 4.3 4.2 4.3 4.3 4.2 4.2 4.1 4.1 4.0 4.0 4.1 4.0 3.8 4.0 4.0 4.0 4.1 3.9 3.9 3.9 3.9 4.2 4.2 4.3 4.4 4.3 4.5 4.6 4.9 5.0 5.3 5.5 5.7 5.7 5.7 5.7 5.9 5.8 5.8 5.8 5.7 5.7 5.7 5.9 6.0 5.8 5.9 5.9 6.0 6.1 6.3 6.2 6.1 6.1 6.0 5.8 5.7 5.7 5.6 5.8 5.6 5.6 5.6 5.5 5.4 5.4 5.5 5.4 5.4 5.3 5.4 5.2 5.2 5.1 5.0 5.0 4.9 5.0 5.0 5.0 4.9 4.7 4.8 4.7 4.7 4.6 4.6 4.7 4.7 4.5 4.4 4.5 4.4 4.6 4.5 4.4 4.5 4.4 4.6 4.7 4.6 4.7 4.7 4.7 5.0 5.0 4.9 5.1 5.0 5.4 5.6 5.8 6.1 6.1 6.5 6.8 7.3 7.8 8.3 8.7 9.0 9.4 9.5 9.5 9.6 9.8 10.0 9.9 9.9 9.8 9.8 9.9 9.9 9.6 9.4 9.4 9.5 9.5 9.4 9.8 9.3 9.1 9.0 9.0 9.1 9.0 9.1 9.0 9.0 9.0 8.8 8.6 8.5 8.3 8.3 8.2 8.2 8.2 8.2 8.2 8.1 7.8 7.8 7.7 7.9 8.0 7.7 7.5 7.6 7.5 7.5 7.3 7.2 7.2 7.2 6.9 6.7 6.6 6.7 6.7 6.2 6.3 6.1 6.2 6.1 5.9 5.7 5.8 5.6 5.7 5.5 5.4 5.4 5.6 5.3 5.2 5.1 5.0 5.0 5.1 5.0 4.8 4.9 5.0 5.1 4.8 4.9 4.8 4.9 5.0 4.9 4.7 4.7 4.7 4.6 4.4 4.4 4.4 4.3 4.3 4.4 4.3 4.2 4.2 4.1 4.0 4.1 4.0 4.0 3.8 4.0 3.8 3.8 3.7 3.8 3.8 3.9 4.0 3.8 3.8 3.7 3.6 3.6 3.7 3.6 3.5 3.6 3.6 3.6 3.6 3.5 4.4 14.8 13.2 11.0 10.2 8.4 7.8 6.9 6.7 6.7 6.4 6.2 6.1 6.1 5.8 5.9 5.4 5.1 4.7 4.5 4.1 3.9 4.0 3.9 3.7 3.7 3.6 3.6 3.5 3.6 3.5 3.6 3.6 3.5 3.5 3.6 3.5 3.4 3.6 3.6 3.5 3.7 3.7 3.9 3.7 3.8 3.7 3.9 3.9 3.9 3.9 4.1 4.2 4.2 4.1 4.1 4.2 4.1 4.0 4.2 4.2 4.2 4.3 4.1 4.3 4.3 4.4 x 4.5 4.4 4.3 4.4 4.3 4.3 4.3 4.2 4.1 4.1"
-).split(" ").map(function(t, i){
-  var y = UNEMP_FROM_YEAR + ((i / 12) | 0), mo = (i % 12) + 1;
-  return { m:y + "-" + ("0" + mo).slice(-2), v:(t === "x" ? null : Number(t)) };
-});
-function checkUnemploymentHistory(){
-  var vs = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
-  var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
-  if (unempHistory.length !== 944 || Math.abs(hi - 14.8) > 1e-9 || Math.abs(lo - 2.5) > 1e-9 ||
-      unempHistory[0].m !== "1948-01" || unempHistory[unempHistory.length - 1].m !== "2026-08")
-    console.warn("unempHistory failed its check", unempHistory.length, lo, hi,
-                 unempHistory[0].m, unempHistory[unempHistory.length - 1].m);
+export function attachHistory(host, tipId, expect){
+  if (!host) return null;
+  var g = pendingGeom;
+  if (expect && (!g || g.src !== expect))
+    (window.__geomMiss = window.__geomMiss || []).push(expect + " wanted, " + (g ? g.src : "none") + " pending");
+  host.__geom = g;
+  if (tipId) wireHistHover(host, tipId);
+  return g;
 }
-var NROU_NOW = 4.2;
-function unempState(v){
-  return v < ACT_BAND_LO ? "tight"
-       : v <= ACT_BAND_HI ? "good"
-       : v < 6.5 ? "warning"
-       : v < 8.5 ? "serious" : "critical";
-}
-function yearTicks(out, vals, w, X, T, B, f){
-  var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
-  if (w.cycle){
-    var stepY = Math.max(1, Math.ceil((w.y1 - w.y0 + 1) / (w.narrow ? 4 : 6)));
-    years = [];
-    for (var cyr = w.y0; cyr <= w.y1; cyr += stepY) years.push(cyr);
-  }
-  years.forEach(function(yr){
-    var i = -1;
-    for (var k = 0; k < vals.length && i < 0; k++) if (vals[k].m === yr + "-01") i = k;
-    if (i < 0) return;
-    out.unshift(vGrid(X(i), T, B));
-    out.push(xLabel(f(X(i)), yr, B + 17));
-  });
-}
-export function unempHistoryChart(Wpx, from, o){
-  o = o || {};
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var vals = unempHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
-  if (!n) return "";
-  var seen = vals.filter(function(d){ return d.v != null; });
-  if (!seen.length) return "";
-  var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-  var sc = windowScale(seen.map(function(d){ return d.v; }), [0, NROU_NOW]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-  yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
-  var sw = colWidth((R - L) / n);
-  vals.forEach(function(d, i){
-    if (d.v == null) return;
-    out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-  });
-  var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
-  out.push(avgRule(L, R, f(Y(avgV))));
-  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  out.push(zeroRule(L, R, zero));
-  out.push(meanRule(L, R, Y(NROU_NOW)));
-  out.push(crossLine(T, B));
-  out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-  publishGeom("unempHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
-                   refs:[{ label:"Average", v:avgV },
-                         { label:"CBO estimate", v:NROU_NOW, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
-  return vhOpen(W, H) +
-    'aria-label="The unemployment rate, every month from ' + y0 + ' to ' + y1 +
-    ', against the 3.5 to 5 per cent band and CBO\u2019s estimate of the noncyclical rate">' + out.join("") + '</svg>';
-}
-/* ---- Hormones — the policy rate's history ---- */
-function checkFedFundsHistory(){
-  var vs = fedFundsHistory.map(function(d){ return d.v; });
-  var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
-  if (!fedFundsHistory.length || fedFundsHistory[0].m !== "1954-07" || lo < 0 || hi < 19 || hi > 20)
-    console.warn("fedFundsHistory failed its check", fedFundsHistory.length, lo, hi,
-                 fedFundsHistory[0] && fedFundsHistory[0].m);
-}
-export function fedFundsHistoryChart(Wpx, from, o){
-  o = o || {};
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var vals = fedFundsHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
-  if (!n) return "";
-  var seen = vals.filter(function(d){ return d.v != null; });
-  if (!seen.length) return "";
-  var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-  var sc = windowScale(seen.map(function(d){ return d.v; }), [0]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:zero, noGridAt:0,
-    top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-  yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
-  var sw = colWidth((R - L) / n);
-  var seenV = seen.map(function(d){ return d.v; });
-  var vLo = Math.min.apply(null, seenV), vHi = Math.max.apply(null, seenV);
-  var step = function(v){
-    if (!(vHi > vLo)) return 5;
-    return Math.max(0, Math.min(5, Math.floor(6 * (v - vLo) / (vHi - vLo))));
-  };
-  vals.forEach(function(d, i){
-    if (d.v == null) return;
-    out.push('<path class="ff-col hcol f' + step(d.v) + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-  });
-  var avgV = seen.reduce(function(a, d){ return a + d.v; }, 0) / seen.length;
-  out.push(avgRule(L, R, f(Y(avgV))));
-  out.push(fitLine(seen.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  out.push(zeroRule(L, R, zero));
-  out.push(crossLine(T, B));
-  out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-  publishGeom("fedFundsHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
-                   refs:[{ label:"Average", v:avgV }],
-                   fmt:function(v){ return v.toFixed(2) + "%"; } });
-  return vhOpen(W, H) +
-    'aria-label="The effective federal funds rate, every month from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
-}
-var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
-var CPI_TARGET = 2;
-export function qAtIndex(y0, i){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
-/* ---- the reference key, shared ---- */
-export function householdsChart(Wpx, from, to){
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var hi = to == null ? dsrHistory.length : to;
-  var bill = dsrHistory.slice(from, hi);
-  var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
-  var n = bill.length;
-  var sc = windowScale(bill.concat(kept), [0]);
-  var LO = sc.lo, HI = sc.hi;
-  var X = function(i){ var h = (R - L) / (2 * Math.max(1, n));
-    return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [];
-  var y0 = DSR_FROM_YEAR + Math.floor(from / 4);
-  var y1 = DSR_FROM_YEAR + Math.floor((hi - 1) / 4);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return g.toFixed(0) + "%"; } }));
-  windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-    var i = (yr - DSR_FROM_YEAR) * 4 - from; if (i < 0 || i >= n) return;
-    out.unshift(vGrid(X(i), T, B));
-    out.push(xLabel(f(X(i)), yr, B + 17));
-  });
-  out.push(crossLine(T, B));
-  function line(ser, cls){
-    return '<path class="' + cls + '" d="' + ser.map(function(v, i){
-      return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v)); }).join("") + '"/>';
-  }
-  var hhSlot = (R - L) / Math.max(1, n);
-  var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);
-  bill.forEach(function(v, i){
-    var cx = X(i);
-    out.push('<g class="hcol">' +
-      '<path class="hh-col bill" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx - hhOff, Y(0), Y(v), hhSw) + '"/>' +
-      '<path class="hh-col kept" stroke-width="' + hhSw.toFixed(2) + '" d="' + colPath(cx + hhOff, Y(0), Y(kept[i]), hhSw) + '"/>' +
-    '</g>');
-  });
-  out.push(fitLine(kept, "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  var hovAt = 0;
-  publishGeom("householdsChart", { L:L, R:R, T:T, B:B, W:W, n:n,
-    refs:[{ label:"Paid out on debt", cls:"hh-bill" }, { label:"Kept as saving", cls:"hh-kept" }],
-    at:function(d, i){ hovAt = i; return qAtIndex(DSR_FROM_YEAR, from + i); },
-    fmt:function(v){ return v.toFixed(1) + "% out \u00b7 " + kept[hovAt].toFixed(1) + "% kept"; },
-    vals:bill.map(function(v){ return { v:v }; }) });
-  return '<svg class="hist-svg vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
-    'aria-label="Household debt service and the personal saving rate, both as a share of disposable ' +
-    'income, every quarter from ' + y0 + ' to ' + y1 + '">' + out.join("") + '</svg>';
-}
-export function cpiHistoryChart(Wpx, from, o){
-  o = o || {};
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
-  if (!n) return "";
-  var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
-  var sc = windowScale(vals.map(function(d){ return d.v; }), [0, CPI_TARGET]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0), avgShown = null;
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-  yearTicks(out, vals, { y0:y0, y1:y1, cycle:o.cycle, narrow:narrow }, X, T, B, f);
-  var sw = colWidth((R - L) / n);
-  vals.forEach(function(d, i){
-    out.push('<path class="temp-col hcol ' + heatStep(d.v) + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-  });
-  if (n){
-    var avgV = vals.reduce(function(a, d){ return a + d.v; }, 0) / n, avgY = Y(avgV);
-    out.push(avgRule(L, R, f(avgY)));
-    avgShown = avgV;
-  }
-  out.push(fitLine(vals.map(function(d){ return d.v; }), "month", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  out.push(zeroRule(L, R, zero));
-  out.push(meanRule(L, R, Y(CPI_TARGET)));
-  out.push(crossLine(T, B));
-  out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-  publishGeom("cpiHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atMonth,
-                   refs:[{ label:"Average", v:avgShown },
-                         { label:"Fed target", v:CPI_TARGET, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
-  return vhOpen(W, H) +
-    'aria-label="Consumer prices year over year, every month from ' + y0 + ' to ' + y1 +
-    ', against the 2 per cent target, shaded from cool to hot">' + out.join("") + '</svg>';
-}
-var GDP_NORM = 2.6;
-export function growthInfoHtml(){
-  return '<h4>Real GDP growth</h4>' +
-    '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
-      '(' + gdpNowQ.q + '), so it is already adjusted for inflation \u2014 this is output, not prices. The ends of ' +
-      'the track are the record and they are the same event twice: \u22127.4% in 2020 Q2, the deepest quarter of ' +
-      'the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.0\u20134.3% band is computed from this page\u2019s own ' +
-      'series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at ' +
-      '0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks ' +
-      'like in that direction. There is no official normal rate of growth to point at instead, which is why it ' +
-      'is drawn this way and said so.</p>' +
-    '<p class="caption" style="margin-top:10px;">Two other lines matter more than the edges. The dashed line on ' +
-      'the chart is this series\u2019 own long-run average, <b>' + GDP_NORM + '%</b> \u2014 the middle of the record ' +
-      'rather than the edge of it, and the honest answer to "is this quick or slow". And the CBO puts the ' +
-      'economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 at 2.1% a year through ' +
-      '2030, easing to 1.8% after that as the population ages. Today\u2019s reading sits inside the band, below the ' +
-      'long-run average, and almost exactly at potential: the economy is growing about as fast as it can.</p>' +
-    srcBlock([
-      {t:"BEA \u2014 Gross Domestic Product", u:"https://www.bea.gov/data/gdp/gross-domestic-product"},
-      {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"}
-    ]);
-}
-export function gdpHistoryChart(Wpx, from, o){
-  o = o || {};
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var vals = gdpQuarterlyYoY.slice(from, o.to == null ? undefined : o.to), n = vals.length;
-  if (!n) return "";
-  var y0 = parseInt(vals[0].q.slice(0, 4), 10), y1 = parseInt(vals[n - 1].q.slice(0, 4), 10);
-  var sc = windowScale(vals.map(function(d){ return d.v; }), [0, GDP_NORM]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-  if (o.cycle){
-    var spanY = y1 - y0 + 1, stepY = Math.max(1, Math.ceil(spanY / (narrow ? 4 : 6)));
-    for (var cyr = y0; cyr <= y1; cyr += stepY){
-      var cix = (cyr - y0) * 4; if (cix >= n) break;
-      out.unshift(vGrid(X(cix), T, B));
-      out.push(xLabel(f(X(cix)), cyr, B + 17));
-    }
-  } else windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-    var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
-    out.unshift(vGrid(X(i), T, B));
-    out.push(xLabel(f(X(i)), yr, B + 17));
-  });
-  var sw = colWidth((R - L) / n);
-  vals.forEach(function(d, i){
-    out.push('<path class="growth-col hcol' + (quarterRegime(d) === "contraction" ? " down" : "") + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
-  });
-  var gAvg = vals.reduce(function(a, d){ return a + d.v; }, 0) / n;
-  out.push(avgRule(L, R, f(Y(gAvg))));
-  out.push(fitLine(vals.map(function(d){ return d.v; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  out.push(zeroRule(L, R, zero));
-  out.push(meanRule(L, R, Y(GDP_NORM)));
-  out.push(crossLine(T, B));
-  out.push('<rect class="temp-hist-hit" x="' + L + '" y="' + T + '" width="' + (R - L) + '" height="' + (B - T) + '" fill="transparent"/>');
-  publishGeom("gdpHistoryChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, vals:vals, at:atQuarter,
-                   refs:[{ label:"Average", v:gAvg },
-                         { label:"Long-run", v:GDP_NORM, dash:true }],
-                   fmt:function(v){ return v.toFixed(1) + "%"; } });
-  return vhOpen(W, H) +
-    'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
-    ', against the long-run average of ' + GDP_NORM + ' per cent; quarters in expansion in gold, in contraction in periwinkle">' +
-    out.join("") + '</svg>';
-}
-export function m2GrowthChart(Wpx, from, to){
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var all = m2Yoy.slice(4), vals = all.slice(from, to == null ? undefined : to), n = vals.length;
-  var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
-  var y1 = M2_FROM_YEAR + 1 + Math.floor(((to == null ? all.length : to) - 1) / 4);
-  var sc = windowScale(vals, [0, M2_NORM]);
-  var LO = sc.lo, HI = sc.hi;
-  var halfCol = (R - L) / (2 * Math.max(1, n));
-  var X = function(i){ return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1); };
-  var Y = function(v){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v){ return v.toFixed(1); };
-  var out = [], zero = Y(0);
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:(LO <= 0 && HI >= 0 ? Y(0) : B), noGridAt:0, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g){ return (Math.round(g) === g ? g : g.toFixed(1)) + "%"; } }));
-  windowYears(y0, y1, narrow ? 4 : 5).forEach(function(yr){
-    var i = (yr - y0) * 4; if (i < 0 || i >= n) return;
-    out.unshift(vGrid(X(i), T, B));
-    out.push(xLabel(f(X(i)), yr, B + 17));
-  });
-  var sw = colWidth((R - L) / n);
-  vals.forEach(function(v, i){
-    if (v == null) return;
-    out.push('<path class="m2-col hcol ' + m2Step(v) + '" stroke-width="' + sw.toFixed(2) +
-      '" d="' + colPath(X(i), zero, Y(v), sw) + '"/>');
-  });
-  var vAvg = vals.filter(function(v){ return v != null; }).reduce(function(a, v){ return a + v; }, 0) /
-             (vals.filter(function(v){ return v != null; }).length || 1);
-  out.push(meanRule(L, R, Y(M2_NORM)));
-  out.push(avgRule(L, R, f(Y(vAvg))));
-  out.push(zeroRule(L, R, zero));
-  out.push(crossLine(T, B));
-  publishGeom("m2GrowthChart", { L:X(0), R:X(n - 1), T:T, B:B, W:W, n:n, at:function(d, i){ return qAtIndex(M2_FROM_YEAR + 1, from + i); },
-                   fmt:function(v){ return (v > 0 ? "+" : "") + v.toFixed(1) + "%"; },
-                   refs:[{ label:"Average", v:vAvg }, { label:"Long-run pace", v:M2_NORM, dash:true }],
-                   vals:vals.map(function(v){ return v == null ? null : { v:v }; }) });
-  out.push(fitLine(vals.filter(function(v){ return v != null; }), "quarter", function(v){ return v.toFixed(1) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  out.push(meanRule(L, R, Y(M2_NORM)));
-  return vhOpen(W, H) +
-    'aria-label="Money stock growth year over year, every quarter from ' + y0 + ' to ' + y1 +
-    ', against the long-run norm of ' + M2_NORM + ' per cent">' +
-    out.join("") + '</svg>';
-}
-function checkMoneyStock(){
-  var g = m2Yoy.filter(function(x){ return x != null; });
-  var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
-  if (m2Level.length !== 271 || Math.abs(hi - 25.61) > 0.02 || Math.abs(lo + 4.64) > 0.02)
-    console.warn("m2Level failed its check", m2Level.length, hi.toFixed(2), lo.toFixed(2));
-}
-function velocityVerdict(v){
-  var r = v / PULSE_PRE2008;
-  return r < 0.75 ? { text:"Very slow", state:"serious" }
-       : r < 0.95 ? { text:"Slow",      state:"warning" }
-       : r < 1.10 ? { text:"Steady",    state:"good" }
-       : r < 1.25 ? { text:"Fast",      state:"warning" }
-                  : { text:"Very fast", state:"serious" };
-}
-export function derivePulseTag(){
-  var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
-  if (pulse) pulse.tag = velocityVerdict(pulse.meter.value);
-}
-export var lagging = [
-  {
-    bodyTerm:"Activity", econTerm:"Labor market",
-    page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
-    tag:{text:"Solid", state:"good"},
-    metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
-    meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:"3.5–5%"},
-           ends:{ low:"Tight", zone:"Normal", high:"Slack" }},
-    shortCaption:"Ticked up slightly but still low against the full sweep of U.S. history.",
-    caption:"Physical activity confirms a phase only after it's underway — unemployment is the textbook lagging indicator, typically trailing a turn by two to three quarters. Ticked up slightly but still low against the full sweep of U.S. history; the modern BLS series (since 1948) set its own record at 14.8% in April 2020 (14.7% as first reported), against a low of 2.5% in mid-1953; the 24.9% at the far end of the bar is the Census Bureau's historical estimate for 1933. August payrolls rose 162,000, beating forecasts.",
-    aux:{label:"Initial jobless claims (wk of Sep 12)", value:"196K"},
-    get peek(){
-      var seen = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
-      return colPeek(seen, function(v){ return "unemp-col " + unempState(v); });
-    },
-    src:[{t:"BLS — The Employment Situation, August 2026", u:"https://www.bls.gov/news.release/empsit.nr0.htm"},{t:"DOL — Unemployment Insurance Weekly Claims", u:"https://www.dol.gov/ui/data.pdf"},{t:"BLS via FRED — Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"},{t:"Census Bureau — Historical Statistics of the United States, Colonial Times to 1970 (Series D 85–86, unemployment 1890–1970)", u:"https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html"}]
-  },
-  {
-    bodyTerm:"Temperature", econTerm:"Inflation",
-    page:{ bare:true, seat:seatTemperature },
-    tag:{text:"Running hot", state:"warning"},
-    get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"CPI, YoY, Aug 2026",
-    meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:1,to:3, label:"1–3%"},
-           ends:{ low:"Cold", high:"Hot" }},
-    shortCaption:"",
-    caption:"Basal body temperature rises only after ovulation has already happened — CPI works the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
-    facts:[],
-    aux:[],
-    src:[{t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
-  }
-];
 
-var gdpNowQ;
+export function setPageMode(v){ pageMode = v; return v; }
+export function setPageCycles(v){ pageCycles = v; return v; }
+export function setPageRange(v){ pageRange = v; return v; }
+export function setPAGE_STOPS(v){ PAGE_STOPS = v; return v; }
+export function setHIST_HEAD(v){ HIST_HEAD = v; return v; }
+
+export var pageMode, pageCycles, pageRange, PAGE_STOPS, HIST_HEAD;
 
 export function bootHistory(){
+  window.__histRead = function(host, d, i){ if (host) histReadFill(host, d, i); };
   layer(0, { open:function(){ return headMenuFor !== null; }, close:function(){ headMenuShut(true); } });
   document.addEventListener("click", function(e){
     var pick = e.target.closest && e.target.closest(".bh-pick");
@@ -717,15 +454,4 @@ export function bootHistory(){
     paintHeadMenus();
     if (headMenuFor) headMenuFirst();
   });
-  GYN.step("checkVelocityHistory", checkVelocityHistory, "check");
-  checkVelocityHistory();
-  GYN.step("checkUnemploymentHistory", checkUnemploymentHistory, "check");
-  checkUnemploymentHistory();
-  GYN.step("checkFedFundsHistory", checkFedFundsHistory, "check");
-  checkFedFundsHistory();
-  gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
-  GYN.step("checkMoneyStock", checkMoneyStock, "check");
-  checkMoneyStock();
-  GYN.step("derivePulseTag", derivePulseTag, "derive");
-  derivePulseTag();
 }

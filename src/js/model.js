@@ -1,12 +1,8 @@
-import { cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, MONTHS_SHORT, seasonOverride } from "./refresh-season.js";
+import { monthLabel, qLabel, yearOf } from "./format.js";
+import { addSources } from "./dom.js";
 import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.js";
-import { fedFunds, fedFundsRange } from "./live.js";
-import { gdpSrc, usRealGdpGrowth } from "./data.js";
-import { buffettHistory, capeHistory } from "./components.js";
-import { calendarTodayY, vixRow } from "./charts.js";
-import { currentEra, sp500AnnualReturns, typicalCycleYears } from "./forms.js";
-import { clampPct } from "./render-core.js";
-import { eraGrowth } from "./render-pages.js";
+import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.js";
+import { buffettHistory, capeHistory, gdpSrc, marketCycles, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth, vixRow } from "./data.js";
 
 // ---- The season, computed ----
 function slopeOf(vals){
@@ -47,7 +43,6 @@ function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
            growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1], annual:quartersPerStep === 4 };
 }
 export var QUARTER_END_MONTH = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
-export function qLabel(q){ var m = /^(\d{4}) (Q[1-4])$/.exec(q); return m ? m[2] + " " + m[1] : q; }
 var SEASON_YEARS = 2;
 function closingReading(endYear){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
@@ -55,7 +50,6 @@ function closingReading(endYear){
 }
 export function quarterRegime(d){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
 export function seasonTitle(meta){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
-export function monthLabel(m){ return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4); }
 export function cycleReturns(from, to){
   var level = 1, peakRet = -Infinity, peakYear = null, cumByYear = {};
   for (var py = from; py <= to; py++){
@@ -139,7 +133,7 @@ function rankIn(list, m, v){
   list.forEach(function(d, j){ if (d.k <= m) i = j; });
   return i < 0 ? null : rankToDate(list.slice(0, i).map(function(d){ return d.v; }), v != null ? v : list[i].v);
 }
-export var moodLists = null;
+var moodLists = null;
 function moodSeries(){
   if (moodLists) return moodLists;
   var monthly = function(h){ return h.map(function(d){ return { k:d.m, v:d.v }; }); };
@@ -168,7 +162,7 @@ function moodRead(x, before){
   x.word = moodWord(x.pct, x.change);
   return x;
 }
-export var moodCache = null;
+var moodCache = null;
 export function moodTrack(){
   if (moodCache) return moodCache;
   var t = sp500MonthlyHistory.map(function(d){ return moodAt(d.m); }).filter(function(x){ return x; });
@@ -189,122 +183,100 @@ export function cycleStory(c){
   var now = c.ongoing && moodToday();
   return { first:t[0], last:now && now.word ? now : t[t.length - 1], hi:hi, lo:lo, most:most.map(function(w){ return { word:w, n:count[w] }; }) };
 }
-export function vitalRingSvg(pct, state, label, cls){
-  var r = 46, c = 2 * Math.PI * r;
-  var offset = c * (1 - clampPct(pct, 0, 100) / 100);
-  return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' +
-    (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
-    '<circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle>' +
-    '<circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" ' +
-      'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle>' +
-  '</svg>';
-}
-export var SPREAD_DETAIL = "", UNINV_DETAIL = "", drawSpreadWindow = null, spreadPick = "3m", pressureView = "yield", drawSpreadView = null;
-export var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
-export function spreadLabel(key){
-  var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
-  return r ? r.label : HZN_SPREADS[0].label;
-}
-function policyFacts(){ return [
-  { label:"Fed funds target",  value:fedFundsRange() },
-  fedFunds.lastMove ? { label:"Last Fed move", value:fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
-                                      (fedFunds.vote ? " \u00b7 " + fedFunds.vote : ""), wordy:true } : null,
-  { label:"First hike since",  value:"2023 \u00b7 one more signalled",  wordy:true },
-  fedFunds.next ? { label:"Next decision", value:fedFunds.next } : null
-].filter(Boolean); }
-export function policyFactRows(){
-  return policyFacts().map(function(f){
-    return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
-           f.value + '</b></div>';
-  }).join("");
-}
-export var allSources = [
-  {t:"Treasury daily par yield curve rates", u:"https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=202609"},
-  {t:"FRED — 10Y minus 2Y spread", u:"https://fred.stlouisfed.org/series/T10Y2Y"},
-  {t:"FRED — 10Y minus 3M spread", u:"https://fred.stlouisfed.org/series/T10Y3M"},
-  {t:"FRED — 10Y minus 3M spread, monthly average (T10Y3MM)", u:"https://fred.stlouisfed.org/series/T10Y3MM"},
-  {t:"BLS Employment Situation", u:"https://www.bls.gov/news.release/empsit.nr0.htm"},
-  {t:"DOL weekly unemployment claims", u:"https://www.dol.gov/ui/data.pdf"},
-  {t:"BLS Consumer Price Index", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
-  {t:"Federal Reserve FOMC statement", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},
-  {t:"FRED — Consumer Price Index for All Urban Consumers (CPIAUCSL)", u:"https://fred.stlouisfed.org/series/CPIAUCSL"},
-  {t:"FRED — Consumer Price Index for All Urban Consumers, not seasonally adjusted, before 1948 (CPIAUCNS)", u:"https://fred.stlouisfed.org/series/CPIAUCNS"},
-  {t:"FRED — Federal Funds Target Range, upper limit (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
-  {t:"FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}
-];
-export function addSources(list){
-  if (!list) return;
-  var seen = Object.create(null), i;
-  for (i = 0; i < allSources.length; i++) if (allSources[i] && allSources[i].u) seen[allSources[i].u] = 1;
-  var add = Array.isArray(list) ? list : [list];
-  for (i = 0; i < add.length; i++){
-    var s = add[i];
-    if (!s || !s.u || seen[s.u]) continue;
-    allSources.push(s); seen[s.u] = 1;
-  }
-}
 // ---- Shared SVG chart helpers (used by the GDP, yield-by-maturity, and spread-history charts ----
-var SVG_NS = "http://www.w3.org/2000/svg";
-export function svgEl(tag, attrs){
-  var e = document.createElementNS(SVG_NS, tag);
-  for (var k in attrs) e.setAttribute(k, attrs[k]);
-  return e;
+export function cycleSpanYears(){
+  return (currentEra && currentEra.from) ? (calendarTodayY - currentEra.from + 1) : 5;
 }
-export function attachHoverTracking(hit, svg, W, padL, innerW, count, onIndex, onHide){
-  var rect = null, lastTouch = 0, shownIdx = -1, viaTouch = false;
-  function refresh(){ rect = svg.getBoundingClientRect(); }
-  function indexFromClientX(clientX){
-    var relX = (clientX - rect.left) / rect.width * W;
-    return Math.max(0, Math.min(count - 1, Math.round(((relX - padL) / innerW) * (count - 1))));
-  }
-  function hide(){ shownIdx = -1; viaTouch = false; onHide(); }
-  function recentTouch(){ return Date.now() - lastTouch < 800; }
-  hit.addEventListener("mouseenter", function(){ if (!recentTouch()) refresh(); });
-  hit.addEventListener("mousemove", function(evt){
-    if (recentTouch()) return;
-    if (!rect) refresh();
-    shownIdx = indexFromClientX(evt.clientX); viaTouch = false; onIndex(shownIdx);
+export function cycleByName(nm){
+  for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].name === nm) return marketCycles[i];
+  return null;
+}
+export function openCycle(){
+  for (var i = 0; i < marketCycles.length; i++) if (marketCycles[i].ongoing) return marketCycles[i];
+  return marketCycles[marketCycles.length - 1];
+}
+export function cycleSlice(series, c){
+  var to = c.to || calendarTodayY, a = -1, b = -1;
+  series.forEach(function(d, i){
+    var y = yearOf(d);
+    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
   });
-  hit.addEventListener("mouseleave", function(){ if (!viaTouch) hide(); });
-  hit.addEventListener("touchstart", function(evt){
-    lastTouch = Date.now(); refresh();
-    var i = indexFromClientX(evt.touches[0].clientX);
-    if (viaTouch && i === shownIdx){ hide(); return; }
-    shownIdx = i; viaTouch = true; onIndex(i);
-  }, {passive:true});
-  hit.addEventListener("touchmove", function(evt){
-    lastTouch = Date.now(); if (!rect) refresh();
-    var i = indexFromClientX(evt.touches[0].clientX);
-    if (i !== shownIdx){ shownIdx = i; viaTouch = true; onIndex(i); }
-  }, {passive:true});
-  hit.addEventListener("touchend", function(){ lastTouch = Date.now(); }, {passive:true});
-  hoverAwayAdd({ hit:hit, touch:function(evt){ if (viaTouch && evt.target !== hit && !hit.contains(evt.target)) hide(); },
-                 scroll:function(){ if (viaTouch) hide(); } });
+  return a === -1 ? null : [a, b];
 }
-var hoverAway = null;
-function hoverAwayAdd(h){
-  if (!hoverAway){
-    hoverAway = [];
-    document.addEventListener("touchstart", function(evt){ hoverAwayLive().forEach(function(x){ x.touch(evt); }); }, {passive:true});
-    window.addEventListener("scroll", function(){ hoverAwayLive().forEach(function(x){ x.scroll(); }); }, {passive:true});
+export function totalGrowthYears(y0, y1){
+  var years = [], rates = [];
+  for (var y = y0; y <= y1; y++)
+    if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined){ years.push(y); rates.push(usRealGdpGrowth[y]); }
+  if (!years.length) return null;
+  var factor = rates.reduce(function(fa, g){ return fa * (1 + g / 100); }, 1);
+  return { years:years, total:(factor - 1) * 100 };
+}
+export function cycleMonths(c){
+  var to = c.to || calendarTodayY, a = -1, b = -1;
+  cpiYoYHistory.forEach(function(d, i){
+    var y = parseInt(d.m.slice(0, 4), 10);
+    if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
+  });
+  return a === -1 ? null : [a, b];
+}
+export function cycLabel(c){
+  return { name:c.ongoing ? "Current cycle" : c.name.replace(" Cycle", ""),
+           years:c.from + "\u2013" + (c.to || "Today") };
+}
+export function cycleQtrIdx(y0, cyc, len){
+  var to = cyc.to || calendarTodayY;
+  var a = Math.max(0, (cyc.from - y0) * 4), b = Math.min(len, (to - y0 + 1) * 4);
+  return b > a ? [a, b] : null;
+}
+export function totalRiseIn(vals){
+  var years = [], rates = [];
+  vals.forEach(function(d){
+    var y = parseInt(d.m.slice(0, 4), 10);
+    if (y !== calendarTodayY && d.m.slice(5) === "12"){ years.push(y); rates.push(d.v); }
+  });
+  if (!years.length) return null;
+  var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
+  return { years:years, total:(factor - 1) * 100 };
+}
+export function eraInflation(cyc){
+  var years = [], rates = [];
+  for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
+    if (y === calendarTodayY) continue;
+    var dec = cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
+    if (dec){ years.push(y); rates.push(dec.v); }
   }
-  hoverAway.push(h);
+  var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
+  return { years:years, rates:rates, total:(factor - 1) * 100 };
 }
-function hoverAwayLive(){ return (hoverAway = hoverAway.filter(function(x){ return x.hit.isConnected; })); }
+export function eraGrowth(cyc){
+  var years = [];
+  for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
+    if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined) years.push(y);
+  }
+  var rates = years.map(function(y){ return usRealGdpGrowth[y]; });
+  var growthFactor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
+  var n = rates.length;
+  var cagr = n ? (Math.pow(growthFactor, 1 / n) - 1) * 100 : 0;
+  var xs = rates.map(function(_, i){ return i; }), mx = (n - 1) / 2, my = rates.reduce(function(a, b){ return a + b; }, 0) / (n || 1);
+  var num = 0, den = 0;
+  xs.forEach(function(x, i){ num += (x - mx) * (rates[i] - my); den += (x - mx) * (x - mx); });
+  var slope = den ? num / den : 0;
+  var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
+  return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
+}
+export function eraMarketTotal(cyc){
+  var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
+  return years.length ? cum[years[years.length - 1]] : null;
+}
 
 export function setMoodLists(v){ moodLists = v; return v; }
 export function setMoodCache(v){ moodCache = v; return v; }
-export function setPressureView(v){ pressureView = v; return v; }
-export function setSpreadPick(v){ spreadPick = v; return v; }
-export function setSPREAD_DETAIL(v){ SPREAD_DETAIL = v; return v; }
-export function setDrawSpreadWindow(v){ drawSpreadWindow = v; return v; }
-export function setUNINV_DETAIL(v){ UNINV_DETAIL = v; return v; }
-export function setDrawSpreadView(v){ drawSpreadView = v; return v; }
 
-export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy;
+export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy, currentEra;
 var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow, cpiDirection, cpiHot, cpiCold, growthSlopeQ, growthTrendNow, gdpLatest;
 
 export function bootModel(){
+  currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
   seasonTrackAll = (function(){
     var out = [], prevRegime;
     gdpQuarterlyYoY.forEach(function(d, i){

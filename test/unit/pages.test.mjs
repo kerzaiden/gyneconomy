@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.js';
-import { ROSTER, HIST_HEAD } from '../../src/js/roster.js';
+import { ROSTER } from '../../src/js/roster.js';
+import { HIST_HEAD } from '../../src/js/history.js';
 import { histFrame } from '../../src/js/charts.js';
-import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart } from '../../src/js/history.js';
-import { deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/components.js';
+import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/history-charts.js';
 
 const BROKEN = ['NaN', 'undefined', 'Infinity', '[object Object]'];
 const broken = html => BROKEN.filter(b => html.includes(b));

@@ -1,10 +1,10 @@
-import { byId, layer, put, rovingKeys, wheelMeta } from "./refresh-season.js";
+import { srcBlock } from "./format.js";
+import { byId, expandBtn, layer, put, rovingKeys } from "./dom.js";
 import { GYN } from "./live.js";
-import { frameworkRows } from "./charts.js";
-import { currentEra } from "./forms.js";
-import { cpiNow, currentSeason, seasonGroup, seasonWhy } from "./model.js";
-import { expandBtn, srcBlock } from "./render-core.js";
-import { calendarReset, cycleViewEl, metricPageReset, setTopbarBack, topbarBack } from "./render-pages.js";
+import { wheelMeta } from "./refresh-season.js";
+import { frameworkRows } from "./data.js";
+import { cpiNow, currentEra, currentSeason, seasonGroup, seasonWhy } from "./model.js";
+import { calendarReset, cycleViewEl, metricPageReset, setTopbarBack } from "./render-pages.js";
 import { settleStrips, showCycle } from "./dial-cycle.js";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----

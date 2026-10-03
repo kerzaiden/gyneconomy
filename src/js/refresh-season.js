@@ -1,49 +1,7 @@
-export function byId(id){
-  var n = document.getElementById(id);
-  if (!n){
-    var m = (window.__elMiss = window.__elMiss || {});
-    m[id] = (m[id] || 0) + 1;
-  }
-  return n;
-}
-export function byIdMaybe(id){ return document.getElementById(id); }
-export function put(target, html){
-  var n = (typeof target === "string") ? byId(target) : target;
-  if (n) n.innerHTML = html;
-  return n;
-}
-export function elFrom(html){ var t = document.createElement("template"); t.innerHTML = html; return t.content.firstElementChild; }
+import { MONTHS_SHORT } from "./format.js";
+import { cpiYoYBefore, gdpYoYBefore } from "./history-fred.js";
+
 // ---- Layers: Escape closes only the topmost open layer; Tab stays inside a dialog ----
-var LAYERS = [];
-export function layer(rank, o){ o.rank = rank; LAYERS.push(o); LAYERS.sort(function(a, b){ return a.rank - b.rank; }); }
-export function onScreen(el){ return !!el && el.isConnected && el.getClientRects().length > 0; }
-export function focusQuiet(el){ if (!onScreen(el)) return false; el.focus({ preventScroll:true }); return document.activeElement === el; }
-function tabStops(box){
-  return Array.prototype.filter.call(box.querySelectorAll("a[href], button:not([disabled]), input, textarea, select, [tabindex]"),
-    function(n){ return n.tabIndex >= 0 && onScreen(n) && getComputedStyle(n).visibility !== "hidden"; });
-}
-function keepTab(e, box){
-  var stops = tabStops(box), at = document.activeElement;
-  if (!stops.length){ e.preventDefault(); return; }
-  var first = stops[0], last = stops[stops.length - 1];
-  if (!box.contains(at) || (e.shiftKey ? at === first : at === last)){ e.preventDefault(); (e.shiftKey ? last : first).focus(); }
-}
-export function rovingKeys(box, sel, onAttr, vertical){
-  function items(){ return Array.prototype.slice.call(box.querySelectorAll(sel)); }
-  function sync(){ items().forEach(function(b){ b.tabIndex = b.getAttribute(onAttr) === "true" ? 0 : -1; }); }
-  var step = { ArrowLeft:-1, ArrowRight:1 };
-  if (vertical){ step.ArrowUp = -1; step.ArrowDown = 1; }
-  box.addEventListener("keydown", function(e){
-    var all = items(), i = all.indexOf(e.target); if (i < 0) return;
-    var j = e.key === "Home" ? 0 : e.key === "End" ? all.length - 1 : step[e.key] ? (i + step[e.key] + all.length) % all.length : -1;
-    if (j < 0) return;
-    e.preventDefault(); if (j === i) return;
-    all[j].focus(); all[j].click();
-  });
-  box.addEventListener("click", sync);
-  sync();
-}
-export var MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 export function hubTodayHtml(){
   var d = new Date();
   return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -183,20 +141,15 @@ export var gdpQuarterlyYoY = [
   {q:"2026 Q1", v:2.68}, {q:"2026 Q2", v:2.10}
 ];
 
-export function setCpiYoYHistory(v){ cpiYoYHistory = v; return v; }
-export function setGdpQuarterlyYoY(v){ gdpQuarterlyYoY = v; return v; }
-
-export var DATA_COMPILED, dataCompiledLabel;
+export var DATA_COMPILED, dataCompiledLabel, calendarTodayY;
 
 export function bootRefreshSeason(){
-  document.addEventListener("keydown", function(e){
-    if (e.key !== "Escape" && e.key !== "Tab") return;
-    var top = LAYERS.filter(function(l){ return l.open(); })[0]; if (!top) return;
-    if (e.key === "Escape"){ e.preventDefault(); top.close(); return; }
-    var box = top.box && top.box(); if (box) keepTab(e, box);
-  });
-  try{ var savedTheme = localStorage.getItem("gyneconomy-theme"); if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme); }catch(e){}
   // ---- REFRESH: the one date to edit ----
   DATA_COMPILED = new Date(2026, 8, 25);
   dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
+  /* ---- Live data without a render refactor ---- */
+  cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
+  gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
+  // ---- Daily Feeling/Energy readout (Cycle tab) ----
+  calendarTodayY = DATA_COMPILED.getFullYear();
 }

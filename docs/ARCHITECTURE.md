@@ -300,13 +300,19 @@ it was seventeen parts joined into one closure, so any part could read or write 
 the manifest's; now each module says what it imports.
 
 - **A module's top level is declarations and values that need nothing else.** Whatever runs at load and reads
-  another module sits in that module's `boot…()`, and `main.js` calls the boots in the old manifest order. **The
-  boot order is the semantics** (it was the manifest order); `tools/load-order.js` follows every statement that
-  runs at load, boots included, and fails on a value read before it is set.
-- **An import is read-only, so a module that owns a value exports its setter** (`setSentiment`, `setCpiYoYHistory`);
+  another module sits in that module's `boot…()`, and `main.js` calls the boots in order. **The boot order is the
+  semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
+  follows every statement that runs at load, boots included, and fails on a value read before it is set.
+- **An import is read-only, so a module that owns a value exports its setter** (`setSentiment`, `setFedFunds`);
   a write from outside goes through it. `grep 'export function set'` lists them.
-- **The import graph is dense**: most modules import most others, as the one closure allowed. It is legal (every
-  cross-module read at load is inside a boot), and untangling it is later work, not a rule.
+- **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
+  any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
+  mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (generated), `refresh-season`, `data`
+  (every literal figure and series), `model` (seasons, cycles, mood), `history` (the one history component),
+  `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
+  and inner pages), `indicators`, `era`, `insights`, `diagnosis`, `dial-cycle`, `analysis`, `pages-nav` and
+  `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
+  layer at boot (`setHIST_HEAD` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
 
 The conversion was proved by the snapshot (every state identical) and the browser suite, before and after.

@@ -55,8 +55,8 @@ const KEYED = [
   ['history-fred.js',  'cpiYoYBefore',            'm', 730, [-15, 25]],
   ['history-fred.js',  'sp500ReturnsBefore',      'y',  62, [-60, 70]],
   ['history-fred.js',  'gdpGrowthBefore',         'y',  60, [-20, 25]],
-  ['components.js',     'buffettHistory',          'q', 220, [10, 400]],
-  ['components.js',     'capeHistory',             'y',  55, [4, 60]],
+  ['data.js',           'buffettHistory',          'q', 220, [10, 400]],
+  ['data.js',           'capeHistory',             'y',  55, [4, 60]],
 ];
 const TODAY = new Date();
 const NOW = { m: TODAY.getUTCFullYear() * 12 + TODAY.getUTCMonth() + 1,
@@ -79,11 +79,11 @@ for (const [file, name, key, floor, [lo, hi], lag] of KEYED) {
 }
 
 const BARE = [
-  ['history.js',   'm2Level',        260, [200,   40000]],
-  ['components.js','m2vHistory',     260, [900,    2600]],
-  ['forms.js',     'dsrHistory',      80, [7,        18]],
+  ['data.js',      'm2Level',        260, [200,   40000]],
+  ['data.js',      'm2vHistory',     260, [900,    2600]],
+  ['data.js',      'dsrHistory',      80, [7,        18]],
   ['data.js',      'deficitHistory',  78, [-20,      8]],
-  ['history.js',   'unempHistory',   930, [2,        16]]
+  ['data.js',      'unempHistory',   930, [2,        16]]
 ];
 for (const [file, name, floor, [lo, hi]] of BARE) {
   const vals = literal(file, name);

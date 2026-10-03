@@ -1,12 +1,12 @@
-import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY, MONTHS_SHORT } from "./refresh-season.js";
+import { MONTHS_SHORT, prettyKey, qAtIndex } from "./format.js";
+import { GYN, LIVE_NAMES, liveIsoOf } from "./live.js";
+import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.js";
+import { peekCard } from "./charts.js";
 import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.js";
-import { fedFunds, GYN, LIVE_NAMES, liveIsoOf } from "./live.js";
-import { CONFIDENCE_LINE, confidenceReading, curveAsOf, DEF_FROM_YEAR, deficitHistory, labRow, PRODUCTIVITY_SLOWDOWN, productivityReading, t10yYieldHistory } from "./data.js";
-import { buffettHistory, CAPE_FAIR, capeHistory, coincident, hyAt, hyOas, hyQuarters, M2V_FROM_YEAR, m2vHistory, PULSE_PRE2008 } from "./components.js";
-import { lagging, M2_FROM_YEAR, m2Yoy, qAtIndex, unempHistory } from "./history.js";
-import { bagSvg, boltSvg, circulationSvg, clockSvg, diamondSvg, DSR_FROM_YEAR, dsrHistory, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, marketReading, marketSvg, peekCard, personSvg, SAV_FROM_YEAR, savHistory, sp500Years, sproutSvg, thermoSvg, vixPct, volatilitySvg } from "./forms.js";
-import { budgetSvg, debtSvg, interestSvg, periodOf } from "./indicators.js";
-import { indPeriod, insightCirculation, insightMood, insightWeather } from "./pages-nav.js";
+import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.js";
+import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, fedFunds, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.js";
+import { setHIST_HEAD, setPAGE_STOPS, setPageCycles, setPageMode, setPageRange } from "./history.js";
+import { indPeriod, vixPct } from "./readings.js";
 
 // ---- The roster: every reading, declared once ----
 export var TIMING = {
@@ -16,9 +16,9 @@ export var TIMING = {
   lagging:    { label:"Lagging",    hint:"confirms a turn after it has happened" }
 };
 export var CATEGORIES = [
-  { key:"weather", title:"Weather", shown:0, insight:insightWeather, onDial:true },
-  { key:"circulation", title:"Circulation", shown:2, insight:insightCirculation },
-  { key:"mood", title:"Mood", shown:1, insight:insightMood, inTrend:true },
+  { key:"weather", title:"Weather", shown:0, onDial:true },
+  { key:"circulation", title:"Circulation", shown:2 },
+  { key:"mood", title:"Mood", shown:1, inTrend:true },
   { key:"energy", title:"Energy", shown:3 }
 ];
 export var GROUP_MARK = { "Stress":boltSvg };
@@ -38,11 +38,6 @@ export function keyed(h){
 function hyMonths(){
   return hyOas.map(function(v, i){ var a = hyAt(i); return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
 }
-export function prettyKey(k){
-  if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
-  if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
-  return k;
-}
 function lastDate(R){ var h = keyed(R.hist); return prettyKey(h[h.length - 1].k); }
 function compiledDay(){ return dataCompiledLabel; }
 function isoLabel(iso){
@@ -56,8 +51,6 @@ export function paintWhen(sheet){
 }
 function labPeriod(R){ return periodOf(labRow(R.id)); }
 export function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
-export function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading, marketReading]); }
-export function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 export function peekOf(id, o){
   var R = ROSTER_BY[id];
   o.kicker = R.name; o.mark = R.mark(); o.unit = R.cardUnit; o.target = id;
@@ -82,8 +75,10 @@ function checkRoster(){
   LIVE_NAMES.forEach(function(n){ if (!live[n]) bad.push(n + ": arrives live and no reading shows it"); });
   if (bad.length && window.console) console.warn("roster: " + bad.join(", "));
 }
+export function periodOf(row){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
+export function categoriesShown(){ return CATEGORIES.slice().sort(function(a, b){ return a.shown - b.shown; }); }
 
-export var ROSTER, pageMode, pageCycles, pageRange, PAGE_STOPS, HIST_HEAD;
+export var ROSTER;
 
 export function bootRoster(){
   ROSTER = [
@@ -137,11 +132,11 @@ export function bootRoster(){
       mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
-  pageMode = pageState(function(R){ return R.cycles === false ? undefined : "cycles"; });
-  pageCycles = pageState(function(R){ return R.cycles === false ? undefined : null; });
-  pageRange = pageState(function(R){ return R.range || "10y"; });
-  PAGE_STOPS = pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; });
-  HIST_HEAD = pageState(function(R){ return { mark:R.mark, title:R.head }; });
+  setPageMode(pageState(function(R){ return R.cycles === false ? undefined : "cycles"; }));
+  setPageCycles(pageState(function(R){ return R.cycles === false ? undefined : null; }));
+  setPageRange(pageState(function(R){ return R.range || "10y"; }));
+  setPAGE_STOPS(pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; }));
+  setHIST_HEAD(pageState(function(R){ return { mark:R.mark, title:R.head }; }));
   GYN.step("checkRoster", checkRoster, "check");
   checkRoster();
   GYN.ROSTER = ROSTER;

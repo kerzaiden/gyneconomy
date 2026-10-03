@@ -68,7 +68,7 @@ ok('a growth slope of exactly -0.025 is flat', readSeason(cpi(2.0, 0), at(-0.025
 ok('3.0 in an expansion is spring',    season(cpi(3.0, 0.05), gdp(2, 0.05)),   'spring');
 ok('3.001 in an expansion is summer',  season(cpi(3.001, 0.05), gdp(2, 0.05)), 'summer');
 
-const src = fs.readFileSync(path.join(__dirname, '..', 'src/js/forms.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8');
 const lit = src.slice(src.indexOf('var marketCycles = ['));
 const cycles = new Function('return ' + lit.slice(lit.indexOf('['), lit.indexOf('\n];') + 3))();
 

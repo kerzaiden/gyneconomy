@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
 import { createRequire } from 'module';
-import { trendOf, curveVerdict, valuationVerdict, histFrame, colPath, colWidth, ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, AXIS } from '../../src/js/charts.js';
-import { CAPE_FAIR } from '../../src/js/components.js';
-import { merge, fmtAsOf, fedFundsRange } from '../../src/js/live.js';
-import { prettyKey } from '../../src/js/roster.js';
-import { seasonGroup, monthLabel, seasonTitle, yearAfter } from '../../src/js/model.js';
+import { trendOf, histFrame, colPath, colWidth, AXIS } from '../../src/js/charts.js';
+import { curveVerdict, valuationVerdict } from '../../src/js/readings.js';
+import { ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, prettyKey, monthLabel } from '../../src/js/format.js';
+import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.js';
+import { merge } from '../../src/js/live.js';
+import { seasonGroup, seasonTitle, yearAfter } from '../../src/js/model.js';
 import * as fred from '../../src/js/history-fred.js';
 
 const require = createRequire(import.meta.url);

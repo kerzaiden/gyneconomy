@@ -1,14 +1,15 @@
-import { byId, byIdMaybe, cpiYoYHistory, put } from "./refresh-season.js";
+import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.js";
+import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl } from "./dom.js";
+import { GYN } from "./live.js";
+import { attachHoverTracking, AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.js";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.js";
-import { fedFunds, fedFundsRange, GYN } from "./live.js";
-import { t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, usRealGdpGrowth } from "./data.js";
-import { histLegend, histReadEnsure, histReadFill, mWindowFrom, qWindowFrom, refitHistory, sentiment, timelineWindow, valRow, valuation, windowYears } from "./components.js";
-import { fedFundsHistoryChart, HIST_NOTE, histHead, histNote } from "./history.js";
-import { appendSvgMarkup, atMonth, attachHistory, AXIS, calendarTodayY, chartAxes, colPath, colPeek, colWidth, curveVerdict, cycleQtrIdx, cycleSlice, divergeChart, fearCurve, fitLine, hiCard, highlightsHtml, histBar, histControls, histFrame, histTip, horizonRead, pageCycle, trendOf, trendPill, vGrid, VIX_CALM, VIX_CONVENTION, VIX_FEAR, vix3mClose, vixRow, volatilityTag, xLabel } from "./charts.js";
-import { curveNoteFull, VOL_JOIN, volatilityDetailHtml, volatilityRing } from "./forms.js";
-import { pageRange } from "./roster.js";
-import { addSources, attachHoverTracking, cycleReturns, drawSpreadView, drawSpreadWindow, policyFactRows, qLabel, setDrawSpreadView, setDrawSpreadWindow, setSPREAD_DETAIL, setUNINV_DETAIL, SPREAD_DETAIL, spreadPick, svgEl, UNINV_DETAIL } from "./model.js";
-import { drawsPage, expandBtn, factsFrom, srcBlock } from "./render-core.js";
+import { calendarTodayY } from "./refresh-season.js";
+import { curveNoteFull, fedFunds, fedFundsRange, sentiment, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, valuation, VIX_CALM, VIX_CONVENTION, VIX_FEAR, vixRow, VOL_JOIN } from "./data.js";
+import { cycleQtrIdx, cycleSlice } from "./model.js";
+import { attachHistory, HIST_NOTE, histControls, histHead, histLegend, histNote, histReadEnsure, histReadFill, mWindowFrom, pageCycle, pageRange, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
+import { curveVerdict, fearCurve, horizonRead, policyFactRows, setSPREAD_DETAIL, setUNINV_DETAIL, UNINV_DETAIL, vix3mClose, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.js";
+import { fedFundsHistoryChart } from "./history-charts.js";
+import { drawsPage, drawSpreadWindow, setDrawSpreadView, setDrawSpreadWindow, spreadPick } from "./render-core.js";
 
 // ---- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----
 function spreadSeries(){
@@ -454,55 +455,9 @@ function renderSubjectRows(){
 
 }
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
-export function totalRiseIn(vals){
-  var years = [], rates = [];
-  vals.forEach(function(d){
-    var y = parseInt(d.m.slice(0, 4), 10);
-    if (y !== calendarTodayY && d.m.slice(5) === "12"){ years.push(y); rates.push(d.v); }
-  });
-  if (!years.length) return null;
-  var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
-  return { years:years, total:(factor - 1) * 100 };
-}
-export function eraInflation(cyc){
-  var years = [], rates = [];
-  for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
-    if (y === calendarTodayY) continue;
-    var dec = cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
-    if (dec){ years.push(y); rates.push(dec.v); }
-  }
-  var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
-  return { years:years, rates:rates, total:(factor - 1) * 100 };
-}
-export function eraGrowth(cyc){
-  var years = [];
-  for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
-    if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined) years.push(y);
-  }
-  var rates = years.map(function(y){ return usRealGdpGrowth[y]; });
-  var growthFactor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
-  var n = rates.length;
-  var cagr = n ? (Math.pow(growthFactor, 1 / n) - 1) * 100 : 0;
-  var xs = rates.map(function(_, i){ return i; }), mx = (n - 1) / 2, my = rates.reduce(function(a, b){ return a + b; }, 0) / (n || 1);
-  var num = 0, den = 0;
-  xs.forEach(function(x, i){ num += (x - mx) * (rates[i] - my); den += (x - mx) * (x - mx); });
-  var slope = den ? num / den : 0;
-  var trend = slope > 0.1 ? "rising" : slope < -0.1 ? "falling" : "flat";
-  return { years: years, rates: rates, cagr: cagr, total: (growthFactor - 1) * 100, slope: slope, trend: trend, avg: my };
-}
-export function fmtSigned(v, dp){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }
-var GROWTH_SHOWN = { expansion:"expanding", contraction:"contracting", steady:"steady" };
-function growthShown(reg){ return GROWTH_SHOWN[reg] || reg; }
-export function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
-export function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
-export function eraMarketTotal(cyc){
-  var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
-  return years.length ? cum[years[years.length - 1]] : null;
-}
 export var shownEra = null;
 export var calendarReset = null;
 export var metricPageReset = null;
-export var openIndicatorsPage = null;
 export var topbarBack = null, eraPageBack = null;
 export function setTopbar(title, onBack){
   byId("topbar-title").textContent = title;
@@ -510,12 +465,11 @@ export function setTopbar(title, onBack){
   byId("topbar-back").hidden = !onBack;
 }
 
-export function setShownEra(v){ shownEra = v; return v; }
-export function setMetricPageReset(v){ metricPageReset = v; return v; }
-export function setOpenIndicatorsPage(v){ openIndicatorsPage = v; return v; }
 export function setEraPageBack(v){ eraPageBack = v; return v; }
 export function setCalendarReset(v){ calendarReset = v; return v; }
 export function setTopbarBack(v){ topbarBack = v; return v; }
+export function setShownEra(v){ shownEra = v; return v; }
+export function setMetricPageReset(v){ metricPageReset = v; return v; }
 
 export var cycleViewEl;
 

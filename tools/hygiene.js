@@ -102,11 +102,26 @@ function pinned(js) {
   return PINNED.filter(([, re]) => !re.test(js)).map(([n]) => n + ' moved from its pinned value: update the pin with the decision, or put it back');
 }
 
+function cycles(files) {
+  const deps = {};
+  Object.keys(files).forEach(f => { deps[f] = [...files[f].matchAll(/from "\.\/([\w-]+\.js)"/g)].map(m => m[1]).filter(d => d in files); });
+  const state = {}, out = [];
+  const visit = (f, trail) => {
+    if (state[f] === 2) return;
+    if (state[f] === 1) { out.push('modules import in a circle: ' + trail.slice(trail.indexOf(f)).concat(f).join(' \u2192 ')); return; }
+    state[f] = 1;
+    deps[f].forEach(d => visit(d, trail.concat(f)));
+    state[f] = 2;
+  };
+  Object.keys(deps).sort().forEach(f => visit(f, []));
+  return out;
+}
+
 function audit(files, html, css) {
   let out = fontSizes(css).concat(pageScoped(css));
   Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
   const js = Object.values(files).join('\n');
-  return out.concat(twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
+  return out.concat(cycles(files), twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
 }
 
 if (require.main === module) {
@@ -120,7 +135,7 @@ if (require.main === module) {
     console.log('HYGIENE — a child holds what its parent owns, or something is unused:\n\n  ' + out.join('\n  ') + '\n');
     process.exit(1);
   }
-  console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, nothing unused, nothing removed come back, pins held');
+  console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, modules in layers, nothing unused, nothing removed come back, pins held');
 } else {
-  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
+  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
 }
