@@ -278,8 +278,8 @@
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
   .detail-modal .legend-rows, .metric-sheet .legend-rows, .sign-detail .legend-rows, .hero .legend-rows, .journal-about .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child{ border-bottom:none; }
+  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
@@ -288,7 +288,7 @@
   .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
   .detail-modal .legend-row .bar, .metric-sheet .legend-row .bar, .sign-detail .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
   .detail-modal .legend-row .bar.ytd, .metric-sheet .legend-row .bar.ytd, .sign-detail .legend-row .bar.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .journal-about .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
+  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .journal-about .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
   .detail-modal .legend-head, .metric-sheet .legend-head, .sign-detail .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
   :root{
@@ -495,7 +495,10 @@
   .reading-book{ grid-column:1 / -1; border-top:1px dashed var(--border-strong); padding-top:14px; }
   .reading-book blockquote{ margin:8px 0 0; padding-left:14px; border-left:3px solid var(--border-strong); font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .framework-rows{ margin-top:12px; }
-  .seasons-rows > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
+  .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
+  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
+  .model-card .legend-rows{ margin:0; }
+  .model-card .legend-row{ padding:10px 12px; }
   .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:var(--type-interface); padding:10px 12px; }
   .seasons-rows .lag-row.lag-row-head{ font-size:var(--type-label); }
   .seasons-rows .meta{ display:none; }
@@ -1630,17 +1633,16 @@
         <p>The board is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1991 the same way, and keeps the vital signs the book teaches you to watch. Every figure is compiled by hand from primary sources and fixed at publish time — nothing on it updates on its own.</p>
       </div>
 
-      <h3 class="menu-section">The Cycle Model</h3>
-      <div class="menu-card journal-about">
-      <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
-        it: the recovery, the boom, and the bleed the boom pays for.</p>
-      <div class="legend-rows">
-        <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
-        <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Cycle Model</h3>
+        <p>A cycle runs from its first rising year to the bear market that ends it.</p>
+        <div class="legend-rows">
+          <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
+          <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
+        </div>
       </div>
-    </div>
 
-      <div class="menu-card seasons-rows">
+      <div class="menu-card model-card seasons-rows">
         <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
         <div id="seasons-rows"></div>
       </div>

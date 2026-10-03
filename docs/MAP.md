@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,905 lines** in 33 files, about 581 KB, roughly **165 thousand tokens**. No session can
+The source is **8,907 lines** in 33 files, about 581 KB, roughly **165 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `7ea9766` on 2026-10-03.
+Generated from commit `6888efc` on 2026-10-03.
 
 ## The page
 
@@ -18,8 +18,8 @@ Generated from commit `7ea9766` on 2026-10-03.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,346 | the whole stylesheet, every token and rule |
-| `page-body.html` | 391 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `styles.css` | 1,349 | the whole stylesheet, every token and rule |
+| `page-body.html` | 390 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 29 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
@@ -1178,21 +1178,21 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 411 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 484 | journal (editorial content tab) |
 | 490 | content tab: reading companion |
-| 539 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 734 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 778 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 850 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,019 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,034 | The symptoms: a cycle's years against today |
-| 1,120 | hero: yield curve |
-| 1,150 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,169 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,196 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,204 | long cycle (structural layer) |
-| 1,211 | indicator grid |
-| 1,237 | info icon + popover (progressive disclosure for longer notes) |
-| 1,251 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,336 | footer |
+| 542 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 737 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 781 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 853 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,022 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,037 | The symptoms: a cycle's years against today |
+| 1,123 | hero: yield curve |
+| 1,153 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,172 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,199 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,207 | long cycle (structural layer) |
+| 1,214 | indicator grid |
+| 1,240 | info icon + popover (progressive disclosure for longer notes) |
+| 1,254 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,339 | footer |
 
 ## Markup landmarks
 
@@ -1296,25 +1296,25 @@ Every `id` in the static DOM (110), which is what the renderers fill:
 | 236 | `app-version` |
 | 240 | `sheet-howto` |
 | 283 | `sheet-book` |
-| 315 | `seasons-kicker` |
-| 316 | `seasons-rows` |
-| 319 | `framework-kicker` |
-| 322 | `framework-rows` |
-| 332 | `sheet-appearance` |
-| 340 | `theme-toggle` |
-| 347 | `sheet-contact` |
-| 356 | `contact-form` |
-| 357 | `contact-title` |
-| 358 | `contact-message` |
-| 360 | `contact-hint` |
-| 361 | `contact-send` |
-| 367 | `sheet-sources` |
-| 370 | `sources-back` |
-| 375 | `asof-text` |
-| 376 | `sources-groups` |
-| 382 | `detail-backdrop` |
-| 384 | `detail-modal-close` |
-| 385 | `detail-modal-body` |
+| 314 | `seasons-kicker` |
+| 315 | `seasons-rows` |
+| 318 | `framework-kicker` |
+| 321 | `framework-rows` |
+| 331 | `sheet-appearance` |
+| 339 | `theme-toggle` |
+| 346 | `sheet-contact` |
+| 355 | `contact-form` |
+| 356 | `contact-title` |
+| 357 | `contact-message` |
+| 359 | `contact-hint` |
+| 360 | `contact-send` |
+| 366 | `sheet-sources` |
+| 369 | `sources-back` |
+| 374 | `asof-text` |
+| 375 | `sources-groups` |
+| 381 | `detail-backdrop` |
+| 383 | `detail-modal-close` |
+| 384 | `detail-modal-body` |
 
 ## Finding things fast
 
