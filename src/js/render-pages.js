@@ -299,7 +299,7 @@ function renderHormones(){
   drawsPage("sheet-sign-hormones", draw);
   draw();
 
-  HIST_NOTE["hormones-range"] = '<h4>Effective federal funds rate</h4>' + factsFrom(
+  HIST_NOTE["hormones-range"] = function(){ return '<h4>Effective federal funds rate</h4>' + factsFrom(
     "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
     "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
     "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
@@ -312,7 +312,7 @@ function renderHormones(){
     "The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June " +
     "1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds " +
     "both is the reason this one stands on zero rather than on its own minimum. " +
-    "Source: Federal Reserve H.15 via FRED, series FEDFUNDS.")
+    "Source: Federal Reserve H.15 via FRED, series FEDFUNDS."); };
 
   /* ---- Keren, V609: "can you put that into insights? The hormones page doesn't have an insight section. ---- */
   function ffPeaks(){
@@ -362,7 +362,7 @@ function renderHormones(){
 }
 // ---- RENDER: Volatility — the VIX since 1986, and the shape of its curve today ----
 function renderVolatility(){
-  HIST_NOTE["fear-range"] = volatilityDetailHtml();
+  HIST_NOTE["fear-range"] = volatilityDetailHtml;
   var VOL_Y0 = volatilityHistory.length ? parseInt(volatilityHistory[0].m.slice(0, 4), 10) : 0;
   function drawVolatility(){
     var host = byId("fear-history"); if (!host || !volatilityHistory.length) return;

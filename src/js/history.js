@@ -55,7 +55,7 @@ function headMenuHtml(id){
       'data-head-grp="' + x.key + '"><span class="cycsel-nm">' + x.label + '</span>' +
       '<span class="cycsel-yr">' + (x.on ? x.value : "") + '</span>' + CHEV + '</button>';
   }).join("") + '<div class="bh-sep"></div>';
-  var note = HIST_NOTE[id];
+  var note = typeof HIST_NOTE[id] === "function" ? HIST_NOTE[id]() : HIST_NOTE[id];
   if (!note) return extra;
   if (headNoteIdx[id] == null){ headNoteIdx[id] = detailTexts.length; detailTexts.push(""); }
   detailTexts[headNoteIdx[id]] = note;

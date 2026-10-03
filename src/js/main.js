@@ -1,5 +1,5 @@
 import { bootDom } from "./dom.js";
-import { bootLive } from "./live.js";
+import { bootLive, forgetLive } from "./live.js";
 import { bootRefreshSeason } from "./refresh-season.js";
 import { bootData } from "./data.js";
 import { bootModel } from "./model.js";
@@ -15,20 +15,24 @@ import { bootPagesNav } from "./pages-nav.js";
 import { bootTabsMenu } from "./tabs-menu.js";
 import { bootRepaint } from "./repaint.js";
 
-bootDom();
-bootRefreshSeason();
-bootLive();
-bootReadingRegistry();
-bootData();
-bootReadings();
-bootHistory();
-bootRoster();
-bootModel();
-bootRenderCore();
-bootRenderPages();
-bootDialCycle();
-bootPagesNav();
-bootDiagnosis();
-bootAnalysis();
-bootTabsMenu();
-bootRepaint();
+try {
+  bootDom();
+  bootRefreshSeason();
+  bootLive();
+  bootReadingRegistry();
+  bootData();
+  bootReadings();
+  bootHistory();
+  bootRoster();
+  bootModel();
+  bootRenderCore();
+  bootRenderPages();
+  bootDialCycle();
+  bootPagesNav();
+  bootDiagnosis();
+  bootAnalysis();
+  bootTabsMenu();
+  bootRepaint();
+} catch (e) {
+  forgetLive(e);
+}

@@ -6,7 +6,7 @@ import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, 
 import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.js";
 import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.js";
 import { page } from "./history.js";
-import { indPeriod, vixPct } from "./readings.js";
+import { desireRow, indPeriod, vixPct } from "./readings.js";
 
 // ---- The roster: every reading, declared once ----
 export var TIMING = {
@@ -48,6 +48,10 @@ export function paintWhen(sheet){
   var R = ROSTER_BY[sheet], when = cardDate(R);
   if (!when) return;
   Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w){ w.textContent = when; });
+}
+function desireWhen(){
+  var m = /(\w{3}) (\d{1,2}),? (\d{4})$/.exec(String((desireRow() || {}).metricSub || ""));
+  return isoLabel(liveIsoOf("hyOasNow")) || (m ? m[1] + " " + m[2] + ", " + m[3] : "");
 }
 function labPeriod(R){ return periodOf(labRow(R.id)); }
 export function rosterFor(ind){ return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
@@ -110,7 +114,7 @@ export function bootRoster(){
       when:function(){ return isoLabel(liveIsoOf("vixClose")) || compiledDay(); }, live:["sentiment", "vixClose", "vix3mClose"] },
     { id:"sheet-sign-desire", name:"Desire", cat:"mood", timing:"coincident", mark:flameSvg, door:"row", term:"Desire", hk:"desire-range",
       head:"High-Yield Spread over Treasuries", range:"max", cycles:false, stops:["1y", "max"], hist:hyMonths, peek:hyQuarters,
-      live:["coincident", "hyOasNow"] },
+      when:desireWhen, live:["coincident", "hyOasNow"] },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
       cardUnit:"OECD index" },

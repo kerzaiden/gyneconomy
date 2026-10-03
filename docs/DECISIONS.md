@@ -76,9 +76,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Words for verdicts and trends
 
-- **On screen, growth's direction reads "expanding" and "contracting", never "expansion" and "contraction".**
-  A participle says the body is doing something; an abstract noun names a state the reader has to attach to
-  her. (V304)
+- **On screen, growth reads "quickening", "slowing" or "steady" by its trend, and "contracting" only when real
+  GDP is below zero; never "expansion" and "contraction".** A participle says the body is doing something (V304).
+  Keren, V698: "I think we are growing. It doesn't contradict the season autumn... Maybe we're slowing, maybe
+  we're stagnant. Make the graph and the wording match the data." The model's values stay "expansion" and
+  "contraction"; the Growth card, the chart legend, the season note and Weather's opening line now say the
+  pace, and Weather's opening line is computed from the reading. (V304, V698)
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
   fairly valued"; the same pattern gave Pulse a fast/slow scale. (V290, V298)
@@ -1173,6 +1176,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   in `src/data/*.json`; navigation split into `inner-pages` and `cycle-tab`; TypeScript by inference only, since
   the no-comments rule rules out annotations; a live document refused if any of its text carries `<`, `>` or `"`;
   content tests of what the pages say, with an 88% line-coverage floor. (V697)
+- **A first visit and a returning visit show the same figures, and a figure the bots update is never typed.**
+  Keren chose "Fix all" on Claude's V697 review. Claude chose: cached documents load through the readings' own
+  `set`; the debt card reads its series; a warning at boot fails `npm run check`; a stored document that breaks
+  the boot is dropped once; the service worker never stores an error page; `sources.html` is checked in CI;
+  `npm run map` writes nothing when only the commit stamp would change. (V698)
+- **The policy fact under the Fed card follows the Fed's own moves.** Keren: "make the policy fact adaptable to
+  whatever is the current situation." The Data fetcher reads the run of target changes it already fetches
+  (DFEDTARU): a move after the other direction reads "First hike since 2023" (the year of the previous move the
+  same way); a run reads "Cuts in a row: 2 since Sep 2024". "One more signalled" is gone: it came from the dot
+  plot, which nothing fetches. (V698)
 
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)

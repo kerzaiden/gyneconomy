@@ -263,12 +263,12 @@ w("")
 
 out = "\n".join(o) + "\n"
 
+cur = read(OUT) if os.path.exists(OUT) else ""
+strip = lambda s: re.sub(r"Generated from commit .*", "", s)
+if strip(cur) == strip(out):
+    print("MAP.md is current")
+    sys.exit(0)
 if "--check" in sys.argv:
-    cur = read(OUT) if os.path.exists(OUT) else ""
-    strip = lambda s: re.sub(r"Generated from commit .*", "", s)
-    if strip(cur) == strip(out):
-        print("MAP.md is current")
-        sys.exit(0)
     print("MAP.md is OUT OF DATE — run: npm run map")
     sys.exit(1)
 

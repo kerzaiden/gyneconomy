@@ -40,6 +40,9 @@ jobs:
       - name: Accessibility
         run: npm run a11y:check
 
+      - name: Sources page
+        run: npm run sources:check
+
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

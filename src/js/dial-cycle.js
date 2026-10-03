@@ -416,7 +416,7 @@ export function bootDialCycle(){
     facts([
       'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline.',
       'US news usually quotes a different figure for \u201cgrowth this quarter\u201d: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.',
-      '<b>Gold is expansion, periwinkle is contraction</b> \u2014 the season model\u2019s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.',
+      '<b>Gold is quickening growth, periwinkle is slowing growth</b> \u2014 the season model\u2019s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.',
       'That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.',
       'The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase.'
     ]) +

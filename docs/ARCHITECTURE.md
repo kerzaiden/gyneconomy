@@ -17,8 +17,10 @@ described under "How the live layer works" below; the decisions are these:
 - **The literal in the file is the floor, not a duplicate.** It renders first; the database and the
   cache render over it. Most loads (a local file, a test, a viewer without the grant, a first visit)
   render the literal. Never block first paint on a permission prompt.
-- **`X = LIVE("X", X);` sits immediately after each declaration.** That placement is the mechanism; a
-  line moved below a consumer silently stops working.
+- **`liveInto("X")` sits immediately after each declaration.** That placement is the mechanism; a
+  line moved below a consumer silently stops working. Since V698 it applies the cached document through the
+  reading's own `set`, the same route `receive` uses, so a first visit and a returning visit apply the same
+  rules (the V697 review found the Fed vote, the card dates and the notes differing between them).
 - **An object document merges over the literal (V544).** The pipeline publishes `fedFunds` as
   `{lo, hi, asOf}`; the file's object also carries the FOMC date, vote and next meeting, which no fetcher
   knows. Replacing dropped all three.
@@ -27,7 +29,11 @@ described under "How the live layer works" below; the decisions are these:
 - **Repaints go through the doors**, every `[data-open="<sheet>"]`, never by element id (V619): a reading
   is printed on more than one door and painting one left the other stale with no visible symptom.
 - **A cached figure contradicting a load-time assertion warns**, and the suite turns the warning into a
-  failing check. That is the design working.
+  failing check. That is the design working. Since V698 the unit tests fail on a warning at boot too, so
+  `npm run check` (all the Backfill runs before it commits) stops a bot commit that CI would reject.
+- **A figure the Backfill updates is read from its series, never typed (V698).** Gross debt's card value,
+  date and note figures come from the last quarter of `grossDebtQuarterly` (`syncGrossDebt`); its typed
+  122.6 would have turned `main` red the night FRED posted Q2 2026.
 
 Six of the nine rows have a writer today; see Open questions.
 
@@ -56,8 +62,11 @@ blank the app on every later visit):
 
 - **Checked on the way in and on the way out.** `receive` caches a document only once `docOk` (the reading's
   `kind`, `band` and `ok`, and no `<` anywhere, because live documents carry data, never markup) has passed it,
-  and `LIVE()` checks the cached copy again before the app builds on it. A refused document falls back to the
-  literal.
+  and `liveInto()` checks the cached copy again before the app builds on it. A refused document falls back to the
+  literal. Since V698 `receive` caches only what applied, a row must carry a full meter (value, min, max), a
+  valuation must keep its CAPE row, the coincident rows all three readings, and a yield curve its 3M and 10Y
+  inside the fetcher's own 0–20% band. If boot still throws with documents stored, `forgetLive` drops them
+  and reloads once on the file's figures (`gyn.forgot` in session storage stops a loop).
 - **Every reading is applied at load.** A scalar that lands inside an object row (`vixClose`, `capeValue`,
   `hyOasNow`) is applied by `liveInto` right after its row exists, so a second visit no longer shows the file's
   figures.
@@ -65,8 +74,12 @@ blank the app on every later visit):
   (`liveApplied`), never with storage, so an unchanged value that was never applied still lands.
 - **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
   `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
-- **A card's date is its figure's date.** Pressure and Volatility date their cards from the applied document's
-  `asOf`, and `paintWhen` repaints the date with the figure.
+- **A card's date is its figure's date.** Pressure, Volatility and Desire date their cards from the applied
+  document's `asOf`, and `paintWhen` repaints the date with the figure. `liveApplied` is written before the
+  painters run (V698; it was written after, so a card carried the previous document's date).
+- **What is derived from a live figure is derived again when it lands (V698).** A note that quotes a live
+  figure is a function (`HIST_NOTE[id]` may be one, read when the head is drawn), and the Pressure verdict
+  (`deriveHorizon`) reruns in the yield curve's `set`.
 
 #### Where live data enters
 

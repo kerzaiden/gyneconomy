@@ -1,11 +1,11 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { MONTHS_SHORT } from "./format.js";
-import { GYN, LIVE, liveInto, liveIsoOf, merge } from "./live.js";
+import { GYN, liveInto, liveIsoOf, merge } from "./live.js";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.js";
 
 export var now = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
-    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" },
+    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
   {m:"1M",  y:4.01}, {m:"2M",  y:4.18}, {m:"3M",  y:4.24}, {m:"4M",  y:4.33}, {m:"6M",  y:4.34},
   {m:"1Y",  y:4.51}, {m:"2Y",  y:4.87}, {m:"3Y",  y:4.99}, {m:"5Y",  y:5.03}, {m:"7Y",  y:5.10},
@@ -47,7 +47,7 @@ export var now = {
   src:[{t:"Federal Reserve Z.1 via FRED \u2014 Nonfinancial corporate equities, market value (NCBEILQ027S)", u:"https://fred.stlouisfed.org/series/NCBEILQ027S"},{t:"BEA via FRED \u2014 Gross Domestic Product, nominal (GDP)", u:"https://fred.stlouisfed.org/series/GDP"},{t:"Robert Shiller \u2014 U.S. stock market data and CAPE ratio since 1871 (Yale)", u:"https://shillerdata.com/"}]
 },
   vixRow: undefined,
-  vix3mClose: undefined
+  vix3mClose: 17.61
 };
 // ---- DATA (single source of truth — edit here on refresh) ----
 var YIELD_CURVE_ASOF = "2026-09-24";
@@ -74,11 +74,11 @@ export var gdpSrc = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)
 var labPanel = [
   {
     sub:"gross federal debt ÷ GDP",
-    meter:{min:0, max:125.9, value:122.6, optimal:{lte:70, label:"\u2264 70%"},
+    meter:{min:0, max:125.9, value:null, optimal:{lte:70, label:"\u2264 70%"},
            ends:{ zone:"50-year average", high:"Elevated" }},
-    shortNote:"Q1 2026 — above the WWII peak, and within reach of the 2020 record.",
-    note:"Q1 2026, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at 119.1% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's 122.6% is about 1.75 times it.",
-    direction:"up", flagValue:"122.6%", flagState:"serious",
+    shortNote:"",
+    note:"{q}, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at {ww2}% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's {v}% is about {x} times it.",
+    direction:"up", flagValue:"", flagState:"serious",
     id:"sheet-metric-debt"
   },
   {
@@ -161,14 +161,22 @@ export var longCycleSrc = [
   {t:"BLS — Productivity and Costs, Second Quarter 2026 (revised)", u:"https://www.bls.gov/news.release/archives/prod2_09032026.htm"},
   {t:"BLS via FRED — Nonfarm business output per hour, index (OPHNFB) and quarterly % change (PRS85006092), 1947–", u:"https://fred.stlouisfed.org/series/PRS85006092"}
 ];
+function syncGrossDebt(){
+  var row = labRow("sheet-metric-debt"), last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
+  var ww2 = fiscalHistory.gross.filter(function(d){ return d.y === 1946; })[0].v, v = Math.round(last.v * 10) / 10;
+  var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill = { q:q, v:v.toFixed(1), ww2:ww2.toFixed(1), x:(v / row.meter.optimal.lte).toFixed(2) };
+  row.meter.value = v;
+  row.flagValue = fill.v + "%";
+  row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
+  row.noteTpl = row.noteTpl || row.note;
+  row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m, k){ return fill[k] != null ? fill[k] : m; });
+}
 function checkGrossDebt(){
   if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
   var row = labRow("sheet-metric-debt"), by = function(a){ var o = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
   var g = by(fiscalHistory.gross), it = by(fiscalHistory.interest), bu = by(fiscalHistory.budget), bad = [];
   var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
   if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-  var last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
-  if (Math.abs(row.meter.value - last.v) > 0.05) bad.push("value " + row.meter.value + " vs " + last.q + " " + last.v);
   var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
   if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
   if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
@@ -445,7 +453,7 @@ export var typicalCycleSrc = [
 export var t10y3mHistory, t10y2yHistory, t3mYieldHistory, t2yYieldHistory, t5yYieldHistory, t10yYieldHistory, t30yYieldHistory, usRealGdpGrowth, DEF_1983, sp500AnnualReturns, sp500Years;
 
 export function bootData(){
-  now.yieldCurve = LIVE("yieldCurve", now.yieldCurve);
+  liveInto("yieldCurve");
   t10y3mHistory = treasuryQuarterly.s3m;
   t10y2yHistory = treasuryQuarterly.s2y;
   // ---- Yield LEVELS by maturity, quarterly from Q1 2005 — not spreads, the actual yields themselves, ----
@@ -465,11 +473,13 @@ export function bootData(){
   DEF_1983 = deficitHistory[1983 - DEF_FROM_YEAR];
   GYN.step("checkDesireWindow", checkDesireWindow, "check");
   checkDesireWindow();
+  GYN.step("syncGrossDebt", syncGrossDebt, "derive");
+  syncGrossDebt();
   GYN.step("checkGrossDebt", checkGrossDebt, "check");
   checkGrossDebt();
-  now.sentiment = LIVE("sentiment", now.sentiment);
+  liveInto("sentiment");
   liveInto("vixClose");
-  now.valuation = LIVE("valuation", now.valuation);
+  liveInto("valuation");
   now.valuation.rows.sort(function(a, b){ return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1); });
   GYN.step("checkVelocityHistory", checkVelocityHistory, "check");
   checkVelocityHistory();

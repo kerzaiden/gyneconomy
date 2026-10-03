@@ -3,7 +3,7 @@ import { byId, byIdMaybe, moreRow, put } from "./dom.js";
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.js";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.js";
-import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, nowModel, totalGrowthYears, totalRiseIn } from "./model.js";
+import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.js";
 import { attachHistory, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
 import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.js";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.js";
@@ -241,8 +241,8 @@ function gdpHighlights(r, gq){
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
   cards.push(hiCard("The latest quarter", phaseClass(r.regime),
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
-    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the trend as " +
-    r.regime + "."));
+    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads growth as " +
+    growthWord(r) + "."));
   put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
 }
 export function renderMetricPages(ctx){

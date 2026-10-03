@@ -1,4 +1,4 @@
-var VERSION = 'gyn-697';
+var VERSION = 'gyn-698';
 var SHELL = [
   './',
   './index.html',
@@ -40,16 +40,18 @@ self.addEventListener('fetch', function (e) {
                   (req.headers.get('accept') || '').indexOf('text/html') !== -1;
 
   if (wantsHtml) {
+    var stored = function () {
+      return caches.match(req).then(function (hit) {
+        return hit || caches.match('./index.html');
+      });
+    };
     e.respondWith(
       fetch(req, { cache: 'no-store' }).then(function (res) {
+        if (!res || !res.ok) return stored().then(function (hit) { return hit || res; });
         var copy = res.clone();
         caches.open(VERSION).then(function (c) { c.put(req, copy); }).catch(function () {});
         return res;
-      }).catch(function () {
-        return caches.match(req).then(function (hit) {
-          return hit || caches.match('./index.html');
-        });
-      })
+      }).catch(stored)
     );
     return;
   }

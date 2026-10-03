@@ -11,10 +11,13 @@ w.fetch = () => Promise.reject(new Error('offline'));
 w.scrollTo = () => {};
 export const errors = [];
 w.addEventListener('error', e => errors.push(e.message));
+export const warnings = [];
+console.warn = (...a) => { warnings.push(a.map(String).join(' ')); };
 for (const k of ['window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'location', 'history', 'getComputedStyle',
   'requestAnimationFrame', 'cancelAnimationFrame', 'matchMedia', 'fetch', 'Node', 'Element', 'HTMLElement', 'SVGElement',
   'Event', 'KeyboardEvent', 'CustomEvent', 'MutationObserver', 'DOMParser'])
   Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true });
 
 await import('../../src/js/main.js');
+export const bootWarnings = warnings.slice();
 export { w as window };

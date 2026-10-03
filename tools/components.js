@@ -157,7 +157,8 @@ const stripDate = t => t.replace(/on \d{4}-\d{2}-\d{2}\./, 'on DATE.').replace(/
 const arg = process.argv[2];
 
 if (arg === '--doc') {
-  const text = componentsDoc();
+  const text = componentsDoc(), was = fs.existsSync(DOC) ? fs.readFileSync(DOC, 'utf8') : '';
+  if (stripDate(was) === stripDate(text)) { console.log('COMPONENTS.md is current'); process.exit(0); }
   fs.writeFileSync(DOC, text);
   console.log(`wrote docs/COMPONENTS.md — ${text.split('\n').length} lines`);
   process.exit(0);

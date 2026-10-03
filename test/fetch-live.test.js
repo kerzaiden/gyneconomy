@@ -95,13 +95,17 @@ const days = (from, n, v) => Array.from({ length: n }, (_, i) => ({
   date: new Date(Date.parse(from + 'T00:00:00Z') + i * 86400000).toISOString().slice(0, 10), value: String(v) }));
 const hike = days('2026-08-01', 47, 3.75).concat(days('2026-09-17', 10, 4)).reverse();
 ok('a hike is dated by its FOMC decision, not the day it took effect', fedMove(hike, '2026-09-26', FOMC_DECISIONS),
-   { lastMove: '+0.25', lastMoveLabel: 'raised a quarter point', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' });
+   { lastMove: '+0.25', lastMoveLabel: 'raised a quarter point', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026', turnLabel: 'First hike since', turnValue: 'before 2026' });
 const cut = days('2026-09-17', 42, 4).concat(days('2026-10-29', 5, 3.5));
 ok('a half-point cut, and the next decision after it', fedMove(cut, '2026-11-02', FOMC_DECISIONS),
-   { lastMove: '-0.50', lastMoveLabel: 'cut half a point', asOf: 'Oct 28, 2026', next: 'Dec 9, 2026' });
+   { lastMove: '-0.50', lastMoveLabel: 'cut half a point', asOf: 'Oct 28, 2026', next: 'Dec 9, 2026', turnLabel: 'First cut since', turnValue: 'before 2026' });
 ok('no next decision past the end of the calendar', fedMove(cut, '2026-12-10', FOMC_DECISIONS).next, '');
 ok('a move off the calendar is dated the day before it took effect', fedMove(days('2026-03-01', 3, 2).concat(days('2026-03-04', 2, 1.5)), '2026-03-06', []).asOf,
    'Mar 3, 2026');
+const turns = days('2023-06-01', 60, 5.25).concat(days('2023-07-31', 400, 5.5), days('2024-09-04', 100, 5), days('2024-12-13', 600, 4.5), days('2026-08-05', 43, 4.25), days('2026-09-17', 10, 4.5));
+ok('a hike after cuts names the year of the hike before it', fedMove(turns, '2026-09-26', FOMC_DECISIONS).turnLabel + ' ' + fedMove(turns, '2026-09-26', FOMC_DECISIONS).turnValue, 'First hike since 2023');
+const twoCuts = days('2024-06-01', 95, 5.5).concat(days('2024-09-04', 100, 5), days('2024-12-13', 20, 4.5));
+ok('a run of cuts is counted from its first', [fedMove(twoCuts, '2025-01-02', []).turnLabel, fedMove(twoCuts, '2025-01-02', []).turnValue], ['Cuts in a row', '2 since Sep 2024']);
 ok('missing values are skipped', fedMove([{ date: '2026-09-18', value: '.' }].concat(hike), '2026-09-26', FOMC_DECISIONS).lastMove, '+0.25');
 try { fedMove(days('2026-01-01', 30, 4), '2026-02-01', FOMC_DECISIONS); fail++; console.log('  FAIL no change'); }
 catch (e) { if (/no change/.test(e.message)) { pass++; console.log('  ok   a flat history is refused, not guessed            threw'); } else { fail++; console.log('  FAIL ' + e.message); } }
@@ -109,6 +113,9 @@ ok('a reading that failed keeps its previous document',
    assemble({ vixClose: { v: 1 }, capeValue: { v: 2 }, _meta: { old: true } }, { vixClose: { v: 3 }, _meta: { now: true } }),
    { vixClose: { v: 3 }, capeValue: { v: 2 }, _meta: { now: true } });
 ok('a first run has nothing to keep', assemble(null, { yieldCurve: 1 }), { yieldCurve: 1 });
+const held = { kind: 'object', lo: 3.75, hi: 4, lastMove: '+0.25', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' };
+ok('a failed move fetch keeps the last good Fed document', assemble({ fedFunds: held }, { fedFunds: { kind: 'object', lo: 3.75, hi: 4 } }).fedFunds, held);
+ok('a new range without its move replaces the old document', assemble({ fedFunds: held }, { fedFunds: { kind: 'object', lo: 3.5, hi: 3.75 } }).fedFunds, { kind: 'object', lo: 3.5, hi: 3.75 });
 
 console.log('\nFOMC calendar — tools/fetch-live.js\n');
 const fomcPage = fs.readFileSync(path.join(__dirname, 'fixtures', 'fomccalendars.html'), 'utf8');
