@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 const fs = require('fs'), path = require('path');
 
-const SRC = fs.readFileSync(path.join(__dirname, '..', 'src/js/08-model.js'), 'utf8');
+const SRC = fs.readFileSync(path.join(__dirname, '..', 'src/js/model.js'), 'utf8');
 function lift(names, env) {
-  const win = /\n {2}(var GROWTH_WINDOW = [^\n]*;)/.exec(SRC);
-  if (!win) throw new Error('the growth window is not in 08-model.js');
+  const win = /\n(?:export )?(var GROWTH_WINDOW = [^\n]*;)/.exec(SRC);
+  if (!win) throw new Error('the growth window is not in model.js');
   let out = win[1] + '\n' + Object.keys(env || {}).map(k => 'var ' + k + ' = __env.' + k + ';\n').join('');
   for (const n of names) {
-    const start = SRC.indexOf('  function ' + n + '(');
-    if (start < 0) throw new Error('not found in 08-model.js: ' + n);
+    const found = new RegExp('^(?:export )?function ' + n + '\\(', 'm').exec(SRC);
+    const start = found ? SRC.indexOf('function ', found.index) : -1;
+    if (start < 0) throw new Error('not found in model.js: ' + n);
     let i = SRC.indexOf('{', start), depth = 0, j = i;
     for (; j < SRC.length; j++) {
       if (SRC[j] === '{') depth++;
@@ -70,16 +71,16 @@ console.log('\nThe growth window is said one way\n');
 }
 console.log('\nProductivity\u2019s word follows the two BLS lines its note cites\n');
 {
-  const DATA = fs.readFileSync(path.join(__dirname, '..', 'src/js/03-data.js'), 'utf8');
-  const consts = /\n {2}(var PRODUCTIVITY_TREND = [^\n]*;)/.exec(DATA)[1];
-  const start = DATA.indexOf('  function productivityWord(');
+  const DATA = fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8');
+  const consts = /\n(?:export )?(var PRODUCTIVITY_TREND = [^\n]*;)/.exec(DATA)[1];
+  const start = DATA.indexOf('function productivityWord(');
   let i = DATA.indexOf('{', start), d = 0, j = i;
   for (; j < DATA.length; j++) { if (DATA[j] === '{') d++; else if (DATA[j] === '}') { d--; if (!d) break; } }
   const W = new Function(consts + DATA.slice(start, j + 1) + 'return { productivityWord, PRODUCTIVITY_TREND, PRODUCTIVITY_SLOWDOWN };')();
   ok('at or above the long-run line is above trend', [W.productivityWord(2.2).text, W.productivityWord(2.1).text], ['Above trend', 'Above trend']);
   ok('between the lines is above the slowdown', [W.productivityWord(2.09).text, W.productivityWord(1.3).text], ['Above the slowdown', 'Above the slowdown']);
   ok('below the slowdown line says so, and is not good', [W.productivityWord(1.29).text, W.productivityWord(1.29).state], ['Below the slowdown', 'warning']);
-  const NOTE = fs.readFileSync(path.join(__dirname, '..', 'src/js/05-history.js'), 'utf8');
+  const NOTE = fs.readFileSync(path.join(__dirname, '..', 'src/js/history.js'), 'utf8');
   const note = NOTE.slice(NOTE.indexOf('function productivityInfoHtml'), NOTE.indexOf('function outputInfoHtml'));
   ok('the note cites both lines the word is read against',
      [note.indexOf(W.PRODUCTIVITY_SLOWDOWN + '% a year') > -1, note.indexOf(W.PRODUCTIVITY_TREND + '% a year') > -1], [true, true]);

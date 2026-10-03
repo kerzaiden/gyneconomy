@@ -13,13 +13,17 @@ if (!Array.isArray(manifest) || !manifest.length) {
   console.error('src/manifest.json is empty or not a list'); process.exit(2);
 }
 
+const { bundle, modules } = require('./bundle');
+
 const parts = manifest.map(name => {
   const p = path.join(SRC, name);
   if (!fs.existsSync(p)) { console.error('missing part: src/' + name); process.exit(2); }
-  return fs.readFileSync(p, 'utf8');
+  return /\.js$/.test(name) ? bundle(p) : fs.readFileSync(p, 'utf8');
 });
 
 const joined = parts.join('\n');
+const sources = manifest.filter(n => !/\.js$/.test(n)).map(n => ({ name: n, text: fs.readFileSync(path.join(SRC, n), 'utf8') }))
+  .concat(modules().map(f => ({ name: 'js/' + path.basename(f), text: fs.readFileSync(f, 'utf8') })));
 
 const leak = joined.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g);
 if (leak) {
@@ -28,8 +32,8 @@ if (leak) {
 }
 
 const escapes = [];
-parts.forEach((text, i) => {
-  const name = manifest[i], css = /\.css$/.test(name), html = /\.html$/.test(name);
+sources.forEach(({ name, text }) => {
+  const css = /\.css$/.test(name), html = /\.html$/.test(name);
   let inblk = false, inscript = false;
   text.split('\n').forEach((line, n) => {
     const st = line.trimStart();

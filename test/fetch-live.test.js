@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS } = require('../tools/fetch-live.js');
+const fs = require('fs');
+const path = require('path');
+const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -107,6 +109,40 @@ ok('a reading that failed keeps its previous document',
    assemble({ vixClose: { v: 1 }, capeValue: { v: 2 }, _meta: { old: true } }, { vixClose: { v: 3 }, _meta: { now: true } }),
    { vixClose: { v: 3 }, capeValue: { v: 2 }, _meta: { now: true } });
 ok('a first run has nothing to keep', assemble(null, { yieldCurve: 1 }), { yieldCurve: 1 });
+
+console.log('\nFOMC calendar — tools/fetch-live.js\n');
+const fomcPage = fs.readFileSync(path.join(__dirname, 'fixtures', 'fomccalendars.html'), 'utf8');
+const parsed = fomcFromHtml(fomcPage);
+const perYear = y => parsed.filter(d => d.slice(0, 4) === y).length;
+ok('eight decisions in each full year', [perYear('2024'), perYear('2025'), perYear('2026')], [8, 8, 8]);
+ok('the fixture reads back as the hand list for 2025-2026', parsed.filter(d => d >= '2025'), FOMC_DECISIONS);
+ok('a known date: Sep 16, 2026', parsed.includes('2026-09-16'), true);
+ok('Apr/May 30-1 is May 1', parsed.includes('2024-05-01') && !parsed.includes('2024-04-30'), true);
+ok('an asterisk (SEP) does not hide the date', parsed.includes('2026-12-09'), true);
+ok('unscheduled and notation votes are skipped', parsed.filter(d => d.slice(0, 4) === '2020'), ['2020-01-29']);
+ok('sorted and deduplicated', fomcFromHtml(fomcPage + fomcPage), parsed);
+const oneRow = (y, m, d) => '<h4>' + y + ' FOMC Meetings</h4><div class="fomc-meeting__month"><strong>' + m + '</strong></div>'
+  + '<div class="fomc-meeting__date">' + d + '</div>';
+ok('a single month with 31-1 rolls into the next', fomcFromHtml(oneRow(2030, 'October', '31-1')), ['2030-11-01']);
+ok('an en dash reads as a hyphen', fomcFromHtml(oneRow(2030, 'June', '11&ndash;12*')), ['2030-06-12']);
+ok('nothing to read is an empty calendar', fomcFromHtml(''), []);
+
+const quiet = [];
+const hush = m => quiet.push(m);
+const fetched = ['2026-02-01', '2026-04-01', '2026-06-01', '2026-08-01', '2027-01-27', '2026-02-01'];
+ok('fetched dates win for the years they cover', fomcCalendar(fetched, FOMC_DECISIONS, 2026, hush),
+   FOMC_DECISIONS.filter(d => d < '2026').concat(['2026-02-01', '2026-04-01', '2026-06-01', '2026-08-01', '2027-01-27']));
+ok('a plausible fetch says nothing', quiet.length, 0);
+ok('an empty fetch falls back to the hand list', fomcCalendar([], FOMC_DECISIONS, 2026, hush), FOMC_DECISIONS);
+ok('and warns', /WARNING/.test(quiet[0] || ''), true);
+ok('too few dates this year falls back', fomcCalendar(['2026-01-28', '2027-01-27'], FOMC_DECISIONS, 2026, hush), FOMC_DECISIONS);
+ok('a failed fetch (null) falls back', fomcCalendar(null, FOMC_DECISIONS, 2026, hush), FOMC_DECISIONS);
+
+ok('a decision within 60 days: not run out', fomcRunsOut(FOMC_DECISIONS, '2026-10-02', 60), false);
+ok('the day after the last decision: run out', fomcRunsOut(FOMC_DECISIONS, '2026-12-10', 60), true);
+ok('61 days ahead is outside the window', fomcRunsOut(['2026-03-03'], '2026-01-01', 60), true);
+ok('60 days ahead is inside the window', fomcRunsOut(['2026-03-02'], '2026-01-01', 60), false);
+ok('the run date itself does not count', fomcRunsOut(['2026-01-01'], '2026-01-01', 60), true);
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

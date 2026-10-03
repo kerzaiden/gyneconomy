@@ -9,10 +9,10 @@ const GONE = ['vh-line', 'subject-chev', 'gdpPeers', 'pickPeer', 'data-gdp-peer'
 const PINNED = [['COL_FILL', /var COL_FILL = 0\.68;/], ['AXIS', /var AXIS = \{ L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 \};/]];
 
 function enclosing(src, at) {
-  const i = src.lastIndexOf('\n  function ', at);
-  if (i < 0) return null;
-  const m = /^\n {2}function\s+([\w$]+)/.exec(src.slice(i));
-  return m ? m[1] : null;
+  const re = /\n(?:export )?function\s+([\w$]+)/g;
+  let m, name = null;
+  while ((m = re.exec(src)) && m.index < at) name = m[1];
+  return name;
 }
 
 function lineOf(src, at) { return src.slice(0, at).split('\n').length; }
@@ -83,7 +83,7 @@ function unused(js, html, css) {
 
 function twice(js) {
   const seen = {};
-  for (const m of js.matchAll(/^  function ([A-Za-z_$][\w$]*)\s*\(/gm)) seen[m[1]] = (seen[m[1]] || 0) + 1;
+  for (const m of js.matchAll(/^(?:export )?function ([A-Za-z_$][\w$]*)\s*\(/gm)) seen[m[1]] = (seen[m[1]] || 0) + 1;
   return Object.keys(seen).filter(n => seen[n] > 1).map(n => 'function ' + n + ' is declared ' + seen[n] + ' times; the last one silently replaces the others');
 }
 
@@ -112,7 +112,7 @@ function audit(files, html, css) {
 if (require.main === module) {
   const dir = path.join(ROOT, 'src', 'js');
   const files = {};
-  fs.readdirSync(dir).filter(f => f.endsWith('.js') && f !== '03b-history-fred.js')
+  fs.readdirSync(dir).filter(f => f.endsWith('.js') && f !== 'history-fred.js')
     .forEach(f => { files[f] = fs.readFileSync(path.join(dir, f), 'utf8'); });
   const out = audit(files, fs.readFileSync(path.join(ROOT, 'src', 'page-body.html'), 'utf8'),
                     fs.readFileSync(path.join(ROOT, 'src', 'styles.css'), 'utf8'));

@@ -103,10 +103,10 @@ ok('two series in one reply is refused, not guessed between',
    (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
             catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
 ok('consumer confidence is written after the S&P 500, and the early seasons last',
-   /var sp500MonthlyHistory = \[\];\n\n  var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\n\n  var gdpYoYBefore = \[\];\n  var cpiYoYBefore = \[\];\n  var sp500ReturnsBefore = \{\};\n  var gdpGrowthBefore = \{\};\n$/.test(emit([], [], null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+   /export var sp500MonthlyHistory = \[\];\nexport var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\nexport var gdpYoYBefore = \[\];\nexport var cpiYoYBefore = \[\];\nexport var sp500ReturnsBefore = \{\};\nexport var gdpGrowthBefore = \{\};\n$/.test(emit([], [], null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
 ok('the early seasons are written as the app reads them',
    earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }),
-   '\n  var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\n  var cpiYoYBefore = [{m:"1948-01",v:10.24}];\n  var sp500ReturnsBefore = {1948:5.7,1949:18.3};\n  var gdpGrowthBefore = {1948:4.1};\n');
+   'export var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\nexport var cpiYoYBefore = [{m:"1948-01",v:10.24}];\nexport var sp500ReturnsBefore = {1948:5.7,1949:18.3};\nexport var gdpGrowthBefore = {1948:4.1};\n');
 const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
   '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });
@@ -128,7 +128,7 @@ ok('the VIX starts where the VXO hands over',
    [{ m: '1987-10', v: 150.19 }, { m: '1989-12', v: 23 }, { m: '1990-01', v: 17.24 }]);
 ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
 ok('volatility is written after the Fed funds rate, and the fear curve no longer is',
-   [/var fedFundsHistory = \[\];\n  var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }])),
+   [/^export var fedFundsHistory = \[\];\nexport var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }])),
     /fearCurve/.test(emit([], []))], [true, false]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);

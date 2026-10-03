@@ -37,26 +37,26 @@ const step = {
 const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11' };
 
 const KEYED = [
-  ['01-refresh-season.js', 'cpiYoYHistory',           'm', 440, [-5, 20]],
-  ['01-refresh-season.js', 'gdpQuarterlyYoY',         'q', 150, [-15, 20]],
-  ...['m3', 'y2', 'y5', 'y10', 'y30'].map(k => ['03b-history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
-  ...['s3m', 's2y'].map(k => ['03b-history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [-5, 6], 3]),
-  ['03b-history-fred.js',  'fedFundsHistory',         'm', 860, [0, 25], 6],
-  ['03b-history-fred.js',  'volatilityHistory',       'm', 480, [5, 100], 6],
-  ['03b-history-fred.js',  'productivityHistory',     'q', 300, [-15, 15], 3],
-  ['03b-history-fred.js',  'sp500MonthlyHistory',     'm', 900, [5, 50000], 6],
-  ['03b-history-fred.js',  'confidenceHistory',       'm', 790, [50, 150], 6],
-  ['03b-history-fred.js',  'grossDebtQuarterly',      'q', 235, [10, 200], 4],
-  ['03b-history-fred.js',  'fiscalHistory.gross',     'y',  85, [10, 200], 2],
-  ['03b-history-fred.js',  'fiscalHistory.held',      'y',  85, [10, 200], 2],
-  ['03b-history-fred.js',  'fiscalHistory.interest',  'y',  84, [0, 10], 2],
-  ['03b-history-fred.js',  'fiscalHistory.budget',    'y',  95, [-40, 10], 2],
-  ['03b-history-fred.js',  'gdpYoYBefore',            'q', 160, [-15, 20]],
-  ['03b-history-fred.js',  'cpiYoYBefore',            'm', 730, [-15, 25]],
-  ['03b-history-fred.js',  'sp500ReturnsBefore',      'y',  62, [-60, 70]],
-  ['03b-history-fred.js',  'gdpGrowthBefore',         'y',  60, [-20, 25]],
-  ['04-components.js',     'buffettHistory',          'q', 220, [10, 400]],
-  ['04-components.js',     'capeHistory',             'y',  55, [4, 60]],
+  ['refresh-season.js', 'cpiYoYHistory',           'm', 440, [-5, 20]],
+  ['refresh-season.js', 'gdpQuarterlyYoY',         'q', 150, [-15, 20]],
+  ...['m3', 'y2', 'y5', 'y10', 'y30'].map(k => ['history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
+  ...['s3m', 's2y'].map(k => ['history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [-5, 6], 3]),
+  ['history-fred.js',  'fedFundsHistory',         'm', 860, [0, 25], 6],
+  ['history-fred.js',  'volatilityHistory',       'm', 480, [5, 100], 6],
+  ['history-fred.js',  'productivityHistory',     'q', 300, [-15, 15], 3],
+  ['history-fred.js',  'sp500MonthlyHistory',     'm', 900, [5, 50000], 6],
+  ['history-fred.js',  'confidenceHistory',       'm', 790, [50, 150], 6],
+  ['history-fred.js',  'grossDebtQuarterly',      'q', 235, [10, 200], 4],
+  ['history-fred.js',  'fiscalHistory.gross',     'y',  85, [10, 200], 2],
+  ['history-fred.js',  'fiscalHistory.held',      'y',  85, [10, 200], 2],
+  ['history-fred.js',  'fiscalHistory.interest',  'y',  84, [0, 10], 2],
+  ['history-fred.js',  'fiscalHistory.budget',    'y',  95, [-40, 10], 2],
+  ['history-fred.js',  'gdpYoYBefore',            'q', 160, [-15, 20]],
+  ['history-fred.js',  'cpiYoYBefore',            'm', 730, [-15, 25]],
+  ['history-fred.js',  'sp500ReturnsBefore',      'y',  62, [-60, 70]],
+  ['history-fred.js',  'gdpGrowthBefore',         'y',  60, [-20, 25]],
+  ['components.js',     'buffettHistory',          'q', 220, [10, 400]],
+  ['components.js',     'capeHistory',             'y',  55, [4, 60]],
 ];
 const TODAY = new Date();
 const NOW = { m: TODAY.getUTCFullYear() * 12 + TODAY.getUTCMonth() + 1,
@@ -79,11 +79,11 @@ for (const [file, name, key, floor, [lo, hi], lag] of KEYED) {
 }
 
 const BARE = [
-  ['05-history.js',   'm2Level',        260, [200,   40000]],
-  ['04-components.js','m2vHistory',     260, [900,    2600]],
-  ['07-forms.js',     'dsrHistory',      80, [7,        18]],
-  ['03-data.js',      'deficitHistory',  78, [-20,      8]],
-  ['05-history.js',   'unempHistory',   930, [2,        16]]
+  ['history.js',   'm2Level',        260, [200,   40000]],
+  ['components.js','m2vHistory',     260, [900,    2600]],
+  ['forms.js',     'dsrHistory',      80, [7,        18]],
+  ['data.js',      'deficitHistory',  78, [-20,      8]],
+  ['history.js',   'unempHistory',   930, [2,        16]]
 ];
 for (const [file, name, floor, [lo, hi]] of BARE) {
   const vals = literal(file, name);

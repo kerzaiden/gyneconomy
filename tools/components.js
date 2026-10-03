@@ -2,7 +2,7 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..'), SRC = path.join(ROOT, 'src/js');
 const LEDGER = path.join(ROOT, 'test/components.json');
 
-const FN = /^  function ([A-Za-z0-9_$]+)\(/;
+const FN = /^(?:export )?function ([A-Za-z0-9_$]+)\(/;
 
 const CODE = [];
 function scan() {
@@ -70,7 +70,7 @@ function sizes() {
     lines.forEach((l, i) => {
       const m = FN.exec(l);
       if (m) { name = m[1]; start = i; }
-      else if (name && l === '  }') { out[name] = i - start + 1; name = null; }
+      else if (name && l === '}') { out[name] = i - start + 1; name = null; }
     });
   }
   return out;

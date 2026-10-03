@@ -5,7 +5,8 @@ function lift(file, names) {
   const src = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
   let out = '';
   for (const n of names) {
-    const start = src.indexOf('  function ' + n + '(');
+    const found = new RegExp('^(?:export )?function ' + n + '\\(', 'm').exec(src);
+    const start = found ? src.indexOf('function ', found.index) : -1;
     if (start < 0) throw new Error('not found in ' + file + ': ' + n);
     let i = src.indexOf('{', start), depth = 0, j = i;
     for (; j < src.length; j++) {
@@ -16,7 +17,7 @@ function lift(file, names) {
   }
   return new Function(out + 'return { ' + names.join(', ') + ' };')();
 }
-const { slopeOf, readSeason, cpiTrend } = lift('src/js/08-model.js', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
+const { slopeOf, readSeason, cpiTrend } = lift('src/js/model.js', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -67,9 +68,9 @@ ok('a growth slope of exactly -0.025 is flat', readSeason(cpi(2.0, 0), at(-0.025
 ok('3.0 in an expansion is spring',    season(cpi(3.0, 0.05), gdp(2, 0.05)),   'spring');
 ok('3.001 in an expansion is summer',  season(cpi(3.001, 0.05), gdp(2, 0.05)), 'summer');
 
-const src = fs.readFileSync(path.join(__dirname, '..', 'src/js/07-forms.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'src/js/forms.js'), 'utf8');
 const lit = src.slice(src.indexOf('var marketCycles = ['));
-const cycles = new Function('return ' + lit.slice(lit.indexOf('['), lit.indexOf('\n  ];') + 4))();
+const cycles = new Function('return ' + lit.slice(lit.indexOf('['), lit.indexOf('\n];') + 3))();
 
 ok('every cycle has a name', cycles.every(c => typeof c.name === 'string' && c.name.length > 3), true);
 ok('every cycle starts after it is named', cycles.every(c => c.from > 1900 && c.from < 2100), true);
