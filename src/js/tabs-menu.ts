@@ -13,12 +13,12 @@ type SourceGroup = [string, RegExp | null];
 function renderSeasonRows(){
 
   var seasonRules = [
-    {key:"winter",          growth:"Slowing or shrinking", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
-    {key:"springdeflation", growth:"Quickening",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Quickening",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
-    {key:"summer",          growth:"Quickening",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
-    {key:"autumn",          growth:"Slowing or shrinking", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
-    {key:"lateautumn",      growth:"Slowing or shrinking", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
+    {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
+    {key:"springdeflation", growth:"Expansion",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
+    {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
+    {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
+    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
+    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
   ];
   function rangePos(v: number){
     if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
