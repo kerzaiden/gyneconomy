@@ -530,8 +530,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The policy-rate reading is Interest rates, a member of Circulation; "hormones" is its word only in the
   Diagnosis.** Keren: "when I'm looking at circulation page I want to see interest rates instead of hormones and
   in the analysis … I would want to see hormones because hormones are not the official terminology of the
-  market." The card, page, Search and Insights say Interest rates; the Diagnosis says "Hormones are …" and, where it
-  gives figures, "hormones (the Fed funds rate)". A hormone is a messenger secreted on purpose that sets the tempo
+  market." The card, page, Search and Insights say Interest rates; the Diagnosis said "Hormones are …" until its
+  systems left in 1.8.0. A hormone is a messenger secreted on purpose that sets the tempo
   of everything downstream, which is the rate the Fed sets; the Insights lede keeps that sentence. (V592, V683)
 - **Pressure is the Treasury yields and the Treasury spreads in one page, opening on the 10-year yield; its ⋯
   menu holds two groups, Treasury yields and Treasury spreads (10Y − 3M, 10Y − 2Y), and the page shows one series
@@ -1050,8 +1050,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   to lay out; the border-box chevron did fail inside a `<button>`. (V450)
 - **A past cycle's category cards are built like today's: the same unit and mini chart, with the cycle's
   figure and its range over the cycle as the label.** Keren: "in the past cycles the categories should be
-  identical in design to the current cycle categories". Since V665 they live on the category pages that the
-  Diagnosis's systems open. (V660, V665)
+  identical in design to the current cycle categories". Since V665 they live on the category pages, which Search
+  opens. (V660, V665, 1.8.0)
 - **A past cycle's miniature is drawn from that cycle's own points for every reading; a series the past cycles
   read is always dated points, never bare numbers.** Desire's quarter-ends were bare numbers, so its past-cycle
   miniature could never draw. (V670)
@@ -1172,25 +1172,21 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **It sits under the dial on the Cycle page, for today and for any closed cycle.** Keren: "I want the
   diagnosis to open below the cycle. Mind you, that the cycle page applies to past cycles as well." It follows
   her cycle-tracking app's home page. (V665)
-- **It reads in clinical order and language: the trend card (the emotion in its season), then each System (a
-  category, whose heading opens the category page) with its one Analysis line. It lists no
-  Symptoms; the readings live on the category pages its headings open.** Keren: "use clinical language, ergo
-  symptoms and analysis. Analysis would be what it tells the doctor. System is basically the category." At
-  V672: "I don't need the symptoms because if I just press on either category … I would see all the so-called
-  symptoms … just want the analysis." The headline and History gave way to the trend card in V681. (V665, V672, V681)
-- **The Diagnosis is two separate cards at the cycle's width: the emotion in its season, then Circulation and
-  Energy.** Keren: "I want to break the analysis container to three separate containers. That would be at the
-  width of the current cycle"; the third, Feeling and season, left in V686 (the Mood page tells her story by cycle).
-  The second card is headed by its systems' names with the stethoscope, and its systems carry no "Analysis" label
-  (Keren, V674: "it just takes up space"). A closed cycle's card ends on what followed: the S&P 500 a year after
-  the close. (V674, V682, V686)
-- **Circulation and Energy close on one combined line, "Across the cycle": the Fed funds rate and the unemployment
-  rate from the month the cycle opened to now.** Keren: "the next combined metrics I want is something to do with
-  circulation and energy so figure it out". Claude chose the pair as the cycle's policy and its result (money's
-  price against work); both figures are the app's own histories, read through the same ends as the past cycles.
-  A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
-- **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
-  "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
+- **The Diagnosis is two cards at the cycle's width: the emotion in its season with the cycle's story, then the
+  cycle year by year.** Keren: "I want to break the analysis container to three separate containers. That would be
+  at the width of the current cycle" (V674); the systems card (Circulation and Energy, one Analysis line each, and
+  "Across the cycle") left in 1.8.0. Keren: "circulation and energy is not that important because I can see that
+  in the search or in the cycle itself … Yes, drop this circulation and energy." Don't re-add the systems or the
+  Symptoms; the category pages hold the readings. (V665, V672, V674, V682, V686, 1.8.0)
+- **The cycle reads year by year under its story, one row a year, the years parted by hairlines, and each year
+  opens its quarter's sheet.** Keren: "I need to turn the dial all the way back and click on the button … what I
+  would want is some kind of a very brief summary of the cycle by years … it correlates pretty well with the story
+  of the cycle", then "Make the separation between years through lines or something. Make it beautiful." The year
+  stands in the serif on the left; beside it the year's seasons in order, and under them Mrs. Market's emotion at
+  its first and last month (one word when they agree; none before her mood can be read) and the S&P 500's return
+  for the year ("so far" for the year in progress), all from the app's own record, nothing written by hand. The
+  year opens the sheet of its last quarter, the one the dial's centre opens. A closed cycle ends on "After": the
+  S&P 500 a year after the close. (1.8.0)
 - **The Mood page has one Insights box (since 1.5.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
@@ -1202,9 +1198,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Season, which she judged uninformative ("it doesn't tell me anything"): an emotion in a season lasted about two
   months, and emotion and season together did no better than slid tracks at explaining the next year. Don't re-add
   a season grid or a posture or forecast. (V684, V686, V688)
-- **A closed cycle is diagnosed at its close: the season and the feeling at the closing month, the Analysis as
-  the movement across the cycle, and what actually followed a year later.** Keren chose this layout; verdicts are
-  words for today, and a closed cycle's figures are on its cards. (V665, V672)
+- **A closed cycle is diagnosed at its close: the feeling and season at the closing month, its years, and what
+  actually followed a year later.** Keren chose this layout; verdicts are words for today, and a closed cycle's
+  figures are on its cards. (V665, V672, 1.8.0)
 - **The Diagnosis and the Mood page use one vocabulary: the cycle of market emotions' stages, read from the
   Mood readings.** Keren chose "Switch" on the card (V686): the seven price-and-VIX feelings of V664 (Hope,
   Optimism, Euphoria, Anxiety, Fear, Capitulation, Despondency), their cut-offs and the Diagnosis (i) that stated

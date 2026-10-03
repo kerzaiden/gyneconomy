@@ -33,10 +33,9 @@ export function clockSvg(){ return markSvg('<circle cx="12" cy="12" r="8.4" stro
 export function thermoSvg(){ return markSvg(
   '<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/>' +
   '<path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>'); }
-export function stethoscopeSvg(){ return markSvg('<path d="M5.5 3.5v5a4.5 4.5 0 0 0 9 0v-5M4 3.5h3M13 3.5h3" stroke-width="1.8"/>' +
-  '<path d="M10 13v2.5a4.5 4.5 0 0 0 9 0v-2" stroke-width="1.8"/><circle cx="19" cy="11" r="2.2" stroke-width="1.7"/>'); }
 export function personSvg(){ return markSvg(
   '<circle cx="12" cy="8" r="3.9" stroke-width="1.8"/><path d="M4.4 20.4c.6-4 3.7-6.5 7.6-6.5s7 2.5 7.6 6.5" stroke-width="1.8"/>'); }
+export function calendarSvg(){ return markSvg('<rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke-width="1.8"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" stroke-width="1.8"/>'); }
 export function bookSvg(){ return markSvg(
   '<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/>' +
   '<path d="M12 6.6v13.6" stroke-width="1.7"/>'); }

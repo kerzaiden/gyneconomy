@@ -57,6 +57,8 @@ async function openPage(p, url, sheet) {
   const home = s => p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
     return c ? c.closest('.cat-sheet').id : null; }, s);
   const cat = await home(sheet), up = cat && cat.indexOf('sheet-grp-') === 0 ? await home(cat) : null;
+  const first = up || cat, shown = s => p.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].some(x => x.offsetParent !== null), s);
+  if (first && !await shown(first)) { await p.click('.tab-btn[data-tab="search"]'); await settle(p); }
   if (up && !await click(p, '[data-open="' + up + '"]')) return false;
   if (up) await settle(p);
   if (!cat || !await click(p, (up ? '.cat-item' : '') + '[data-open="' + cat + '"]')) return false;
@@ -280,33 +282,27 @@ async function openPage(p, url, sheet) {
   {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
-      const d = document.getElementById('diagnosis');
+      const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('.trend-text').length,
                    story: [...d.querySelectorAll('.trend-card .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
                    told: (() => { document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
                      const b = document.getElementById('detail-modal-body'), t = b.querySelectorAll('.hi-card').length + ':' +
                        (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1];
                      document.getElementById('detail-modal-close').click(); return t; })(),
-                   heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
-                   grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
-                   doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
-                   symptoms: [...d.querySelectorAll('.dx-k')].filter(k => /Symptoms/.test(k.textContent)).length,
-                   analyses: [...d.querySelectorAll('.dx-cat')].map(s => s.querySelectorAll('.dx-k').length + ':' + !!s.querySelector('.dx-v')),
-                   frame: (() => { const c = d.querySelector('.dx-cat'), s = c && c.closest('.dx-sys');
-                     return s ? s.querySelector('.dx-sys-head').textContent.trim() + ':' + !!s.querySelector('.dx-sys-head .dx-mark svg') : ''; })(),
+                   doors: d.querySelectorAll('[data-open]:not([data-open="sheet-cat-mood"])').length,
                    cards: document.querySelectorAll('.cat-row').length,
-                   boxes: [...d.children].map(c => c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.className).join(),
-                   across: [...d.querySelectorAll('.dx-k')].some(k => k.textContent.trim() === 'Across the cycle') } : null;
+                   years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
+                   opens: yrs ? yrs.querySelectorAll('button.dx-year[data-detail-idx]').length : 0,
+                   after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
+                   boxes: [...d.children].map(c => c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.className).join() } : null;
     });
     const today = await read();
-    const onlyAnalysis = d => d && d.symptoms === 0 && d.frame === 'Circulation and Energy:true' && d.analyses.length === 2 && d.analyses.every(a => a === '0:true');
     await sweep(p);
     const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
     (today && today.visible && FEEL.test(today.title) && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
-     today.heads.join() === 'Circulation and Energy,Circulation,Energy' && today.boxes === 'trend,sys' && today.across && today.grid === '0:0:false' &&
-     today.doors.join() === 'sheet-cat-circulation,sheet-cat-energy')
-      ? ok('the Diagnosis sits under the dial, in place of the category cards', today.title)
-      : bad('the Diagnosis sits under the dial, in place of the category cards', JSON.stringify(today));
+     today.boxes === 'trend,sys' && today.doors === 0 && !today.after)
+      ? ok('the Diagnosis sits under the dial: the story, then the cycle year by year', today.title)
+      : bad('the Diagnosis sits under the dial: the story, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -316,9 +312,11 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    (onlyAnalysis(today) && onlyAnalysis(past) && past.boxes === 'trend,sys' && !past.across && past.grid === '0:0:false')
-      ? ok('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', 'Keren, V682, V686')
-      : bad('the Diagnosis reads its systems in two cards, unlabelled, today and at a close', JSON.stringify([today, past]));
+    const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] + 1);
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'trend,sys' && past.doors === 0 && past.after &&
+     yearRun(past.years) && past.opens >= past.years.length - 1)
+      ? ok('the cycle reads year by year, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
+      : bad('the cycle reads year by year, each year opening its quarter, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
@@ -338,7 +336,7 @@ async function openPage(p, url, sheet) {
     (!spill.length)
       ? ok('a closed cycle\u2019s preview columns stay inside their card', 'none past the frame')
       : bad('a closed cycle\u2019s preview columns stay inside their card', JSON.stringify(spill));
-    (past && past.visible && past.title === 'Cycle story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.heads.length === 3)
+    (past && past.visible && past.title === 'Cycle story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -507,7 +505,8 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const lists = {};
     for (const cat of ['circulation', 'mood', 'energy']) {
-      await click(p, '[data-open="sheet-cat-' + cat + '"]'); await settle(p);
+      await p.click('.tab-btn[data-tab="search"]'); await settle(p);
+      await click(p, '#search-list [data-open="sheet-cat-' + cat + '"]'); await settle(p);
       lists[cat] = await p.evaluate(c => ({ heads: document.querySelectorAll('#sheet-cat-' + c + ' h3, #sheet-cat-' + c + ' .cat-group-head').length,
         tall: [...document.querySelectorAll('#sheet-cat-' + c + ' .cat-item')].map(i => Math.round(i.getBoundingClientRect().height)),
         lead: (i => i && i.dataset.open + '<' + i.dataset.preview + ':' + (i.querySelector('.ci-value').textContent ===
@@ -531,6 +530,7 @@ async function openPage(p, url, sheet) {
     (lists.mood.white && lists.energy.white)
       ? ok('a category card stays white when touched or hovered', 'Keren, V678')
       : bad('a category card stays white when touched or hovered', JSON.stringify(lists));
+    await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
     const feel = await p.evaluate(() => {
       const card = document.querySelector('#diagnosis .trend-card');
       return { stage: document.querySelector('#diagnosis .trend-head').textContent.trim().split(' ')[0],
@@ -596,8 +596,8 @@ async function openPage(p, url, sheet) {
     const deep = await p.evaluate(() => document.getElementById('topbar-title').textContent);
     await p.click('#topbar-back'); await settle(p);
     const again = await p.evaluate(() => document.querySelectorAll('#metric-page .cat-item').length);
-    await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
-    await click(p, '[data-open="sheet-cat-energy"]'); await settle(p);
+    await goHome(p, url); await p.click('.tab-btn[data-tab="search"]'); await settle(p);
+    await click(p, '#search-list [data-open="sheet-cat-energy"]'); await settle(p);
     const home = await p.evaluate(() => [...document.querySelectorAll('#metric-page .cat-item')].map(i => i.querySelector('.ci-name').textContent).join('+'));
     await p.click('#topbar-back'); await settle(p);
     (grp.bar === 'Stress' && grp.names === 'Federal debt+Interest payments+Federal budget+Households' && deep === 'Federal debt' &&
@@ -670,7 +670,7 @@ async function openPage(p, url, sheet) {
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),
       word: (n.querySelector('.ci-word') || {}).textContent || '', when: n.querySelector('.ci-when').textContent.trim() })));
     const live = got ? got.filter(i => i.val !== '\u2014') : [];
-    (view && view.dial && view.today && view.tiles === 2 && view.closed && view.bar === 'Housing Cycle' &&
+    (view && view.dial && view.today && view.tiles === 0 && view.closed && view.bar === 'Housing Cycle' &&
      got.length === 19 && live.length >= 17 && live.every(i => /over the cycle|Flat all cycle/.test(i.word)) &&
      live.every(i => /200[3-8]/.test(i.when)))
       ? ok('a closed cycle opens on the Cycle page itself', view.tiles + ' tiles \u00b7 ' + live.length + ' of ' + got.length + ' cards read 2003\u20132008')
@@ -847,12 +847,6 @@ async function openPage(p, url, sheet) {
       return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
     }), sheet);
     const cape = await doors('sheet-metric-valuation');
-    const dxDrift = await g.evaluate(() => {
-      const word = id => ((document.querySelector('.cat-item[data-open="' + id + '"] .ci-word') || {}).textContent || '').trim().toLowerCase();
-      const line = [...document.querySelectorAll('#diagnosis .dx-v')].map(v => v.textContent).find(t => /Hormones are/.test(t)) || '';
-      const want = 'Hormones are ' + word('sheet-sign-hormones') + '; money is ' + word('sheet-sign-volume') + '.';
-      return line === want ? [] : ['diagnosis "' + line + '", cards "' + want + '"'];
-    });
     const ff = await doors('sheet-sign-hormones');
     const cache = await g.evaluate(() => {
       try { return JSON.parse(localStorage.getItem('gyn.live') || '{}') || {}; } catch (e) { return {}; }
@@ -869,8 +863,6 @@ async function openPage(p, url, sheet) {
     (ff.length >= 2 && ff.every(t => /^1\.25/.test(t)) && ff.some(t => /Easing/.test(t)) && ff.every(t => !/Tightening/.test(t)))
       ? ok('site feed moves an object doc, word and all', ff.join(' · '))
       : bad('site feed moves an object doc, word and all', JSON.stringify(ff));
-    !dxDrift.length ? ok('after the site feed the Diagnosis reads what every card reads')
-                    : bad('after the site feed the Diagnosis reads what every card reads', dxDrift.join(' | '));
     (cache.capeValue && cache.capeValue.value === 50.5 && cache.fedFunds && cache.fedFunds.lo === 1.25 && !('_meta' in cache))
       ? ok('site feed writes the cache, without _meta')
       : bad('site feed writes the cache, without _meta', JSON.stringify(cache).slice(0, 200));

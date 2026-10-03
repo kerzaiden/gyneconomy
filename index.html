@@ -612,19 +612,23 @@
   .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--text-primary); text-align:left; }
-  button.dx-sys-head{ cursor:pointer; position:relative; }
-  button.dx-sys-head::before{ content:""; position:absolute; left:0; right:0; top:50%; height:44px; transform:translateY(-50%); }
-  button.dx-sys-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
-  button.dx-sys-head:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
-  button.dx-sys-head:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
   .dx-mark svg{ width:18px; height:18px; }
-  .dx-cat + .dx-cat{ margin-top:12px; }
-  .dx-cat .dx-sys-head{ margin-bottom:4px; }
-  .dx-row{ margin-top:12px; }
-  .dx-row .dx-k{ display:block; margin-bottom:3px; }
-  .dx-k{ font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
-  .dx-v{ margin:0; font-size:var(--type-interface); line-height:1.55; color:var(--text-primary); }
+  .dx-year{ display:grid; grid-template-columns:3.4em 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
+    margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
+    font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
+  .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
+  .dx-year:last-child{ padding-bottom:0; }
+  button.dx-year{ cursor:pointer; }
+  button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+  .dx-year .peek-chev{ align-self:center; color:var(--text-muted); }
+  .dx-year-n{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:var(--type-section);
+    line-height:1; color:var(--text-primary); font-variant-numeric:lining-nums; }
+  .dx-year-v{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .dx-year-lead{ font-size:var(--type-reading); font-weight:600; line-height:1.3; }
+  .dx-year-line{ font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .dx-year-line b{ color:var(--text-primary); font-weight:700; }
   .trend-card{ display:block; width:100%; box-sizing:border-box; margin:0; padding:14px 16px 12px; text-align:left; cursor:pointer;
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-family:"Public Sans",sans-serif;
     -webkit-tap-highlight-color:transparent; }
@@ -1558,7 +1562,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.7.1 (725)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.8.0 (726)</span></p>
     </div>
   </div>
 
@@ -31419,11 +31423,11 @@
   function thermoSvg() {
     return markSvg('<path d="M9.9 15.5V5.9a2.1 2.1 0 0 1 4.2 0v9.6" stroke-width="1.7"/><circle cx="12" cy="17.9" r="3.5" stroke-width="1.7"/><path d="M12 8.6v6.6" stroke-width="2.1"/><circle cx="12" cy="17.9" r="1.7" fill="currentColor" stroke="none"/>');
   }
-  function stethoscopeSvg() {
-    return markSvg('<path d="M5.5 3.5v5a4.5 4.5 0 0 0 9 0v-5M4 3.5h3M13 3.5h3" stroke-width="1.8"/><path d="M10 13v2.5a4.5 4.5 0 0 0 9 0v-2" stroke-width="1.8"/><circle cx="19" cy="11" r="2.2" stroke-width="1.7"/>');
-  }
   function personSvg() {
     return markSvg('<circle cx="12" cy="8" r="3.9" stroke-width="1.8"/><path d="M4.4 20.4c.6-4 3.7-6.5 7.6-6.5s7 2.5 7.6 6.5" stroke-width="1.8"/>');
+  }
+  function calendarSvg() {
+    return markSvg('<rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke-width="1.8"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" stroke-width="1.8"/>');
   }
   function bookSvg() {
     return markSvg('<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/><path d="M12 6.6v13.6" stroke-width="1.7"/>');
@@ -33936,106 +33940,38 @@
       if (ui.topbarBack) ui.topbarBack();
     });
   }
-  function todayFace(item) {
-    var t = item.__today, box = document.createElement("div");
-    if (!t) return {
-      val: item.querySelector(".ci-value"),
-      word: item.querySelector(".ci-word")
-    };
-    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
-    return {
-      val: box.firstChild,
-      word: t.word == null ? null : box.lastChild
-    };
-  }
-  function readDoor(open) {
-    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
-    if (!item) return null;
-    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
-    var figure = val ? val.cloneNode(true) : null;
-    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
-      n.remove();
+  function quarterCards(m, seg) {
+    var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
+    var gq = gdpQuarterlyYoY.filter(function(d) {
+      return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q;
     });
-    return {
-      name: item.getAttribute("data-title"),
-      figure: figure ? figure.textContent.trim() : "",
-      unit: unit ? unit.textContent.trim() : "",
-      word: word ? word.textContent.trim() : ""
-    };
+    var cards = [ [ tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c) {
+      return c.m <= qEnd;
+    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q) ], [ marketPeek(y, m.era.from), String(y) ] ];
+    return '<div class="cat-sheet cat-weather">' + catList(cards.map(function(c) {
+      return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : "";
+    }).join("")) + "</div>";
   }
-  function rosterRows() {
-    return readingRoster().byId;
+  function quarterSheet(m, seg, isPresent) {
+    var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
+    return popHead(meta.name + (meta.theme ? " · " + meta.theme : ""), qLabel(seg.q) + " · year " + (Math.floor(seg.from) + 1) + " of the " + m.era.name) + quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
   }
-  function kT(k) {
-    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
+  function quarterPopup(m, seg, isPresent) {
+    var meta = wheelMeta[seg.season], era = m.era;
+    var yearN = Math.floor(seg.from) + 1;
+    var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
+    var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
+    var reading = seasonReading[seg.season] || {};
+    return head + (isPresent ? `<p class="caption" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">` + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
+      return "<li>" + w + "</li>";
+    }).join("") + "</ul></div>" : "") + (reading.fromTheBook && reading.fromTheBook.length ? '<div class="reading-book"><h5>From the book</h5>' + reading.fromTheBook.map(function(x) {
+      return "<blockquote>" + x.text + (x.title ? '<br><span class="marker-sub">— ' + x.title + "</span>" : "") + "</blockquote>";
+    }).join("") + "</div>" : "");
   }
-  function upTo(list, k) {
-    var t = kT(k) + 1e-6;
-    return list.filter(function(d) {
-      return d.v != null && kT(d.k) <= t;
-    });
-  }
-  function pairAt(r, k) {
-    var p = r.pair ? upTo(r.pair, k).pop() : null;
-    return p ? p.v : null;
-  }
-  function eraFig(today) {
-    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
-    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
-    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
-    function one2(x) {
-      var a = Math.abs(x).toFixed(dp);
-      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
-    }
-    return function(x, y) {
-      return pre + one2(x) + (y != null ? "/" + one2(y) : suf);
-    };
-  }
-  function rosterRow(R) {
-    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
-      return d.v != null;
-    });
-    var sorted = seen.map(function(d) {
-      return d.v;
-    }).sort(function(a, b) {
-      return a - b;
-    });
-    r.place = function(v) {
-      var lo = 0, hi = sorted.length;
-      while (lo < hi) {
-        var mid = lo + hi >> 1;
-        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
-      }
-      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-    };
-    r.first = seen[0];
-    r.now = seen[seen.length - 1];
-    r.seen = seen;
-    if (R.pair) r.pair = keyed(R.pair);
-    if (R.peek) r.peek = r.pair;
-    return r;
-  }
-  var __roster = null;
-  function readingRoster() {
-    if (__roster) return __roster;
-    var all = ROSTER.filter(function(R) {
-      return R.hist;
-    }).map(rosterRow);
-    all.byId = {};
-    all.forEach(function(r) {
-      all.byId[r.id] = r;
-    });
-    return __roster = all;
-  }
-  function pastFigure(r, v, second) {
-    var card = readDoor(r.id);
-    if (!card) throw new Error("the reading " + r.id + " has no card");
-    var fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
-    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
-  }
-  function prettyK(r, k) {
-    return r.pre ? r.pre + k : prettyKey(k);
+  function peekEl(html) {
+    var n = elFrom(html);
+    if (!n) throw new Error("a peek drew nothing");
+    return n;
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -34047,79 +33983,52 @@
   function pct(v) {
     return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
   }
-  function inYears(from, to) {
-    return function(d) {
-      var y = +d.k.slice(0, 4);
-      return y >= from && y <= to;
-    };
-  }
-  function eraEnds(id, era) {
-    var r = rosterRows()[id], to = era.to;
-    if (!r || to == null) return null;
-    var span = r.seen.filter(inYears(era.from, to));
-    if (span.length < 2) return null;
-    var a = span[0], b = span[span.length - 1];
-    return {
-      r: r,
-      from: prettyK(r, a.k),
-      to: prettyK(r, b.k),
-      a: pastFigure(r, a.v, pairAt(r, a.k)),
-      b: pastFigure(r, b.v, pairAt(r, b.k))
-    };
-  }
-  function eraMove(id, era, label) {
-    var e = eraEnds(id, era);
-    if (!e) return "";
-    return (label || e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
-  }
-  var HORMONES = "Hormones (the Fed funds rate)";
-  function analysisFor(key, d, era) {
-    var w = function(id) {
-      var r = readDoor(id);
-      return r && r.word ? r.word.toLowerCase() : "";
-    };
-    if (era) return key === "circulation" ? eraMove("sheet-sign-hormones", era, HORMONES) : eraMove("sheet-sign-activity", era);
-    if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
-    return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
-  }
-  function dxRow(label, html) {
-    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + dxText(html) + "</div>";
-  }
-  function dxText(html) {
-    return '<p class="dx-v">' + html + "</p>";
-  }
-  function dxSection(head, body, cls) {
-    return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
-  }
-  function systemHtml(c, analysis) {
-    return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + "</div>";
-  }
-  function dxHead(title, c, mark) {
-    var tag = c ? 'button type="button"' : "div";
-    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
-  }
   function diagnosisHtml(m) {
     var open = m.ongoing, d = open ? diagnoseToday() : {
       after: yearAfter(marketMonths(), m.endMonth)
-    }, closed = open ? null : m.era;
-    if (!d) return "";
-    var systems = categoriesShown().filter(function(c) {
-      return !c.onDial && !c.inTrend;
-    });
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + dxSection(dxHead(systems.map(function(c) {
-      return c.title;
-    }).join(" and "), null, stethoscopeSvg()), systems.map(function(c) {
-      return systemHtml(c, analysisFor(c.key, d, closed));
-    }).join("") + (open ? acrossCycle(m.era) : d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
-  }
-  function acrossCycle(era) {
-    var span = {
-      from: era.from,
-      to: calendarTodayY
     };
-    var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
-    if (!fed || !job) return "";
-    return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
+    if (!d) return "";
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 a year after the close", "<b>" + pct(d.after) + "</b>") : "");
+  }
+  function yearByYear(m, after) {
+    var segs = m.track.filter(function(seg) {
+      return !seg.isNow && seg.to > seg.from;
+    }), rows = [];
+    for (var y = m.era.from; y <= m.endYear; y++) {
+      var inYear = segs.filter(function(seg) {
+        return parseInt(seg.q, 10) === y;
+      }), ytd = m.ongoing && y === calendarTodayY;
+      rows.push(yearRow(String(y), seasonsIn(inYear), [ moodIn(y, ytd), marketIn(y, ytd) ].filter(function(p) {
+        return p;
+      }).join(" · "), inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0));
+    }
+    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + rows.join("") + after + "</section>";
+  }
+  function yearRow(year, lead2, line, sheet) {
+    var tag = sheet != null ? "button" : "div";
+    return "<" + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead2 ? '<span class="dx-year-lead">' + lead2 + "</span>" : "") + (line ? '<span class="dx-year-line">' + line + "</span>" : "") + "</span>" + (sheet != null ? CHEV : "") + "</" + tag + ">";
+  }
+  function seasonsIn(inYear) {
+    var seasons = [];
+    inYear.forEach(function(seg) {
+      var n = wheelMeta[seg.season].name;
+      if (seasons[seasons.length - 1] !== n) seasons.push(n);
+    });
+    return seasons.join(", then ");
+  }
+  function moodIn(y, ytd) {
+    var moods = moodTrack().filter(function(x) {
+      return !!x.word && +x.m.slice(0, 4) === y;
+    }).map(function(x) {
+      return x.word;
+    });
+    var today = ytd ? moodToday() : null;
+    if (today && today.word) moods.push(today.word);
+    return moods.length ? moods[0] === moods[moods.length - 1] ? moods[0] : moods[0] + " to " + moods[moods.length - 1] : "";
+  }
+  function marketIn(y, ytd) {
+    var ret = sp500AnnualReturns[y];
+    return ret != null ? "S&amp;P&nbsp;500 <b>" + fmtSigned(ret, 1) + "%</b>" + (ytd ? " so far" : "") : "";
   }
   function moodDoor(head, body) {
     var mood = CATEGORIES.filter(function(c) {
@@ -34314,34 +34223,6 @@
       b.setAttribute("data-detail-idx", hubDetailIdx);
     }
   }
-  function quarterCards(m, seg) {
-    var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
-    var gq = gdpQuarterlyYoY.filter(function(d) {
-      return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q;
-    });
-    var cards = [ [ tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c) {
-      return c.m <= qEnd;
-    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q) ], [ marketPeek(y, m.era.from), String(y) ] ];
-    return '<div class="cat-sheet cat-weather">' + catList(cards.map(function(c) {
-      return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : "";
-    }).join("")) + "</div>";
-  }
-  function quarterSheet(m, seg, isPresent) {
-    var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
-    return popHead(meta.name + (meta.theme ? " · " + meta.theme : ""), qLabel(seg.q) + " · year " + (Math.floor(seg.from) + 1) + " of the " + m.era.name) + quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
-  }
-  function quarterPopup(m, seg, isPresent) {
-    var meta = wheelMeta[seg.season], era = m.era;
-    var yearN = Math.floor(seg.from) + 1;
-    var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
-    var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
-    var reading = seasonReading[seg.season] || {};
-    return head + (isPresent ? `<p class="caption" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">` + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
-      return "<li>" + w + "</li>";
-    }).join("") + "</ul></div>" : "") + (reading.fromTheBook && reading.fromTheBook.length ? '<div class="reading-book"><h5>From the book</h5>' + reading.fromTheBook.map(function(x) {
-      return "<blockquote>" + x.text + (x.title ? '<br><span class="marker-sub">— ' + x.title + "</span>" : "") + "</blockquote>";
-    }).join("") + "</div>" : "");
-  }
   function hubShowDefault() {
     if (dialState.parked != null) {
       hubShowQuarter(dialState.parked);
@@ -34383,11 +34264,6 @@
     themeEl.classList.toggle("bull", ret >= 0);
     themeEl.classList.toggle("bear", ret < 0);
     put("season-wheel-hub-detail", hubLine("S&amp;P 500 total return <b>" + fmtSigned(ret, 1) + "%</b>") + (cum != null ? hubLine("<b>" + fmtSigned(cum, 1) + "%</b> since " + m.era.from + (y === m.peakYear ? " · <b>Peak year</b>" : "")) : ""));
-  }
-  function peekEl(html) {
-    var n = elFrom(html);
-    if (!n) throw new Error("a peek drew nothing");
-    return n;
   }
   function one(sel) {
     var n = document.querySelector(sel);
@@ -34698,6 +34574,107 @@
         t = setTimeout(settleStrips, 120);
       };
     }());
+  }
+  function todayFace(item) {
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return {
+      val: item.querySelector(".ci-value"),
+      word: item.querySelector(".ci-word")
+    };
+    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
+    return {
+      val: box.firstChild,
+      word: t.word == null ? null : box.lastChild
+    };
+  }
+  function readDoor(open) {
+    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
+    if (!item) return null;
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
+    var figure = val ? val.cloneNode(true) : null;
+    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
+      n.remove();
+    });
+    return {
+      name: item.getAttribute("data-title"),
+      figure: figure ? figure.textContent.trim() : "",
+      unit: unit ? unit.textContent.trim() : "",
+      word: word ? word.textContent.trim() : ""
+    };
+  }
+  function rosterRows() {
+    return readingRoster().byId;
+  }
+  function kT(k) {
+    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
+    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
+  }
+  function upTo(list, k) {
+    var t = kT(k) + 1e-6;
+    return list.filter(function(d) {
+      return d.v != null && kT(d.k) <= t;
+    });
+  }
+  function pairAt(r, k) {
+    var p = r.pair ? upTo(r.pair, k).pop() : null;
+    return p ? p.v : null;
+  }
+  function eraFig(today) {
+    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
+    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
+    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
+    function one2(x) {
+      var a = Math.abs(x).toFixed(dp);
+      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
+    }
+    return function(x, y) {
+      return pre + one2(x) + (y != null ? "/" + one2(y) : suf);
+    };
+  }
+  function rosterRow(R) {
+    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    });
+    var sorted = seen.map(function(d) {
+      return d.v;
+    }).sort(function(a, b) {
+      return a - b;
+    });
+    r.place = function(v) {
+      var lo = 0, hi = sorted.length;
+      while (lo < hi) {
+        var mid = lo + hi >> 1;
+        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
+      }
+      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+    };
+    r.first = seen[0];
+    r.now = seen[seen.length - 1];
+    r.seen = seen;
+    if (R.pair) r.pair = keyed(R.pair);
+    if (R.peek) r.peek = r.pair;
+    return r;
+  }
+  var __roster = null;
+  function readingRoster() {
+    if (__roster) return __roster;
+    var all = ROSTER.filter(function(R) {
+      return R.hist;
+    }).map(rosterRow);
+    all.byId = {};
+    all.forEach(function(r) {
+      all.byId[r.id] = r;
+    });
+    return __roster = all;
+  }
+  function pastFigure(r, v, second) {
+    var card = readDoor(r.id);
+    if (!card) throw new Error("the reading " + r.id + " has no card");
+    var fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
+    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
+  }
+  function prettyK(r, k) {
+    return r.pre ? r.pre + k : prettyKey(k);
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;

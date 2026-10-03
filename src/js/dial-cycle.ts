@@ -1,18 +1,16 @@
 import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, popHead, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, detailTexts, elFrom, moreRow, need, put, rovingKeys, ui } from "./dom.ts";
+import { byId, detailSlot, detailTexts, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { asOfLabel, calendarTodayY, gdpQuarterlyYoY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
-import { gdpSrc, seasonReading, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
-import { cycleModel, cycleYtdFraction, QUARTER_END_MONTH, seasonGroup, seasonTitle } from "./model.ts";
+import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
+import { gdpSrc, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
+import { cycleModel, cycleYtdFraction, seasonGroup, seasonTitle } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { catCard, catList, gdpPeek, marketPeek, tempPeek } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
+import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
 import type { TrackSeg } from "./model.ts";
-import type { SeasonReading } from "./data.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
-type QuarterSeg = Pick<TrackSeg, "q" | "from" | "season" | "reading">;
 type DialQuarter = { seg: TrackSeg; a0: number; a1: number; mid: number };
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null; sheets: Record<number, string> };
 type HubOpen = { cat?: (typeof CATEGORIES)[number]; html?: string } | null;
@@ -156,44 +154,6 @@ function hubOpen(open: HubOpen){
   if (open && open.cat){ b.setAttribute("data-open", "sheet-cat-" + open.cat.key); b.setAttribute("data-title", open.cat.title); }
   if (open && open.html){ detailTexts[hubDetailIdx] = open.html; b.setAttribute("data-detail-idx", hubDetailIdx as unknown as string); }
 }
-function quarterCards(m: CycleModel, seg: QuarterSeg){
-  var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
-  var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q; });
-  var cards: [string | null, string][] = [
-    [tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c){ return c.m <= qEnd; })), monthLabel(qEnd)],
-    [gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)],
-    [marketPeek(y, m.era.from), String(y)]
-  ];
-  return '<div class="cat-sheet cat-weather">' +
-    catList(cards.map(function(c){ return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : ""; }).join("")) + '</div>';
-}
-function quarterSheet(m: CycleModel, seg: QuarterSeg, isPresent: boolean){
-  var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
-  return popHead(meta.name + (meta.theme ? ' \u00b7 ' + meta.theme : ''), qLabel(seg.q) + ' \u00b7 year ' + (Math.floor(seg.from) + 1) + ' of the ' + m.era.name) +
-    quarterCards(m, seg) + moreRow(quarterPopup(m, seg, isPresent), "About " + about);
-}
-function quarterPopup(m: CycleModel, seg: QuarterSeg, isPresent: boolean){
-  var meta = wheelMeta[seg.season], era = m.era;
-  var yearN = Math.floor(seg.from) + 1;
-  var when = isPresent ? (m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth)) : qLabel(seg.q);
-  var head = popHead(when + ' · ' + (meta.theme || meta.name), meta.name + (meta.altName ? ' · ' + meta.altName : '') +
-    ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
-  var reading: Partial<SeasonReading> = seasonReading[seg.season] || {};
-  return head +
-    (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + era.blurb + '</p>' : '') +
-    (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
-    (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
-    (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
-    (reading.watch && reading.watch.length
-      ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' +
-          reading.watch.map(function(w){ return '<li>' + w + '</li>'; }).join("") + '</ul></div>' : '') +
-    (reading.fromTheBook && reading.fromTheBook.length
-      ? '<div class="reading-book"><h5>From the book</h5>' +
-          reading.fromTheBook.map(function(x){
-            return '<blockquote>' + x.text +
-              (x.title ? '<br><span class="marker-sub">\u2014 ' + x.title + '</span>' : '') + '</blockquote>';
-          }).join("") + '</div>' : '');
-}
 function hubShowDefault(){
   if (dialState.parked != null){ hubShowQuarter(dialState.parked); return; }
   var m = dialState.m, meta = wheelMeta[m.season], qs = dialState.quarters, last = qs[qs.length - 1];
@@ -216,7 +176,6 @@ function hubShowYear(y: number){
   put("season-wheel-hub-detail", hubLine('S&amp;P 500 total return <b>' + fmtSigned(ret, 1) + '%</b>') +
     (cum != null ? hubLine('<b>' + fmtSigned(cum, 1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '')) : ""));
 }
-function peekEl(html: string): Element { var n = elFrom(html); if (!n) throw new Error("a peek drew nothing"); return n; }
 export function one(sel: string): Element { var n = document.querySelector(sel); if (!n) throw new Error("the page has no " + sel); return n; }
 export function cycleView(): HTMLElement { if (!cycleViewEl) throw new Error("the cycle view is not built"); return cycleViewEl; }
 function renderCycleDial(){
