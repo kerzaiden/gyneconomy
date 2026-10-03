@@ -35,7 +35,7 @@ function fontSizes(css) {
 function pageScoped(css) {
   const out = [];
   css.split('\n').forEach((line, i) => {
-    if (/(^|[\s,{}>+~(])#sheet-[\w-]+/.test(line.split('{')[0])) out.push('styles.css:' + (i + 1) + ' styles one page by id');
+    if (/#sheet-[\w-]+/.test(line.split('{')[0])) out.push('styles.css:' + (i + 1) + ' styles one page by id');
   });
   return out;
 }
@@ -104,7 +104,7 @@ function pinned(js) {
 
 function cycles(files) {
   const deps = {};
-  Object.keys(files).forEach(f => { deps[f] = [...files[f].matchAll(/from "\.\/([\w-]+\.js)"/g)].map(m => m[1]).filter(d => d in files); });
+  Object.keys(files).forEach(f => { deps[f] = [...files[f].matchAll(/from ["']\.\/([\w-]+\.js)["']/g)].map(m => m[1]).filter(d => d in files); });
   const state = {}, out = [];
   const visit = (f, trail) => {
     if (state[f] === 2) return;

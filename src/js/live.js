@@ -122,7 +122,7 @@ function applyLive(name, value, d){
 export function refreshLiveData(){
   if (!window.claude || typeof window.claude.use !== "function") return;
   window.claude.use("db").then(function(db){
-    if (!db) return;
+    if (!db) return null;
     return Promise.all(LIVE_NAMES.map(function(name){
       return db.doc("data/" + name).get().then(function(row){
         var d = row && (row.data || row);

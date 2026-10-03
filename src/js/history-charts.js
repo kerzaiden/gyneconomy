@@ -126,7 +126,7 @@ export function velocityHistoryChart(Wpx, from, to){
     out.join("") + '</svg>';
 }
 export function desireHistoryChart(Wpx, from){
-  var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
+  var F = histFrame(Wpx), W = F.W, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
   var ser = hyOas.slice(from), n = ser.length;
@@ -292,10 +292,6 @@ export function householdsChart(Wpx, from, to){
     out.push(xLabel(f(X(i)), yr, B + 17));
   });
   out.push(crossLine(T, B));
-  function line(ser, cls){
-    return '<path class="' + cls + '" d="' + ser.map(function(v, i){
-      return (i ? "L" : "M") + f(X(i)) + "," + f(Y(v)); }).join("") + '"/>';
-  }
   var hhSlot = (R - L) / Math.max(1, n);
   var hhSw = colWidth(hhSlot / 2), hhOff = Math.max(0.7, hhSw * 0.62);
   bill.forEach(function(v, i){

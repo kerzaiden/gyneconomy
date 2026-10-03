@@ -9,7 +9,6 @@ import { settleStrips, showCycle } from "./dial-cycle.js";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function renderSeasonRows(){
-  var meta = wheelMeta[currentSeason];
 
   var seasonRules = [
     {key:"winter",          growth:"Slowing",     temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},

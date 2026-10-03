@@ -284,7 +284,7 @@ export function eraMarketTotal(cyc){
 export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy, currentEra;
-var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow, cpiDirection, cpiHot, cpiCold, growthSlopeQ, growthTrendNow, gdpLatest;
+var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow;
 
 export function bootModel(){
   currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
@@ -329,12 +329,6 @@ export function bootModel(){
   nowModel = cycleModel(currentEra);
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;
-  cpiDirection = readingNow.cpiDirection;
-  cpiHot = readingNow.cpiHot;
-  cpiCold = readingNow.cpiCold;
-  growthSlopeQ = readingNow.growthSlopeQ;
-  growthTrendNow = readingNow.growthTrend;
-  gdpLatest = readingNow.gdpLatest;
   currentSeason = nowModel.season;
   seasonWhy = seasonWhyFor(nowModel);
   addSources(gdpSrc);

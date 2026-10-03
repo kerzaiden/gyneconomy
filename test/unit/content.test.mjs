@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
 import { ui } from '../../src/js/dom.js';
 import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.js';
-import { now, fedFundsRange, labRow } from '../../src/js/data.js';
-import { grossDebtQuarterly } from '../../src/js/history-fred.js';
+import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.js';
+import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.js';
+import { rowReadings, volumeVerdict } from '../../src/js/readings.js';
+import { ROSTER } from '../../src/js/roster.js';
+import { grossDebtQuarterly, productivityHistory, confidenceHistory } from '../../src/js/history-fred.js';
 import { HIST_NOTE } from '../../src/js/history.js';
 import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.js';
 import { seasonName } from '../../src/js/format.js';
@@ -25,6 +28,59 @@ async function deliver(docs) {
   delete window.claude;
 }
 
+const last = a => a[a.length - 1];
+const r1 = v => (Math.round(v * 10) / 10).toFixed(1);
+
+test('each card prints the last value of its own record', () => {
+  const want = {
+    'sheet-metric-temp': r1(last(cpiYoYHistory).v) + '%',
+    'sheet-metric-gdp': (last(gdpQuarterlyYoY).v >= 0 ? '+' : '\u2212') + r1(Math.abs(last(gdpQuarterlyYoY).v)) + '%',
+    'sheet-sign-pulse': last(m2vHistory).toFixed(2) + '\u00d7',
+    'sheet-sign-activity': r1(last(unempHistory).v) + '%',
+    'sheet-sign-productivity-growth': r1(last(productivityHistory).v) + '%',
+    'sheet-sign-confidence': r1(last(confidenceHistory).v),
+    'sheet-metric-debt': r1(last(grossDebtQuarterly).v) + '%'
+  };
+  for (const [sheet, v] of Object.entries(want)) assert.equal(value(sheet), v, sheet);
+});
+
+const BANDS = {
+  'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
+  Desire: { from: 3.5, to: 6 }, Pulse: { from: 1.7, to: 2.19 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
+  Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
+  'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
+};
+
+function bands() {
+  const out = {}, seen = new Set();
+  const walk = o => {
+    if (!o || typeof o !== 'object' || seen.has(o)) return;
+    seen.add(o);
+    if (o.meter && o.meter.optimal) { const { label, ...b } = o.meter.optimal; out[o.bodyTerm || o.marker || o.id] = { b, label }; }
+    Object.values(o).forEach(walk);
+  };
+  walk(now); walk(rowReadings()); ROSTER.forEach(R => walk(labRow(R.id)));
+  return out;
+}
+
+test('every band is the one pinned here, and its label says the same numbers', () => {
+  const got = bands();
+  assert.deepEqual(Object.fromEntries(Object.entries(got).map(([k, v]) => [k, v.b])), BANDS,
+    'a band moved: change it with Keren\u2019s decision, then the pin');
+  for (const [k, { b, label }] of Object.entries(got)) {
+    const nums = label.match(/\d+(\.\d+)?/g).map(Number);
+    const vals = Object.values(b);
+    assert.equal(nums.length, vals.length, k + ' label ' + label);
+    nums.forEach((n, i) => assert.ok(Math.abs(n - vals[i]) <= 0.05, k + ' label ' + label + ' vs ' + vals[i]));
+  }
+});
+
+test('the Volume verdict turns at the edges of her pace', () => {
+  const at = g => volumeVerdict(g).text;
+  assert.deepEqual([at(-0.1), at(M2_PACE_LO - 0.01), at(M2_PACE_LO), at(M2_PACE_HI - 0.01), at(M2_PACE_HI)],
+    ['Draining', 'Thin', 'Steady', 'Steady', 'Filling']);
+});
+
 const FED = { kind: 'object', lo: 3.75, hi: 4, lastMove: '+0.25', lastMoveLabel: 'raised a quarter point', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' };
 
 test('the Fed card prints the one Fed funds range', () => {
@@ -37,11 +93,14 @@ test('the Diagnosis names the model’s season', () => {
   assert.match(head, new RegExp(' in ' + seasonName(seasonGroup(nowModel.season)) + '$'));
 });
 
-test('a live Fed cut reaches the card, its tag and the policy facts', async () => {
+test('a live Fed cut reaches every door, its tag, the Diagnosis and the policy facts', async () => {
   await deliver({ fedFunds: { ...FED, lo: 3.5, hi: 3.75, lastMove: '-0.25', lastMoveLabel: 'cut a quarter point' } });
   assert.equal(now.fedFunds.lo, 3.5);
-  assert.equal(value('sheet-sign-hormones'), '3.50–3.75%');
+  const doors = [...document.querySelectorAll('[data-open="sheet-sign-hormones"]')];
+  assert.ok(doors.length >= 2);
+  doors.forEach(d => assert.match(d.textContent, /3\.50–3\.75%/));
   assert.equal(tag('sheet-sign-hormones'), 'Easing');
+  assert.ok([...document.querySelectorAll('#diagnosis .dx-v')].some(v => /Hormones are easing/.test(v.textContent)));
   assert.match(document.getElementById('policy-facts').textContent, /3\.50–3\.75%/);
 });
 

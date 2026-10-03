@@ -23,47 +23,53 @@ const run = async (p, label, out) => {
   }
 };
 
+const settle = p => p.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
+  Promise.all(document.getAnimations().map(a => a.finished.catch(() => null))).then(() => done())))));
+const open = async (p, file) => {
+  await p.goto('file://' + file);
+  await p.waitForFunction(() => window.__GYN && document.getElementById('diagnosis'));
+  await settle(p);
+};
+const tap = async (p, sel, until) => {
+  const hit = await p.evaluate(s => { const e = [...document.querySelectorAll(s)].find(x => x.offsetParent !== null);
+    if (!e) return false; e.click(); return true; }, sel);
+  if (!hit) return false;
+  if (until) await p.waitForFunction(until);
+  await settle(p);
+  return true;
+};
+
 (async () => {
   const b = await chromium.launch({ executablePath: CHROME });
-  const out = [];
+  const out = [], skipped = [];
+  let states = 0;
+  const audit = async (p, label) => { states++; await run(p, label, out); };
   for (const [w, scheme] of [[414, 'light'], [414, 'dark'], [1280, 'light'], [1280, 'dark']]) {
     const ctx = await b.newContext({ viewport: { width: w, height: 900 }, colorScheme: scheme });
     const p = await ctx.newPage();
     await p.route('**/*', r => { const u = r.request().url();
       (u.startsWith('file://') || u.startsWith('data:') || u.startsWith('blob:')) ? r.continue() : r.abort(); });
-    await p.goto('file://' + FILE); await p.waitForTimeout(1400);
-    await run(p, w + '/' + scheme + ' home', out);
-
+    const at = w + '/' + scheme;
+    await open(p, FILE);
+    await audit(p, at + ' home');
     for (const t of ['analysis', 'search', 'portfolio']) {
-      await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
-      await p.waitForTimeout(450);
-      await run(p, w + '/' + scheme + ' tab:' + t, out);
+      if (await tap(p, '.tab-btn[data-tab="' + t + '"]')) await audit(p, at + ' tab:' + t);
+      else skipped.push(at + ' tab:' + t);
     }
-
-    await p.goto('file://' + FILE); await p.waitForTimeout(1200);
-    const opened = await p.evaluate(() => {
-      const cat = document.querySelector('[data-open="sheet-cat-weather"]');
-      if (!cat) return false; cat.click(); return true;
-    });
-    if (opened) {
-      await p.waitForTimeout(400);
-      await p.evaluate(() => { const i = document.querySelector('.cat-item[data-open="sheet-metric-temp"]'); if (i) i.click(); });
-      await p.waitForTimeout(800);
-      await run(p, w + '/' + scheme + ' page:Temperature', out);
-      const modal = await p.evaluate(() => {
-        const e = [...document.querySelectorAll('.expand-btn, .info-btn')].filter(x => x.offsetParent !== null)[0];
-        if (!e) return false; e.click(); return true;
-      });
-      if (modal) { await p.waitForTimeout(500); await run(p, w + '/' + scheme + ' modal', out); }
-    }
-
-    await p.goto('file://' + FILE); await p.waitForTimeout(1200);
-    await p.evaluate(() => { const m = document.querySelector('.menu-btn'); if (m) m.click(); });
-    await p.waitForTimeout(500);
-    await run(p, w + '/' + scheme + ' menu', out);
-    await p.evaluate(() => { const r = document.querySelector('[data-sheet="book"]'); if (r) r.click(); });
-    await p.waitForTimeout(500);
-    await run(p, w + '/' + scheme + ' about', out);
+    await open(p, FILE);
+    if (await tap(p, '[data-open="sheet-cat-weather"]') &&
+        await tap(p, '.cat-item[data-open="sheet-metric-temp"]', () => document.querySelector('#metric-page .page-chart'))) {
+      await audit(p, at + ' page:Temperature');
+      if (await tap(p, '#metric-page .expand-btn, #metric-page .more-row, .more-row', () => document.querySelector('#detail-backdrop.show')))
+        await audit(p, at + ' modal');
+      else skipped.push(at + ' modal');
+    } else skipped.push(at + ' page:Temperature');
+    await open(p, FILE);
+    if (await tap(p, '.menu-btn', () => document.querySelector('.more-menu.in'))) {
+      await audit(p, at + ' menu');
+      if (await tap(p, '[data-sheet="book"]')) await audit(p, at + ' about');
+      else skipped.push(at + ' about');
+    } else skipped.push(at + ' menu');
     await ctx.close();
   }
   await b.close();
@@ -77,7 +83,8 @@ const run = async (p, label, out) => {
   const order = { critical: 0, serious: 1, moderate: 2, minor: 3 };
   const rules = [...byRule.values()].sort((a, b) => (order[a.impact] ?? 9) - (order[b.impact] ?? 9));
 
-  console.log('axe-core ' + axe.version + ' — ' + FILE.split('/').pop() + ', 24 states\n');
+  console.log('axe-core ' + axe.version + ' — ' + FILE.split('/').pop() + ', ' + states + ' states\n');
+  if (skipped.length) console.log('  not reached: ' + skipped.join(', ') + '\n');
   if (!rules.length) console.log('  no violations');
   for (const r of rules) {
     console.log('  [' + (r.impact || '?').toUpperCase() + '] ' + r.id + ' — ' + r.help);
@@ -87,5 +94,5 @@ const run = async (p, label, out) => {
   }
   const bad = rules.filter(r => r.impact === 'serious' || r.impact === 'critical');
   console.log('\n' + rules.length + ' distinct rule(s); ' + bad.length + ' serious or critical');
-  if (CHECK) process.exit(bad.length ? 1 : 0);
+  if (CHECK) process.exit(bad.length || skipped.length ? 1 : 0);
 })();

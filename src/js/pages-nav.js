@@ -182,7 +182,7 @@ function buildNav(){
     openSheet = null; openHome = null;
     metricPage.hidden = true;
     homeCtx.hide().forEach(function(n){ if (n) n.hidden = false; });
-    setTopbar.apply(null, homeCtx.bar());
+    var bar = homeCtx.bar(); setTopbar(bar[0], bar[1]);
     if (keepScroll) return;
     var y = returnScroll;
     window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });

@@ -67,7 +67,7 @@ function repaintValuationRow(){
   paintReading("sheet-metric-valuation", row.flagValue, now.valuation.tag || null);
 }
 function repaintPolicy(){
-  var box = put("policy-facts", policyFactRows());
+  put("policy-facts", policyFactRows());
   var dir = /^\+/.test(now.fedFunds.lastMove) ? "Tightening"
           : /^[-−]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
   paintReading("sheet-sign-hormones", fedFundsRange(), { text:dir });

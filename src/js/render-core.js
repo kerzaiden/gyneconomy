@@ -86,7 +86,7 @@ export function timingPill(kind){
 }
 export function collapseEmptyBlocks(sheet){
   if (!sheet || sheet.hidden || !sheet.offsetHeight) return;
-  [].forEach.call(sheet.children, function(kid){
+  Array.prototype.forEach.call(sheet.children, function(kid){
     if (kid.classList.contains("page-foot")) return;
     if (!kid.offsetHeight) kid.style.display = "none";
     else if (kid.style.display === "none") kid.style.display = "";
@@ -182,7 +182,7 @@ function registerFlowPages(){
     var key = page.range["pulse-range"];
     var pulCyc = pageCycle("pulse-range");
     var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
-    var bar = put("pulse-timeline", histControls("pulse-range",
+    put("pulse-timeline", histControls("pulse-range",
       { depth:Math.floor(m2vHistory.length / 4) }));
     var vFrom = pulIdx ? pulIdx[0] : qWindowFrom(m2vHistory.length, key), vTo = pulIdx ? pulIdx[1] : undefined;
     host.innerHTML = velocityHistoryChart(host.clientWidth, vFrom, vTo);
@@ -198,7 +198,7 @@ function registerFlowPages(){
     var len = m2Yoy.length - 4, key = page.range["volume-range"];
     var volCyc = pageCycle("volume-range");
     var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
-    var bar = put("volume-timeline", histControls("volume-range",
+    put("volume-timeline", histControls("volume-range",
       { depth:Math.floor(len / 4) }));
     var mFrom = volIdx ? volIdx[0] : qWindowFrom(len, key), mTo = volIdx ? volIdx[1] : undefined;
     host.innerHTML = m2GrowthChart(host.clientWidth, mFrom, mTo);
@@ -399,7 +399,6 @@ function renderPressurePage(){
   }
 
   var matPick = "10y";
-  var SERIES = maturities.map(function(m){ return { key:m.code, label:m.name.replace("-Month", "M").replace("-Year", "Y") }; });
   GYN.on("pickSeries", function(bar, code){
     matPick = code; pressureView = "yield"; maturities.forEach(function(m){ m.on = (m.code === matPick); });
     drawPressure();

@@ -4,7 +4,7 @@ import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.js";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.js";
 import { confidenceHistory, productivityHistory } from "./history-fred.js";
 import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, M2_PACE_HI, M2_PACE_LO, hyQuarterEnds, labRow, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
 import { cpiNow, growthWord } from "./model.js";
 import { HIST_NOTE, histHead, histNote } from "./history.js";
 
@@ -26,13 +26,10 @@ function confidenceWord(v){
     says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
 }
 export function deficitBlock(){
-  var lo = Math.min.apply(null, deficitHistory), iLo = deficitHistory.indexOf(lo), iSur = -1, i;
+  var iSur = -1, i;
   for (i = deficitHistory.length - 1; i >= 0; i--) if (deficitHistory[i] > 0){ iSur = i; break; }
   var lastY = DEF_FROM_YEAR + deficitHistory.length - 1;
   var surCount = deficitHistory.filter(function(v){ return v > 0; }).length;
-  function row(name, val){
-    return '<div class="legend-row"><span>' + name + '</span><small>' + val + '</small></div>';
-  }
   var defRow = labRow("sheet-marker-deficit");
   var note = '<h4>Federal budget deficit or surplus</h4>' +
     (defRow ? ledeHtml(defRow.note) : '') +
@@ -71,7 +68,7 @@ export var coincident = [
            after:function(ind){ return desireBlock(ind) + riskMatrixBlock(ind.meter.value, valRow("cape").meter.value); } },
     tag:{text:"High appetite", state:"good"},
     metric:"2.80%", metricSub:"high-yield OAS, Sep 24 2026",
-    meter:{min:2.41,max:21.82,value:2.80,optimal:{from:3.5,to:6, label:"3.5–6%"},
+    meter:{min:2.41,max:21.82,value:2.80,optimal:{from:HY_NORM_LO, to:HY_NORM_HI, label:HY_NORM_LO + "\u2013" + HY_NORM_HI + "%"},
            ends:{ low:"Tight", zone:"Normal", high:"Wide" }},
     shortCaption:"A touch off its tightest levels, but still near the tightest spread on record — she's in the mood to take risk.",
     aux:{label:"Long-run median, since 1996", value:"~4.5%"},
@@ -96,7 +93,7 @@ export var coincident = [
     page:{ bare:true, noHead:true, chartFirst:true, peeked:true, chart:function(ind){ return volumeBlock(ind); } },
     tag:null,
     metric:"+5.7%", metricSub:"M2, year over year, Aug 2026",
-    meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:3.5, to:10, label:"3.5\u201310%"},
+    meter:{min:-4.64, max:25.61, value:5.66, optimal:{from:M2_PACE_LO, to:M2_PACE_HI, label:M2_PACE_LO + "\u2013" + M2_PACE_HI + "%"},
            ends:{ low:"Draining", zone:"Her pace", high:"Flooding" }},
     shortCaption:"Growing at her ordinary pace again, after the largest transfusion in the record and the only drain.",
     caption:"How much blood there is \u2014 the other half of the number Pulse measures. Nominal output is the money stock times its velocity, so Volume and Pulse are two halves of one reading and neither means much alone: a racing pulse on full volume is exercise, and the same pulse on falling volume is shock. Her volume grew 40% in the twenty-six months to April 2022, the largest transfusion in the record, while velocity fell to its all-time low \u2014 which is why prices stayed quiet far longer than the money alone implied, and why the fever arrived only when circulation picked up on top of the enlarged stock. Then the volume itself was drained: five quarters of year-over-year contraction from 2023 Q1, the only ones in sixty-seven years. Range: +25.6% (2021 Q1) to \u22124.6% (2023 Q2), against a 1960\u20132019 pace of 6.8%.",
@@ -121,8 +118,8 @@ function desireInfoHtml(ind){
       'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
       'stripped out (' + ind.metricSub + ').</p>' +
     '<p class="caption" style="margin-top:10px;"><b>Normal here is ' + HY_NORM_LO + '\u2013' + HY_NORM_HI +
-      '%</b>, and both edges are the credit market\u2019s own breaks rather than a target: below about 3.5% is ' +
-      'read as complacency, above about 6% as stress, and above 8% as distress. The long-run median since the ' +
+      '%</b>, and both edges are the credit market\u2019s own breaks rather than a target: below about ' + HY_NORM_LO + '% is ' +
+      'read as complacency, above about ' + HY_NORM_HI + '% as stress, and above 8% as distress. The long-run median since the ' +
       'index began in 1996 is roughly 4.5%, which sits inside the band. An economy has no level it ought to be ' +
       'at, so none of this is an optimum \u2014 it is where this spread has actually sat.</p>' +
     '<p class="caption" style="margin-top:10px;"><b>Tight</b> means lenders are asking little to take credit ' +
@@ -142,7 +139,7 @@ function volumeInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
       'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
       '(' + ind.metricSub + ').</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Her pace is 3.5\u201310%</b>, and that is a band computed from ' +
+    '<p class="caption" style="margin-top:10px;"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
       'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
       'year on average (median 6.70%), and the tenth to ninetieth percentile runs 3.3% to 10.3%. So roughly four ' +
       'quarters in five sat inside this band, and the two ends are what unusual looks like in each direction \u2014 ' +
@@ -195,7 +192,7 @@ function activityInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
       'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
       'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 3.5\u20135% band brackets the CBO\u2019s noncyclical rate of ' +
+    '<p class="caption" style="margin-top:10px;"><b>The ' + ACT_BAND_LO + '\u2013' + ACT_BAND_HI + '% band brackets the CBO\u2019s noncyclical rate of ' +
       'unemployment</b> \u2014 its estimate of the rate that remains once demand is neither too hot nor too cold, ' +
       'currently around 4.2%. Be clear about what is sourced and what is not: the CBO\u2019s number is published, ' +
       'the two edges are round figures set either side of it rather than a computed interval. There is no ' +
@@ -251,8 +248,6 @@ function desireBlock(ind){
   '</div>';
 }
 function volumeBlock(ind){
-  var g = m2Yoy.filter(function(x){ return x != null; });
-  var hi = Math.max.apply(null, g), lo = Math.min.apply(null, g);
   histNote("volume-range", volumeInfoHtml(ind));
   return histBar("", "volume-timeline") +
     '<div class="page-chart pulsebox">' +
@@ -263,7 +258,6 @@ function volumeBlock(ind){
     '</div>';
 }
 function velocityRecordBlock(pulseInd){
-  var hi = Math.max.apply(null, m2vHistory), lo = Math.min.apply(null, m2vHistory);
   if (pulseInd) histNote("pulse-range", pulseInfoHtml(pulseInd));
   return histBar("", "pulse-timeline") +
     '<div class="page-chart pulsebox">' +
@@ -273,10 +267,10 @@ function velocityRecordBlock(pulseInd){
     '<div id="pulse-trend"></div>' +
     '</div>';
 }
-function volumeVerdict(g){
+export function volumeVerdict(g){
   return g < 0     ? { text:"Draining", state:"serious" }
-       : g < 3.5   ? { text:"Thin",     state:"warning" }
-       : g < 10    ? { text:"Steady",   state:"good" }
+       : g < M2_PACE_LO ? { text:"Thin",     state:"warning" }
+       : g < M2_PACE_HI ? { text:"Steady",   state:"good" }
        : g < 16    ? { text:"Filling",  state:"warning" }
                    : { text:"Flooding", state:"serious" };
 }
@@ -326,7 +320,7 @@ export var lagging = [
     page:{ bare:true, noMark:true, deferHighlights:true, after:activityStackHtml },
     tag:{text:"Solid", state:"good"},
     metric:"4.1%", metricSub:"unemployment rate, Aug 2026",
-    meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:"3.5–5%"},
+    meter:{min:2.5,max:24.9,value:4.1,optimal:{from:ACT_BAND_LO,to:ACT_BAND_HI, label:ACT_BAND_LO + "\u2013" + ACT_BAND_HI + "%"},
            ends:{ low:"Tight", zone:"Normal", high:"Slack" }},
     shortCaption:"Ticked up slightly but still low against the full sweep of U.S. history.",
     caption:"Physical activity confirms a phase only after it's underway — unemployment is the textbook lagging indicator, typically trailing a turn by two to three quarters. Ticked up slightly but still low against the full sweep of U.S. history; the modern BLS series (since 1948) set its own record at 14.8% in April 2020 (14.7% as first reported), against a low of 2.5% in mid-1953; the 24.9% at the far end of the bar is the Census Bureau's historical estimate for 1933. August payrolls rose 162,000, beating forecasts.",
