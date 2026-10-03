@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,904 lines** in 33 files, about 581 KB, roughly **165 thousand tokens**. No session can
+The source is **8,900 lines** in 33 files, about 580 KB, roughly **165 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `e8b22ac` on 2026-10-03.
+Generated from commit `12ce6d8` on 2026-10-03.
 
 ## The page
 
@@ -19,7 +19,7 @@ Generated from commit `e8b22ac` on 2026-10-03.
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,347 | the whole stylesheet, every token and rule |
-| `page-body.html` | 389 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `page-body.html` | 385 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 29 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
@@ -1296,25 +1296,25 @@ Every `id` in the static DOM (110), which is what the renderers fill:
 | 236 | `app-version` |
 | 240 | `sheet-howto` |
 | 283 | `sheet-book` |
-| 313 | `seasons-kicker` |
-| 314 | `seasons-rows` |
-| 317 | `framework-kicker` |
-| 320 | `framework-rows` |
-| 330 | `sheet-appearance` |
-| 338 | `theme-toggle` |
-| 345 | `sheet-contact` |
-| 354 | `contact-form` |
-| 355 | `contact-title` |
-| 356 | `contact-message` |
-| 358 | `contact-hint` |
-| 359 | `contact-send` |
-| 365 | `sheet-sources` |
-| 368 | `sources-back` |
-| 373 | `asof-text` |
-| 374 | `sources-groups` |
-| 380 | `detail-backdrop` |
-| 382 | `detail-modal-close` |
-| 383 | `detail-modal-body` |
+| 309 | `seasons-kicker` |
+| 310 | `seasons-rows` |
+| 313 | `framework-kicker` |
+| 316 | `framework-rows` |
+| 326 | `sheet-appearance` |
+| 334 | `theme-toggle` |
+| 341 | `sheet-contact` |
+| 350 | `contact-form` |
+| 351 | `contact-title` |
+| 352 | `contact-message` |
+| 354 | `contact-hint` |
+| 355 | `contact-send` |
+| 361 | `sheet-sources` |
+| 364 | `sources-back` |
+| 369 | `asof-text` |
+| 370 | `sources-groups` |
+| 376 | `detail-backdrop` |
+| 378 | `detail-modal-close` |
+| 379 | `detail-modal-body` |
 
 ## Finding things fast
 
