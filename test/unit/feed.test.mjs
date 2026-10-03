@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import { errors, warnings, window } from './dom.mjs';
 import { refreshLiveData, liveApplied, READINGS } from '../../src/js/live.ts';
+import { isoDay } from '../../src/js/format.ts';
 import { createRequire } from 'module';
 const fetchLive = createRequire(import.meta.url)('../../tools/fetch-live.js');
 
@@ -15,8 +16,8 @@ test('every document the Data bot wrote is accepted by the app, unless the file 
   for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));
   delete window.claude;
   const refused = Object.keys(docs).filter(n => {
-    const r = READINGS[n], file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN;
-    return liveApplied[n] !== JSON.stringify(docs[n]) && !(Date.parse(docs[n].asOf) < file);
+    const r = READINGS[n], file = r && r.fileAsOf ? isoDay(r.fileAsOf()) : '', got = isoDay(docs[n].asOf);
+    return liveApplied[n] !== JSON.stringify(docs[n]) && !(got && got < file);
   });
   assert.deepEqual(refused, []);
   assert.deepEqual(errors.concat(warnings.filter(w => /repaint|registry/.test(w))), []);

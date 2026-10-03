@@ -5,6 +5,7 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'data', 'live.json');
 const KEY = process.env.FRED_API_KEY;
 const BANDS = { vixClose: [5, 100], vix3mClose: [5, 100], capeValue: [4, 60] };
+const MAX_AGE_DAYS = { yieldCurve: 7, vixClose: 7, vix3mClose: 7, capeValue: 93 };
 
 const notes = [];
 const say = m => { notes.push(m); console.log(m); };
@@ -132,6 +133,11 @@ async function fomcLive(today, log) {
       + '; it needs the next year\'s dates (add them to FOMC_DECISIONS in tools/fetch-live.js)');
   }
   return calendar;
+}
+
+function staleDocs(doc, today) {
+  return Object.keys(MAX_AGE_DAYS).filter(k => doc[k] && (Date.parse(today) - Date.parse(doc[k].asOf)) / 864e5 > MAX_AGE_DAYS[k])
+    .map(k => k + ': stale since ' + doc[k].asOf);
 }
 
 function assemble(prev, fresh) {
@@ -298,7 +304,7 @@ async function shillerSheet(parse) {
   throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { BANDS, capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
+if (require.main !== module) { module.exports = { BANDS, MAX_AGE_DAYS, staleDocs, capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
 else (async () => {
   const out = {};
   const failed = [];
@@ -360,6 +366,7 @@ else (async () => {
   let prev = {};
   try { prev = JSON.parse(fs.readFileSync(OUT, 'utf8')); } catch (e) {}
   const doc = assemble(prev, out);
+  staleDocs(doc, new Date().toISOString().slice(0, 10)).forEach(f => failed.push(f));
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify(doc, null, 1) + '\n');

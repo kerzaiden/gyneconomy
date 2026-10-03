@@ -5,6 +5,12 @@ export function fmtAsOf(iso: string | null | undefined){
   if (!m) return "";
   return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
 }
+export function isoDay(s: string | null | undefined){
+  var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
+  var y = iso ? +iso[1] : shown ? +shown[3] : 0, m = iso ? +iso[2] : shown ? MONTHS_SHORT.indexOf(shown[1]) + 1 : 0, d = iso ? +iso[3] : shown ? +shown[2] : 0;
+  var at = new Date(Date.UTC(y, m - 1, d));
+  return y && m >= 1 && at.getUTCMonth() === m - 1 && at.getUTCDate() === d ? at.toISOString().slice(0, 10) : "";
+}
 export function qAtIndex(y0: number, i: number){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
 export function yearOf(d: Point){ if (d.y != null) return d.y; var k = d.q || d.m; if (!k) throw new Error("a point has no date"); return parseInt(k.slice(0, 4), 10); }
 export function metered(m: Meter): number { if (m.value == null) throw new Error("a meter has no value"); return m.value; }

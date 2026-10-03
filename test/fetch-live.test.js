@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut } = require('../tools/fetch-live.js');
+const { capeFromRows, priceFromRows, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut, staleDocs } = require('../tools/fetch-live.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -150,6 +150,9 @@ ok('the day after the last decision: run out', fomcRunsOut(FOMC_DECISIONS, '2026
 ok('61 days ahead is outside the window', fomcRunsOut(['2026-03-03'], '2026-01-01', 60), true);
 ok('60 days ahead is inside the window', fomcRunsOut(['2026-03-02'], '2026-01-01', 60), false);
 ok('the run date itself does not count', fomcRunsOut(['2026-01-01'], '2026-01-01', 60), true);
+ok('a daily figure a week old is fresh, eight days old is stale', staleDocs({ vixClose: { asOf: '2026-09-26' }, vix3mClose: { asOf: '2026-09-25' } }, '2026-10-03'), ['vix3mClose: stale since 2026-09-25']);
+ok('a monthly CAPE three months old is fresh, and the Fed has no age limit', staleDocs({ capeValue: { asOf: '2026-07-02' }, fedFunds: { asOf: 'Jan 1, 2020' } }, '2026-10-03'), []);
+ok('a CAPE past three months is stale', staleDocs({ capeValue: { asOf: '2026-06-30' } }, '2026-10-03'), ['capeValue: stale since 2026-06-30']);
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

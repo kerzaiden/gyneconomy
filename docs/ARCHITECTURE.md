@@ -79,6 +79,17 @@ blank the app on every later visit):
   rule, `olderThanFile`, since V706), so neither an offline visit nor a slow feed shows last month's figure.
   Every reading declares it (1.2.1): the scalars and the valuation take their row's date or `capeAsOf`, and
   coincident the newest period its rows name. A series or scalar document must carry an ISO `asOf` (1.1.1).
+- **Dates are compared as calendar days, never as times (1.6.1).** `isoDay` turns a file's display date
+  ("Sep 22 2026", "Sep 16, 2026") and a document's ISO date into the same `YYYY-MM-DD`, and refuses a day
+  that is not on the calendar (month 13, February 30). `Date.parse` read a display date as local midnight and
+  an ISO date as UTC midnight, so a same-day VIX close was refused west of Greenwich. The guard also never
+  goes backwards: `liveFloor` keeps the newest day the file or any applied document has shown, so an undated
+  Fed range (which blanks the decision date on purpose) cannot open the door to an older decision.
+- **An object document keeps each field's type (1.6.1).** `fieldsKept`: a field the file has must arrive as
+  the same type and never as an object; a field the file lacks must be a string; `rows` go through `overRows`.
+- **A stale feed turns the Data run red (1.6.1).** `staleDocs` in `fetch-live` flags a daily figure (curve,
+  VIX) older than 7 days, which covers a long weekend with a holiday, and CAPE older than 93 days, because
+  Shiller's monthly sheet runs a month or two behind. The Fed has no age limit: its date is its last decision.
 - **A live row changes figures, never structure (1.2.1).** `overRows` lays a document's rows over the
   file's: the strings and numbers the file row has, and the meter's value, min and max. The page renderer, the
   band and the zone labels stay the file's, so a row that went through JSON (and lost its functions) cannot

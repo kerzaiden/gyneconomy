@@ -4,7 +4,7 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { trendOf, histFrame, colPath, colWidth, AXIS } from '../../src/js/charts.ts';
 import { curveVerdict, valuationVerdict } from '../../src/js/readings.ts';
-import { ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, prettyKey, monthLabel } from '../../src/js/format.ts';
+import { ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, isoDay, prettyKey, monthLabel } from '../../src/js/format.ts';
 import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.ts';
 import { merge, plainText } from '../../src/js/live.ts';
 import { seasonGroup, seasonTitle, yearAfter } from '../../src/js/model.ts';
@@ -113,4 +113,10 @@ test('the Fred backfill writes the stored figures back byte for byte', () => {
   const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, fred.treasuryQuarterly, fred.productivityHistory,
     fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory);
   assert.equal(out, fs.readFileSync(new URL('../../src/data/fred.json', import.meta.url), 'utf8'));
+});
+
+test('isoDay reads ISO and display dates alike and refuses days off the calendar', () => {
+  assert.deepEqual(['2026-09-22', 'Sep 22 2026', 'Sep 16, 2026', 'Jul 1, 2023', '2024-02-29'].map(isoDay),
+    ['2026-09-22', '2026-09-22', '2026-09-16', '2023-07-01', '2024-02-29']);
+  assert.deepEqual(['2026-13-05', '2026-02-30', '2025-02-29', 'Foo 1 2026', '', '2026-9-1', null].map(isoDay), ['', '', '', '', '', '', '']);
 });
