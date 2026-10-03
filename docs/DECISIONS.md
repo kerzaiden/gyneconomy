@@ -464,9 +464,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   years, ±0.1 pp a year counting as flat (the quarterly ±0.025 pp a quarter, at a year's scale), with prices
   read monthly as always (CPIAUCNS before 1948).** Keren chose annual seasons for the older cycles (V690). Two
   years is the window nearest eight quarters in the span of GDP it reads; it fills every quarter of a year, and
-  the quarters before the first quarterly reading (1949 Q4). BEA's annual growth begins in 1930, so 1928–30 have
-  no season. Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
+  the quarters before the first quarterly reading (1949 Q4). Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
   growth rose from −8.5% to −6.4%. (V690)
+- **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
+  BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
+  over reading the 1920s–40s from industrial production or leaving 1928–30 blank. Claude chose MeasuringWorth over
+  Balke and Gordon (1989) because it is the series kept current and published year by year; the Backfill refuses
+  the join if MeasuringWorth's 1930 growth misses BEA's by more than half a point. (1.4.0; 1928–30 blank in V690.)
 
 ## Readings and bands
 

@@ -1549,7 +1549,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.2.2 (716)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.4.0 (718)</span></p>
     </div>
   </div>
 
@@ -27580,6 +27580,9 @@
       1989: 31.48
     },
     gdpGrowthBefore: {
+      1927: 1,
+      1928: 1.1,
+      1929: 5.7,
       1930: -8.5,
       1931: -6.4,
       1932: -12.9,
@@ -27959,6 +27962,9 @@
   }, {
     t: "BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)",
     u: "https://fred.stlouisfed.org/series/A191RL1A225NBEA"
+  }, {
+    t: "MeasuringWorth (Johnston and Williamson) — What Was the U.S. GDP Then?, real GDP before 1930",
+    u: "https://www.measuringworth.com/datasets/usgdp/"
   } ];
   var labPanel = [ {
     sub: "gross federal debt ÷ GDP",
@@ -34566,6 +34572,12 @@
     summer: "Summer",
     autumn: "Autumn"
   };
+  function aheadWord(cyc) {
+    return cyc.ongoing ? "not yet run" : "shorter than a typical cycle";
+  }
+  function stripDots(n, title) {
+    return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + "</span>" : "";
+  }
   function seasonStripHtml(cyc, spanOverride) {
     var groupName = stripGroupName;
     return function() {
@@ -34585,7 +34597,7 @@
         last.to = seg.q;
         last.seasons[seg.season] = true;
       });
-      var done = segs.length;
+      var lead2 = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead2 + segs.length;
       var span = Math.max(spanOverride || 0, typicalCycleYears * 4, cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
       var ahead = Math.max(0, span - done);
       var pills = runs.map(function(r) {
@@ -34594,14 +34606,14 @@
         }).join(" · ");
         return '<span class="strip-run ' + r.g + (r.n === 1 ? " one" : "") + '" style="flex:' + r.n + ' 1 0" title="' + groupName[r.g] + " · " + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + " – " + qLabel(r.to)) + " · " + names + '"></span>';
       }).join("");
-      if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + "</span>";
+      pills = stripDots(lead2, "no season read before " + (lead2 ? qLabel(segs[0].q) : "")) + pills + stripDots(ahead, aheadWord(cyc));
       var lastSeg = segs[segs.length - 1];
       var foot = cyc.ongoing ? "Year <b>" + m.yearIndex + "</b> · now <b>" + wheelMeta[m.season].name + "</b>" : "<b>" + Math.round(m.elapsedYears) + " years</b> · ended in <b>" + wheelMeta[lastSeg.season].name + "</b>";
       return {
         span: span,
         done: done,
         years: cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears),
-        strip: '<div class="strip" role="img" aria-label="' + runs.map(function(r) {
+        strip: '<div class="strip" role="img" aria-label="' + (lead2 ? "No season " + lead2 + " quarters, " : "") + runs.map(function(r) {
           return groupName[r.g] + " " + r.n + (r.n === 1 ? " quarter" : " quarters");
         }).join(", ") + '">' + pills + "</div>",
         foot: foot
@@ -34643,7 +34655,7 @@
       var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
       return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="flex:' + Math.max(r.q, 1) + ' 1 0" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
     }).join("");
-    if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + "</span>";
+    pills += stripDots(ahead, aheadWord(cyc));
     return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' + runs.map(function(r) {
       return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir;
     }).join(", ") + '">' + pills + "</div>";
@@ -36920,7 +36932,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
