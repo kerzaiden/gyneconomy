@@ -1148,6 +1148,24 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ## Code and process
 
+### Versions
+
+- **A release has a version, `MAJOR.MINOR.PATCH`, and a build number.** Keren: "make versioning like the
+  convention" (app-store practice: a semantic marketing version beside a sequential build). Claude chose the
+  details, for her to overturn: the first is **1.0.0, build 710**, the build carrying on from V709, so the old
+  V-numbers were builds all along; the friendly name stays (`1.0.0 — Semantic Versions`); the menu's foot reads
+  `Version 1.0.0 (710)`; the artifact's label is `1.0.0 (710)`. Versions before 1.0.0 keep their V-names in
+  git and in this register. (1.0.0)
+- **Which number moves:**
+  - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
+    a category or tab added or removed, the book's framework changed.
+  - **Minor** for something new that leaves the rest as it was: a reading, a page, a chart, a card, a
+    feature, new history.
+  - **Patch** for a fix or a wording change: a bug, a figure corrected, a note reworded, a test or tool or
+    docs change with nothing new on screen.
+  - The largest change in a release decides; a lower number resets to 0 when a higher one moves. The build
+    number rises by one with every release, whichever number moves, and never resets.
+
 - **Where Keren hands Claude the call, Claude's choice is recorded here as Claude's, for her to overturn.** Keren,
   on the V693 review: "fix all issue and make judgement calls where needed". At V694 Claude chose: the installed
   app turns with the device (WCAG 1.3.4); a chart's ⋯ menu is a plain disclosure, not an ARIA menu; an update

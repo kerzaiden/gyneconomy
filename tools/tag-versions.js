@@ -1,37 +1,47 @@
 #!/usr/bin/env node
 const { execSync } = require('child_process');
 
-const SUBJECT = /^V(\d{3,}) — (.+)$/;
+const LEGACY = /^V(\d{3,}) — (.+)$/;
+const SEMVER = /^(\d+\.\d+\.\d+) — (.+?)(?: \(#\d+\))?$/;
 
 function slug(name) {
   return name.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-function plan(log, tags) {
-  const tagged = tags.map(t => /^v(\d+)-/.exec(t)).filter(Boolean).map(m => Number(m[1]));
-  const floor = tagged.length ? Math.max(...tagged) : 0;
+function plan(log, tags, buildAt) {
+  const have = new Set(tags);
+  const legacy = new Set(tags.map(t => /^v(\d+)-/.exec(t)).filter(Boolean).map(m => Number(m[1])));
   const seen = new Set(), out = [];
   for (const c of log) {
-    const m = SUBJECT.exec(c.subject);
-    if (!m) continue;
-    const n = Number(m[1]);
-    if (n <= floor || seen.has(n)) continue;
-    seen.add(n);
-    out.push({ n, sha: c.sha, tag: 'v' + n + '-' + slug(m[2].split(':')[0]) });
+    const s = SEMVER.exec(c.subject), l = !s && LEGACY.exec(c.subject);
+    if (s) {
+      const tag = 'v' + s[1];
+      if (have.has(tag) || seen.has(tag)) continue;
+      seen.add(tag);
+      out.push({ tag, sha: c.sha, message: s[1] + ' (build ' + buildAt(c.sha) + ') — ' + s[2] });
+    } else if (l) {
+      const n = Number(l[1]);
+      if (legacy.has(n) || seen.has(n)) continue;
+      seen.add(n);
+      const tag = 'v' + n + '-' + slug(l[2].split(':')[0]);
+      out.push({ tag, sha: c.sha, message: tag });
+    }
   }
-  return out.sort((a, b) => a.n - b.n);
+  return out.reverse();
 }
 
 function main() {
   const sh = c => execSync(c, { encoding: 'utf8' });
   const log = sh('git log --format=%H%x09%s HEAD').split('\n').filter(Boolean)
     .map(l => { const i = l.indexOf('\t'); return { sha: l.slice(0, i), subject: l.slice(i + 1) }; });
-  const todo = plan(log, sh('git tag --list "v[0-9]*"').split('\n').filter(Boolean));
+  const buildAt = sha => JSON.parse(sh('git show ' + sha + ':package.json')).build;
+  const todo = plan(log, sh('git tag --list "v[0-9]*"').split('\n').filter(Boolean), buildAt);
   if (!todo.length) { console.log('every version is tagged'); return; }
+  const apply = process.argv.includes('--apply');
   for (const t of todo) {
-    console.log((process.argv.includes('--apply') ? 'tag ' : 'would tag ') + t.tag + ' → ' + t.sha.slice(0, 7));
-    if (process.argv.includes('--apply')) sh('git tag -a ' + t.tag + ' -m ' + t.tag + ' ' + t.sha);
+    console.log((apply ? 'tag ' : 'would tag ') + t.tag + ' → ' + t.sha.slice(0, 7) + '  ' + t.message);
+    if (apply) execSync('git tag -a ' + t.tag + ' -F - ' + t.sha, { input: t.message });
   }
 }
 
