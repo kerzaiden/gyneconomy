@@ -55,8 +55,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Effective" was doing the note's job in the title. (V608)
 - **A section of sentences about the figures above it is called Insights, on every reading's page.** The app had
   two names for one component and Keren chose one; Insights has been her word for it since V379. A category's
-  combined reading is the exception since 1.3.0: it sits behind its analysis card's More details, untitled (see
-  Search and the category pages). (V453, V604, 1.3.0)
+  combined reading is the exception since 1.5.0: it sits behind its analysis card's More details, untitled (see
+  Search and the category pages). (V453, V604, 1.5.0)
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
@@ -202,15 +202,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "doesn't really inform me all that much besides taking up space"; Keren asked for something that "take[s] all the
   parameters inside that category" together, preferred trends to text ("text can only go so far", after Apple Health's
   Trends), then the category's composite set against past cycles; "just say weather analysis … I don't need the titles,
-  trends, and readings. Just put the containers one on top of the other." (1.3.0)
+  trends, and readings. Just put the containers one on top of the other." (1.5.0)
 - **A category's insights open from its analysis card's More details, with no Insights title, and the page has no
   Insights box; the method of the analysis follows them in the same sheet.** Keren: "insights is important and it
   should be visible for some prominent place, but I hardly doubt it that someone will scroll all the way to see the
   insights. So when you click on more details, we can just show the insights without even calling it insights." Mood's
   own figures, which had a More details of their own, now follow her story in that sheet. The button sits as far
-  from the rows above it as from the card's foot ("the padding … is uneven"). (1.3.0)
+  from the rows above it as from the card's foot ("the padding … is uneven"). (1.5.0)
 - **Weather's insights carry no "What usually comes next" card.** It read as a forecast once it sat under the analysis;
-  Keren: "drop the forecast". The season's prose behind a dial quarter keeps it, one tap further in. (1.3.0)
+  Keren: "drop the forecast". The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
 - **The analysis is the category as one reading through the cycle on screen, drawn over every other cycle from the
   quarter each opened and matched on its quarter-by-quarter moves.** Keren: "the composite parameter comprised of all
   the subcategories of that category can be more informative if it correlates with past cycles". The composite averages
@@ -221,7 +221,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Claude's calls, for Keren to overturn: the Fed funds rate, unemployment and federal debt count upside down; Stress
   enters as Federal debt, the longest of its four; Pressure is left out, its record starting in 2005; the S&P 500 enters
   as its twelve-month change, its only figure every quarter; cycles are matched on moves, because on levels every bull
-  run matched every other. (1.3.0)
+  run matched every other. (1.5.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
   the source order and the category sheets and past cycles read it; Search and the Diagnosis place the four by
@@ -490,9 +490,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   years, ±0.1 pp a year counting as flat (the quarterly ±0.025 pp a quarter, at a year's scale), with prices
   read monthly as always (CPIAUCNS before 1948).** Keren chose annual seasons for the older cycles (V690). Two
   years is the window nearest eight quarters in the span of GDP it reads; it fills every quarter of a year, and
-  the quarters before the first quarterly reading (1949 Q4). BEA's annual growth begins in 1930, so 1928–30 have
-  no season. Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
+  the quarters before the first quarterly reading (1949 Q4). Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
   growth rose from −8.5% to −6.4%. (V690)
+- **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
+  BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
+  over reading the 1920s–40s from industrial production or leaving 1928–30 blank. Claude chose MeasuringWorth over
+  Balke and Gordon (1989) because it is the series kept current and published year by year; the Backfill refuses
+  the join if MeasuringWorth's 1930 growth misses BEA's by more than half a point. (1.4.0; 1928–30 blank in V690.)
 
 ## Readings and bands
 
@@ -1179,7 +1183,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   A closed cycle's Analysis is already its movement across the cycle, so the line shows today only. (V682)
 - **The Diagnosis's lines set each title above its text, so a title takes no width from its sentence.** Keren:
   "make it so there's a title and a text so it doesn't hold so much text the title takes on a lot of room." (V682)
-- **The Mood page has one Insights box (since 1.3.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
+- **The Mood page has one Insights box (since 1.5.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
   and two more details buttons … she's in optimism and her story this cycle it's pretty much the same thing"

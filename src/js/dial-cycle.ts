@@ -324,6 +324,10 @@ export function renderCycleView(m: CycleModel){
 export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----
 var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
+function aheadWord(cyc: Cycle){ return cyc.ongoing ? "not yet run" : "shorter than a typical cycle"; }
+function stripDots(n: number, title: string){
+  return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + '</span>' : "";
+}
 export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
   var groupName: Record<string, string> = stripGroupName;
   return (function(){
@@ -333,7 +337,7 @@ export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
       if (!last || last.g !== g) runs.push(last = { g:g, n:0, from:seg.q, to:seg.q, seasons:{} });
       last.n++; last.to = seg.q; last.seasons[seg.season] = true;
     });
-    var done = segs.length;
+    var lead = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead + segs.length;
     var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                         cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
     var ahead = Math.max(0, span - done);
@@ -342,13 +346,13 @@ export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
       return '<span class="strip-run ' + r.g + (r.n === 1 ? ' one' : '') + '" style="' +
         'flex:' + r.n + ' 1 0' + '" title="' + groupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
     }).join("");
-    if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' + new Array(ahead + 1).join("<i></i>") + '</span>';
+    pills = stripDots(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + pills + stripDots(ahead, aheadWord(cyc));
     var lastSeg = segs[segs.length - 1];
     var foot = cyc.ongoing
       ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
       : '<b>' + Math.round(m.elapsedYears) + ' years</b> · ended in <b>' + wheelMeta[lastSeg.season].name + '</b>';
     return { span:span, done:done, years:(cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears)),
-             strip:'<div class="strip" role="img" aria-label="' + runs.map(function(r){ return groupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ') + '">' + pills + '</div>',
+             strip:'<div class="strip" role="img" aria-label="' + (lead ? 'No season ' + lead + ' quarters, ' : '') + runs.map(function(r){ return groupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ') + '">' + pills + '</div>',
              foot:foot };
   })();
 }
@@ -379,8 +383,7 @@ export function marketStripHtml(cyc: Cycle, spanQ?: number, doneQ?: number){
       "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " +
       (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
   }).join("");
-  if (ahead) pills += '<span class="strip-dots" style="flex:' + ahead + ' 1 0" title="' + (cyc.ongoing ? "not yet run" : "shorter than a typical cycle") + '">' +
-    new Array(ahead + 1).join("<i></i>") + "</span>";
+  pills += stripDots(ahead, aheadWord(cyc));
   return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' +
     runs.map(function(r){ return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir; }).join(", ") +
     '">' + pills + "</div>";

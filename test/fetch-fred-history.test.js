@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { premiumFromRows, damodaranReturns, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -125,6 +125,11 @@ const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</t
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });
 ok('a year missing from the Damodaran table is refused, not filled',
    (() => { try { damodaranReturns(dTable, 1948, 1952); return 'kept'; } catch (e) { return /no 1950|no 1951/.test(e.message); } })(), true);
+const wTable = '<table><tr><th>Year</th><th>Real GDP</th></tr><tr><td>1926</td><td>1,000.0</td></tr>' +
+  '<tr><td>1927</td><td>$1,010.0</td></tr><tr><td>1928</td><td>1,020.1</td></tr></table>';
+ok('the MeasuringWorth table is read as levels, year by year', worthLevels(wTable, 1926, 1928), { 1926: 1000, 1927: 1010, 1928: 1020.1 });
+throws('a year missing from the MeasuringWorth table is refused, not filled', () => worthLevels(wTable, 1926, 1929), /no 1929/);
+ok('growth is each year against the year before, to one decimal, as BEA gives it', worthGrowth({ 1926: 1000, 1927: 1010, 1928: 999 }, 1927, 1928), { 1927: 1, 1928: -1.1 });
 ok('a monthly change is the month against the same month a year before, to two decimals',
    yoyMonthly([d('1947-01-01', 21.48), d('1947-02-01', 21.62), d('1948-01-01', 23.68), d('1948-02-01', 23.67)], -5, 20),
    [{ m: '1948-01', v: 10.24 }, { m: '1948-02', v: 9.48 }]);

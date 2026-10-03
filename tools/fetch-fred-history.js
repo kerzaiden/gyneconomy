@@ -52,6 +52,8 @@ const GDP_JOIN = '1988 Q1';
 const CPI_JOIN = '1989-01';
 const RETURNS_FROM = 1928, RETURNS_JOIN = 1990, GROWTH_FROM = 1930, CPI_EARLY = '1928-01';
 const DAMODARAN = 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html';
+const WORTH_FROM = 1926;
+const MEASURINGWORTH = 'https://www.measuringworth.com/datasets/usgdp/result.php?year_source=' + WORTH_FROM + '&year_result=' + GROWTH_FROM + '&use%5B%5D=REALGDP';
 const { shillerSheet, shillerMonth, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
 
@@ -180,6 +182,24 @@ function damodaranReturns(html, from, to) {
   return out;
 }
 
+function worthLevels(html, from, to) {
+  const out = {};
+  for (const row of html.split(/<tr[\s>]/i).slice(1)) {
+    const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(m => m[1].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
+    if (cells.length < 2 || !/^\d{4}$/.test(cells[0])) continue;
+    const y = Number(cells[0]), v = Number(cells[1].replace(/[$,\s]/g, ''));
+    if (y >= from && y <= to && band(v, 1, 1e9)) out[y] = v;
+  }
+  for (let y = from; y <= to; y++) if (!(y in out)) throw new Error('MeasuringWorth: no ' + y + ' in the real GDP table; the page began: ' + html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 1500));
+  return out;
+}
+
+function worthGrowth(levels, from, to) {
+  const out = {};
+  for (let y = from; y <= to; y++) out[y] = Math.round((levels[y] / levels[y - 1] - 1) * 1000) / 10;
+  return out;
+}
+
 function fiscalYears(rows, lo, hi) {
   return rows.filter(r => band(r.v, lo, hi)).map(r => {
     if (!/^\d{4}-01-01$/.test(r.date)) throw new Error('not a fiscal-year date: ' + r.date);
@@ -301,11 +321,17 @@ async function earlySeasons() {
   fiscalYears(await fredSeries('A191RL1A225NBEA', GROWTH_FROM + '-01-01'), -15, 25).filter(d => d.y < RETURNS_JOIN).forEach(d => { growth[d.y] = d.v; });
   for (let y = GROWTH_FROM; y < RETURNS_JOIN; y++) if (!(y in growth)) throw new Error('A191RL1A225NBEA: no ' + y);
   say('Real GDP      ' + Object.keys(growth).length + ' years, ' + GROWTH_FROM + ' → ' + (RETURNS_JOIN - 1) + ' (BEA, annual change)');
+  const w = await fetch(MEASURINGWORTH, { headers: { 'user-agent': 'gyneconomy-backfill (github.com/kerzaiden/gyneconomy)' } });
+  if (!w.ok) throw new Error('MeasuringWorth: HTTP ' + w.status);
+  const levels = worthLevels(await w.text(), WORTH_FROM, GROWTH_FROM), worth = worthGrowth(levels, WORTH_FROM + 1, GROWTH_FROM);
+  if (Math.abs(worth[GROWTH_FROM] - growth[GROWTH_FROM]) > 0.5) throw new Error('MeasuringWorth ' + GROWTH_FROM + ' growth ' + worth[GROWTH_FROM] + ' does not meet BEA ' + growth[GROWTH_FROM]);
+  for (let y = WORTH_FROM + 1; y < GROWTH_FROM; y++) growth[y] = worth[y];
+  say('Real GDP      ' + (WORTH_FROM + 1) + ' → ' + (GROWTH_FROM - 1) + ' (MeasuringWorth, ' + JSON.stringify(levels) + '; ' + GROWTH_FROM + ' meets BEA at ' + worth[GROWTH_FROM] + ')');
   return { gdp, cpi, returns, growth };
 }
 
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { premiumFromRows, damodaranReturns, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `21afbe4` on 2026-10-03. **82 components**, **36 shared patterns**.
+Generated from commit `879065f` on 2026-10-03. **83 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -76,6 +76,7 @@ Generated from commit `21afbe4` on 2026-10-03. **82 components**, **36 shared pa
 | **`quarterCards`** | `.cat-sheet` `.cat-weather` | `dial-cycle.ts:quarterSheet` |
 | **`quarterPopup`** | `.reading-block` `.reading-book` `.reading-watch` | `dial-cycle.ts:quarterSheet` |
 | **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-row` `.legend-rows` `.season-sw` `.ytd` | `dial-cycle.ts:bootDialCycle` |
+| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 
 ## dom.ts
 
@@ -292,7 +293,6 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.dx-mark` | 2 | `diagnosis.ts:dxHead`, `diagnosis.ts:moodDoor` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |
 | `.strip-run` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
-| `.strip-dots` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.strip` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.hi-card` | 2 | `format.ts:hiCard`, `render-core.ts:cardDetailHtml` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
