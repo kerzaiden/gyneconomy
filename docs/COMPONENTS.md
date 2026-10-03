@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2973ac9` on 2026-10-03. **81 components**, **40 shared patterns**.
+Generated from commit `31840ea` on 2026-10-03. **81 components**, **40 shared patterns**.
 
 ## analysis.js
 
@@ -207,6 +207,7 @@ renderer speaks. Listed most-used first.
 | **`timelineSpan`** | history.js | 6 places |
 | **`atMonth`** | format.js | 5 places |
 | **`focusQuiet`** | dom.js | 5 places |
+| **`labRow`** | data.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
 | **`paintReading`** | repaint.js | 5 places |
 | **`qWindowFrom`** | history.js | 5 places |
@@ -217,11 +218,8 @@ renderer speaks. Listed most-used first.
 | **`histReadFill`** | history.js | 4 places |
 | **`hyAt`** | data.js | 4 places |
 | **`indOf`** | readings.js | 4 places |
-| **`labRow`** | data.js | 4 places |
 | **`layer`** | dom.js | 4 places |
-| **`LIVE`** | live.js | 4 places |
 | **`mean`** | format.js | 4 places |
-| **`merge`** | live.js | 4 places |
 | **`moodTrack`** | model.js | 4 places |
 | **`openCycle`** | model.js | 4 places |
 | **`prettyK`** | era.js | 4 places |
@@ -229,11 +227,14 @@ renderer speaks. Listed most-used first.
 | **`seasonGroup`** | model.js | 4 places |
 | **`byIdMaybe`** | dom.js | 3 places |
 | **`cycleQtrIdx`** | model.js | 3 places |
+| **`desireRow`** | readings.js | 3 places |
 | **`docValue`** | live.js | 3 places |
 | **`eraFig`** | era.js | 3 places |
-| **`fmtAsOf`** | format.js | 3 places |
 | **`groupId`** | indicators.js | 3 places |
 | **`headMoreBtn`** | history.js | 3 places |
+| **`liveInto`** | live.js | 3 places |
+| **`liveIsoOf`** | live.js | 3 places |
+| **`merge`** | live.js | 3 places |
 | **`moodToday`** | model.js | 3 places |
 | **`mWindowFrom`** | history.js | 3 places |
 | **`onScreen`** | dom.js | 3 places |

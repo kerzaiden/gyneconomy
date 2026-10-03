@@ -22,19 +22,21 @@ export function plainText(v){
   if (v && typeof v === "object") return Object.keys(v).every(function(k){ return plainText(k) && plainText(v[k]); });
   return true;
 }
-export function LIVE(name, fallback){
-  var d = LIVE_CACHE[name];
-  if (!docOk(name, d)) return fallback;
-  liveApplied[name] = JSON.stringify(d);
-  if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf);
-  return d.kind === "object" ? merge(fallback, docValue(d)) : docValue(d);
-}
 export function liveIsoOf(name){
   try { return JSON.parse(liveApplied[name] || "{}").asOf || ""; } catch (e) { return ""; }
 }
 export function liveInto(name){
-  var v = LIVE(name, null);
-  if (v != null) READINGS[name].set(v);
+  var d = LIVE_CACHE[name];
+  return docOk(name, d) && landLive(name, docValue(d), d);
+}
+function landLive(name, value, d){
+  var r = READINGS[name], was = liveApplied[name], asOf = liveAsOf[name];
+  if (d){ liveApplied[name] = JSON.stringify(d); if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf); }
+  try {
+    if (!shapeOk(r, value)) throw new Error("shape");
+    r.set(value);
+    return true;
+  } catch (e) { liveApplied[name] = was; liveAsOf[name] = asOf; return false; }
 }
 /* ---- The first series to come from outside the file ---- */
 export function repaintLive(){
@@ -101,26 +103,17 @@ function receive(next, mode){
   var names = Object.keys(next).filter(function(n){ return docOk(n, next[n]); });
   if (!names.length) return 0;
   var fresh = {}, moved = 0;
-  names.forEach(function(n){ fresh[n] = next[n]; });
-  var now = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
-  try { window.localStorage.setItem("gyn.live", JSON.stringify(now)); } catch (e) {}
-  LIVE_CACHE = now;
   names.forEach(function(name){
-    var doc = JSON.stringify(next[name]);
-    if (next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
-    if (liveApplied[name] === doc) return;
-    if (applyLive(name, docValue(next[name]))) { liveApplied[name] = doc; moved++; }
+    if (liveApplied[name] === JSON.stringify(next[name])) fresh[name] = next[name];
+    else if (applyLive(name, docValue(next[name]), next[name])){ fresh[name] = next[name]; moved++; }
   });
+  var keep = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
+  try { window.localStorage.setItem("gyn.live", JSON.stringify(keep)); } catch (e) {}
+  LIVE_CACHE = keep;
   return moved;
 }
-function applyLive(name, value){
-  if (value == null) return false;
-  var r = READINGS[name];
-  if (!r) return false;
-  try {
-    if (!shapeOk(r, value)) return false;
-    r.set(value);
-  } catch (e) { return false; }
+function applyLive(name, value, d){
+  if (value == null || !READINGS[name] || !landLive(name, value, d)) return false;
   (painters[name] || []).concat(painters["*"] || []).forEach(function(fn){
     try { fn(); } catch (e) { if (window.console) console.warn("repaint " + name + " failed", e); }
   });
@@ -159,6 +152,13 @@ export function fetchSiteData(){
   }).catch(function(){  });
 }
 
+export function forgetLive(e){
+  var had = false;
+  try { had = !!window.localStorage.getItem("gyn.live") && !window.sessionStorage.getItem("gyn.forgot"); } catch (x) {}
+  if (!had) throw e;
+  try { window.localStorage.removeItem("gyn.live"); window.sessionStorage.setItem("gyn.forgot", "1"); } catch (x) { throw e; }
+  window.location.reload();
+}
 export function bootLive(){
   LIVE_CACHE = (function(){
     try { return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {}; }

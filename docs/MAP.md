@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,589 lines** in 31 files, about 538 KB, roughly **153 thousand tokens**. No session can
+The source is **8,614 lines** in 31 files, about 540 KB, roughly **153 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `2973ac9` on 2026-10-03.
+Generated from commit `31840ea` on 2026-10-03.
 
 ## The page
 
@@ -23,20 +23,20 @@ Generated from commit `2973ac9` on 2026-10-03.
 | `js/main.js` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **27** modules, **475** top-level functions, **145** top-level vars, **347** exported names, **17** boots.
+Counts: **27** modules, **479** top-level functions, **145** top-level vars, **347** exported names, **17** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
 | `js/dom.js` | 134 | 21 | `format` |
-| `js/live.js` | 168 | 21 | `format` |
+| `js/live.js` | 168 | 22 | `format` |
 | `js/refresh-season.js` | 40 | 7 | `format`, `history-fred` |
-| `js/data.js` | 495 | 70 | `format`, `history-fred`, `live` |
+| `js/data.js` | 505 | 71 | `format`, `history-fred`, `live` |
 | `js/model.js` | 330 | 47 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.js` | 457 | 39 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.js` | 811 | 65 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.js` | 144 | 18 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
+| `js/readings.js` | 818 | 66 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/roster.js` | 148 | 19 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.js` | 567 | 38 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.js` | 484 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.js` | 83 | 17 | `dom`, `era`, `format`, `live`, `marks`, `model`, `refresh-season`, `roster` |
@@ -55,7 +55,7 @@ Counts: **27** modules, **475** top-level functions, **145** top-level vars, **3
 | `js/inner-pages.js` | 257 | 11 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.js` | 183 | 17 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.js` | 61 | 22 | — |
-| `js/main.js` | 35 | 0 | `analysis`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
+| `js/main.js` | 39 | 0 | `analysis`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
 ## The boots
 
@@ -68,12 +68,12 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 1 | `bootDom` | `js/dom.js:124`–133 |
 | 2 | `bootLive` | `js/live.js:162`–167 |
 | 3 | `bootRefreshSeason` | `js/refresh-season.js:30`–39 |
-| 4 | `bootData` | `js/data.js:447`–494 |
+| 4 | `bootData` | `js/data.js:455`–504 |
 | 5 | `bootModel` | `js/model.js:277`–329 |
 | 6 | `bootHistory` | `js/history.js:432`–456 |
-| 7 | `bootReadings` | `js/readings.js:630`–737 |
-| 8 | `bootReadingRegistry` | `js/readings.js:743`–810 |
-| 9 | `bootRoster` | `js/roster.js:83`–143 |
+| 7 | `bootReadings` | `js/readings.js:630`–724 |
+| 8 | `bootReadingRegistry` | `js/readings.js:747`–817 |
+| 9 | `bootRoster` | `js/roster.js:87`–147 |
 | 10 | `bootRenderCore` | `js/render-core.js:556`–566 |
 | 11 | `bootRenderPages` | `js/render-pages.js:466`–483 |
 | 12 | `bootDiagnosis` | `js/diagnosis.js:79`–82 |
@@ -127,27 +127,28 @@ falls in. **export** marks a name other modules import.
 | 7 | `docValue` | `function docValue(` |
 | 16 | `docOk` | `function docOk(` |
 | 20 | `plainText` · export | `function plainText(` |
-| 25 | `LIVE` · export | `function LIVE(` |
-| 32 | `liveIsoOf` · export | `function liveIsoOf(` |
-| 35 | `liveInto` · export | `function liveInto(` |
+| 25 | `liveIsoOf` · export | `function liveIsoOf(` |
+| 28 | `liveInto` · export | `function liveInto(` |
+| 32 | `landLive` | `function landLive(` |
 
 #### The first series to come from outside the file
 
 | Line | Name | Anchor |
 |---|---|---|
-| 40 | `repaintLive` · export | `function repaintLive(` |
-| 45 | `shapeOk` | `function shapeOk(` |
-| 51 | `GYN` · export | `var GYN =` |
-| 76 | `painters` | `var painters =` |
-| 77 | `defineReadings` · export | `function defineReadings(` |
-| 81 | `onLive` · export | `function onLive(` |
-| 82 | `exposeLive` · export | `function exposeLive(` |
-| 85 | `KINDS` | `var KINDS =` |
-| 86 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
-| 100 | `receive` | `function receive(` |
-| 116 | `applyLive` | `function applyLive(` |
-| 129 | `refreshLiveData` · export | `function refreshLiveData(` |
-| 146 | `fetchSiteData` · export | `function fetchSiteData(` |
+| 42 | `repaintLive` · export | `function repaintLive(` |
+| 47 | `shapeOk` | `function shapeOk(` |
+| 53 | `GYN` · export | `var GYN =` |
+| 78 | `painters` | `var painters =` |
+| 79 | `defineReadings` · export | `function defineReadings(` |
+| 83 | `onLive` · export | `function onLive(` |
+| 84 | `exposeLive` · export | `function exposeLive(` |
+| 87 | `KINDS` | `var KINDS =` |
+| 88 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
+| 102 | `receive` | `function receive(` |
+| 115 | `applyLive` | `function applyLive(` |
+| 122 | `refreshLiveData` · export | `function refreshLiveData(` |
+| 139 | `fetchSiteData` · export | `function fetchSiteData(` |
+| 155 | `forgetLive` · export | `function forgetLive(` |
 
 ### `js/refresh-season.js`
 
@@ -223,47 +224,48 @@ falls in. **export** marks a name other modules import.
 | 147 | `hyQuarterEnds` · export | `function hyQuarterEnds(` |
 | 148 | `capeHistory` · export | `var capeHistory =` |
 | 149 | `longCycleSrc` · export | `var longCycleSrc =` |
-| 164 | `checkGrossDebt` | `function checkGrossDebt(` |
-| 176 | `valRow` · export | `function valRow(` |
-| 180 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
-| 181 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
-| 182 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
-| 183 | `m2vHistory` · export | `var m2vHistory =` |
-| 184 | `PRODUCTIVITY_SRC` · export | `var PRODUCTIVITY_SRC =` |
-| 189 | `CONFIDENCE_SRC` · export | `var CONFIDENCE_SRC =` |
-| 193 | `checkVelocityHistory` | `function checkVelocityHistory(` |
-| 198 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
-| 199 | `m2Level` | `var m2Level =` |
-| 200 | `m2Yoy` · export | `var m2Yoy =` |
-| 201 | `M2_NORM` · export | `var M2_NORM =` |
-| 202 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
-| 203 | `unempHistory` · export | `var unempHistory =` |
-| 207 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
-| 215 | `NROU_NOW` · export | `var NROU_NOW =` |
-| 216 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
-| 223 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
-| 224 | `CPI_TARGET` · export | `var CPI_TARGET =` |
-| 225 | `GDP_NORM` · export | `var GDP_NORM =` |
-| 226 | `checkMoneyStock` | `function checkMoneyStock(` |
-| 232 | `seasonReading` · export | `var seasonReading =` |
-| 276 | `frameworkRows` · export | `var frameworkRows =` |
-| 285 | `VIX_CALM` · export | `var VIX_CALM =` |
-| 286 | `VIX_CONVENTION` · export | `var VIX_CONVENTION =` |
-| 290 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 291 | `dsrHistory` · export | `var dsrHistory =` |
-| 292 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
-| 293 | `savHistory` · export | `var savHistory =` |
-| 294 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 302 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 303 | `dsrNow` · export | `var dsrNow =` |
-| 304 | `savNow` · export | `var savNow =` |
-| 305 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 306 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 317 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 318 | `sp500AnnualReturnSource` · export | `var sp500AnnualReturnSource =` |
-| 323 | `marketCycles` · export | `var marketCycles =` |
-| 439 | `typicalCycleYears` · export | `var typicalCycleYears =` |
-| 440 | `typicalCycleSrc` · export | `var typicalCycleSrc =` |
+| 164 | `syncGrossDebt` | `function syncGrossDebt(` |
+| 174 | `checkGrossDebt` | `function checkGrossDebt(` |
+| 184 | `valRow` · export | `function valRow(` |
+| 188 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
+| 189 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
+| 190 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
+| 191 | `m2vHistory` · export | `var m2vHistory =` |
+| 192 | `PRODUCTIVITY_SRC` · export | `var PRODUCTIVITY_SRC =` |
+| 197 | `CONFIDENCE_SRC` · export | `var CONFIDENCE_SRC =` |
+| 201 | `checkVelocityHistory` | `function checkVelocityHistory(` |
+| 206 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
+| 207 | `m2Level` | `var m2Level =` |
+| 208 | `m2Yoy` · export | `var m2Yoy =` |
+| 209 | `M2_NORM` · export | `var M2_NORM =` |
+| 210 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
+| 211 | `unempHistory` · export | `var unempHistory =` |
+| 215 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
+| 223 | `NROU_NOW` · export | `var NROU_NOW =` |
+| 224 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
+| 231 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
+| 232 | `CPI_TARGET` · export | `var CPI_TARGET =` |
+| 233 | `GDP_NORM` · export | `var GDP_NORM =` |
+| 234 | `checkMoneyStock` | `function checkMoneyStock(` |
+| 240 | `seasonReading` · export | `var seasonReading =` |
+| 284 | `frameworkRows` · export | `var frameworkRows =` |
+| 293 | `VIX_CALM` · export | `var VIX_CALM =` |
+| 294 | `VIX_CONVENTION` · export | `var VIX_CONVENTION =` |
+| 298 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
+| 299 | `dsrHistory` · export | `var dsrHistory =` |
+| 300 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
+| 301 | `savHistory` · export | `var savHistory =` |
+| 302 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 310 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 311 | `dsrNow` · export | `var dsrNow =` |
+| 312 | `savNow` · export | `var savNow =` |
+| 313 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 314 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 325 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 326 | `sp500AnnualReturnSource` · export | `var sp500AnnualReturnSource =` |
+| 331 | `marketCycles` · export | `var marketCycles =` |
+| 447 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 448 | `typicalCycleSrc` · export | `var typicalCycleSrc =` |
 
 ### `js/model.js`
 
@@ -458,9 +460,10 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 738 | `isNum` | `function isNum(` |
-| 739 | `rowsOk` | `function rowsOk(` |
-| 742 | `desireRow` · export | `function desireRow(` |
+| 725 | `isNum` | `function isNum(` |
+| 726 | `rowsOk` | `function rowsOk(` |
+| 732 | `deriveHorizon` | `function deriveHorizon(` |
+| 746 | `desireRow` · export | `function desireRow(` |
 
 ### `js/roster.js`
 
@@ -479,13 +482,14 @@ falls in. **export** marks a name other modules import.
 | 42 | `compiledDay` | `function compiledDay(` |
 | 43 | `isoLabel` | `function isoLabel(` |
 | 47 | `paintWhen` · export | `function paintWhen(` |
-| 52 | `labPeriod` | `function labPeriod(` |
-| 53 | `rosterFor` · export | `function rosterFor(` |
-| 54 | `peekOf` · export | `function peekOf(` |
-| 59 | `cardDate` · export | `function cardDate(` |
-| 60 | `checkRoster` | `function checkRoster(` |
-| 78 | `periodOf` · export | `function periodOf(` |
-| 79 | `categoriesShown` · export | `function categoriesShown(` |
+| 52 | `desireWhen` | `function desireWhen(` |
+| 56 | `labPeriod` | `function labPeriod(` |
+| 57 | `rosterFor` · export | `function rosterFor(` |
+| 58 | `peekOf` · export | `function peekOf(` |
+| 63 | `cardDate` · export | `function cardDate(` |
+| 64 | `checkRoster` | `function checkRoster(` |
+| 82 | `periodOf` · export | `function periodOf(` |
+| 83 | `categoriesShown` · export | `function categoriesShown(` |
 
 ### `js/render-core.js`
 

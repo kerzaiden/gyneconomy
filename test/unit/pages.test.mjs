@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { errors } from './dom.mjs';
+import { errors, bootWarnings } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.js';
 import { ROSTER } from '../../src/js/roster.js';
 import { page } from '../../src/js/history.js';
@@ -10,6 +10,10 @@ import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryCha
 const BROKEN = ['NaN', 'undefined', 'Infinity', '[object Object]'];
 const broken = html => BROKEN.filter(b => html.includes(b));
 const WIDTHS = [320, 390, 768, 1280];
+
+test('the app boots with no self-check warning', () => {
+  assert.deepEqual(bootWarnings, []);
+});
 
 test('every reading in the roster has a page that draws it', () => {
   for (const R of ROSTER) {

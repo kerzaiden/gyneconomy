@@ -109,6 +109,9 @@ ok('a reading that failed keeps its previous document',
    assemble({ vixClose: { v: 1 }, capeValue: { v: 2 }, _meta: { old: true } }, { vixClose: { v: 3 }, _meta: { now: true } }),
    { vixClose: { v: 3 }, capeValue: { v: 2 }, _meta: { now: true } });
 ok('a first run has nothing to keep', assemble(null, { yieldCurve: 1 }), { yieldCurve: 1 });
+const held = { kind: 'object', lo: 3.75, hi: 4, lastMove: '+0.25', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' };
+ok('a failed move fetch keeps the last good Fed document', assemble({ fedFunds: held }, { fedFunds: { kind: 'object', lo: 3.75, hi: 4 } }).fedFunds, held);
+ok('a new range without its move replaces the old document', assemble({ fedFunds: held }, { fedFunds: { kind: 'object', lo: 3.5, hi: 3.75 } }).fedFunds, { kind: 'object', lo: 3.5, hi: 3.75 });
 
 console.log('\nFOMC calendar — tools/fetch-live.js\n');
 const fomcPage = fs.readFileSync(path.join(__dirname, 'fixtures', 'fomccalendars.html'), 'utf8');

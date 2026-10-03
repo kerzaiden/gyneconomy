@@ -1173,6 +1173,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   in `src/data/*.json`; navigation split into `inner-pages` and `cycle-tab`; TypeScript by inference only, since
   the no-comments rule rules out annotations; a live document refused if any of its text carries `<`, `>` or `"`;
   content tests of what the pages say, with an 88% line-coverage floor. (V697)
+- **A first visit and a returning visit show the same figures, and a figure the bots update is never typed.**
+  Keren chose "Fix all" on Claude's V697 review. Claude chose: cached documents load through the readings' own
+  `set`; the debt card reads its series; a warning at boot fails `npm run check`; a stored document that breaks
+  the boot is dropped once; the service worker never stores an error page; `sources.html` is checked in CI;
+  `npm run map` writes nothing when only the commit stamp would change. Left for Keren: the typed policy fact
+  "First hike since 2023 · one more signalled" and Weather's opening line, which can contradict the live
+  figures. (V698)
 
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)

@@ -124,6 +124,8 @@ function assemble(prev, fresh) {
   const out = {};
   for (const k of Object.keys(prev || {})) if (k !== '_meta') out[k] = prev[k];
   for (const k of Object.keys(fresh)) out[k] = fresh[k];
+  const was = prev && prev.fedFunds, ff = fresh.fedFunds;
+  if (ff && !ff.lastMove && was && was.lo === ff.lo && was.hi === ff.hi) out.fedFunds = was;
   return out;
 }
 

@@ -29,7 +29,7 @@ function repaintVolatilityRing(){
   });
 }
 function paintTag(d, tag){
-  var t = d.querySelector(".tag");
+  var t = d.querySelector(".tag") || d.querySelector(".ci-word");
   if (!t) return;
   t.textContent = tag.text;
   if (tag.state != null && /\btag\b/.test(t.className))

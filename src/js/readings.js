@@ -1,6 +1,6 @@
 import { facts, fmtSigned, ledeHtml, monthLabel, qAtIndex, qPretty, srcBlock } from "./format.js";
 import { byId, expandBtn, ui } from "./dom.js";
-import { defineReadings, GYN, LIVE, liveAsOf, liveInto, merge } from "./live.js";
+import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.js";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.js";
 import { confidenceHistory, productivityHistory } from "./history-fred.js";
 import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
@@ -241,7 +241,7 @@ function temperatureInfoHtml(ind){
     ]);
 }
 function desireBlock(ind){
-  histNote("desire-range", desireInfoHtml(ind));
+  histNote("desire-range", function(){ return desireInfoHtml(ind); });
   return histBar("", "desire-timeline") +
     '<div class="page-chart pulsebox">' +
     histHead("desire-range") +
@@ -554,7 +554,7 @@ export function volatilityRing(){
 }
 export function volatilityDetailHtml(){
   var m = now.vixRow.meter;
-  return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + '</div>' + facts([
+  return '<h4>Volatility</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + '</div>' + facts([
     'The <b>VIX</b> is Cboe\u2019s volatility index: what options traders pay to insure the S&amp;P 500 against a fall ' +
       'over the next thirty days, as an annual rate.',
     'It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near ' +
@@ -625,7 +625,7 @@ export function indPeriod(R){
 
 
 export var productivityReading, confidenceRecord, confidenceReading, tempInfo, horizonRead, householdsNow, marketReading;
-var productivityRecord, gdpNowQ, HZN_METERS, curveSub;
+var productivityRecord, gdpNowQ, HZN_METERS;
 
 export function bootReadings(){
   /* ---- Productivity growth is not in this panel ---- */
@@ -674,7 +674,7 @@ export function bootReadings(){
   })(confidenceRecord);
   now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
   liveInto("capeValue");
-  coincident = LIVE("coincident", coincident);
+  liveInto("coincident");
   liveInto("hyOasNow");
   GYN.step("deriveVolumeTag", deriveVolumeTag, "derive");
   deriveVolumeTag();
@@ -690,21 +690,9 @@ export function bootReadings(){
       'One of the two readings a season is computed from: the level, and the direction of the last twelve months.',
       'It confirms heat that has already built rather than predicting it.'
     ]);
-  now.vix3mClose = LIVE("vix3mClose", 17.61);
-  horizonRead = (function(){
-    var pick = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
-    var sp = pick("10Y") - pick("3M");
-    var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
-    var tN2 = hznLast(t10y2yHistory);
-    var dSpread = sN.v - hznBack(t10y3mHistory, sN.i, HZN_BACK);
-    var dLong   = lN.v - hznBack(t10yYieldHistory, lN.i, HZN_BACK);
-    var dShort  = tN.v - hznBack(t3mYieldHistory, tN.i, HZN_BACK);
-    var w = horizonWord(sp, dLong, dShort, dSpread);
-    return { spread:sp, q:sN, q2:tN2, dSpread:dSpread, dLong:dLong, dShort:dShort,
-             was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
-             d2:tN2.v - hznBack(t10y2yHistory, tN2.i, HZN_BACK),
-             word:w.word, state:w.state };
-  })();
+  liveInto("vix3mClose");
+  GYN.step("deriveHorizon", deriveHorizon, "derive");
+  deriveHorizon();
   HZN_METERS = {
     "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
@@ -714,7 +702,6 @@ export function bootReadings(){
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }
   };
   householdsNow = householdsWord(dsrNow, savNow);
-  curveSub = "Cboe, " + now.vixRow.sub;
   marketReading = (function(h){
     var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
     var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
@@ -736,8 +723,25 @@ export function bootReadings(){
   })(sp500Years);
 }
 function isNum(x){ return typeof x === "number" && isFinite(x); }
-function rowsOk(rows){
-  return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){ return r && typeof r === "object" && (!r.meter || isNum(r.meter.value)); });
+function rowsOk(rows, need){
+  return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){
+    var m = r && typeof r === "object" && r.meter;
+    return !!m && isNum(m.value) && isNum(m.min) && isNum(m.max) && m.min < m.max;
+  }) && (need || []).every(function(k){ return rows.some(function(r){ return r.key === k || r.bodyTerm === k; }); });
+}
+function deriveHorizon(){
+  var pick = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
+  var sp = pick("10Y") - pick("3M");
+  var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
+  var tN2 = hznLast(t10y2yHistory);
+  var dSpread = sN.v - hznBack(t10y3mHistory, sN.i, HZN_BACK);
+  var dLong   = lN.v - hznBack(t10yYieldHistory, lN.i, HZN_BACK);
+  var dShort  = tN.v - hznBack(t3mYieldHistory, tN.i, HZN_BACK);
+  var w = horizonWord(sp, dLong, dShort, dSpread);
+  horizonRead = { spread:sp, q:sN, q2:tN2, dSpread:dSpread, dLong:dLong, dShort:dShort,
+    was:hznBack(t10y3mHistory, sN.i, HZN_BACK), was2:hznBack(t10y2yHistory, tN2.i, HZN_BACK),
+    d2:tN2.v - hznBack(t10y2yHistory, tN2.i, HZN_BACK),
+    word:w.word, state:w.state };
 }
 export function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
 export function bootReadingRegistry(){
@@ -747,15 +751,18 @@ export function bootReadingRegistry(){
       kind: "object",
       ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
       set: function(v){
-        if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"" });
+        if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"", next:"" });
         if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
         now.fedFunds = merge(now.fedFunds, v);
       }
     },
     yieldCurve: {
       kind: "series",
-      ok: function(v){ return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || isNum(r.y)); }); },
-      set: function(v){ now.yieldCurve = v; }
+      ok: function(v){
+        var has = function(m){ return v.some(function(r){ return r.m === m && r.y !== null; }); };
+        return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || (isNum(r.y) && r.y >= 0 && r.y <= 20)); }) && has("10Y") && has("3M");
+      },
+      set: function(v){ now.yieldCurve = v; if (horizonRead) deriveHorizon(); }
     },
     sentiment:  {
       kind: "object",
@@ -764,7 +771,7 @@ export function bootReadingRegistry(){
     },
     valuation:  {
       kind: "object",
-      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
+      ok: function(v){ return v.rows === undefined || rowsOk(v.rows, ["cape"]); },
       set: function(v){
         now.valuation = merge(now.valuation, v);
         if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
@@ -772,7 +779,7 @@ export function bootReadingRegistry(){
     },
     coincident: {
       kind: "series",
-      ok: rowsOk,
+      ok: function(v){ return rowsOk(v, ["Desire", "Pulse", "Volume"]); },
       set: function(v){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
       onOpen: true
     },
@@ -806,5 +813,5 @@ export function bootReadingRegistry(){
       }
     }
   });
-  now.fedFunds = LIVE("fedFunds", now.fedFunds);
+  liveInto("fedFunds");
 }
