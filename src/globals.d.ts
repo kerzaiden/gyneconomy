@@ -1,9 +1,6 @@
 interface Window {
   claude?: { use(name: string): Promise<any> };
   __GYN: unknown;
-  __sources: { all: Src[]; cards: { src: Src[] }[]; annual: Src[]; gdp: Src[] };
-  __CAT_SNAP: Record<string, Node>;
-  __histRead: unknown;
   __paintMiss: string[];
   __actMiss: string[];
   __elMiss: Record<string, number>;

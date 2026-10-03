@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4df59d1` on 2026-10-03. **80 components**, **36 shared patterns**.
+Generated from commit `dd5dc96` on 2026-10-03. **80 components**, **36 shared patterns**.
 
 ## analysis.ts
 
@@ -177,9 +177,11 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | dom.ts | 49 places |
-| **`put`** | dom.ts | 23 places |
+| **`byId`** | dom.ts | 34 places |
+| **`need`** | dom.ts | 26 places |
+| **`put`** | dom.ts | 24 places |
 | **`fmtSigned`** | format.ts | 19 places |
+| **`metered`** | format.ts | 12 places |
 | **`histFrame`** | charts.ts | 11 places |
 | **`monthLabel`** | format.ts | 11 places |
 | **`publishGeom`** | charts.ts | 11 places |
@@ -190,56 +192,62 @@ renderer speaks. Listed most-used first.
 | **`lede`** | format.ts | 9 places |
 | **`pageCycle`** | history.ts | 9 places |
 | **`qLabel`** | format.ts | 9 places |
-| **`windowYears`** | charts.ts | 9 places |
 | **`factsFrom`** | format.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`focusQuiet`** | dom.ts | 8 places |
+| **`windowYears`** | charts.ts | 8 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
-| **`valRow`** | data.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`yearOf`** | format.ts | 7 places |
 | **`atMonth`** | format.ts | 6 places |
+| **`fileRow`** | data.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
+| **`tagFor`** | format.ts | 6 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
+| **`bandEnds`** | format.ts | 4 places |
+| **`curveAt`** | data.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
-| **`indOf`** | readings.ts | 4 places |
 | **`mean`** | format.ts | 4 places |
-| **`moodTrack`** | model.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`prettyK`** | era.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |
+| **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
+| **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
-| **`eraFig`** | era.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
 | **`groupId`** | indicators.ts | 3 places |
 | **`growthWord`** | model.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
-| **`histReadFill`** | history.ts | 3 places |
+| **`indOf`** | readings.ts | 3 places |
 | **`keyed`** | roster.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
+| **`moodTrack`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
+| **`openOf`** | render-core.ts | 3 places |
 | **`popHead`** | format.ts | 3 places |
 | **`qPretty`** | format.ts | 3 places |
 | **`registerTiming`** | render-core.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
+| **`stateOf`** | format.ts | 3 places |
 | **`tabSegs`** | history.ts | 3 places |
+| **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 

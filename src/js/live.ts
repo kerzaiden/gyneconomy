@@ -43,11 +43,13 @@ export function plainText(v: unknown): boolean {
 export function liveIsoOf(name: string): string {
   try { return JSON.parse(liveApplied[name] || "{}").asOf || ""; } catch (e) { return ""; }
 }
+function olderThanFile(name: string, d: LiveDoc | null | undefined){
+  var r = READINGS[name], file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
+  return got < file;
+}
 export function liveInto(name: string){
-  var d = LIVE_CACHE[name], r = READINGS[name];
-  var file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
-  if (got < file) return false;
-  return docOk(name, d) && landLive(name, docValue(d), d);
+  var d = LIVE_CACHE[name];
+  return !olderThanFile(name, d) && docOk(name, d) && landLive(name, docValue(d), d);
 }
 function landLive(name: string, value: unknown, d: LiveDoc | null | undefined){
   var r = READINGS[name], was = liveApplied[name], asOf = liveAsOf[name];
@@ -58,7 +60,7 @@ function landLive(name: string, value: unknown, d: LiveDoc | null | undefined){
     return true;
   } catch (e) { liveApplied[name] = was; liveAsOf[name] = asOf; return false; }
 }
-/* ---- The first series to come from outside the file ---- */
+/* ---- Repaint ---- */
 export function repaintLive(){
   LIVE_NAMES.forEach(function(n){
     (painters[n] || []).forEach(function(fn){ try { fn(); } catch (e) { if (window.console) console.warn("repaint " + n + " failed", e); } });
@@ -120,7 +122,7 @@ export function checkLiveCoverage(){
   if (bad.length && window.console) console.warn("reading registry: " + bad.join(", "));
 }
 function receive(next: Record<string, LiveDoc>, mode: "replace" | "merge"){
-  var names = Object.keys(next).filter(function(n){ return docOk(n, next[n]); });
+  var names = Object.keys(next).filter(function(n){ return docOk(n, next[n]) && !olderThanFile(n, next[n]); });
   if (!names.length) return 0;
   var fresh: Record<string, LiveDoc> = {}, moved = 0;
   names.forEach(function(name){
@@ -178,6 +180,9 @@ export function forgetLive(e: unknown){
   if (!had) throw e;
   try { window.localStorage.removeItem("gyn.live"); window.sessionStorage.setItem("gyn.forgot", "1"); } catch (x) { throw e; }
   window.location.reload();
+}
+export function bootDone(){
+  try { window.sessionStorage.removeItem("gyn.forgot"); } catch (e) {}
 }
 export function bootLive(){
   LIVE_CACHE = (function(){

@@ -10,6 +10,7 @@ import type { CycleModel, Mood } from "./model.ts";
 type WeatherRow = { name: string; from: number; closed: boolean; g: number; p: number; gap: number };
 type Story = NonNullable<ReturnType<typeof cycleStory>>;
 type StoryBeat = { x: Mood; verb: string; tag?: string };
+type MoodRead = Mood & { word: string; pct: number; change: number };
 
 function insightCirculation(){
   var vel = m2vHistory, n = vel.length;
@@ -21,8 +22,8 @@ function insightCirculation(){
   var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
   var offLow = (vel[n - 1] / lo - 1) * 100;
   var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
-  if (!volInd || !volInd.meter) return "";
-  var volPct = volInd.meter.value!;
+  if (!volInd || !volInd.meter || volInd.meter.value == null) return "";
+  var volPct = volInd.meter.value;
   var up = volPct > 0, vup = velChg > 0;
   var name = up && vup  ? "Growing and moving faster"
            : up && !vup ? "Added faster than it is used"
@@ -138,7 +139,8 @@ function moodCycleSvg(now: string){
   return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' +
     (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
 }
-function moodInfo(d: Mood){
+function isRead(d: Mood): d is MoodRead { return !!d.word && d.pct != null && d.change != null; }
+function moodInfo(d: MoodRead){
   return '<h4>Her mood</h4>' + facts([moodFigures(d),
     "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
     "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor\u2019s euphoria is not another\u2019s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.",
@@ -147,20 +149,20 @@ function moodInfo(d: Mood){
     "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month."
   ]) + srcBlock(MOOD_SRC);
 }
-function moodFigures(d: Mood){
-  var r = Math.round, ago = d.ago ? ", " + (d.change! > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+function moodFigures(d: MoodRead){
+  var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
   return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) +
-    " that ranks " + r(d.pct!) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) +
+    " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) +
     ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
 }
-function moodCard(d: Mood){
+function moodCard(d: MoodRead){
   var c = ui.eraOpen || currentEra, s = cycleStory(c);
   return hiCard("She\u2019s in " + d.word, "", s ? c.name + ", " + c.from + "\u2013" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
 }
 function insightMood(){
   var d = moodToday();
   var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor\u2019s euphoria is not another\u2019s.");
-  if (!d || !d.word) return highlightsHtml([intro], "", "");
+  if (!d || !isRead(d)) return highlightsHtml([intro], "", "");
   return highlightsHtml([intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + '</figure>', moodCard(d)], "", moreRow(moodInfo(d)));
 }
 function storyBeats(s: Story, open: boolean | undefined){
@@ -182,6 +184,6 @@ export var INSIGHT: Record<string, () => string> = { weather:insightWeather, cir
 export function replaceInsights(c: { key: string }){
   var boxes: Element[] = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
   if (!boxes.length || !INSIGHT[c.key]) return;
-  boxes.slice(1).forEach(function(b){ b.parentNode!.removeChild(b); });
+  boxes.slice(1).forEach(function(b){ b.remove(); });
   boxes[0].outerHTML = INSIGHT[c.key]();
 }

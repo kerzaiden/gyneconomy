@@ -174,17 +174,29 @@ function analyze(mods, bootOrder) {
   return { problems, statements: top.length, shared: moduleVars.size, modules: mods.length };
 }
 
-module.exports = { analyze };
+function bootsOf(code) {
+  const out = [];
+  (function walk(n) {
+    if (!n || typeof n.type !== 'string') return;
+    if (/Function/.test(n.type)) return;
+    if (n.type === 'CallExpression' && n.callee.type === 'Identifier' && /^boot[A-Z]/.test(n.callee.name)) out.push(n.callee.name);
+    for (const k in n) { const v = n[k]; if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v.type === 'string') walk(v); }
+  })(acorn.parse(code, { ecmaVersion: 'latest', sourceType: 'module' }));
+  return out;
+}
+
+module.exports = { analyze, bootsOf };
 
 if (require.main === module) {
   const { scriptModules, bootOrder } = require('./source');
   const { evalOrder } = require('./bundle');
-  let r;
+  let r, boots;
   try {
     const mods = scriptModules(), order = evalOrder();
     mods.sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name));
     const main = mods.find(m => m.name === 'js/main.ts');
-    const boots = [...main.text.matchAll(/^(boot[A-Z]\w*)\(\);$/gm)].map(m => m[1]);
+    boots = bootsOf(main.plain);
+    if (!boots.length) throw new Error('main calls no boot…() function, so nothing at load would be checked');
     r = analyze(mods, boots);
   }
   catch (e) { console.error('load-order: ' + e.message); process.exit(2); }
@@ -195,5 +207,5 @@ if (require.main === module) {
     console.error('Move the assignment above the first statement that needs it, or the statement below it.');
     process.exit(1);
   }
-  console.log('ok: load order — ' + r.statements + ' statements at load across ' + r.modules + ' modules, ' + r.shared + ' shared values, none read before it is set');
+  console.log('ok: load order — ' + boots.length + ' boots, ' + r.statements + ' statements at load across ' + r.modules + ' modules, ' + r.shared + ' shared values, none read before it is set');
 }

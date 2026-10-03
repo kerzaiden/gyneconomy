@@ -1,17 +1,17 @@
-import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, qPretty, srcBlock, yearOf } from "./format.ts";
-import { addSources, byId, put } from "./dom.ts";
+import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf } from "./format.ts";
+import { addSources, byId, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource, valRow } from "./data.ts";
+import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
 import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, productivityReading } from "./readings.ts";
 import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.ts";
-import { catItem, catList, metricSheet, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.ts";
+import { catItem, catList, metricSheet, openOf, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.ts";
 
 type SeriesPt = Point & { v: number };
-type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: State; shortNote?: string };
+type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
 type SplitPage = { after?: string; row: SplitRow; line: string; fmt: (v: number) => string; tick?: (v: number) => string; at?: (d: SeriesPt) => string;
   src: Src[]; band?: string; goodAbove?: boolean; info?: () => string; insight: (s: SplitSpec) => string[] };
 type SplitSpec = SplitPage & { id: string; name: string; mid: number; timing: string; series: SeriesPt[]; midLabel: string };
@@ -25,11 +25,12 @@ var BUFFETT_2001 = [
   { t:"Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
     u:"https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf" }
 ];
+function midOf(R: RosterRow): number { if (R.mid == null) throw new Error(R.id + " has no middle line"); return R.mid; }
 function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(): Record<string, SplitPage> {
   var tenth = function(v: number){ return v.toFixed(1) + "%"; };
   return {
-    "sheet-metric-buffett": { after:"sheet-metric-valuation", row:valRow("buffett")!, line:"Buffett’s line",
+    "sheet-metric-buffett": { after:"sheet-metric-valuation", row:fileRow("buffett"), line:"Buffett’s line",
       fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
       band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
            "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
@@ -69,7 +70,7 @@ function productivityPage(tenth: (v: number) => string): SplitPage {
 function splitSpec(R: RosterRow, P: SplitPage): SplitSpec {
   var s: SplitSpec = Object.create(R);
   for (var k in P) (s as Record<string, unknown>)[k] = P[k as keyof SplitPage];
-  s.series = (R.hist as { s: readonly Point[] }).s as SeriesPt[]; s.midLabel = P.line + ", " + (P.tick || P.fmt)(R.mid!);
+  s.series = (R.hist as { s: readonly Point[] }).s as SeriesPt[]; s.midLabel = P.line + ", " + (P.tick || P.fmt)(midOf(R));
   return s;
 }
 function splitInfo(s: SplitSpec){
@@ -79,7 +80,7 @@ function splitInfo(s: SplitSpec){
 function periodTicks(vals: SeriesPt[]){
   if (!vals.length || !(vals[0].q || vals[0].m)) return null;
   var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
-  return function(d: SeriesPt){ var k = (d.q || d.m)!; return /(Q1|-01)$/.test(k) && ys.indexOf(yearOf(d)) !== -1 ? "’" + k.slice(2, 4) : ""; };
+  return function(d: SeriesPt){ var k = d.q || d.m || ""; return /(Q1|-01)$/.test(k) && ys.indexOf(yearOf(d)) !== -1 ? "’" + k.slice(2, 4) : ""; };
 }
 function periodOfSeries(d: SeriesPt){ return d.m ? "month" : d.q ? "quarter" : "year"; }
 function drawSplit(s: SplitSpec, W?: number){
@@ -104,7 +105,7 @@ function mountSplit(s: SplitSpec){
     var sheet = metricSheet(s.id);
     sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill(s.timing) + '</div>' +
       '<div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
-    var after = byId(s.after!);
+    var after = s.after ? byId(s.after) : null;
     if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
   }
   histNote(s.id, splitInfo(s));
@@ -117,7 +118,7 @@ function splitPeek(R: RosterRow, row: SplitRow){
     word:meterWord(row.meter), state:row.flagState || "norm", icon:subjectIcon(row.flagState || "norm", R.mark()),
     target:R.id });
   return peekOf(R.id, { value:row.flagValue, word:meterWord(row.meter), state:row.flagState || "norm", colBase:R.mid,
-    cols:keyed(R.hist).map(function(d){ return R.flip ? -d.v! : d.v; }), colClass:function(v: number){ return "dv-bar " + (v > R.mid! ? "over" : "under"); } });
+    cols:keyed(R.hist).map(function(d){ return R.flip ? -(d.v || 0) : d.v; }), colClass:function(v: number){ return "dv-bar " + (v > midOf(R) ? "over" : "under"); } });
 }
 export function indicatorPeeks(){
   var pages = splitPages(), alone = ROSTER.filter(function(R){ return R.door === "split" && !pages[R.id]; });
@@ -139,18 +140,18 @@ export function catSheet(id: string, key: string){
 export function groupId(name: string){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }
 function groupCard(grp: Element, name: string){
   var first = grp.firstChild as Element, card = first.cloneNode(true) as Element;
-  card.setAttribute("data-preview", first.getAttribute("data-open")!);
+  card.setAttribute("data-preview", openOf(first));
   card.setAttribute("data-open", groupId(name)); card.setAttribute("data-title", name);
-  card.querySelector(".ci-name")!.textContent = name;
-  if (grp.__mark) card.querySelector(".peek-mark")!.innerHTML = grp.__mark();
+  var nm = card.querySelector(".ci-name"), mk = card.querySelector(".peek-mark"); if (nm) nm.textContent = name;
+  if (grp.__mark && mk) mk.innerHTML = grp.__mark();
   return card;
 }
 function groupSheet(grp: Element, name: string, key: string, items: Element){
   items.appendChild(groupCard(grp, name));
   var sheet = catSheet(groupId(name), key);
   sheet.innerHTML = catList("");
-  sheet.firstChild!.appendChild(grp);
-  byId("today-analysis").appendChild(sheet);
+  var list = sheet.firstChild; if (list) list.appendChild(grp);
+  need("today-analysis").appendChild(sheet);
 }
 export function appendPicks(items: Element, picks: CatPick[], key: string){
   picks.forEach(function(p){
@@ -174,29 +175,29 @@ export function catPicks(c: { key: string }){
 }
 // ---- The split indicators' insights ----
 function buffettInsight(s: SplitSpec){
-  var now = s.row.meter.value!, bv = buffettHistory.map(function(d){ return d.v; });
+  var now = metered(s.row.meter), bv = buffettHistory.map(function(d){ return d.v; });
   var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1), bDot = maxIn(buffettHistory, 2000, 2007);
   var richer = bv.filter(function(v){ return v > now; }).length;
   var above = buffettHistory.filter(function(d){ return d.v > s.mid; });
   return [lede('The price of the whole stock market set against the size of the economy that has to ' +
       'earn it. A reading far above the line is a body valued for more than it produces.'),
-    hiCard("Where it sits", s.row.flagState || "serious", richer === 0
+    hiCard("Where it sits", s.row.flagState || "serious", richer === 0 && bPrev && bDot
       ? "At " + Math.round(now) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) +
-        " — above the previous record of " + Math.round(bPrev!.v) + "% (" + bPrev!.q + ") and far above the dot-com peak of " +
-        Math.round(bDot!.v) + "% (" + bDot!.q + ")."
+        " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
+        Math.round(bDot.v) + "% (" + bDot.q + ")."
       : "At " + Math.round(now) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."),
     hiCard("Against Buffett’s line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length +
       " quarters, the last time below it in " + (buffettHistory.filter(function(d){ return d.v <= s.mid; }).pop() || {}).q + ".")];
 }
 function debtInsight(s: SplitSpec){
-  var now = s.row.meter.value!, rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
+  var now = metered(s.row.meter), rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY); if (!rec) throw new Error("no gross debt record");
   var under = grossDebtQuarterly.filter(function(d){ return d.v <= s.mid; }).pop();
   var era = grossDebtQuarterly.filter(function(d){ return yearOf(d) === currentEra.from; })[0];
   var cards = [lede('What the government owes, measured against what the whole economy makes in a ' +
     'year. The larger the debt, the less room the body has to borrow when something goes wrong.'),
     hiCard("Against the record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " +
-      (now >= rec!.v ? "the highest reading since the quarterly series began in 1966." :
-        (rec!.v - now).toFixed(1) + " points below the record of " + rec!.v.toFixed(1) + "% in " + rec!.q + ".")),
+      (now >= rec.v ? "the highest reading since the quarterly series began in 1966." :
+        (rec.v - now).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")),
     hiCard("Against the 70% line", "warning", under
       ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.")];
   if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) +
@@ -249,7 +250,7 @@ function marketInsight(s: SplitSpec){
       bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")];
 }
 function interestInsight(s: SplitSpec){
-  var now = s.row.meter.value!, hist = fiscalHistory.interest, last = hist[hist.length - 1];
+  var now = metered(s.row.meter), hist = fiscalHistory.interest, last = hist[hist.length - 1];
   var rec = hist.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var above = hist.filter(function(d){ return d.v > s.mid; }).length;
   return [lede('The yearly cost of carrying the debt. Money spent on interest is energy the body has ' +

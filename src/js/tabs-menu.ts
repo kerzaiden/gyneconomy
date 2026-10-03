@@ -1,11 +1,11 @@
 import { srcBlock } from "./format.ts";
-import { byId, expandBtn, layer, put, rovingKeys, ui } from "./dom.ts";
+import { byId, expandBtn, layer, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { frameworkRows } from "./data.ts";
 import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.ts";
-import { cycleViewEl } from "./render-pages.ts";
-import { settleStrips, showCycle } from "./dial-cycle.ts";
+import { cycleView, one, settleStrips, showCycle } from "./dial-cycle.ts";
+import { sourceIndex } from "./pages-nav.ts";
 
 type SourceGroup = [string, RegExp | null];
 
@@ -61,12 +61,12 @@ function renderTopbar(){
   var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
   var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
   var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", search:"Search", portfolio:"Portfolio" };
-  var topTitle = byId("topbar-title");
+  var topTitle = need("topbar-title");
   btns.forEach(function(btn){
     btn.addEventListener("click", function(){
       if (btn.classList.contains("active")){
-        if (btn.getAttribute("data-tab") === "analysis"){ if (ui.metricPageReset) ui.metricPageReset(); if (ui.calendarReset) ui.calendarReset(); }
-        if (btn.getAttribute("data-tab") === "cycle" && ui.metricPageReset) ui.metricPageReset();
+        if (btn.getAttribute("data-tab") === "analysis"){ GYN.fire("metricPageReset"); GYN.fire("calendarReset"); }
+        if (btn.getAttribute("data-tab") === "cycle") GYN.fire("metricPageReset");
         return;
       }
       btns.forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
@@ -75,21 +75,21 @@ function renderTopbar(){
       btn.setAttribute("aria-selected", "true");
       var tab = btn.getAttribute("data-tab"), target = document.querySelector<HTMLElement>('.tab-panel[data-tab="' + tab + '"]');
       if (target) target.hidden = false;
-      if (ui.metricPageReset) ui.metricPageReset();
-      if (ui.calendarReset) ui.calendarReset();
+      GYN.fire("metricPageReset");
+      GYN.fire("calendarReset");
       topTitle.textContent = tabTitles[tab as keyof typeof tabTitles] || "Gyneconomy";
       ui.topbarBack = null;
-      byId("topbar-back").hidden = true;
-      if (tab === "cycle"){ target!.insertBefore(cycleViewEl!, byId("today-analysis")); showCycle(currentEra); }
+      need("topbar-back").hidden = true;
+      if (tab === "cycle" && target){ target.insertBefore(cycleView(), byId("today-analysis")); showCycle(currentEra); }
       if (tab === "analysis") settleStrips();
       window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
   });
 }
-function wireTabKeys(){ rovingKeys(document.querySelector(".tabbar")!, ".tab-btn", "aria-selected"); }
+function wireTabKeys(){ rovingKeys(one(".tabbar"), ".tab-btn", "aria-selected"); }
 // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
 function wireMenu(){
-  var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
+  var menu = need("more-menu"), open = need("menu-btn"), back = need("menu-back");
   var prevOverflow = "", locked = false;
   function slideIn(el: HTMLElement){ if (el.__cancelOut) el.__cancelOut(); el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
   function slideOut(el: HTMLElement, done?: () => void){
@@ -116,7 +116,7 @@ function wireMenu(){
   function fromHash(){ if (location.hash === "#menu"){ show(); if (history.replaceState) history.replaceState(null, "", location.pathname + location.search); } }
   fromHash(); window.addEventListener("hashchange", fromHash);
 
-  // ---- the Sources screen, built on first open from window.__sources (the same grouping as sources.html) ----
+  // ---- the Sources screen, built on first open from sourceIndex (the same grouping as sources.html) ----
   var built = false;
   var groups: SourceGroup[] = [
     ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|eurostat|ftportfolios|fisherinvestments|yardeni/],
@@ -128,11 +128,11 @@ function wireMenu(){
     ["Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/]
   ];
   function buildSources(){
-    var src = window.__sources, seen: Record<string, boolean> = {}, items: Src[] = [];
+    var src = sourceIndex, seen: Record<string, boolean> = {}, items: Src[] = [];
     function add(x: Src){ if (!x || seen[x.u]) return; seen[x.u] = true; items.push(x); }
     src.all.forEach(add); src.cards.forEach(function(c){ c.src.forEach(add); }); src.annual.forEach(add); src.gdp.forEach(add);
     var buckets = groups.map(function(): Src[] { return []; }), rest: Src[] = [];
-    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ if (String(x.u).search(groups[i][1]!) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
+    items.forEach(function(x){ for (var i = 0; i < groups.length; i++){ var re = groups[i][1]; if (re && String(x.u).search(re) >= 0){ buckets[i].push(x); return; } } rest.push(x); });
     if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
     put("sources-groups", groups.map(function(g, i){
       if (!buckets[i].length) return "";
@@ -156,19 +156,19 @@ function wireMenu(){
     if (row) row.focus();
     slideOut(el);
   }
-  menu.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>(".menu-row[data-sheet]"); if (row) showSheet(row.getAttribute("data-sheet")!, row); });
+  menu.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>(".menu-row[data-sheet]"), name = row && row.getAttribute("data-sheet"); if (row && name != null) showSheet(name, row); });
   document.addEventListener("click", function(e){ if ((e.target as Element).closest && (e.target as Element).closest("[data-sheet-back]")) hideSheet(); });
   layer(2, { open:function(){ return !!openSheet; }, close:hideSheet, box:function(){ return openSheet; } });
   layer(3, { open:function(){ return !menu.hidden && menu.classList.contains("in"); }, close:hide, box:function(){ return menu; } });
 
   // ---- Contact: hand the note to the visitor's mail app. The address is assembled here, at send time, from its ----
   (function(){
-    var form = byId("contact-form"), hint = byId("contact-hint");
+    var form = need("contact-form"), hint = need("contact-hint");
     var parts = ["kerzaiden", "gmail", "com"];
     form.addEventListener("submit", function(e){
       e.preventDefault();
       var title = (byId("contact-title") as HTMLInputElement).value.trim(), msg = (byId("contact-message") as HTMLTextAreaElement).value.trim();
-      if (!msg){ hint.textContent = "Write a message first."; hint.classList.add("err"); byId("contact-message").focus(); return; }
+      if (!msg){ hint.textContent = "Write a message first."; hint.classList.add("err"); need("contact-message").focus(); return; }
       hint.classList.remove("err"); hint.textContent = "Opening your mail app\u2026";
       var to = parts[0] + "@" + parts[1] + "." + parts[2];
       var subject = "Gyneconomy" + (title ? " \u2014 " + title : "");

@@ -17,9 +17,10 @@ var DIAG_SRC = [
   {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
 ];
 function pct(v: number){ return (v >= 0 ? "+" : "\u2212") + Math.abs(v * 100).toFixed(0) + "%"; }
+function inYears(from: number, to: number){ return function(d: { k: string }){ var y = +d.k.slice(0, 4); return y >= from && y <= to; }; }
 function eraEnds(id: string, era: EraSpan){
-  var r = rosterRows()[id]; if (!r) return null;
-  var span = r.seen.filter(function(d: { k: string }){ var y = +d.k.slice(0, 4); return y >= era.from && y <= era.to!; });
+  var r = rosterRows()[id], to = era.to; if (!r || to == null) return null;
+  var span = r.seen.filter(inYears(era.from, to));
   if (span.length < 2) return null;
   var a = span[0], b = span[span.length - 1];
   return { r:r, from:prettyK(r, a.k), to:prettyK(r, b.k), a:pastFigure(r, a.v, pairAt(r, a.k)), b:pastFigure(r, b.v, pairAt(r, b.k)) };
@@ -50,7 +51,7 @@ function diagnosisHtml(m: CycleModel){
   var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(marketMonths(), m.endMonth) }, closed = open ? null : m.era;
   if (!d) return "";
   var systems = categoriesShown().filter(function(c){ return !c.onDial && !c.inTrend; });
-  return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season!)) : "Cycle story", trendText(m.era.story)) +
+  return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
     dxSection(dxHead(systems.map(function(c){ return c.title; }).join(" and "), null, stethoscopeSvg()),
       systems.map(function(c){ return systemHtml(c, analysisFor(c.key, d, closed)); }).join("") + (open ? acrossCycle(m.era) :
       d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));

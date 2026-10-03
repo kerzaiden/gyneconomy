@@ -516,7 +516,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   asking whether it duplicated Pressure's Treasury spreads (it did not; those are the yield curve). The quantity
   index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
   Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
-  spread, went with it. Keren: "use appetite as the keyword". (V703)
+  spread, went with it. Keren: "use appetite as the keyword". (V708)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
@@ -1234,7 +1234,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
-- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.js`): its page, name, category, group,
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, group,
   timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the
