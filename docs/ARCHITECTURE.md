@@ -372,7 +372,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -600,6 +600,25 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 `git show 46e5b1f:src/js/03-data.js` (V659 on `main`) has the last copy. **Mood's fast members (Volatility,
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
+
+## The category analysis (1.2.0)
+
+Each category page opens on one card, `.cat-analysis`, the first child of its `.cat-list`, built by `analysisHtml`
+in `src/js/category-analysis.ts`. The card is not a door (no `data-open`), so the one-card rule, the card-height test
+and the past-cycle cards (`eraCards`) never see it.
+
+- **The composite** (`composite`): the readings of the category that have an entry in `MEMBERS` (keyed by roster id,
+  so membership comes from the roster's `cat`), each ranked against its own record to date (`rankToDate`, the mood
+  score's ranker, at least twelve points before it), turned by `up`, kept per quarter (the last rank in it) and
+  averaged over the quarters every member has. Mood takes `SCORES.mood`, her mood score from `moodTrack`, as it is.
+  Cached per category: every input is a history that only the Backfill changes.
+- **The match** (`analyse`): the cycle on screen (`ui.eraOpen`, else `currentEra`) from its first quarter, against every
+  closed cycle that ran at least as long, each cut to the same number of quarters. `corrOfMoves` correlates the
+  quarter-on-quarter changes; `criticalR` turns the two-tailed 5% t table into the correlation a match must pass.
+- **The words** (`sayMove`, `sayMatch`) read the line's first and last quarter, the nearest cycle, and say when the
+  cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`.
+- **A past cycle**: `eraShow` calls `replaceCategory`, which replaces the Insights and the analysis together, so the card
+  reads the closed cycle across its whole length against the cycles at least as long.
 
 ## The Diagnosis (V664, under the dial since V665)
 

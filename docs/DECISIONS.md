@@ -196,6 +196,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
 - **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
   "each category page should have the shade of the color of the category". (V660)
+- **A category page opens on its analysis, one card named for it ("Weather analysis", "Mood analysis" …), with its
+  reading cards under it and no section titles.** Search already lists the readings, so a page that only repeated them
+  "doesn't really inform me all that much besides taking up space"; Keren asked for something that "take[s] all the
+  parameters inside that category" together, preferred trends to text ("text can only go so far", after Apple Health's
+  Trends), then the category's composite set against past cycles; "just say weather analysis … I don't need the titles,
+  trends, and readings. Just put the containers one on top of the other." The Insights box stays under the cards. (1.2.0)
+- **The analysis is the category as one reading through the cycle on screen, drawn over every other cycle from the
+  quarter each opened and matched on its quarter-by-quarter moves.** Keren: "the composite parameter comprised of all
+  the subcategories of that category can be more informative if it correlates with past cycles". The composite averages
+  each reading's rank against its own record to date, the method of her mood score; Mood's composite is that score.
+  The other cycles are drawn only as far as this one has run, so it describes and does not forecast. A match is close
+  when it passes the standard 5% significance test for that many quarters, loose below it. Dropped on the way, at
+  Keren's word: each reading against past cycles ("not very informative") and this cycle's average against the last.
+  Claude's calls, for Keren to overturn: the Fed funds rate, unemployment and federal debt count upside down; Stress
+  enters as Federal debt, the longest of its four; Pressure is left out, its record starting in 2005; the S&P 500 enters
+  as its twelve-month change, its only figure every quarter; cycles are matched on moves, because on levels every bull
+  run matched every other. (1.2.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
   the source order and the category sheets and past cycles read it; Search and the Diagnosis place the four by

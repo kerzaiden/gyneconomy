@@ -9,6 +9,7 @@ import { CATEGORIES, peekOf, ROSTER } from "./roster.ts";
 import { gdpPeek, needInd, tempPeek } from "./render-core.ts";
 import { appendPicks, catPicks, catSheet, indicatorPeeks } from "./indicators.ts";
 import { INSIGHT } from "./insights.ts";
+import { analysisHtml } from "./category-analysis.ts";
 /* ---- THE CYCLE TAB: cards and categories ---- */
 var PAIR_ART: Record<string, (ind: Indicator) => PeekCardOpts> = {
   "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
@@ -59,7 +60,7 @@ function buildCategories(){
   var host = need("today-analysis");
   CATEGORIES.forEach(function(c){
     var sheet = catSheet("sheet-cat-" + c.key, c.key);
-    var items = document.createElement("div"); items.className = "cat-list";
+    var items = document.createElement("div"); items.className = "cat-list"; items.innerHTML = analysisHtml(c.key);
     appendPicks(items, catPicks(c), c.key);
     sheet.appendChild(items);
     var tog = INSIGHT[c.key as keyof typeof INSIGHT] ? INSIGHT[c.key as keyof typeof INSIGHT]() : "";

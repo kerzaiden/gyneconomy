@@ -1,4 +1,4 @@
-import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock, tagFor } from "./format.ts";
+import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock, tagFor } from "./format.ts";
 import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
@@ -138,9 +138,7 @@ export function cardDetailHtml(ind: Indicator, opts?: IndicatorPage){
   return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) +
   (function(){
     var lede = ind.lead != null ? ind.lead : (ind.shortCaption != null ? ind.shortCaption : (ind.caption || ""));
-    var figs = facts.map(function(a){
-      return '<div class="aux-stat' + (a.wordy ? " wordy" : "") + '"><span>' + a.label + '</span><b>' + a.value + '</b></div>';
-    }).join("");
+    var figs = facts.map(auxStat).join("");
     if (!lede && !figs) return "";
     var block = '<section class="highlights"><div class="hi-head">Insights</div>' +
       (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
