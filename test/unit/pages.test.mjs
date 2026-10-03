@@ -116,7 +116,7 @@ test('every history chart is attached to its readout, so hover and keys reach it
   let seen = 0;
   const loose = Object.keys(sheetRenderers).flatMap(id => {
     sheetRenderers[id](390);
-    const svgs = [...document.querySelectorAll('svg.vh-svg')];
+    const svgs = [...document.querySelectorAll('svg.vh-svg')].filter(svg => !svg.closest('.cat-analysis'));
     seen += svgs.length;
     return svgs.filter(svg => { for (let n = svg.parentElement; n; n = n.parentElement) if (n.__geom) return false; return true; })
       .map(svg => id + ': ' + svg.getAttribute('aria-label').slice(0, 40));

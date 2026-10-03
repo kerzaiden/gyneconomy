@@ -5,7 +5,7 @@ import { forgetMood, nowModel } from "./model.ts";
 import { policyFactRows, volatilityRing, volatilityTag } from "./readings.ts";
 import { CATEGORIES, paintWhen } from "./roster.ts";
 import { sheetRenderers } from "./render-core.ts";
-import { replaceInsights } from "./insights.ts";
+import { replaceCategory } from "./category-analysis.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 
 function paintReading(sheet: string, value: string | number, tag: Tag | null){
@@ -59,7 +59,7 @@ function repaintPolicy(){
 }
 function repaintDiagnosis(){
   if (!ui.eraOpen) renderDiagnosis(nowModel);
-  CATEGORIES.forEach(replaceInsights);
+  CATEGORIES.forEach(replaceCategory);
 }
 
 export function bootRepaint(){

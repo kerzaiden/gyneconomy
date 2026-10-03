@@ -53,6 +53,9 @@ export function qLabel(q: string){ var m = /^(\d{4}) (Q[1-4])$/.exec(q); return 
 export function monthLabel(m: string){ return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4); }
 export function clampPct(v: number, lo: number, hi: number){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
 export function ledeHtml(text: string){ return '<p class="lede">' + text + '</p>'; }
+export function auxStat(f: { label: string; value: string | number; wordy?: boolean }){
+  return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' + f.value + '</b></div>';
+}
 export function facts(list: string[]){ return '<ul class="facts">' + list.map(function(f: string){ return "<li>" + f + "</li>"; }).join("") + '</ul>'; }
 export function factsFrom(text: unknown){
   var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);

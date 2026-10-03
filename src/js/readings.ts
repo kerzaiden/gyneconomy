@@ -1,4 +1,4 @@
-import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
@@ -526,10 +526,7 @@ function policyFacts(){ return [
   now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? { label:"Next decision", value:now.fedFunds.next } : null
 ].filter(Boolean) as AuxFact[]; }
 export function policyFactRows(){
-  return policyFacts().map(function(f){
-    return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + '</span><b>' +
-           f.value + '</b></div>';
-  }).join("");
+  return policyFacts().map(auxStat).join("");
 }
 export function growthShownCap(r: Parameters<typeof growthWord>[0]){ var w = growthWord(r); return w.charAt(0).toUpperCase() + w.slice(1); }
 export function phaseClass(regime: string){ return regime === "contraction" ? "phase-down" : "phase-up"; }

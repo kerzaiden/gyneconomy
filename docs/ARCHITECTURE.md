@@ -378,7 +378,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -607,6 +607,31 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
+## The category analysis (1.5.0)
+
+Each category page opens on one card, `.cat-analysis`, the first child of its `.cat-list`, built by `analysisHtml`
+in `src/js/category-analysis.ts`. The card is not a door (no `data-open`), so the one-card rule, the card-height test
+and the past-cycle cards (`eraCards`) never see it.
+
+- **The composite** (`composite`): the readings of the category that have an entry in `MEMBERS` (keyed by roster id,
+  so membership comes from the roster's `cat`), each ranked against its own record to date (`rankToDate`, the mood
+  score's ranker, at least twelve points before it), turned by `up`, kept per quarter (the last rank in it) and
+  averaged over the quarters every member has. Mood takes `SCORES.mood`, her mood score from `moodTrack`, as it is.
+  Cached per category: every input is a history that only the Backfill changes.
+- **The match** (`analyse`): the cycle on screen (`ui.eraOpen`, else `currentEra`) from its first quarter, against every
+  closed cycle that ran at least as long, each cut to the same number of quarters. `corrOfMoves` correlates the
+  quarter-on-quarter changes; `criticalR` turns the two-tailed 5% t table into the correlation a match must pass.
+- **The words** (`sayMove`, `sayMatch`) read the line's first and last quarter, the nearest cycle, and say when the
+  cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`. It has
+  no readout: it draws several cycles at once, so the readout test leaves `.cat-analysis` out by name.
+  A cycle too short for a composite leaves the card as an empty hidden `.cat-analysis`, so `replaceCategory` finds it
+  again when Back returns to a cycle that has one.
+- **The insights** (`INSIGHT` in `insights.ts`) are no longer a box on the page: they return their cards bare, and
+  `detail` puts them first in the card's More details sheet, untitled, with the method after them. Mood's composite
+  ends on `moodToday`, so the card and the sheet read the same mood.
+- **Repainting**: `eraShow` and `repaintDiagnosis` call `replaceCategory`, which rebuilds the card (and so its sheet),
+  so a past cycle reads across its whole length and a live VIX moves Mood's line and story together.
+
 ## The Diagnosis (V664, under the dial since V665)
 
 Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
@@ -679,7 +704,7 @@ followed a year later. The systems are `CATEGORIES` in `shown` order.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.
   The hub's button opens it (`hubOpen`'s `cat`) while the dial shows today; a parked quarter or a closed
   cycle opens its quarter sheet (`quarterSheet`), since the Weather page is today's. The Diagnosis's Analysis leaves out
-  every `onDial` category. Weather's Insights open with `cycleNowNote` (the note the popup used to open with), then
+  every `onDial` category. Weather's Insights (behind Weather analysis's More details since 1.5.0) open with `cycleNowNote` (the note the popup used to open with), then
   the season's `seasonReading` (`seasonCards`), this cycle's years from `sp500Years` (`marketCycleCard`) and the
   barometer. The S&P 500 card is a row reading (`marketReading` in forms) whose series `sp500Years` is the same
   `sp500AnnualReturns` the dial's inner band draws, so card, chart and dial read one number. Its split page names

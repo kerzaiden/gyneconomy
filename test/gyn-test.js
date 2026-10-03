@@ -283,8 +283,10 @@ async function openPage(p, url, sheet) {
       const d = document.getElementById('diagnosis');
       return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('.trend-text').length,
                    story: [...d.querySelectorAll('.trend-card .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
-                   told: [...document.querySelectorAll('#sheet-cat-mood > .insights')].map(b => b.querySelectorAll('.hi-card').length + ':' +
-                     (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1]).pop(),
+                   told: (() => { document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
+                     const b = document.getElementById('detail-modal-body'), t = b.querySelectorAll('.hi-card').length + ':' +
+                       (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1];
+                     document.getElementById('detail-modal-close').click(); return t; })(),
                    heads: [...d.querySelectorAll('.dx-sys-head')].map(h => [...h.childNodes].filter(n => !(n.classList && n.classList.contains('expand-btn'))).map(n => n.textContent).join('').trim()),
                    grid: d.querySelectorAll('.fs-feel').length + ':' + d.querySelectorAll('.fs-cell.now').length + ':' + [...d.querySelectorAll('.dx-k')].some(k => k.textContent === 'The test'),
                    doors: [...d.querySelectorAll('button.dx-sys-head')].map(h => h.getAttribute('data-open')),
@@ -535,18 +537,20 @@ async function openPage(p, url, sheet) {
         head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
     });
     await click(p, '#diagnosis .trend-card'); await settle(p);
+    await click(p, '#sheet-cat-mood:not([hidden]) .cat-analysis .more-row'); await settle(p);
     const cyc = await p.evaluate(() => {
-      const s = document.querySelector('#sheet-cat-mood:not([hidden]) .mood-curve'), card = document.querySelector('#sheet-cat-mood:not([hidden]) .hi-card .hi-name');
+      const s = document.querySelector('#detail-modal-body .mood-curve'), card = document.querySelector('#detail-modal-body .hi-card .hi-name');
       return s && { labels: [...s.querySelectorAll('.mood-lab')].map(t => t.textContent).join('+'), calls: s.querySelectorAll('.mood-call').length,
         now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent,
-        es: [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .hi-head')].map(h => h.textContent).join('+') + ':' +
-          [...document.querySelectorAll('#sheet-cat-mood:not([hidden]) .highlights')].pop().querySelectorAll('.hi-card').length };
+        es: document.querySelectorAll('#sheet-cat-mood:not([hidden]) .hi-head, #detail-modal-body .hi-head').length + ':' +
+          document.querySelectorAll('#detail-modal-body .hi-card').length };
     });
+    await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === 'Insights:1' && feel.stage.toUpperCase() === cyc.now[0])
+     cyc.es === '0:1' && feel.stage.toUpperCase() === cyc.now[0])
       ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
       : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '#season-wheel-hub-open'); await settle(p);
@@ -554,9 +558,11 @@ async function openPage(p, url, sheet) {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');
       return page && { bar: document.getElementById('topbar-title').textContent.trim(),
         names: [...page.querySelectorAll('.cat-item .ci-name')].map(n => n.textContent.trim()).join('+'),
-        cards: [...page.querySelectorAll('.insights .hi-name')].map(n => n.textContent.trim()),
         modal: !document.getElementById('detail-modal') || document.getElementById('detail-modal').hidden !== false ? false : true };
     });
+    await click(p, '#sheet-cat-weather:not([hidden]) .cat-analysis .more-row'); await settle(p);
+    if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
+    await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     (wx && wx.bar === 'Weather' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
      wx.cards.indexOf('In the body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The barometer') > 0)

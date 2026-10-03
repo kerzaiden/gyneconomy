@@ -281,6 +281,31 @@ test('a past cycle shows its own record on the cards and the Diagnosis, and Back
   assert.deepEqual(errors, []);
 });
 
+test('each category page opens on its analysis, which follows the cycle on screen', async () => {
+  const { criticalR } = await import('../../src/js/category-analysis.ts');
+  assert.equal(criticalR(14).toFixed(3), '0.532');
+  assert.equal(criticalR(2), 2);
+  const say = key => document.querySelector('#sheet-cat-' + key + ' .cat-list > .cat-analysis .ca-say').textContent;
+  for (const key of ['weather', 'mood', 'circulation', 'energy']) {
+    const box = document.querySelector('#sheet-cat-' + key + ' .cat-list').firstElementChild;
+    assert.ok(box.classList.contains('cat-analysis'), key);
+    assert.match(box.querySelector('.ca-name').textContent, / analysis$/);
+    assert.ok(box.querySelector('svg .ca-line.now'), key);
+    assert.match(say(key), /^Since the AI Cycle opened, .+ out of 100\./);
+  }
+  assert.equal(document.querySelectorAll('.cat-sheet .insights, .cat-sheet .hi-head').length, 0);
+  document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
+  const body = document.getElementById('detail-modal-body');
+  assert.match(body.textContent, /She\u2019s in /);
+  assert.match(body.textContent, /How the analysis reads/);
+  document.getElementById('detail-modal-close').click();
+  document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
+  assert.match(say('energy'), /^Across the Big Tech Cycle, /);
+  ui.eraPageBack();
+  assert.match(say('energy'), /^Since the AI Cycle opened, /);
+  assert.deepEqual(errors, []);
+});
+
 test('a live figure repaints exactly the cards whose roster row declares it', async () => {
   const cards = () => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')]
     .map(n => [n.dataset.open, n.querySelector('.ci-value').textContent]));

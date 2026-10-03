@@ -1075,11 +1075,20 @@
   .metric-sheet.cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
     background:linear-gradient(to bottom, color-mix(in srgb, var(--cat) 26%, var(--page)), color-mix(in srgb, var(--cat) 8%, var(--page)) 55%, var(--page)); }
   body:has(#metric-page .cat-sheet:not([hidden])) .wrap > .topbar{ background:transparent; border-bottom-color:transparent; }
-  .cat-sheet .cat-item{ margin:0; padding:18px 20px 20px; border:0; border-radius:24px; }
+  .cat-sheet .cat-item, .cat-analysis{ margin:0; padding:18px 20px 20px; border:0; border-radius:24px; }
+  .cat-analysis{ background:var(--surface); font-family:"Public Sans",sans-serif; }
+  .ca-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
+  .ca-line{ fill:none; stroke:var(--text-muted); stroke-opacity:.22; stroke-width:1.5; stroke-linejoin:round; }
+  .ca-line.near{ stroke-opacity:.8; stroke-width:2.5; }
+  .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
+  .ca-dot{ fill:var(--cat); }
+  .cat-analysis .more-row{ margin-top:20px; }
+  .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
+  .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
   .cat-sheet .ci-head .peek-mark{ color:var(--cat); }
   .cat-sheet .ci-head .peek-mark svg{ width:20px; height:20px; }
-  .cat-sheet .ci-name{ font-size:var(--type-reading); font-weight:600; letter-spacing:0; text-transform:none; color:var(--cat); }
+  .cat-sheet .ci-name, .ca-name{ font-size:var(--type-reading); font-weight:600; letter-spacing:0; text-transform:none; color:var(--cat); }
   .cat-sheet .ci-when{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface); }
   .cat-sheet .ci-body{ margin-top:26px; align-items:flex-end; min-height:0; }
   .cat-sheet .ci-read{ display:flex; flex-direction:column-reverse; gap:3px; }
@@ -1549,7 +1558,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.4.0 (718)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.5.0 (719)</span></p>
     </div>
   </div>
 
@@ -1809,6 +1818,9 @@
   }
   function ledeHtml(text) {
     return '<p class="lede">' + text + "</p>";
+  }
+  function auxStat(f) {
+    return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
   }
   function facts(list) {
     return '<ul class="facts">' + list.map(function(f) {
@@ -30817,9 +30829,7 @@
     } : null ].filter(Boolean);
   }
   function policyFactRows() {
-    return policyFacts().map(function(f) {
-      return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
-    }).join("");
+    return policyFacts().map(auxStat).join("");
   }
   function growthShownCap(r) {
     var w = growthWord(r);
@@ -32810,14 +32820,12 @@
   function cardDetailHtml(ind, opts) {
     opts = opts || {};
     var facts2 = [].concat(ind.facts || [], ind.aux || []);
-    var chartHtml = opts.chart ? opts.chart(ind) : "";
+    var chartHtml2 = opts.chart ? opts.chart(ind) : "";
     var bloodTest = opts.bare ? "" : opts.noHead ? "" : headHtml(ind, opts.noMark) + '<div class="metric-row"><span class="metric mono">' + ind.metric + '</span><span class="metric-sub">' + ind.metricSub + "</span></div>";
     if (bloodTest && opts.bloodCard) bloodTest = '<div class="page-chart blood-card">' + bloodTest + "</div>";
-    return (opts.chartFirst ? chartHtml + bloodTest : bloodTest + chartHtml) + function() {
+    return (opts.chartFirst ? chartHtml2 + bloodTest : bloodTest + chartHtml2) + function() {
       var lede2 = ind.lead != null ? ind.lead : ind.shortCaption != null ? ind.shortCaption : ind.caption || "";
-      var figs = facts2.map(function(a) {
-        return '<div class="aux-stat' + (a.wordy ? " wordy" : "") + '"><span>' + a.label + "</span><b>" + a.value + "</b></div>";
-      }).join("");
+      var figs = facts2.map(auxStat).join("");
       if (!lede2 && !figs) return "";
       var block = '<section class="highlights"><div class="hi-head">Insights</div>' + (lede2 ? '<div class="hi-card"><p>' + lede2 + "</p></div>" : "") + figs + "</section>";
       if (opts.deferHighlights) {
@@ -32966,14 +32974,14 @@
       return "yl-col normal";
     }, 0, true);
   }
-  function ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB) {
+  function ylmYearMarks(svg, quarters2, ylmFrom, ylmTo, x, padT, H, padB) {
     var el = svgEl;
-    var firstYear = parseInt(quarters[ylmFrom].slice(0, 4), 10);
-    var lastYear = parseInt(quarters[ylmTo - 1].slice(0, 4), 10);
+    var firstYear = parseInt(quarters2[ylmFrom].slice(0, 4), 10);
+    var lastYear = parseInt(quarters2[ylmTo - 1].slice(0, 4), 10);
     var step = Math.max(1, Math.round((lastYear - firstYear) / 4));
     var xLabelYears = [];
     for (var yv = firstYear + (ylmFrom ? step : 0); yv <= lastYear; yv += step) xLabelYears.push(yv);
-    quarters.forEach(function(q, i) {
+    quarters2.forEach(function(q, i) {
       if (i < ylmFrom || i >= ylmTo) return;
       var m = q.match(/^(\d{4}) Q1$/);
       if (m && xLabelYears.indexOf(parseInt(m[1], 10)) !== -1) {
@@ -32992,20 +33000,20 @@
       }
     });
   }
-  function ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colW, latestSpread) {
+  function ylmColumns(svg, maturities, quarters2, ylmFrom, ylmTo, x, y, colW, latestSpread) {
     var el = svgEl;
     var spreadAt = {};
     t10y3mHistory.forEach(function(d) {
       spreadAt[d.q] = d.v;
     });
-    var lastCol = maturities[0].data[quarters.length - 1];
+    var lastCol = maturities[0].data[quarters2.length - 1];
     if (lastCol && lastCol.latest && latestSpread != null) spreadAt[lastCol.q] = latestSpread;
     maturities.forEach(function(mat) {
       if (!mat.on) return;
       var y0 = y(0);
       mat.data.forEach(function(d, i) {
         if (i < ylmFrom || i >= ylmTo || d.v == null) return;
-        var sp = spreadAt[quarters[i]];
+        var sp = spreadAt[quarters2[i]];
         var zone = sp == null ? "normal" : pressureZone(sp).key;
         svg.appendChild(el("path", {
           class: "yl-col hcol " + zone,
@@ -33068,7 +33076,7 @@
     var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
     var innerW = W - padL - padR, innerH = H - padT - padB;
     var el = svgEl;
-    var quarters = t3mYieldHistory.map(function(d) {
+    var quarters2 = t3mYieldHistory.map(function(d) {
       return d.q;
     });
     var maturities = pressureMaturities();
@@ -33087,13 +33095,13 @@
           latest: true
         });
       });
-      quarters = maturities[0].data.map(function(d) {
+      quarters2 = maturities[0].data.map(function(d) {
         return d.q;
       });
     }
     function colLabel(i) {
       var d = maturities[0].data[i];
-      return d && d.latest ? latestLabel : quarters[i];
+      return d && d.latest ? latestLabel : quarters2[i];
     }
     addSources([ {
       t: "FRED — 5-Year Treasury Rate (GS5)",
@@ -33102,7 +33110,7 @@
       t: "FRED — 30-Year Treasury Rate (GS30)",
       u: "https://fred.stlouisfed.org/series/GS30"
     } ]);
-    var ylmFrom = 0, ylmTo = quarters.length;
+    var ylmFrom = 0, ylmTo = quarters2.length;
     function ylmCount() {
       return ylmTo - ylmFrom;
     }
@@ -33181,8 +33189,8 @@
           };
         }) : []
       });
-      ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB);
-      ylmColumns(svg, maturities, quarters, ylmFrom, ylmTo, x, y, colWidth(innerW / Math.max(1, ylmCount())), latestSpread);
+      ylmYearMarks(svg, quarters2, ylmFrom, ylmTo, x, padT, H, padB);
+      ylmColumns(svg, maturities, quarters2, ylmFrom, ylmTo, x, y, colWidth(innerW / Math.max(1, ylmCount())), latestSpread);
       ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR);
       var crosshair = el("line", {
         x1: 0,
@@ -33233,13 +33241,13 @@
     }
     function drawYlm() {
       withLatest();
-      var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
+      var ylmY0 = parseInt(quarters2[0].slice(0, 4), 10);
       var ylmCyc = pageCycle("pressure-range", ylmY0);
       var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, page.range["pressure-range"]);
-      ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters2.length, page.range["pressure-range"]);
+      ylmTo = ylmSpan ? ylmSpan[1] : quarters2.length;
       put("pressure-timeline", histControls("pressure-range", {
-        depth: Math.floor(quarters.length / 4)
+        depth: Math.floor(quarters2.length / 4)
       }, ylmY0));
       render();
       var yTrend = byId("ylm-trend");
@@ -33521,7 +33529,7 @@
     var series = spreadSeries();
     addSources(series["3m"].sources);
     addSources(series["2y"].sources);
-    function qIndex(data, q) {
+    function qIndex2(data, q) {
       for (var i = 0; i < data.length; i++) {
         if (data[i].q === q) return i;
       }
@@ -33551,7 +33559,7 @@
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       svg.innerHTML = "";
       t10y3mRecessions.forEach(function(r) {
-        var i0 = qIndex(data, r.from), i1 = qIndex(data, r.to);
+        var i0 = qIndex2(data, r.from), i1 = qIndex2(data, r.to);
         if (i0 < 0 || i1 < 0) return;
         svg.appendChild(el("rect", {
           x: x(i0, data.length),
@@ -33660,10 +33668,10 @@
     draw("3m");
   }
   function deriveUninversionDetail() {
-    var rowsHtml = '<div class="lag-rows"><div class="lag-row lag-row-head"><span>Cycle</span><span>Un-inverted</span><span>Recession began</span><span>Lag</span></div>' + uninvLagCycles.map(function(c) {
+    var rowsHtml2 = '<div class="lag-rows"><div class="lag-row lag-row-head"><span>Cycle</span><span>Un-inverted</span><span>Recession began</span><span>Lag</span></div>' + uninvLagCycles.map(function(c) {
       return '<div class="lag-row"><span>' + c.cycle + "</span><span>" + c.uninv + "</span><span>" + c.recession + "</span><span>" + c.lag + "</span></div>";
     }).join("") + "</div>";
-    var detail = '<h4>Time from un-inversion to recession: the historical record</h4><p class="caption">Not a model and not a survey — this is what actually happened in each of the last four comparable U.S. cycles, read straight off the Federal Reserve’s own 10-year-minus-3-month spread series on FRED (daily closes and monthly averages) and dated against NBER’s official recession start months. Where the daily and monthly series disagree on the exact month, a range is shown: from the first month the monthly average turned positive to the month of the last negative daily close.</p>' + rowsHtml + '<p class="caption">Range: 1–10 months. Average and median: about 4–5 months.</p><p class="caption follow">Today, the 3-month spread is ' + uninvLagToday.months + " months past its December 2024 un-inversion (the first month the monthly average reached zero) — already twice the longest precedent above. Counted instead from when it settled durably positive without re-dipping negative (" + uninvLagToday.altFrom + "), that’s " + uninvLagToday.altMonths + " months — still beyond every precedent here. Four data points is a small sample, and it gets smaller still: the four U.S. recessions before 1989 (1969–70 through 1981–82) followed the opposite pattern — the recession started before the curve’s final un-inversion, sometimes by close to a year — a genuinely different regime, not folded into the average above. One further correction from the popular telling: September 1998 (Russia/LTCM) is often cited as an inversion with no recession, but the spread never actually went negative that month (+0.12 points) — so it isn’t really a counter-example. Treat all of this as a historical comparison, not a forecast.</p>" + srcBlock([ {
+    var detail2 = '<h4>Time from un-inversion to recession: the historical record</h4><p class="caption">Not a model and not a survey — this is what actually happened in each of the last four comparable U.S. cycles, read straight off the Federal Reserve’s own 10-year-minus-3-month spread series on FRED (daily closes and monthly averages) and dated against NBER’s official recession start months. Where the daily and monthly series disagree on the exact month, a range is shown: from the first month the monthly average turned positive to the month of the last negative daily close.</p>' + rowsHtml2 + '<p class="caption">Range: 1–10 months. Average and median: about 4–5 months.</p><p class="caption follow">Today, the 3-month spread is ' + uninvLagToday.months + " months past its December 2024 un-inversion (the first month the monthly average reached zero) — already twice the longest precedent above. Counted instead from when it settled durably positive without re-dipping negative (" + uninvLagToday.altFrom + "), that’s " + uninvLagToday.altMonths + " months — still beyond every precedent here. Four data points is a small sample, and it gets smaller still: the four U.S. recessions before 1989 (1969–70 through 1981–82) followed the opposite pattern — the recession started before the curve’s final un-inversion, sometimes by close to a year — a genuinely different regime, not folded into the average above. One further correction from the popular telling: September 1998 (Russia/LTCM) is often cited as an inversion with no recession, but the spread never actually went negative that month (+0.12 points) — so it isn’t really a counter-example. Treat all of this as a historical comparison, not a forecast.</p>" + srcBlock([ {
       t: "NBER — US Business Cycle Expansions and Contractions",
       u: "https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions"
     }, {
@@ -33679,7 +33687,7 @@
       t: "Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)",
       u: "https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"
     } ]);
-    ui.uninvDetail = detail;
+    ui.uninvDetail = detail2;
     addSources([ {
       t: "Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)",
       u: "https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"
@@ -34182,7 +34190,7 @@
     var trackW = moonW + 5, capDegT = trackW / 2 / R * 180 / Math.PI;
     var capDegM = moonW / 2 / R * 180 / Math.PI;
     var parts = [ '<path class="dial-track" d="' + arcPath(R, START - LEAD + capDegT, SEAM_END - capDegT) + '"></path>' ];
-    var quarters = [];
+    var quarters2 = [];
     var segs = m.track.filter(function(seg) {
       return !seg.isNow && seg.to > seg.from;
     });
@@ -34206,8 +34214,8 @@
       }
       run.forEach(function(q2, k) {
         var s0 = v0 + (v1 - v0) * k / run.length, s1 = v0 + (v1 - v0) * (k + 1) / run.length;
-        var step = seasonGroup(q2.seg.season), i = quarters.length, last = k === run.length - 1;
-        quarters.push({
+        var step = seasonGroup(q2.seg.season), i = quarters2.length, last = k === run.length - 1;
+        quarters2.push({
           seg: q2.seg,
           a0: q2.a0,
           a1: q2.a1,
@@ -34260,7 +34268,7 @@
     dialEl.innerHTML = parts.join("");
     dialState = {
       m: m,
-      quarters: quarters,
+      quarters: quarters2,
       badgeDeg: badgeDeg,
       badgeAt: BADGE_AT,
       polar: polar,
@@ -34737,7 +34745,7 @@
       var oc = openCycle();
       txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
     }
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + circLede + hiCard(name, "", txt) + "</section>";
+    return circLede + hiCard(name, "", txt);
   }
   function insightWeather() {
     var rows = marketCycles.map(function(c) {
@@ -34786,11 +34794,11 @@
       return absGap(r).toFixed(1);
     }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
     if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
+    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt);
   }
   function seasonCards(m) {
     var r = seasonReading[m.season] || {};
-    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the body", "", r.body) : "") + (r.next ? hiCard("What usually comes next", "", r.next) : "");
+    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the body", "", r.body) : "");
   }
   function marketCycleCard(m) {
     var years = sp500Years.filter(function(d) {
@@ -34866,8 +34874,8 @@
   function insightMood() {
     var d = moodToday();
     var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
-    if (!d || !isRead(d)) return highlightsHtml([ intro ], "", "");
-    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo(d)));
+    if (!d || !isRead(d)) return intro;
+    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
   }
   function storyBeats(s, open) {
     var ev = [ {
@@ -34905,13 +34913,309 @@
     circulation: insightCirculation,
     mood: insightMood
   };
-  function replaceInsights(c) {
-    var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
-    if (!boxes.length || !INSIGHT[c.key]) return;
-    boxes.slice(1).forEach(function(b) {
-      b.remove();
+  var QM = [ "03", "06", "09", "12" ];
+  function months(h) {
+    return h.map(function(d) {
+      return {
+        k: d.m,
+        v: d.v
+      };
     });
-    boxes[0].outerHTML = INSIGHT[c.key]();
+  }
+  function quarters(h) {
+    return h.map(function(d) {
+      return {
+        k: d.q.slice(0, 4) + "-" + QUARTER_END_MONTH[d.q.slice(5)],
+        v: d.v
+      };
+    });
+  }
+  function byQuarter(vals, y0) {
+    return vals.map(function(v, i) {
+      return {
+        k: y0 + Math.floor(i / 4) + "-" + QM[i % 4],
+        v: v
+      };
+    });
+  }
+  function spYear() {
+    return sp500MonthlyHistory.slice(12).map(function(d, i) {
+      return {
+        k: d.m,
+        v: (d.v / sp500MonthlyHistory[i].v - 1) * 100
+      };
+    });
+  }
+  var MEMBERS = {
+    "sheet-metric-temp": {
+      up: true,
+      what: "prices (CPI over the year)",
+      points: function() {
+        return months(cpiYoYHistory);
+      }
+    },
+    "sheet-metric-gdp": {
+      up: true,
+      what: "growth (real GDP over the year)",
+      points: function() {
+        return quarters(gdpQuarterlyYoY);
+      }
+    },
+    "sheet-sign-market": {
+      up: true,
+      what: "the S&P 500’s change over twelve months",
+      points: spYear
+    },
+    "sheet-sign-hormones": {
+      up: false,
+      what: "the Fed funds rate, upside down",
+      points: function() {
+        return months(fedFundsHistory);
+      }
+    },
+    "sheet-sign-pulse": {
+      up: true,
+      what: "velocity (Pulse)",
+      points: function() {
+        return byQuarter(m2vHistory, M2V_FROM_YEAR);
+      }
+    },
+    "sheet-sign-volume": {
+      up: true,
+      what: "M2 over the year (Volume)",
+      points: function() {
+        return byQuarter(m2Yoy, M2_FROM_YEAR);
+      }
+    },
+    "sheet-metric-debt": {
+      up: false,
+      what: "federal debt against GDP (Stress), upside down",
+      points: function() {
+        return quarters(grossDebtQuarterly);
+      }
+    },
+    "sheet-sign-activity": {
+      up: false,
+      what: "the unemployment rate, upside down",
+      points: function() {
+        return months(unempHistory);
+      }
+    },
+    "sheet-sign-productivity-growth": {
+      up: true,
+      what: "productivity growth",
+      points: function() {
+        return quarters(productivityHistory);
+      }
+    }
+  };
+  var SCORES = {
+    mood: {
+      what: "her mood score: valuations, calm (the VIX upside down) and confidence, the Mood page’s own reading",
+      points: function() {
+        var today = moodToday();
+        return moodTrack().map(function(x) {
+          return {
+            k: x.m,
+            v: x.score
+          };
+        }).concat(today ? [ {
+          k: today.m,
+          v: today.score
+        } ] : []);
+      }
+    }
+  };
+  function qIndex(k) {
+    return +k.slice(0, 4) * 4 + Math.floor((+k.slice(5, 7) - 1) / 3);
+  }
+  function rankTrack(pts, up) {
+    var out = {}, prior = [];
+    pts.forEach(function(d) {
+      if (d.v == null) return;
+      var r = rankToDate(prior, d.v);
+      if (r != null) out[qIndex(d.k)] = up ? r : 100 - r;
+      prior.push(d.v);
+    });
+    return out;
+  }
+  function plainTrack(pts) {
+    var out = {};
+    pts.forEach(function(d) {
+      if (d.v != null) out[qIndex(d.k)] = d.v;
+    });
+    return out;
+  }
+  function membersOf(key) {
+    return ROSTER.filter(function(R) {
+      return R.cat === key && MEMBERS[R.id];
+    }).map(function(R) {
+      return MEMBERS[R.id];
+    });
+  }
+  var trackCache = {};
+  function composite(key) {
+    if (trackCache[key]) return trackCache[key];
+    if (SCORES[key]) return plainTrack(SCORES[key].points());
+    var tracks = membersOf(key).map(function(m) {
+      return rankTrack(m.points(), m.up);
+    }), out = {};
+    if (!tracks.length) return trackCache[key] = out;
+    Object.keys(tracks[0]).forEach(function(q) {
+      var vs = tracks.map(function(t) {
+        return t[+q];
+      });
+      if (vs.every(function(v) {
+        return v != null;
+      })) out[+q] = vs.reduce(function(a, b) {
+        return a + b;
+      }, 0) / vs.length;
+    });
+    return trackCache[key] = out;
+  }
+  function path(t, from, k) {
+    var out = [], q = from * 4;
+    while (t[q] != null && (k == null || out.length < k)) {
+      out.push(t[q]);
+      q++;
+    }
+    return out;
+  }
+  function corrOfMoves(a, b) {
+    var da = a.slice(1).map(function(v, i) {
+      return v - a[i];
+    }), db = b.slice(1).map(function(v, i) {
+      return v - b[i];
+    });
+    var n = da.length, ma = da.reduce(function(s, v) {
+      return s + v;
+    }, 0) / n, mb = db.reduce(function(s, v) {
+      return s + v;
+    }, 0) / n;
+    var sab = 0, saa = 0, sbb = 0;
+    da.forEach(function(v, i) {
+      sab += (v - ma) * (db[i] - mb);
+      saa += (v - ma) * (v - ma);
+      sbb += (db[i] - mb) * (db[i] - mb);
+    });
+    return saa && sbb ? sab / Math.sqrt(saa * sbb) : 0;
+  }
+  var T05 = [ 12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179, 2.16, 2.145, 2.131, 2.12, 2.11, 2.101, 2.093, 2.086, 2.08, 2.074, 2.069, 2.064, 2.06, 2.056, 2.052, 2.048, 2.045, 2.042 ];
+  function criticalR(pairs) {
+    var df = pairs - 2;
+    if (df < 1) return 2;
+    var t = df <= 30 ? T05[df - 1] : df < 40 ? 2.042 : df < 60 ? 2.021 : df < 120 ? 2 : 1.98;
+    return t / Math.sqrt(df + t * t);
+  }
+  function analyse(key, era) {
+    var t = composite(key), cat = CATEGORIES.filter(function(c) {
+      return c.key === key;
+    })[0];
+    var cur = path(t, era.from, era.ongoing ? void 0 : (era.to - era.from + 1) * 4), k = cur.length;
+    if (!cat || k < 4) return null;
+    var rows = marketCycles.filter(function(c) {
+      return c !== era && !c.ongoing && (c.to - c.from + 1) * 4 >= k;
+    }).map(function(c) {
+      var p = path(t, c.from, k);
+      return p.length === k ? {
+        c: c,
+        p: p,
+        r: corrOfMoves(cur, p)
+      } : null;
+    }).filter(Boolean);
+    rows.sort(function(a, b) {
+      return b.r - a.r;
+    });
+    var since = Math.floor(Math.min.apply(null, Object.keys(t).map(Number)) / 4);
+    var made = SCORES[key] ? [ SCORES[key].what ] : membersOf(key).map(function(m) {
+      return m.what;
+    });
+    return {
+      key: key,
+      title: cat.title,
+      era: era,
+      cur: cur,
+      rows: rows,
+      crit: criticalR(k - 1),
+      since: since,
+      made: made
+    };
+  }
+  function sayMove(d) {
+    var a = Math.round(d.cur[0]), b = Math.round(d.cur[d.cur.length - 1]);
+    var verb = d.era.ongoing ? b > a ? "has risen" : b < a ? "has fallen" : "has held" : b > a ? "rose" : b < a ? "fell" : "held";
+    return (d.era.ongoing ? "Since the " + d.era.name + " opened, " : "Across the " + d.era.name + ", ") + d.title + " " + verb + (a === b ? " at " + a : " from " + a + " to " + b) + " out of 100.";
+  }
+  function sayMatch(d) {
+    if (!d.rows.length) return " No other cycle on record is long enough to compare.";
+    var best = d.rows[0], k = d.cur.length, last = d.cur[k - 1];
+    var below = d.rows.every(function(m) {
+      return m.p[k - 1] > last;
+    }), above = d.rows.every(function(m) {
+      return m.p[k - 1] < last;
+    });
+    var edge = below || above ? " At this point of a cycle it sits " + (below ? "lower" : "higher") + " than any of the " + d.rows.length + " cycles it can be set against." : "";
+    return (best.r >= d.crit ? " Quarter by quarter it has moved like the " + best.c.name + "." : " No other cycle has moved closely like it; the nearest is the " + best.c.name + ".") + edge;
+  }
+  function chartHtml(d) {
+    var F = histFrame(360), L = F.L, R = F.R, T = F.T, B = F.B, k = d.cur.length;
+    var X = function(i2) {
+      return L + (R - L) * i2 / Math.max(1, k - 1);
+    };
+    var Y = function(v) {
+      return B - (B - T) * v / 100;
+    };
+    var line = function(p, cls) {
+      return '<path class="ca-line' + cls + '" d="' + p.map(function(v, i2) {
+        return (i2 ? "L" : "M") + X(i2).toFixed(1) + "," + Y(v).toFixed(1);
+      }).join("") + '"/>';
+    };
+    var out = [ chartAxes({
+      ticks: [ 0, 50, 100 ],
+      y: Y,
+      x0: L,
+      x1: R,
+      top: T - AXIS.LEG - AXIS.READ,
+      bot: B,
+      fmt: function(v) {
+        return v === 0 ? "Low" : v === 50 ? "Mid" : "High";
+      }
+    }) ];
+    var step = k > 24 ? 8 : 4;
+    for (var i = 0; i < k; i += step) {
+      out.push(vGrid(X(i), T, B));
+      out.push(xLabel(X(i).toFixed(1), "Year " + (i / 4 + 1), B + 17));
+    }
+    d.rows.slice(1).forEach(function(m) {
+      out.push(line(m.p, ""));
+    });
+    if (d.rows.length) out.push(line(d.rows[0].p, " near"));
+    out.push(line(d.cur, " now"));
+    out.push('<circle class="ca-dot" cx="' + X(k - 1).toFixed(1) + '" cy="' + Y(d.cur[k - 1]).toFixed(1) + '" r="5"/>');
+    var keyY = T - AXIS.READ / 2;
+    out.push('<text class="ca-key now" x="' + L + '" y="' + keyY + '">' + d.era.name + "</text>");
+    if (d.rows.length) out.push('<text class="ca-key near" x="' + R + '" y="' + keyY + '" text-anchor="end">' + d.rows[0].c.name + "</text>");
+    return vhOpen(F.W, F.H) + 'aria-label="' + d.title + " through the " + d.era.name + ', set against the other cycles at the same point.">' + out.join("") + "</svg>";
+  }
+  function rowsHtml(d) {
+    return d.rows.slice(0, 3).map(function(m) {
+      return auxStat({
+        label: m.c.name,
+        value: m.r.toFixed(2) + " · " + (m.r >= d.crit ? "close" : "loose")
+      });
+    }).join("");
+  }
+  function detail(d) {
+    return (INSIGHT[d.key] ? INSIGHT[d.key]() : "") + "<h4>How the analysis reads</h4>" + facts([ "The line is " + d.title + " as one reading, from " + d.since + ": " + d.made.join(", ") + ".", "Each reading is ranked against its own record up to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more of what the category measures, and the ranks are averaged. It is the method of her mood score.", "Every cycle is drawn from the quarter it opened, so the lines share a start. The " + d.era.name + " is set against every other cycle that ran at least as long and has the record to draw it.", "Two cycles are matched on their moves quarter by quarter (the correlation of the changes), so two cycles that merely both rose do not count as alike. A match is close when it passes the standard test at 5% significance for that many quarters (" + d.crit.toFixed(2) + " here); below it, it is loose.", "The other cycles are drawn only as far as this one has run. This is a description of the record, not a forecast." ]);
+  }
+  function analysisHtml(key) {
+    var d = analyse(key, ui.eraOpen || currentEra);
+    if (!d) return '<div class="cat-analysis" hidden></div>';
+    return '<div class="cat-analysis"><div class="ca-name">' + d.title + ' analysis</div><p class="ca-say">' + sayMove(d) + sayMatch(d) + "</p>" + chartHtml(d) + rowsHtml(d) + moreRow(detail(d)) + "</div>";
+  }
+  function replaceCategory(c) {
+    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-analysis");
+    if (box) box.outerHTML = analysisHtml(c.key);
   }
   var CYCLE_DATA_KEY = "gyn.cycleData";
   var YEAR_W = 36;
@@ -34981,7 +35285,7 @@
         apply();
       });
     })();
-    var listWrap = need("calendar-list"), detail = need("calendar-cycle");
+    var listWrap = need("calendar-list"), detail2 = need("calendar-cycle");
     function open(from) {
       var era = marketCycles.filter(function(c) {
         return c.from === from;
@@ -34998,9 +35302,9 @@
           return;
         }
       }
-      enterEra(era, detail);
+      enterEra(era, detail2);
       listWrap.hidden = true;
-      detail.hidden = false;
+      detail2.hidden = false;
       setTopbar(era.name, ui.eraPageBack = back);
       window.scrollTo({
         top: 0,
@@ -35009,7 +35313,7 @@
     }
     function back() {
       leaveEra();
-      detail.hidden = true;
+      detail2.hidden = true;
       listWrap.hidden = false;
       setTopbar("Analysis", null);
       window.scrollTo({
@@ -35029,7 +35333,7 @@
     });
     GYN.on("calendarReset", function() {
       leaveEra();
-      detail.hidden = true;
+      detail2.hidden = true;
       listWrap.hidden = false;
       ui.topbarBack = null;
       need("topbar-back").hidden = true;
@@ -35157,7 +35461,7 @@
       page.mode[id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode[id];
     }
     if (!era) modeHome = null;
-    CATEGORIES.forEach(replaceInsights);
+    CATEGORIES.forEach(replaceCategory);
   }
   function enterEra(era, page2) {
     var ta = need("today-analysis");
@@ -36129,10 +36433,9 @@
       var sheet = catSheet("sheet-cat-" + c.key, c.key);
       var items = document.createElement("div");
       items.className = "cat-list";
+      items.innerHTML = analysisHtml(c.key);
       appendPicks(items, catPicks(c), c.key);
       sheet.appendChild(items);
-      var tog = INSIGHT[c.key] ? INSIGHT[c.key]() : "";
-      if (tog) sheet.insertAdjacentHTML("beforeend", tog);
       host.appendChild(sheet);
     });
     [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
@@ -37109,7 +37412,7 @@
   }
   function repaintDiagnosis() {
     if (!ui.eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(replaceInsights);
+    CATEGORIES.forEach(replaceCategory);
   }
   function bootRepaint() {
     onLive("fedFunds", repaintPolicy);

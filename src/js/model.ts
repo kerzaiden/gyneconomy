@@ -125,7 +125,7 @@ export function cycleNowNote(m: CycleModel){
 }
 export function seasonGroup(key: string){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 // ---- The diagnosis: how she feels, and what has followed ----
-function rankToDate(prior: (number | null)[], v: number | null | undefined){
+export function rankToDate(prior: (number | null)[], v: number | null | undefined){
   if (v == null || prior.length < 12) return null;
   return 100 * prior.filter(function(x){ return x != null && x < v; }).length / prior.length;
 }
