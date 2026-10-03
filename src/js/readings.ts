@@ -1,10 +1,10 @@
 import { bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
-import { expandBtn, need, ui } from "./dom.ts";
+import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
-import { confidenceHistory, productivityHistory } from "./history-fred.ts";
+import { confidenceHistory, durablesHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -12,11 +12,11 @@ export type SeriesRecord<P> = { now: P; lo: P; hi: P };
 type WordReading = Indicator & { tag: Tag; info: () => string; span: string; lead: string; caption: string; page: IndicatorPage };
 export type ProductivityReading = WordReading & { wordWhy: string };
 export type ConfidenceReading = WordReading & { wordSays: string };
+export type DesireReading = WordReading & { wordSays: string };
 export type MarketReading = WordReading & { wordSays: string; now: YearPoint; lo: YearPoint; hi: YearPoint; open: boolean };
 type HznPoint = { v: number | null; partial?: boolean };
 type HznAt = { i: number; v: number };
 export type HorizonRead = { spread: number; q: HznAt; q2: HznAt; dSpread: number; dLong: number; dShort: number; was: number | null; was2: number | null; d2: number; word: string; state: State };
-type RiskBand = { key: string; label: string; at: (v: number) => boolean };
 type WordOf = { state: State; text: string; says: string; why?: string };
 
 function productivityWord(v: number): WordOf & { why: string } {
@@ -35,6 +35,12 @@ function confidenceWord(v: number): WordOf {
     says:"above the OECD\u2019s long-term average of 100, the side on which households lean towards spending on major purchases" };
   return { state:"warning", text:"Pessimistic",
     says:"below the OECD\u2019s long-term average of 100, the side on which households lean towards saving more and spending less" };
+}
+function desireWord(v: number): WordOf {
+  if (v >= DESIRE_LINE) return { state:"good", text:"High appetite",
+    says:"above zero: households are buying more of what they could put off than they were a year earlier" };
+  return { state:"warning", text:"Low appetite",
+    says:"below zero: households are buying less of what they could put off than they were a year earlier" };
 }
 export function deficitBlock(){
   var iSur = -1, i;
@@ -74,19 +80,6 @@ export function deficitBlock(){
 }
 export var coincident: Indicator[] = [
   {
-    bodyTerm:"Desire", econTerm:"Risk tolerance (credit)",
-    page:{ bare:true, noMark:true, deferHighlights:true,
-           after:function(ind){ return desireBlock(ind) + riskMatrixBlock(metered(ind.meter), metered(fileRow("cape").meter)); } },
-    tag:{text:"High appetite", state:"good"},
-    metric:"2.80%", metricSub:"high-yield OAS, Sep 24 2026",
-    meter:{min:2.41,max:21.82,value:2.80,optimal:{from:HY_NORM_LO, to:HY_NORM_HI, label:HY_NORM_LO + "\u2013" + HY_NORM_HI + "%"},
-           ends:{ low:"Tight", zone:"Normal", high:"Wide" }},
-    shortCaption:"A touch off its tightest levels, but still near the tightest spread on record — she's in the mood to take risk.",
-    aux:{label:"Long-run median, since 1996", value:"~4.5%"},
-    get peek(){ return colPeek(hyQuarterEnds(), function(){ return "hy-col"; }); },
-    src:[{t:"ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},{t:"ICE Data Indices — index originator (full history behind the FRED window)", u:"https://www.ice.com/fixed-income-data-services/index-solutions/fixed-income-indices"}]
-  },
-  {
     bodyTerm:"Pulse", econTerm:"Money velocity",
     page:{ bare:true, noHead:true, chartFirst:true, peeked:true,
            chart:function(ind){ return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind); } },
@@ -119,29 +112,6 @@ function deriveVolumeTag(){
 export function meterFlagged(m: Meter){
   var ends = bandEnds(m.optimal, -Infinity, Infinity);
   return m.value != null && (m.value < ends[0] || m.value > ends[1]);
-}
-function desireInfoHtml(ind: Indicator){
-  return '<h4>Risk tolerance (credit)</h4>' +
-    '<p class="caption">The reading is <b>' + tagFor(ind).text + '</b>. The figure is the ICE BofA US High Yield ' +
-      'Index option-adjusted spread \u2014 the extra yield investors demand to lend to companies rated below ' +
-      'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
-      'stripped out (' + ind.metricSub + ').</p>' +
-    '<p class="caption follow"><b>Normal here is ' + HY_NORM_LO + '\u2013' + HY_NORM_HI +
-      '%</b>, and both edges are the credit market\u2019s own breaks rather than a target: below about ' + HY_NORM_LO + '% is ' +
-      'read as complacency, above about ' + HY_NORM_HI + '% as stress, and above 8% as distress. The long-run median since the ' +
-      'index began in 1996 is roughly 4.5%, which sits inside the band. An economy has no level it ought to be ' +
-      'at, so none of this is an optimum \u2014 it is where this spread has actually sat.</p>' +
-    '<p class="caption follow"><b>Tight</b> means lenders are asking little to take credit ' +
-      'risk, so appetite is high; <b>wide</b> means they are asking a lot. That is why the figure flags amber ' +
-      'while the reading stays good: abnormally tight spreads are bullish risk appetite AND a historically ' +
-      'unusual place for compensation to sit. Both are true of the one number. The ends of the scale are the ' +
-      'index\u2019s own record: 2.41% in June 2007 and 21.82% in December 2008.</p>' +
-    srcBlock([
-      {t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index OAS (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"},
-      {t:"Trading Economics \u2014 the index\u2019s record high and low since 1996", u:"https://tradingeconomics.com/united-states/bofa-merrill-lynch-us-high-yield-option-adjusted-spread-fed-data.html"},
-      {t:"Convex \u2014 high-yield spread regimes and the long-run median", u:"https://convextrade.com/glossary/hy-spreads"},
-      {t:"CME Group \u2014 how Fed policy moves corporate bond spreads", u:"https://www.cmegroup.com/openmarkets/interest-rates/2025/How-Fed-Policy-Can-Impact-Corporate-Bond-Spreads.html"}
-    ]);
 }
 function volumeInfoHtml(ind: Indicator){
   return '<h4>' + ind.econTerm + '</h4>' +
@@ -181,6 +151,17 @@ function confidenceInfoHtml(f: ConfidenceReading){
     '<p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and ' +
       'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
     srcBlock(CONFIDENCE_SRC);
+}
+function desireInfoHtml(f: DesireReading){
+  return '<h4>' + f.econTerm + '</h4>' +
+    '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
+      'The record, month by month, runs ' + f.span + '.</p>' +
+    '<p class="caption follow">Durable goods are the BEA\u2019s own category for goods that last three years or more: ' +
+      'cars, furniture, appliances, electronics, recreational goods. They are the purchases a household can postpone, so their ' +
+      'spending moves with appetite rather than need. The figure is real spending, adjusted for prices, against the same month a year earlier.</p>' +
+    '<p class="caption follow"><b>Zero is the only line.</b> Above it she is buying more of what she could do without than a ' +
+      'year ago; below it her appetite is low. No other band is drawn.</p>' +
+    srcBlock(DESIRE_SRC);
 }
 function productivityInfoHtml(f: ProductivityReading){
   return '<h4>' + f.econTerm + '</h4>' +
@@ -245,16 +226,6 @@ function temperatureInfoHtml(ind: Indicator){
       {t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
       {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
     ]);
-}
-function desireBlock(ind: Indicator){
-  histNote("desire-range", function(){ return desireInfoHtml(ind); });
-  return histBar("", "desire-timeline") +
-    '<div class="page-chart pulsebox">' +
-    histHead("desire-range") +
-    '<div id="desire-record" class="vh-host"></div>' +
-    histTip("desire-hist-tooltip") +
-    '<div id="desire-trend"></div>' +
-  '</div>';
 }
 function volumeBlock(ind: Indicator){
   histNote("volume-range", volumeInfoHtml(ind));
@@ -440,71 +411,6 @@ export function horizonInfoHtml(pick: string){
       'which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' +
     String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
-var RISK_REWARD: RiskBand[] = [
-  { key:"low",  label:"Low",      at:function(v){ return v < 4; } },
-  { key:"mod",  label:"Moderate", at:function(v){ return v >= 4 && v <= 10; } },
-  { key:"high", label:"High",     at:function(v){ return v > 10; } }
-];
-var RISK_RISK: RiskBand[] = [
-  { key:"low",  label:"Low",      at:function(v){ return v < 20; } },
-  { key:"mod",  label:"Moderate", at:function(v){ return v >= 20 && v <= 30; } },
-  { key:"high", label:"High",     at:function(v){ return v > 30; } }
-];
-function riskCell(bands: RiskBand[], v: number){ var i = 0; bands.forEach(function(b, k){ if (b.at(v)) i = k; }); return i; }
-export function riskMatrixBlock(oas: number, cape: number){
-  var wi = riskCell(RISK_REWARD, oas), ri = riskCell(RISK_RISK, cape);
-  var ylabs = [], cells = [];
-  for (var r = RISK_RISK.length - 1; r >= 0; r--){
-    ylabs.push('<span class="rm-y' + (r === ri ? " on" : "") + '">' + RISK_RISK[r].label + '</span>');
-    for (var c = 0; c < RISK_REWARD.length; c++){
-      var here = (r === ri && c === wi);
-      cells.push('<span class="rm-c s' + (r + (RISK_REWARD.length - 1 - c)) + (here ? " here" : "") + '" title="' +
-        RISK_RISK[r].label + ' risk · ' + RISK_REWARD[c].label + ' reward">' +
-        (here ? '<i class="rm-mark"></i>' : "") + '</span>');
-    }
-  }
-  var xlabs = RISK_REWARD.map(function(b, i){
-    return '<span class="rm-x' + (i === wi ? " on" : "") + '">' + b.label + '</span>';
-  }).join("");
-  return '<div class="page-chart riskmx">' +
-    '<div class="spread-history-head"><h4>Risk / Reward</h4>' + expandBtn(riskMatrixNote) + '</div>' +
-    '<div class="rm-frame"><span class="rm-axis rm-axis-y">Risk</span>' +
-      '<div class="rm-grid">' +
-        '<div class="rm-ylabs">' + ylabs.join("") + '</div>' +
-        '<div class="rm-cells">' + cells.join("") + '</div>' +
-        '<span></span><div class="rm-xlabs">' + xlabs + '</div>' +
-      '</div></div>' +
-    '<div class="rm-axis rm-axis-x">Reward</div>' +
-    '<p class="pt-note"><b>' + RISK_RISK[ri].label + ' risk</b> (CAPE ' + cape.toFixed(1) + '×) · ' +
-      '<b>' + RISK_REWARD[wi].label + ' reward</b> (' + oas.toFixed(2) + '% spread). ' +
-      'Risk: CAPE under 20 / 20–30 / over 30. Reward: spread under 4% / 4–10% / over 10%. ' +
-      'The grid places the two readings against each other. It does not forecast.</p>' +
-  '</div>';
-}
-var riskMatrixNote =
-  '<h4>Risk / Reward</h4>' +
-  '<p class="caption">Two readings already on this board, placed against each other because neither answers the ' +
-    'other’s question alone. <b>Risk</b> is CAPE, from the Valuations page — how much price sits on a decade of ' +
-    'earnings, and so how much there is to give back. <b>Reward</b> is the extra yield demanded to hold junk ' +
-    'debt — Desire’s own figure, read forwards: a wide spread is a lot of compensation for the risk, a tight ' +
-    'one is very little. This is the same figure the card above tags as high appetite, seen from the other ' +
-    'side: <b>high appetite is what a low-reward market looks like from the inside.</b></p>' +
-  '<p class="caption follow">How to read it. The two readings are placed against each ' +
-    'other rather than divided into a single figure, so what you get is a position on two axes rather than one ' +
-    'number. It is also not <b>Value at Risk</b>, which is a different and far more precise measure — the loss ' +
-    'not exceeded with a stated probability over a stated horizon. This grid has no distribution, no ' +
-    'confidence level and no horizon.</p>' +
-  '<p class="caption follow">The bands. A spread under 4% is the euphoric zone (the record ' +
-    'low is 2.41%, June 2007), over 10% the distressed one (the record high 21.82%, December 2008), and ' +
-    'between them is ordinary. CAPE’s 20 and 30 are round numbers sitting close to the terciles of this ' +
-    'app’s own 1970–2026 history (16.9 and 26.5); they split those fifty-seven years twenty-four, ' +
-    'twenty-one and twelve.</p>' +
-  '<p class="caption follow">No cell carries a rating. The wash deepens toward high risk and ' +
-    'low reward because being paid least when there is most to lose is arithmetic about two readings — a ' +
-    'description of where you are standing, not a claim about what happens next. The honest way to say more ' +
-    'would be to shade each cell by what followed historically, as the un-inversion panel on the Pressure page ' +
-    'does; that needs a long spread history, and FRED now serves this series on a rolling three-year window, ' +
-    'so the past years cannot be binned.</p>';
 function pulseBlock(rate: number, ref: number, ind?: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
   var title = ind
@@ -599,7 +505,7 @@ function marketInfoHtml(f: MarketReading){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, confidenceReading, marketReading]); }
+export function rowReadings(): Indicator[] { return ([] as Indicator[]).concat(coincident, lagging, [productivityReading, desireReading, confidenceReading, marketReading]); }
 export function indOf(R: { term?: string }): Indicator | undefined { return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
@@ -641,31 +547,10 @@ export function indPeriod(R: { term?: string }){
 }
 
 
-export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
+export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
-export function bootReadings(){
-  /* ---- Productivity growth is not in this panel ---- */
-  productivityRecord = (function(){
-    var h = productivityHistory;
-    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
-             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
-  })();
-  productivityReading = (function(R){
-    var word = productivityWord(R.now.v);
-    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
-    return {
-      bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
-      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
-      econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
-      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
-      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
-              ends:{ low:"Falling" } },
-      span:span,
-      lead:"",
-      caption:at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
-    };
-  })(productivityRecord);
+function deriveFeelingReadings(){
   confidenceRecord = (function(){
     var h = confidenceHistory;
     return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
@@ -689,10 +574,56 @@ export function bootReadings(){
         ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
     };
   })(confidenceRecord);
+  desireRecord = (function(){
+    var h = durablesHistory;
+    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
+             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
+  })();
+  desireReading = (function(R){
+    var word = desireWord(R.now.v), at = monthLabel(R.now.m);
+    var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
+    return {
+      bodyTerm:"Desire", info:function(){ return desireInfoHtml(desireReading); },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-desire-chart"></div><div id="sheet-sign-desire-highlights"></div>'; } },
+      econTerm:"Consumer demand", metricSub:"consumer demand, YoY, " + at,
+      metric:fmtSigned(R.now.v, 1) + "%", tag:{ state:word.state, text:word.text }, wordSays:word.says,
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:DESIRE_LINE, label:"\u2265 0%"}, ends:{ low:"Low appetite" } },
+      span:span,
+      get peek(){
+        return colPeek(durablesHistory.map(function(d){ return d.v; }), function(v){ return "dv-bar " + (v > 0 ? "over" : "under"); }, 0, true);
+      },
+      lead:"",
+      caption:at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says +
+        ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+    };
+  })(desireRecord);
+}
+export function bootReadings(){
+  /* ---- Productivity growth is not in this panel ---- */
+  productivityRecord = (function(){
+    var h = productivityHistory;
+    return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
+             hi:h.reduce(function(a, d){ return d.v > a.v ? d : a; }) };
+  })();
+  productivityReading = (function(R){
+    var word = productivityWord(R.now.v);
+    var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
+    return {
+      bodyTerm:"Productivity growth", info:function(){ return productivityInfoHtml(productivityReading); },
+      page:{ bare:true, chart:function(){ return '<div id="sheet-sign-productivity-growth-chart"></div><div id="sheet-sign-productivity-growth-highlights"></div>'; } },
+      econTerm:"Productivity growth", metricSub:"nonfarm business output per hour, YoY, " + at,
+      metric:R.now.v.toFixed(1) + "%", tag:{ state:word.state, text:word.text }, wordWhy:word.why,
+      meter:{ min:R.lo.v, max:R.hi.v, value:R.now.v, optimal:{gte:PRODUCTIVITY_SLOWDOWN, label:"\u2265 " + PRODUCTIVITY_SLOWDOWN + "% YoY"},
+              ends:{ low:"Falling" } },
+      span:span,
+      lead:"",
+      caption:at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+    };
+  })(productivityRecord);
+  deriveFeelingReadings();
   now.valuation.tag = valuationVerdict(metered(fileRow("cape").meter));
   liveInto("capeValue");
   liveInto("coincident");
-  liveInto("hyOasNow");
   GYN.step("deriveVolumeTag", deriveVolumeTag, "derive");
   deriveVolumeTag();
   gdpNowQ = gdpQuarterlyYoY[gdpQuarterlyYoY.length - 1];
@@ -761,7 +692,6 @@ function deriveHorizon(){
     d2:hznDelta(t10y2yHistory, tN2),
     word:w.word, state:w.state };
 }
-export function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
 export function bootReadingRegistry(){
   /* ---- THE READING REGISTRY ---- */
   defineReadings({
@@ -812,15 +742,6 @@ export function bootReadingRegistry(){
       }
     },
     vix3mClose: { kind: "scalar", band: [5, 100], set: function(v: number){ now.vix3mClose = v; }, onOpen: true },
-    hyOasNow: {
-      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").slice(-1)[0]; },
-      set: function(v: number){
-        var row = desireRow();
-        row.meter.value = v;
-        row.metric = v.toFixed(2) + "%";
-        if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
-      }
-    },
     capeValue: {
       kind: "scalar", band: [4, 60],
       set: function(v: number){

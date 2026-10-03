@@ -3,10 +3,10 @@ import { addSources, byId, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { buffettHistory, CONFIDENCE_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
+import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
-import { confidenceReading, confidenceRecord, marketReading, meterFlagged, productivityReading } from "./readings.ts";
+import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, productivityReading } from "./readings.ts";
 import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.ts";
 import { catItem, catList, metricSheet, openOf, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.ts";
 
@@ -40,7 +40,7 @@ function splitPages(): Record<string, SplitPage> {
     "sheet-metric-interest": { after:"sheet-metric-debt", row:labRow("sheet-metric-interest"), line:"50-year average",
       fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
-    "sheet-sign-confidence": confidencePage(),
+    "sheet-sign-desire": desirePage(), "sheet-sign-confidence": confidencePage(),
     "sheet-sign-market": marketPage()
   };
 }
@@ -48,6 +48,12 @@ function confidencePage(): SplitPage {
   var r = confidenceReading;
   return { goodAbove:true, line:"OECD average", fmt:function(v){ return v.toFixed(1); }, tick:function(v){ return String(Math.round(v)); },
     src:CONFIDENCE_SRC, insight:confidenceInsight, info:r.info,
+    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
+}
+function desirePage(): SplitPage {
+  var r = desireReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
+  return { goodAbove:true, line:"No change", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
+    src:DESIRE_SRC, insight:desireInsight, info:r.info,
     row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
 }
 function marketPage(): SplitPage {
@@ -218,6 +224,17 @@ function confidenceInsight(s: SplitSpec){
       (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
     hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
       confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.")];
+}
+function desireInsight(s: SplitSpec){
+  var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
+  var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
+  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
+  return [lede('What households spend on the things they could put off: cars, furniture, appliances, electronics. ' +
+      'Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.'),
+    hiCard("The latest month", s.row.flagState || "", atMonth(last as MonthPoint) + " ran at " + fmtSigned(last.v, 1) + "%, " +
+      (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
+    hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " +
+      fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.")];
 }
 var ORDINAL = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
 function marketInsight(s: SplitSpec){

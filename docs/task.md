@@ -18,10 +18,10 @@ artifact's database. Everything else about the app is automated without you.
 **1. Read the pipeline's file.** Fetch
 `https://raw.githubusercontent.com/kerzaiden/gyneconomy/main/data/live.json`
 
-It holds six documents, each already fetched from a primary source and already validated, each with
+It holds five documents, each already fetched from a primary source and already validated, each with
 its own `asOf` date:
 
-`yieldCurve` · `fedFunds` · `vixClose` · `vix3mClose` · `hyOasNow` · `capeValue`
+`yieldCurve` · `fedFunds` · `vixClose` · `vix3mClose` · `capeValue`
 
 Its `_meta.failed` names anything the pipeline could not get.
 
@@ -60,7 +60,7 @@ That is the whole job. You fetch no figure yourself.
 
 ## Report every run
 
-The six documents and their dates · anything in `_meta.failed` · which documents you wrote · the
+The five documents and their dates · anything in `_meta.failed` · which documents you wrote · the
 season the page computes · whether the artifact matches main. A run that wrote nothing says why.
 
 **Notify (push) if:** a document was missing or `_meta.failed` is not empty · the newest date in the

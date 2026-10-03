@@ -72,11 +72,6 @@
   "value": 16.39,
   "asOf": "2026-10-01"
  },
- "hyOasNow": {
-  "kind": "scalar",
-  "value": 3.24,
-  "asOf": "2026-10-01"
- },
  "vix3mClose": {
   "kind": "scalar",
   "value": 18.58,
@@ -93,7 +88,6 @@
    "yieldCurve",
    "fedFunds",
    "vixClose",
-   "hyOasNow",
    "vix3mClose",
    "capeValue"
   ],

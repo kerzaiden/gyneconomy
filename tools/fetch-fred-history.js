@@ -156,7 +156,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -173,6 +173,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (productivity) out.productivityHistory = q(productivity);
   if (sp500) out.sp500MonthlyHistory = m(sp500);
   if (confidence) out.confidenceHistory = m(confidence);
+  if (durables) out.durablesHistory = m(durables);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -238,7 +239,11 @@ async function main() {
   say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
 
   const early = await earlySeasons();
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early));
+  const durables = yoyMonthly(await fredSeries('DDURRA3M086SBEA', '1959-01-01'), -60, 80);
+  if (!durables.length) throw new Error('DDURRA3M086SBEA: no year-over-year month');
+  say('DDURRA3M086SBEA YoY ' + durables.length + ' months, ' + durables[0].m + ' → ' + durables[durables.length - 1].m);
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
