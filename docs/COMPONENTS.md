@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `32e9746` on 2026-10-03. **83 components**, **35 shared patterns**.
+Generated from commit `c2129d9` on 2026-10-03. **83 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -206,6 +206,7 @@ renderer speaks. Listed most-used first.
 | **`vhOpen`** | charts.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
+| **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |

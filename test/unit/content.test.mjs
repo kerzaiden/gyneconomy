@@ -5,7 +5,7 @@ import { ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
-import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState } from '../../src/js/readings.ts';
+import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
@@ -107,7 +107,10 @@ test('every derived cut-off is computed from its own record (Keren: convention o
 });
 
 test('the Sahm rule reads the three-month average against its low of the twelve months before', () => {
-  const i = unempHistory.findIndex(d => d.m === '2020-04');
+  const i = unempHistory.findIndex(d => d.m === '2020-04'), avg = j => (unempHistory[j - 2].v + unempHistory[j - 1].v + unempHistory[j].v) / 3;
+  const sahm = j => avg(j) - Math.min(...Array.from({ length: 12 }, (_, k) => avg(j - 12 + k)));
+  const off = unempHistory.map((d, j) => j < 14 || unempSahm[j] == null || Math.abs(unempSahm[j] - sahm(j)) < 1e-9 ? null : d.m).filter(Boolean);
+  assert.deepEqual(off, []);
   assert.ok(unempSahm[i] > 3, 'April 2020 triggers');
   assert.ok(unempSahm[unempHistory.findIndex(d => d.m === '2019-06')] < 0.5, 'mid-2019 does not');
   assert.equal(sahmOf('2020-04'), unempSahm[i]);
@@ -321,4 +324,12 @@ test('a live figure repaints exactly the cards whose roster row declares it', as
     const got = cards(), moved = Object.keys(got).filter(k => got[k] !== was[k]).sort();
     assert.deepEqual(moved, ROSTER.filter(R => (R.live || []).includes(name)).map(R => R.id).filter(id => id in got).sort(), name);
   }
+});
+
+test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
+  const at = (gap, day) => deliver({ yieldCurve: { kind: 'series', asOf: day, rows: now.yieldCurve.map(r => r.m === '10Y' ? { ...r, y: now.yieldCurve.find(x => x.m === '3M').y + gap } : r) } });
+  await at(-0.01, '2026-12-30');
+  assert.equal(horizonRead.word, 'Pessimistic');
+  await at(0.01, '2026-12-31');
+  assert.notEqual(horizonRead.word, 'Pessimistic');
 });

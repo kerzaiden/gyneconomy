@@ -1558,7 +1558,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.7.0 (723)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.7.1 (725)</span></p>
     </div>
   </div>
 
@@ -32061,19 +32061,23 @@
     }, X(0), X(n - 1), Y, R, L, 0));
     return vhOpen(W, H) + 'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + " to " + y1 + ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + "</svg>";
   }
+  function colScale(F, n, lo, hi) {
+    var h = (F.R - F.L) / (2 * Math.max(1, n));
+    return {
+      X: function(i) {
+        return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1);
+      },
+      Y: function(v) {
+        return F.B - (F.B - F.T) * (v - lo) / (hi - lo);
+      }
+    };
+  }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length;
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var X = function(i) {
-      var h = (R - L) / (2 * Math.max(1, n));
-      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32174,14 +32178,7 @@
     var sc = windowScale(seen.map(function(d) {
       return d.v;
     }), [ 0, NROU_NOW ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32260,14 +32257,7 @@
     var sc = windowScale(seen.map(function(d) {
       return d.v;
     }), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32343,14 +32333,7 @@
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var X = function(i) {
-      var h = (R - L) / (2 * Math.max(1, n));
-      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32425,14 +32408,7 @@
     var sc = windowScale(vals.map(function(d) {
       return d.v;
     }), [ 0, CPI_TARGET ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32509,14 +32485,7 @@
     var sc = windowScale(vals.map(function(d) {
       return d.v;
     }), [ 0, GDP_NORM ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32595,14 +32564,7 @@
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
     var y1 = M2_FROM_YEAR + 1 + Math.floor(((to == null ? all.length : to) - 1) / 4);
     var sc = windowScale(vals, [ 0, M2_NORM ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
