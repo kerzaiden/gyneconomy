@@ -15,7 +15,7 @@ rules below are the ones that matter most.
 - `docs/ARCHITECTURE.md` — why things are the way they are, including decisions that look like bugs.
   Read the part that covers what you are touching.
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
-  before grepping; the source is ~15,000 lines.
+  before grepping; the source is ~7,000 lines of TypeScript and ~1,400 of CSS.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
 - `git log` — every version is a commit `V6NN — Short Name` and an annotated tag. The history lives here,
   not in the code. The code has no comments since V650 (the app) and V652 (tools, tests, workflows);

@@ -69,7 +69,7 @@ function unused(js, html, css) {
   const all = js + '\n' + html;
   const count = n => (all.match(new RegExp('\\b' + n.replace(/\$/g, '\\$') + '\\b', 'g')) || []).length;
   const out = [];
-  new Set([...js.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m => m[1])).forEach(n => {
+  new Set([...js.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*[<(]/g)].map(m => m[1])).forEach(n => {
     if (count(n) <= 1) out.push('function ' + n + ' is never used');
   });
   new Set([...js.matchAll(/\bvar\s+([A-Za-z_$][\w$]*)\s*[:=]/g)].map(m => m[1])).forEach(n => {
@@ -83,7 +83,7 @@ function unused(js, html, css) {
 
 function twice(js) {
   const seen = {};
-  for (const m of js.matchAll(/^(?:export )?function ([A-Za-z_$][\w$]*)\s*\(/gm)) seen[m[1]] = (seen[m[1]] || 0) + 1;
+  for (const m of js.matchAll(/^(?:export )?function ([A-Za-z_$][\w$]*)\s*[<(]/gm)) seen[m[1]] = (seen[m[1]] || 0) + 1;
   return Object.keys(seen).filter(n => seen[n] > 1).map(n => 'function ' + n + ' is declared ' + seen[n] + ' times; the last one silently replaces the others');
 }
 
@@ -117,11 +117,27 @@ function cycles(files) {
   return out;
 }
 
-function audit(files, html, css) {
+function layerOrder(doc) {
+  const at = doc.indexOf('**The modules are layers'), from = doc.indexOf('From the bottom:', at), end = doc.indexOf('\n- ', from);
+  return at < 0 || from < 0 ? [] : [...doc.slice(from, end).matchAll(/`([\w-]+)`/g)].map(m => m[1]);
+}
+
+function layers(files, order) {
+  if (!order.length) return ['docs/ARCHITECTURE.md lists no module layers'];
+  const rank = f => order.indexOf(f.replace(/\.[jt]s$/, '')), out = [];
+  Object.keys(files).sort().forEach(f => {
+    if (rank(f) < 0) { out.push(f + ' is not in the layer order in docs/ARCHITECTURE.md'); return; }
+    [...files[f].matchAll(/from ["']\.\/([\w-]+\.[jt]s)["']/g)].map(m => m[1]).filter(d => d in files && rank(d) >= rank(f))
+      .forEach(d => out.push(f + ' imports ' + d + ', which is not in a layer below it (docs/ARCHITECTURE.md)'));
+  });
+  return out;
+}
+
+function audit(files, html, css, order) {
   let out = fontSizes(css).concat(pageScoped(css));
   Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
   const js = Object.values(files).join('\n');
-  return out.concat(cycles(files), twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
+  return out.concat(cycles(files), order ? layers(files, order) : [], twice(js), unused(js, html, css), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
 }
 
 if (require.main === module) {
@@ -130,12 +146,13 @@ if (require.main === module) {
   fs.readdirSync(dir).filter(f => /\.[jt]s$/.test(f))
     .forEach(f => { files[f] = fs.readFileSync(path.join(dir, f), 'utf8'); });
   const out = audit(files, fs.readFileSync(path.join(ROOT, 'src', 'page-body.html'), 'utf8'),
-                    fs.readFileSync(path.join(ROOT, 'src', 'styles.css'), 'utf8'));
+                    fs.readFileSync(path.join(ROOT, 'src', 'styles.css'), 'utf8'),
+                    layerOrder(fs.readFileSync(path.join(ROOT, 'docs', 'ARCHITECTURE.md'), 'utf8')));
   if (out.length) {
     console.log('HYGIENE — a child holds what its parent owns, or something is unused:\n\n  ' + out.join('\n  ') + '\n');
     process.exit(1);
   }
   console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, modules in layers, nothing unused, nothing removed come back, pins held');
 } else {
-  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
+  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
 }

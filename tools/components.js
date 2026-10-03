@@ -208,9 +208,9 @@ if (arg === '--check') {
     else if (caps[fn] != null && n > caps[fn]) longer.push(fn + ' ' + caps[fn] + ' -> ' + n + ' lines');
   }
   if (longer.length) {
-    console.error('SIZE \u2014 a function got longer:\\n');
+    console.error('SIZE \u2014 a function got longer:\n');
     longer.forEach(l => console.error('  ' + l));
-    console.error('\\nSplit it, or if it has to grow, run: npm run comp:bless');
+    console.error('\nSplit it, or if it has to grow, run: npm run comp:bless');
     process.exit(1);
   }
 

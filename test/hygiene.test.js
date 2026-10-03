@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -42,6 +42,11 @@ ok('a removed id coming back is caught', gone('<div id="growth-peers"></div>').l
 ok('a longer name that contains a removed one passes', gone('.pbar-wide .xpbar'), []);
 ok('the pinned geometry passes', pinned('var COL_FILL = 0.68; var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };'), []);
 ok('a moved pin is caught', pinned('var COL_FILL = 0.7; var AXIS = { L:37, R:6, T:10, LEG:20, RAIL:5, FOOT:8, READ:61 };').length, 1);
+ok('an unused generic function is caught', unused('function lonely<T>(x: T){ return x; }', '', ''), ['function lonely is never used']);
+ok('the layer order is read from the doc', layerOrder('**The modules are layers** From the bottom: `a`, `b`, `main`.\n- next'), ['a', 'b', 'main']);
+ok('an import from a layer below passes', layers({ 'a.ts': '', 'b.ts': 'import { x } from "./a.ts";' }, ['a', 'b']), []);
+ok('an import from a layer above is caught', layers({ 'a.ts': 'import { y } from "./b.ts";', 'b.ts': '' }, ['a', 'b']).length, 1);
+ok('a module missing from the order is caught', layers({ 'c.ts': '' }, ['a']).length, 1);
 
 console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

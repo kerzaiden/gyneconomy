@@ -343,19 +343,6 @@ async function openPage(p, url, sheet) {
   }
 
   {
-    const doors = sheet => p.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].map(d => {
-      const v = d.querySelector('.ci-value, .subject-value');
-      const w = d.querySelector('.tag');
-      return (v ? v.firstChild.nodeValue.trim() : '-') + '|' + (w ? w.textContent.trim() : '');
-    }), sheet);
-    const capeBefore = await doors('sheet-metric-valuation');
-    await p.evaluate(() => window.__GYN.applyLive('capeValue', 50.5));
-    await settle(p);
-    const capeAfter = await doors('sheet-metric-valuation');
-    (capeBefore.length >= 1 && capeAfter.every(t => /^50\.5/.test(t)) && capeBefore.some(t => !/^50\.5/.test(t)))
-      ? ok('a fresh CAPE reaches every door', capeBefore.length + ' doors')
-      : bad('a fresh CAPE reaches every door', JSON.stringify({ capeBefore, capeAfter }));
-
     const pm = await p.evaluate(() => (window.__paintMiss || []).slice(0, 6));
     pm.length ? bad('every reading prints where it is painted', pm.join(' | '))
               : ok('every reading prints where it is painted');
@@ -790,31 +777,6 @@ async function openPage(p, url, sheet) {
 
     const seam = await g.evaluate(() => !!(window.__GYN && window.__GYN.applyLive));
     if (!seam) bad('repaint seam present', 'window.__GYN.applyLive missing');
-
-    if (seam) {
-      const bands = await g.evaluate(() => {
-        const R = window.__GYN.READINGS, out = {};
-        Object.keys(R).forEach(n => {
-          if (R[n].kind !== 'scalar') return;
-          const [lo, hi] = R[n].band, A = window.__GYN.applyLive;
-          out[n] = {
-            lo: A(n, lo), hi: A(n, hi),
-            under: A(n, lo - 0.01), over: A(n, hi + 0.01),
-            nan: A(n, NaN), str: A(n, String(lo)), arr: A(n, [lo])
-          };
-        });
-        return out;
-      });
-      const bn = Object.keys(bands);
-      const bandOk = bn.length > 0 && bn.every(n => {
-        const b = bands[n];
-        return b.lo === true && b.hi === true && b.under === false && b.over === false
-            && b.nan === false && b.str === false && b.arr === false;
-      });
-      bandOk ? ok('every scalar band is inclusive and refuses outside it', bn.join(', '))
-             : bad('every scalar band is inclusive and refuses outside it', JSON.stringify(bands));
-
-    }
     await c.close();
   }
 

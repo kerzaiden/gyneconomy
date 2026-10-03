@@ -1,4 +1,4 @@
-const { analyze } = require('../tools/load-order.js');
+const { analyze, bootsOf } = require('../tools/load-order.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -32,5 +32,7 @@ ok('a store property set before it is read passes', late('var page = { mode: und
 ok('a store property given a value where the store is declared is set', late('var page = { mode: "years" };', 'var a = page.mode;'), []);
 ok('a store read in a called function is caught', booted(['export var page = { head: undefined };\nexport function bootA(){ show(); }\nfunction show(){ return page.head.x; }', 'export function bootB(){ page.head = {}; }'], ['bootA', 'bootB']), ['page.head']);
 ok('an object holding functions is not a store', late('var o = { f: function(){}, g: undefined };', 'var a = o.g;'), []);
+ok('boots inside a try block are found, in order', bootsOf('try {\n  bootA();\n  bootB();\n} catch (e) { recover(e); }'), ['bootA', 'bootB']);
+ok('a boot named inside a function is not a call at load', bootsOf('function later(){ bootC(); }\nbootA();'), ['bootA']);
 console.log('\n' + pass + '/' + (pass + fail) + ' passed');
 process.exit(fail ? 1 : 0);
