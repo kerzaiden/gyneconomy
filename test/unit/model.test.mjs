@@ -30,6 +30,12 @@ test('a closed cycle\'s season strip spans its own years, so a season sits under
   }
 });
 
+test('shrinking output reads as contraction whatever its direction, so 1931 is Winter', () => {
+  const all = marketCycles.flatMap(c => cycleModel(c).track);
+  all.filter(p => p.reading.gdpLatest.v < 0).forEach(p => assert.equal(p.reading.regime, 'contraction', p.q));
+  assert.equal(all.find(p => p.q === '1931 Q1').season, 'winter');
+});
+
 test('only the open cycle reaches today, and it ends on now', () => {
   const open = marketCycles.filter(c => c.ongoing);
   assert.equal(open.length, 1);

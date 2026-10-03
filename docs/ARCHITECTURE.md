@@ -739,7 +739,9 @@ Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, hot i
 direction, otherwise direction alone decides — **never re-add a Goldilocks Zone**. Contraction mirrors it:
 cold is Winter outright, otherwise direction alone. **Never redefine stagflation as contraction + hot
 regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and falling, reads
-Autumn–Disinflation). Within-range stagflation is real (17 quarters since 1990). **Flat growth continues
+Autumn–Disinflation). Within-range stagflation is real (17 quarters since 1990). **Shrinking is contraction**:
+a reading whose latest growth is below zero is contraction whatever the slope (1.6.0), so 1931 (−6.4% after
+−8.5%) reads Winter, not Spring. **Flat growth continues
 the prior regime**: never test `growthTrend !== "falling"`. `prevRegime` comes from `seasonTrackAll`,
 computed once over the full history, never per cycle.
 

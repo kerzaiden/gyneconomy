@@ -83,6 +83,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   we're stagnant. Make the graph and the wording match the data." The model's values stay "expansion" and
   "contraction"; the Growth card, the chart legend, the season note and Weather's opening line now say the
   pace, and Weather's opening line is computed from the reading. (V304, V698)
+- **The season table names each season's side, "Expansion" or "Contraction"; the readings keep their
+  participles.** Keren: "I like the terminology expansion and contraction better." The table says which side a
+  season sits on; the Growth card, legend and notes still say what growth is doing now. (1.6.0, Oct 3, 2026)
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
   fairly valued"; the same pattern gave Pulse a fast/slow scale. (V290, V298)
@@ -478,6 +481,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Keren's choice. (undated, Sep 18, 2026)
 - **The second Autumn is "Autumn–Stagflation", with no "Late"; its key stays `lateautumn`.** Keren dropped
   "Late", and the key stays so nothing downstream moves. (undated, Sep 19, 2026)
+- **Shrinking real GDP is contraction, whatever its direction.** When the latest growth reading (a quarter
+  against the same quarter a year earlier, or a year before 1949) is below zero, the regime is contraction even if
+  the trend is rising. Zero is the line between growing and shrinking, so no cut-off is set. It moved 13 quarters,
+  none after 1982: 1931 and 1933 from Spring to Winter, 1947 and 1982 Q1 from Summer to Autumn. Keren: 1931 "is
+  cold and cooling and growth is contracting, I would think it is winter"; chose "Shrinking is contraction".
+  (1.6.0, Oct 3, 2026)
 - **Flat growth keeps whichever regime the economy was already in, from one continuous season sequence across
   all of history, never reset at a cycle's start; flat falls back to expansion only at the very start of the
   series.** Keren: flat growth with prices still falling from a contraction should keep reading as
