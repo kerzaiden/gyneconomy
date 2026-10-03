@@ -30,6 +30,8 @@ ok('nothing to do when everything is tagged',
    plan([c('s', '1.0.0 — Semantic Versions'), c('a', 'V642 — In Step')], ['v1.0.0', 'v642-in-step'], at), []);
 ok('minor resets patch', V.next('1.4.2', 'minor'), '1.5.0');
 ok('major resets minor and patch', V.next('1.4.2', 'major'), '2.0.0');
+ok('major refuses on 0.x, which keeps 1.0.0 for the finished draft', V.next('0.9.0', 'major'), null);
+ok('1.0.0 is given exactly', V.next('0.9.3', '1.0.0'), '1.0.0');
 ok('patch moves the last number', V.next('1.4.2', 'patch'), '1.4.3');
 ok('an exact version is taken as given', V.next('1.4.2', '1.6.0'), '1.6.0');
 ok('a bump must say which number moves', V.next('1.4.2', 'bigger'), null);

@@ -1239,6 +1239,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   V-numbers were builds all along; the friendly name stays (`1.0.0 — Semantic Versions`); the menu's foot reads
   `Version 1.0.0 (710)`; the artifact's label is `1.0.0 (710)`. Versions before 1.0.0 keep their V-names in
   git and in this register. (1.0.0)
+- **Until the first draft is finished, versions are 0.x; 1.0.0 is kept for the day Keren calls the draft
+  finished.** Keren, at 1.8.0: "I feel like we haven't finished the first draft of the app." She chose to
+  restart at 0.x, so the next release is **0.9.0, build 727**, and the build number carries on. The releases
+  named 1.0.0 to 1.8.0 keep their names in git and in this register; the build number orders them with the 0.x
+  releases. Claude chose, for her to overturn: before 1.0.0 the rule below applies one place down (`npm run bump major`
+  refuses on 0.x; 1.0.0 is given exactly, `npm run bump 1.0.0`): a change that would be major moves the minor
+  number, and anything smaller moves the patch. (0.9.0)
 - **Which number moves:**
   - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
     a category or tab added or removed, the book's framework changed.
