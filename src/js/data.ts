@@ -1,5 +1,5 @@
 import SERIES from "../data/series.json" with { type: "json" };
-import { bandEnds, MONTHS_SHORT } from "./format.ts";
+import { bandEnds } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
@@ -28,12 +28,12 @@ export var now: NowStore = {
     { marker:"CBOE VIX", sub:"Sep 22 2026",
       meter:{min:9.14,max:82.69,value:14.21,optimal:{lte:VIX_CALM, label:"below " + VIX_CALM}, ends:{zone:"Calm", high:"Elevated"}},
       shortNote:"Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
-      note:"The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike \u2014 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 \u2014 still well below the ~19\u201320 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does \u2014 spreads widened through 2007 while the VIX stayed calm \u2014 so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
+      note:"The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike \u2014 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 \u2014 still well below the ~19\u201320 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
       direction:"up", flagValue:"14.2", flagState:"warning" }
   ],
   shortImpression:"The published gauge says fear; the two markets it is built on say almost none is priced.",
   impression:"Two things are true at once and the panel shows both. The headline index reads Fear, because it is built mostly of momentum and breadth and the market has been sliding for a month. The two markets underneath it read the opposite: the option market is paying almost nothing for protection and lenders are asking almost nothing to take credit risk, which is the same sentence said twice. Sentiment has turned while almost no fear is priced in against forty years of history. None of this forecasts a fall \u2014 a contrarian read is not a timer, and complacency can last for years \u2014 but it is the condition in which a shock is expensive.",
-  src:[{t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986\u20132021 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VXOCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)", u:"https://fred.stlouisfed.org/series/VXVCLS"},{t:"Cboe \u2014 Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)", u:"https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"},{t:"Federal Reserve \u2014 FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"S&P DJI via FRED \u2014 S&P 500 daily closes (SP500)", u:"https://fred.stlouisfed.org/series/SP500"},{t:"S&P DJI via FRED \u2014 Dow Jones Industrial Average daily closes (DJIA)", u:"https://fred.stlouisfed.org/series/DJIA"},{t:"Federal Reserve via FRED \u2014 10-year Treasury constant-maturity yield, daily (DGS10)", u:"https://fred.stlouisfed.org/series/DGS10"},{t:"ICE Data Indices via FRED \u2014 ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)", u:"https://fred.stlouisfed.org/series/BAMLH0A0HYM2"}]
+  src:[{t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986\u20132021 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VXOCLS"},{t:"Cboe via FRED \u2014 CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)", u:"https://fred.stlouisfed.org/series/VXVCLS"},{t:"Cboe \u2014 Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)", u:"https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"},{t:"Federal Reserve \u2014 FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"S&P DJI via FRED \u2014 S&P 500 daily closes (SP500)", u:"https://fred.stlouisfed.org/series/SP500"},{t:"S&P DJI via FRED \u2014 Dow Jones Industrial Average daily closes (DJIA)", u:"https://fred.stlouisfed.org/series/DJIA"},{t:"Federal Reserve via FRED \u2014 10-year Treasury constant-maturity yield, daily (DGS10)", u:"https://fred.stlouisfed.org/series/DGS10"}]
 },
   valuation: {
   kicker:"What she is priced at",
@@ -125,6 +125,8 @@ export function labRow(id: string): Row { return labPanel.filter(function(r){ re
 export var PRODUCTIVITY_TREND = 2.1, PRODUCTIVITY_SLOWDOWN = 1.3;
 // ---- Consumer confidence ----
 export var CONFIDENCE_LINE = 100;
+// ---- Desire: real spending on durable goods ----
+export var DESIRE_LINE = 0;
 /* ---- Institutional trust is not in this panel ---- */
 /* ---- The deficit, year by year ---- */
 export var DEF_FROM_YEAR = 1946;
@@ -142,31 +144,7 @@ export function fedFundsRange(){
           : now.fedFunds.lo.toFixed(2) + "\u2013" + now.fedFunds.hi.toFixed(2)) + "%";
 }
 export var buffettHistory = SERIES.buffettHistory;
-export var HY_NORM_LO = 3.5, HY_NORM_HI = 6;
 export var M2_PACE_LO = 3.5, M2_PACE_HI = 10;
-export var hyDates = SERIES.hyDates;
-export var hyOas = SERIES.hyOas;
-function checkDesireWindow(){
-  if (hyDates.length !== hyOas.length) console.warn("Desire: dates and values out of step");
-  var hi = Math.max.apply(null, hyOas), lo = Math.min.apply(null, hyOas);
-  if (hi.toFixed(2) !== "4.61" || lo.toFixed(2) !== "2.59")
-    console.warn("Desire: window extremes moved — expected 4.61 / 2.59, got " + hi + " / " + lo);
-}
-export function hyAt(i: number){
-  var t = hyDates[i];
-  return { y:2000 + +t.slice(0, 2), m:+t.slice(2, 4), d:+t.slice(4, 6) };
-}
-export function hyLabel(i: number){ var t = hyAt(i); return MONTHS_SHORT[t.m - 1] + " " + t.d + " " + t.y; }
-export function hyNum(i: number){ var a = hyAt(i); return a.y * 10000 + a.m * 100 + a.d; }
-export function hyQuarters(){
-  var out: { k: string; v: number }[] = [];
-  hyDates.forEach(function(t, i){
-    var a = hyAt(i), k = a.y + " Q" + Math.ceil(a.m / 3), last = out[out.length - 1];
-    if (last && last.k === k) last.v = hyOas[i]; else out.push({ k:k, v:hyOas[i] });
-  });
-  return out;
-}
-export function hyQuarterEnds(){ return hyQuarters().map(function(o){ return o.v; }); }
 export var capeHistory: { y: number; v: number | null }[] = SERIES.capeHistory;
 export var longCycleSrc: Src[] = [
   {t:"CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)", u:"https://www.cbo.gov/publication/62105"},
@@ -229,6 +207,10 @@ export var PRODUCTIVITY_SRC: Src[] = [
   {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
   {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
   {t:"BLS via FRED \u2014 Nonfarm Business Sector: Labor Productivity (OPHNFB)", u:"https://fred.stlouisfed.org/series/OPHNFB"}
+];
+export var DESIRE_SRC: Src[] = [
+  {t:"BEA via FRED \u2014 Real personal consumption expenditures: durable goods, chain-type quantity index, monthly since 1959 (DDURRA3M086SBEA)", u:"https://fred.stlouisfed.org/series/DDURRA3M086SBEA"},
+  {t:"BEA \u2014 Personal income and outlays, the monthly release behind the series", u:"https://www.bea.gov/data/income-saving/personal-income"}
 ];
 export var CONFIDENCE_SRC: Src[] = [
   {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},
@@ -293,7 +275,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
     body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
     economy: "Stagflation. Growth is slowing while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
     next: "Winter — the bleed. Historically the leading signs have already turned by now (an inverted or un-inverting curve, widening credit spreads); the bleed itself confirms months later in prices and activity.",
-    watch: ["Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — high-yield spreads widening", "Sentiment — cracking (VIX spikes)"],
+    watch: ["Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — durable-goods spending falling below a year earlier", "Sentiment — cracking (VIX spikes)"],
     fromTheBook: []
   },
   winter: {
@@ -323,7 +305,7 @@ export var frameworkRows: FrameworkRow[] = [
   {indicator:"Cervical fluid", body:"Cervical mucus change", economy:"Credit spreads / yield curve", category:"Leading"},
   {indicator:"Psychology", body:"Emotional state", economy:"Investor sentiment, asset valuations", category:"Leading"},
   {indicator:"Effort", body:"Energy", economy:"Capital — GDP, profits", category:"Coincident"},
-  {indicator:"Desire", body:"Desire / libido", economy:"Risk tolerance", category:"Coincident"},
+  {indicator:"Desire", body:"Desire / libido", economy:"Consumer demand", category:"Coincident"},
   {indicator:"Activity", body:"Physical activity", economy:"Labor / employment", category:"Lagging"},
   {indicator:"Temperature", body:"Basal body temperature", economy:"Inflation", category:"Lagging"}
 ];
@@ -507,8 +489,6 @@ export function bootData(){
   GYN.step("checkDeficitHistory", checkDeficitHistory, "check");
   checkDeficitHistory();
   DEF_1983 = deficitHistory[1983 - DEF_FROM_YEAR];
-  GYN.step("checkDesireWindow", checkDesireWindow, "check");
-  checkDesireWindow();
   GYN.step("deriveUninvLag", deriveUninvLag, "derive");
   deriveUninvLag();
   GYN.step("syncGrossDebt", syncGrossDebt, "derive");

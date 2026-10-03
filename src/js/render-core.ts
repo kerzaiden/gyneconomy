@@ -3,11 +3,11 @@ import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScre
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { dataCompiledLabel } from "./refresh-season.ts";
-import { curveAsOf, curveAt, curveSpread, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
+import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.ts";
-import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.ts";
+import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
 import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
-import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
+import { heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import type { ModelReading } from "./model.ts";
 export var catSnap: Record<string, Node> = {};
@@ -224,24 +224,9 @@ function registerFlowPages(){
       null, true, { rising:"expanding", falling:"contracting" }));
   }
   drawsPage("sheet-sign-volume", drawM2Record);
-  function drawDesireRecord(){
-    var host = byId("desire-record");
-    if (!host || !host.clientWidth) return;
-    var from = hyWindowFrom(page.range["desire-range"]);
-    var win = hyOas.slice(from);
-    var bar = byId("desire-timeline");
-    if (bar) bar.innerHTML = '<div class="hist-controls">' +
-      rangeBar("desire-range", timelineFor({ depth:3, stops:page.stops["desire-range"] }),
-               page.range["desire-range"]) + '</div>';
-    host.innerHTML = desireHistoryChart(host.clientWidth, from);
-    attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
-    put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
-      { rising:"widening", falling:"tightening" }));
-  }
-  drawsPage("sheet-sign-desire", drawDesireRecord);
   (function(){
     var t: ReturnType<typeof setTimeout> | undefined; window.addEventListener("resize", function(){
-      clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); drawDesireRecord(); }, 150);
+      clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); }, 150);
     });
   })();
 }

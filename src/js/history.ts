@@ -2,7 +2,7 @@ import { CHEV, yearOf } from "./format.ts";
 import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, pendingGeom } from "./charts.ts";
-import { deficitHistory, hyAt, hyDates, hyNum, marketCycles } from "./data.ts";
+import { deficitHistory, marketCycles } from "./data.ts";
 import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.ts";
 
 export type HeadGroup = { key: string; label: string; on: boolean; value: string; rows: string };
@@ -98,7 +98,6 @@ function headMenuShut(refocus: boolean){
 export function histNote(head: string, info: string | (() => string)){ if (head && info) HIST_NOTE[head] = info; }
 var TIMELINE_STOPS = [
   { key:"cycle",  label:"Current cycle" },
-  { key:"1y",     label:"1Y",  span:1 },
   { key:"5y",     label:"5Y",  span:5 },
   { key:"10y",    label:"10Y", span:10 },
   { key:"25y",    label:"25Y", span:25 },
@@ -366,14 +365,6 @@ export function qWindowFrom(len: number, key: string | undefined){
 export function defFrom(key: string){
   var sp = timelineSpan(key);
   return (sp == null || sp === Infinity) ? 0 : Math.max(0, deficitHistory.length - sp);
-}
-export function hyWindowFrom(key: string){
-  var sp = timelineSpan(key);
-  if (sp == null || sp === Infinity) return 0;
-  var last = hyAt(hyDates.length - 1);
-  var cut = (last.y - sp) * 10000 + last.m * 100 + last.d;
-  for (var i = 0; i < hyDates.length; i++) if (hyNum(i) >= cut) return i;
-  return 0;
 }
 export function tabSegs(items: string[][], active: string | undefined, attr: string){
   var any = items.some(function(t){ return t[0] === active; });

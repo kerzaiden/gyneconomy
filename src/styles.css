@@ -699,9 +699,6 @@
   .hh-col{ fill:none; stroke-linecap:round; }
   .hh-col.bill{ stroke:var(--accent); opacity:0.9; }
   .hh-col.kept{ stroke:var(--text-secondary); opacity:0.85; }
-  .hy-col2{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
-  .hy-col2.tight, .hy-col2.warning{ stroke:var(--warning); }
-  .hy-col2.serious{ stroke:var(--serious); }
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
 
@@ -709,7 +706,7 @@
   .peek-text > .peek-chart{ margin:12px 0 13px; }
   .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
-  .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col, .peek-chart.heat .hy-col{ vector-effect:non-scaling-stroke; }
+  .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
   .peek-base{ stroke:var(--accent); stroke-width:1.1; fill:none; opacity:0.8; vector-effect:non-scaling-stroke; }
   .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.42; }
@@ -741,10 +738,7 @@
   .hzn-col{ fill:none; stroke-linecap:round; }
   .hzn-col.pos{ stroke:var(--ovulate); }
   .hzn-col.neg{ stroke:var(--bleed-mid); }
-  .hy-col{ fill:none; stroke-linecap:round; stroke:var(--text-primary); opacity:0.8; }
 
-  .hy-avg{ fill:none; stroke:var(--text-secondary); stroke-width:2; stroke-linecap:round; opacity:0.75; }
-  .pulsebox > #desire-trend{ margin-top:12px; }
   .hzn-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
   .hzn-col.inv{ stroke:var(--critical); }
   .unemp-col{ fill:none; stroke-linecap:round; stroke:var(--good); opacity:0.9; }
@@ -776,34 +770,6 @@
   .pt-note{ font-size:var(--type-meta); color:var(--text-muted); line-height:1.55; margin:12px 0 0; }
 
   .page-chart.blood-card{ padding:14px 14px 16px; }
-  .page-chart.riskmx{ padding-bottom:var(--pad); }
-
-  .riskmx .spread-history-head{ justify-content:flex-start; gap:4px; }
-  .rm-frame{ display:flex; align-items:stretch; gap:7px; margin:14px auto 0; max-width:340px; }
-  .rm-grid{ flex:1 1 auto; min-width:0; display:grid; grid-template-columns:13px 1fr; gap:6px; }
-  .rm-ylabs{ display:grid; grid-template-rows:repeat(3, 1fr); gap:6px; }
-  .rm-cells{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px;
-    border-left:1px solid var(--border-strong); border-bottom:1px solid var(--border-strong);
-    padding:0 0 7px 7px; }
-  .rm-xlabs{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px; padding-left:7px; }
-  .rm-axis{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.09em;
-    text-transform:uppercase; color:var(--text-muted); }
-  .rm-axis-y{ writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; flex:none; }
-  .rm-axis-x{ text-align:center; margin-top:8px; }
-  .riskmx .pt-note{ max-width:66ch; }
-  .rm-y, .rm-x{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
-  .rm-y{ writing-mode:vertical-rl; transform:rotate(180deg); }
-  .rm-x{ padding-top:6px; }
-  .rm-y.on, .rm-x.on{ color:var(--text-primary); font-weight:700; }
-  .rm-c{ position:relative; aspect-ratio:1 / 0.72; border-radius:var(--radius); background:var(--track); }
-  .rm-c::before{ content:""; position:absolute; inset:0; border-radius:inherit; background:var(--accent); }
-  .rm-c.s0::before{ opacity:0.05; } .rm-c.s1::before{ opacity:0.09; } .rm-c.s2::before{ opacity:0.14; }
-  .rm-c.s3::before{ opacity:0.20; } .rm-c.s4::before{ opacity:0.27; }
-  .rm-mark{ position:absolute; inset:0; margin:auto; width:20px; height:20px; border-radius:50%;
-    background:var(--surface); border:1px solid var(--border-strong); box-sizing:border-box;
-    box-shadow:0 1px 2.5px rgba(30,20,30,0.18); }
-  .rm-mark::after{ content:""; position:absolute; inset:4.5px; border-radius:50%; background:var(--accent); }
   /* ---- the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the ---- */
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
@@ -846,7 +812,7 @@
   .trend-on .temp-col, .trend-on .growth-col,
   .trend-on .m2-col, .trend-on .def-col,
   .trend-on .yl-col, .trend-on .hzn-col, .trend-on .unemp-col,
-  .trend-on .hh-col, .trend-on .hy-col2, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
+  .trend-on .hh-col, .trend-on .pv-col{ stroke:var(--border-strong) !important; fill:var(--border-strong) !important; opacity:0.45; }
   .trend-on .temp-avg{ opacity:0.16; }
   .trend-on .temp-range{ opacity:0.3; }
   .trend-on .dv-mid{ opacity:0.4; }

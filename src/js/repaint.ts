@@ -2,7 +2,7 @@ import { byIdMaybe, put, ui } from "./dom.ts";
 import { checkLiveCoverage, exposeLive, fetchSiteData, GYN, onLive, refreshLiveData } from "./live.ts";
 import { curveAt, fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.ts";
 import { forgetMood, nowModel } from "./model.ts";
-import { desireRow, policyFactRows, riskMatrixBlock, volatilityRing, volatilityTag } from "./readings.ts";
+import { policyFactRows, volatilityRing, volatilityTag } from "./readings.ts";
 import { CATEGORIES, paintWhen } from "./roster.ts";
 import { sheetRenderers } from "./render-core.ts";
 import { replaceInsights } from "./insights.ts";
@@ -47,14 +47,6 @@ function repaintPressureChart(){
   var s = byIdMaybe("sheet-sign-pressure");
   if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
 }
-function repaintDesire(){
-  var row = desireRow(), cape = valRow("cape"), cv = cape && cape.meter.value;
-  if (!row || !cape) return;
-  paintReading("sheet-sign-desire", row.metric, null);
-  Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el: Element){
-    var rv = row.meter.value; if (rv != null && cv != null) el.outerHTML = riskMatrixBlock(rv, cv);
-  });
-}
 function syncCape(){ syncCapeHistory(); forgetMood(); }
 function repaintValuationRow(){
   var row = valRow("cape");
@@ -76,10 +68,8 @@ export function bootRepaint(){
   onLive("yieldCurve", repaintPressureChart);
   onLive("valuation", repaintValuationRow);
   onLive("vixClose", repaintVolatility);
-  onLive("hyOasNow", repaintDesire);
   onLive("capeValue", repaintValuationRow);
   onLive("capeValue", syncCape);
-  onLive("capeValue", repaintDesire);
   onLive("*", repaintDiagnosis);
   exposeLive();
   GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
