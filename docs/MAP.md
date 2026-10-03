@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,679 lines** in 31 files, about 567 KB, roughly **161 thousand tokens**. No session can
+The source is **8,696 lines** in 31 files, about 568 KB, roughly **161 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `78a120e` on 2026-10-03.
+Generated from commit `dc2bcd2` on 2026-10-03.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `78a120e` on 2026-10-03.
 | `js/main.ts` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **27** modules, **523** top-level functions, **91** top-level vars, **325** exported names, **18** boots.
+Counts: **27** modules, **527** top-level functions, **91** top-level vars, **326** exported names, **18** boots.
 
 ## Modules, in boot order
 
@@ -32,10 +32,10 @@ Counts: **27** modules, **523** top-level functions, **91** top-level vars, **32
 | `js/dom.ts` | 145 | 18 | `format` |
 | `js/live.ts` | 196 | 20 | `format` |
 | `js/refresh-season.ts` | 39 | 4 | `format`, `history-fred` |
-| `js/data.ts` | 528 | 61 | `format`, `history-fred`, `live`, `refresh-season` |
+| `js/data.ts` | 528 | 62 | `format`, `history-fred`, `live` |
 | `js/model.ts` | 344 | 44 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 470 | 38 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 795 | 65 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/readings.ts` | 812 | 68 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 149 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 567 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 454 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
@@ -73,7 +73,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 6 | `bootModel` | `js/model.ts:297`–343 |
 | 7 | `bootHistory` | `js/history.ts:446`–469 |
 | 8 | `bootReadings` | `js/readings.ts:638`–707 |
-| 9 | `bootReadingRegistry` | `js/readings.ts:732`–794 |
+| 9 | `bootReadingRegistry` | `js/readings.ts:746`–811 |
 | 10 | `bootRoster` | `js/roster.ts:136`–148 |
 | 11 | `bootRenderCore` | `js/render-core.ts:556`–566 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:436`–453 |
@@ -168,63 +168,64 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 12 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
-| 13 | `VIX_CALM` · export | `var VIX_CALM =` |
+| 11 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
+| 12 | `VIX_CALM` · export | `var VIX_CALM =` |
 
 #### DATA (single source of truth — edit here on refresh)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 62 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
-| 63 | `curveAsOf` · export | `function curveAsOf(` |
-| 66 | `monthsToCurve` | `function monthsToCurve(` |
-| 70 | `deriveUninvLag` · export | `function deriveUninvLag(` |
-| 77 | `t10y3mRecessions` · export | `var t10y3mRecessions =` |
+| 61 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
+| 62 | `curveAsOf` · export | `function curveAsOf(` |
+| 65 | `monthsToCurve` | `function monthsToCurve(` |
+| 69 | `deriveUninvLag` · export | `function deriveUninvLag(` |
+| 76 | `t10y3mRecessions` · export | `var t10y3mRecessions =` |
 
 #### Un-inversion → recession lag, computed from actual history (not a forecasting model or a survey)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 88 | `UNINV_FROM` | `var UNINV_FROM =` |
-| 89 | `uninvLagToday` · export | `var uninvLagToday =` |
-| 124 | `labRow` · export | `function labRow(` |
-| 125 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
+| 87 | `UNINV_FROM` | `var UNINV_FROM =` |
+| 88 | `uninvLagToday` · export | `var uninvLagToday =` |
+| 123 | `labRow` · export | `function labRow(` |
+| 124 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
 
 #### Consumer confidence
 
 | Line | Name | Anchor |
 |---|---|---|
-| 127 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
+| 126 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
 
 #### Desire: real spending on durable goods
 
 | Line | Name | Anchor |
 |---|---|---|
-| 129 | `DESIRE_LINE` · export | `var DESIRE_LINE =` |
+| 128 | `DESIRE_LINE` · export | `var DESIRE_LINE =` |
 
 #### Desire: the equity risk premium
 
 | Line | Name | Anchor |
 |---|---|---|
-| 131 | `PREMIUM_LINE` · export | `var PREMIUM_LINE =` |
+| 130 | `PREMIUM_LINE` · export | `var PREMIUM_LINE =` |
 
 #### The deficit, year by year
 
 | Line | Name | Anchor |
 |---|---|---|
-| 134 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
-| 135 | `deficitHistory` · export | `var deficitHistory =` |
-| 136 | `DEF_MEAN` · export | `var DEF_MEAN =` |
-| 139 | `checkDeficitHistory` | `function checkDeficitHistory(` |
-| 144 | `fedFundsRange` · export | `function fedFundsRange(` |
-| 148 | `buffettHistory` · export | `var buffettHistory =` |
-| 149 | `M2_PACE_LO` · export | `var M2_PACE_LO =` |
-| 166 | `syncGrossDebt` | `function syncGrossDebt(` |
-| 176 | `checkGrossDebt` | `function checkGrossDebt(` |
-| 186 | `curveAt` · export | `function curveAt(` |
-| 190 | `curveNeed` | `function curveNeed(` |
-| 191 | `curveSpread` · export | `function curveSpread(` |
-| 192 | `policyDirection` · export | `function policyDirection(` |
+| 133 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
+| 134 | `deficitHistory` · export | `var deficitHistory =` |
+| 135 | `DEF_MEAN` · export | `var DEF_MEAN =` |
+| 138 | `checkDeficitHistory` | `function checkDeficitHistory(` |
+| 143 | `fedFundsRange` · export | `function fedFundsRange(` |
+| 147 | `buffettHistory` · export | `var buffettHistory =` |
+| 148 | `M2_PACE_LO` · export | `var M2_PACE_LO =` |
+| 165 | `syncGrossDebt` | `function syncGrossDebt(` |
+| 175 | `checkGrossDebt` | `function checkGrossDebt(` |
+| 185 | `curveAt` · export | `function curveAt(` |
+| 189 | `curveNeed` | `function curveNeed(` |
+| 190 | `curveSpread` · export | `function curveSpread(` |
+| 191 | `policyDirection` · export | `function policyDirection(` |
+| 194 | `capeAsOf` · export | `function capeAsOf(` |
 | 195 | `syncCapeHistory` · export | `function syncCapeHistory(` |
 | 199 | `valRow` · export | `function valRow(` |
 | 203 | `fileRow` · export | `function fileRow(` |
@@ -450,8 +451,11 @@ falls in. **export** marks a name other modules import.
 | 708 | `isNum` | `function isNum(` |
 | 710 | `rowId` | `function rowId(` |
 | 711 | `rowLike` | `function rowLike(` |
-| 716 | `rowsOk` | `function rowsOk(` |
-| 719 | `deriveHorizon` | `function deriveHorizon(` |
+| 724 | `rowsOk` | `function rowsOk(` |
+| 727 | `deriveHorizon` | `function deriveHorizon(` |
+| 740 | `vixAsOf` | `function vixAsOf(` |
+| 741 | `coincidentAsOf` | `function coincidentAsOf(` |
+| 742 | `periodIso` | `function periodIso(` |
 
 ### `js/roster.ts`
 

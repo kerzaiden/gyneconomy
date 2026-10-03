@@ -1,7 +1,6 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { bandEnds } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
-import { calendarTodayY } from "./refresh-season.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
 export type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
@@ -59,7 +58,7 @@ export var now: NowStore = {
   vix3mClose: 17.61
 };
 // ---- DATA (single source of truth — edit here on refresh) ----
-var YIELD_CURVE_ASOF = "2026-09-24";
+var YIELD_CURVE_ASOF = "2026-09-24", CAPE_ASOF = "2026-09-01";
 export function curveAsOf(){
   return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
 }
@@ -192,9 +191,10 @@ export function curveSpread(){ return curveNeed("10Y") - curveNeed("3M"); }
 export function policyDirection(){
   return /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
 }
+export function capeAsOf(){ return liveIsoOf("capeValue") || CAPE_ASOF; }
 export function syncCapeHistory(){
-  var last = capeHistory[capeHistory.length - 1], v = fileRow("cape").meter.value;
-  if (last.y === calendarTodayY) last.v = v; else capeHistory.push({ y:calendarTodayY, v:v });
+  var last = capeHistory[capeHistory.length - 1], v = fileRow("cape").meter.value, y = Number(capeAsOf().slice(0, 4));
+  if (last.y === y) last.v = v; else if (y > last.y) capeHistory.push({ y:y, v:v });
 }
 export function valRow(k: string): Row | null {
   for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
@@ -502,8 +502,8 @@ export function bootData(){
   checkGrossDebt();
   liveInto("sentiment");
   liveInto("vixClose");
-  liveInto("valuation");
   now.valuation.rows.sort(function(a, b){ return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1); });
+  liveInto("valuation");
   GYN.step("checkVelocityHistory", checkVelocityHistory, "check");
   checkVelocityHistory();
   GYN.step("checkUnemploymentHistory", checkUnemploymentHistory, "check");

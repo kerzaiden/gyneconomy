@@ -1550,7 +1550,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.1.1 (712)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.1.2 (713)</span></p>
     </div>
   </div>
 
@@ -27879,6 +27879,7 @@
     vix3mClose: 17.61
   };
   var YIELD_CURVE_ASOF = "2026-09-24";
+  var CAPE_ASOF = "2026-09-01";
   function curveAsOf() {
     return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
   }
@@ -28158,10 +28159,13 @@
   function policyDirection() {
     return /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
   }
+  function capeAsOf() {
+    return liveIsoOf("capeValue") || CAPE_ASOF;
+  }
   function syncCapeHistory() {
-    var last = capeHistory[capeHistory.length - 1], v = fileRow("cape").meter.value;
-    if (last.y === calendarTodayY) last.v = v; else capeHistory.push({
-      y: calendarTodayY,
+    var last = capeHistory[capeHistory.length - 1], v = fileRow("cape").meter.value, y = Number(capeAsOf().slice(0, 4));
+    if (last.y === y) last.v = v; else if (y > last.y) capeHistory.push({
+      y: y,
       v: v
     });
   }
@@ -28565,10 +28569,10 @@
     checkGrossDebt();
     liveInto("sentiment");
     liveInto("vixClose");
-    liveInto("valuation");
     now.valuation.rows.sort(function(a, b) {
       return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1);
     });
+    liveInto("valuation");
     GYN.step("checkVelocityHistory", checkVelocityHistory, "check");
     checkVelocityHistory();
     GYN.step("checkUnemploymentHistory", checkUnemploymentHistory, "check");
@@ -31119,6 +31123,21 @@
       return t !== "string" && t !== "number" || typeof r[k] === t;
     });
   }
+  function overRows(file, rows) {
+    return file.map(function(f, i) {
+      var r = rows[i], o = Object.assign({}, f), m = r.meter;
+      Object.keys(f).forEach(function(k) {
+        var t = typeof f[k];
+        if (t === "string" || t === "number") o[k] = r[k];
+      });
+      o.meter = merge(o.meter, {
+        value: m.value,
+        min: m.min,
+        max: m.max
+      });
+      return o;
+    });
+  }
   function rowsOk(rows, file) {
     return Array.isArray(rows) && rows.length === file.length && file.every(function(f, i) {
       return rowLike(rows[i], f);
@@ -31146,6 +31165,18 @@
       state: w.state
     };
   }
+  function vixAsOf() {
+    return String(now.sentiment.rows[0].sub || "");
+  }
+  function coincidentAsOf() {
+    return coincident.map(function(c) {
+      return periodIso(String(c.metricSub || ""));
+    }).sort().pop() || "";
+  }
+  function periodIso(sub) {
+    var q = /Q([1-4]) (\d{4})$/.exec(sub), m = /([A-Z][a-z]{2}) (\d{4})$/.exec(sub), i = m ? MONTHS_SHORT.indexOf(m[1]) : -1;
+    return q ? q[2] + "-" + ("0" + ((+q[1] - 1) * 3 + 1)).slice(-2) + "-01" : m && i >= 0 ? m[2] + "-" + ("0" + (i + 1)).slice(-2) + "-01" : "";
+  }
   function bootReadingRegistry() {
     defineReadings({
       fedFunds: {
@@ -31157,19 +31188,19 @@
           return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
         },
         set: function(v) {
-          if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, {
+          if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge({
             lastMove: "",
             lastMoveLabel: "",
             asOf: "",
             next: ""
-          });
-          if (v.lastMove !== void 0 && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge(v, {
+          }, v);
+          if (v.lastMove !== void 0 && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge({
             turnLabel: "",
             turnValue: ""
-          });
-          if (v.asOf !== void 0 && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, {
+          }, v);
+          if (v.asOf !== void 0 && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge({
             vote: ""
-          });
+          }, v);
           now.fedFunds = merge(now.fedFunds, v);
         }
       },
@@ -31194,33 +31225,40 @@
       },
       sentiment: {
         kind: "object",
+        fileAsOf: vixAsOf,
         ok: function(v) {
           return v.rows === void 0 || rowsOk(v.rows, now.sentiment.rows);
         },
         set: function(v) {
-          now.sentiment = merge(now.sentiment, v);
+          now.sentiment = merge(now.sentiment, v.rows ? merge(v, {
+            rows: overRows(now.sentiment.rows, v.rows)
+          }) : v);
           now.vixRow = now.sentiment.rows[0];
         },
         onOpen: true
       },
       valuation: {
         kind: "object",
+        fileAsOf: capeAsOf,
         ok: function(v) {
           return v.rows === void 0 || rowsOk(v.rows, now.valuation.rows);
         },
         set: function(v) {
-          now.valuation = merge(now.valuation, v);
+          now.valuation = merge(now.valuation, v.rows ? merge(v, {
+            rows: overRows(now.valuation.rows, v.rows)
+          }) : v);
           var cape = valRow("cape");
           if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
         }
       },
       coincident: {
         kind: "series",
+        fileAsOf: coincidentAsOf,
         ok: function(v) {
           return rowsOk(v, coincident);
         },
         set: function(v) {
-          coincident = v;
+          coincident = overRows(coincident, v);
           deriveVolumeTag();
           derivePulseTag();
         },
@@ -31229,9 +31267,7 @@
       vixClose: {
         kind: "scalar",
         band: [ 5, 100 ],
-        fileAsOf: function() {
-          return now.sentiment.rows[0].sub;
-        },
+        fileAsOf: vixAsOf,
         set: function(v) {
           var row = now.sentiment.rows[0];
           row.meter.value = v;
@@ -31242,6 +31278,7 @@
       vix3mClose: {
         kind: "scalar",
         band: [ 5, 100 ],
+        fileAsOf: vixAsOf,
         set: function(v) {
           now.vix3mClose = v;
         },
@@ -31250,6 +31287,7 @@
       capeValue: {
         kind: "scalar",
         band: [ 4, 60 ],
+        fileAsOf: capeAsOf,
         set: function(v) {
           var row = fileRow("cape");
           row.meter.value = v;

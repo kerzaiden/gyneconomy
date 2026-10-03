@@ -19,6 +19,7 @@ for (const k of ['window', 'document', 'navigator', 'localStorage', 'sessionStor
   Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true });
 
 w.sessionStorage.setItem('gyn.forgot', '1');
+if (globalThis.gynCache) w.localStorage.setItem('gyn.live', JSON.stringify(globalThis.gynCache));
 await import('../../src/js/main.ts');
 export const bootWarnings = warnings.slice();
 export { w as window };

@@ -77,6 +77,14 @@ blank the app on every later visit):
 - **An older document never beats the file (V701).** A reading may declare `fileAsOf()`, the date of the
   file's own figure; `liveInto` at boot and `receive` at run time both skip a document dated before it (one
   rule, `olderThanFile`, since V706), so neither an offline visit nor a slow feed shows last month's figure.
+  Every reading declares it (1.2.1): the scalars and the valuation take their row's date or `capeAsOf`, and
+  coincident the newest period its rows name. A series or scalar document must carry an ISO `asOf` (1.1.1).
+- **A live row changes figures, never structure (1.2.1).** `overRows` lays a document's rows over the
+  file's: the strings and numbers the file row has, and the meter's value, min and max. The page renderer, the
+  band and the zone labels stay the file's, so a row that went through JSON (and lost its functions) cannot
+  strip a page on the next visit, and a document cannot move a band.
+- **A Fed document's own fields win (1.2.1).** A move without a decision clears the stale decision fields but
+  keeps the date it carries, so the older-than-the-file guard still has a date to compare.
 - **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
   `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
 - **A card's date is its figure's date.** Pressure and Volatility date their cards from the applied
