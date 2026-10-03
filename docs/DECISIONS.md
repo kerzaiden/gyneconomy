@@ -77,26 +77,25 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Words for verdicts and trends
 
-- **On screen, growth reads "quickening", "slowing" or "steady" by its trend, and "contracting" only when real
-  GDP is below zero; never "expansion" and "contraction".** A participle says the body is doing something (V304).
-  Keren, V698: "I think we are growing. It doesn't contradict the season autumn... Maybe we're slowing, maybe
-  we're stagnant. Make the graph and the wording match the data." The model's values stay "expansion" and
-  "contraction"; the Growth card, the chart legend, the season note and Weather's opening line now say the
-  pace, and Weather's opening line is computed from the reading. (V304, V698)
-- **The season table names each season's side, "Expansion" or "Contraction"; the readings keep their
-  participles.** Keren: "I like the terminology expansion and contraction better." The table says which side a
-  season sits on; the Growth card, legend and notes still say what growth is doing now. (1.6.0, Oct 3, 2026)
+- **Growth is said in one pair of words everywhere: Expansion and Contraction ("expanding", "contracting" in a
+  sentence), the model's own regime.** The season table, the Growth card, the chart legend, the season notes and
+  pop-ups, Weather's opening line and the Growth page's trend all say the same side. Keren, on the 1929 pop-up that
+  still said "quickening": "check that the vocabulary is the same across the app"; earlier, "I like the
+  terminology expansion and contraction better." Where the economy is contracting while output is still above a
+  year earlier, the sentence says so beside the figure, so the word never hides the number. This replaces the
+  participles quickening, slowing and steady (V304, V698) and the table-only split of 1.6.0. (V304, V698, 1.6.0,
+  1.7.0, Oct 3, 2026)
 - **A verdict is said in one family of words on one axis, never a hand-set word that belongs to no scale.**
   Keren: "use overvalued or undervalued, and for the range in between choose words from the same family, maybe
   fairly valued"; the same pattern gave Pulse a fast/slow scale. (V290, V298)
 - **Where a reading has a published convention, its word follows the convention rather than vocabulary of our
   own.** Keren: "we don't want to overcomplicate things, they are already so complicated"; and for Volatility,
   "set the rules per convention". (V236, V663)
-- **Each page says its trend in its own vocabulary: Growth's pace is quickening or slowing, Volume's is
-  expanding or contracting (never accelerating), Pulse's accelerating or decelerating, Pressure's climbing or
-  easing.** Keren: "I want to keep the vocabulary consistent"; Pulse is a velocity, so "the correct word is
-  accelerating, and the opposite is decelerating." Where growth's pace falls while no quarter is negative,
-  "contracting" would say the opposite of what happened, so the word is "slowing". (V431, V661)
+- **Each page says its trend in its own vocabulary: Growth's and Volume's are expanding or contracting (never
+  accelerating), Pulse's accelerating or decelerating, Pressure's climbing or easing.** Keren: "I want to keep the
+  vocabulary consistent"; Pulse is a velocity, so "the correct word is accelerating, and the opposite is
+  decelerating." Growth's trend took "expanding" and "contracting" in 1.7.0 with the rest of growth's words.
+  (V431, V661, 1.7.0)
 - **The market's words for the feeling are bullish and bearish; long and short are positions taken and are not
   used for a reading.** They name a different thing. (V598)
 - **When a page carries two figures for two things, each is labelled: on Hormones the target range is the
