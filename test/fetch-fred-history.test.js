@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { damodaranReturns, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { premiumFromRows, damodaranReturns, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -111,6 +111,15 @@ ok('the early seasons are written as the app reads them',
    { gdpYoYBefore: [{ q: '1948 Q1', v: 4.21 }], cpiYoYBefore: [{ m: '1948-01', v: 10.24 }], sp500ReturnsBefore: { 1948: 5.7, 1949: 18.3 }, gdpGrowthBefore: { 1948: 4.1 } });
 ok('durable-goods spending is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, [{ m: '2026-08', v: 3.1 }])).durablesHistory, [{ m: '2026-08', v: 3.1 }]);
+ok('the equity risk premium is written as the app reads it',
+   J(emit([], [], null, null, null, null, null, null, null, [{ m: '2026-08', v: 1.2 }])).premiumHistory, [{ m: '2026-08', v: 1.2 }]);
+const shiller = [['Stock Market Data'], ['', '', '', '', 'Excess CAPE'], ['Date', 'P', 'E', 'CAPE', 'Yield'],
+  [1927.12, 17.5, 1.1, 14, 0.04], [1928.01, 17.53, 1.11, 14.1, 0.0412], [1928.1, 20, 1.2, 16, -0.0051], [1928.11, 21, '', '', '']];
+ok('the Excess CAPE Yield is read from Shiller in percent, from its first month',
+   premiumFromRows(shiller, '1928-01'), [{ m: '1928-01', v: 4.12 }, { m: '1928-10', v: -0.51 }]);
+throws('a workbook without the column is refused', () => premiumFromRows([['Date', 'P', 'CAPE'], [1928.01, 17, 14]], '1928-01'), /Excess CAPE Yield/);
+throws('a figure already in percent is refused, not scaled by guess',
+   () => premiumFromRows([['Date', 'P', 'Excess CAPE Yield'], [1928.01, 17, 4.12]], '1928-01'), /not a fraction/);
 const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
   '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });

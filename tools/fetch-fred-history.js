@@ -47,12 +47,43 @@ async function oecdConfidence(start) {
 
 const VOL_JOIN = '1990-01';
 const SP500_FROM = '1948-01';
+const PREMIUM_FROM = '1928-01';
 const GDP_JOIN = '1988 Q1';
 const CPI_JOIN = '1989-01';
 const RETURNS_FROM = 1928, RETURNS_JOIN = 1990, GROWTH_FROM = 1930, CPI_EARLY = '1928-01';
 const DAMODARAN = 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html';
-const { shillerSheet, priceFromRows } = require('./fetch-live.js');
+const { shillerSheet, shillerMonth, priceFromRows } = require('./fetch-live.js');
 const band = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
+
+function premiumFromRows(rows, from) {
+  const cell = c => String(c == null ? '' : c).replace(/\s+/g, ' ').trim();
+  let hdr = -1, dateCol = -1;
+  for (let i = 0; i < Math.min(rows.length, 30); i++) {
+    const r = (rows[i] || []).map(cell);
+    const d = r.findIndex(c => /^date$/i.test(c));
+    if (d >= 0 && r.some(c => /^p$/i.test(c))) { hdr = i; dateCol = d; }
+  }
+  if (hdr < 0) throw new Error('no header row naming Date and P');
+  let col = -1;
+  const width = Math.max(...rows.slice(0, hdr + 1).map(r => (r || []).length));
+  for (let j = 0; j < width && col < 0; j++) {
+    const label = rows.slice(0, hdr + 1).map(r => cell((r || [])[j])).join(' ').replace(/\s+/g, ' ');
+    if (/excess cape yield/i.test(label)) col = j;
+  }
+  if (col < 0) throw new Error('no column naming the Excess CAPE Yield');
+  const out = [];
+  for (let i = hdr + 1; i < rows.length; i++) {
+    const r = rows[i] || [], raw = r[col];
+    if (r[dateCol] == null || r[dateCol] === '' || raw == null || raw === '' || !isFinite(Number(raw))) continue;
+    const m = shillerMonth(r[dateCol]), v = Number(raw);
+    if (m < from) continue;
+    if (Math.abs(v) >= 0.25) throw new Error('Excess CAPE Yield ' + v + ' in ' + m + ' is not a fraction');
+    if (out.length && m <= out[out.length - 1].m) throw new Error('months out of order at ' + m);
+    out.push({ m, v: Math.round(v * 10000) / 100 });
+  }
+  if (!out.length) throw new Error('no Excess CAPE Yield below the header');
+  return out;
+}
 
 function monthlyMean(rows, lo, hi, before) {
   const acc = new Map();
@@ -156,7 +187,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -174,6 +205,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (sp500) out.sp500MonthlyHistory = m(sp500);
   if (confidence) out.confidenceHistory = m(confidence);
   if (durables) out.durablesHistory = m(durables);
+  if (premium) out.premiumHistory = m(premium);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -243,7 +275,10 @@ async function main() {
   if (!durables.length) throw new Error('DDURRA3M086SBEA: no year-over-year month');
   say('DDURRA3M086SBEA YoY ' + durables.length + ' months, ' + durables[0].m + ' → ' + durables[durables.length - 1].m);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables));
+  const premium = await shillerSheet(rows => premiumFromRows(rows, PREMIUM_FROM));
+  say('Excess CAPE Yield ' + premium.length + ' months, ' + premium[0].m + ' → ' + premium[premium.length - 1].m + ' (Shiller)');
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
@@ -272,5 +307,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { damodaranReturns, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { premiumFromRows, damodaranReturns, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }
