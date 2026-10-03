@@ -1087,6 +1087,17 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
+  .ca-note{ margin:16px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .cat-analysis .aux-stat .season-sw{ margin-right:8px; vertical-align:middle; }
+  .clock{ display:block; width:100%; max-width:380px; margin:12px auto 0; }
+  .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
+  .clock-q.now{ fill:var(--accent-wash); }
+  .clock-name{ font-size:var(--type-meta); font-weight:700; fill:var(--text-primary); }
+  .clock-name.now{ fill:var(--accent-ink); }
+  .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
+  .clock-hand{ stroke:var(--accent); stroke-width:3; stroke-linecap:round; }
+  .clock-pin{ fill:var(--accent); }
+  .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -34146,8 +34157,8 @@
   function statDetail(s, rec) {
     return "<h4>How the analysis reads</h4>" + facts([ "A cycle runs from its first bull year to its last bear year. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle." + (s.c.ongoing ? " The year in progress counts at its return so far." : ""), "The seasons are the Season Model’s, read each quarter (each year before 1949) and summed by season; the share is of the time the model has read.", "Temperature is each month’s CPI against the " + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% band: hot above it, warm inside it, cold below it.", "Each median is taken over the closed cycles, so it is the record’s middle, not a target. This is a description of the record, not a forecast." ]) + "<h4>Across the record</h4>" + facts(recordFacts(rec));
   }
-  function bar(runs) {
-    var live = runs.filter(function(r) {
+  function bar(runs2) {
+    var live = runs2.filter(function(r) {
       return r.n > 0;
     });
     return '<div class="strip" role="img" aria-label="' + live.map(function(r) {
@@ -34286,17 +34297,17 @@
     var segs = m.track.filter(function(seg) {
       return !seg.isNow && seg.to > seg.from;
     });
-    var insetDeg = capDegM + MARGIN, runs = [];
+    var insetDeg = capDegM + MARGIN, runs2 = [];
     segs.forEach(function(seg) {
-      var last = runs[runs.length - 1];
-      if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs.push(last = []);
+      var last = runs2[runs2.length - 1];
+      if (!last || seasonGroup(last[last.length - 1].seg.season) !== seasonGroup(seg.season)) runs2.push(last = []);
       last.push({
         seg: seg,
         a0: ORIGIN + seg.from * degPerYear,
         a1: ORIGIN + seg.to * degPerYear
       });
     });
-    runs.forEach(function(run) {
+    runs2.forEach(function(run) {
       var r0 = run[0].a0, r1 = run[run.length - 1].a1;
       var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
       if (v1 - v0 < MIN_CORE) {
@@ -34650,10 +34661,10 @@
     return function() {
       var m = cycleModel(cyc), segs = m.track.filter(function(seg) {
         return !seg.isNow && seg.to > seg.from;
-      }), runs = [];
+      }), runs2 = [];
       segs.forEach(function(seg) {
-        var g = seasonGroup(seg.season), last = runs[runs.length - 1];
-        if (!last || last.g !== g) runs.push(last = {
+        var g = seasonGroup(seg.season), last = runs2[runs2.length - 1];
+        if (!last || last.g !== g) runs2.push(last = {
           g: g,
           n: 0,
           from: seg.q,
@@ -34667,7 +34678,7 @@
       var lead2 = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead2 + segs.length;
       var span = Math.max(spanOverride || 0, typicalCycleYears * 4, cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
       var ahead = Math.max(0, span - done);
-      var pills = runs.map(function(r) {
+      var pills = runs2.map(function(r) {
         var names = Object.keys(r.seasons).map(function(k) {
           return seasonTitle(wheelMeta[k]);
         }).join(" · ");
@@ -34680,7 +34691,7 @@
         span: span,
         done: done,
         years: cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears),
-        strip: '<div class="strip" role="img" aria-label="' + (lead2 ? "No season " + lead2 + " quarters, " : "") + runs.map(function(r) {
+        strip: '<div class="strip" role="img" aria-label="' + (lead2 ? "No season " + lead2 + " quarters, " : "") + runs2.map(function(r) {
           return groupName[r.g] + " " + r.n + (r.n === 1 ? " quarter" : " quarters");
         }).join(", ") + '">' + pills + "</div>",
         foot: foot
@@ -34697,13 +34708,13 @@
     });
     var ytdQ = typeof doneQ === "number" ? doneQ - closedQ : Math.round(cycleYtdFraction * 4);
     if (!(ytdQ >= 1)) ytdQ = 1;
-    var runs = [];
+    var runs2 = [];
     years.forEach(function(yy) {
       var ytd = cyc.ongoing && yy === calendarTodayY;
       var q = ytd ? ytdQ : 4;
       var dir = sp500AnnualReturns[yy] >= 0 ? "up" : "down";
-      var last = runs[runs.length - 1];
-      if (!last || last.dir !== dir || last.ytd !== ytd) runs.push(last = {
+      var last = runs2[runs2.length - 1];
+      if (!last || last.dir !== dir || last.ytd !== ytd) runs2.push(last = {
         dir: dir,
         ytd: ytd,
         q: 0,
@@ -34713,17 +34724,17 @@
       last.q += q;
       last.to = yy;
     });
-    var done = runs.reduce(function(a, r) {
+    var done = runs2.reduce(function(a, r) {
       return a + r.q;
     }, 0);
     var span = Math.max(spanQ || 0, done);
     var ahead = Math.max(0, span - done);
-    var pills = runs.map(function(r) {
+    var pills = runs2.map(function(r) {
       var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
       return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="flex:' + Math.max(r.q, 1) + ' 1 0" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
     }).join("");
     pills += stripDots(ahead, aheadWord(cyc));
-    return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' + runs.map(function(r) {
+    return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' + runs2.map(function(r) {
       return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir;
     }).join(", ") + '">' + pills + "</div>";
   }
@@ -34731,15 +34742,15 @@
   function settleStrips() {
     Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip) {
       if (!strip.clientWidth || strip.closest(".cyc-scale")) return;
-      var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
-      runs.forEach(function(r2) {
+      var runs2 = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
+      runs2.forEach(function(r2) {
         r2.classList.remove("settled");
         r2.style.flex = r2.getAttribute("data-flex") || r2.style.flex;
         r2.style.width = "";
       });
-      for (var pass = 0; pass < runs.length; pass++) {
+      for (var pass = 0; pass < runs2.length; pass++) {
         var worst = null;
-        for (var r of runs) {
+        for (var r of runs2) {
           if (r.classList.contains("settled")) continue;
           var b = r.getBoundingClientRect();
           if (b.width < b.height * STRIP_MIN_RATIO && (!worst || b.width < worst.w)) worst = {
@@ -35730,6 +35741,239 @@
     GYN.step("renderCycleList", renderCycleList, "wire");
     renderCycleList();
     renderCycleView(nowModel);
+  }
+  var PHASES = [ "reflation", "recovery", "overheat", "stagflation" ];
+  var CLOCK = {
+    reflation: {
+      name: "Reflation",
+      asset: "Bonds",
+      growth: "slowing",
+      prices: "cooling",
+      seasons: "Autumn · disinflation, and a cooling Winter"
+    },
+    recovery: {
+      name: "Recovery",
+      asset: "Stocks",
+      growth: "picking up",
+      prices: "cooling",
+      seasons: "Spring · deflation, and a cooling Summer"
+    },
+    overheat: {
+      name: "Overheat",
+      asset: "Commodities",
+      growth: "picking up",
+      prices: "heating",
+      seasons: "Spring · reflation, and Summer"
+    },
+    stagflation: {
+      name: "Stagflation",
+      asset: "Cash",
+      growth: "slowing",
+      prices: "heating",
+      seasons: "Autumn · stagflation, and a heating Winter"
+    }
+  };
+  var CLOCK_SRC = [ {
+    t: "Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004; US data 1973–2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public",
+    u: "https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"
+  } ];
+  var SEASONS_SRC = [ {
+    t: "Bridgewater Associates — The All Weather Story (2012)",
+    u: "https://www.bridgewater.com/resources/all-weather-story.pdf"
+  }, {
+    t: "Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals",
+    u: "https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"
+  } ];
+  var ALL_SEASONS = [ {
+    what: "Stocks",
+    w: 30,
+    ink: "--ovulate"
+  }, {
+    what: "Long-term Treasuries",
+    w: 40,
+    ink: "--ff-deep"
+  }, {
+    what: "Intermediate Treasuries",
+    w: 15,
+    ink: "--ff-blue"
+  }, {
+    what: "Gold",
+    w: 7.5,
+    ink: "--season-autumn"
+  }, {
+    what: "Commodities",
+    w: 7.5,
+    ink: "--season-summer"
+  } ];
+  var WEATHER = [ {
+    when: "Growth picking up",
+    holds: "Stocks, commodities",
+    test: function(r) {
+      return r.regime === "expansion";
+    }
+  }, {
+    when: "Growth slowing",
+    holds: "Treasuries",
+    test: function(r) {
+      return r.regime !== "expansion";
+    }
+  }, {
+    when: "Prices heating",
+    holds: "Commodities, gold",
+    test: function(r) {
+      return r.cpiDirection !== "falling";
+    }
+  }, {
+    when: "Prices cooling",
+    holds: "Stocks, Treasuries",
+    test: function(r) {
+      return r.cpiDirection === "falling";
+    }
+  } ];
+  function phaseOf(r) {
+    var cooling = r.cpiDirection === "falling";
+    return r.regime === "expansion" ? cooling ? "recovery" : "overheat" : cooling ? "reflation" : "stagflation";
+  }
+  function monthPlus(m, k) {
+    var i = +m.slice(0, 4) * 12 + (+m.slice(5) - 1) + k;
+    return Math.floor(i / 12) + "-" + String(i % 12 + 1).padStart(2, "0");
+  }
+  var runsCache = null;
+  function runs() {
+    if (runsCache) return runsCache;
+    var sp = {}, cpi = {}, ff = {}, out = [], last = null;
+    sp500MonthlyHistory.forEach(function(d) {
+      sp[d.m] = d.v;
+    });
+    cpiYoYHistory.forEach(function(d) {
+      cpi[d.m] = d.v;
+    });
+    fedFundsHistory.forEach(function(d) {
+      if (d.v != null) ff[d.m] = d.v;
+    });
+    marketCycles.forEach(function(c) {
+      cycleModel(c).track.forEach(function(seg) {
+        if (seg.isNow || seg.reading.annual) return;
+        var p = phaseOf(seg.reading), m = seg.q.slice(0, 4) + "-" + QUARTER_END_MONTH[seg.q.slice(5)], m12 = monthPlus(m, 12);
+        var fresh = p !== last;
+        last = p;
+        if (sp[m] == null || sp[m12] == null || cpi[m12] == null) return;
+        var f = 1;
+        for (var k = 1; k <= 12 && f; k++) f = ff[monthPlus(m, k)] != null ? f * (1 + ff[monthPlus(m, k)] / 1200) : 0;
+        out.push({
+          phase: p,
+          stocks: (sp[m12] / sp[m] - 1) * 100 - cpi[m12],
+          cash: f ? (f - 1) * 100 - cpi[m12] : null,
+          fresh: fresh
+        });
+      });
+    });
+    return runsCache = out;
+  }
+  function phaseMid(vs) {
+    var s = vs.slice().sort(function(a, b) {
+      return a - b;
+    }), n = s.length;
+    return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  }
+  function phaseRecord(p) {
+    var r = runs().filter(function(x) {
+      return x.phase === p;
+    }), paired = r.filter(function(x) {
+      return x.cash != null;
+    });
+    return {
+      n: r.length,
+      episodes: r.filter(function(x) {
+        return x.fresh;
+      }).length,
+      stocks: phaseMid(r.map(function(x) {
+        return x.stocks;
+      })),
+      up: Math.round(100 * r.filter(function(x) {
+        return x.stocks > 0;
+      }).length / r.length),
+      beat: paired.filter(function(x) {
+        return x.stocks > x.cash;
+      }).length,
+      paired: paired.length
+    };
+  }
+  function wedge(cx, cy, r, a0, a1) {
+    var p = function(a) {
+      return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1);
+    };
+    return "M" + cx + "," + cy + "L" + p(a0) + "A" + r + "," + r + " 0 0 1 " + p(a1) + "Z";
+  }
+  function phaseClock(now2) {
+    var S = 300, wide = 380, cx = 190, cy = 150, r = 116, out = [];
+    var at = {
+      recovery: -Math.PI,
+      overheat: -Math.PI / 2,
+      stagflation: 0,
+      reflation: Math.PI / 2
+    };
+    PHASES.forEach(function(p) {
+      var a0 = at[p], mid = a0 + Math.PI / 4, lx = cx + r * .56 * Math.cos(mid), ly = cy + r * .56 * Math.sin(mid);
+      out.push('<path class="clock-q' + (p === now2 ? " now" : "") + '" d="' + wedge(cx, cy, r, a0, a0 + Math.PI / 2) + '"/>');
+      out.push('<text class="clock-name' + (p === now2 ? " now" : "") + '" x="' + lx.toFixed(1) + '" y="' + (ly - 4).toFixed(1) + '" text-anchor="middle">' + CLOCK[p].name + "</text>");
+      out.push('<text class="clock-asset" x="' + lx.toFixed(1) + '" y="' + (ly + 14).toFixed(1) + '" text-anchor="middle">' + CLOCK[p].asset + "</text>");
+    });
+    var hand = at[now2] + Math.PI / 4;
+    out.push('<line class="clock-hand" x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * .3 * Math.cos(hand)).toFixed(1) + '" y2="' + (cy + r * .3 * Math.sin(hand)).toFixed(1) + '"/>');
+    out.push('<circle class="clock-pin" cx="' + cx + '" cy="' + cy + '" r="5"/>');
+    out.push('<text class="clock-axis" x="' + cx + '" y="18" text-anchor="middle">Growth picking up</text>');
+    out.push('<text class="clock-axis" x="' + cx + '" y="' + (S - 6) + '" text-anchor="middle">Growth slowing</text>');
+    out.push('<text class="clock-axis" x="4" y="' + (cy + 4) + '">Prices</text><text class="clock-axis" x="4" y="' + (cy + 20) + '">cooling</text>');
+    out.push('<text class="clock-axis" x="' + (wide - 4) + '" y="' + (cy + 4) + '" text-anchor="end">Prices</text><text class="clock-axis" x="' + (wide - 4) + '" y="' + (cy + 20) + '" text-anchor="end">heating</text>');
+    return '<svg class="clock" viewBox="0 0 ' + wide + " " + S + '" role="img" aria-label="The Investment Clock, pointing at ' + CLOCK[now2].name + '">' + out.join("") + "</svg>";
+  }
+  function clockDetail() {
+    return "<h4>How the clock reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the cycle by two directions: whether growth is picking up or slowing, and whether inflation is rising or falling. It turns clockwise, Reflation, Recovery, Overheat, Stagflation, and names the asset that led in each phase in US data from 1973 to 2004.", "Here both directions are the Season Model’s own: growth is its expansion or contraction, prices its CPI trend over twelve months, with steady prices counted as heating, as the Season Model counts them.", "So each phase holds parts of her seasons: " + PHASES.map(function(p) {
+      return "<b>" + CLOCK[p].name + "</b>, " + CLOCK[p].seasons;
+    }).join("; ") + ". Mind the names: her Spring · reflation sits in the clock’s Overheat, and the clock’s Reflation is slowing growth with cooling prices.", "The figures are what followed in the record, every quarter the model has read since 1950: the S&amp;P&nbsp;500’s change over the next twelve months less CPI (prices, not dividends), and cash as the Fed funds rate held for the same twelve months. Neighbouring quarters overlap, so a phase rests on its runs, not its quarters.", "The clock’s bonds and commodities need long histories the app does not carry yet. This is the record and a published model, not a forecast or advice." ]) + srcBlock(CLOCK_SRC);
+  }
+  function clockHtml(r) {
+    var now2 = phaseOf(r), c = CLOCK[now2], rec = phaseRecord(now2);
+    var rows = PHASES.map(function(p) {
+      var x = phaseRecord(p);
+      return auxStat({
+        label: CLOCK[p].name + " · " + CLOCK[p].asset.toLowerCase() + (p === now2 ? " · today" : ""),
+        value: fmtSigned(x.stocks, 1) + "% · up " + x.up + "%"
+      });
+    }).join("");
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">Investment Clock</div><p class="ca-say">Growth is ' + c.growth + " and prices are " + c.prices + ": on the Investment Clock that is " + c.name + ", the phase where it favours " + c.asset.toLowerCase() + ".</p>" + phaseClock(now2) + '<p class="ca-note">In ' + rec.episodes + " runs of " + c.name + " since 1950, stocks beat cash over the next year in " + rec.beat + " of " + rec.paired + " quarters. Stocks over the next year, after inflation, median and how often up:</p>" + rows + moreRow(clockDetail()) + "</div>";
+  }
+  function seasonsDetail() {
+    return "<h4>How the portfolio reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: each asset does well in some economic weather and badly in other, so a portfolio that balances its risk across all four, growth picking up or slowing, inflation rising or falling, needs no one to call the next season.", "The All Seasons weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the portfolio holds. Today’s two are marked from the Season Model’s readings.", "Its record needs bond, gold and commodity histories the app does not carry yet. This is a published allocation, not advice." ]) + srcBlock(SEASONS_SRC);
+  }
+  function seasonsHtml(r) {
+    var bar2 = '<div class="strip" role="img" aria-label="' + ALL_SEASONS.map(function(a) {
+      return a.what + " " + a.w + "%";
+    }).join(", ") + '">' + ALL_SEASONS.map(function(a) {
+      return '<span class="strip-run" style="flex:' + a.w + " 1 0;--season:var(" + a.ink + ')" title="' + a.what + " " + a.w + '%"></span>';
+    }).join("") + "</div>";
+    var weights = ALL_SEASONS.map(function(a) {
+      return auxStat({
+        label: '<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what,
+        value: a.w + "%"
+      });
+    }).join("");
+    var weather = WEATHER.map(function(w) {
+      return auxStat({
+        label: w.when + (w.test(r) ? " · today" : ""),
+        value: w.holds,
+        wordy: true
+      });
+    }).join("");
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">All Seasons portfolio</div><p class="ca-say">Bridgewater’s All Weather holds something for every season, so no season has to be called. Its version for individuals:</p>' + bar2 + weights + '<p class="ca-note">What each kind of weather has favoured:</p>' + weather + moreRow(seasonsDetail()) + "</div>";
+  }
+  function buildPortfolio() {
+    var host = need("panel-portfolio"), r = nowModel.reading;
+    host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml(r) + seasonsHtml(r) + "</div>";
+  }
+  function bootPortfolio() {
+    buildPortfolio();
   }
   var BUFFETT_2001 = [ {
     t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
@@ -37610,6 +37854,7 @@
     bootPagesNav();
     bootDiagnosis();
     bootAnalysis();
+    bootPortfolio();
     bootTabsMenu();
     bootRepaint();
     bootDone();

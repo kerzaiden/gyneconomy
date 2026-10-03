@@ -389,7 +389,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (a cycle's length, bull years and bleed, seasons and temperature, against the closed cycles), `diagnosis`, `dial-cycle`, `analysis`, `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (a cycle's length, bull years and bleed, seasons and temperature, against the closed cycles), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Investment Clock and the All Seasons portfolio), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.

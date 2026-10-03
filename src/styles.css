@@ -1093,6 +1093,17 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
+  .ca-note{ margin:16px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .cat-analysis .aux-stat .season-sw{ margin-right:8px; vertical-align:middle; }
+  .clock{ display:block; width:100%; max-width:380px; margin:12px auto 0; }
+  .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
+  .clock-q.now{ fill:var(--accent-wash); }
+  .clock-name{ font-size:var(--type-meta); font-weight:700; fill:var(--text-primary); }
+  .clock-name.now{ fill:var(--accent-ink); }
+  .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
+  .clock-hand{ stroke:var(--accent); stroke-width:3; stroke-linecap:round; }
+  .clock-pin{ fill:var(--accent); }
+  .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
