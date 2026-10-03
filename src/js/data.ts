@@ -288,21 +288,21 @@ function checkMoneyStock(){
 export var seasonReading: Record<Season, SeasonReading> = {
   summer: {
     body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
-    economy: "Overheat. Growth is still running but inflation sits above target, so the central bank is leaning against it.",
+    economy: "Overheat. The economy is still expanding but inflation sits above target, so the central bank is leaning against it.",
     next: "Autumn — disinflation. Temperature (CPI) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
     watch: ["Temperature (CPI) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)"],
     fromTheBook: []
   },
   autumn: {
     body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-    economy: "Disinflation. Growth is slowing and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
-    next: "Autumn — stagflation, if prices turn back up while growth keeps slowing; or Winter, if prices fall below target first.",
+    economy: "Disinflation. The economy is contracting and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
+    next: "Autumn — stagflation, if prices turn back up while the economy keeps contracting; or Winter, if prices fall below target first.",
     watch: ["Activity — unemployment starting to drift up", "Hormones — credit growth and lending standards", "Whether temperature keeps falling or gets stuck above target"],
     fromTheBook: []
   },
   lateautumn: {
     body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-    economy: "Stagflation. Growth is slowing while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
+    economy: "Stagflation. The economy is contracting while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
     next: "Winter — the bleed. Historically the leading signs have already turned by now (an inverted or un-inverting curve, widening credit spreads); the bleed itself confirms months later in prices and activity.",
     watch: ["Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — durable-goods spending falling below a year earlier", "Sentiment — cracking (VIX spikes)"],
     fromTheBook: []
@@ -310,7 +310,7 @@ export var seasonReading: Record<Season, SeasonReading> = {
   winter: {
     body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
     economy: "Deflation, or close to it. Output contracts, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market.",
-    next: "Spring, once policy has loosened enough for credit to begin flowing again and growth turns up — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as growth turns.",
+    next: "Spring, once policy has loosened enough for credit to begin flowing again and the economy turns to expansion — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as it turns.",
     watch: ["Hormones — money supply and lending growth turning up", "Cervical fluid — the curve steepening sharply as short rates fall", "The Calendar — the next year closing up after the down year"],
     fromTheBook: []
   },
@@ -323,8 +323,8 @@ export var seasonReading: Record<Season, SeasonReading> = {
   },
   spring: {
     body: "Follicular. Estrogen rises, the lining rebuilds, and energy returns day by day. Nothing is at its peak yet, but the direction is unmistakable.",
-    economy: "Reflation. Growth is rising and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
-    next: "Summer — inflation, once prices rise through the top of the target range while growth keeps rising.",
+    economy: "Reflation. The economy is expanding and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
+    next: "Summer — inflation, once prices rise through the top of the target range while the economy keeps expanding.",
     watch: ["Temperature — inflation approaching the top of its range", "Cervical fluid — the curve steepening as growth is priced in", "Sentiment and valuation starting to stretch"],
     fromTheBook: []
   }

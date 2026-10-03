@@ -28350,21 +28350,21 @@
   var seasonReading = {
     summer: {
       body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
-      economy: "Overheat. Growth is still running but inflation sits above target, so the central bank is leaning against it.",
+      economy: "Overheat. The economy is still expanding but inflation sits above target, so the central bank is leaning against it.",
       next: "Autumn — disinflation. Temperature (CPI) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
       watch: [ "Temperature (CPI) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)" ],
       fromTheBook: []
     },
     autumn: {
       body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-      economy: "Disinflation. Growth is slowing and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
-      next: "Autumn — stagflation, if prices turn back up while growth keeps slowing; or Winter, if prices fall below target first.",
+      economy: "Disinflation. The economy is contracting and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
+      next: "Autumn — stagflation, if prices turn back up while the economy keeps contracting; or Winter, if prices fall below target first.",
       watch: [ "Activity — unemployment starting to drift up", "Hormones — credit growth and lending standards", "Whether temperature keeps falling or gets stuck above target" ],
       fromTheBook: []
     },
     lateautumn: {
       body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-      economy: "Stagflation. Growth is slowing while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
+      economy: "Stagflation. The economy is contracting while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
       next: "Winter — the bleed. Historically the leading signs have already turned by now (an inverted or un-inverting curve, widening credit spreads); the bleed itself confirms months later in prices and activity.",
       watch: [ "Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — durable-goods spending falling below a year earlier", "Sentiment — cracking (VIX spikes)" ],
       fromTheBook: []
@@ -28372,7 +28372,7 @@
     winter: {
       body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
       economy: "Deflation, or close to it. Output contracts, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market.",
-      next: "Spring, once policy has loosened enough for credit to begin flowing again and growth turns up — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as growth turns.",
+      next: "Spring, once policy has loosened enough for credit to begin flowing again and the economy turns to expansion — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as it turns.",
       watch: [ "Hormones — money supply and lending growth turning up", "Cervical fluid — the curve steepening sharply as short rates fall", "The Calendar — the next year closing up after the down year" ],
       fromTheBook: []
     },
@@ -28385,8 +28385,8 @@
     },
     spring: {
       body: "Follicular. Estrogen rises, the lining rebuilds, and energy returns day by day. Nothing is at its peak yet, but the direction is unmistakable.",
-      economy: "Reflation. Growth is rising and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
-      next: "Summer — inflation, once prices rise through the top of the target range while growth keeps rising.",
+      economy: "Reflation. The economy is expanding and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
+      next: "Summer — inflation, once prices rise through the top of the target range while the economy keeps expanding.",
       watch: [ "Temperature — inflation approaching the top of its range", "Cervical fluid — the curve steepening as growth is priced in", "Sentiment and valuation starting to stretch" ],
       fromTheBook: []
     }
@@ -28901,29 +28901,24 @@
     };
   }
   var seasonRuleSentence = {
-    spring: "Quickening growth with prices heating, within or below the range, is reflation — Spring.",
-    springdeflation: "Quickening growth with prices cooling, within or below the range, is Spring — deflation.",
-    summer: "Quickening growth with prices above the range — hot — is inflation, Summer.",
-    autumn: "Slowing growth with prices cooling, within or above the range, is disinflation — Autumn.",
-    lateautumn: "Slowing growth with prices heating or steady, within or above the range, is Autumn — stagflation.",
-    winter: "Slowing growth with prices below the range — cold — is deflation, Winter."
+    spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
+    springdeflation: "Expansion with prices cooling, within or below the range, is Spring — deflation.",
+    summer: "Expansion with prices above the range — hot — is inflation, Summer.",
+    autumn: "Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
+    lateautumn: "Contraction with prices heating or steady, within or above the range, is Autumn — stagflation.",
+    winter: "Contraction with prices below the range — cold — is deflation, Winter."
   };
   function seasonWhyFor(m) {
-    var r = m.reading, was = m.ongoing ? "is" : "was";
-    return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) + "growth " + was + " " + growthWord(r) + " (real GDP " + r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " " + growthWindowWord() + " quarters, ") + fmtSigned(r.growthSlopeQ * 4, 1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+    var r = m.reading;
+    return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
   }
   function growthWord(r) {
-    return r.gdpLatest && r.gdpLatest.v < 0 ? "contracting" : r.growthTrend === "rising" ? "quickening" : r.growthTrend === "falling" ? "slowing" : "steady";
+    return r.regime === "contraction" ? "contracting" : "expanding";
   }
   function cycleNowNote(m) {
     var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
     var years = [ "Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years" ][n] || n + " years";
-    var growth = {
-      contracting: "the economy is shrinking",
-      slowing: "growth is still positive but slowing",
-      quickening: "growth is picking up",
-      steady: "growth is holding steady"
-    }[w];
+    var growth = w === "expanding" ? "the economy is expanding" : r.gdpLatest.v < 0 ? "the economy is contracting and output is shrinking" : "the economy is contracting, though output is still above a year earlier";
     var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") + (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
     return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
   }
@@ -30849,8 +30844,7 @@
     return policyFacts().map(auxStat).join("");
   }
   function growthShownCap(r) {
-    var w = growthWord(r);
-    return w.charAt(0).toUpperCase() + w.slice(1);
+    return growthWord(r) === "contracting" ? "Contraction" : "Expansion";
   }
   function phaseClass(regime) {
     return regime === "contraction" ? "phase-down" : "phase-up";
@@ -32595,7 +32589,7 @@
         return v.toFixed(1) + "%";
       }
     });
-    return vhOpen(W, H) + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; quarters of quickening growth in gold, of slowing growth in periwinkle">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; quarters of expansion in gold, of contraction in periwinkle">' + out.join("") + "</svg>";
   }
   function m2GrowthChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -34768,7 +34762,7 @@
     detailTexts.push("");
     GYN.step("renderCycleDial", renderCycleDial, "wire");
     renderCycleDial();
-    growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is quickening growth, periwinkle is slowing growth</b> — the season model’s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
+    growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one dips. A quarter below zero is always contraction. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
       t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
       u: "https://fred.stlouisfed.org/series/GDPC1"
     } ]));
@@ -36162,8 +36156,8 @@
       put("gdp-trend", trendPill(trendOf(win.map(function(d) {
         return d.v;
       }), "points", "quarter"), null, true, {
-        rising: "quickening",
-        falling: "slowing"
+        rising: "expanding",
+        falling: "contracting"
       }));
     };
   }
@@ -36352,7 +36346,7 @@
     }).length;
     var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than last. A body spends the first half of its cycle building something it has not used yet, and an economy does the same with output.</p>' ];
     cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads growth as " + growthWord(r) + "."));
+    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the economy as " + growthWord(r) + "."));
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function shutPickers() {
@@ -37099,6 +37093,9 @@
       gdp: gdpSrc
     };
   }
+  function seasonModelNote() {
+    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is CPI against a 1–3% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is the board’s own tolerance around the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
+  }
   function renderSeasonRows() {
     var seasonRules = [ {
       key: "winter",
@@ -37170,7 +37167,7 @@
       var m = wheelMeta[r.key], now2 = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
     }).join(""));
-    put("seasons-kicker", "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption follow">Growth is the direction of real GDP — quickening when its trend is rising, slowing when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last ' + growthWindowWord() + " of those readings. Slowing is not shrinking: growth can slow while every quarter is still positive. Shrinking is never quickening: when real GDP is below where it stood a year earlier, the economy is contracting whichever way its trend points, so a smaller fall after a larger one, as in 1931, takes a season of the slowing side. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last " + growthWindowWord() + " quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh quickening — so a flat quarter after several quarters of falling growth still reads as slowing. With growth quickening, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). With growth slowing, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with the quickening side, even though slowing growth with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>"));
+    put("seasons-kicker", "The Season Model" + expandBtn(seasonModelNote()));
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
       return '<div class="lag-row"><span>' + r.indicator + "</span><span>" + r.body + "</span><span>" + r.economy + "</span><span>" + r.category + "</span></div>";
     }).join(""));

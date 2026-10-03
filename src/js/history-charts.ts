@@ -360,7 +360,7 @@ export function gdpHistoryChart(Wpx: number, from: number, o?: HistOpts){
                    fmt:function(v: number){ return v.toFixed(1) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
-    ', against the long-run average of ' + GDP_NORM + ' per cent; quarters of quickening growth in gold, of slowing growth in periwinkle">' +
+    ', against the long-run average of ' + GDP_NORM + ' per cent; quarters of expansion in gold, of contraction in periwinkle">' +
     out.join("") + '</svg>';
 }
 export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
