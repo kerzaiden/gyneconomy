@@ -1,4 +1,4 @@
-import { fmtSigned, monthLabel, qLabel, yearOf } from "./format.ts";
+import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
@@ -107,10 +107,10 @@ var seasonRuleSentence: Record<Season, string> = {
   winter:"Contraction with prices below the range — cold — is deflation, Winter."
 };
 function seasonWhyFor(m: CycleModel){
-  var r = m.reading, was = m.ongoing ? "is" : "was";
-  return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) +
-    "the economy " + was + " " + growthWord(r) + " (real GDP " +
-    r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " " + growthWindowWord() + " quarters, ") + fmtSigned(r.growthSlopeQ * 4, 1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+  var r = m.reading;
+  return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " +
+    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (CPI " + r.cpiNow.toFixed(1) + "%). " +
+    seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
 }
 export function growthWord(r: ModelReading){
   return r.regime === "contraction" ? "contracting" : "expanding";

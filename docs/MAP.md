@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,905 lines** in 32 files, about 583 KB, roughly **166 thousand tokens**. No session can
+The source is **8,917 lines** in 32 files, about 582 KB, roughly **165 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a13059b` on 2026-10-03.
+Generated from commit `32e9746` on 2026-10-03.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `a13059b` on 2026-10-03.
 | `js/main.ts` | 28 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **28** modules, **562** top-level functions, **100** top-level vars, **340** exported names, **18** boots.
+Counts: **28** modules, **563** top-level functions, **100** top-level vars, **340** exported names, **18** boots.
 
 ## Modules, in boot order
 
@@ -43,7 +43,7 @@ Counts: **28** modules, **562** top-level functions, **100** top-level vars, **3
 | `js/dial-cycle.ts` | 444 | 26 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
-| `js/tabs-menu.ts` | 191 | 4 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
+| `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
@@ -82,7 +82,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:420`–443 |
 | 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
 | 16 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
-| 17 | `bootTabsMenu` | `js/tabs-menu.ts:181`–190 |
+| 17 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 18 | `bootRepaint` | `js/repaint.ts:65`–81 |
 
 ## Script, module by module
@@ -784,20 +784,21 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 13 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 13 | `seasonModelNote` | `function seasonModelNote(` |
+| 25 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### TAB NAVIGATION (Cycle / Analysis / Search / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 60 | `renderTopbar` | `function renderTopbar(` |
-| 89 | `wireTabKeys` | `function wireTabKeys(` |
+| 72 | `renderTopbar` | `function renderTopbar(` |
+| 101 | `wireTabKeys` | `function wireTabKeys(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 91 | `wireMenu` | `function wireMenu(` |
+| 103 | `wireMenu` | `function wireMenu(` |
 
 ### `js/repaint.ts`
 
