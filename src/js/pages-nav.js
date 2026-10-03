@@ -1,18 +1,17 @@
 import { capeFmt1, CHEV, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, yearOf } from "./format.js";
-import { allSources, byId, byIdMaybe, elFrom, focusQuiet, layer, moreRow, put } from "./dom.js";
+import { allSources, byId, byIdMaybe, elFrom, focusQuiet, layer, moreRow, put, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.js";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.js";
-import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, gdpSrc, m2Yoy, PULSE_PRE2008, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, sp500AnnualReturnSource, unempHistory, valRow, valuation } from "./data.js";
+import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, gdpSrc, m2Yoy, now, PULSE_PRE2008, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, sp500AnnualReturnSource, unempHistory, valRow } from "./data.js";
 import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, nowModel, totalGrowthYears, totalRiseIn } from "./model.js";
-import { attachHistory, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, pageCycle, pageCycles, pageMode, pageRange, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
+import { attachHistory, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.js";
 import { coincident, deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, indOf, lagging, phaseClass, rowReadings, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.js";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, m2Step, unempHistoryChart } from "./history-charts.js";
 import { CATEGORIES, categoriesShown, peekOf, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
-import { cardDetailHtml, collapseEmptyBlocks, detailClose, gdpPeek, heldHighlights, metricSheet, registerTiming, seatPageFoot, setHeldHighlights, setOpenIndicatorsPage, sheetRenderers, subjectIcon, subjectRow, tempPeek, timingMembers, timingPill } from "./render-core.js";
-import { cycleViewEl, eraPageBack, setMetricPageReset, setTopbar } from "./render-pages.js";
+import { cardDetailHtml, collapseEmptyBlocks, detailClose, gdpPeek, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, tempPeek, timingMembers, timingPill } from "./render-core.js";
+import { cycleViewEl, setTopbar } from "./render-pages.js";
 import { appendPicks, catPicks, catSheet, groupId, indicatorPeeks } from "./indicators.js";
-import { eraOpen } from "./era.js";
 import { INSIGHT } from "./insights.js";
 import { growthDetail } from "./dial-cycle.js";
 
@@ -75,7 +74,7 @@ function renderSignsList(){
     var d = metricSheet(id);
     d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
     d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") +
-      (function(){ var h = heldHighlights; setHeldHighlights(""); return h; })();
+      (function(){ var h = ui.heldHighlights; ui.heldHighlights = ""; return h; })();
     registerTiming(timing, {
       title:R.name, sub:ind.econTerm, metric:ind.metric, metricSub:ind.metricSub,
       tag:ind.tag, icon:subjectIcon(ind.tag.state, svg),
@@ -172,8 +171,8 @@ function buildNav(){
   var PAGE_HOME = {
     cycle:    { panel:cyclePanel,    bar:function(){ return ["Current Cycle", null]; },
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
-    analysis: { panel:analysisPanel, bar:function(){ return eraOpen ? [eraOpen.name, eraPageBack] : ["Analysis", null]; },
-                hide:function(){ return [byId(eraOpen ? "calendar-cycle" : "calendar-list")]; } },
+    analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Analysis", null]; },
+                hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
     search:   { panel:document.querySelector('.tab-panel[data-tab="search"]'), bar:function(){ return ["Search", null]; },
                 hide:function(){ return [byId("search-home")]; } }
   };
@@ -204,7 +203,7 @@ function buildNav(){
     if (!focusQuiet(from)) focusQuiet(byId("topbar-title"));
   }
   layer(4, { open:function(){ return !!openSheet; }, close:backFromPage });
-  setMetricPageReset(closeMetricPage);
+  ui.metricPageReset = closeMetricPage;
 
   function openMetricPage(el, title, returning, homeKey){
     if (!el) return;
@@ -296,11 +295,11 @@ function buildSearch(){
     state.kind = b.getAttribute("data-ind-tab"); apply();
   });
   input.addEventListener("input", function(){ state.q = input.value.trim().toLowerCase(); apply(); });
-  setOpenIndicatorsPage(function(tab){
+  ui.openIndicatorsPage = function(tab){
     var btn = document.querySelector('.tab-btn[data-tab="search"]');
     if (btn && !btn.classList.contains("active")) btn.click();
     input.value = ""; state.q = ""; state.kind = tab || "all"; apply();
-  });
+  };
   apply();
 }
 /* ---- THE CYCLE TAB: cards and categories ---- */
@@ -375,8 +374,8 @@ function renderPeekAndCategories(){
   if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
   host.innerHTML =
     tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) +
-    peekOf("sheet-metric-valuation", { value:capeNow.toFixed(1) + "\u00d7", word:valuation.tag.text,
-               state:valuation.tag.state,
+    peekOf("sheet-metric-valuation", { value:capeNow.toFixed(1) + "\u00d7", word:now.valuation.tag.text,
+               state:now.valuation.tag.state,
                cols:capeHistory.map(function(d){ return d.v; }), colBase:CAPE_FAIR,
                colClass:function(v){ return "dv-bar " + (v > CAPE_FAIR ? "over" : "under"); } }) +
     peekOf("sheet-metric-households", { value:dsrNow.toFixed(1) + "/" + savNow.toFixed(1),
@@ -425,7 +424,7 @@ function redrawSheet(id){
 }
 function registerTempGdpPages(){
   sheetRenderers["sheet-metric-temp"] = function(W){
-    var r = pageRange["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
+    var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
     put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory }));
     put("temp-head", histHead("sheet-metric-temp"));
     var hist = byId("temp-history"); hist.hidden = false;
@@ -449,7 +448,7 @@ function registerTempGdpPages(){
       headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
   };
   sheetRenderers["sheet-metric-gdp"] = function(W){
-    var r = pageRange["sheet-metric-gdp"];
+    var r = page.range["sheet-metric-gdp"];
     put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY }));
     put("gdp-head", histHead("sheet-metric-gdp"));
     histNote("sheet-metric-gdp", growthInfoHtml());
@@ -476,7 +475,7 @@ function registerActivityPowerDeficitPages(){
     var hist = byId("act-history"); if (!hist) return;
     var cyc = pageCycle(id);
     var span = cyc ? actCycleMonths(cyc) : null;
-    var from = span ? span[0] : mWindowFrom(unempHistory.length, pageRange[id]);
+    var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
     var to = span ? span[1] : undefined;
     hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
     attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
@@ -491,7 +490,7 @@ function registerActivityPowerDeficitPages(){
   };
   sheetRenderers["deficit-range"] = function(W){
     var host = byId("deficit-record"); if (!host) return;
-    var key = pageRange["deficit-range"], defCyc = pageCycle("deficit-range");
+    var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
     var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
                            Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1)] : null;
     var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
@@ -510,7 +509,7 @@ function registerHouseholdsValuationPages(){
     var id = "sheet-metric-households";
     var hhCyc = pageCycle(id, DSR_FROM_YEAR);
     var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
-    var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
+    var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]);
     var to = idx ? idx[1] : dsrHistory.length;
     var host = byId("households-chart"); if (!host) return;
     histNote(id, dsrInfoHtml() + savInfoHtml());
@@ -527,7 +526,7 @@ function registerHouseholdsValuationPages(){
     var hl = put("households-highlights", householdsHighlights());
   };
   sheetRenderers["sheet-metric-valuation"] = function(W){
-    var r = pageRange["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
+    var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
     var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
     var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
     var capeTrend = trendOf(vals.map(function(d){ return d.v; }), "\u00d7", "year");
@@ -558,8 +557,8 @@ function wireMetricPageControls(){
     var sel = e.target.closest(".cycsel"), id = sel && sel.getAttribute("data-cycles-for");
     if (id && e.target.closest("[data-picker-toggle]")){ pickerOpen[id] = !pickerOpen[id]; redrawSheet(id); return; }
     var opt = e.target.closest(".cycsel-opt");
-    if (id && opt && (id in pageCycles)){
-      pageCycles[id] = opt.getAttribute("data-cycle");
+    if (id && opt && (id in page.cycles)){
+      page.cycles[id] = opt.getAttribute("data-cycle");
       pickerOpen[id] = false;
       redrawSheet(id); return;
     }
@@ -568,15 +567,15 @@ function wireMetricPageControls(){
   document.addEventListener("click", function(e){
     var seg = e.target.closest && e.target.closest(".range-seg"); if (!seg) return;
     var mid = seg.parentNode.getAttribute("data-mode-for");
-    if (mid && (mid in pageMode)){
-      pageMode[mid] = seg.getAttribute("data-mode");
+    if (mid && (mid in page.mode)){
+      page.mode[mid] = seg.getAttribute("data-mode");
       var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
       if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
       return;
     }
     var id = seg.parentNode.getAttribute("data-range-for");
-    if (!(id in pageRange)) return;
-    pageRange[id] = seg.getAttribute("data-range");
+    if (!(id in page.range)) return;
+    page.range[id] = seg.getAttribute("data-range");
     var host = byId("metric-page");
     var draw = sheetRenderers[id]; if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
   });
@@ -589,11 +588,11 @@ function valuationHighlights(capeNow, buffNow){
   cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
     'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
     'producing.</p>');
-  cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0
+  cards.push(hiCard("Shiller CAPE", now.valuation.tag.state, richer.length === 0
     ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
     : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
       " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
-  put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(valuation.impression))));
+  put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(now.valuation.impression))));
 }
 function tempHighlights(tempInd, r){
   var cyc = nowModel.cpi, hot = cyc.filter(function(d){ return d.v > 3; }).length;

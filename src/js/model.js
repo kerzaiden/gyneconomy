@@ -2,7 +2,7 @@ import { monthLabel, qLabel, yearOf } from "./format.js";
 import { addSources } from "./dom.js";
 import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.js";
 import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.js";
-import { buffettHistory, capeHistory, gdpSrc, marketCycles, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth, vixRow } from "./data.js";
+import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.js";
 
 // ---- The season, computed ----
 function slopeOf(vals){
@@ -170,7 +170,7 @@ export function moodTrack(){
   return moodCache;
 }
 export function moodToday(){
-  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
+  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow.meter.value);
   return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
 }
 export function cycleStory(c){
@@ -269,8 +269,7 @@ export function eraMarketTotal(cyc){
   return years.length ? cum[years[years.length - 1]] : null;
 }
 
-export function setMoodLists(v){ moodLists = v; return v; }
-export function setMoodCache(v){ moodCache = v; return v; }
+export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy, currentEra;
 var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow, cpiDirection, cpiHot, cpiCold, growthSlopeQ, growthTrendNow, gdpLatest;

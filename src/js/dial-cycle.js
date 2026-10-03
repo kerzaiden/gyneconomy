@@ -1,12 +1,11 @@
 import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, popHead, qLabel, srcBlock } from "./format.js";
-import { byId, detailSlot, detailTexts, elFrom, moreRow, put, rovingKeys } from "./dom.js";
+import { byId, detailSlot, detailTexts, elFrom, moreRow, put, rovingKeys, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { asOfLabel, calendarTodayY, gdpQuarterlyYoY, hubTodayHtml, wheelMeta } from "./refresh-season.js";
 import { gdpSrc, seasonReading, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.js";
 import { cycleModel, cycleYtdFraction, QUARTER_END_MONTH, seasonGroup, seasonTitle } from "./model.js";
 import { CATEGORIES } from "./roster.js";
 import { catCard, catList, gdpPeek, marketPeek, tempPeek } from "./render-core.js";
-import { setShownEra, shownEra } from "./render-pages.js";
 import { renderDiagnosis } from "./diagnosis.js";
 
 // ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
@@ -306,11 +305,11 @@ function dialSay(){
 // ---- the whole view, for one cycle ----
 export function renderCycleView(m){
   drawDial(m);
-  shownEraModel = m; setShownEra(m.era);
+  shownEraModel = m; ui.shownEra = m.era;
   renderDiagnosis(m);
 }
 var shownEraModel = null;
-export function showCycle(era){ if (shownEra !== era) renderCycleView(cycleModel(era)); }
+export function showCycle(era){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----
 var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
 export function seasonStripHtml(cyc, spanOverride){

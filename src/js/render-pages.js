@@ -1,15 +1,15 @@
 import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.js";
-import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl } from "./dom.js";
+import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { attachHoverTracking, AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.js";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.js";
 import { calendarTodayY } from "./refresh-season.js";
-import { curveNoteFull, fedFunds, fedFundsRange, sentiment, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, valuation, VIX_CALM, VIX_CONVENTION, VIX_FEAR, vixRow, VOL_JOIN } from "./data.js";
+import { curveNoteFull, fedFundsRange, now, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
 import { cycleQtrIdx, cycleSlice } from "./model.js";
-import { attachHistory, HIST_NOTE, histControls, histHead, histLegend, histNote, histReadEnsure, histReadFill, mWindowFrom, pageCycle, pageRange, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
-import { curveVerdict, fearCurve, horizonRead, policyFactRows, setSPREAD_DETAIL, setUNINV_DETAIL, UNINV_DETAIL, vix3mClose, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.js";
+import { attachHistory, HIST_NOTE, histControls, histHead, histLegend, histNote, histReadEnsure, histReadFill, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.js";
+import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.js";
 import { fedFundsHistoryChart } from "./history-charts.js";
-import { drawsPage, drawSpreadWindow, setDrawSpreadView, setDrawSpreadWindow, spreadPick } from "./render-core.js";
+import { drawsPage, spreadPick } from "./render-core.js";
 
 // ---- RENDER: yield-curve spread history chart — toggle between 10Y-3M and 10Y-2Y ----
 function spreadSeries(){
@@ -161,7 +161,7 @@ function renderSpreadHistory(){
     }
     attachHoverTracking(hit, svg, W, padL, innerW, data.length, showAt, hide);
 
-    setSPREAD_DETAIL(s.detail);
+    ui.spreadDetail = s.detail;
   }
 
   Object.keys(series).forEach(function(k){
@@ -177,7 +177,7 @@ function renderSpreadHistory(){
     });
   });
 
-  setDrawSpreadWindow(draw);
+  ui.drawSpreadWindow = draw;
   draw("3m");
 }
 // ---- RENDER: un-inversion-to-recession historical lag panel ----
@@ -200,7 +200,7 @@ function deriveUninversionDetail(){
       {t:"FRED — 10Y minus 3M spread, monthly average (T10Y3MM)", u:"https://fred.stlouisfed.org/series/T10Y3MM"},
       {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
     ]);
-  setUNINV_DETAIL(detail);
+  ui.uninvDetail = detail;
   addSources([
     {t:"Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)", u:"https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"}
   ]);
@@ -214,11 +214,11 @@ function renderHorizonPage(){
     var data = hznData();
     var cyc = pageCycle("pressure-range", hznY0);
     var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-    var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["pressure-range"]);
+    var from = idx ? idx[0] : qWindowFrom(data.length, page.range["pressure-range"]);
     var to = idx ? idx[1] : data.length;
     host.innerHTML = histControls("pressure-range",
       { depth:Math.floor(data.length / 4) }, hznY0);
-    if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
+    if (ui.drawSpreadWindow) ui.drawSpreadWindow(spreadPick, from, to);
     var tr = byId("ylm-trend");
     if (tr){
       var w = [];
@@ -228,7 +228,7 @@ function renderHorizonPage(){
     }
     put("pressure-insights", spreadInsights());
   }
-  setDrawSpreadView(drawHzn);
+  ui.drawSpreadView = drawHzn;
 }
 function spreadInsights(){
   var r = horizonRead;
@@ -251,7 +251,7 @@ function spreadInsights(){
     ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
     "prices where the Fed is going, the bill only where it has been."));
   var facts =
-    '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + '</span><b>' +
+    '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(ui.uninvDetail) + '</span><b>' +
       uninvLagToday.months + ' months</b></div>' +
     '<div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div>' +
     '<div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
@@ -262,7 +262,7 @@ function spreadInsights(){
 function renderValuationTag(){
   var cape = valRow("cape");
   histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
-  addSources(valuation.src);
+  addSources(now.valuation.src);
 }
 /* ---- RENDER: Hormones ---- */
 function renderHormones(){
@@ -281,7 +281,7 @@ function renderHormones(){
     var id = "hormones-range";
     var cyc = pageCycle(id);
     var span = cyc ? ffCycleMonths(cyc) : null;
-    var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
+    var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[id]);
     var to = span ? span[1] : undefined;
     var win = fedFundsHistory.slice(from, to);
     bar.innerHTML =
@@ -304,8 +304,8 @@ function renderHormones(){
     "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
     "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
     "so the two are different figures and the page says which is which: the range is the decision, the " +
-    "chart is where money traded. Target " + fedFundsRange() + (fedFunds.asOf ? ", set " + fedFunds.asOf : "") +
-    (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " +
+    "chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") +
+    (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " +
     fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " +
     atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date " +
     "\u2014 that month ran partly under the previous target. " +
@@ -352,8 +352,8 @@ function renderHormones(){
       cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + '</div></section>';
   }
 
-  var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening"
-          : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+  var dir = /^\+/.test(now.fedFunds.lastMove) ? "Tightening"
+          : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
   put("subj-value-hormones", fedFundsRange() +
     '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + '</span>');
   var rowSay = byId("subj-say-hormones");
@@ -369,7 +369,7 @@ function renderVolatility(){
     var cyc = pageCycle("fear-range", VOL_Y0);
     var span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
     var vals = span ? volatilityHistory.slice(span[0], span[1])
-                    : timelineWindow(volatilityHistory, pageRange["fear-range"]);
+                    : timelineWindow(volatilityHistory, page.range["fear-range"]);
     if (!vals.length) vals = volatilityHistory.slice(-12);
     var fit = trendOf(vals.map(function(d){ return d.v; }), "points", "month");
     var years = windowYears(parseInt(vals[0].m.slice(0, 4), 10),
@@ -404,11 +404,11 @@ function renderVolatility(){
   }
   drawsPage("sheet-sign-sentiment", drawVolatility);
   drawVolatility();
-  addSources(sentiment.src.concat(VIX_CONVENTION));
+  addSources(now.sentiment.src.concat(VIX_CONVENTION));
 }
 function volatilityHighlights(y0){
   var hl = byId("curve-highlights"); if (!hl || !volatilityHistory.length) return;
-  var m = vixRow.meter, v = m.value, tag = volatilityTag();
+  var m = now.vixRow.meter, v = m.value, tag = volatilityTag();
   var top = volatilityHistory.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var vixOnly = volatilityHistory.filter(function(d){ return d.m >= VOL_JOIN; });
   var vixTop = vixOnly.reduce(function(a, d){ return d.v > a.v ? d : a; }, vixOnly[0]);
@@ -425,12 +425,12 @@ function volatilityHighlights(y0){
     (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
   var shapeTxt = r == null
     ? "No reading today \u2014 the three-month leg is missing, so the shape cannot be computed."
-    : "The next month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " +
+    : "The next month is priced at " + v.toFixed(2) + " against " + now.vix3mClose.toFixed(2) + " three months out, a ratio of " +
       r.toFixed(2) + ". " + (r >= 1
         ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like \u2014 and inversions cluster near bottoms."
         : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
   hl.innerHTML = highlightsHtml([lede,
-    hiCard("Where it sits" + expandBtn(factsFrom(vixRow.note)), tag.state, nowTxt),
+    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow.note)), tag.state, nowTxt),
     hiCard("Against the record", "", recTxt),
     hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt)]);
 }
@@ -447,7 +447,7 @@ function renderSubjectRows(){
 
   put("subj-ring-sentiment", volatilityRing());
   var volTag = volatilityTag();
-  set("sentiment", vixRow.flagValue +
+  set("sentiment", now.vixRow.flagValue +
     '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + '</span>', "");
   say("sentiment", "");
   spark("sentiment", "");
@@ -455,21 +455,11 @@ function renderSubjectRows(){
 
 }
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
-export var shownEra = null;
-export var calendarReset = null;
-export var metricPageReset = null;
-export var topbarBack = null, eraPageBack = null;
 export function setTopbar(title, onBack){
   byId("topbar-title").textContent = title;
-  topbarBack = onBack || null;
+  ui.topbarBack = onBack || null;
   byId("topbar-back").hidden = !onBack;
 }
-
-export function setEraPageBack(v){ eraPageBack = v; return v; }
-export function setCalendarReset(v){ calendarReset = v; return v; }
-export function setTopbarBack(v){ topbarBack = v; return v; }
-export function setShownEra(v){ shownEra = v; return v; }
-export function setMetricPageReset(v){ metricPageReset = v; return v; }
 
 export var cycleViewEl;
 
@@ -489,5 +479,5 @@ export function bootRenderPages(){
   GYN.step("renderSubjectRows", renderSubjectRows, "build");
   renderSubjectRows();
   cycleViewEl = byId("cycle-view");
-  byId("topbar-back").addEventListener("click", function(){ if (topbarBack) topbarBack(); });
+  byId("topbar-back").addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
 }

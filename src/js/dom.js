@@ -1,5 +1,19 @@
 import { CHEV } from "./format.js";
 
+export var ui = {
+  eraOpen: null,
+  shownEra: null,
+  topbarBack: null,
+  eraPageBack: null,
+  heldHighlights: "",
+  openIndicatorsPage: null,
+  calendarReset: null,
+  metricPageReset: null,
+  drawSpreadView: null,
+  drawSpreadWindow: null,
+  spreadDetail: "",
+  uninvDetail: ""
+};
 export function byId(id){
   var n = document.getElementById(id);
   if (!n){

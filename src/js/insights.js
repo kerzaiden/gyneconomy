@@ -1,11 +1,10 @@
 import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.js";
-import { moreRow } from "./dom.js";
+import { moreRow, ui } from "./dom.js";
 import { calendarTodayY, cpiYoYHistory, cycleNowNote, wheelMeta } from "./refresh-season.js";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.js";
 import { currentEra, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.js";
 import { indOf } from "./readings.js";
 import { ROSTER_BY } from "./roster.js";
-import { eraOpen } from "./era.js";
 
 function insightCirculation(){
   var vel = m2vHistory, n = vel.length;
@@ -150,7 +149,7 @@ function moodFigures(d){
     ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
 }
 function moodCard(d){
-  var c = eraOpen || currentEra, s = cycleStory(c);
+  var c = ui.eraOpen || currentEra, s = cycleStory(c);
   return hiCard("She\u2019s in " + d.word, "", s ? c.name + ", " + c.from + "\u2013" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
 }
 function insightMood(){

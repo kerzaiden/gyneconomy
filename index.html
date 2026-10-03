@@ -1855,6 +1855,20 @@
   function withUnit(fig, unit) {
     return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : "");
   }
+  var ui = {
+    eraOpen: null,
+    shownEra: null,
+    topbarBack: null,
+    eraPageBack: null,
+    heldHighlights: "",
+    openIndicatorsPage: null,
+    calendarReset: null,
+    metricPageReset: null,
+    drawSpreadView: null,
+    drawSpreadWindow: null,
+    spreadDetail: "",
+    uninvDetail: ""
+  };
   function byId(id) {
     var n = document.getElementById(id);
     if (!n) {
@@ -2043,6 +2057,250 @@
       if (savedTheme === "light" || savedTheme === "dark") document.documentElement.setAttribute("data-theme", savedTheme);
     } catch (e) {}
     detailSlots = Object.create(null);
+  }
+  var liveAsOf = {};
+  var liveApplied = {};
+  function merge(base, over) {
+    var o = {};
+    if (base && typeof base === "object" && !Array.isArray(base)) {
+      for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
+    }
+    for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
+    return o;
+  }
+  function docValue(d) {
+    if (!d || typeof d !== "object") return null;
+    if (d.kind === "series") return Array.isArray(d.rows) ? d.rows : null;
+    if (d.kind === "scalar") return d.value === void 0 ? null : d.value;
+    if (d.kind !== "object") return null;
+    var over = {}, any = false;
+    for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)) {
+      over[k] = d[k];
+      any = true;
+    }
+    return any ? over : null;
+  }
+  function docOk(name, d) {
+    var r = READINGS[name];
+    try {
+      return !!r && shapeOk(r, docValue(d)) && plainText(d);
+    } catch (e) {
+      return false;
+    }
+  }
+  function plainText(v) {
+    if (typeof v === "string") return !/[<>"]/.test(v);
+    if (v && typeof v === "object") return Object.keys(v).every(function(k) {
+      return plainText(k) && plainText(v[k]);
+    });
+    return true;
+  }
+  function LIVE(name, fallback) {
+    var d = LIVE_CACHE[name];
+    if (!docOk(name, d)) return fallback;
+    liveApplied[name] = JSON.stringify(d);
+    if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf);
+    return d.kind === "object" ? merge(fallback, docValue(d)) : docValue(d);
+  }
+  function liveIsoOf(name) {
+    try {
+      return JSON.parse(liveApplied[name] || "{}").asOf || "";
+    } catch (e) {
+      return "";
+    }
+  }
+  function liveInto(name) {
+    var v = LIVE(name, null);
+    if (v != null) READINGS[name].set(v);
+  }
+  function repaintLive() {
+    LIVE_NAMES.forEach(function(n) {
+      (painters[n] || []).forEach(function(fn) {
+        try {
+          fn();
+        } catch (e) {
+          if (window.console) console.warn("repaint " + n + " failed", e);
+        }
+      });
+    });
+  }
+  function shapeOk(r, v) {
+    if (r.kind === "series") return Array.isArray(v) && v.length > 0 && (r.ok ? !!r.ok(v) : true);
+    if (r.kind === "scalar") return typeof v === "number" && v >= r.band[0] && v <= r.band[1];
+    if (!v || typeof v !== "object" || Array.isArray(v)) return false;
+    return r.ok ? !!r.ok(v) : true;
+  }
+  var GYN = {
+    steps: [],
+    step: function(name, fn, kind) {
+      this.steps.push({
+        name: name,
+        fn: fn,
+        kind: kind
+      });
+      return fn;
+    },
+    of: function(kind) {
+      return this.steps.filter(function(s) {
+        return s.kind === kind;
+      });
+    },
+    repeatable: function() {
+      return this.steps.filter(function(s) {
+        return s.kind === "check" || s.kind === "derive" || s.kind === "render";
+      });
+    },
+    acts: {},
+    on: function(name, fn) {
+      this.acts[name] = fn;
+      return fn;
+    },
+    has: function(name) {
+      return typeof this.acts[name] === "function";
+    },
+    fire: function(name, a, b) {
+      if (this.has(name)) return this.acts[name](a, b);
+      (window.__actMiss = window.__actMiss || []).push(name);
+    },
+    render: function() {
+      this.repeatable().forEach(function(s) {
+        try {
+          s.fn();
+        } catch (e) {
+          if (window.console) console.warn("GYN.render: " + s.name, e);
+        }
+      });
+      return this.repeatable().length;
+    }
+  };
+  var LIVE_NAMES;
+  var LIVE_CACHE;
+  var READINGS;
+  var painters = {};
+  function defineReadings(r) {
+    READINGS = r;
+    LIVE_NAMES = Object.keys(r);
+  }
+  function onLive(name, fn) {
+    (painters[name] || (painters[name] = [])).push(fn);
+  }
+  function exposeLive() {
+    try {
+      window.__GYN = GYN;
+      GYN.applyLive = applyLive;
+      GYN.READINGS = READINGS;
+    } catch (e) {}
+  }
+  var KINDS = [ "object", "series", "scalar" ];
+  function checkLiveCoverage() {
+    var bad = [];
+    LIVE_NAMES.forEach(function(n) {
+      var r = READINGS[n], shows = painters[n] && painters[n].length ? 1 : 0;
+      if (KINDS.indexOf(r.kind) < 0) bad.push(n + ": kind " + r.kind);
+      if (r.kind === "scalar" && !(r.band && r.band.length === 2 && r.band[0] < r.band[1])) bad.push(n + ": a scalar needs a band");
+      if (typeof r.set !== "function") bad.push(n + ": nowhere to land");
+      if (shows + (r.onOpen ? 1 : 0) !== 1) bad.push(n + ": " + (shows ? r.onOpen ? "paints AND declares onOpen" : "" : "no painter and no onOpen"));
+      (painters[n] || []).forEach(function(f) {
+        if (typeof f !== "function") bad.push(n + ": painter is not a function");
+      });
+    });
+    if (bad.length && window.console) console.warn("reading registry: " + bad.join(", "));
+  }
+  function receive(next, mode) {
+    var names = Object.keys(next).filter(function(n) {
+      return docOk(n, next[n]);
+    });
+    if (!names.length) return 0;
+    var fresh = {}, moved = 0;
+    names.forEach(function(n) {
+      fresh[n] = next[n];
+    });
+    var now2 = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
+    try {
+      window.localStorage.setItem("gyn.live", JSON.stringify(now2));
+    } catch (e) {}
+    LIVE_CACHE = now2;
+    names.forEach(function(name) {
+      var doc = JSON.stringify(next[name]);
+      if (next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
+      if (liveApplied[name] === doc) return;
+      if (applyLive(name, docValue(next[name]))) {
+        liveApplied[name] = doc;
+        moved++;
+      }
+    });
+    return moved;
+  }
+  function applyLive(name, value) {
+    if (value == null) return false;
+    var r = READINGS[name];
+    if (!r) return false;
+    try {
+      if (!shapeOk(r, value)) return false;
+      r.set(value);
+    } catch (e) {
+      return false;
+    }
+    (painters[name] || []).concat(painters["*"] || []).forEach(function(fn) {
+      try {
+        fn();
+      } catch (e) {
+        if (window.console) console.warn("repaint " + name + " failed", e);
+      }
+    });
+    return true;
+  }
+  function refreshLiveData() {
+    if (!window.claude || typeof window.claude.use !== "function") return;
+    window.claude.use("db").then(function(db) {
+      if (!db) return;
+      return Promise.all(LIVE_NAMES.map(function(name) {
+        return db.doc("data/" + name).get().then(function(row) {
+          var d = row && (row.data || row);
+          return d && typeof d === "object" ? [ name, d ] : null;
+        }).catch(function() {
+          return null;
+        });
+      })).then(function(rows) {
+        var next = {}, got = 0;
+        rows.forEach(function(r) {
+          if (r) {
+            next[r[0]] = r[1];
+            got++;
+          }
+        });
+        if (!got) return;
+        receive(next, "replace");
+      });
+    }).catch(function() {});
+  }
+  function fetchSiteData() {
+    try {
+      if (window.top !== window.self) return;
+      if (location.protocol !== "http:" && location.protocol !== "https:") return;
+      if (typeof fetch !== "function") return;
+    } catch (e) {
+      return;
+    }
+    fetch("data/live.json", {
+      cache: "no-store"
+    }).then(function(r) {
+      return r.ok ? r.json() : null;
+    }).then(function(doc) {
+      if (!doc || typeof doc !== "object") return;
+      var next = {};
+      for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k];
+      receive(next, "merge");
+    }).catch(function() {});
+  }
+  function bootLive() {
+    LIVE_CACHE = function() {
+      try {
+        return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {};
+      } catch (e) {
+        return {};
+      }
+    }();
   }
   var series_default = {
     deficitHistory: [ -7, 1.61, 4.3, .21, -1.04, 1.76, -.41, -1.67, -.3, -.7, .88, .72, -.58, -2.46, .06, -.59, -1.18, -.75, -.86, -.19, -.45, -1.01, -2.67, .32, -.26, -1.98, -1.83, -1.05, -.4, -3.16, -3.94, -2.58, -2.52, -1.55, -2.58, -2.46, -3.83, -5.72, -4.59, -4.89, -4.83, -3.08, -2.96, -2.71, -3.71, -4.37, -4.45, -3.72, -2.79, -2.15, -1.33, -.26, .76, 1.3, 2.3, 1.21, -1.44, -3.3, -3.38, -2.44, -1.8, -1.11, -3.1, -9.76, -8.6, -8.33, -6.62, -4.03, -2.75, -2.42, -3.11, -3.39, -3.77, -4.57, -14.48, -11.69, -5.27, -6.07, -6.2, -5.77 ],
@@ -21481,185 +21739,181 @@
     gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
     calendarTodayY = DATA_COMPILED.getFullYear();
   }
-  var liveAsOf = {};
-  var liveApplied = {};
-  function merge(base, over) {
-    var o = {};
-    if (base && typeof base === "object" && !Array.isArray(base)) {
-      for (var b in base) if (Object.prototype.hasOwnProperty.call(base, b)) o[b] = base[b];
-    }
-    for (var k in over) if (Object.prototype.hasOwnProperty.call(over, k)) o[k] = over[k];
-    return o;
-  }
-  function docValue(d) {
-    if (!d || typeof d !== "object") return null;
-    if (d.kind === "series") return Array.isArray(d.rows) ? d.rows : null;
-    if (d.kind === "scalar") return d.value === void 0 ? null : d.value;
-    if (d.kind !== "object") return null;
-    var over = {}, any = false;
-    for (var k in d) if (k !== "kind" && Object.prototype.hasOwnProperty.call(d, k)) {
-      over[k] = d[k];
-      any = true;
-    }
-    return any ? over : null;
-  }
-  function docOk(name, d) {
-    var r = READINGS[name];
-    try {
-      return !!r && shapeOk(r, docValue(d)) && plainText(d);
-    } catch (e) {
-      return false;
-    }
-  }
-  function plainText(v) {
-    if (typeof v === "string") return !/[<>"]/.test(v);
-    if (v && typeof v === "object") return Object.keys(v).every(function(k) {
-      return plainText(k) && plainText(v[k]);
-    });
-    return true;
-  }
-  function LIVE(name, fallback) {
-    var d = LIVE_CACHE[name];
-    if (!docOk(name, d)) return fallback;
-    liveApplied[name] = JSON.stringify(d);
-    if (d.asOf) liveAsOf[name] = fmtAsOf(d.asOf);
-    return d.kind === "object" ? merge(fallback, docValue(d)) : docValue(d);
-  }
-  function liveIsoOf(name) {
-    try {
-      return JSON.parse(liveApplied[name] || "{}").asOf || "";
-    } catch (e) {
-      return "";
-    }
-  }
-  function liveInto(name) {
-    var v = LIVE(name, null);
-    if (v != null) READINGS[name].set(v);
-  }
-  function repaintLive() {
-    LIVE_NAMES.forEach(function(n) {
-      (READINGS[n].paint || []).forEach(function(fn) {
-        try {
-          fn();
-        } catch (e) {
-          if (window.console) console.warn("repaint " + n + " failed", e);
-        }
-      });
-    });
-  }
-  function shapeOk(r, v) {
-    if (r.kind === "series") return Array.isArray(v) && v.length > 0 && (r.ok ? !!r.ok(v) : true);
-    if (r.kind === "scalar") return typeof v === "number" && v >= r.band[0] && v <= r.band[1];
-    if (!v || typeof v !== "object" || Array.isArray(v)) return false;
-    return r.ok ? !!r.ok(v) : true;
-  }
-  var GYN = {
-    steps: [],
-    step: function(name, fn, kind) {
-      this.steps.push({
-        name: name,
-        fn: fn,
-        kind: kind
-      });
-      return fn;
+  var now = {
+    fedFunds: {
+      lo: 3.75,
+      hi: 4,
+      lastMove: "+0.25",
+      lastMoveLabel: "raised a quarter point",
+      asOf: "Sep 16, 2026",
+      vote: "12–0",
+      next: "Oct 28, 2026"
     },
-    of: function(kind) {
-      return this.steps.filter(function(s) {
-        return s.kind === kind;
-      });
+    yieldCurve: [ {
+      m: "1M",
+      y: 4.01
+    }, {
+      m: "2M",
+      y: 4.18
+    }, {
+      m: "3M",
+      y: 4.24
+    }, {
+      m: "4M",
+      y: 4.33
+    }, {
+      m: "6M",
+      y: 4.34
+    }, {
+      m: "1Y",
+      y: 4.51
+    }, {
+      m: "2Y",
+      y: 4.87
+    }, {
+      m: "3Y",
+      y: 4.99
+    }, {
+      m: "5Y",
+      y: 5.03
+    }, {
+      m: "7Y",
+      y: 5.1
+    }, {
+      m: "10Y",
+      y: 5.18
+    }, {
+      m: "20Y",
+      y: 5.53
+    }, {
+      m: "30Y",
+      y: 5.47
+    } ],
+    sentiment: {
+      kicker: "How she feels right now",
+      hint: "Her mood, fast and contrarian: what the option market is paying for protection, what lenders demand to take risk, and how much she is borrowing to bet on herself.",
+      tag: {
+        text: "Greedy",
+        state: "serious"
+      },
+      rows: [ {
+        marker: "CBOE VIX",
+        sub: "Sep 22 2026",
+        meter: {
+          min: 9.14,
+          max: 82.69,
+          value: 14.21,
+          optimal: {
+            lte: 20,
+            label: "below 20"
+          },
+          ends: {
+            zone: "Calm",
+            high: "Elevated"
+          }
+        },
+        shortNote: "Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
+        note: "The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike — 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 — still well below the ~19–20 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does — spreads widened through 2007 while the VIX stayed calm — so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
+        direction: "up",
+        flagValue: "14.2",
+        flagState: "warning"
+      } ],
+      shortImpression: "The published gauge says fear; the two markets it is built on say almost none is priced.",
+      impression: "Two things are true at once and the panel shows both. The headline index reads Fear, because it is built mostly of momentum and breadth and the market has been sliding for a month. The two markets underneath it read the opposite: the option market is paying almost nothing for protection and lenders are asking almost nothing to take credit risk, which is the same sentence said twice. Sentiment has turned while almost no fear is priced in against forty years of history. None of this forecasts a fall — a contrarian read is not a timer, and complacency can last for years — but it is the condition in which a shock is expensive.",
+      src: [ {
+        t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS)",
+        u: "https://fred.stlouisfed.org/series/VIXCLS"
+      }, {
+        t: "Cboe via FRED — CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986–2021 (VXOCLS)",
+        u: "https://fred.stlouisfed.org/series/VXOCLS"
+      }, {
+        t: "Cboe via FRED — CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)",
+        u: "https://fred.stlouisfed.org/series/VXVCLS"
+      }, {
+        t: "Cboe — Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)",
+        u: "https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"
+      }, {
+        t: "Federal Reserve — FOMC statement, Sep 16 2026",
+        u: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+      }, {
+        t: "S&P DJI via FRED — S&P 500 daily closes (SP500)",
+        u: "https://fred.stlouisfed.org/series/SP500"
+      }, {
+        t: "S&P DJI via FRED — Dow Jones Industrial Average daily closes (DJIA)",
+        u: "https://fred.stlouisfed.org/series/DJIA"
+      }, {
+        t: "Federal Reserve via FRED — 10-year Treasury constant-maturity yield, daily (DGS10)",
+        u: "https://fred.stlouisfed.org/series/DGS10"
+      }, {
+        t: "ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)",
+        u: "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
+      } ]
     },
-    repeatable: function() {
-      return this.steps.filter(function(s) {
-        return s.kind === "check" || s.kind === "derive" || s.kind === "render";
-      });
+    valuation: {
+      kicker: "What she is priced at",
+      hint: "Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months — CAPE passed 30 in 2017 and the market rose for four more years.",
+      tag: null,
+      rows: [ {
+        key: "buffett",
+        marker: "Buffett indicator",
+        sub: "market cap ÷ GDP, Q2 2026",
+        meter: {
+          min: 32,
+          max: 256,
+          value: 256,
+          optimal: {
+            lte: 80,
+            label: "≤ 80%"
+          },
+          ends: {
+            zone: "Buffett’s zone",
+            high: "Rich"
+          }
+        },
+        shortNote: "The highest reading in the 80-year record — above the 2021 and dot-com peaks.",
+        note: "Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) — the same definition the widely quoted charts use. At ≈256% this is the highest reading in the 80-year record, clear of the 2021 peak (≈219%) and the dot-com peak (≈163%); the record low is ≈32% (Q2 1982).",
+        direction: "up",
+        flagValue: "≈256%",
+        flagState: "serious"
+      }, {
+        key: "cape",
+        marker: "Shiller CAPE",
+        sub: "cyclically-adjusted P/E ratio",
+        meter: {
+          min: 4.78,
+          max: 44.19,
+          value: 40.58,
+          optimal: {
+            lte: 17,
+            label: "≤ 17×"
+          },
+          ends: {
+            zone: "Long-run mean",
+            high: "Rich"
+          }
+        },
+        shortNote: "Among the richest readings on record, just shy of the dot-com peak.",
+        note: "Cyclically-adjusted P/E (Shiller's own series, September 2026) vs. its ~17× long-run average — among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999). The band ends at 17×, which is that series' own long-run mean (17.42) rather than a target — there is no level a market ought to trade at.",
+        direction: "up",
+        flagValue: "40.6×",
+        flagState: "serious"
+      } ],
+      shortImpression: "Both gauges are at or near their record — she is priced for everything to keep going right.",
+      impression: "Two independent measures of the same thing, both at or near the richest readings ever recorded: capital is worth 2.5 times the economy that produces it, and prices are 41 times a decade of earnings. Valuations are close to useless as a timing signal — they have been stretched for years and the market kept rising. What it reliably says is what the next decade's returns are likely to look like from here, and that a shock arriving at this price has further to fall before anything looks cheap.",
+      src: [ {
+        t: "Federal Reserve Z.1 via FRED — Nonfinancial corporate equities, market value (NCBEILQ027S)",
+        u: "https://fred.stlouisfed.org/series/NCBEILQ027S"
+      }, {
+        t: "BEA via FRED — Gross Domestic Product, nominal (GDP)",
+        u: "https://fred.stlouisfed.org/series/GDP"
+      }, {
+        t: "Robert Shiller — U.S. stock market data and CAPE ratio since 1871 (Yale)",
+        u: "https://shillerdata.com/"
+      } ]
     },
-    acts: {},
-    on: function(name, fn) {
-      this.acts[name] = fn;
-      return fn;
-    },
-    has: function(name) {
-      return typeof this.acts[name] === "function";
-    },
-    fire: function(name, a, b) {
-      if (this.has(name)) return this.acts[name](a, b);
-      (window.__actMiss = window.__actMiss || []).push(name);
-    },
-    render: function() {
-      this.repeatable().forEach(function(s) {
-        try {
-          s.fn();
-        } catch (e) {
-          if (window.console) console.warn("GYN.render: " + s.name, e);
-        }
-      });
-      return this.repeatable().length;
-    }
+    vixRow: void 0,
+    vix3mClose: void 0
   };
-  function setLIVE_CACHE(v) {
-    LIVE_CACHE = v;
-    return v;
-  }
-  function setREADINGS(v) {
-    READINGS = v;
-    return v;
-  }
-  function setLIVE_NAMES(v) {
-    LIVE_NAMES = v;
-    return v;
-  }
-  var LIVE_NAMES;
-  var LIVE_CACHE;
-  var READINGS;
-  function bootLive() {
-    LIVE_CACHE = function() {
-      try {
-        return JSON.parse(window.localStorage.getItem("gyn.live") || "{}") || {};
-      } catch (e) {
-        return {};
-      }
-    }();
-  }
-  var yieldCurve = [ {
-    m: "1M",
-    y: 4.01
-  }, {
-    m: "2M",
-    y: 4.18
-  }, {
-    m: "3M",
-    y: 4.24
-  }, {
-    m: "4M",
-    y: 4.33
-  }, {
-    m: "6M",
-    y: 4.34
-  }, {
-    m: "1Y",
-    y: 4.51
-  }, {
-    m: "2Y",
-    y: 4.87
-  }, {
-    m: "3Y",
-    y: 4.99
-  }, {
-    m: "5Y",
-    y: 5.03
-  }, {
-    m: "7Y",
-    y: 5.1
-  }, {
-    m: "10Y",
-    y: 5.18
-  }, {
-    m: "20Y",
-    y: 5.53
-  }, {
-    m: "30Y",
-    y: 5.47
-  } ];
   var YIELD_CURVE_ASOF = "2026-09-24";
   function curveAsOf() {
     return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
@@ -21820,17 +22074,8 @@
     var hi = Math.max.apply(null, deficitHistory), lo = Math.min.apply(null, deficitHistory);
     if (deficitHistory.length !== 80 || Math.abs(hi - 4.3) > .005 || Math.abs(lo + 14.48) > .005) console.warn("deficitHistory failed its check", deficitHistory.length, hi, lo);
   }
-  var fedFunds = {
-    lo: 3.75,
-    hi: 4,
-    lastMove: "+0.25",
-    lastMoveLabel: "raised a quarter point",
-    asOf: "Sep 16, 2026",
-    vote: "12–0",
-    next: "Oct 28, 2026"
-  };
   function fedFundsRange() {
-    return (fedFunds.lo === fedFunds.hi ? fedFunds.lo.toFixed(2) : fedFunds.lo.toFixed(2) + "–" + fedFunds.hi.toFixed(2)) + "%";
+    return (now.fedFunds.lo === now.fedFunds.hi ? now.fedFunds.lo.toFixed(2) : now.fedFunds.lo.toFixed(2) + "–" + now.fedFunds.hi.toFixed(2)) + "%";
   }
   var buffettHistory = series_default.buffettHistory;
   var HY_NORM_LO = 3.5;
@@ -21939,130 +22184,8 @@
     if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
-  var sentiment = {
-    kicker: "How she feels right now",
-    hint: "Her mood, fast and contrarian: what the option market is paying for protection, what lenders demand to take risk, and how much she is borrowing to bet on herself.",
-    tag: {
-      text: "Greedy",
-      state: "serious"
-    },
-    rows: [ {
-      marker: "CBOE VIX",
-      sub: "Sep 22 2026",
-      meter: {
-        min: 9.14,
-        max: 82.69,
-        value: 14.21,
-        optimal: {
-          lte: 20,
-          label: "below 20"
-        },
-        ends: {
-          zone: "Calm",
-          high: "Elevated"
-        }
-      },
-      shortNote: "Eased to a fresh multi-week low while stocks stayed calm — complacency compounding on complacency.",
-      note: "The price of protection, and so the cleanest read on fear in the equity market: it is what options traders are paying to insure against a fall over the next 30 days. It fell through the week after the FOMC's surprise quarter-point hike — 17.71 on Sep 16, 15.44 on Sep 17, 14.81 on Sep 18 (Cboe closes) — held essentially flat into the new week at 14.87 on Sep 21, then eased further to 14.21 on Sep 22 — still well below the ~19–20 long-run average. A calm options market alongside a quiet one is the more ordinary pairing — but calm bought this cheap, this close to fresh highs, is still calm. Read it contrarian: a low VIX is not good news, it is the absence of worry, and the extremes at both ends are the signal. It is also the slower of the two fear gauges: credit usually cracks before equity volatility does — spreads widened through 2007 while the VIX stayed calm — so Desire, which reads the high-yield spread, is worth checking against this one. Range: the index's record closing low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020), both published by Cboe.",
-      direction: "up",
-      flagValue: "14.2",
-      flagState: "warning"
-    } ],
-    shortImpression: "The published gauge says fear; the two markets it is built on say almost none is priced.",
-    impression: "Two things are true at once and the panel shows both. The headline index reads Fear, because it is built mostly of momentum and breadth and the market has been sliding for a month. The two markets underneath it read the opposite: the option market is paying almost nothing for protection and lenders are asking almost nothing to take credit risk, which is the same sentence said twice. Sentiment has turned while almost no fear is priced in against forty years of history. None of this forecasts a fall — a contrarian read is not a timer, and complacency can last for years — but it is the condition in which a shock is expensive.",
-    src: [ {
-      t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS)",
-      u: "https://fred.stlouisfed.org/series/VIXCLS"
-    }, {
-      t: "Cboe via FRED — CBOE S&P 100 Volatility Index (VXO), the original VIX, daily closes 1986–2021 (VXOCLS)",
-      u: "https://fred.stlouisfed.org/series/VXOCLS"
-    }, {
-      t: "Cboe via FRED — CBOE S&P 500 3-Month Volatility Index, daily closes (VXVCLS)",
-      u: "https://fred.stlouisfed.org/series/VXVCLS"
-    }, {
-      t: "Cboe — Inside Volatility Trading: the VIX record low (9.14, Nov 3 2017) and high (82.69, Mar 16 2020)",
-      u: "https://www.cboe.com/insights/posts/inside-volatility-trading-nothing-remains-unchanged/"
-    }, {
-      t: "Federal Reserve — FOMC statement, Sep 16 2026",
-      u: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
-    }, {
-      t: "S&P DJI via FRED — S&P 500 daily closes (SP500)",
-      u: "https://fred.stlouisfed.org/series/SP500"
-    }, {
-      t: "S&P DJI via FRED — Dow Jones Industrial Average daily closes (DJIA)",
-      u: "https://fred.stlouisfed.org/series/DJIA"
-    }, {
-      t: "Federal Reserve via FRED — 10-year Treasury constant-maturity yield, daily (DGS10)",
-      u: "https://fred.stlouisfed.org/series/DGS10"
-    }, {
-      t: "ICE Data Indices via FRED — ICE BofA US High Yield Index Option-Adjusted Spread (BAMLH0A0HYM2)",
-      u: "https://fred.stlouisfed.org/series/BAMLH0A0HYM2"
-    } ]
-  };
-  var valuation = {
-    kicker: "What she is priced at",
-    hint: "Slow and structural: what the market is willing to pay for her. A ten-year return predictor, not a read on the next twelve months — CAPE passed 30 in 2017 and the market rose for four more years.",
-    tag: null,
-    rows: [ {
-      key: "buffett",
-      marker: "Buffett indicator",
-      sub: "market cap ÷ GDP, Q2 2026",
-      meter: {
-        min: 32,
-        max: 256,
-        value: 256,
-        optimal: {
-          lte: 80,
-          label: "≤ 80%"
-        },
-        ends: {
-          zone: "Buffett’s zone",
-          high: "Rich"
-        }
-      },
-      shortNote: "The highest reading in the 80-year record — above the 2021 and dot-com peaks.",
-      note: "Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) — the same definition the widely quoted charts use. At ≈256% this is the highest reading in the 80-year record, clear of the 2021 peak (≈219%) and the dot-com peak (≈163%); the record low is ≈32% (Q2 1982).",
-      direction: "up",
-      flagValue: "≈256%",
-      flagState: "serious"
-    }, {
-      key: "cape",
-      marker: "Shiller CAPE",
-      sub: "cyclically-adjusted P/E ratio",
-      meter: {
-        min: 4.78,
-        max: 44.19,
-        value: 40.58,
-        optimal: {
-          lte: 17,
-          label: "≤ 17×"
-        },
-        ends: {
-          zone: "Long-run mean",
-          high: "Rich"
-        }
-      },
-      shortNote: "Among the richest readings on record, just shy of the dot-com peak.",
-      note: "Cyclically-adjusted P/E (Shiller's own series, September 2026) vs. its ~17× long-run average — among the richest readings on record, just shy of the all-time dot-com peak. Range: Robert Shiller's monthly series since 1871, from 4.78 (Dec 1920) to 44.19 (Dec 1999). The band ends at 17×, which is that series' own long-run mean (17.42) rather than a target — there is no level a market ought to trade at.",
-      direction: "up",
-      flagValue: "40.6×",
-      flagState: "serious"
-    } ],
-    shortImpression: "Both gauges are at or near their record — she is priced for everything to keep going right.",
-    impression: "Two independent measures of the same thing, both at or near the richest readings ever recorded: capital is worth 2.5 times the economy that produces it, and prices are 41 times a decade of earnings. Valuations are close to useless as a timing signal — they have been stretched for years and the market kept rising. What it reliably says is what the next decade's returns are likely to look like from here, and that a shock arriving at this price has further to fall before anything looks cheap.",
-    src: [ {
-      t: "Federal Reserve Z.1 via FRED — Nonfinancial corporate equities, market value (NCBEILQ027S)",
-      u: "https://fred.stlouisfed.org/series/NCBEILQ027S"
-    }, {
-      t: "BEA via FRED — Gross Domestic Product, nominal (GDP)",
-      u: "https://fred.stlouisfed.org/series/GDP"
-    }, {
-      t: "Robert Shiller — U.S. stock market data and CAPE ratio since 1871 (Yale)",
-      u: "https://shillerdata.com/"
-    } ]
-  };
   function valRow(k) {
-    for (var i = 0; i < valuation.rows.length; i++) if (valuation.rows[i].key === k) return valuation.rows[i];
+    for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
     return null;
   }
   var CAPE_FAIR = 17;
@@ -22375,26 +22498,6 @@
     t: "Fisher Investments — Stock Market Cycles (bull about 61 months, bear about 16, 1946–2018)",
     u: "https://www.fisherinvestments.com/en-us/resource-library/market-cycles"
   } ];
-  function setYieldCurve(v) {
-    yieldCurve = v;
-    return v;
-  }
-  function setSentiment(v) {
-    sentiment = v;
-    return v;
-  }
-  function setVixRow(v) {
-    vixRow = v;
-    return v;
-  }
-  function setValuation(v) {
-    valuation = v;
-    return v;
-  }
-  function setFedFunds(v) {
-    fedFunds = v;
-    return v;
-  }
   var t10y3mHistory;
   var t10y2yHistory;
   var t3mYieldHistory;
@@ -22404,11 +22507,10 @@
   var t30yYieldHistory;
   var usRealGdpGrowth;
   var DEF_1983;
-  var vixRow;
   var sp500AnnualReturns;
   var sp500Years;
   function bootData() {
-    yieldCurve = LIVE("yieldCurve", yieldCurve);
+    now.yieldCurve = LIVE("yieldCurve", now.yieldCurve);
     t10y3mHistory = treasuryQuarterly.s3m;
     t10y2yHistory = treasuryQuarterly.s2y;
     t3mYieldHistory = treasuryQuarterly.m3;
@@ -22461,10 +22563,10 @@
     checkDesireWindow();
     GYN.step("checkGrossDebt", checkGrossDebt, "check");
     checkGrossDebt();
-    sentiment = LIVE("sentiment", sentiment);
+    now.sentiment = LIVE("sentiment", now.sentiment);
     liveInto("vixClose");
-    valuation = LIVE("valuation", valuation);
-    valuation.rows.sort(function(a, b) {
+    now.valuation = LIVE("valuation", now.valuation);
+    now.valuation.rows.sort(function(a, b) {
       return (a.key === "cape" ? 0 : 1) - (b.key === "cape" ? 0 : 1);
     });
     GYN.step("checkVelocityHistory", checkVelocityHistory, "check");
@@ -22475,7 +22577,7 @@
     checkFedFundsHistory();
     GYN.step("checkMoneyStock", checkMoneyStock, "check");
     checkMoneyStock();
-    vixRow = sentiment.rows[0];
+    now.vixRow = now.sentiment.rows[0];
     GYN.step("checkHouseholdHistories", checkHouseholdHistories, "check");
     checkHouseholdHistories();
     sp500AnnualReturns = merge(sp500ReturnsBefore, {
@@ -22829,7 +22931,7 @@
     return moodCache;
   }
   function moodToday() {
-    var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
+    var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow.meter.value);
     return x && moodRead(x, moodTrack().filter(function(p) {
       return p.m < x.m;
     }));
@@ -22849,10 +22951,10 @@
     var most = Object.keys(count).sort(function(a, b) {
       return count[b] - count[a];
     }).slice(0, 2);
-    var now = c.ongoing && moodToday();
+    var now2 = c.ongoing && moodToday();
     return {
       first: t[0],
-      last: now && now.word ? now : t[t.length - 1],
+      last: now2 && now2.word ? now2 : t[t.length - 1],
       hi: hi,
       lo: lo,
       most: most.map(function(w) {
@@ -23000,13 +23102,9 @@
     var cum = cycleReturns(cyc.from, cyc.ongoing ? calendarTodayY : cyc.to).cumByYear, years = Object.keys(cum);
     return years.length ? cum[years[years.length - 1]] : null;
   }
-  function setMoodLists(v) {
-    moodLists = v;
-    return v;
-  }
-  function setMoodCache(v) {
-    moodCache = v;
-    return v;
+  function forgetMood() {
+    moodLists = null;
+    moodCache = null;
   }
   var cycleYtdFraction;
   var nowModel;
@@ -23543,20 +23641,27 @@
       return x.hit.isConnected;
     });
   }
+  var page = {
+    mode: void 0,
+    cycles: void 0,
+    range: void 0,
+    stops: void 0,
+    head: void 0
+  };
   var HIST_NOTE = {};
   var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
   function headPickRow(on, attr, key, label) {
     return '<button type="button" class="cycsel-opt bh-pick' + (on ? " on" : "") + '" aria-pressed="' + (on ? "true" : "false") + '" ' + attr + '="' + key + '"><span class="cycsel-tick" aria-hidden="true"></span><span class="cycsel-nm">' + label + "</span></button>";
   }
   function histHead(id) {
-    var H = HIST_HEAD[id];
+    var H = page.head[id];
     if (!H) return "";
     var t = typeof H.title === "function" ? H.title() : H.title;
     return '<div class="band-head">' + (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + "</span>" : "") + '<h2 class="bh-title">' + t + '</h2><span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span><div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" aria-expanded="' + (headMenuFor === id ? "true" : "false") + '" aria-label="More about this chart">' + DOTS + '</button><div class="cycsel-menu bh-menu"' + (headMenuFor === id ? "" : " hidden") + ">" + (headMenuFor === id ? headMenuHtml(id) : "") + "</div></div></div>";
   }
   var headNoteIdx = {};
   function headMenuHtml(id) {
-    var H = HIST_HEAD[id] || {};
+    var H = page.head[id] || {};
     var groups = H.menu ? H.menu() : [];
     var extra;
     if (!groups.length) extra = ""; else if (headSubFor) {
@@ -24000,16 +24105,16 @@
   }
   var pickerOpen = {};
   function histControls(id, tl, minYear, extra) {
-    var mode = pageMode[id], on = mode === "cycles";
+    var mode = page.mode[id], on = mode === "cycles";
     var known = mode === "cycles" || mode === "calendar";
-    return '<div class="hist-controls">' + modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, pageCycles[id], minYear) : rangeBar(id, timelineFor({
+    return '<div class="hist-controls">' + modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
       series: tl.series,
       depth: tl.depth,
-      stops: PAGE_STOPS[id]
-    }), pageRange[id])) + "</div>";
+      stops: page.stops[id]
+    }), page.range[id])) + "</div>";
   }
   function pageCycle(id, y0) {
-    var c = pageMode[id] === "cycles" ? cycleByName(pageCycles[id]) || openCycle() : null;
+    var c = page.mode[id] === "cycles" ? cycleByName(page.cycles[id]) || openCycle() : null;
     return c && c.from < y0 ? openCycle() : c;
   }
   function cyclePicker(id, picked, minYear) {
@@ -24044,31 +24149,6 @@
     if (tipId) wireHistHover(host, tipId);
     return g;
   }
-  function setPageMode(v) {
-    pageMode = v;
-    return v;
-  }
-  function setPageCycles(v) {
-    pageCycles = v;
-    return v;
-  }
-  function setPageRange(v) {
-    pageRange = v;
-    return v;
-  }
-  function setPAGE_STOPS(v) {
-    PAGE_STOPS = v;
-    return v;
-  }
-  function setHIST_HEAD(v) {
-    HIST_HEAD = v;
-    return v;
-  }
-  var pageMode;
-  var pageCycles;
-  var pageRange;
-  var PAGE_STOPS;
-  var HIST_HEAD;
   function bootHistory() {
     window.__histRead = function(host, d, i) {
       if (host) histReadFill(host, d, i);
@@ -24532,7 +24612,7 @@
     } ]
   } ];
   function volatilityTag() {
-    var v = vixRow.meter.value;
+    var v = now.vixRow.meter.value;
     return v < VIX_CALM ? {
       text: "Calm",
       state: "good"
@@ -24545,9 +24625,9 @@
     };
   }
   function fearCurve() {
-    var near = vixRow && vixRow.meter && vixRow.meter.value;
-    if (typeof near !== "number" || typeof vix3mClose !== "number" || !(vix3mClose > 0)) return null;
-    return Math.round(near / vix3mClose * 1e3) / 1e3;
+    var near = now.vixRow && now.vixRow.meter && now.vixRow.meter.value;
+    if (typeof near !== "number" || typeof now.vix3mClose !== "number" || !(now.vix3mClose > 0)) return null;
+    return Math.round(near / now.vix3mClose * 1e3) / 1e3;
   }
   function curveVerdict(r) {
     return r == null ? {
@@ -24650,7 +24730,7 @@
   }
   function horizonInfoHtml(pick) {
     var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
-    return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption" style="margin-top:10px;"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption" style="margin-top:10px;">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' + String(SPREAD_DETAIL || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
+    return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption" style="margin-top:10px;"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption" style="margin-top:10px;">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' + String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
   }
   var RISK_REWARD = [ {
     key: "low",
@@ -24752,16 +24832,16 @@
     } ]);
   }
   function vixPct(v) {
-    var m = vixRow.meter;
+    var m = now.vixRow.meter;
     return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
   }
   function volatilityRing() {
-    var m = vixRow.meter;
+    var m = now.vixRow.meter;
     return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value.toFixed(2) + ", between its record low of " + m.min + " and its record high of " + m.max);
   }
   function volatilityDetailHtml() {
-    var m = vixRow.meter;
-    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(sentiment.src.concat(VIX_CONVENTION));
+    var m = now.vixRow.meter;
+    return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
   }
   function marketWord(v) {
     if (v >= 0) return {
@@ -24789,23 +24869,21 @@
       return x.bodyTerm === R.term;
     })[0];
   }
-  var SPREAD_DETAIL = "";
-  var UNINV_DETAIL = "";
   function policyFacts() {
     return [ {
       label: "Fed funds target",
       value: fedFundsRange()
-    }, fedFunds.lastMove ? {
+    }, now.fedFunds.lastMove ? {
       label: "Last Fed move",
-      value: fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") + (fedFunds.vote ? " · " + fedFunds.vote : ""),
+      value: now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") + (now.fedFunds.vote ? " · " + now.fedFunds.vote : ""),
       wordy: true
     } : null, {
       label: "First hike since",
       value: "2023 · one more signalled",
       wordy: true
-    }, fedFunds.next ? {
+    }, now.fedFunds.next ? {
       label: "Next decision",
-      value: fedFunds.next
+      value: now.fedFunds.next
     } : null ].filter(Boolean);
   }
   function policyFactRows() {
@@ -24845,27 +24923,10 @@
     var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
     return m ? m[2] : "";
   }
-  function setCoincident(v) {
-    coincident = v;
-    return v;
-  }
-  function setVix3mClose(v) {
-    vix3mClose = v;
-    return v;
-  }
-  function setSPREAD_DETAIL(v) {
-    SPREAD_DETAIL = v;
-    return v;
-  }
-  function setUNINV_DETAIL(v) {
-    UNINV_DETAIL = v;
-    return v;
-  }
   var productivityReading;
   var confidenceRecord;
   var confidenceReading;
   var tempInfo;
-  var vix3mClose;
   var horizonRead;
   var householdsNow;
   var marketReading;
@@ -24983,7 +25044,7 @@
         caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
       };
     }(confidenceRecord);
-    valuation.tag = valuationVerdict(valRow("cape").meter.value);
+    now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
     liveInto("capeValue");
     coincident = LIVE("coincident", coincident);
     liveInto("hyOasNow");
@@ -24993,10 +25054,10 @@
     GYN.step("derivePulseTag", derivePulseTag, "derive");
     derivePulseTag();
     tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
-    vix3mClose = LIVE("vix3mClose", 17.61);
+    now.vix3mClose = LIVE("vix3mClose", 17.61);
     horizonRead = function() {
       var pick = function(m) {
-        var h = yieldCurve.filter(function(d) {
+        var h = now.yieldCurve.filter(function(d) {
           return d.m === m;
         })[0];
         return h ? h.y : null;
@@ -25040,7 +25101,7 @@
         max: hznRecord(t10y2yHistory).max,
         value: function() {
           var p = function(m) {
-            var h = yieldCurve.filter(function(d) {
+            var h = now.yieldCurve.filter(function(d) {
               return d.m === m;
             })[0];
             return h ? h.y : 0;
@@ -25057,9 +25118,9 @@
       }
     };
     householdsNow = householdsWord(dsrNow, savNow);
-    curveSub = "Cboe, " + vixRow.sub;
+    curveSub = "Cboe, " + now.vixRow.sub;
     marketReading = function(h) {
-      var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
+      var now2 = h[h.length - 1], word = marketWord(now2.v), open = now2.y === calendarTodayY;
       var lo = h.reduce(function(a, d) {
         return d.v < a.v ? d : a;
       }), hi = h.reduce(function(a, d) {
@@ -25079,11 +25140,11 @@
         },
         econTerm: "S&P 500",
         metricSub: "total return",
-        now: now,
+        now: now2,
         lo: lo,
         hi: hi,
         open: open,
-        metric: fmtSigned(now.v, 1) + "%",
+        metric: fmtSigned(now2.v, 1) + "%",
         tag: {
           state: word.state,
           text: word.text
@@ -25092,7 +25153,7 @@
         meter: {
           min: lo.v,
           max: hi.v,
-          value: now.v,
+          value: now2.v,
           optimal: {
             gte: 0,
             label: "≥ 0%"
@@ -25108,9 +25169,125 @@
           }), marketCol, 0, true);
         },
         lead: "",
-        caption: now.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
+        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
       };
     }(sp500Years);
+  }
+  function isNum(x) {
+    return typeof x === "number" && isFinite(x);
+  }
+  function rowsOk(rows) {
+    return Array.isArray(rows) && rows.length > 0 && rows.every(function(r) {
+      return r && typeof r === "object" && (!r.meter || isNum(r.meter.value));
+    });
+  }
+  function desireRow() {
+    return coincident.filter(function(c) {
+      return c.bodyTerm === "Desire";
+    })[0];
+  }
+  function bootReadingRegistry() {
+    defineReadings({
+      fedFunds: {
+        kind: "object",
+        ok: function(v) {
+          return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
+        },
+        set: function(v) {
+          if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, {
+            lastMove: "",
+            lastMoveLabel: "",
+            asOf: ""
+          });
+          if (v.asOf !== void 0 && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, {
+            vote: ""
+          });
+          now.fedFunds = merge(now.fedFunds, v);
+        }
+      },
+      yieldCurve: {
+        kind: "series",
+        ok: function(v) {
+          return v.every(function(r) {
+            return r && typeof r.m === "string" && (r.y === null || isNum(r.y));
+          });
+        },
+        set: function(v) {
+          now.yieldCurve = v;
+        }
+      },
+      sentiment: {
+        kind: "object",
+        ok: function(v) {
+          return v.rows === void 0 || rowsOk(v.rows);
+        },
+        set: function(v) {
+          now.sentiment = merge(now.sentiment, v);
+          now.vixRow = now.sentiment.rows[0];
+        },
+        onOpen: true
+      },
+      valuation: {
+        kind: "object",
+        ok: function(v) {
+          return v.rows === void 0 || rowsOk(v.rows);
+        },
+        set: function(v) {
+          now.valuation = merge(now.valuation, v);
+          if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
+        }
+      },
+      coincident: {
+        kind: "series",
+        ok: rowsOk,
+        set: function(v) {
+          coincident = v;
+          deriveVolumeTag();
+          derivePulseTag();
+        },
+        onOpen: true
+      },
+      vixClose: {
+        kind: "scalar",
+        band: [ 5, 100 ],
+        set: function(v) {
+          var row = now.sentiment.rows[0];
+          row.meter.value = v;
+          row.flagValue = v.toFixed(1);
+          if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
+        }
+      },
+      vix3mClose: {
+        kind: "scalar",
+        band: [ 5, 100 ],
+        set: function(v) {
+          now.vix3mClose = v;
+        },
+        onOpen: true
+      },
+      hyOasNow: {
+        kind: "scalar",
+        band: [ 1, 30 ],
+        set: function(v) {
+          var row = desireRow();
+          row.meter.value = v;
+          row.metric = v.toFixed(2) + "%";
+          if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
+        }
+      },
+      capeValue: {
+        kind: "scalar",
+        band: [ 4, 60 ],
+        set: function(v) {
+          var row = valRow("cape");
+          row.meter.value = v;
+          row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
+          if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
+          now.valuation.tag = valuationVerdict(v);
+        }
+      }
+    });
+    now.fedFunds = LIVE("fedFunds", now.fedFunds);
   }
   function debtSvg() {
     return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>');
@@ -25386,7 +25563,7 @@
       rule: true,
       eraUnit: "Fed funds rate",
       when: function() {
-        return fedFunds.asOf;
+        return now.fedFunds.asOf;
       },
       live: [ "fedFunds" ]
     }, {
@@ -25644,24 +25821,24 @@
     ROSTER.forEach(function(R) {
       ROSTER_BY[R.id] = R;
     });
-    setPageMode(pageState(function(R) {
+    page.mode = pageState(function(R) {
       return R.cycles === false ? void 0 : "cycles";
-    }));
-    setPageCycles(pageState(function(R) {
+    });
+    page.cycles = pageState(function(R) {
       return R.cycles === false ? void 0 : null;
-    }));
-    setPageRange(pageState(function(R) {
+    });
+    page.range = pageState(function(R) {
       return R.range || "10y";
-    }));
-    setPAGE_STOPS(pageState(function(R) {
+    });
+    page.stops = pageState(function(R) {
       return R.stops || [ "5y", "10y", "25y", "max" ];
-    }));
-    setHIST_HEAD(pageState(function(R) {
+    });
+    page.head = pageState(function(R) {
       return {
         mark: R.mark,
         title: R.head
       };
-    }));
+    });
     GYN.step("checkRoster", checkRoster, "check");
     checkRoster();
     GYN.ROSTER = ROSTER;
@@ -26543,7 +26720,7 @@
       e.preventDefault();
       e.stopPropagation();
       close();
-      if (openIndicatorsPage) openIndicatorsPage(chip.getAttribute("data-ind-tab"));
+      if (ui.openIndicatorsPage) ui.openIndicatorsPage(chip.getAttribute("data-ind-tab"));
     });
   }
   var detailClose = null;
@@ -26593,7 +26770,6 @@
     var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' + rosterFor(ind).mark() + "</span></span>";
     return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag.state + '">' + ind.tag.text + "</span></div>";
   }
-  var heldHighlights = "";
   function cardDetailHtml(ind, opts) {
     opts = opts || {};
     var facts2 = [].concat(ind.facts || [], ind.aux || []);
@@ -26608,7 +26784,7 @@
       if (!lede2 && !figs) return "";
       var block = '<section class="highlights"><div class="hi-head">Insights</div>' + (lede2 ? '<div class="hi-card"><p>' + lede2 + "</p></div>" : "") + figs + "</section>";
       if (opts.deferHighlights) {
-        heldHighlights = block;
+        ui.heldHighlights = block;
         return "";
       }
       return block;
@@ -26628,7 +26804,7 @@
   function latestYieldPoint() {
     var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
     var at = function(k) {
-      var h = yieldCurve.filter(function(d) {
+      var h = now.yieldCurve.filter(function(d) {
         return d.m === k;
       })[0];
       return h && h.y != null ? h.y : null;
@@ -26703,7 +26879,7 @@
     function drawVelocityRecord() {
       var host = byId("pulse-record");
       if (!host || !host.clientWidth) return;
-      var key = pageRange["pulse-range"];
+      var key = page.range["pulse-range"];
       var pulCyc = pageCycle("pulse-range");
       var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
       var bar = put("pulse-timeline", histControls("pulse-range", {
@@ -26721,7 +26897,7 @@
     function drawM2Record() {
       var host = byId("m2-record");
       if (!host || !host.clientWidth) return;
-      var len = m2Yoy.length - 4, key = pageRange["volume-range"];
+      var len = m2Yoy.length - 4, key = page.range["volume-range"];
       var volCyc = pageCycle("volume-range");
       var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
       var bar = put("volume-timeline", histControls("volume-range", {
@@ -26741,13 +26917,13 @@
     function drawDesireRecord() {
       var host = byId("desire-record");
       if (!host || !host.clientWidth) return;
-      var from = hyWindowFrom(pageRange["desire-range"]);
+      var from = hyWindowFrom(page.range["desire-range"]);
       var win = hyOas.slice(from);
       var bar = byId("desire-timeline");
       if (bar) bar.innerHTML = '<div class="hist-controls">' + rangeBar("desire-range", timelineFor({
         depth: 3,
-        stops: PAGE_STOPS["desire-range"]
-      }), pageRange["desire-range"]) + "</div>";
+        stops: page.stops["desire-range"]
+      }), page.range["desire-range"]) + "</div>";
       host.innerHTML = desireHistoryChart(host.clientWidth, from);
       attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
       put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true, {
@@ -26769,7 +26945,7 @@
     })();
   }
   function renderPressureRow() {
-    var y10 = (yieldCurve.filter(function(d) {
+    var y10 = (now.yieldCurve.filter(function(d) {
       return d.m === "10Y";
     })[0] || {}).y;
     put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") + '<span class="unit">10-year Treasury</span>');
@@ -26847,7 +27023,7 @@
     }, x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
   }
   function pressureHead(maturities, mat, title, note) {
-    var H = HIST_HEAD["pressure-range"], spread = pressureView === "spread";
+    var H = page.head["pressure-range"], spread = pressureView === "spread";
     H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
     H.menu = function() {
       return [ {
@@ -27059,7 +27235,7 @@
       var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
       var ylmCyc = pageCycle("pressure-range", ylmY0);
       var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
-      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
+      ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, page.range["pressure-range"]);
       ylmTo = ylmSpan ? ylmSpan[1] : quarters.length;
       put("pressure-timeline", histControls("pressure-range", {
         depth: Math.floor(quarters.length / 4)
@@ -27081,9 +27257,9 @@
       pressureHead(maturities, matOf(matPick), matTitle(), "<h4>" + matTitle() + "</h4>" + factsFrom(matDetail()));
     }
     function drawPressure() {
-      var spread = pressureView === "spread" && drawSpreadView;
+      var spread = pressureView === "spread" && ui.drawSpreadView;
       showPressureView(!!spread);
-      if (spread) drawSpreadView(); else {
+      if (spread) ui.drawSpreadView(); else {
         drawYlm();
         renderPressureInsights();
       }
@@ -27098,7 +27274,7 @@
   function renderPressureInsights() {
     var ins = byId("pressure-insights");
     if (!ins || !t10yYieldHistory.length) return;
-    var y10 = (yieldCurve.filter(function(d) {
+    var y10 = (now.yieldCurve.filter(function(d) {
       return d.m === "10Y";
     })[0] || {}).y;
     var seen = t10yYieldHistory.filter(function(d) {
@@ -27122,7 +27298,7 @@
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
     cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
@@ -27146,10 +27322,8 @@
       colClass: marketCol
     });
   }
-  var drawSpreadWindow = null;
   var spreadPick = "3m";
   var pressureView = "yield";
-  var drawSpreadView = null;
   var HZN_SPREADS = [ {
     key: "3m",
     label: "10Y − 3M"
@@ -27163,14 +27337,13 @@
     })[0];
     return r ? r.label : HZN_SPREADS[0].label;
   }
-  var openIndicatorsPage = null;
   function peekArt(src) {
     return src.querySelector(".peek-chart");
   }
   function catItem(src, key) {
     var open = src.getAttribute("data-open");
-    var page = document.getElementById(open);
-    if (page) page.classList.add("cat-" + key);
+    var page2 = document.getElementById(open);
+    if (page2) page2.classList.add("cat-" + key);
     (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
     var item = catCard(src, cardDate(ROSTER_BY[open]));
     if (src.parentNode) src.parentNode.removeChild(src);
@@ -27261,22 +27434,6 @@
       }
     });
   }
-  function setHeldHighlights(v) {
-    heldHighlights = v;
-    return v;
-  }
-  function setOpenIndicatorsPage(v) {
-    openIndicatorsPage = v;
-    return v;
-  }
-  function setDrawSpreadWindow(v) {
-    drawSpreadWindow = v;
-    return v;
-  }
-  function setDrawSpreadView(v) {
-    drawSpreadView = v;
-    return v;
-  }
   function bootRenderCore() {
     GYN.step("wireDetailModal", wireDetailModal, "wire");
     wireDetailModal();
@@ -27288,730 +27445,6 @@
     renderPressurePage();
     GYN.step("renderPressureInsights", renderPressureInsights, "render");
     renderPressureInsights();
-  }
-  function todayFace(item) {
-    var t = item.__today, box = document.createElement("div");
-    if (!t) return {
-      val: item.querySelector(".ci-value"),
-      word: item.querySelector(".ci-word")
-    };
-    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
-    return {
-      val: box.firstChild,
-      word: t.word == null ? null : box.lastChild
-    };
-  }
-  function readDoor(open) {
-    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
-    if (!item) return null;
-    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
-    var figure = val ? val.cloneNode(true) : null;
-    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
-      n.parentNode.removeChild(n);
-    });
-    return {
-      name: item.getAttribute("data-title"),
-      figure: figure ? figure.textContent.trim() : "",
-      unit: unit ? unit.textContent.trim() : "",
-      word: word ? word.textContent.trim() : ""
-    };
-  }
-  function rosterRows() {
-    return readingRoster().byId;
-  }
-  var eraOpen = null;
-  function kT(k) {
-    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-    return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
-  }
-  function upTo(list, k) {
-    var t = kT(k) + 1e-6;
-    return list.filter(function(d) {
-      return d.v != null && kT(d.k) <= t;
-    });
-  }
-  function pairAt(r, k) {
-    var p = r.pair ? upTo(r.pair, k).pop() : null;
-    return p ? p.v : null;
-  }
-  function eraFig(today) {
-    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
-    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
-    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
-    function one(x) {
-      var a = Math.abs(x).toFixed(dp);
-      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
-    }
-    return function(x, y) {
-      return pre + one(x) + (y != null ? "/" + one(y) : suf);
-    };
-  }
-  function rosterRow(R) {
-    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
-      return d.v != null;
-    });
-    var sorted = seen.map(function(d) {
-      return d.v;
-    }).sort(function(a, b) {
-      return a - b;
-    });
-    r.place = function(v) {
-      var lo = 0, hi = sorted.length;
-      while (lo < hi) {
-        var mid = lo + hi >> 1;
-        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
-      }
-      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-    };
-    r.first = seen[0];
-    r.now = seen[seen.length - 1];
-    r.seen = seen;
-    if (R.pair) r.pair = keyed(R.pair);
-    if (R.peek) r.peek = R.peek === "pair" ? r.pair : keyed(R.peek);
-    return r;
-  }
-  var __roster = null;
-  function readingRoster() {
-    if (__roster) return __roster;
-    __roster = ROSTER.filter(function(R) {
-      return R.hist;
-    }).map(rosterRow);
-    __roster.byId = {};
-    __roster.forEach(function(r) {
-      __roster.byId[r.id] = r;
-    });
-    return __roster;
-  }
-  function pastFigure(r, v, second) {
-    var card = readDoor(r.id), fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
-    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
-  }
-  function prettyK(r, k) {
-    return r.pre ? r.pre + k : prettyKey(k);
-  }
-  function setEraOpen(v) {
-    eraOpen = v;
-    return v;
-  }
-  function insightCirculation() {
-    var vel = m2vHistory, n = vel.length;
-    if (!vel || n < 5) return "";
-    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
-    var run = 0;
-    for (var i = n - 1; i >= 4; i--) {
-      if (vel[i] / vel[i - 4] > 1) run++; else break;
-    }
-    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
-    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
-    var offLow = (vel[n - 1] / lo - 1) * 100;
-    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
-    if (!volInd || !volInd.meter) return "";
-    var volPct = volInd.meter.value;
-    var up = volPct > 0, vup = velChg > 0;
-    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
-    var f1 = function(v) {
-      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
-    };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
-    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
-    if (run >= 8) {
-      var oc = openCycle();
-      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
-    }
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + circLede + hiCard(name, "", txt) + "</section>";
-  }
-  function insightWeather() {
-    var rows = marketCycles.map(function(c) {
-      var to = c.to || calendarTodayY;
-      var g = totalGrowthYears(c.from, to);
-      var sp = cycleSlice(cpiYoYHistory, c);
-      var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
-      if (!g || !p) return null;
-      return {
-        name: c.name,
-        from: c.from,
-        closed: !c.ongoing,
-        g: g.total,
-        p: p.total,
-        gap: p.total - g.total
-      };
-    }).filter(Boolean);
-    if (rows.length < 3) return "";
-    var now = rows[rows.length - 1];
-    var past = rows.slice(0, -1);
-    if (!past.length) return "";
-    var f1 = function(v) {
-      return v.toFixed(1) + "%";
-    };
-    var absGap = function(r) {
-      return Math.abs(r.gap);
-    };
-    var tightest = past.reduce(function(a, b) {
-      return absGap(b) < absGap(a) ? b : a;
-    });
-    var widest = rows.reduce(function(a, b) {
-      return absGap(b) > absGap(a) ? b : a;
-    });
-    var GAP_BAND = 1.5;
-    var run = 0;
-    for (var i = rows.length - 1; i >= 0; i--) {
-      if (rows[i].gap > GAP_BAND) run++; else break;
-    }
-    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
-    var spell = function(n) {
-      return NUM[n] || String(n);
-    };
-    var lead = now.gap > GAP_BAND ? "Prices are running ahead of output" : now.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
-    var txt = lead + ". Since " + now.from + " prices are up " + f1(now.p) + " and the economy is up " + f1(now.g) + " — " + absGap(now).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
-      return absGap(r).toFixed(1);
-    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
-    if (widest === now) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
-  }
-  function seasonCards(m) {
-    var r = seasonReading[m.season] || {};
-    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the body", "", r.body) : "") + (r.next ? hiCard("What usually comes next", "", r.next) : "");
-  }
-  function marketCycleCard(m) {
-    var years = sp500Years.filter(function(d) {
-      return d.y >= m.era.from && d.y <= m.endYear;
-    });
-    if (!years.length) return "";
-    var bear = years.filter(function(d) {
-      return d.v < 0;
-    }), before = sp500Years.filter(function(d) {
-      return d.y < m.era.from && d.v < 0;
-    }).pop();
-    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
-      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
-    }).join(", ");
-    var n = function(k, what) {
-      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
-    };
-    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
-    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
-  }
-  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
-  var MOOD_SRC = [ {
-    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
-    u: "https://rulerapproach.org/"
-  }, {
-    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
-    u: "https://www.cnn.com/markets/fear-and-greed"
-  }, {
-    t: "Russell Investments — the cycle of market emotions",
-    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
-  } ];
-  function curvePath(pts) {
-    var f = function(p) {
-      return p[0].toFixed(1) + "," + p[1].toFixed(1);
-    };
-    return pts.map(function(p, i) {
-      if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
-      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
-    }).join("");
-  }
-  function moodCallout(x, y, lines, from, to) {
-    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
-      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
-    }).join("");
-  }
-  function moodCycleSvg(now) {
-    var pts = MOOD_CHART.map(function(s) {
-      return [ s[1], s[2] ];
-    });
-    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
-    MOOD_CHART.forEach(function(s) {
-      var on = s[0] === now ? " now" : "";
-      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
-      out.push('<text class="mood-lab' + on + '" x="' + (s[1] + s[4]) + '" y="' + (s[2] + s[5]) + '" text-anchor="' + s[6] + '">' + s[0].toUpperCase() + "</text>");
-    });
-    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now ? ", with today at " + now : "") + '.">' + out.join("") + "</svg>";
-  }
-  function moodInfo(d) {
-    return "<h4>Her mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
-  }
-  function moodFigures(d) {
-    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
-    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
-  }
-  function moodCard(d) {
-    var c = eraOpen || currentEra, s = cycleStory(c);
-    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
-  }
-  function insightMood() {
-    var d = moodToday();
-    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
-    if (!d || !d.word) return highlightsHtml([ intro ], "", "");
-    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo(d)));
-  }
-  function storyBeats(s, open) {
-    var ev = [ {
-      x: s.first,
-      verb: "opened in"
-    }, {
-      x: s.last,
-      verb: open ? "is now in" : "closed in"
-    } ];
-    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
-      var same = ev.filter(function(e) {
-        return e.x.m === p[0].m;
-      })[0];
-      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
-        x: p[0],
-        verb: p[0] === s.hi ? "rose to" : "fell to",
-        tag: p[1]
-      });
-    });
-    ev.sort(function(a, b) {
-      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
-    });
-    var parts = ev.map(function(e) {
-      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
-    });
-    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
-  }
-  function storyText(s, open) {
-    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
-      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
-    }).join(" and ") + ".";
-  }
-  var INSIGHT = {
-    weather: insightWeather,
-    circulation: insightCirculation,
-    mood: insightMood
-  };
-  function replaceInsights(c) {
-    var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
-    if (!boxes.length || !INSIGHT[c.key]) return;
-    boxes.slice(1).forEach(function(b) {
-      b.parentNode.removeChild(b);
-    });
-    boxes[0].outerHTML = INSIGHT[c.key]();
-  }
-  var DIAG_SRC = [ {
-    t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
-    u: "https://fred.stlouisfed.org/series/VIXCLS"
-  }, {
-    t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
-    u: "https://shillerdata.com/"
-  } ];
-  function pct(v) {
-    return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
-  }
-  function eraEnds(id, era) {
-    var r = rosterRows()[id];
-    if (!r) return null;
-    var span = r.seen.filter(function(d) {
-      var y = +d.k.slice(0, 4);
-      return y >= era.from && y <= era.to;
-    });
-    if (span.length < 2) return null;
-    var a = span[0], b = span[span.length - 1];
-    return {
-      r: r,
-      from: prettyK(r, a.k),
-      to: prettyK(r, b.k),
-      a: pastFigure(r, a.v, pairAt(r, a.k)),
-      b: pastFigure(r, b.v, pairAt(r, b.k))
-    };
-  }
-  function eraMove(id, era, label) {
-    var e = eraEnds(id, era);
-    if (!e) return "";
-    return (label || e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
-  }
-  var HORMONES = "Hormones (the Fed funds rate)";
-  function analysisFor(key, d, era) {
-    var w = function(id) {
-      var r = readDoor(id);
-      return r && r.word ? r.word.toLowerCase() : "";
-    };
-    if (era) return key === "circulation" ? eraMove("sheet-sign-hormones", era, HORMONES) : eraMove("sheet-sign-activity", era);
-    if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
-    return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
-  }
-  function dxRow(label, html) {
-    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + dxText(html) + "</div>";
-  }
-  function dxText(html) {
-    return '<p class="dx-v">' + html + "</p>";
-  }
-  function dxSection(head, body, cls) {
-    return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
-  }
-  function systemHtml(c, analysis) {
-    return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + "</div>";
-  }
-  function dxHead(title, c, mark) {
-    var tag = c ? 'button type="button"' : "div";
-    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
-  }
-  function diagnosisHtml(m) {
-    var open = m.ongoing, d = open ? diagnoseToday() : {
-      after: yearAfter(marketMonths(), m.endMonth)
-    }, closed = open ? null : m.era;
-    if (!d) return "";
-    var systems = categoriesShown().filter(function(c) {
-      return !c.onDial && !c.inTrend;
-    });
-    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + dxSection(dxHead(systems.map(function(c) {
-      return c.title;
-    }).join(" and "), null, stethoscopeSvg()), systems.map(function(c) {
-      return systemHtml(c, analysisFor(c.key, d, closed));
-    }).join("") + (open ? acrossCycle(m.era) : d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
-  }
-  function acrossCycle(era) {
-    var span = {
-      from: era.from,
-      to: calendarTodayY
-    };
-    var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
-    if (!fed || !job) return "";
-    return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
-  }
-  function moodDoor(head, body) {
-    var mood = CATEGORIES.filter(function(c) {
-      return c.key === "mood";
-    })[0];
-    return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + "</span>" + (head || mood.title) + CHEV + "</span>" + body + "</button>";
-  }
-  function trendText(t) {
-    return '<span class="trend-text">' + t + "</span>";
-  }
-  function renderDiagnosis(m) {
-    var host = document.getElementById("diagnosis");
-    if (host && m) host.innerHTML = diagnosisHtml(m);
-  }
-  function buildDiagnosis() {
-    var home = byId("today-analysis");
-    if (!home || document.getElementById("diagnosis")) return;
-    var host = document.createElement("article");
-    host.className = "dx";
-    host.id = "diagnosis";
-    home.insertBefore(host, home.firstChild);
-    renderDiagnosis(nowModel);
-    addSources(DIAG_SRC);
-  }
-  function bootDiagnosis() {
-    GYN.step("buildDiagnosis", buildDiagnosis, "build");
-    buildDiagnosis();
-  }
-  function paintReading(sheet, value, tag) {
-    var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
-    Array.prototype.forEach.call(doors, function(d) {
-      if (d.__today) {
-        painted++;
-        return;
-      }
-      var v = d.querySelector(".ci-value, .subject-value");
-      if (v && v.firstChild && v.firstChild.nodeType === 3) {
-        v.firstChild.nodeValue = String(value);
-        painted++;
-      }
-      if (tag) paintTag(d, tag);
-    });
-    paintWhen(sheet);
-    if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
-    return painted;
-  }
-  function repaintVolatilityRing() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
-      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
-      if (m) m.innerHTML = volatilityRing();
-    });
-  }
-  function paintTag(d, tag) {
-    var t = d.querySelector(".tag");
-    if (!t) return;
-    t.textContent = tag.text;
-    if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
-  }
-  function repaintVolatility() {
-    repaintVolatilityRing();
-    paintReading("sheet-sign-sentiment", vixRow.flagValue, volatilityTag());
-  }
-  function repaintPressureRow() {
-    var h = yieldCurve.filter(function(d) {
-      return d.m === "10Y";
-    })[0];
-    if (!h || h.y == null) return;
-    paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
-  }
-  function repaintPressureChart() {
-    var s = byIdMaybe("sheet-sign-pressure");
-    if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
-  }
-  function desireRow() {
-    return coincident.filter(function(c) {
-      return c.bodyTerm === "Desire";
-    })[0];
-  }
-  function repaintDesire() {
-    var row = desireRow(), cape = valRow("cape");
-    if (!row || !cape) return;
-    paintReading("sheet-sign-desire", row.metric, null);
-    Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el) {
-      el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
-    });
-  }
-  function syncCapeHistory() {
-    var last = capeHistory[capeHistory.length - 1], now = valRow("cape").meter.value;
-    if (last.y === calendarTodayY) last.v = now; else capeHistory.push({
-      y: calendarTodayY,
-      v: now
-    });
-    setMoodLists(null);
-    setMoodCache(null);
-  }
-  function repaintValuationRow() {
-    var row = valRow("cape");
-    if (!row) return;
-    paintReading("sheet-metric-valuation", row.flagValue, valuation.tag || null);
-  }
-  function isNum(x) {
-    return typeof x === "number" && isFinite(x);
-  }
-  function rowsOk(rows) {
-    return Array.isArray(rows) && rows.length > 0 && rows.every(function(r) {
-      return r && typeof r === "object" && (!r.meter || isNum(r.meter.value));
-    });
-  }
-  var KINDS = [ "object", "series", "scalar" ];
-  function checkLiveCoverage() {
-    var bad = [];
-    LIVE_NAMES.forEach(function(n) {
-      var r = READINGS[n], shows = r.paint && r.paint.length ? 1 : 0;
-      if (KINDS.indexOf(r.kind) < 0) bad.push(n + ": kind " + r.kind);
-      if (r.kind === "scalar" && !(r.band && r.band.length === 2 && r.band[0] < r.band[1])) bad.push(n + ": a scalar needs a band");
-      if (typeof r.set !== "function") bad.push(n + ": nowhere to land");
-      if (shows + (r.onOpen ? 1 : 0) !== 1) bad.push(n + ": " + (shows ? r.onOpen ? "paints AND declares onOpen" : "" : "no painter and no onOpen"));
-      (r.paint || []).forEach(function(f) {
-        if (typeof f !== "function") bad.push(n + ": painter is not a function");
-      });
-    });
-    if (bad.length && window.console) console.warn("reading registry: " + bad.join(", "));
-  }
-  function receive(next, mode) {
-    var names = Object.keys(next).filter(function(n) {
-      return docOk(n, next[n]);
-    });
-    if (!names.length) return 0;
-    var fresh = {}, moved = 0;
-    names.forEach(function(n) {
-      fresh[n] = next[n];
-    });
-    var now = mode === "replace" ? fresh : merge(LIVE_CACHE, fresh);
-    try {
-      window.localStorage.setItem("gyn.live", JSON.stringify(now));
-    } catch (e) {}
-    setLIVE_CACHE(now);
-    names.forEach(function(name) {
-      var doc = JSON.stringify(next[name]);
-      if (next[name].asOf) liveAsOf[name] = fmtAsOf(next[name].asOf);
-      if (liveApplied[name] === doc) return;
-      if (applyLive(name, docValue(next[name]))) {
-        liveApplied[name] = doc;
-        moved++;
-      }
-    });
-    return moved;
-  }
-  function applyLive(name, value) {
-    if (value == null) return false;
-    var r = READINGS[name];
-    if (!r) return false;
-    try {
-      if (!shapeOk(r, value)) return false;
-      r.set(value);
-    } catch (e) {
-      return false;
-    }
-    (r.paint || []).concat(repaintDiagnosis).forEach(function(fn) {
-      try {
-        fn();
-      } catch (e) {
-        if (window.console) console.warn("repaint " + name + " failed", e);
-      }
-    });
-    return true;
-  }
-  function repaintPolicy() {
-    var box = put("policy-facts", policyFactRows());
-    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
-    paintReading("sheet-sign-hormones", fedFundsRange(), {
-      text: dir
-    });
-  }
-  function refreshLiveData() {
-    if (!window.claude || typeof window.claude.use !== "function") return;
-    window.claude.use("db").then(function(db) {
-      if (!db) return;
-      return Promise.all(LIVE_NAMES.map(function(name) {
-        return db.doc("data/" + name).get().then(function(row) {
-          var d = row && (row.data || row);
-          return d && typeof d === "object" ? [ name, d ] : null;
-        }).catch(function() {
-          return null;
-        });
-      })).then(function(rows) {
-        var next = {}, got = 0;
-        rows.forEach(function(r) {
-          if (r) {
-            next[r[0]] = r[1];
-            got++;
-          }
-        });
-        if (!got) return;
-        receive(next, "replace");
-      });
-    }).catch(function() {});
-  }
-  function fetchSiteData() {
-    try {
-      if (window.top !== window.self) return;
-      if (location.protocol !== "http:" && location.protocol !== "https:") return;
-      if (typeof fetch !== "function") return;
-    } catch (e) {
-      return;
-    }
-    fetch("data/live.json", {
-      cache: "no-store"
-    }).then(function(r) {
-      return r.ok ? r.json() : null;
-    }).then(function(doc) {
-      if (!doc || typeof doc !== "object") return;
-      var next = {};
-      for (var k in doc) if (k !== "_meta" && Object.prototype.hasOwnProperty.call(doc, k)) next[k] = doc[k];
-      receive(next, "merge");
-    }).catch(function() {});
-  }
-  function repaintDiagnosis() {
-    if (!eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(replaceInsights);
-  }
-  function bootRepaint() {
-    setREADINGS({
-      fedFunds: {
-        kind: "object",
-        ok: function(v) {
-          return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
-        },
-        set: function(v) {
-          if (!v.lastMove && (v.lo !== fedFunds.lo || v.hi !== fedFunds.hi)) v = merge(v, {
-            lastMove: "",
-            lastMoveLabel: "",
-            asOf: ""
-          });
-          if (v.asOf !== void 0 && v.asOf !== fedFunds.asOf && !v.vote) v = merge(v, {
-            vote: ""
-          });
-          setFedFunds(merge(fedFunds, v));
-        },
-        paint: [ repaintPolicy ]
-      },
-      yieldCurve: {
-        kind: "series",
-        ok: function(v) {
-          return v.every(function(r) {
-            return r && typeof r.m === "string" && (r.y === null || isNum(r.y));
-          });
-        },
-        set: function(v) {
-          setYieldCurve(v);
-        },
-        paint: [ repaintPressureRow, repaintPressureChart ]
-      },
-      sentiment: {
-        kind: "object",
-        ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows);
-        },
-        set: function(v) {
-          setSentiment(merge(sentiment, v));
-          setVixRow(sentiment.rows[0]);
-        },
-        onOpen: true
-      },
-      valuation: {
-        kind: "object",
-        ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows);
-        },
-        set: function(v) {
-          setValuation(merge(valuation, v));
-          if (valRow("cape")) valuation.tag = valuationVerdict(valRow("cape").meter.value);
-        },
-        paint: [ repaintValuationRow ]
-      },
-      coincident: {
-        kind: "series",
-        ok: rowsOk,
-        set: function(v) {
-          setCoincident(v);
-          deriveVolumeTag();
-          derivePulseTag();
-        },
-        onOpen: true
-      },
-      vixClose: {
-        kind: "scalar",
-        band: [ 5, 100 ],
-        set: function(v) {
-          var row = sentiment.rows[0];
-          row.meter.value = v;
-          row.flagValue = v.toFixed(1);
-          if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
-        },
-        paint: [ repaintVolatility ]
-      },
-      vix3mClose: {
-        kind: "scalar",
-        band: [ 5, 100 ],
-        set: function(v) {
-          setVix3mClose(v);
-        },
-        onOpen: true
-      },
-      hyOasNow: {
-        kind: "scalar",
-        band: [ 1, 30 ],
-        set: function(v) {
-          var row = desireRow();
-          row.meter.value = v;
-          row.metric = v.toFixed(2) + "%";
-          if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
-        },
-        paint: [ repaintDesire ]
-      },
-      capeValue: {
-        kind: "scalar",
-        band: [ 4, 60 ],
-        set: function(v) {
-          var row = valRow("cape");
-          row.meter.value = v;
-          row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
-          if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
-          valuation.tag = valuationVerdict(v);
-        },
-        paint: [ repaintValuationRow, syncCapeHistory, repaintDesire ]
-      }
-    });
-    setLIVE_NAMES(Object.keys(READINGS));
-    setFedFunds(LIVE("fedFunds", fedFunds));
-    try {
-      window.__GYN = GYN;
-      GYN.applyLive = applyLive;
-      GYN.READINGS = READINGS;
-    } catch (e) {}
-    GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
-    checkLiveCoverage();
-    GYN.step("refreshLiveData", refreshLiveData, "live");
-    refreshLiveData();
-    GYN.step("fetchSiteData", fetchSiteData, "live");
-    fetchSiteData();
   }
   function spreadSeries() {
     return {
@@ -28249,7 +27682,7 @@
         if (shell) histReadFill(shell, null);
       }
       attachHoverTracking(hit, svg, W, padL, innerW, data.length, showAt, hide);
-      setSPREAD_DETAIL(s.detail);
+      ui.spreadDetail = s.detail;
     }
     Object.keys(series).forEach(function(k) {
       var sr = series[k];
@@ -28266,7 +27699,7 @@
         draw(btn.getAttribute("data-series"));
       });
     });
-    setDrawSpreadWindow(draw);
+    ui.drawSpreadWindow = draw;
     draw("3m");
   }
   function deriveUninversionDetail() {
@@ -28289,7 +27722,7 @@
       t: "Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)",
       u: "https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"
     } ]);
-    setUNINV_DETAIL(detail);
+    ui.uninvDetail = detail;
     addSources([ {
       t: "Predicting Recessions Using the Yield Curve (Federal Reserve Bank of Boston)",
       u: "https://www.bostonfed.org/publications/current-policy-perspectives/2020/predicting-recessions-using-the-yield-curve.aspx"
@@ -28306,12 +27739,12 @@
       var data = hznData();
       var cyc = pageCycle("pressure-range", hznY0);
       var idx = cyc ? cycleQtrIdx(hznY0, cyc, data.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(data.length, pageRange["pressure-range"]);
+      var from = idx ? idx[0] : qWindowFrom(data.length, page.range["pressure-range"]);
       var to = idx ? idx[1] : data.length;
       host.innerHTML = histControls("pressure-range", {
         depth: Math.floor(data.length / 4)
       }, hznY0);
-      if (drawSpreadWindow) drawSpreadWindow(spreadPick, from, to);
+      if (ui.drawSpreadWindow) ui.drawSpreadWindow(spreadPick, from, to);
       var tr = byId("ylm-trend");
       if (tr) {
         var w = [];
@@ -28325,7 +27758,7 @@
       }
       put("pressure-insights", spreadInsights());
     }
-    setDrawSpreadView(drawHzn);
+    ui.drawSpreadView = drawHzn;
   }
   function spreadInsights() {
     var r = horizonRead;
@@ -28337,13 +27770,13 @@
     cards.push('<p class="hi-lede">A lender who wants more for ten years than for three months expects growth ahead; one who takes less expects the opposite, and pays to say so. This is the body’s forecast of its own next season — a mood, not a measurement taken off it.</p>');
     cards.push(hiCard(r.word, r.state, "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) + " points over four quarters, from " + sgn(r.was) + " to " + sgn(r.q.v) + " — the 10-year " + (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " + (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " + (fromLong ? "long end, which is growth being priced rather than relief about the Fed." : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") + " Which end moved is the reading: on a chart the two look identical."));
     cards.push(hiCard("The short end", "", "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) + ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year prices where the Fed is going, the bill only where it has been."));
-    var facts2 = '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(UNINV_DETAIL) + "</span><b>" + uninvLagToday.months + ' months</b></div><div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div><div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
+    var facts2 = '<div class="aux-stat"><span>Time from un-inversion' + expandBtn(ui.uninvDetail) + "</span><b>" + uninvLagToday.months + ' months</b></div><div class="aux-stat wordy"><span>Last inverted</span><b>Oct 2022 – Dec 2024</b></div><div class="aux-stat wordy"><span>Deepest point</span><b>−1.89 pts · May 4, 2023</b></div>';
     return '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + facts2 + "</section>";
   }
   function renderValuationTag() {
     var cape = valRow("cape");
     histNote("sheet-metric-valuation", "<h4>" + cape.marker + '</h4><div class="marker-sub">' + cape.sub + "</div>" + factsFrom(cape.note));
-    addSources(valuation.src);
+    addSources(now.valuation.src);
   }
   function renderHormones() {
     var host = byId("hormones-history");
@@ -28366,7 +27799,7 @@
       var id = "hormones-range";
       var cyc = pageCycle(id);
       var span = cyc ? ffCycleMonths(cyc) : null;
-      var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, pageRange[id]);
+      var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[id]);
       var to = span ? span[1] : void 0;
       var win = fedFundsHistory.slice(from, to);
       bar.innerHTML = histBar(histControls(id, {
@@ -28392,7 +27825,7 @@
     }
     drawsPage("sheet-sign-hormones", draw);
     draw();
-    HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (fedFunds.asOf ? ", set " + fedFunds.asOf : "") + (fedFunds.vote ? " on a " + fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
+    HIST_NOTE["hormones-range"] = "<h4>Effective federal funds rate</h4>" + factsFrom("The rate banks actually charge each other overnight, averaged by month. It is the price the whole yield curve is quoted against, which is why it reads first on this page and the Treasury levels below read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, so the two are different figures and the page says which is which: the range is the decision, the chart is where money traded. Target " + fedFundsRange() + (now.fedFunds.asOf ? ", set " + now.fedFunds.asOf : "") + (now.fedFunds.vote ? " on a " + now.fedFunds.vote + " vote" : "") + "; the effective rate ran at " + fedFundsHistory[fedFundsHistory.length - 1].v.toFixed(2) + "% through " + atMonth(fedFundsHistory[fedFundsHistory.length - 1]) + ", which is not a contradiction but a date — that month ran partly under the previous target. The record is " + fedFundsHistory.length + " months deep, from July 1954. Its peak is 19.10% in June 1981, under Volcker; its floor is 0.05% in April 2020, and 0.16% in December 2008. A chart that holds both is the reason this one stands on zero rather than on its own minimum. Source: Federal Reserve H.15 via FRED, series FEDFUNDS.");
     function ffPeaks() {
       var out = [], mode = "up", ext = fedFundsHistory[0];
       fedFundsHistory.forEach(function(d) {
@@ -28430,7 +27863,7 @@
       cards.push(hiCard("Rise, peak, withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div></section>";
     }
-    var dir = /^\+/.test(fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(fedFunds.lastMove) ? "Easing" : "On hold";
+    var dir = /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
     put("subj-value-hormones", fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + dir + "</span>");
     var rowSay = byId("subj-say-hormones");
     if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d) {
@@ -28447,7 +27880,7 @@
       if (!host || !volatilityHistory.length) return;
       var cyc = pageCycle("fear-range", VOL_Y0);
       var span = cyc ? cycleSlice(volatilityHistory, cyc) : null;
-      var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, pageRange["fear-range"]);
+      var vals = span ? volatilityHistory.slice(span[0], span[1]) : timelineWindow(volatilityHistory, page.range["fear-range"]);
       if (!vals.length) vals = volatilityHistory.slice(-12);
       var fit = trendOf(vals.map(function(d) {
         return d.v;
@@ -28489,12 +27922,12 @@
     }
     drawsPage("sheet-sign-sentiment", drawVolatility);
     drawVolatility();
-    addSources(sentiment.src.concat(VIX_CONVENTION));
+    addSources(now.sentiment.src.concat(VIX_CONVENTION));
   }
   function volatilityHighlights(y0) {
     var hl = byId("curve-highlights");
     if (!hl || !volatilityHistory.length) return;
-    var m = vixRow.meter, v = m.value, tag = volatilityTag();
+    var m = now.vixRow.meter, v = m.value, tag = volatilityTag();
     var top = volatilityHistory.reduce(function(a, d) {
       return d.v > a.v ? d : a;
     });
@@ -28511,8 +27944,8 @@
     var lede2 = '<p class="hi-lede">Volatility is how hard the market is shaking. The VIX prices the next thirty days of it, so it climbs with fear and sinks with calm — read it the other way round, because panic gathers near bottoms and complacency near tops.</p>';
     var nowTxt = "At " + v.toFixed(2) + " the VIX reads " + tag.text.toLowerCase() + ": by convention below " + VIX_CALM + " is calm, " + VIX_CALM + " to " + VIX_FEAR + " elevated and above " + VIX_FEAR + " fearful. Its daily record low is " + m.min + " and its high " + m.max + ".";
     var recTxt = higher + " of the " + volatilityHistory.length + " months since " + y0 + " averaged higher than today. The most shaken month was " + atMonth(top) + " at " + top.v.toFixed(1) + (top.m < VOL_JOIN ? " on the VXO" + (vixTop ? ", and on the VIX itself " + atMonth(vixTop) + " at " + vixTop.v.toFixed(1) : "") : "") + ".";
-    var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
-    hl.innerHTML = highlightsHtml([ lede2, hiCard("Where it sits" + expandBtn(factsFrom(vixRow.note)), tag.state, nowTxt), hiCard("Against the record", "", recTxt), hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt) ]);
+    var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + now.vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
+    hl.innerHTML = highlightsHtml([ lede2, hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow.note)), tag.state, nowTxt), hiCard("Against the record", "", recTxt), hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state, shapeTxt) ]);
   }
   function renderSubjectRows() {
     function spark(key, html) {
@@ -28529,39 +27962,14 @@
     }
     put("subj-ring-sentiment", volatilityRing());
     var volTag = volatilityTag();
-    set("sentiment", vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
+    set("sentiment", now.vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
     say("sentiment", "");
     spark("sentiment", "");
   }
-  var shownEra = null;
-  var calendarReset = null;
-  var metricPageReset = null;
-  var topbarBack = null;
-  var eraPageBack = null;
   function setTopbar(title, onBack) {
     byId("topbar-title").textContent = title;
-    topbarBack = onBack || null;
+    ui.topbarBack = onBack || null;
     byId("topbar-back").hidden = !onBack;
-  }
-  function setEraPageBack(v) {
-    eraPageBack = v;
-    return v;
-  }
-  function setCalendarReset(v) {
-    calendarReset = v;
-    return v;
-  }
-  function setTopbarBack(v) {
-    topbarBack = v;
-    return v;
-  }
-  function setShownEra(v) {
-    shownEra = v;
-    return v;
-  }
-  function setMetricPageReset(v) {
-    metricPageReset = v;
-    return v;
   }
   var cycleViewEl;
   function bootRenderPages() {
@@ -28581,8 +27989,215 @@
     renderSubjectRows();
     cycleViewEl = byId("cycle-view");
     byId("topbar-back").addEventListener("click", function() {
-      if (topbarBack) topbarBack();
+      if (ui.topbarBack) ui.topbarBack();
     });
+  }
+  function todayFace(item) {
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return {
+      val: item.querySelector(".ci-value"),
+      word: item.querySelector(".ci-word")
+    };
+    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
+    return {
+      val: box.firstChild,
+      word: t.word == null ? null : box.lastChild
+    };
+  }
+  function readDoor(open) {
+    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
+    if (!item) return null;
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
+    var figure = val ? val.cloneNode(true) : null;
+    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
+      n.parentNode.removeChild(n);
+    });
+    return {
+      name: item.getAttribute("data-title"),
+      figure: figure ? figure.textContent.trim() : "",
+      unit: unit ? unit.textContent.trim() : "",
+      word: word ? word.textContent.trim() : ""
+    };
+  }
+  function rosterRows() {
+    return readingRoster().byId;
+  }
+  function kT(k) {
+    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
+    return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+  }
+  function upTo(list, k) {
+    var t = kT(k) + 1e-6;
+    return list.filter(function(d) {
+      return d.v != null && kT(d.k) <= t;
+    });
+  }
+  function pairAt(r, k) {
+    var p = r.pair ? upTo(r.pair, k).pop() : null;
+    return p ? p.v : null;
+  }
+  function eraFig(today) {
+    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
+    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
+    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
+    function one(x) {
+      var a = Math.abs(x).toFixed(dp);
+      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
+    }
+    return function(x, y) {
+      return pre + one(x) + (y != null ? "/" + one(y) : suf);
+    };
+  }
+  function rosterRow(R) {
+    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    });
+    var sorted = seen.map(function(d) {
+      return d.v;
+    }).sort(function(a, b) {
+      return a - b;
+    });
+    r.place = function(v) {
+      var lo = 0, hi = sorted.length;
+      while (lo < hi) {
+        var mid = lo + hi >> 1;
+        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
+      }
+      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+    };
+    r.first = seen[0];
+    r.now = seen[seen.length - 1];
+    r.seen = seen;
+    if (R.pair) r.pair = keyed(R.pair);
+    if (R.peek) r.peek = R.peek === "pair" ? r.pair : keyed(R.peek);
+    return r;
+  }
+  var __roster = null;
+  function readingRoster() {
+    if (__roster) return __roster;
+    __roster = ROSTER.filter(function(R) {
+      return R.hist;
+    }).map(rosterRow);
+    __roster.byId = {};
+    __roster.forEach(function(r) {
+      __roster.byId[r.id] = r;
+    });
+    return __roster;
+  }
+  function pastFigure(r, v, second) {
+    var card = readDoor(r.id), fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
+    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
+  }
+  function prettyK(r, k) {
+    return r.pre ? r.pre + k : prettyKey(k);
+  }
+  var DIAG_SRC = [ {
+    t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
+    u: "https://fred.stlouisfed.org/series/VIXCLS"
+  }, {
+    t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
+    u: "https://shillerdata.com/"
+  } ];
+  function pct(v) {
+    return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
+  }
+  function eraEnds(id, era) {
+    var r = rosterRows()[id];
+    if (!r) return null;
+    var span = r.seen.filter(function(d) {
+      var y = +d.k.slice(0, 4);
+      return y >= era.from && y <= era.to;
+    });
+    if (span.length < 2) return null;
+    var a = span[0], b = span[span.length - 1];
+    return {
+      r: r,
+      from: prettyK(r, a.k),
+      to: prettyK(r, b.k),
+      a: pastFigure(r, a.v, pairAt(r, a.k)),
+      b: pastFigure(r, b.v, pairAt(r, b.k))
+    };
+  }
+  function eraMove(id, era, label) {
+    var e = eraEnds(id, era);
+    if (!e) return "";
+    return (label || e.r.eraUnit || e.r.name) + " went from " + e.a + " (" + e.from + ") to " + e.b + " (" + e.to + ") across the cycle.";
+  }
+  var HORMONES = "Hormones (the Fed funds rate)";
+  function analysisFor(key, d, era) {
+    var w = function(id) {
+      var r = readDoor(id);
+      return r && r.word ? r.word.toLowerCase() : "";
+    };
+    if (era) return key === "circulation" ? eraMove("sheet-sign-hormones", era, HORMONES) : eraMove("sheet-sign-activity", era);
+    if (key === "circulation") return "Hormones are " + w("sheet-sign-hormones") + "; money is " + w("sheet-sign-volume") + ".";
+    return "Labour is " + w("sheet-sign-activity") + "; the household reserve is " + w("sheet-metric-households") + ".";
+  }
+  function dxRow(label, html) {
+    return '<div class="dx-row"><span class="dx-k">' + label + "</span>" + dxText(html) + "</div>";
+  }
+  function dxText(html) {
+    return '<p class="dx-v">' + html + "</p>";
+  }
+  function dxSection(head, body, cls) {
+    return '<section class="dx-sys' + (cls ? " " + cls : "") + '">' + head + body + "</section>";
+  }
+  function systemHtml(c, analysis) {
+    return '<div class="dx-cat cat-' + c.key + '">' + dxHead(c.title, c) + dxText(analysis) + "</div>";
+  }
+  function dxHead(title, c, mark) {
+    var tag = c ? 'button type="button"' : "div";
+    return "<" + tag + ' class="dx-sys-head"' + (c ? ' data-open="sheet-cat-' + c.key + '" data-title="' + title + '"' : "") + ">" + (mark ? '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" : "") + title + (c ? CHEV : "") + "</" + (c ? "button" : "div") + ">";
+  }
+  function diagnosisHtml(m) {
+    var open = m.ongoing, d = open ? diagnoseToday() : {
+      after: yearAfter(marketMonths(), m.endMonth)
+    }, closed = open ? null : m.era;
+    if (!d) return "";
+    var systems = categoriesShown().filter(function(c) {
+      return !c.onDial && !c.inTrend;
+    });
+    return moodDoor(open ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + dxSection(dxHead(systems.map(function(c) {
+      return c.title;
+    }).join(" and "), null, stethoscopeSvg()), systems.map(function(c) {
+      return systemHtml(c, analysisFor(c.key, d, closed));
+    }).join("") + (open ? acrossCycle(m.era) : d.after != null ? dxRow("Followed", "The S&amp;P 500 a year after the close: <b>" + pct(d.after) + "</b>.") : ""));
+  }
+  function acrossCycle(era) {
+    var span = {
+      from: era.from,
+      to: calendarTodayY
+    };
+    var fed = eraEnds("sheet-sign-hormones", span), job = eraEnds("sheet-sign-activity", span);
+    if (!fed || !job) return "";
+    return dxRow("Across the cycle", "Since " + fed.from + " h" + HORMONES.slice(1) + " went from " + fed.a + " to " + fed.b + " (" + fed.to + ") and the " + job.r.name.toLowerCase() + " from " + job.a + " to " + job.b + " (" + job.to + ").");
+  }
+  function moodDoor(head, body) {
+    var mood = CATEGORIES.filter(function(c) {
+      return c.key === "mood";
+    })[0];
+    return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + "</span>" + (head || mood.title) + CHEV + "</span>" + body + "</button>";
+  }
+  function trendText(t) {
+    return '<span class="trend-text">' + t + "</span>";
+  }
+  function renderDiagnosis(m) {
+    var host = document.getElementById("diagnosis");
+    if (host && m) host.innerHTML = diagnosisHtml(m);
+  }
+  function buildDiagnosis() {
+    var home = byId("today-analysis");
+    if (!home || document.getElementById("diagnosis")) return;
+    var host = document.createElement("article");
+    host.className = "dx";
+    host.id = "diagnosis";
+    home.insertBefore(host, home.firstChild);
+    renderDiagnosis(nowModel);
+    addSources(DIAG_SRC);
+  }
+  function bootDiagnosis() {
+    GYN.step("buildDiagnosis", buildDiagnosis, "build");
+    buildDiagnosis();
   }
   function drawDial(m) {
     var era = m.era;
@@ -28970,12 +28585,12 @@
   function renderCycleView(m) {
     drawDial(m);
     shownEraModel = m;
-    setShownEra(m.era);
+    ui.shownEra = m.era;
     renderDiagnosis(m);
   }
   var shownEraModel = null;
   function showCycle(era) {
-    if (shownEra !== era) renderCycleView(cycleModel(era));
+    if (ui.shownEra !== era) renderCycleView(cycleModel(era));
   }
   var stripGroupName = {
     winter: "Winter",
@@ -29117,6 +28732,538 @@
       };
     }());
   }
+  function insightCirculation() {
+    var vel = m2vHistory, n = vel.length;
+    if (!vel || n < 5) return "";
+    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
+    var run = 0;
+    for (var i = n - 1; i >= 4; i--) {
+      if (vel[i] / vel[i - 4] > 1) run++; else break;
+    }
+    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
+    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
+    var offLow = (vel[n - 1] / lo - 1) * 100;
+    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
+    if (!volInd || !volInd.meter) return "";
+    var volPct = volInd.meter.value;
+    var up = volPct > 0, vup = velChg > 0;
+    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
+    var f1 = function(v) {
+      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
+    };
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
+    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
+    if (run >= 8) {
+      var oc = openCycle();
+      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
+    }
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + circLede + hiCard(name, "", txt) + "</section>";
+  }
+  function insightWeather() {
+    var rows = marketCycles.map(function(c) {
+      var to = c.to || calendarTodayY;
+      var g = totalGrowthYears(c.from, to);
+      var sp = cycleSlice(cpiYoYHistory, c);
+      var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
+      if (!g || !p) return null;
+      return {
+        name: c.name,
+        from: c.from,
+        closed: !c.ongoing,
+        g: g.total,
+        p: p.total,
+        gap: p.total - g.total
+      };
+    }).filter(Boolean);
+    if (rows.length < 3) return "";
+    var now2 = rows[rows.length - 1];
+    var past = rows.slice(0, -1);
+    if (!past.length) return "";
+    var f1 = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    var absGap = function(r) {
+      return Math.abs(r.gap);
+    };
+    var tightest = past.reduce(function(a, b) {
+      return absGap(b) < absGap(a) ? b : a;
+    });
+    var widest = rows.reduce(function(a, b) {
+      return absGap(b) > absGap(a) ? b : a;
+    });
+    var GAP_BAND = 1.5;
+    var run = 0;
+    for (var i = rows.length - 1; i >= 0; i--) {
+      if (rows[i].gap > GAP_BAND) run++; else break;
+    }
+    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
+    var NUM = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var spell = function(n) {
+      return NUM[n] || String(n);
+    };
+    var lead = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
+    var txt = lead + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
+      return absGap(r).toFixed(1);
+    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
+    if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
+  }
+  function seasonCards(m) {
+    var r = seasonReading[m.season] || {};
+    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the body", "", r.body) : "") + (r.next ? hiCard("What usually comes next", "", r.next) : "");
+  }
+  function marketCycleCard(m) {
+    var years = sp500Years.filter(function(d) {
+      return d.y >= m.era.from && d.y <= m.endYear;
+    });
+    if (!years.length) return "";
+    var bear = years.filter(function(d) {
+      return d.v < 0;
+    }), before = sp500Years.filter(function(d) {
+      return d.y < m.era.from && d.v < 0;
+    }).pop();
+    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
+      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
+    }).join(", ");
+    var n = function(k, what) {
+      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
+    };
+    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
+    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
+  }
+  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
+  var MOOD_SRC = [ {
+    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
+    u: "https://rulerapproach.org/"
+  }, {
+    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
+    u: "https://www.cnn.com/markets/fear-and-greed"
+  }, {
+    t: "Russell Investments — the cycle of market emotions",
+    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
+  } ];
+  function curvePath(pts) {
+    var f = function(p) {
+      return p[0].toFixed(1) + "," + p[1].toFixed(1);
+    };
+    return pts.map(function(p, i) {
+      if (!i) return "M" + f(p);
+      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
+      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
+    }).join("");
+  }
+  function moodCallout(x, y, lines, from, to) {
+    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
+      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
+    }).join("");
+  }
+  function moodCycleSvg(now2) {
+    var pts = MOOD_CHART.map(function(s) {
+      return [ s[1], s[2] ];
+    });
+    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
+    MOOD_CHART.forEach(function(s) {
+      var on = s[0] === now2 ? " now" : "";
+      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
+      out.push('<text class="mood-lab' + on + '" x="' + (s[1] + s[4]) + '" y="' + (s[2] + s[5]) + '" text-anchor="' + s[6] + '">' + s[0].toUpperCase() + "</text>");
+    });
+    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
+  }
+  function moodInfo(d) {
+    return "<h4>Her mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: credit spreads go back only to 2023 here, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
+  }
+  function moodFigures(d) {
+    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
+  }
+  function moodCard(d) {
+    var c = ui.eraOpen || currentEra, s = cycleStory(c);
+    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
+  }
+  function insightMood() {
+    var d = moodToday();
+    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
+    if (!d || !d.word) return highlightsHtml([ intro ], "", "");
+    return highlightsHtml([ intro, '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>", moodCard(d) ], "", moreRow(moodInfo(d)));
+  }
+  function storyBeats(s, open) {
+    var ev = [ {
+      x: s.first,
+      verb: "opened in"
+    }, {
+      x: s.last,
+      verb: open ? "is now in" : "closed in"
+    } ];
+    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
+      var same = ev.filter(function(e) {
+        return e.x.m === p[0].m;
+      })[0];
+      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
+        x: p[0],
+        verb: p[0] === s.hi ? "rose to" : "fell to",
+        tag: p[1]
+      });
+    });
+    ev.sort(function(a, b) {
+      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
+    });
+    var parts = ev.map(function(e) {
+      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
+    });
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  }
+  function storyText(s, open) {
+    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
+      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
+    }).join(" and ") + ".";
+  }
+  var INSIGHT = {
+    weather: insightWeather,
+    circulation: insightCirculation,
+    mood: insightMood
+  };
+  function replaceInsights(c) {
+    var boxes = [].slice.call(document.querySelectorAll("#sheet-cat-" + c.key + " > .insights"));
+    if (!boxes.length || !INSIGHT[c.key]) return;
+    boxes.slice(1).forEach(function(b) {
+      b.parentNode.removeChild(b);
+    });
+    boxes[0].outerHTML = INSIGHT[c.key]();
+  }
+  var CYCLE_DATA_KEY = "gyn.cycleData";
+  var YEAR_W = 36;
+  var ALIKE = 5;
+  function cycleDataOn() {
+    try {
+      return localStorage.getItem(CYCLE_DATA_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function cycleRowsHtml(on) {
+    var strips = {};
+    marketCycles.forEach(function(c) {
+      strips[c.from] = seasonStripHtml(c);
+    });
+    return marketCycles.slice().reverse().map(function(cyc) {
+      var total = eraMarketTotal(cyc), strip = strips[cyc.from];
+      var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
+      var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
+      var foot = '<div class="era-foot"><span class="era-econ"><span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span><span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span></div>";
+      return on ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' + cyc.from + '">' + head + "</button>" + cycleTrack(cyc, strip, bands) + foot + "</div>" : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
+    }).join("");
+  }
+  function wireCycleData(list) {
+    var btn = byId("cycle-data"), legend = byId("cycle-legend");
+    function apply(on) {
+      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
+      list.innerHTML = cycleRowsHtml(on);
+      if (legend) {
+        legend.hidden = !on;
+        legend.innerHTML = on ? symptomLegend() : "";
+      }
+      settleStrips();
+    }
+    if (btn) btn.addEventListener("click", function() {
+      var on = btn.getAttribute("aria-checked") !== "true";
+      try {
+        localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0");
+      } catch (e) {}
+      apply(on);
+    });
+    apply(!!btn && cycleDataOn());
+  }
+  function renderCycleList() {
+    var list = byId("cycle-list");
+    wireCycleData(list);
+    var PREVIEW_CYCLES = 99;
+    (function() {
+      var rows = [].slice.call(list.querySelectorAll(".era-row"));
+      var btn = byId("cycle-more"), label = byId("cycle-more-label");
+      if (!btn || rows.length <= PREVIEW_CYCLES) {
+        if (btn) btn.hidden = true;
+        return;
+      }
+      var extra = rows.slice(PREVIEW_CYCLES), open2 = false;
+      function apply() {
+        extra.forEach(function(r) {
+          r.hidden = !open2;
+        });
+        btn.setAttribute("aria-expanded", open2 ? "true" : "false");
+        label.textContent = open2 ? "View less" : "View more";
+      }
+      apply();
+      btn.addEventListener("click", function() {
+        open2 = !open2;
+        apply();
+      });
+    })();
+    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle");
+    function open(from) {
+      var era = marketCycles.filter(function(c) {
+        return c.from === from;
+      })[0];
+      if (!era) return;
+      if (era.ongoing) {
+        var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
+        if (tab) {
+          tab.click();
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+          return;
+        }
+      }
+      enterEra(era, detail);
+      listWrap.hidden = true;
+      detail.hidden = false;
+      setTopbar(era.name, ui.eraPageBack = back);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+    function back() {
+      leaveEra();
+      detail.hidden = true;
+      listWrap.hidden = false;
+      setTopbar("Analysis", null);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+    list.addEventListener("click", function(e) {
+      var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open");
+      if (row) open(parseInt(row.getAttribute("data-era"), 10));
+    });
+    list.addEventListener("keydown", function(e) {
+      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")) {
+        e.preventDefault();
+        open(parseInt(e.target.getAttribute("data-era"), 10));
+      }
+    });
+    ui.calendarReset = function() {
+      leaveEra();
+      detail.hidden = true;
+      listWrap.hidden = false;
+      ui.topbarBack = null;
+      byId("topbar-back").hidden = true;
+    };
+    addSources(sp500AnnualReturnSource);
+    addSources(typicalCycleSrc);
+  }
+  var taHome = null;
+  var modeHome = null;
+  function eraReading(r, era) {
+    var from = era.from, to = era.to || calendarTodayY;
+    var span = r.seen.filter(function(d) {
+      var y = +d.k.slice(0, 4);
+      return y >= from && y <= to;
+    });
+    if (!span.length) return {
+      none: true,
+      word: "Not measured before " + prettyK(r, r.first.k)
+    };
+    var end = span[span.length - 1], sign = r.flip ? -1 : 1, vs = span.map(function(d) {
+      return sign * d.v;
+    });
+    var second = r.pair ? upTo(r.pair, end.k).pop() : null;
+    return {
+      v: sign * end.v,
+      raw: end.v,
+      lo: Math.min.apply(null, vs),
+      hi: Math.max.apply(null, vs),
+      when: prettyK(r, end.k),
+      second: second && kT(second.k) >= from ? second.v : null,
+      peek: upTo(r.peek || r.seen, end.k).map(function(d) {
+        return sign * d.v;
+      })
+    };
+  }
+  function eraValue(val, t, r, e) {
+    val.innerHTML = t.value;
+    var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
+    val.firstChild.nodeValue = eraFig(t.text)(surplus ? -e.v : e.v, r.pair ? e.second : null);
+    if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
+  }
+  function eraRange(t, r, e) {
+    if (e.lo === e.hi) return "Flat all cycle";
+    var f = eraFig(t.text), pc = r.pair ? "%" : "";
+    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
+  }
+  function eraMini(t, r, e) {
+    if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
+    if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
+    return colPeek(e.peek, function() {
+      return "era-col";
+    }, r.mid, r.rule);
+  }
+  function eraCard(item, r, era) {
+    var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
+    var word = item.querySelector(".ci-word");
+    if (!item.__today) item.__today = {
+      value: val.innerHTML,
+      text: val.firstChild.nodeValue,
+      word: word ? word.innerHTML : null,
+      when: when.textContent,
+      mini: mini ? mini.innerHTML : ""
+    };
+    var t = item.__today;
+    if (!era) {
+      val.innerHTML = t.value;
+      when.textContent = t.when;
+      item.__today = null;
+      if (mini) mini.innerHTML = t.mini;
+      if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
+      return;
+    }
+    var e = r ? eraReading(r, era) : {
+      none: true,
+      word: "No history in the app"
+    };
+    if (!word) {
+      word = document.createElement("span");
+      word.className = "ci-word";
+      val.parentNode.appendChild(word);
+    }
+    when.textContent = e.none ? "" : e.when;
+    if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r, e);
+    if (e.none) {
+      val.innerHTML = "—";
+      word.textContent = e.word;
+      return;
+    }
+    eraValue(val, t, r, e);
+    word.textContent = eraRange(t, r, e);
+  }
+  function eraCards(era) {
+    var rows = rosterRows();
+    Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item) {
+      eraCard(item, rows[item.getAttribute("data-preview") || item.getAttribute("data-open")], era);
+    });
+  }
+  function eraShow(era) {
+    eraCards(era);
+    if (era && !modeHome) {
+      modeHome = {};
+      for (var k in page.mode) modeHome[k] = page.mode[k];
+    }
+    for (var id in page.cycles) {
+      page.cycles[id] = era ? era.name : null;
+      page.mode[id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode[id];
+    }
+    if (!era) modeHome = null;
+    CATEGORIES.forEach(replaceInsights);
+  }
+  function enterEra(era, page2) {
+    var ta = byId("today-analysis");
+    if (!taHome) taHome = {
+      parent: ta.parentNode,
+      next: ta.nextSibling
+    };
+    ui.eraOpen = era;
+    showCycle(era);
+    page2.appendChild(cycleViewEl);
+    page2.appendChild(ta);
+    eraShow(era);
+  }
+  function leaveEra() {
+    if (!ui.eraOpen) return;
+    var ta = byId("today-analysis");
+    taHome.parent.insertBefore(ta, taHome.next);
+    taHome.parent.insertBefore(cycleViewEl, ta);
+    ui.eraOpen = null;
+    eraShow(null);
+    showCycle(currentEra);
+    repaintLive();
+  }
+  function cycleSymptoms(cyc, years) {
+    var rows = [], quiet = [], absent = [];
+    readingRoster().forEach(function(r) {
+      var now2 = r.place(r.now.v), measured = false;
+      var cells = years.map(function(y) {
+        if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return {
+          y: y,
+          state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
+        };
+        var best = null;
+        r.seen.forEach(function(d) {
+          if (+d.k.slice(0, 4) !== y) return;
+          var gap = Math.abs(r.place(d.v) - now2);
+          if (!best || gap < best.gap) best = {
+            d: d,
+            gap: gap
+          };
+        });
+        if (!best) return {
+          y: y,
+          state: "na"
+        };
+        measured = true;
+        return {
+          y: y,
+          state: best.gap <= ALIKE ? "on" : "off",
+          best: best.d
+        };
+      });
+      var hits = cells.filter(function(c) {
+        return c.state === "on";
+      });
+      if (hits.length) rows.push({
+        r: r,
+        cells: cells,
+        hits: hits
+      }); else (measured ? quiet : absent).push(r.name);
+    });
+    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") + (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
+    return {
+      rows: rows,
+      foot: foot.trim()
+    };
+  }
+  function placeWords(r, v) {
+    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
+    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
+  }
+  function symptomNote(cyc, row) {
+    var r = row.r;
+    return "<h4>" + r.name + " · " + cyc.name + "</h4><p>Now " + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
+      return prettyK(r, c.best.k) + ": " + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ", " + placeWords(r, c.best.v);
+    }));
+  }
+  function symptomRow(cyc, row, cols) {
+    var r = row.r;
+    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
+      return c.y;
+    }).join(", ") + '">' + row.cells.map(function(c) {
+      return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>';
+    }).join("") + "<b>" + r.name + "</b></button>";
+  }
+  function cycleTrack(cyc, strip, bands) {
+    var years = [];
+    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
+    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
+    var cols = "grid-template-columns:repeat(" + years.length + "," + YEAR_W + "px) minmax(96px,1fr)";
+    var yrs = years.map(function(y) {
+      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
+      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + "</span>";
+    }).join("");
+    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)"><div style="width:' + strip.span * YEAR_W / 4 + 'px">' + bands + '</div><span></span></div><div class="sx-yrs" style="' + cols + '">' + yrs + "<span></span></div>" + sx.rows.map(function(row) {
+      return symptomRow(cyc, row, cols);
+    }).join("") + "</div>" + (sx.foot ? '<p class="sx-foot">' + sx.foot + "</p>" : "");
+  }
+  function symptomLegend() {
+    return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p><div class="sx-keys">' + CATEGORIES.map(function(c) {
+      return '<span><i class="cat-' + c.key + '"></i>' + c.title + "</span>";
+    }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span><span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
+  }
+  function bootAnalysis() {
+    GYN.step("renderCycleList", renderCycleList, "wire");
+    renderCycleList();
+    renderCycleView(nowModel);
+  }
   var BUFFETT_2001 = [ {
     t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
     u: "https://fortune.com/2001/12/10/warren-buffett-stock-market/"
@@ -29139,7 +29286,7 @@
         fmt: function(v) {
           return Math.round(v) + "%";
         },
-        src: BUFFETT_2001.concat(valuation.src.slice(0, 2)),
+        src: BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
         band: "The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
         insight: buffettInsight
       },
@@ -29258,7 +29405,7 @@
   function drawSplit(s, W) {
     var id = s.id, cyc = pageCycle(id);
     var span = cyc ? cycleSlice(s.series, cyc) : null;
-    var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
+    var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
     var tr = trendOf(vals.map(function(d) {
       return d.v;
     }), "points", periodOfSeries(s.series[0]));
@@ -29396,30 +29543,30 @@
     return picks;
   }
   function buffettInsight(s) {
-    var now = s.row.meter.value, bv = buffettHistory.map(function(d) {
+    var now2 = s.row.meter.value, bv = buffettHistory.map(function(d) {
       return d.v;
     });
     var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1), bDot = maxIn(buffettHistory, 2e3, 2007);
     var richer = bv.filter(function(v) {
-      return v > now;
+      return v > now2;
     }).length;
     var above = buffettHistory.filter(function(d) {
       return d.v > s.mid;
     });
-    return [ lede("The price of the whole stock market set against the size of the economy that has to earn it. A reading far above the line is a body valued for more than it produces."), hiCard("Where it sits", s.row.flagState || "serious", richer === 0 ? "At " + Math.round(now) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(now) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."), hiCard("Against Buffett’s line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length + " quarters, the last time below it in " + (buffettHistory.filter(function(d) {
+    return [ lede("The price of the whole stock market set against the size of the economy that has to earn it. A reading far above the line is a body valued for more than it produces."), hiCard("Where it sits", s.row.flagState || "serious", richer === 0 ? "At " + Math.round(now2) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(now2) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."), hiCard("Against Buffett’s line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length + " quarters, the last time below it in " + (buffettHistory.filter(function(d) {
       return d.v <= s.mid;
     }).pop() || {}).q + ".") ];
   }
   function debtInsight(s) {
-    var now = s.row.meter.value, rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
+    var now2 = s.row.meter.value, rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
     var under = grossDebtQuarterly.filter(function(d) {
       return d.v <= s.mid;
     }).pop();
     var era = grossDebtQuarterly.filter(function(d) {
       return yearOf(d) === currentEra.from;
     })[0];
-    var cards = [ lede("What the government owes, measured against what the whole economy makes in a year. The larger the debt, the less room the body has to borrow when something goes wrong."), hiCard("Against the record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " + (now >= rec.v ? "the highest reading since the quarterly series began in 1966." : (rec.v - now).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")), hiCard("Against the 70% line", "warning", under ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.") ];
-    if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) + "% (" + era.q + "); the change since is " + fmtSigned(now - era.v, 1) + " points."));
+    var cards = [ lede("What the government owes, measured against what the whole economy makes in a year. The larger the debt, the less room the body has to borrow when something goes wrong."), hiCard("Against the record", s.row.flagState || "serious", "At " + now2.toFixed(1) + "% of GDP, " + (now2 >= rec.v ? "the highest reading since the quarterly series began in 1966." : (rec.v - now2).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")), hiCard("Against the 70% line", "warning", under ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.") ];
+    if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) + "% (" + era.q + "); the change since is " + fmtSigned(now2 - era.v, 1) + " points."));
     return cards;
   }
   function productivityInsight(s) {
@@ -29455,14 +29602,14 @@
     return [ lede("What the whole stock market returned each year, dividends included. A year above the line is a bull year and one below it a bear year, the same years the dial’s inner band colours."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " + (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") + (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")), hiCard("Against the record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " + bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ];
   }
   function interestInsight(s) {
-    var now = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
+    var now2 = s.row.meter.value, hist = fiscalHistory.interest, last = hist[hist.length - 1];
     var rec = hist.reduce(function(a, d) {
       return d.v > a.v ? d : a;
     });
     var above = hist.filter(function(d) {
       return d.v > s.mid;
     }).length;
-    return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has already used, paid again every year."), hiCard("Against the record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now.toFixed(1) + "% " + (now > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The last actual year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
+    return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has already used, paid again every year."), hiCard("Against the record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now2.toFixed(1) + "% " + (now2 > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The last actual year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
   }
   function convertLeadingSigns() {
     ROSTER.filter(function(R) {
@@ -29540,8 +29687,8 @@
       var d = metricSheet(id);
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
       d.querySelector(".sign-detail").innerHTML = cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") + function() {
-        var h = heldHighlights;
-        setHeldHighlights("");
+        var h = ui.heldHighlights;
+        ui.heldHighlights = "";
         return h;
       }();
       registerTiming(timing, {
@@ -29710,10 +29857,10 @@
       analysis: {
         panel: analysisPanel,
         bar: function() {
-          return eraOpen ? [ eraOpen.name, eraPageBack ] : [ "Analysis", null ];
+          return ui.eraOpen ? [ ui.eraOpen.name, ui.eraPageBack ] : [ "Analysis", null ];
         },
         hide: function() {
-          return [ byId(eraOpen ? "calendar-cycle" : "calendar-list") ];
+          return [ byId(ui.eraOpen ? "calendar-cycle" : "calendar-list") ];
         }
       },
       search: {
@@ -29774,7 +29921,7 @@
       },
       close: backFromPage
     });
-    setMetricPageReset(closeMetricPage);
+    ui.metricPageReset = closeMetricPage;
     function openMetricPage(el, title, returning, homeKey) {
       if (!el) return;
       seatPageFoot(el);
@@ -29906,14 +30053,14 @@
       state.q = input.value.trim().toLowerCase();
       apply();
     });
-    setOpenIndicatorsPage(function(tab) {
+    ui.openIndicatorsPage = function(tab) {
       var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
       input.value = "";
       state.q = "";
       state.kind = tab || "all";
       apply();
-    });
+    };
     apply();
   }
   var PAIR_ART = {
@@ -30015,8 +30162,8 @@
     });
     host.innerHTML = tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) + peekOf("sheet-metric-valuation", {
       value: capeNow.toFixed(1) + "×",
-      word: valuation.tag.text,
-      state: valuation.tag.state,
+      word: now.valuation.tag.text,
+      state: now.valuation.tag.state,
       cols: capeHistory.map(function(d) {
         return d.v;
       }),
@@ -30084,7 +30231,7 @@
   }
   function registerTempGdpPages() {
     sheetRenderers["sheet-metric-temp"] = function(W) {
-      var r = pageRange["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
+      var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
       put("temp-rangebar", histControls("sheet-metric-temp", {
         series: cpiYoYHistory
       }));
@@ -30122,7 +30269,7 @@
       headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
     };
     sheetRenderers["sheet-metric-gdp"] = function(W) {
-      var r = pageRange["sheet-metric-gdp"];
+      var r = page.range["sheet-metric-gdp"];
       put("gdp-rangebar", histControls("sheet-metric-gdp", {
         series: gdpQuarterlyYoY
       }));
@@ -30161,7 +30308,7 @@
       if (!hist) return;
       var cyc = pageCycle(id);
       var span = cyc ? actCycleMonths(cyc) : null;
-      var from = span ? span[0] : mWindowFrom(unempHistory.length, pageRange[id]);
+      var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
       var to = span ? span[1] : void 0;
       hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, {
         to: to,
@@ -30187,7 +30334,7 @@
     sheetRenderers["deficit-range"] = function(W) {
       var host = byId("deficit-record");
       if (!host) return;
-      var key = pageRange["deficit-range"], defCyc = pageCycle("deficit-range");
+      var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
       var defIdx = defCyc ? [ Math.max(0, defCyc.from - DEF_FROM_YEAR), Math.min(deficitHistory.length, (defCyc.to || calendarTodayY) - DEF_FROM_YEAR + 1) ] : null;
       var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : void 0;
       var bar = put("deficit-rangebar", histControls("deficit-range", {
@@ -30207,7 +30354,7 @@
       var id = "sheet-metric-households";
       var hhCyc = pageCycle(id, DSR_FROM_YEAR);
       var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
-      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, pageRange[id]);
+      var from = idx ? idx[0] : qWindowFrom(dsrHistory.length, page.range[id]);
       var to = idx ? idx[1] : dsrHistory.length;
       var host = byId("households-chart");
       if (!host) return;
@@ -30226,7 +30373,7 @@
       var hl = put("households-highlights", householdsHighlights());
     };
     sheetRenderers["sheet-metric-valuation"] = function(W) {
-      var r = pageRange["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
+      var r = page.range["sheet-metric-valuation"], vlCyc = pageCycle("sheet-metric-valuation");
       var vlSpan = vlCyc ? cycleSlice(capeHistory, vlCyc) : null;
       var vals = vlSpan ? capeHistory.slice(vlSpan[0], vlSpan[1]) : timelineWindow(capeHistory, r);
       var capeTrend = trendOf(vals.map(function(d) {
@@ -30272,8 +30419,8 @@
         return;
       }
       var opt = e.target.closest(".cycsel-opt");
-      if (id && opt && id in pageCycles) {
-        pageCycles[id] = opt.getAttribute("data-cycle");
+      if (id && opt && id in page.cycles) {
+        page.cycles[id] = opt.getAttribute("data-cycle");
         pickerOpen[id] = false;
         redrawSheet(id);
         return;
@@ -30287,15 +30434,15 @@
       var seg = e.target.closest && e.target.closest(".range-seg");
       if (!seg) return;
       var mid = seg.parentNode.getAttribute("data-mode-for");
-      if (mid && mid in pageMode) {
-        pageMode[mid] = seg.getAttribute("data-mode");
+      if (mid && mid in page.mode) {
+        page.mode[mid] = seg.getAttribute("data-mode");
         var mHost = byId("metric-page"), mDraw = sheetRenderers[mid];
         if (mDraw) mDraw(mHost && mHost.clientWidth ? mHost.clientWidth : 340);
         return;
       }
       var id = seg.parentNode.getAttribute("data-range-for");
-      if (!(id in pageRange)) return;
-      pageRange[id] = seg.getAttribute("data-range");
+      if (!(id in page.range)) return;
+      page.range[id] = seg.getAttribute("data-range");
       var host = byId("metric-page");
       var draw = sheetRenderers[id];
       if (draw) draw(host && host.clientWidth ? host.clientWidth : 340);
@@ -30310,10 +30457,10 @@
     });
     var cards = [];
     cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ten years. Paying far above the long-run price is appetite running ahead of what the body is actually producing.</p>');
-    cards.push(hiCard("Shiller CAPE", valuation.tag.state, richer.length === 0 ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "." : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y + " — only " + richer.map(function(d) {
+    cards.push(hiCard("Shiller CAPE", now.valuation.tag.state, richer.length === 0 ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "." : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y + " — only " + richer.map(function(d) {
       return d.y + " (" + capeFmt1(d.v) + ")";
     }).join(" and ") + " ran higher."));
-    put("valuation-highlights", highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(valuation.impression))));
+    put("valuation-highlights", highlightsHtml(cards, "", moreRow("<h4>Valuations</h4>" + factsFrom(now.valuation.impression))));
   }
   function tempHighlights(tempInd, r) {
     var cyc = nowModel.cpi, hot = cyc.filter(function(d) {
@@ -30379,340 +30526,6 @@
       annual: sp500AnnualReturnSource,
       gdp: gdpSrc
     };
-  }
-  var CYCLE_DATA_KEY = "gyn.cycleData";
-  var YEAR_W = 36;
-  var ALIKE = 5;
-  function cycleDataOn() {
-    try {
-      return localStorage.getItem(CYCLE_DATA_KEY) === "1";
-    } catch (e) {
-      return false;
-    }
-  }
-  function cycleRowsHtml(on) {
-    var strips = {};
-    marketCycles.forEach(function(c) {
-      strips[c.from] = seasonStripHtml(c);
-    });
-    return marketCycles.slice().reverse().map(function(cyc) {
-      var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
-      var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
-      var foot = '<div class="era-foot"><span class="era-econ"><span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span><span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span></div>";
-      return on ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' + cyc.from + '">' + head + "</button>" + cycleTrack(cyc, strip, bands) + foot + "</div>" : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
-    }).join("");
-  }
-  function wireCycleData(list) {
-    var btn = byId("cycle-data"), legend = byId("cycle-legend");
-    function apply(on) {
-      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
-      list.innerHTML = cycleRowsHtml(on);
-      if (legend) {
-        legend.hidden = !on;
-        legend.innerHTML = on ? symptomLegend() : "";
-      }
-      settleStrips();
-    }
-    if (btn) btn.addEventListener("click", function() {
-      var on = btn.getAttribute("aria-checked") !== "true";
-      try {
-        localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0");
-      } catch (e) {}
-      apply(on);
-    });
-    apply(!!btn && cycleDataOn());
-  }
-  function renderCycleList() {
-    var list = byId("cycle-list");
-    wireCycleData(list);
-    var PREVIEW_CYCLES = 99;
-    (function() {
-      var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = byId("cycle-more"), label = byId("cycle-more-label");
-      if (!btn || rows.length <= PREVIEW_CYCLES) {
-        if (btn) btn.hidden = true;
-        return;
-      }
-      var extra = rows.slice(PREVIEW_CYCLES), open2 = false;
-      function apply() {
-        extra.forEach(function(r) {
-          r.hidden = !open2;
-        });
-        btn.setAttribute("aria-expanded", open2 ? "true" : "false");
-        label.textContent = open2 ? "View less" : "View more";
-      }
-      apply();
-      btn.addEventListener("click", function() {
-        open2 = !open2;
-        apply();
-      });
-    })();
-    var listWrap = byId("calendar-list"), detail = byId("calendar-cycle");
-    function open(from) {
-      var era = marketCycles.filter(function(c) {
-        return c.from === from;
-      })[0];
-      if (!era) return;
-      if (era.ongoing) {
-        var tab = document.querySelector('.tab-btn[data-tab="cycle"]');
-        if (tab) {
-          tab.click();
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-          });
-          return;
-        }
-      }
-      enterEra(era, detail);
-      listWrap.hidden = true;
-      detail.hidden = false;
-      setTopbar(era.name, setEraPageBack(back));
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-    function back() {
-      leaveEra();
-      detail.hidden = true;
-      listWrap.hidden = false;
-      setTopbar("Analysis", null);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    }
-    list.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open");
-      if (row) open(parseInt(row.getAttribute("data-era"), 10));
-    });
-    list.addEventListener("keydown", function(e) {
-      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")) {
-        e.preventDefault();
-        open(parseInt(e.target.getAttribute("data-era"), 10));
-      }
-    });
-    setCalendarReset(function() {
-      leaveEra();
-      detail.hidden = true;
-      listWrap.hidden = false;
-      setTopbarBack(null);
-      byId("topbar-back").hidden = true;
-    });
-    addSources(sp500AnnualReturnSource);
-    addSources(typicalCycleSrc);
-  }
-  var taHome = null;
-  var modeHome = null;
-  function eraReading(r, era) {
-    var from = era.from, to = era.to || calendarTodayY;
-    var span = r.seen.filter(function(d) {
-      var y = +d.k.slice(0, 4);
-      return y >= from && y <= to;
-    });
-    if (!span.length) return {
-      none: true,
-      word: "Not measured before " + prettyK(r, r.first.k)
-    };
-    var end = span[span.length - 1], sign = r.flip ? -1 : 1, vs = span.map(function(d) {
-      return sign * d.v;
-    });
-    var second = r.pair ? upTo(r.pair, end.k).pop() : null;
-    return {
-      v: sign * end.v,
-      raw: end.v,
-      lo: Math.min.apply(null, vs),
-      hi: Math.max.apply(null, vs),
-      when: prettyK(r, end.k),
-      second: second && kT(second.k) >= from ? second.v : null,
-      peek: upTo(r.peek || r.seen, end.k).map(function(d) {
-        return sign * d.v;
-      })
-    };
-  }
-  function eraValue(val, t, r, e) {
-    val.innerHTML = t.value;
-    var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
-    val.firstChild.nodeValue = eraFig(t.text)(surplus ? -e.v : e.v, r.pair ? e.second : null);
-    if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
-  }
-  function eraRange(t, r, e) {
-    if (e.lo === e.hi) return "Flat all cycle";
-    var f = eraFig(t.text), pc = r.pair ? "%" : "";
-    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
-  }
-  function eraMini(t, r, e) {
-    if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
-    if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
-    return colPeek(e.peek, function() {
-      return "era-col";
-    }, r.mid, r.rule);
-  }
-  function eraCard(item, r, era) {
-    var val = item.querySelector(".ci-value"), when = item.querySelector(".ci-when"), mini = item.querySelector(".ci-mini");
-    var word = item.querySelector(".ci-word");
-    if (!item.__today) item.__today = {
-      value: val.innerHTML,
-      text: val.firstChild.nodeValue,
-      word: word ? word.innerHTML : null,
-      when: when.textContent,
-      mini: mini ? mini.innerHTML : ""
-    };
-    var t = item.__today;
-    if (!era) {
-      val.innerHTML = t.value;
-      when.textContent = t.when;
-      item.__today = null;
-      if (mini) mini.innerHTML = t.mini;
-      if (word && t.word == null) word.parentNode.removeChild(word); else if (word) word.innerHTML = t.word;
-      return;
-    }
-    var e = r ? eraReading(r, era) : {
-      none: true,
-      word: "No history in the app"
-    };
-    if (!word) {
-      word = document.createElement("span");
-      word.className = "ci-word";
-      val.parentNode.appendChild(word);
-    }
-    when.textContent = e.none ? "" : e.when;
-    if (mini) mini.innerHTML = e.none ? "" : eraMini(t, r, e);
-    if (e.none) {
-      val.innerHTML = "—";
-      word.textContent = e.word;
-      return;
-    }
-    eraValue(val, t, r, e);
-    word.textContent = eraRange(t, r, e);
-  }
-  function eraCards(era) {
-    var rows = rosterRows();
-    Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item) {
-      eraCard(item, rows[item.getAttribute("data-preview") || item.getAttribute("data-open")], era);
-    });
-  }
-  function eraShow(era) {
-    eraCards(era);
-    if (era && !modeHome) {
-      modeHome = {};
-      for (var k in pageMode) modeHome[k] = pageMode[k];
-    }
-    for (var id in pageCycles) {
-      pageCycles[id] = era ? era.name : null;
-      pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id];
-    }
-    if (!era) modeHome = null;
-    CATEGORIES.forEach(replaceInsights);
-  }
-  function enterEra(era, page) {
-    var ta = byId("today-analysis");
-    if (!taHome) taHome = {
-      parent: ta.parentNode,
-      next: ta.nextSibling
-    };
-    setEraOpen(era);
-    showCycle(era);
-    page.appendChild(cycleViewEl);
-    page.appendChild(ta);
-    eraShow(era);
-  }
-  function leaveEra() {
-    if (!eraOpen) return;
-    var ta = byId("today-analysis");
-    taHome.parent.insertBefore(ta, taHome.next);
-    taHome.parent.insertBefore(cycleViewEl, ta);
-    setEraOpen(null);
-    eraShow(null);
-    showCycle(currentEra);
-    repaintLive();
-  }
-  function cycleSymptoms(cyc, years) {
-    var rows = [], quiet = [], absent = [];
-    readingRoster().forEach(function(r) {
-      var now = r.place(r.now.v), measured = false;
-      var cells = years.map(function(y) {
-        if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return {
-          y: y,
-          state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
-        };
-        var best = null;
-        r.seen.forEach(function(d) {
-          if (+d.k.slice(0, 4) !== y) return;
-          var gap = Math.abs(r.place(d.v) - now);
-          if (!best || gap < best.gap) best = {
-            d: d,
-            gap: gap
-          };
-        });
-        if (!best) return {
-          y: y,
-          state: "na"
-        };
-        measured = true;
-        return {
-          y: y,
-          state: best.gap <= ALIKE ? "on" : "off",
-          best: best.d
-        };
-      });
-      var hits = cells.filter(function(c) {
-        return c.state === "on";
-      });
-      if (hits.length) rows.push({
-        r: r,
-        cells: cells,
-        hits: hits
-      }); else (measured ? quiet : absent).push(r.name);
-    });
-    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") + (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
-    return {
-      rows: rows,
-      foot: foot.trim()
-    };
-  }
-  function placeWords(r, v) {
-    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
-    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
-  }
-  function symptomNote(cyc, row) {
-    var r = row.r;
-    return "<h4>" + r.name + " · " + cyc.name + "</h4><p>Now " + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
-      return prettyK(r, c.best.k) + ": " + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ", " + placeWords(r, c.best.v);
-    }));
-  }
-  function symptomRow(cyc, row, cols) {
-    var r = row.r;
-    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
-      return c.y;
-    }).join(", ") + '">' + row.cells.map(function(c) {
-      return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>';
-    }).join("") + "<b>" + r.name + "</b></button>";
-  }
-  function cycleTrack(cyc, strip, bands) {
-    var years = [];
-    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
-    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
-    var cols = "grid-template-columns:repeat(" + years.length + "," + YEAR_W + "px) minmax(96px,1fr)";
-    var yrs = years.map(function(y) {
-      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
-      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + "</span>";
-    }).join("");
-    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)"><div style="width:' + strip.span * YEAR_W / 4 + 'px">' + bands + '</div><span></span></div><div class="sx-yrs" style="' + cols + '">' + yrs + "<span></span></div>" + sx.rows.map(function(row) {
-      return symptomRow(cyc, row, cols);
-    }).join("") + "</div>" + (sx.foot ? '<p class="sx-foot">' + sx.foot + "</p>" : "");
-  }
-  function symptomLegend() {
-    return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p><div class="sx-keys">' + CATEGORIES.map(function(c) {
-      return '<span><i class="cat-' + c.key + '"></i>' + c.title + "</span>";
-    }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span><span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
-  }
-  function bootAnalysis() {
-    GYN.step("renderCycleList", renderCycleList, "wire");
-    renderCycleList();
-    renderCycleView(nowModel);
   }
   function renderSeasonRows() {
     var meta = wheelMeta[currentSeason];
@@ -30783,8 +30596,8 @@
       }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
     }
     put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' + seasonRules.map(function(r) {
-      var m = wheelMeta[r.key], now = r.key === currentSeason;
-      return '<div class="lag-row ' + seasonGroup(r.key) + (now ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + "</span></div>";
+      var m = wheelMeta[r.key], now2 = r.key === currentSeason;
+      return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
     }).join(""));
     put("seasons-kicker", "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
@@ -30815,10 +30628,10 @@
       btn.addEventListener("click", function() {
         if (btn.classList.contains("active")) {
           if (btn.getAttribute("data-tab") === "analysis") {
-            if (metricPageReset) metricPageReset();
-            if (calendarReset) calendarReset();
+            if (ui.metricPageReset) ui.metricPageReset();
+            if (ui.calendarReset) ui.calendarReset();
           }
-          if (btn.getAttribute("data-tab") === "cycle" && metricPageReset) metricPageReset();
+          if (btn.getAttribute("data-tab") === "cycle" && ui.metricPageReset) ui.metricPageReset();
           return;
         }
         btns.forEach(function(b) {
@@ -30832,10 +30645,10 @@
         btn.setAttribute("aria-selected", "true");
         var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
         if (target) target.hidden = false;
-        if (metricPageReset) metricPageReset();
-        if (calendarReset) calendarReset();
+        if (ui.metricPageReset) ui.metricPageReset();
+        if (ui.calendarReset) ui.calendarReset();
         topTitle.textContent = tabTitles[tab] || "Gyneconomy";
-        setTopbarBack(null);
+        ui.topbarBack = null;
         byId("topbar-back").hidden = true;
         if (tab === "cycle") {
           target.insertBefore(cycleViewEl, byId("today-analysis"));
@@ -31016,10 +30829,106 @@
     GYN.step("wireContactForm", wireContactForm, "wire");
     wireContactForm();
   }
+  function paintReading(sheet, value, tag) {
+    var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
+    Array.prototype.forEach.call(doors, function(d) {
+      if (d.__today) {
+        painted++;
+        return;
+      }
+      var v = d.querySelector(".ci-value, .subject-value");
+      if (v && v.firstChild && v.firstChild.nodeType === 3) {
+        v.firstChild.nodeValue = String(value);
+        painted++;
+      }
+      if (tag) paintTag(d, tag);
+    });
+    paintWhen(sheet);
+    if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
+    return painted;
+  }
+  function repaintVolatilityRing() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
+      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
+      if (m) m.innerHTML = volatilityRing();
+    });
+  }
+  function paintTag(d, tag) {
+    var t = d.querySelector(".tag");
+    if (!t) return;
+    t.textContent = tag.text;
+    if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
+  }
+  function repaintVolatility() {
+    repaintVolatilityRing();
+    paintReading("sheet-sign-sentiment", now.vixRow.flagValue, volatilityTag());
+  }
+  function repaintPressureRow() {
+    var h = now.yieldCurve.filter(function(d) {
+      return d.m === "10Y";
+    })[0];
+    if (!h || h.y == null) return;
+    paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
+  }
+  function repaintPressureChart() {
+    var s = byIdMaybe("sheet-sign-pressure");
+    if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
+  }
+  function repaintDesire() {
+    var row = desireRow(), cape = valRow("cape");
+    if (!row || !cape) return;
+    paintReading("sheet-sign-desire", row.metric, null);
+    Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el) {
+      el.outerHTML = riskMatrixBlock(row.meter.value, cape.meter.value);
+    });
+  }
+  function syncCapeHistory() {
+    var last = capeHistory[capeHistory.length - 1], now2 = valRow("cape").meter.value;
+    if (last.y === calendarTodayY) last.v = now2; else capeHistory.push({
+      y: calendarTodayY,
+      v: now2
+    });
+    forgetMood();
+  }
+  function repaintValuationRow() {
+    var row = valRow("cape");
+    if (!row) return;
+    paintReading("sheet-metric-valuation", row.flagValue, now.valuation.tag || null);
+  }
+  function repaintPolicy() {
+    var box = put("policy-facts", policyFactRows());
+    var dir = /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-−]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
+    paintReading("sheet-sign-hormones", fedFundsRange(), {
+      text: dir
+    });
+  }
+  function repaintDiagnosis() {
+    if (!ui.eraOpen) renderDiagnosis(nowModel);
+    CATEGORIES.forEach(replaceInsights);
+  }
+  function bootRepaint() {
+    onLive("fedFunds", repaintPolicy);
+    onLive("yieldCurve", repaintPressureRow);
+    onLive("yieldCurve", repaintPressureChart);
+    onLive("valuation", repaintValuationRow);
+    onLive("vixClose", repaintVolatility);
+    onLive("hyOasNow", repaintDesire);
+    onLive("capeValue", repaintValuationRow);
+    onLive("capeValue", syncCapeHistory);
+    onLive("capeValue", repaintDesire);
+    onLive("*", repaintDiagnosis);
+    exposeLive();
+    GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
+    checkLiveCoverage();
+    GYN.step("refreshLiveData", refreshLiveData, "live");
+    refreshLiveData();
+    GYN.step("fetchSiteData", fetchSiteData, "live");
+    fetchSiteData();
+  }
   bootDom();
   bootRefreshSeason();
   bootLive();
-  bootRepaint();
+  bootReadingRegistry();
   bootData();
   bootReadings();
   bootHistory();
@@ -31032,6 +30941,7 @@
   bootDiagnosis();
   bootAnalysis();
   bootTabsMenu();
+  bootRepaint();
 })();</script>
 <script>(function() {
   try {

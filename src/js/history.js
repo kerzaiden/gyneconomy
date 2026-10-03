@@ -5,6 +5,13 @@ import { AXIS, pendingGeom } from "./charts.js";
 import { deficitHistory, hyAt, hyDates, hyNum, marketCycles } from "./data.js";
 import { cycLabel, cycleByName, cycleSpanYears, openCycle } from "./model.js";
 
+export var page = {
+  mode: undefined,
+  cycles: undefined,
+  range: undefined,
+  stops: undefined,
+  head: undefined
+};
 /* ---- the history card's head ---- */
 export var HIST_NOTE = {};
 var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
@@ -16,7 +23,7 @@ export function headPickRow(on, attr, key, label){
     '<span class="cycsel-nm">' + label + '</span></button>';
 }
 export function histHead(id){
-  var H = HIST_HEAD[id];
+  var H = page.head[id];
   if (!H) return "";
   var t = typeof H.title === "function" ? H.title() : H.title;
   return '<div class="band-head">' +
@@ -32,7 +39,7 @@ export function histHead(id){
 }
 var headNoteIdx = {};
 function headMenuHtml(id){
-  var H = HIST_HEAD[id] || {};
+  var H = page.head[id] || {};
   var groups = H.menu ? H.menu() : [];
   var extra;
   if (!groups.length) extra = "";
@@ -369,16 +376,16 @@ function modeBar(id, active, extra){
 }
 export var pickerOpen = {};
 export function histControls(id, tl, minYear, extra){
-  var mode = pageMode[id], on = mode === "cycles";
+  var mode = page.mode[id], on = mode === "cycles";
   var known = mode === "cycles" || mode === "calendar";
   return '<div class="hist-controls">' +
     modeBar(id, mode, extra) +
-    (!known ? "" : on ? cyclePicker(id, pageCycles[id], minYear)
-                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:PAGE_STOPS[id] }), pageRange[id])) +
+    (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear)
+                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:page.stops[id] }), page.range[id])) +
   '</div>';
 }
 export function pageCycle(id, y0){
-  var c = pageMode[id] === "cycles" ? (cycleByName(pageCycles[id]) || openCycle()) : null;
+  var c = page.mode[id] === "cycles" ? (cycleByName(page.cycles[id]) || openCycle()) : null;
   return c && c.from < y0 ? openCycle() : c;
 }
 function cyclePicker(id, picked, minYear){
@@ -421,14 +428,6 @@ export function attachHistory(host, tipId, expect){
   if (tipId) wireHistHover(host, tipId);
   return g;
 }
-
-export function setPageMode(v){ pageMode = v; return v; }
-export function setPageCycles(v){ pageCycles = v; return v; }
-export function setPageRange(v){ pageRange = v; return v; }
-export function setPAGE_STOPS(v){ PAGE_STOPS = v; return v; }
-export function setHIST_HEAD(v){ HIST_HEAD = v; return v; }
-
-export var pageMode, pageCycles, pageRange, PAGE_STOPS, HIST_HEAD;
 
 export function bootHistory(){
   window.__histRead = function(host, d, i){ if (host) histReadFill(host, d, i); };

@@ -1,10 +1,10 @@
 import { srcBlock } from "./format.js";
-import { byId, expandBtn, layer, put, rovingKeys } from "./dom.js";
+import { byId, expandBtn, layer, put, rovingKeys, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { wheelMeta } from "./refresh-season.js";
 import { frameworkRows } from "./data.js";
 import { cpiNow, currentEra, currentSeason, seasonGroup, seasonWhy } from "./model.js";
-import { calendarReset, cycleViewEl, metricPageReset, setTopbarBack } from "./render-pages.js";
+import { cycleViewEl } from "./render-pages.js";
 import { settleStrips, showCycle } from "./dial-cycle.js";
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
@@ -64,8 +64,8 @@ function renderTopbar(){
   btns.forEach(function(btn){
     btn.addEventListener("click", function(){
       if (btn.classList.contains("active")){
-        if (btn.getAttribute("data-tab") === "analysis"){ if (metricPageReset) metricPageReset(); if (calendarReset) calendarReset(); }
-        if (btn.getAttribute("data-tab") === "cycle" && metricPageReset) metricPageReset();
+        if (btn.getAttribute("data-tab") === "analysis"){ if (ui.metricPageReset) ui.metricPageReset(); if (ui.calendarReset) ui.calendarReset(); }
+        if (btn.getAttribute("data-tab") === "cycle" && ui.metricPageReset) ui.metricPageReset();
         return;
       }
       btns.forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
@@ -74,10 +74,10 @@ function renderTopbar(){
       btn.setAttribute("aria-selected", "true");
       var tab = btn.getAttribute("data-tab"), target = document.querySelector('.tab-panel[data-tab="' + tab + '"]');
       if (target) target.hidden = false;
-      if (metricPageReset) metricPageReset();
-      if (calendarReset) calendarReset();
+      if (ui.metricPageReset) ui.metricPageReset();
+      if (ui.calendarReset) ui.calendarReset();
       topTitle.textContent = tabTitles[tab] || "Gyneconomy";
-      setTopbarBack(null);
+      ui.topbarBack = null;
       byId("topbar-back").hidden = true;
       if (tab === "cycle"){ target.insertBefore(cycleViewEl, byId("today-analysis")); showCycle(currentEra); }
       if (tab === "analysis") settleStrips();
