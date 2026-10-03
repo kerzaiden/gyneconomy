@@ -1,5 +1,5 @@
 import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, popHead, qLabel, srcBlock } from "./format.ts";
-import { byId, detailSlot, detailTexts, elFrom, moreRow, put, rovingKeys, ui } from "./dom.ts";
+import { byId, detailSlot, detailTexts, elFrom, moreRow, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, gdpQuarterlyYoY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { gdpSrc, seasonReading, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
@@ -7,6 +7,7 @@ import { cycleModel, cycleYtdFraction, QUARTER_END_MONTH, seasonGroup, seasonTit
 import { CATEGORIES } from "./roster.ts";
 import { catCard, catList, gdpPeek, marketPeek, tempPeek } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
+import { cycleViewEl } from "./render-pages.ts";
 import type { TrackSeg } from "./model.ts";
 import type { SeasonReading } from "./data.ts";
 
@@ -92,7 +93,7 @@ function drawDial(m: CycleModel){
       parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
     }
   }
-  var dialEl = byId("cycle-dial");
+  var dialEl = need("cycle-dial");
   dialEl.style.setProperty("--moon-w", moonW.toFixed(2));
   dialEl.style.setProperty("--track-w", trackW.toFixed(2));
   dialEl.style.setProperty("--moon-w-active", (moonW + 5).toFixed(2));
@@ -102,7 +103,7 @@ function drawDial(m: CycleModel){
 }
 // ---- the Appearance row: System · Light · Dark, kept in localStorage; System clears the choice ----
 function wireThemeChoice(){
-  var group = byId("theme-toggle"), current = byId("appearance-current"); if (!group) return;
+  var group = need("theme-toggle"), current = byId("appearance-current"); if (!group) return;
   var names = { system:"Use system setting", light:"Light mode", dark:"Dark mode" };
   function paint(){
     var cur = document.documentElement.getAttribute("data-theme") || "system";
@@ -110,8 +111,7 @@ function wireThemeChoice(){
     if (current) current.textContent = names[cur as keyof typeof names];
   }
   group.addEventListener("click", function(e){
-    var b = (e.target as Element).closest("[data-theme-choice]"); if (!b) return;
-    var v = b.getAttribute("data-theme-choice")!;
+    var b = (e.target as Element).closest("[data-theme-choice]"), v = b && b.getAttribute("data-theme-choice"); if (v == null) return;
     if (v === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", v);
     try{ if (v === "system") localStorage.removeItem("gyneconomy-theme"); else localStorage.setItem("gyneconomy-theme", v); }catch(err){}
     paint();
@@ -143,7 +143,7 @@ function renderCycleKicker(){
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
   put("season-wheel-hub-date", dateHtml);
-  var themeEl = byId("season-wheel-hub-theme"), ret = sp500AnnualReturns[y];
+  var themeEl = need("season-wheel-hub-theme"), ret = sp500AnnualReturns[y];
   themeEl.innerHTML = meta.name + '<span class="hub-chev" aria-hidden="true">\u203a</span>'; themeEl.classList.remove("bull", "bear");
   put("season-wheel-hub-detail", (meta.theme ? '<span class="hub-stage">' + meta.theme + '</span>' : '') +
     (ret != null ? hubLine('<b>' + fmtSigned(ret, 1) + '%</b> ' + y) : ''));
@@ -159,13 +159,13 @@ function hubOpen(open: HubOpen){
 function quarterCards(m: CycleModel, seg: QuarterSeg){
   var r = seg.reading, y = parseInt(seg.q, 10), qEnd = y + "-" + (r.annual ? "12" : QUARTER_END_MONTH[String(seg.q).slice(5)]);
   var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q; });
-  var cards = [
+  var cards: [string | null, string][] = [
     [tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c){ return c.m <= qEnd; })), monthLabel(qEnd)],
     [gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)],
     [marketPeek(y, m.era.from), String(y)]
   ];
   return '<div class="cat-sheet cat-weather">' +
-    catList(cards.map(function(c){ return c[0] ? catCard(elFrom(c[0])!, c[1]!).outerHTML : ""; }).join("")) + '</div>';
+    catList(cards.map(function(c){ return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : ""; }).join("")) + '</div>';
 }
 function quarterSheet(m: CycleModel, seg: QuarterSeg, isPresent: boolean){
   var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
@@ -210,14 +210,17 @@ function hubShowYear(y: number){
   var m = dialState.m, ret = sp500AnnualReturns[y], isYtd = m.ongoing && y === calendarTodayY;
   var cum = m.cumByYear[y]; hubOpen(null);
   put("season-wheel-hub-date", "<b>" + y + "</b>" + (isYtd ? " · Today" : ""));
-  var themeEl = byId("season-wheel-hub-theme");
+  var themeEl = need("season-wheel-hub-theme");
   themeEl.textContent = ret >= 0 ? "Bull year" : "Bear year";
   themeEl.classList.toggle("bull", ret >= 0); themeEl.classList.toggle("bear", ret < 0);
   put("season-wheel-hub-detail", hubLine('S&amp;P 500 total return <b>' + fmtSigned(ret, 1) + '%</b>') +
     (cum != null ? hubLine('<b>' + fmtSigned(cum, 1) + '%</b> since ' + m.era.from + (y === m.peakYear ? ' · <b>Peak year</b>' : '')) : ""));
 }
+function peekEl(html: string): Element { var n = elFrom(html); if (!n) throw new Error("a peek drew nothing"); return n; }
+export function one(sel: string): Element { var n = document.querySelector(sel); if (!n) throw new Error("the page has no " + sel); return n; }
+export function cycleView(): HTMLElement { if (!cycleViewEl) throw new Error("the cycle view is not built"); return cycleViewEl; }
 function renderCycleDial(){
-  var dial = byId("cycle-dial"), hub = document.querySelector(".season-wheel-hub")!;
+  var dial = need("cycle-dial"), hub = one(".season-wheel-hub");
   var active: Element[] | null = null;
   function mark(i: number | null){
     if (active) active.forEach(function(el){ el.classList.remove("active"); });
@@ -228,8 +231,8 @@ function renderCycleDial(){
   function readTarget(el: Element){
     var t = el.closest && el.closest("[data-q], [data-year]");
     if (!t) return false;
-    if (t.hasAttribute("data-q")){ var i = +t.getAttribute("data-q")!; mark(i); hubShowQuarter(i); }
-    else { mark(null); hubShowYear(+t.getAttribute("data-year")!); }
+    var q = t.getAttribute("data-q"); if (q != null){ var i = +q; mark(i); hubShowQuarter(i); }
+    else { mark(null); hubShowYear(+(t.getAttribute("data-year") || "")); }
     shown = true;
     return true;
   }
@@ -293,8 +296,8 @@ function renderCycleDial(){
     if (dialState.parked != null) mark(dialState.parked);
   }
   ["pointerup", "pointercancel"].forEach(function(t){ dial.addEventListener(t, endScrub); });
-  dial.addEventListener("click", function(e){ var t = !scrubbing && (e.target as Element).closest && (e.target as Element).closest("[data-q]"); if (t) goTo(+t.getAttribute("data-q")!); });
-  byId("season-wheel-hub-open").addEventListener("keydown", function(e){
+  dial.addEventListener("click", function(e){ var t = !scrubbing && (e.target as Element).closest && (e.target as Element).closest("[data-q]"), q = t && t.getAttribute("data-q"); if (typeof q === "string") goTo(+q); });
+  need("season-wheel-hub-open").addEventListener("keydown", function(e){
     var i = dialKeyStep(e.key); if (i == null) return;
     e.preventDefault(); shown = false; goTo(i); dialSay();
   });
@@ -308,9 +311,9 @@ function dialKeyStep(key: string){
   return to === n ? -1 : to;
 }
 function dialSay(){
-  var m = dialState.m, q = dialState.quarters[dialState.parked!], meta = wheelMeta[q ? q.seg.season : m.season];
+  var m = dialState.m, q = dialState.parked == null ? undefined : dialState.quarters[dialState.parked], meta = wheelMeta[q ? q.seg.season : m.season];
   var when = q ? qLabel(q.seg.q) : m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth);
-  byId("season-wheel-live").textContent = when + ", " + meta.name + (meta.theme ? ", " + meta.theme : "");
+  need("season-wheel-live").textContent = when + ", " + meta.name + (meta.theme ? ", " + meta.theme : "");
 }
 // ---- the whole view, for one cycle ----
 export function renderCycleView(m: CycleModel){
@@ -431,7 +434,7 @@ export function bootDialCycle(){
     ]) +
     srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]));
   window.addEventListener("resize", (function(){
-    var t: ReturnType<typeof setTimeout> | null = null;
-    return function(){ clearTimeout(t!); t = setTimeout(settleStrips, 120); };
+    var t: ReturnType<typeof setTimeout> | undefined;
+    return function(){ clearTimeout(t); t = setTimeout(settleStrips, 120); };
   })());
 }

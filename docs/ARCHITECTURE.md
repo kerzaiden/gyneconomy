@@ -242,6 +242,12 @@ answer registers it, the view that needs it fires it, and neither holds a refere
 with no handler is recorded, which makes the suite able to see it.
 ```
 
+Since V707 the same holds between modules: the five view hooks that rode on `ui` behind a silent `if`
+(`openIndicatorsPage`, `calendarReset`, `metricPageReset`, `drawSpreadView`, `drawSpreadWindow`) are `GYN`
+actions, and the two `window` channels are exports (`sourceIndex` from `pages-nav`, `catSnap` from
+`render-core`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
+not hooks.
+
 ## Who refreshes what
 
 | | Refreshes | How often | Reaches |
@@ -341,6 +347,12 @@ the manifest's; now each module says what it imports.
   and after the types went in. `npm run typecheck` (in `check`) runs `tsc` with `strict` on. The app's shared shapes
   (a row, a meter, a point, a cycle, a reading, a chart's geometry) are global types in `src/types.d.ts`; what the
   app adds to `window` and to DOM elements is in `src/globals.d.ts`; a type only one module uses stays in that module.
+  **The types say what can be missing (V707).** `byId` returns `HTMLElement | null`; `need(id)` is the checked
+  lookup for an element written in `page-body.html`, and throws if it is gone. A band is one of `{lte}`, `{gte}` or
+  `{from, to}` (read through `bandEnds`), a verdict `State` is one of six words and a style `Tone` adds the
+  classes a tag may carry, and a `Cycle` is either ongoing (`to: null`) or closed (`to` a year). No `!` asserts a
+  value its type says may be null: a data invariant is read through a helper that throws a named error when it
+  breaks (`fileRow`, `metered`, `tagFor`, `stateOf`), so a bad document fails at the line that trusts it.
   Types are syntax, not comments, so the no-comments rule holds. `load-order` parses the source after
   `stripTypeScriptTypes`, which blanks the types and keeps every position; `uncomment` reads comments with
   TypeScript's own parser, so one inside type syntax or in a `.d.ts` file is caught (V705); the function
@@ -713,7 +725,7 @@ The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat 
 Circulation's own Horizon card for V685–V687, and since V688 is Pressure's second ⋯ group, Treasury spreads
 (Keren). One state, `pressureView` ("yield" or "spread", in model beside `spreadPick`), picks what the page
 draws: `drawPressure` shows one chart shell (`showPressureView`), draws that view (`drawYlm` or the spread view
-`drawSpreadView`, set by `renderHorizonPage`), and writes its Insights into the one `#pressure-insights` box, so
+`drawSpreadView`, the action `renderHorizonPage` registers), and writes its Insights into the one `#pressure-insights` box, so
 the page keeps one Insights box; `pressureHead` builds the title, both menu groups and the note. Both views share
 the `pressure-range` window. **The spread's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback

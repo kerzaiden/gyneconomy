@@ -1,10 +1,10 @@
-import { atMonth, factsFrom, hiCard, highlightsHtml, qLabel, srcBlock } from "./format.ts";
-import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, put, svgEl, ui } from "./dom.ts";
+import { atMonth, factsFrom, hiCard, highlightsHtml, metered, qLabel, srcBlock, stateOf } from "./format.ts";
+import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, need, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { curveNoteFull, fedFundsRange, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { curveNoteFull, fedFundsRange, fileRow, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
 import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.ts";
 import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.ts";
@@ -59,7 +59,7 @@ function spreadSeries(): Record<string, SpreadSeries>{
   };
 }
 function renderSpreadHistory(){
-  var svg = byId("spread-history-svg");
+  var svg = need("spread-history-svg");
   var F = histFrame(), W = F.W, H = F.H, padL = F.L, padR = W - F.R, padT = F.T, padB = H - F.B;
   var innerW = W - padL - padR, innerH = H - padT - padB;
   var minV = -2, maxV = 4;
@@ -145,11 +145,11 @@ function renderSpreadHistory(){
     btn.addEventListener("click", function(){
       document.querySelectorAll(".spread-toggle-btn").forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
       btn.classList.add("active"); btn.setAttribute("aria-selected","true");
-      draw(btn.getAttribute("data-series")!);
+      var key = btn.getAttribute("data-series"); if (key != null) draw(key);
     });
   });
 
-  ui.drawSpreadWindow = draw;
+  GYN.on("drawSpreadWindow", function(key: string, win: [number, number]){ draw(key, win[0], win[1]); });
   draw("3m");
 }
 // ---- RENDER: un-inversion-to-recession historical lag panel ----
@@ -179,7 +179,7 @@ function deriveUninversionDetail(){
 }
 // ---- RENDER: the Treasury spreads, inside Pressure ----
 function renderHorizonPage(){
-  var host = byId("pressure-timeline"); if (!host) return;
+  var host = need("pressure-timeline");
   var hznY0 = parseInt(t10y3mHistory[0].q.slice(0, 4), 10);
   function hznData(){ return spreadPick === "2y" ? t10y2yHistory : t10y3mHistory; }
   function drawHzn(){
@@ -190,7 +190,7 @@ function renderHorizonPage(){
     var to = idx ? idx[1] : data.length;
     host.innerHTML = histControls("pressure-range",
       { depth:Math.floor(data.length / 4) }, hznY0);
-    if (ui.drawSpreadWindow) ui.drawSpreadWindow(spreadPick, from, to);
+    GYN.fire("drawSpreadWindow", spreadPick, [from, to]);
     var tr = byId("ylm-trend");
     if (tr){
       var w: number[] = [];
@@ -200,7 +200,7 @@ function renderHorizonPage(){
     }
     put("pressure-insights", spreadInsights());
   }
-  ui.drawSpreadView = drawHzn;
+  GYN.on("drawSpreadView", drawHzn);
 }
 function spreadInsights(){
   var r = horizonRead;
@@ -212,7 +212,7 @@ function spreadInsights(){
     'forecast of its own next season — a mood, not a measurement taken off it.</p>');
   cards.push(hiCard(r.word, r.state,
     "The spread has " + (r.dSpread >= 0 ? "widened " : "narrowed ") + Math.abs(r.dSpread).toFixed(2) +
-    " points over four quarters, from " + sgn(r.was!) + " to " + sgn(r.q.v) + " — the 10-year " +
+    " points over four quarters, from " + (r.was == null ? "\u2014" : sgn(r.was)) + " to " + sgn(r.q.v) + " — the 10-year " +
     (r.dLong >= 0 ? "up " : "down ") + Math.abs(r.dLong).toFixed(2) + ", the 3-month " +
     (r.dShort >= 0 ? "up " : "down ") + Math.abs(r.dShort).toFixed(2) + ". More of that came from the " +
     (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
@@ -232,7 +232,7 @@ function spreadInsights(){
 }
 // ---- RENDER: Valuation (slow) ----
 function renderValuationTag(){
-  var cape = valRow("cape")!;
+  var cape = fileRow("cape");
   histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
   addSources(now.valuation.src);
 }
@@ -378,7 +378,7 @@ function renderVolatility(){
 }
 function volatilityHighlights(y0: number){
   var hl = byId("curve-highlights"); if (!hl || !volatilityHistory.length) return;
-  var m = now.vixRow!.meter, v = m.value!, tag = volatilityTag();
+  var m = now.vixRow!.meter, v = metered(m), tag = volatilityTag();
   var top = volatilityHistory.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var vixOnly = volatilityHistory.filter(function(d){ return d.m >= VOL_JOIN; });
   var vixTop = vixOnly.reduce(function(a, d){ return d.v > a.v ? d : a; }, vixOnly[0]);
@@ -400,9 +400,9 @@ function volatilityHighlights(y0: number){
         ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like \u2014 and inversions cluster near bottoms."
         : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
   hl.innerHTML = highlightsHtml([lede,
-    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow!.note)), tag.state!, nowTxt),
+    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow!.note)), stateOf(tag), nowTxt),
     hiCard("Against the record", "", recTxt),
-    hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), shape.state!, shapeTxt)]);
+    hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt)]);
 }
 // ---- RENDER: Analysis subjects — one headline figure per collapsible section ----
 function renderSubjectRows(){
@@ -426,9 +426,9 @@ function renderSubjectRows(){
 }
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
 export function setTopbar(title: string, onBack?: (() => void) | null){
-  byId("topbar-title")!.textContent = title;
+  need("topbar-title").textContent = title;
   ui.topbarBack = onBack || null;
-  byId("topbar-back")!.hidden = !onBack;
+  need("topbar-back").hidden = !onBack;
 }
 
 export var cycleViewEl: HTMLElement | null;
@@ -449,5 +449,5 @@ export function bootRenderPages(){
   GYN.step("renderSubjectRows", renderSubjectRows, "build");
   renderSubjectRows();
   cycleViewEl = byId("cycle-view");
-  byId("topbar-back")!.addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
+  need("topbar-back").addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
 }

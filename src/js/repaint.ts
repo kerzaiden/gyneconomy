@@ -48,11 +48,11 @@ function repaintPressureChart(){
   if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
 }
 function repaintDesire(){
-  var row = desireRow(), cape = valRow("cape");
+  var row = desireRow(), cape = valRow("cape"), cv = cape && cape.meter.value;
   if (!row || !cape) return;
   paintReading("sheet-sign-desire", row.metric, null);
   Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el: Element){
-    el.outerHTML = riskMatrixBlock(row.meter.value!, cape!.meter.value!);
+    var rv = row.meter.value; if (rv != null && cv != null) el.outerHTML = riskMatrixBlock(rv, cv);
   });
 }
 function syncCape(){ syncCapeHistory(); forgetMood(); }

@@ -7,11 +7,6 @@ export type UiStore = {
   topbarBack: (() => void) | null;
   eraPageBack: (() => void) | null;
   heldHighlights: string;
-  openIndicatorsPage: ((tab: string | null) => void) | null;
-  calendarReset: (() => void) | null;
-  metricPageReset: (() => void) | null;
-  drawSpreadView: (() => void) | null;
-  drawSpreadWindow: ((key: string, from: number, to: number) => void) | null;
   spreadDetail: string;
   uninvDetail: string;
 };
@@ -22,21 +17,21 @@ export var ui: UiStore = {
   topbarBack: null,
   eraPageBack: null,
   heldHighlights: "",
-  openIndicatorsPage: null,
-  calendarReset: null,
-  metricPageReset: null,
-  drawSpreadView: null,
-  drawSpreadWindow: null,
   spreadDetail: "",
   uninvDetail: ""
 };
-export function byId(id: string): HTMLElement {
+export function byId(id: string): HTMLElement | null {
   var n = document.getElementById(id);
   if (!n){
     var m = (window.__elMiss = window.__elMiss || {});
     m[id] = (m[id] || 0) + 1;
   }
-  return n as HTMLElement;
+  return n;
+}
+export function need(id: string): HTMLElement {
+  var n = document.getElementById(id);
+  if (!n) throw new Error("the page has no #" + id);
+  return n;
 }
 export function byIdMaybe(id: string){ return document.getElementById(id); }
 export function put(target: string | Element | null, html: string){
@@ -45,10 +40,10 @@ export function put(target: string | Element | null, html: string){
   return n;
 }
 export function elFrom(html: string){ var t = document.createElement("template"); t.innerHTML = html; return t.content.firstElementChild; }
-var LAYERS: Layer[] = [];
-export function layer(rank: number, o: Layer){ o.rank = rank; LAYERS.push(o); LAYERS.sort(function(a, b){ return a.rank! - b.rank!; }); }
+var LAYERS: (Layer & { rank: number })[] = [];
+export function layer(rank: number, o: Layer){ LAYERS.push(Object.assign(o, { rank: rank })); LAYERS.sort(function(a, b){ return a.rank - b.rank; }); }
 export function onScreen(el: Element | null | undefined): boolean { return !!el && el.isConnected && el.getClientRects().length > 0; }
-export function focusQuiet(el: HTMLElement | SVGElement | null | undefined){ if (!onScreen(el)) return false; el!.focus({ preventScroll:true }); return document.activeElement === el; }
+export function focusQuiet(el: HTMLElement | SVGElement | null | undefined){ if (!el || !onScreen(el)) return false; el.focus({ preventScroll:true }); return document.activeElement === el; }
 function tabStops(box: Element): HTMLElement[] {
   return Array.prototype.filter.call(box.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input, textarea, select, [tabindex]"),
     function(n: HTMLElement){ return n.tabIndex >= 0 && onScreen(n) && getComputedStyle(n).visibility !== "hidden"; });
