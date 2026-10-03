@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
 
       - name: Install
         run: npm ci
@@ -53,6 +54,9 @@ jobs:
             console.log('ok: ' + keys.length + ' documents — ' + keys.join(', '));
             failed.forEach(f => console.log('::warning title=Figure left alone::' + f));
           "
+
+      - name: The app accepts every new figure
+        run: node --test test/unit/feed.test.mjs
 
       - name: Commit if anything moved
         id: commit
@@ -96,3 +100,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run ci.yml --ref main --repo "$GITHUB_REPOSITORY"
+
+      - name: A figure that did not arrive turns the run red
+        run: |
+          node -e "
+            const failed = require('./data/live.json')._meta.failed || [];
+            failed.forEach(f => console.log('::error title=Figure did not arrive::' + f));
+            process.exit(failed.length ? 1 : 0);
+          "

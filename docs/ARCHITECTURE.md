@@ -252,7 +252,7 @@ not hooks.
 
 | | Refreshes | How often | Reaches |
 |---|---|---|---|
-| **Data workflow** (`data.yml`) | six readings from their primary sources into `data/live.json`, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself) | weekdays 22:40 UTC, after the NY close | the site |
+| **Data workflow** (`data.yml`) | five readings from their primary sources into `data/live.json`, tests that the app accepts each one, then starts the site deploy (V651: a push with the repository's own token starts no workflow by itself). A figure that did not arrive keeps its last document and turns the run red, so a dead key is an email, not a quietly ageing site (1.1.1) | weekdays 22:40 UTC, after the NY close | the site |
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 | **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |

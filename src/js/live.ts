@@ -33,7 +33,10 @@ function docValue(d: LiveDoc | null | undefined): unknown {
 }
 function docOk(name: string, d: LiveDoc | null | undefined){
   var r = READINGS[name];
-  try { return !!r && shapeOk(r, docValue(d)) && plainText(d); } catch (e) { return false; }
+  try { return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d); } catch (e) { return false; }
+}
+function datedOk(r: LiveReading, d: LiveDoc | null | undefined){
+  return r.kind === "object" || /^\d{4}-\d{2}-\d{2}$/.test(String(d && d.asOf));
 }
 export function plainText(v: unknown): boolean {
   if (typeof v === "string") return !/[<>"]/.test(v);

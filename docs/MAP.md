@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,676 lines** in 31 files, about 567 KB, roughly **161 thousand tokens**. No session can
+The source is **8,679 lines** in 31 files, about 567 KB, roughly **161 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `97a1499` on 2026-10-03.
+Generated from commit `78a120e` on 2026-10-03.
 
 ## The page
 
@@ -23,14 +23,14 @@ Generated from commit `97a1499` on 2026-10-03.
 | `js/main.ts` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **27** modules, **522** top-level functions, **91** top-level vars, **325** exported names, **18** boots.
+Counts: **27** modules, **523** top-level functions, **91** top-level vars, **325** exported names, **18** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
 | `js/dom.ts` | 145 | 18 | `format` |
-| `js/live.ts` | 193 | 19 | `format` |
+| `js/live.ts` | 196 | 20 | `format` |
 | `js/refresh-season.ts` | 39 | 4 | `format`, `history-fred` |
 | `js/data.ts` | 528 | 61 | `format`, `history-fred`, `live`, `refresh-season` |
 | `js/model.ts` | 344 | 44 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
@@ -66,8 +66,8 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | Order | Boot | Lines |
 |---|---|---|
 | 1 | `bootDom` | `js/dom.ts:135`–144 |
-| 2 | `bootDone` | `js/live.ts:184`–186 |
-| 3 | `bootLive` | `js/live.ts:187`–192 |
+| 2 | `bootDone` | `js/live.ts:187`–189 |
+| 3 | `bootLive` | `js/live.ts:190`–195 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–38 |
 | 5 | `bootData` | `js/data.ts:478`–527 |
 | 6 | `bootModel` | `js/model.ts:297`–343 |
@@ -122,28 +122,29 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 25 | `docValue` | `function docValue(` |
 | 34 | `docOk` | `function docOk(` |
-| 38 | `plainText` · export | `function plainText(` |
-| 43 | `liveIsoOf` · export | `function liveIsoOf(` |
-| 46 | `olderThanFile` | `function olderThanFile(` |
-| 50 | `liveInto` · export | `function liveInto(` |
-| 54 | `landLive` | `function landLive(` |
+| 38 | `datedOk` | `function datedOk(` |
+| 41 | `plainText` · export | `function plainText(` |
+| 46 | `liveIsoOf` · export | `function liveIsoOf(` |
+| 49 | `olderThanFile` | `function olderThanFile(` |
+| 53 | `liveInto` · export | `function liveInto(` |
+| 57 | `landLive` | `function landLive(` |
 
 #### Repaint
 
 | Line | Name | Anchor |
 |---|---|---|
-| 64 | `repaintLive` · export | `function repaintLive(` |
-| 69 | `shapeOk` | `function shapeOk(` |
-| 101 | `defineReadings` · export | `function defineReadings(` |
-| 105 | `onLive` · export | `function onLive(` |
-| 106 | `exposeLive` · export | `function exposeLive(` |
-| 109 | `KINDS` | `var KINDS =` |
-| 110 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
-| 124 | `receive` | `function receive(` |
-| 137 | `applyLive` | `function applyLive(` |
-| 144 | `refreshLiveData` · export | `function refreshLiveData(` |
-| 161 | `fetchSiteData` · export | `function fetchSiteData(` |
-| 177 | `forgetLive` · export | `function forgetLive(` |
+| 67 | `repaintLive` · export | `function repaintLive(` |
+| 72 | `shapeOk` | `function shapeOk(` |
+| 104 | `defineReadings` · export | `function defineReadings(` |
+| 108 | `onLive` · export | `function onLive(` |
+| 109 | `exposeLive` · export | `function exposeLive(` |
+| 112 | `KINDS` | `var KINDS =` |
+| 113 | `checkLiveCoverage` · export | `function checkLiveCoverage(` |
+| 127 | `receive` | `function receive(` |
+| 140 | `applyLive` | `function applyLive(` |
+| 147 | `refreshLiveData` · export | `function refreshLiveData(` |
+| 164 | `fetchSiteData` · export | `function fetchSiteData(` |
+| 180 | `forgetLive` · export | `function forgetLive(` |
 
 ### `js/refresh-season.ts`
 
