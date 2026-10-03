@@ -28,7 +28,7 @@ function compare(a, b) {
 function next(version, kind) {
   if (SEMVER.test(kind)) return kind;
   const [M, m, p] = parts(version);
-  if (kind === 'major') return (M + 1) + '.0.0';
+  if (kind === 'major') return M === 0 ? null : (M + 1) + '.0.0';
   if (kind === 'minor') return M + '.' + (m + 1) + '.0';
   if (kind === 'patch') return M + '.' + m + '.' + (p + 1);
   return null;
