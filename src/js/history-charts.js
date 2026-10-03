@@ -404,7 +404,7 @@ export function gdpHistoryChart(Wpx, from, o){
                    fmt:function(v){ return v.toFixed(1) + "%"; } });
   return vhOpen(W, H) +
     'aria-label="Real GDP growth year over year, every quarter from ' + y0 + ' to ' + y1 +
-    ', against the long-run average of ' + GDP_NORM + ' per cent; quarters in expansion in gold, in contraction in periwinkle">' +
+    ', against the long-run average of ' + GDP_NORM + ' per cent; quarters of quickening growth in gold, of slowing growth in periwinkle">' +
     out.join("") + '</svg>';
 }
 export function m2GrowthChart(Wpx, from, to){

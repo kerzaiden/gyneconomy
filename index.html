@@ -21730,7 +21730,6 @@
     }
   };
   var seasonOverride = null;
-  var cycleNowNote = "Four years into an AI-driven bull run, growth is still expanding and prices are running hot.";
   var cpiYoYHistory = series_default.cpiYoYHistory;
   var gdpQuarterlyYoY = series_default.gdpQuarterlyYoY;
   var DATA_COMPILED;
@@ -21751,7 +21750,9 @@
       lastMoveLabel: "raised a quarter point",
       asOf: "Sep 16, 2026",
       vote: "12–0",
-      next: "Oct 28, 2026"
+      next: "Oct 28, 2026",
+      turnLabel: "First hike since",
+      turnValue: "2023"
     },
     yieldCurve: [ {
       m: "1M",
@@ -22690,6 +22691,9 @@
     });
   }
   var GROWTH_WINDOW = 8;
+  function growthWindowWord() {
+    return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW);
+  }
   function readSeason(cpi12, gdp8, prevRegime, quartersPerStep) {
     var cpiNow2 = cpi12[cpi12.length - 1].v;
     var cpiSlope = cpiTrend(cpi12);
@@ -22825,16 +22829,31 @@
     };
   }
   var seasonRuleSentence = {
-    spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
-    springdeflation: "Expansion with prices cooling, within or below the range, is Spring — deflation.",
-    summer: "Expansion with prices above the range — hot — is inflation, Summer.",
-    autumn: "Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-    lateautumn: "Contraction with prices heating, within or above the range, is Autumn — stagflation.",
-    winter: "Contraction with prices below the range — cold — is deflation, Winter."
+    spring: "Quickening growth with prices heating, within or below the range, is reflation — Spring.",
+    springdeflation: "Quickening growth with prices cooling, within or below the range, is Spring — deflation.",
+    summer: "Quickening growth with prices above the range — hot — is inflation, Summer.",
+    autumn: "Slowing growth with prices cooling, within or above the range, is disinflation — Autumn.",
+    lateautumn: "Slowing growth with prices heating or steady, within or above the range, is Autumn — stagflation.",
+    winter: "Slowing growth with prices below the range — cold — is deflation, Winter."
   };
   function seasonWhyFor(m) {
     var r = m.reading, was = m.ongoing ? "is" : "was";
-    return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) + "the economy " + was + " in " + r.regime + " (real GDP " + r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " eight quarters, ") + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+    return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) + "growth " + was + " " + growthWord(r) + " (real GDP " + r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " " + growthWindowWord() + " quarters, ") + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+  }
+  function growthWord(r) {
+    return r.gdpLatest && r.gdpLatest.v < 0 ? "contracting" : r.growthTrend === "rising" ? "quickening" : r.growthTrend === "falling" ? "slowing" : "steady";
+  }
+  function cycleNowNote(m) {
+    var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
+    var years = [ "Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years" ][n] || n + " years";
+    var growth = {
+      contracting: "the economy is shrinking",
+      slowing: "growth is still positive but slowing",
+      quickening: "growth is picking up",
+      steady: "growth is holding steady"
+    }[w];
+    var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") + (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
+    return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
   }
   function seasonGroup(key) {
     return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key;
@@ -24902,11 +24921,11 @@
       label: "Last Fed move",
       value: now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") + (now.fedFunds.vote ? " · " + now.fedFunds.vote : ""),
       wordy: true
-    } : null, {
-      label: "First hike since",
-      value: "2023 · one more signalled",
+    } : null, now.fedFunds.lastMove && now.fedFunds.turnLabel ? {
+      label: now.fedFunds.turnLabel,
+      value: now.fedFunds.turnValue,
       wordy: true
-    }, now.fedFunds.next ? {
+    } : null, now.fedFunds.next ? {
       label: "Next decision",
       value: now.fedFunds.next
     } : null ].filter(Boolean);
@@ -24916,16 +24935,8 @@
       return '<div class="aux-stat' + (f.wordy ? " wordy" : "") + '"><span>' + f.label + "</span><b>" + f.value + "</b></div>";
     }).join("");
   }
-  var GROWTH_SHOWN = {
-    expansion: "expanding",
-    contraction: "contracting",
-    steady: "steady"
-  };
-  function growthShown(reg) {
-    return GROWTH_SHOWN[reg] || reg;
-  }
-  function growthShownCap(reg) {
-    var w = growthShown(reg);
+  function growthShownCap(r) {
+    var w = growthWord(r);
     return w.charAt(0).toUpperCase() + w.slice(1);
   }
   function phaseClass(regime) {
@@ -25229,6 +25240,10 @@
             lastMoveLabel: "",
             asOf: "",
             next: ""
+          });
+          if (v.lastMove !== void 0 && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge(v, {
+            turnLabel: "",
+            turnValue: ""
           });
           if (v.asOf !== void 0 && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, {
             vote: ""
@@ -26603,7 +26618,7 @@
         return v.toFixed(1) + "%";
       }
     });
-    return vhOpen(W, H) + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; quarters in expansion in gold, in contraction in periwinkle">' + out.join("") + "</svg>";
+    return vhOpen(W, H) + 'aria-label="Real GDP growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run average of " + GDP_NORM + ' per cent; quarters of quickening growth in gold, of slowing growth in periwinkle">' + out.join("") + "</svg>";
   }
   function m2GrowthChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
@@ -27468,7 +27483,7 @@
   function gdpPeek(r, gq) {
     return peekOf("sheet-metric-gdp", {
       value: fmtSigned(r.gdpLatest.v, 1) + "%",
-      word: growthShownCap(r.regime),
+      word: growthShownCap(r),
       state: phaseClass(r.regime),
       cols: gq.map(function(d) {
         return d.v;
@@ -28766,7 +28781,7 @@
     detailTexts.push("");
     GYN.step("renderCycleDial", renderCycleDial, "wire");
     renderCycleDial();
-    growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
+    growthDetail = "<h4>Growth per cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is quickening growth, periwinkle is slowing growth</b> — the season model’s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one falls below zero. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
       t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
       u: "https://fred.stlouisfed.org/series/GDPC1"
     } ]));
@@ -28852,7 +28867,7 @@
       return absGap(r).toFixed(1);
     }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
     if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
-    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
+    return '<section class="highlights insights"><div class="hi-head">Insights</div>' + lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + "</section>";
   }
   function seasonCards(m) {
     var r = seasonReading[m.season] || {};
@@ -29952,7 +29967,7 @@
     }).length;
     var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than last. A body spends the first half of its cycle building something it has not used yet, and an economy does the same with output.</p>' ];
     cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the trend as " + r.regime + "."));
+    cards.push(hiCard("The latest quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads growth as " + growthWord(r) + "."));
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function renderMetricPages(ctx) {
@@ -30577,7 +30592,7 @@
     var meta = wheelMeta[currentSeason];
     var seasonRules = [ {
       key: "winter",
-      growth: "Contraction",
+      growth: "Slowing",
       temp: "Cold",
       zones: {
         below: 1
@@ -30585,7 +30600,7 @@
       range: "Below the range — cold"
     }, {
       key: "springdeflation",
-      growth: "Expansion",
+      growth: "Quickening",
       temp: "Cooling",
       zones: {
         within: 1,
@@ -30594,7 +30609,7 @@
       range: "Cooling — within or below the range"
     }, {
       key: "spring",
-      growth: "Expansion",
+      growth: "Quickening",
       temp: "Heating",
       zones: {
         within: 1,
@@ -30603,7 +30618,7 @@
       range: "Heating — within or below the range"
     }, {
       key: "summer",
-      growth: "Expansion",
+      growth: "Quickening",
       temp: "Hot",
       zones: {
         above: 1
@@ -30611,7 +30626,7 @@
       range: "Above the range — hot"
     }, {
       key: "autumn",
-      growth: "Contraction",
+      growth: "Slowing",
       temp: "Cooling",
       zones: {
         within: 1,
@@ -30620,7 +30635,7 @@
       range: "Cooling — within or above the range"
     }, {
       key: "lateautumn",
-      growth: "Contraction",
+      growth: "Slowing",
       temp: "Heating",
       zones: {
         within: 1,
@@ -30645,7 +30660,7 @@
       var m = wheelMeta[r.key], now2 = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
     }).join(""));
-    put("seasons-kicker", "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
+    put("seasons-kicker", "The Season Model" + expandBtn('<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — quickening when its trend is rising, slowing when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last ' + growthWindowWord() + " of those readings. Slowing is not shrinking: growth can slow while every quarter is still positive. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed’s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board’s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last " + growthWindowWord() + " quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh quickening — so a flat quarter after several quarters of falling growth still reads as slowing. With growth quickening, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). With growth slowing, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with the quickening side, even though slowing growth with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>"));
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
       return '<div class="lag-row"><span>' + r.indicator + "</span><span>" + r.body + "</span><span>" + r.economy + "</span><span>" + r.category + "</span></div>";
     }).join(""));

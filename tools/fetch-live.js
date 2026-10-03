@@ -47,13 +47,26 @@ function fedMove(obs, today, calendar) {
   const decided = calendar.filter(d => d < effective && d >= dayBefore(dayBefore(dayBefore(effective)))).pop() || dayBefore(effective);
   const size = MOVE_WORDS[Math.abs(bp)] || (Math.abs(bp) / 100).toFixed(2) + ' points';
   const next = calendar.filter(d => d > today)[0];
-  return {
+  return Object.assign({
     lastMove: (bp > 0 ? '+' : '-') + (Math.abs(bp) / 100).toFixed(2),
     lastMoveLabel: (bp > 0 ? 'raised ' : 'cut ') + size,
     asOf: dayLabel(decided),
     next: next ? dayLabel(next) : ''
-  };
+  }, fedTurn(days));
 }
+
+function fedTurn(days) {
+  const moves = [];
+  for (let j = 1; j < days.length; j++) if (days[j].v !== days[j - 1].v) moves.push({ date: days[j].date, up: days[j].v > days[j - 1].v });
+  const last = moves[moves.length - 1], word = last.up ? 'hike' : 'cut';
+  let k = moves.length - 1;
+  while (k > 0 && moves[k - 1].up === last.up) k--;
+  const run = moves.length - k;
+  if (run > 1) return { turnLabel: (last.up ? 'Hikes' : 'Cuts') + ' in a row', turnValue: run + ' since ' + monthYear(moves[k].date) };
+  const before = moves.slice(0, k).filter(m => m.up === last.up).pop();
+  return { turnLabel: 'First ' + word + ' since', turnValue: before ? before.date.slice(0, 4) : 'before ' + days[0].date.slice(0, 4) };
+}
+const monthYear = iso => MONTHS[Number(iso.slice(5, 7)) - 1] + ' ' + iso.slice(0, 4);
 
 const MONTH_INDEX = m => MONTHS.findIndex(x => x.toLowerCase() === String(m).trim().slice(0, 3).toLowerCase());
 const plainText = h => h.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&ndash;|&#8211;|\u2013/g, '-')

@@ -23,6 +23,7 @@ function cpiYear(endMonth){
   return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
 }
 var GROWTH_WINDOW = 8;
+export function growthWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW); }
 function readSeason(cpi12, gdp8, prevRegime, quartersPerStep){
   var cpiNow = cpi12[cpi12.length - 1].v;
   var cpiSlope = cpiTrend(cpi12);
@@ -92,18 +93,29 @@ export function cycleModel(era){
            endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
 }
 var seasonRuleSentence = {
-  spring:"Expansion with prices heating, within or below the range, is reflation — Spring.",
-  springdeflation:"Expansion with prices cooling, within or below the range, is Spring — deflation.",
-  summer:"Expansion with prices above the range — hot — is inflation, Summer.",
-  autumn:"Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-  lateautumn:"Contraction with prices heating, within or above the range, is Autumn — stagflation.",
-  winter:"Contraction with prices below the range — cold — is deflation, Winter."
+  spring:"Quickening growth with prices heating, within or below the range, is reflation — Spring.",
+  springdeflation:"Quickening growth with prices cooling, within or below the range, is Spring — deflation.",
+  summer:"Quickening growth with prices above the range — hot — is inflation, Summer.",
+  autumn:"Slowing growth with prices cooling, within or above the range, is disinflation — Autumn.",
+  lateautumn:"Slowing growth with prices heating or steady, within or above the range, is Autumn — stagflation.",
+  winter:"Slowing growth with prices below the range — cold — is deflation, Winter."
 };
 function seasonWhyFor(m){
   var r = m.reading, was = m.ongoing ? "is" : "was";
   return (m.ongoing ? "Computed from two readings, both shown below: " : "Read at the cycle's close, " + monthLabel(m.endMonth) + (r.annual ? ", from annual growth, the only GDP record before 1947: " : ", the same way today's is: ")) +
-    "the economy " + was + " in " + r.regime + " (real GDP " +
-    r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " eight quarters, ") + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+    "growth " + was + " " + growthWord(r) + " (real GDP " +
+    r.gdpLatest.v.toFixed(1) + "% " + (r.annual ? "in " + r.gdpLatest.q + ", trend " + r.growthTrend + " over the prior two years, " : "year over year in " + qLabel(r.gdpLatest.q) + ", trend " + r.growthTrend + " over the " + (m.ongoing ? "past" : "prior") + " " + growthWindowWord() + " quarters, ") + (r.growthSlopeQ * 4 >= 0 ? "+" : "") + (r.growthSlopeQ * 4).toFixed(1) + " points a year), and prices " + (m.ongoing ? "are" : "were") + " " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " and " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the target range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (m.ongoing && seasonOverride ? " (Season pinned by hand this build.)" : "");
+}
+export function growthWord(r){
+  return r.gdpLatest && r.gdpLatest.v < 0 ? "contracting" : r.growthTrend === "rising" ? "quickening" : r.growthTrend === "falling" ? "slowing" : "steady";
+}
+export function cycleNowNote(m){
+  var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
+  var years = (["Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years"][n] || n + " years");
+  var growth = { contracting:"the economy is shrinking", slowing:"growth is still positive but slowing", quickening:"growth is picking up", steady:"growth is holding steady" }[w];
+  var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") +
+    (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
+  return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
 }
 export function seasonGroup(key){ return key === "springdeflation" ? "spring" : key === "lateautumn" ? "autumn" : key; }
 // ---- The diagnosis: how she feels, and what has followed ----

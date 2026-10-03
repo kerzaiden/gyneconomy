@@ -5,7 +5,7 @@ import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } 
 import { confidenceHistory, productivityHistory } from "./history-fred.js";
 import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
 import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
-import { cpiNow } from "./model.js";
+import { cpiNow, growthWord } from "./model.js";
 import { HIST_NOTE, histHead, histNote } from "./history.js";
 
 function productivityWord(v){
@@ -586,7 +586,7 @@ function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
   now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
                                       (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
-  { label:"First hike since",  value:"2023 \u00b7 one more signalled",  wordy:true },
+  now.fedFunds.lastMove && now.fedFunds.turnLabel ? { label:now.fedFunds.turnLabel, value:now.fedFunds.turnValue, wordy:true } : null,
   now.fedFunds.next ? { label:"Next decision", value:now.fedFunds.next } : null
 ].filter(Boolean); }
 export function policyFactRows(){
@@ -595,9 +595,7 @@ export function policyFactRows(){
            f.value + '</b></div>';
   }).join("");
 }
-var GROWTH_SHOWN = { expansion:"expanding", contraction:"contracting", steady:"steady" };
-function growthShown(reg){ return GROWTH_SHOWN[reg] || reg; }
-export function growthShownCap(reg){ var w = growthShown(reg); return w.charAt(0).toUpperCase() + w.slice(1); }
+export function growthShownCap(r){ var w = growthWord(r); return w.charAt(0).toUpperCase() + w.slice(1); }
 export function phaseClass(regime){ return regime === "contraction" ? "phase-down" : "phase-up"; }
 function activityStackHtml(ind){
   histNote("sheet-sign-activity", activityInfoHtml(ind));
@@ -752,6 +750,7 @@ export function bootReadingRegistry(){
       ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
       set: function(v){
         if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"", next:"" });
+        if (v.lastMove !== undefined && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge(v, { turnLabel:"", turnValue:"" });
         if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
         now.fedFunds = merge(now.fedFunds, v);
       }

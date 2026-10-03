@@ -1,8 +1,8 @@
 import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.js";
 import { moreRow, ui } from "./dom.js";
-import { calendarTodayY, cpiYoYHistory, cycleNowNote, wheelMeta } from "./refresh-season.js";
+import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.js";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.js";
-import { currentEra, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.js";
+import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.js";
 import { indOf } from "./readings.js";
 import { ROSTER_BY } from "./roster.js";
 
@@ -77,7 +77,7 @@ function insightWeather(){
   else
     txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
   return '<section class="highlights insights"><div class="hi-head">Insights</div>' +
-         lede(cycleNowNote) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + '</section>';
+         lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt) + '</section>';
 }
 function seasonCards(m){
   var r = seasonReading[m.season] || {};

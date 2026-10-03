@@ -6,7 +6,7 @@ import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.js';
 import { now, fedFundsRange, labRow } from '../../src/js/data.js';
 import { grossDebtQuarterly } from '../../src/js/history-fred.js';
 import { HIST_NOTE } from '../../src/js/history.js';
-import { nowModel, seasonGroup } from '../../src/js/model.js';
+import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.js';
 import { seasonName } from '../../src/js/format.js';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
@@ -110,6 +110,20 @@ test('a new Fed range without its move clears the old move and the next date, an
   assert.equal(now.fedFunds.lastMove, '');
   assert.equal(now.fedFunds.next, '');
   assert.match(HIST_NOTE['hormones-range'](), /Target 3\.25–3\.50%;/);
+});
+
+test('the policy facts say how the latest move sits in the run of moves', async () => {
+  await deliver({ fedFunds: { ...FED, lo: 3.5, hi: 3.75, lastMove: '-0.25', asOf: 'Oct 28, 2026', turnLabel: 'First cut since', turnValue: '2024' } });
+  assert.match(document.getElementById('policy-facts').textContent, /First cut since2024/);
+  await deliver({ fedFunds: { ...FED, lo: 3.25, hi: 3.5, lastMove: '-0.25', asOf: 'Dec 9, 2026' } });
+  assert.doesNotMatch(document.getElementById('policy-facts').textContent, /since/);
+});
+
+test('Growth’s word and Weather’s opening line follow the model', () => {
+  const w = growthWord(nowModel.reading);
+  assert.equal(word('sheet-metric-gdp').toLowerCase(), w);
+  assert.ok(nowModel.reading.gdpLatest.v < 0 || w !== 'contracting');
+  assert.match(cycleNowNote(nowModel), new RegExp({ contracting: 'shrinking', slowing: 'slowing', quickening: 'picking up', steady: 'steady' }[w]));
 });
 
 test('a boot failure with no stored documents is not swallowed', () => {

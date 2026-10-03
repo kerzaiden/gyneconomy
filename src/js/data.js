@@ -5,7 +5,7 @@ import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp
 
 export var now = {
   fedFunds: { lo:3.75, hi:4.00, lastMove:"+0.25", lastMoveLabel:"raised a quarter point",
-    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026" },
+    asOf:"Sep 16, 2026", vote:"12\u20130", next:"Oct 28, 2026", turnLabel:"First hike since", turnValue:"2023" },
   yieldCurve: [
   {m:"1M",  y:4.01}, {m:"2M",  y:4.18}, {m:"3M",  y:4.24}, {m:"4M",  y:4.33}, {m:"6M",  y:4.34},
   {m:"1Y",  y:4.51}, {m:"2Y",  y:4.87}, {m:"3Y",  y:4.99}, {m:"5Y",  y:5.03}, {m:"7Y",  y:5.10},

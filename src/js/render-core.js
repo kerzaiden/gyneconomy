@@ -549,7 +549,7 @@ export function tempPeek(r, value, cpi){
 }
 export function gdpPeek(r, gq){
   return peekOf("sheet-metric-gdp", { value:fmtSigned(r.gdpLatest.v, 1) + "%",
-    word:growthShownCap(r.regime), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
+    word:growthShownCap(r), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
     colClass:function(v, i){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
 }
 

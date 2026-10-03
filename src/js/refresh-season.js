@@ -21,7 +21,6 @@ export var wheelMeta = {
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
 export var seasonOverride = null;
-export var cycleNowNote = "Four years into an AI-driven bull run, growth is still expanding and prices are running hot.";
 export var cpiYoYHistory = SERIES.cpiYoYHistory;
 export var gdpQuarterlyYoY = SERIES.gdpQuarterlyYoY;
 

@@ -3,7 +3,7 @@ import { byId, expandBtn, layer, put, rovingKeys, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { wheelMeta } from "./refresh-season.js";
 import { frameworkRows } from "./data.js";
-import { cpiNow, currentEra, currentSeason, seasonGroup, seasonWhy } from "./model.js";
+import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.js";
 import { cycleViewEl } from "./render-pages.js";
 import { settleStrips, showCycle } from "./dial-cycle.js";
 
@@ -12,12 +12,12 @@ function renderSeasonRows(){
   var meta = wheelMeta[currentSeason];
 
   var seasonRules = [
-    {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
-    {key:"springdeflation", growth:"Expansion",   temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Expansion",   temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
-    {key:"summer",          growth:"Expansion",   temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
-    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
-    {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
+    {key:"winter",          growth:"Slowing",     temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
+    {key:"springdeflation", growth:"Quickening",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
+    {key:"spring",          growth:"Quickening",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
+    {key:"summer",          growth:"Quickening",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
+    {key:"autumn",          growth:"Slowing",     temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
+    {key:"lateautumn",      growth:"Slowing",     temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
   ];
   function rangePos(v){
     if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
@@ -42,7 +42,7 @@ function renderSeasonRows(){
         '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
   put("seasons-kicker", "The Season Model" + expandBtn(
-    '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — expansion when it is rising, contraction when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last six of those readings. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last eight quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Expansion is growth rising; contraction is growth falling. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh expansion — so a flat quarter after several quarters of falling growth still reads as contraction. In expansion, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). In contraction, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with expansion, even though a contraction with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
+    '<h4>The Season Model</h4><p class="caption">' + seasonWhy + '</p><p class="caption" style="margin-top:10px;">Growth is the direction of real GDP — quickening when its trend is rising, slowing when it is falling, and a flat quarter continues whichever of the two came before it. Each quarter is measured against the same quarter a year earlier, and the direction is the trend through the last ' + growthWindowWord() + ' of those readings. Slowing is not shrinking: growth can slow while every quarter is still positive. Temperature is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and, where it matters, which way it is moving. The band is fixed and editorial: the Fed\u2019s stated objective is a point, 2% on the PCE price index, so the 1–3% band is this board\u2019s symmetric tolerance around that point, read on CPI (the convention some other central banks, such as the Bank of England and the Reserve Bank of Australia, make explicit). Nothing here is drawn live from the Fed. Growth direction is a fitted trend through the last ' + growthWindowWord() + ' quarters of year-over-year real GDP growth; the price direction is a fitted trend through the last twelve monthly CPI readings. Flat growth continues whichever of the two the economy was already in, rather than counting as a fresh quickening — so a flat quarter after several quarters of falling growth still reads as slowing. With growth quickening, hot is Summer; otherwise direction alone decides, regardless of whether prices sit within the range or already below it: heating is Spring — reflation, cooling is Spring — deflation (Sep 18, 2026: this replaces the Goldilocks Zone, which no longer distinguishes direction in that space). With growth slowing, cold is Winter; otherwise direction alone decides, regardless of whether prices sit within the range or already above it: cooling is Autumn — disinflation, heating or steady is Autumn — stagflation (Sep 19, 2026: made symmetric with the quickening side, even though slowing growth with prices still heating inside the range is historically rare). The target range is 1–3%, a point either side of the Fed’s 2% objective.</p>'));
 
   put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
     frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
