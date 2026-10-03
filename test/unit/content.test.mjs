@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
 import { ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
-import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.ts';
+import { now, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
-import { rowReadings, volumeVerdict, laborWord, temperatureWord } from '../../src/js/readings.ts';
+import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
@@ -48,7 +48,7 @@ test('each card prints the last value of its own record', () => {
 
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
-  Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.857 * 0.95, to: 1.857 * 1.10 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
+  Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
@@ -86,17 +86,38 @@ test('Pulse reads Steady exactly where its band is drawn', () => {
 
 test('the labor and temperature words turn at their bands, and the cards follow the record', () => {
   assert.deepEqual([3.4, 3.5, 5, 5.1].map(v => laborWord(v).text), ['Tight', 'Solid', 'Solid', 'Slack']);
-  assert.deepEqual([3.4, 3.5, 5.1, 9].map(v => laborWord(v).state), ['warning', 'good', 'warning', 'critical']);
+  assert.deepEqual([3.4, 3.5, 5.1, 9].map(v => laborWord(v).state), ['warning', 'good', 'warning', 'warning']);
+  assert.deepEqual([[4.5, 0.9], [5.1, 0.49], [5.1, 0.5], [9, null]].map(([v, s]) => unempState(v, s)), ['good', 'warning', 'serious', 'warning']);
   assert.deepEqual([0.9, 1, 3, 3.1].map(v => temperatureWord(v).text), ['Running cold', 'Warm', 'Warm', 'Running hot']);
   const u = unempHistory.filter(d => d.v != null);
   assert.equal(tag('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
   assert.equal(rowReadings().find(r => r.bodyTerm === 'Temperature').tag.text, temperatureWord(cpiYoYHistory[cpiYoYHistory.length - 1].v).text);
 });
 
+test('every derived cut-off is computed from its own record (Keren: convention or the cycle data)', () => {
+  const m2v = m2vHistory.slice(0, 196), m2 = m2Yoy.slice(4, 244);
+  assert.deepEqual([PULSE_PRE2008, PULSE_PRE2008 * PULSE_STEADY_LO, PULSE_PRE2008 * PULSE_STEADY_HI, PULSE_PRE2008 * PULSE_FLOOR, PULSE_PRE2008 * PULSE_CEIL].map(v => +v.toFixed(3)),
+    [1.857, 1.698, 2.136, 1.652, 2.192]);
+  assert.deepEqual([M2_PACE_LO, M2_PACE_HI, M2_FLOOD], [3.4, 10.3, 13.5]);
+  assert.equal(Math.max(...m2).toFixed(1), String(M2_FLOOD));
+  assert.deepEqual([SAV_THIN, SAV_LOW, SAV_MID], [3.3, 4.5, 8.75]);
+  assert.equal(SAHM_TRIGGER, 0.5);
+  assert.equal(Math.max(...m2v), PULSE_PRE2008 * PULSE_CEIL);
+  assert.equal(rowReadings().find(r => r.bodyTerm === 'Pulse').tag.text, 'Very slow');
+});
+
+test('the Sahm rule reads the three-month average against its low of the twelve months before', () => {
+  const i = unempHistory.findIndex(d => d.m === '2020-04');
+  assert.ok(unempSahm[i] > 3, 'April 2020 triggers');
+  assert.ok(unempSahm[unempHistory.findIndex(d => d.m === '2019-06')] < 0.5, 'mid-2019 does not');
+  assert.equal(sahmOf('2020-04'), unempSahm[i]);
+});
+
 test('the Volume verdict turns at the edges of her pace', () => {
   const at = g => volumeVerdict(g).text;
   assert.deepEqual([at(-0.1), at(M2_PACE_LO - 0.01), at(M2_PACE_LO), at(M2_PACE_HI - 0.01), at(M2_PACE_HI)],
     ['Draining', 'Thin', 'Steady', 'Steady', 'Filling']);
+  assert.deepEqual([at(M2_FLOOD), at(M2_FLOOD + 0.01)], ['Filling', 'Flooding']);
 });
 
 const FED = { kind: 'object', lo: 3.75, hi: 4, lastMove: '+0.25', lastMoveLabel: 'raised a quarter point', asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' };

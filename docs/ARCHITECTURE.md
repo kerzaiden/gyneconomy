@@ -366,6 +366,12 @@ the manifest's; now each module says what it imports.
   TypeScript's own parser, so one inside type syntax or in a `.d.ts` file is caught (V705); the function
   sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
 - **A verdict word is derived from its band (V706).** Pulse reads Steady between `PULSE_STEADY_LO` and `PULSE_STEADY_HI` times the pre-2008 mean, and its shaded zone is that same range. Labor market reads Tight, Solid or Slack against `ACT_BAND_*` (the meter's own end words), and Temperature reads Running cold, Warm or Running hot against `TEMP_BAND_*` (the Temperature info's "hot above the band, warm inside it, cold below"). Both words follow the latest month of their record, and the unit tests pin each edge. These two vocabularies are Claude's call from the app's existing words, and Keren can rename them.
+- **A cut-off is computed from its record, not typed (1.2.0).** Under Keren's rule (DECISIONS, Bands and verdicts) a
+  derived edge is `pctl` or the extreme of the series it reads, evaluated in `data.ts` beside that series: Pulse
+  (`PULSE_*`, 1959–2007), Volume (`M2_PACE_*`, `M2_FLOOD`, 1960–2019), the saving cushion (`SAV_*`), the temperature
+  shades (`heatEdges`, the whole CPI record) and the Sahm rule (`unempSahm`, `sahmOf`). The structural readings'
+  colour comes from `stressOf` (band and record), not from a typed `flagState`. The tool's bands (`BANDS` in
+  `tools/fetch-live.js`) are tested equal to `READINGS`'.
 - **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`DESIRE_LINE`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
   the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
@@ -586,7 +592,7 @@ threshold, the bar takes that threshold); editorial and Keren's (Temperature). *
 provenance in the (i), or it does not ship.**
 
 **Temperature's band is the one target in the app.** The Fed publishes a point, 2% on PCE, no band; the
-1–3% edges are Keren's symmetric tolerance around it, read on CPI, which has run 0.39 points higher on
+1–3% edges are Keren's symmetric tolerance around it, the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
 average since 2000. The (i) says both. **Never relabel this band "normal."** Nothing is fetched from the
 Fed; the courier checks monthly that the objective is still 2% and, if it changed, notifies rather than
 moving anything — only Keren moves the band.

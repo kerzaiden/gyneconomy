@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `97a1499` on 2026-10-03. **80 components**, **36 shared patterns**.
+Generated from commit `600b350` on 2026-10-03. **80 components**, **36 shared patterns**.
 
 ## analysis.ts
 
@@ -181,7 +181,7 @@ renderer speaks. Listed most-used first.
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 24 places |
 | **`fmtSigned`** | format.ts | 21 places |
-| **`metered`** | format.ts | 12 places |
+| **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |
 | **`monthLabel`** | format.ts | 11 places |
 | **`publishGeom`** | charts.ts | 11 places |
@@ -203,22 +203,23 @@ renderer speaks. Listed most-used first.
 | **`windowScale`** | history.ts | 7 places |
 | **`yearOf`** | format.ts | 7 places |
 | **`fileRow`** | data.ts | 6 places |
+| **`mean`** | format.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
+| **`bandEnds`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
-| **`bandEnds`** | format.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
-| **`mean`** | format.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
+| **`pctl`** | format.ts | 4 places |
 | **`prettyK`** | era.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |

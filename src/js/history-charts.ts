@@ -1,9 +1,9 @@
 type HistOpts = { to?: number | null; cycle?: boolean };
-import { atMonth, atQuarter, fmtSigned, qAtIndex } from "./format.ts";
+import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
 import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
 import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FROM_YEAR, M2_NORM, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, unempHistory } from "./data.ts";
+import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
 import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
 import { unempState } from "./readings.ts";
@@ -164,7 +164,7 @@ export function unempHistoryChart(Wpx: number, from: number, o?: HistOpts){
   var sw = colWidth((R - L) / n);
   vals.forEach(function(d, i){
     if (d.v == null) return;
-    out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) +
+    out.push('<path class="unemp-col hcol ' + unempState(d.v, sahmOf(d.m)) + '" stroke-width="' + sw.toFixed(2) +
       '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
   });
   var avgV = seen.reduce(function(a, d){ return a + d.v!; }, 0) / seen.length;
@@ -408,9 +408,14 @@ export function m2GrowthChart(Wpx: number, from: number, to?: number | null){
     out.join("") + '</svg>';
 }
 export function m2Step(v: number){
-  return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
+  return v < 0 ? "v5" : v < M2_PACE_LO ? "v4" : v < M2_NORM ? "v3" : v < M2_PACE_HI ? "v2" : v <= M2_FLOOD ? "v1" : "v0";
+}
+var heatTop: number[] = [];
+function heatEdges(){
+  if (!heatTop.length){ var all = cpiYoYHistory.map(function(d){ return d.v; }); heatTop = [pctl(all, 0.9), pctl(all, 0.95)]; }
+  return heatTop;
 }
 export function heatStep(v: number){
-  if (v < 1) return "s0";
-  return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
+  var top = heatEdges();
+  return v < TEMP_BAND_LO ? "s0" : v < CPI_TARGET ? "s1" : v < TEMP_BAND_HI ? "s2" : v < top[0] ? "s3" : v < top[1] ? "s4" : "s5";
 }

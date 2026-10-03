@@ -4,6 +4,7 @@ const path = require('path');
 
 const OUT = path.join(__dirname, '..', 'data', 'live.json');
 const KEY = process.env.FRED_API_KEY;
+const BANDS = { vixClose: [5, 100], vix3mClose: [5, 100], capeValue: [4, 60] };
 
 const notes = [];
 const say = m => { notes.push(m); console.log(m); };
@@ -220,7 +221,7 @@ function capeFromRows(rows) {
     val = v; when = (rows[i] || [])[dateCol]; break;
   }
   if (val == null) throw new Error('no CAPE reading below the header');
-  if (val < 4 || val > 60) throw new Error('CAPE ' + val + ' out of band');
+  if (val < BANDS.capeValue[0] || val > BANDS.capeValue[1]) throw new Error('CAPE ' + val + ' out of band');
 
   return {
     value: Math.round(val * 100) / 100,
@@ -297,7 +298,7 @@ async function shillerSheet(parse) {
   throw new Error('no workbook on shillerdata.com yielded a reading — ' + why.join('; '));
 }
 
-if (require.main !== module) { module.exports = { capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
+if (require.main !== module) { module.exports = { BANDS, capeFromRows, priceFromRows, shillerMonth, shillerSheet, shillerCape, fedMove, assemble, FOMC_DECISIONS, fomcFromHtml, fomcCalendar, fomcRunsOut }; }
 else (async () => {
   const out = {};
   const failed = [];
@@ -324,14 +325,14 @@ else (async () => {
   let vix = null;
   try {
     vix = await fredLatest('VIXCLS');
-    if (vix.value < 5 || vix.value > 100) throw new Error('VIX ' + vix.value + ' out of band');
+    if (vix.value < BANDS.vixClose[0] || vix.value > BANDS.vixClose[1]) throw new Error('VIX ' + vix.value + ' out of band');
     say('vix         ' + vix.value + '  ' + vix.date);
   } catch (e) { failed.push('vix: ' + e.message); vix = null; }
 
   let vix3m = null;
   try {
     vix3m = await fredLatest('VXVCLS');
-    if (vix3m.value < 5 || vix3m.value > 100) throw new Error('VIX3M ' + vix3m.value + ' out of band');
+    if (vix3m.value < BANDS.vix3mClose[0] || vix3m.value > BANDS.vix3mClose[1]) throw new Error('VIX3M ' + vix3m.value + ' out of band');
     say('vix3m       ' + vix3m.value + '  ' + vix3m.date);
   } catch (e) { failed.push('vix3mClose: ' + e.message); vix3m = null; }
 

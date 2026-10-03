@@ -775,7 +775,6 @@
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
   .yl-col.normal{ stroke:var(--season-autumn); }
-  .yl-col.steep{ stroke:var(--good); }
   .meterpeek .mp-track, .meterpeek .mp-band{ fill:none; stroke-linecap:round; vector-effect:non-scaling-stroke; }
   .meterpeek .mp-track{ stroke:var(--border); opacity:0.6; }
   .meterpeek .mp-band{ stroke:var(--good); opacity:0.85; }

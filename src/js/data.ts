@@ -1,8 +1,9 @@
 import SERIES from "../data/series.json" with { type: "json" };
-import { bandEnds } from "./format.ts";
+import { bandEnds, mean, metered, pctl, round1 } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
 
+export var BUFFETT_LINE = 80, DEBT_LINE = 70, INTEREST_LINE = 2, DEFICIT_LINE = 3.8;
 export type NowStore = { fedFunds: FedFunds; yieldCurve: CurvePoint[]; sentiment: Panel; valuation: Panel; vixRow: Row; vix3mClose: number };
 export type SeasonReading = { body: string; economy: string; next: string; watch: string[]; fromTheBook: { text: string; title?: string }[] };
 export type UninvLagCycle = { cycle: string; uninv: string; recession: string; lag: string };
@@ -40,7 +41,7 @@ export var now: NowStore = {
   tag:null,
   rows:[
     { key:"buffett", marker:"Buffett indicator", sub:"market cap \u00f7 GDP, Q2 2026",
-      meter:{min:32,max:256,value:256,optimal:{lte:80, label:"\u2264 80%"}, ends:{zone:"Buffett\u2019s zone", high:"Rich"}},
+      meter:{min:32,max:256,value:256,optimal:{lte:BUFFETT_LINE, label:"\u2264 " + BUFFETT_LINE + "%"}, ends:{zone:"Buffett\u2019s zone", high:"Rich"}},
       shortNote:"The highest reading in the 80-year record \u2014 above the 2021 and dot-com peaks.",
       note:"Warren Buffett's own gauge of capital relative to the real economy. Computed here straight from the Federal Reserve's Financial Accounts (Z.1): the market value of nonfinancial corporate equities ($83.1T at end-Q2 2026) divided by nominal GDP ($32.5T annualized, Q2 2026) \u2014 the same definition the widely quoted charts use. At \u2248256% this is the highest reading in the 80-year record, clear of the 2021 peak (\u2248219%) and the dot-com peak (\u2248163%); the record low is \u224832% (Q2 1982).",
       direction:"up", flagValue:"\u2248256%", flagState:"serious" },
@@ -94,29 +95,29 @@ export var gdpSrc: Src[] = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP
 var labPanel: Row[] = [
   {
     sub:"gross federal debt ÷ GDP",
-    meter:{min:0, max:125.9, value:null, optimal:{lte:70, label:"\u2264 70%"},
+    meter:{min:0, max:125.9, value:null, optimal:{lte:DEBT_LINE, label:"\u2264 " + DEBT_LINE + "%"},
            ends:{ zone:"50-year average", high:"Elevated" }},
     shortNote:"",
     note:"{q}, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at {ww2}% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's {v}% is about {x} times it.",
-    direction:"up", flagValue:"", flagState:"serious",
+    direction:"up", flagValue:"", flagState:"na",
     id:"sheet-metric-debt"
   },
   {
     sub:"net interest costs ÷ GDP",
-    meter:{min:0.63, max:3.3, value:3.3, optimal:{lte:2, label:"\u2264 2.0%"},
+    meter:{min:0.63, max:3.3, value:3.3, optimal:{lte:INTEREST_LINE, label:"\u2264 " + INTEREST_LINE.toFixed(1) + "%"},
            ends:{ zone:"50-year average", high:"High" }},
     shortNote:"FY2026, $1.0T — already the highest interest burden on record.",
     note:"FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
-    direction:"up", flagValue:"3.3%", flagState:"critical",
+    direction:"up", flagValue:"3.3%", flagState:"na",
     id:"sheet-metric-interest"
   },
   {
     sub:"federal deficit or surplus ÷ GDP",
-    meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:3.8, label:"\u2264 3.8%"},
+    meter:{min:-2.3, max:26.9, value:5.8, optimal:{lte:DEFICIT_LINE, label:"\u2264 " + DEFICIT_LINE + "%"},
            ends:{ zone:"50-year average", high:"Large" }},
     shortNote:"FY2026, ~$1.9T — this size deficit once required a recession or a war. Neither is present.",
     note:"FY2026, ~$1.9T, CBO's February 2026 projection (FY2025 actual: 5.8%). Below emergency-level spikes, but deficits this size used to require a recession or a war — neither is present now. Range spans the largest surplus of the modern era (FY2000, +2.3% of GDP; the last one was FY2001, +1.2%) to the WWII deficit peak (FY1943, 26.9%), both from the OMB series on FRED. The green band ends at 3.8% of GDP, CBO's stated average deficit over the last fifty years; this year's 5.8% is half again as large.",
-    direction:"up", flagValue:"5.8%", flagState:"serious",
+    direction:"up", flagValue:"5.8%", flagState:"na",
     id:"sheet-marker-deficit"
   }
 ];
@@ -145,7 +146,6 @@ export function fedFundsRange(){
           : now.fedFunds.lo.toFixed(2) + "\u2013" + now.fedFunds.hi.toFixed(2)) + "%";
 }
 export var buffettHistory = SERIES.buffettHistory;
-export var M2_PACE_LO = 3.5, M2_PACE_HI = 10;
 export var capeHistory: { y: number; v: number | null }[] = SERIES.capeHistory;
 export var longCycleSrc: Src[] = [
   {t:"CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)", u:"https://www.cbo.gov/publication/62105"},
@@ -172,6 +172,11 @@ function syncGrossDebt(){
   row.noteTpl = row.noteTpl || row.note;
   row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m: string, k: string){ return fill[k] != null ? fill[k] : m; });
 }
+function stressOf(m: Meter): State {
+  var v = metered(m), hi = bandEnds(m.optimal, -Infinity, Infinity)[1];
+  return v <= hi ? "good" : v >= m.max ? "critical" : "serious";
+}
+function deriveStress(){ labPanel.forEach(function(r){ r.flagState = stressOf(r.meter); }); }
 function checkGrossDebt(){
   if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
   var row = labRow("sheet-metric-debt"), by = function(a: { y: number; v: number }[]){ var o: Record<number, number> = {}; a.forEach(function(d){ o[d.y] = d.v; }); return o; };
@@ -201,10 +206,12 @@ export function valRow(k: string): Row | null {
   return null;
 }
 export function fileRow(key: string): Row { var r = valRow(key); if (!r) throw new Error("the valuation panel has no " + key + " row"); return r; }
-export var PULSE_PRE2008 = 1.857;
-export var PULSE_STEADY_LO = 0.95, PULSE_STEADY_HI = 1.10;
 export var M2V_FROM_YEAR = 1959;
 export var m2vHistory = SERIES.m2vHistory.map(function(n){ return n / 1000; });
+var m2vPre = m2vHistory.slice(0, (2008 - M2V_FROM_YEAR) * 4);
+export var PULSE_PRE2008 = mean(m2vPre);
+export var PULSE_STEADY_LO = pctl(m2vPre, 0.1) / PULSE_PRE2008, PULSE_STEADY_HI = pctl(m2vPre, 0.9) / PULSE_PRE2008;
+export var PULSE_FLOOR = Math.min.apply(null, m2vPre) / PULSE_PRE2008, PULSE_CEIL = Math.max.apply(null, m2vPre) / PULSE_PRE2008;
 export var PRODUCTIVITY_SRC: Src[] = [
   {t:"BLS \u2014 Productivity and Costs", u:"https://www.bls.gov/productivity/"},
   {t:"BLS Monthly Labor Review \u2014 The U.S. productivity slowdown (2021)", u:"https://www.bls.gov/opub/mlr/2021/article/the-us-productivity-slowdown-the-economy-wide-and-industry-level-analysis.htm"},
@@ -229,6 +236,8 @@ function checkVelocityHistory(){
 export var M2_FROM_YEAR = 1959;
 var m2Level = SERIES.m2Level;
 export var m2Yoy = m2Level.map(function(v, i){ return i < 4 ? null : (v / m2Level[i - 4] - 1) * 100; });
+var m2Ref = m2Yoy.slice(4, 4 + (2020 - 1960) * 4) as number[];
+export var M2_PACE_LO = round1(pctl(m2Ref, 0.1)), M2_PACE_HI = round1(pctl(m2Ref, 0.9)), M2_FLOOD = round1(Math.max.apply(null, m2Ref));
 export var M2_NORM = 6.80;
 var UNEMP_FROM_YEAR = 1948;
 export var unempHistory = SERIES.unempHistory.map(function(t, i){
@@ -242,6 +251,21 @@ function checkUnemploymentHistory(){
       unempHistory[0].m !== "1948-01" || unempHistory[unempHistory.length - 1].m !== "2026-08")
     console.warn("unempHistory failed its check", unempHistory.length, lo, hi,
                  unempHistory[0].m, unempHistory[unempHistory.length - 1].m);
+}
+export var SAHM_TRIGGER = 0.5;
+export var unempSahm = unempHistory.map(function(d, i){ return sahmAt(i); });
+function avg3(i: number){
+  var a = unempHistory.slice(i - 2, i + 1).map(function(d){ return d.v; });
+  return i < 2 || a.some(function(v){ return v == null; }) ? null : mean(a as number[]);
+}
+function sahmAt(i: number){
+  var now3 = avg3(i), low = Infinity;
+  for (var j = i - 12; j < i; j++){ var a = j >= 0 ? avg3(j) : null; if (a == null) return null; low = Math.min(low, a); }
+  return now3 == null ? null : now3 - low;
+}
+export function sahmOf(m: string){
+  var i = (Number(m.slice(0, 4)) - UNEMP_FROM_YEAR) * 12 + Number(m.slice(5, 7)) - 1;
+  return unempSahm[i] == null ? null : unempSahm[i];
 }
 export var NROU_NOW = 4.2;
 function checkFedFundsHistory(){
@@ -322,6 +346,7 @@ export var DSR_FROM_YEAR = 2005;
 export var dsrHistory = SERIES.dsrHistory;
 export var SAV_FROM_YEAR = 1947;
 export var savHistory = SERIES.savHistory;
+export var SAV_THIN = pctl(savHistory, 0.05), SAV_LOW = pctl(savHistory, 0.1), SAV_MID = pctl(savHistory, 0.5);
 function checkHouseholdHistories(){
   var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
   if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6)
@@ -498,6 +523,8 @@ export function bootData(){
   deriveUninvLag();
   GYN.step("syncGrossDebt", syncGrossDebt, "derive");
   syncGrossDebt();
+  GYN.step("deriveStress", deriveStress, "derive");
+  deriveStress();
   GYN.step("checkGrossDebt", checkGrossDebt, "check");
   checkGrossDebt();
   liveInto("sentiment");

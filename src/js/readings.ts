@@ -4,7 +4,7 @@ import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -121,7 +121,7 @@ function volumeInfoHtml(ind: Indicator){
       '(' + ind.metricSub + ').</p>' +
     '<p class="caption follow"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
       'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
-      'year on average (median 6.70%), and the tenth to ninetieth percentile runs 3.3% to 10.3%. So roughly four ' +
+      'year on average (median 6.70%), and the tenth to ninetieth percentile runs ' + M2_PACE_LO + '% to ' + M2_PACE_HI + '%. So roughly four ' +
       'quarters in five sat inside this band, and the two ends are what unusual looks like in each direction \u2014 ' +
       '<b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: \u22124.6% in ' +
       '2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p>' +
@@ -133,9 +133,9 @@ function pulseInfoHtml(ind: Indicator){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
       'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
       'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.</p>' +
-    '<p class="caption follow"><b>The 1.7\u20132.2\u00d7 band is the pre-2008 era\u2019s own range</b>, not a ' +
-      'target \u2014 across the 196 quarters from 1959 Q1 to 2007 Q4 velocity averaged 1.857\u00d7 (median 1.808\u00d7) and ' +
-      'ran between 1.652\u00d7 and 2.192\u00d7. It is labelled <b>Pre-2008</b> rather than normal for that reason: the ' +
+    '<p class="caption follow"><b>The ' + (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + '\u2013' + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + '\u00d7 band is the pre-2008 era\u2019s own middle</b>, not a ' +
+      'target \u2014 the tenth to ninetieth percentile of the 196 quarters from 1959 Q1 to 2007 Q4, when velocity averaged ' + PULSE_PRE2008.toFixed(3) + '\u00d7 (median 1.808\u00d7) and ' +
+      'ran between ' + (PULSE_PRE2008 * PULSE_FLOOR).toFixed(3) + '\u00d7 and ' + (PULSE_PRE2008 * PULSE_CEIL).toFixed(3) + '\u00d7. Beyond those two, the era\u2019s own extremes, the word is <b>very</b> slow or fast. It is labelled <b>Pre-2008</b> rather than normal for that reason: the ' +
       'collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p>' +
     '<p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money ' +
       'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
@@ -264,15 +264,15 @@ export function volumeVerdict(g: number): Tag {
   return g < 0     ? { text:"Draining", state:"serious" }
        : g < M2_PACE_LO ? { text:"Thin",     state:"warning" }
        : g < M2_PACE_HI ? { text:"Steady",   state:"good" }
-       : g < 16    ? { text:"Filling",  state:"warning" }
+       : g <= M2_FLOOD ? { text:"Filling",  state:"warning" }
                    : { text:"Flooding", state:"serious" };
 }
-export function unempState(v: number){
+export function unempState(v: number, sahm: number | null){
   return v < ACT_BAND_LO ? "tight"
        : v <= ACT_BAND_HI ? "good"
-       : v < 6.5 ? "warning"
-       : v < 8.5 ? "serious" : "critical";
+       : sahm != null && sahm >= SAHM_TRIGGER ? "serious" : "warning";
 }
+export function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i]; return null; }
 export function growthInfoHtml(){
   return '<h4>Real GDP growth</h4>' +
     '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
@@ -297,14 +297,14 @@ export function growthInfoHtml(){
 }
 function velocityVerdict(v: number): Tag {
   var r = v / PULSE_PRE2008;
-  return r < 0.75 ? { text:"Very slow", state:"serious" }
+  return r < PULSE_FLOOR ? { text:"Very slow", state:"serious" }
        : r < PULSE_STEADY_LO ? { text:"Slow",      state:"warning" }
        : r <= PULSE_STEADY_HI ? { text:"Steady",    state:"good" }
-       : r < 1.25 ? { text:"Fast",      state:"warning" }
+       : r <= PULSE_CEIL ? { text:"Fast",      state:"warning" }
                   : { text:"Very fast", state:"serious" };
 }
 export function laborWord(v: number): Tag {
-  return v < ACT_BAND_LO ? { text:"Tight", state:"warning" } : { text: v <= ACT_BAND_HI ? "Solid" : "Slack", state: unempState(v) };
+  return v < ACT_BAND_LO ? { text:"Tight", state:"warning" } : { text: v <= ACT_BAND_HI ? "Solid" : "Slack", state: unempState(v, sahmNow()) };
 }
 export function temperatureWord(v: number): Tag {
   return v > TEMP_BAND_HI ? { text:"Running hot", state:"warning" }
@@ -333,8 +333,8 @@ export var lagging: Indicator[] = [
     caption:"Physical activity confirms a phase only after it's underway — unemployment is the textbook lagging indicator, typically trailing a turn by two to three quarters. Ticked up slightly but still low against the full sweep of U.S. history; the modern BLS series (since 1948) set its own record at 14.8% in April 2020 (14.7% as first reported), against a low of 2.5% in mid-1953; the 24.9% at the far end of the bar is the Census Bureau's historical estimate for 1933. August payrolls rose 162,000, beating forecasts.",
     aux:{label:"Initial jobless claims (wk of Sep 12)", value:"196K"},
     get peek(){
-      var seen = unempHistory.filter(function(d){ return d.v != null; }).map(function(d){ return d.v; });
-      return colPeek(seen, function(v: number){ return "unemp-col " + unempState(v); });
+      var seen = unempHistory.filter(function(d){ return d.v != null; });
+      return colPeek(seen.map(function(d){ return d.v; }), function(v: number, i: number){ return "unemp-col " + unempState(v, sahmOf(seen[i].m)); });
     },
     src:[{t:"BLS — The Employment Situation, August 2026", u:"https://www.bls.gov/news.release/empsit.nr0.htm"},{t:"DOL — Unemployment Insurance Weekly Claims", u:"https://www.dol.gov/ui/data.pdf"},{t:"BLS via FRED — Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"},{t:"Census Bureau — Historical Statistics of the United States, Colonial Times to 1970 (Series D 85–86, unemployment 1890–1970)", u:"https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html"}]
   },
@@ -379,8 +379,7 @@ export function valuationVerdict(v: number): Tag {
 export var tempCaptionFull = "", tempLeadShown = "";
 var PRESSURE_ZONES = [
   { key:"inverted", label:"Inverted", from:-2,  to:0 },
-  { key:"normal",   label:"Normal",   from:0,   to:2.5 },
-  { key:"steep",    label:"Steep",    from:2.5, to:4 }
+  { key:"normal",   label:"Normal",   from:0,   to:4 }
 ];
 export function pressureZone(v: number){
   for (var i = 0; i < PRESSURE_ZONES.length; i++){
@@ -398,8 +397,7 @@ function hznRecord(a: HznPoint[]){
 }
 function hznBack(a: HznPoint[], from: number, back: number): number | null { for (var i = from - back; i >= 0; i--) if (a[i].v != null) return a[i].v; return null; }
 function horizonWord(sp: number, dLong: number, dShort: number, dSpread: number): { word: string; state: State } {
-  if (sp < -0.10) return { word:"Pessimistic", state:"critical" };
-  if (sp <  0.25) return { word:"Undecided",   state:"warning" };
+  if (sp < 0) return { word:"Pessimistic", state:"critical" };
   if (dSpread <= 0.05) return { word:"Guarded", state:"warning" };
   return dLong >= -dShort ? { word:"Optimistic", state:"good" } : { word:"Hopeful", state:"good" };
 }
@@ -421,7 +419,7 @@ export function horizonInfoHtml(pick: string){
       'source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the ' +
       'crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever ' +
       'inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, ' +
-      'which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' +
+      'but no source says where \u201cjust above\u201d ends, so the page draws no zone for it.</p>' +
     String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
 function pulseBlock(rate: number, ref: number, ind?: Indicator){
@@ -442,9 +440,9 @@ function pulseBlock(rate: number, ref: number, ind?: Indicator){
 }
 function householdsWord(bill: number, kept: number): { word: string; state: State } {
   var heavy = bill > DSR_MEAN;
-  if (kept < 3)   return { word:heavy ? "Overstretched" : "Stretched",  state:"serious" };
-  if (kept < 4.5) return { word:heavy ? "Stretched"     : "Thin cover", state:"warning" };
-  if (kept < 7)   return { word:heavy ? "Thin cover"    : "Covered",    state:"good" };
+  if (kept < SAV_THIN) return { word:heavy ? "Overstretched" : "Stretched",  state:"serious" };
+  if (kept < SAV_LOW) return { word:heavy ? "Stretched"     : "Thin cover", state:"warning" };
+  if (kept < SAV_MID) return { word:heavy ? "Thin cover"    : "Covered",    state:"good" };
   return                 { word:heavy ? "Covered" : "Well covered",     state:"good" };
 }
 export function dsrInfoHtml(){
