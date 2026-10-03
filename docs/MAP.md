@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `7760335` on 2026-10-03.
+Generated from commit `7ea9766` on 2026-10-03.
 
 ## The page
 
@@ -1296,7 +1296,7 @@ Every `id` in the static DOM (110), which is what the renderers fill:
 | 236 | `app-version` |
 | 240 | `sheet-howto` |
 | 283 | `sheet-book` |
-| 314 | `seasons-kicker` |
+| 315 | `seasons-kicker` |
 | 316 | `seasons-rows` |
 | 319 | `framework-kicker` |
 | 322 | `framework-rows` |

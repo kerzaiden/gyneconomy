@@ -499,7 +499,7 @@
   .reading-book{ grid-column:1 / -1; border-top:1px dashed var(--border-strong); padding-top:14px; }
   .reading-book blockquote{ margin:8px 0 0; padding-left:14px; border-left:3px solid var(--border-strong); font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .framework-rows{ margin-top:12px; }
-  .seasons-rows{ margin-top:12px; }
+  .seasons-rows > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
   .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:var(--type-interface); padding:10px 12px; }
   .seasons-rows .lag-row.lag-row-head{ font-size:var(--type-label); }
   .seasons-rows .meta{ display:none; }
