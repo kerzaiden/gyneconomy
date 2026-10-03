@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,745 lines** in 31 files, about 568 KB, roughly **161 thousand tokens**. No session can
+The source is **8,746 lines** in 31 files, about 568 KB, roughly **161 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `9e9cd4c` on 2026-10-03.
+Generated from commit `aa82770` on 2026-10-03.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `9e9cd4c` on 2026-10-03.
 | `js/main.ts` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **27** modules, **488** top-level functions, **89** top-level vars, **318** exported names, **17** boots.
+Counts: **27** modules, **488** top-level functions, **90** top-level vars, **319** exported names, **17** boots.
 
 ## Modules, in boot order
 
@@ -50,7 +50,7 @@ Counts: **27** modules, **488** top-level functions, **89** top-level vars, **31
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 57 | 29 | — |
 | `js/history-charts.ts` | 458 | 12 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 15 | 12 | — |
+| `js/history-fred.ts` | 16 | 13 | — |
 | `js/indicators.ts` | 246 | 29 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 188 | 16 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -914,10 +914,11 @@ falls in. **export** marks a name other modules import.
 | 8 | `productivityHistory` · export | `var productivityHistory =` |
 | 9 | `sp500MonthlyHistory` · export | `var sp500MonthlyHistory =` |
 | 10 | `confidenceHistory` · export | `var confidenceHistory =` |
-| 11 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
-| 12 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
-| 13 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
-| 14 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
+| 11 | `durablesHistory` · export | `var durablesHistory =` |
+| 12 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
+| 13 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
+| 14 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
+| 15 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
 
 ### `js/indicators.ts`
 
