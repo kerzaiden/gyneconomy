@@ -89,8 +89,8 @@ function wireTabKeys(){ rovingKeys(document.querySelector(".tabbar"), ".tab-btn"
 // ---- MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape ----
 function wireContactForm(){
   var menu = byId("more-menu"), open = byId("menu-btn"), back = byId("menu-back");
-  var prevOverflow = "";
-  function slideIn(el){ el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
+  var prevOverflow = "", locked = false;
+  function slideIn(el){ if (el.__cancelOut) el.__cancelOut(); el.hidden = false; void el.offsetWidth; el.classList.add("in"); }
   function slideOut(el, done){
     el.classList.remove("in");
     var fired = false;
@@ -100,14 +100,15 @@ function wireContactForm(){
       el.removeEventListener("transitionend", finish); el.hidden = true; if (done) done();
     }
     el.addEventListener("transitionend", finish);
-    setTimeout(finish, 420);
+    var t = setTimeout(finish, 420);
+    el.__cancelOut = function(){ fired = true; clearTimeout(t); el.removeEventListener("transitionend", finish); el.__cancelOut = null; };
   }
-  function show(){ slideIn(menu); open.setAttribute("aria-expanded", "true"); prevOverflow = document.body.style.overflow; document.body.style.overflow = "hidden"; back.focus(); }
+  function show(){ slideIn(menu); open.setAttribute("aria-expanded", "true"); if (!locked){ prevOverflow = document.body.style.overflow; locked = true; } document.body.style.overflow = "hidden"; back.focus(); }
   function hide(){
     if (menu.hidden) return;
     open.setAttribute("aria-expanded", "false");
     open.focus();
-    slideOut(menu, function(){ document.body.style.overflow = prevOverflow; });
+    slideOut(menu, function(){ document.body.style.overflow = prevOverflow; locked = false; });
   }
   open.addEventListener("click", show);
   back.addEventListener("click", hide);

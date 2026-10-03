@@ -141,6 +141,7 @@ export function bootRoster(){
   page.range = pageState(function(R){ return R.range || "10y"; });
   page.stops = pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; });
   page.head = pageState(function(R){ return { mark:R.mark, title:R.head }; });
+  page.y0 = pageState(function(R){ var d = R.hist ? keyed(R.hist).filter(function(x){ return x.v != null; })[0] : null; return d ? +String(d.k).slice(0, 4) : undefined; });
   GYN.step("checkRoster", checkRoster, "check");
   checkRoster();
   GYN.ROSTER = ROSTER;

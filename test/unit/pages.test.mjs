@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { errors, bootWarnings } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.js';
 import { ROSTER } from '../../src/js/roster.js';
-import { page } from '../../src/js/history.js';
+import { page, pickerOpen } from '../../src/js/history.js';
+import { cycleByName } from '../../src/js/model.js';
 import { histFrame } from '../../src/js/charts.js';
 import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/history-charts.js';
 
@@ -59,3 +60,38 @@ for (const [name, chart] of Object.entries(CHARTS)) {
     }
   });
 }
+
+test('every history chart is reachable by keyboard and keeps its live region when redrawn', () => {
+  for (let k = 0; k < 2; k++) Object.values(sheetRenderers).forEach(draw => draw(390));
+  const hosts = [...document.querySelectorAll('*')].filter(h => h.__geom);
+  assert.ok(hosts.some(h => h.__geom.src === 'spreadHistory'), 'Horizon is a history chart');
+  hosts.forEach(h => {
+    assert.equal(h.getAttribute('tabindex'), '0', h.__geom.src);
+    assert.equal(h.querySelectorAll(':scope > .sr-only[aria-live]').length, 1, h.__geom.src);
+  });
+});
+
+test('the cycle picker offers only the cycles a chart has years for', () => {
+  for (const id of Object.keys(page.y0)) {
+    if (!sheetRenderers[id]) continue;
+    page.mode[id] = 'cycles'; pickerOpen[id] = true; sheetRenderers[id](390);
+    const opts = [...document.querySelectorAll('[data-cycles-for="' + id + '"] .cycsel-opt')];
+    opts.forEach(o => assert.ok(cycleByName(o.getAttribute('data-cycle')).from >= page.y0[id], id + ' offers ' + o.getAttribute('data-cycle')));
+    pickerOpen[id] = false; page.mode[id] = 'calendar'; sheetRenderers[id](390);
+  }
+});
+
+test('Escape closes only the cycle picker, and arrow keys move along the window tabs', () => {
+  const id = 'deficit-range', key = (type, k, el) => (el || document).dispatchEvent(new KeyboardEvent(type, { key: k, bubbles: true, cancelable: true }));
+  page.mode[id] = 'cycles'; sheetRenderers[id](390);
+  document.querySelector('[data-cycles-for="' + id + '"] [data-picker-toggle]').click();
+  assert.equal(pickerOpen[id], true);
+  key('keydown', 'Escape');
+  assert.equal(pickerOpen[id], false);
+  page.mode[id] = 'calendar'; sheetRenderers[id](390);
+  const segs = () => [...document.querySelectorAll('[data-range-for="' + id + '"] .range-seg')];
+  const at = segs().findIndex(s => s.classList.contains('on'));
+  assert.deepEqual(segs().map(s => s.tabIndex).filter(t => t === 0).length, 1);
+  key('keydown', 'ArrowRight', segs()[at]);
+  assert.equal(page.range[id], segs()[(at + 1) % segs().length].getAttribute('data-range'));
+});

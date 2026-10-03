@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `b1a0a64` on 2026-10-03. **81 components**, **40 shared patterns**.
+Generated from commit `1c12778` on 2026-10-03. **81 components**, **39 shared patterns**.
 
 ## analysis.js
 
@@ -108,8 +108,8 @@ Generated from commit `b1a0a64` on 2026-10-03. **81 components**, **40 shared pa
 | **`cyclePicker`** | `.cycsel-btn` | `history.js:histControls` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.js:histHead`, `history.js:paintHeadMenus` |
 | **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `inner-pages.js:registerTempGdpPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:pressureHead`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
-| **`histKeysWire`** | `.sr-only` | `history.js:wireHistHover` |
-| **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.js:histKeysWire`, `history.js:wireHistHover`, `render-pages.js:renderSpreadHistory` |
+| **`histLive`** | `.sr-only` | `history.js:histKeysWire`, `history.js:wireHistHover` |
+| **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.js:histKeysWire`, `history.js:wireHistHover` |
 
 ## indicators.js
 
@@ -178,23 +178,24 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | dom.js | 50 places |
+| **`byId`** | dom.js | 49 places |
 | **`put`** | dom.js | 23 places |
 | **`fmtSigned`** | format.js | 13 places |
 | **`histFrame`** | charts.js | 12 places |
+| **`publishGeom`** | charts.js | 12 places |
 | **`colPath`** | charts.js | 11 places |
 | **`colWidth`** | charts.js | 11 places |
 | **`monthLabel`** | format.js | 11 places |
-| **`publishGeom`** | charts.js | 11 places |
 | **`addSources`** | dom.js | 10 places |
+| **`attachHistory`** | history.js | 9 places |
 | **`fitLine`** | charts.js | 9 places |
 | **`histControls`** | history.js | 9 places |
 | **`pageCycle`** | history.js | 9 places |
 | **`qLabel`** | format.js | 9 places |
 | **`valRow`** | data.js | 9 places |
 | **`windowYears`** | charts.js | 9 places |
-| **`attachHistory`** | history.js | 8 places |
 | **`factsFrom`** | format.js | 8 places |
+| **`focusQuiet`** | dom.js | 8 places |
 | **`histNote`** | history.js | 8 places |
 | **`lede`** | format.js | 8 places |
 | **`vhOpen`** | charts.js | 8 places |
@@ -206,8 +207,8 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.js | 6 places |
 | **`timelineSpan`** | history.js | 6 places |
 | **`atMonth`** | format.js | 5 places |
-| **`focusQuiet`** | dom.js | 5 places |
 | **`labRow`** | data.js | 5 places |
+| **`layer`** | dom.js | 5 places |
 | **`meanRule`** | charts.js | 5 places |
 | **`paintReading`** | repaint.js | 5 places |
 | **`qWindowFrom`** | history.js | 5 places |
@@ -215,10 +216,8 @@ renderer speaks. Listed most-used first.
 | **`drawsPage`** | render-core.js | 4 places |
 | **`expandBtn`** | dom.js | 4 places |
 | **`fedFundsRange`** | data.js | 4 places |
-| **`histReadFill`** | history.js | 4 places |
 | **`hyAt`** | data.js | 4 places |
 | **`indOf`** | readings.js | 4 places |
-| **`layer`** | dom.js | 4 places |
 | **`mean`** | format.js | 4 places |
 | **`moodTrack`** | model.js | 4 places |
 | **`openCycle`** | model.js | 4 places |
@@ -233,6 +232,8 @@ renderer speaks. Listed most-used first.
 | **`groupId`** | indicators.js | 3 places |
 | **`growthWord`** | model.js | 3 places |
 | **`headMoreBtn`** | history.js | 3 places |
+| **`histReadFill`** | history.js | 3 places |
+| **`keyed`** | roster.js | 3 places |
 | **`liveInto`** | live.js | 3 places |
 | **`liveIsoOf`** | live.js | 3 places |
 | **`merge`** | live.js | 3 places |
@@ -244,6 +245,7 @@ renderer speaks. Listed most-used first.
 | **`registerTiming`** | render-core.js | 3 places |
 | **`renderDiagnosis`** | diagnosis.js | 3 places |
 | **`showCycle`** | dial-cycle.js | 3 places |
+| **`tabSegs`** | history.js | 3 places |
 | **`timelineWindow`** | history.js | 3 places |
 | **`volatilityTag`** | readings.js | 3 places |
 | **`yearTicks`** | history-charts.js | 3 places |
@@ -286,7 +288,6 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cycsel-tick` | 2 | `history.js:cyclePicker`, `history.js:headPickRow` |
 | `.cycsel-menu` | 2 | `history.js:cyclePicker`, `history.js:histHead` |
 | `.cycsel-yr` | 2 | `history.js:cyclePicker`, `history.js:headMenuHtml` |
-| `.active` | 2 | `history.js:modeBar`, `history.js:rangeBar` |
 | `.hist-controls` | 2 | `history.js:histControls`, `render-core.js:registerFlowPages` |
 | `.subject` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.subject-summary` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
