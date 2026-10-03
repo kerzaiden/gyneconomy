@@ -1,6 +1,6 @@
 import { byIdMaybe, put, ui } from "./dom.ts";
 import { checkLiveCoverage, exposeLive, fetchSiteData, GYN, onLive, refreshLiveData } from "./live.ts";
-import { fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.ts";
+import { curveAt, fedFundsRange, now, policyDirection, syncCapeHistory, valRow } from "./data.ts";
 import { forgetMood, nowModel } from "./model.ts";
 import { desireRow, policyFactRows, riskMatrixBlock, volatilityRing, volatilityTag } from "./readings.ts";
 import { CATEGORIES, paintWhen } from "./roster.ts";
@@ -39,20 +39,20 @@ function repaintVolatility(){
   paintReading("sheet-sign-sentiment", now.vixRow!.flagValue, volatilityTag());
 }
 function repaintPressureRow(){
-  var h = now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0];
-  if (!h || h.y == null) return;
-  paintReading("sheet-sign-pressure", h.y.toFixed(2) + "%", null);
+  var y10 = curveAt("10Y");
+  if (y10 == null) return;
+  paintReading("sheet-sign-pressure", y10.toFixed(2) + "%", null);
 }
 function repaintPressureChart(){
   var s = byIdMaybe("sheet-sign-pressure");
   if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
 }
 function repaintDesire(){
-  var row = desireRow(), cape = valRow("cape");
+  var row = desireRow(), cape = valRow("cape"), cv = cape && cape.meter.value;
   if (!row || !cape) return;
   paintReading("sheet-sign-desire", row.metric, null);
   Array.prototype.forEach.call(document.querySelectorAll(".riskmx"), function(el: Element){
-    el.outerHTML = riskMatrixBlock(row.meter.value!, cape!.meter.value!);
+    var rv = row.meter.value; if (rv != null && cv != null) el.outerHTML = riskMatrixBlock(rv, cv);
   });
 }
 function syncCape(){ syncCapeHistory(); forgetMood(); }

@@ -367,7 +367,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The 1935–37 cycle is the Second New Deal, 1938–41 the Keynesian, and 1942–46 the WWII Victory, the war
   written in Roman numerals wherever that cycle names it.** Keren: "rename the recovery cycle between 1935 and 1937
   as the second New Deal cycle", "instead of war cloud cycle, I want to call it Keynesian cycle", and for 1942–46
-  "WW2 … in Latin … II". (V704; Recovery, War Clouds and Victory in V690.)
+  "WW2 … in Latin … II". (V708; Recovery, War Clouds and Victory in V690.)
 - **A cycle that closed before her mood can be read keeps its Diagnosis: the Mood door says when the mood begins,
   and Circulation, Energy and what followed read as for any closed cycle.** (V689)
 - **To close an era, set its `to` to its last bear year, drop `ongoing`, and open the next era on the
@@ -1249,7 +1249,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   integration with controllers and services." (V629)
 - **The subject row, the one row the app opens pages from, is built once in `subjectRow`; callers pass only
   what differs.** Keren: "make it a 10." (V631)
-- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.js`): its page, name, category, group,
+- **A reading is declared once, in the roster (`ROSTER`, `src/js/roster.ts`): its page, name, category, group,
   timing, mark, door, history and card; the category pages, Search, the Diagnosis, the past cycles, the history
   heads and every page's state read it, and a new reading is one row.** Keren: “make the app as consolidated as possible so we won't have to write the same code twice, meaning dry code and as efficient components as possible.” (V670)
 - **Rows are addressed by name (`valRow`), never by array index, so the display order is free to follow the

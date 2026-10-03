@@ -11,7 +11,7 @@ true is in git history (`git show v632-component-page:docs/ARCHIVE.md` for the r
 A published artifact cannot call an external host; its only route in is its own database, which a Claude
 session writes and the page reads with `claude.use("db")`. The hosted site has a second route, a JSON file
 the Data workflow commits. Both end at one intake, `receive`, and one contract, the `READINGS` registry
-in `js/live.js` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
+in `js/live.ts` — one row per reading: kind, band, where it lands, what repaints. The mechanism is
 described under "How the live layer works" below; the decisions are these:
 
 - **The literal in the file is the floor, not a duplicate.** It renders first; the database and the
@@ -39,7 +39,7 @@ Six of the nine rows have a writer today; see Open questions.
 
 ### How the live layer works
 
-Moved here from the code comments of `js/live.js` at V650, when the source lost its comments. Keren's
+Moved here from the code comments of `js/live.ts` at V650, when the source lost its comments. Keren's
 decisions are cited as she made them.
 
 #### The cache
@@ -63,18 +63,20 @@ blank the app on every later visit):
 - **Checked on the way in and on the way out.** `receive` caches a document only once `docOk` (the reading's
   `kind`, `band` and `ok`, and no `<` anywhere, because live documents carry data, never markup) has passed it,
   and `liveInto()` checks the cached copy again before the app builds on it. A refused document falls back to the
-  literal. Since V698 `receive` caches only what applied, a row must carry a full meter (value, min, max), a
-  valuation must keep its CAPE row, the coincident rows all three readings, and a yield curve its 3M and 10Y
-  inside the fetcher's own 0–20% band. If boot still throws with documents stored, `forgetLive` drops them
-  and reloads once on the file's figures (`gyn.forgot` in session storage stops a loop).
+  literal. Since V698 `receive` caches only what applied. A panel of rows (sentiment, valuation, coincident) must
+  carry every row the file has, in the file's order, each with a full meter and every text and number field the
+  file's row has (V706: a valuation with only its CAPE row passed and blanked the app from the third load). A
+  yield curve must carry its 3M and 10Y inside the fetcher's own 0–20% band. If boot still throws with documents
+  stored, `forgetLive` drops them and reloads once on the file's figures; `gyn.forgot` in session storage stops
+  a loop, and `bootDone` clears it after a good boot so the guard works again on the next bad document (V706).
 - **Every reading is applied at load.** A scalar that lands inside an object row (`vixClose`, `capeValue`,
   `hyOasNow`) is applied by `liveInto` right after its row exists, so a second visit no longer shows the file's
   figures.
 - **Applied, not cached, decides a repaint.** `receive` compares a document with what this page load applied
   (`liveApplied`), never with storage, so an unchanged value that was never applied still lands.
 - **An older document never beats the file (V701).** A reading may declare `fileAsOf()`, the date of the
-  file's own figure; `liveInto` skips a cached document dated before it, so an offline visit after a new build
-  shows the build's figure, not last month's cache.
+  file's own figure; `liveInto` at boot and `receive` at run time both skip a document dated before it (one
+  rule, `olderThanFile`, since V706), so neither an offline visit nor a slow feed shows last month's figure.
 - **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
   `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
 - **A card's date is its figure's date.** Pressure, Volatility and Desire date their cards from the applied
@@ -128,7 +130,7 @@ stays empty.
 #### The roster
 
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
-dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.js`,
+dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
 and their groups (`catPicks`), Search's heads and groups, the Diagnosis's systems, the timing chips
 and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
@@ -240,6 +242,12 @@ answer registers it, the view that needs it fires it, and neither holds a refere
 with no handler is recorded, which makes the suite able to see it.
 ```
 
+Since V707 the same holds between modules: the five view hooks that rode on `ui` behind a silent `if`
+(`openIndicatorsPage`, `calendarReset`, `metricPageReset`, `drawSpreadView`, `drawSpreadWindow`) are `GYN`
+actions, and the two `window` channels are exports (`sourceIndex` from `pages-nav`, `catSnap` from
+`render-core`). `ui.topbarBack` and `ui.eraPageBack` stay in the store: they are state (what Back does now),
+not hooks.
+
 ## Who refreshes what
 
 | | Refreshes | How often | Reaches |
@@ -322,6 +330,8 @@ the manifest's; now each module says what it imports.
   another module sits in that module's `boot…()`, and `main.ts` calls the boots in order. **The boot order is the
   semantics**: V696 moved statements between modules but kept the sequence they run in; `tools/load-order.js`
   follows every statement that runs at load, boots included, and fails on a value read before it is set.
+  It reads the boot list from `main.ts`'s syntax tree and fails if it finds none (V705: from V698 to V704 a
+  line pattern missed the boots inside `try` and the gate checked nothing).
 - **An import is read-only, so a value that other modules change lives in its owner's store** (V697): `now` in
   `data` (the live-fed figures: `now.fedFunds`, `now.yieldCurve`, `now.vixRow`…), `ui` in `dom` (what is open, and
   the hooks one page leaves for another), `page` in `history` (each history page's mode, window and head). A write
@@ -337,12 +347,20 @@ the manifest's; now each module says what it imports.
   and after the types went in. `npm run typecheck` (in `check`) runs `tsc` with `strict` on. The app's shared shapes
   (a row, a meter, a point, a cycle, a reading, a chart's geometry) are global types in `src/types.d.ts`; what the
   app adds to `window` and to DOM elements is in `src/globals.d.ts`; a type only one module uses stays in that module.
-  Types are syntax, not comments, so the no-comments rule holds. The tools that read the source (`load-order`,
-  `uncomment`) parse it after `stripTypeScriptTypes`, which blanks the types and keeps every position; the function
+  **The types say what can be missing (V707).** `byId` returns `HTMLElement | null`; `need(id)` is the checked
+  lookup for an element written in `page-body.html`, and throws if it is gone. A band is one of `{lte}`, `{gte}` or
+  `{from, to}` (read through `bandEnds`), a verdict `State` is one of six words and a style `Tone` adds the
+  classes a tag may carry, and a `Cycle` is either ongoing (`to: null`) or closed (`to` a year). No `!` asserts a
+  value its type says may be null: a data invariant is read through a helper that throws a named error when it
+  breaks (`fileRow`, `metered`, `tagFor`, `stateOf`), so a bad document fails at the line that trusts it.
+  Types are syntax, not comments, so the no-comments rule holds. `load-order` parses the source after
+  `stripTypeScriptTypes`, which blanks the types and keeps every position; `uncomment` reads comments with
+  TypeScript's own parser, so one inside type syntax or in a `.d.ts` file is caught (V705); the function
   sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
+- **A verdict word is derived from its band (V706).** Pulse reads Steady between `PULSE_STEADY_LO` and `PULSE_STEADY_HI` times the pre-2008 mean, and its shaded zone is that same range. Labor market reads Tight, Solid or Slack against `ACT_BAND_*` (the meter's own end words), and Temperature reads Running cold, Warm or Running hot against `TEMP_BAND_*` (the Temperature info's "hot above the band, warm inside it, cold below"). Both words follow the latest month of their record, and the unit tests pin each edge. These two vocabularies are Claude's call from the app's existing words, and Keren can rename them.
 - **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
-- **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
-  any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
+- **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` reads
+  the order below from this paragraph and fails on any import that is not from a lower layer, V705). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
@@ -378,7 +396,7 @@ Rules that shape the pages:
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
   budget · Households). The split pages are
-  built by one builder, `src/js/indicators.js` (the roster row plus its `splitPages` entry, joined by
+  built by one builder, `src/js/indicators.ts` (the roster row plus its `splitPages` entry, joined by
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
@@ -707,7 +725,7 @@ The gap is a forecast, not a pressure, judged optimistic or pessimistic; it sat 
 Circulation's own Horizon card for V685–V687, and since V688 is Pressure's second ⋯ group, Treasury spreads
 (Keren). One state, `pressureView` ("yield" or "spread", in model beside `spreadPick`), picks what the page
 draws: `drawPressure` shows one chart shell (`showPressureView`), draws that view (`drawYlm` or the spread view
-`drawSpreadView`, set by `renderHorizonPage`), and writes its Insights into the one `#pressure-insights` box, so
+`drawSpreadView`, the action `renderHorizonPage` registers), and writes its Insights into the one `#pressure-insights` box, so
 the page keeps one Insights box; `pressureHead` builds the title, both menu groups and the note. Both views share
 the `pressure-range` window. **The spread's word is slope AND
 direction, never slope alone** (2008 and 2021 both show a steep curve with opposite meanings); its lookback

@@ -5,7 +5,7 @@ import { ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.ts';
 import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
-import { rowReadings, volumeVerdict } from '../../src/js/readings.ts';
+import { rowReadings, volumeVerdict, laborWord, temperatureWord } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
@@ -46,7 +46,7 @@ test('each card prints the last value of its own record', () => {
 
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
-  Desire: { from: 3.5, to: 6 }, Pulse: { from: 1.7, to: 2.19 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
+  Desire: { from: 3.5, to: 6 }, Pulse: { from: 1.857 * 0.95, to: 1.857 * 1.10 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
@@ -73,6 +73,22 @@ test('every band is the one pinned here, and its label says the same numbers', (
     assert.equal(nums.length, vals.length, k + ' label ' + label);
     nums.forEach((n, i) => assert.ok(Math.abs(n - vals[i]) <= 0.05, k + ' label ' + label + ' vs ' + vals[i]));
   }
+});
+
+test('Pulse reads Steady exactly where its band is drawn', () => {
+  const pulse = rowReadings().find(r => r.bodyTerm === 'Pulse'), o = pulse.meter.optimal, was = pulse.meter.value;
+  const at = v => { pulse.meter.value = v; window.__GYN.render(); return pulse.tag.text; };
+  assert.deepEqual([at(o.from - 0.001), at(o.from), at(o.to), at(o.to + 0.001)], ['Slow', 'Steady', 'Steady', 'Fast']);
+  at(was);
+});
+
+test('the labor and temperature words turn at their bands, and the cards follow the record', () => {
+  assert.deepEqual([3.4, 3.5, 5, 5.1].map(v => laborWord(v).text), ['Tight', 'Solid', 'Solid', 'Slack']);
+  assert.deepEqual([3.4, 3.5, 5.1, 9].map(v => laborWord(v).state), ['warning', 'good', 'warning', 'critical']);
+  assert.deepEqual([0.9, 1, 3, 3.1].map(v => temperatureWord(v).text), ['Running cold', 'Warm', 'Warm', 'Running hot']);
+  const u = unempHistory.filter(d => d.v != null);
+  assert.equal(tag('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
+  assert.equal(rowReadings().find(r => r.bodyTerm === 'Temperature').tag.text, temperatureWord(cpiYoYHistory[cpiYoYHistory.length - 1].v).text);
 });
 
 test('the Volume verdict turns at the edges of her pace', () => {
@@ -126,9 +142,8 @@ test('a live yield curve moves the 10-year figure on the Pressure card', async (
   assert.equal(value('sheet-sign-pressure'), '4.44%');
 });
 
-test('a live CAPE and high-yield spread reach the Valuations and Desire cards', async () => {
-  await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-01' }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
-  assert.equal(value('sheet-metric-valuation'), '35.2×');
+test('a live high-yield spread reaches the Desire card', async () => {
+  await deliver({ hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
   assert.equal(value('sheet-sign-desire'), '4.10%');
   assert.deepEqual(errors, []);
 });
@@ -158,11 +173,28 @@ test('a live document that would break the page is refused and not kept', async 
   assert.ok(!/CBOE VIX"\}\]/.test(localStorage.getItem('gyn.live') || ''));
 });
 
-test('a live CAPE repaints the Valuations verdict word', async () => {
+test('a live panel missing a row the page reads is refused, and an older figure never replaces the file', async () => {
+  const cape = now.valuation.rows[0], vix = value('sheet-sign-sentiment');
+  await deliver({ valuation: { kind: 'object', rows: [cape] } });
+  assert.equal(now.valuation.rows.length, 2);
+  await deliver({ valuation: { kind: 'object', rows: now.valuation.rows.map(r => ({ ...r, note: undefined })) } });
+  assert.ok(now.valuation.rows.every(r => typeof r.note === 'string'));
+  await deliver({ vixClose: { kind: 'scalar', value: 77.7, asOf: '2001-01-02' } });
+  assert.equal(value('sheet-sign-sentiment'), vix);
+  assert.ok(!/77\.7/.test(localStorage.getItem('gyn.live') || ''));
+});
+
+test('a good boot clears the one-reload guard', () => {
+  assert.equal(sessionStorage.getItem('gyn.forgot'), null);
+});
+
+test('a live CAPE reaches every Valuations door with its verdict word', async () => {
+  const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
   await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
   assert.equal(word('sheet-metric-valuation'), 'Fairly valued');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
   assert.equal(word('sheet-metric-valuation'), 'Highly overvalued');
+  assert.ok(doors().length >= 1 && doors().every(t => /^35\.2/.test(t)), JSON.stringify(doors()));
 });
 
 test('a new Fed range without its move clears the old move and the next date, and the note follows', async () => {

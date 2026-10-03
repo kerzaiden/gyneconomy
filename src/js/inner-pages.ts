@@ -1,5 +1,5 @@
-import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, yearOf } from "./format.ts";
-import { byId, byIdMaybe, focusQuiet, layer, moreRow, put } from "./dom.ts";
+import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, stateOf, tagFor, yearOf } from "./format.ts";
+import { byId, byIdMaybe, focusQuiet, layer, moreRow, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
@@ -49,23 +49,23 @@ function redrawSheet(id: string){
   keys.some(function(k){ return focusQuiet(document.querySelector<HTMLElement>(k)); });
 }
 function registerTempGdpPages(){
-  sheetRenderers["sheet-metric-temp"] = function(W){
+  sheetRenderers["sheet-metric-temp"] = function(W = 0){
     var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
     put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory }));
     put("temp-head", histHead("sheet-metric-temp"));
-    var hist = byId("temp-history"); hist.hidden = false;
+    var hist = need("temp-history"); hist.hidden = false;
     var win;
     if (cyc){
       var span = cycleMonths(cyc);
       win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W!, span ? span[0] : 0,
+      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                        { to:span ? span[1] : undefined, cycle:true });
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                   { rising:"heating", falling:"cooling" }));
     } else {
       var from = mWindowFrom(cpiYoYHistory.length, r); win = cpiYoYHistory.slice(from);
-      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W!, from);
+      hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                   { rising:"heating", falling:"cooling" }));
@@ -73,18 +73,18 @@ function registerTempGdpPages(){
     var tri = totalRiseIn(win);
       headSigma("sheet-metric-temp", tri ? fmtSigned(tri.total, 0) + "%" : null);
   };
-  sheetRenderers["sheet-metric-gdp"] = function(W){
+  sheetRenderers["sheet-metric-gdp"] = function(W = 0){
     var r = page.range["sheet-metric-gdp"];
     put("gdp-rangebar", histControls("sheet-metric-gdp", { series:gdpQuarterlyYoY }));
     put("gdp-head", histHead("sheet-metric-gdp"));
     histNote("sheet-metric-gdp", growthInfoHtml());
-    var hist = byId("gdp-history"); hist.hidden = false;
+    var hist = need("gdp-history"); hist.hidden = false;
     var gCyc = pageCycle("sheet-metric-gdp");
     var gSpan = gCyc ? cycleSlice(gdpQuarterlyYoY, gCyc) : null;
     var gFrom = gSpan ? gSpan[0] : qWindowFrom(gdpQuarterlyYoY.length, r);
     var gTo = gSpan ? gSpan[1] : undefined;
     var win = gdpQuarterlyYoY.slice(gFrom, gTo);
-    hist.innerHTML = gdpHistoryChart(hist.clientWidth || W!, gFrom, { to:gTo, cycle:!!gSpan });
+    hist.innerHTML = gdpHistoryChart(hist.clientWidth || W, gFrom, { to:gTo, cycle:!!gSpan });
     attachHistory(hist, "gdp-hist-tooltip", "gdpHistoryChart");
     var gy0 = yearOf(win[0]), gy1 = yearOf(win[win.length - 1]), gt = totalGrowthYears(gy0, gy1);
     headSigma("sheet-metric-gdp", gt ? fmtSigned(gt.total, 0) + "%" : null);
@@ -94,7 +94,7 @@ function registerTempGdpPages(){
 
 }
 function registerActivityPowerDeficitPages(){
-  sheetRenderers["sheet-sign-activity"] = function(W){
+  sheetRenderers["sheet-sign-activity"] = function(W = 0){
     var id = "sheet-sign-activity", bar = byId("act-rangebar");
     if (!bar) return;
     bar.innerHTML = histControls(id, { series:unempHistory });
@@ -103,7 +103,7 @@ function registerActivityPowerDeficitPages(){
     var span = cyc ? actCycleMonths(cyc) : null;
     var from = span ? span[0] : mWindowFrom(unempHistory.length, page.range[id]);
     var to = span ? span[1] : undefined;
-    hist.innerHTML = unempHistoryChart(hist.clientWidth || W!, from, { to:to, cycle:!!span });
+    hist.innerHTML = unempHistoryChart(hist.clientWidth || W, from, { to:to, cycle:!!span });
     attachHistory(hist, "act-hist-tooltip", "unempHistoryChart");
     var win = unempHistory.slice(from, to).filter(function(d){ return d.v != null; });
     put("act-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
@@ -114,7 +114,7 @@ function registerActivityPowerDeficitPages(){
     if (!byIdMaybe("deficit-record")) sheet.insertAdjacentHTML("afterbegin", deficitBlock());
     sheetRenderers["deficit-range"](W);
   };
-  sheetRenderers["deficit-range"] = function(W){
+  sheetRenderers["deficit-range"] = function(W = 0){
     var host = byId("deficit-record"); if (!host) return;
     var key = page.range["deficit-range"], defCyc = pageCycle("deficit-range");
     var defIdx = defCyc ? [Math.max(0, defCyc.from - DEF_FROM_YEAR),
@@ -122,7 +122,7 @@ function registerActivityPowerDeficitPages(){
     var from = defIdx ? defIdx[0] : defFrom(key), defTo = defIdx ? defIdx[1] : undefined;
     put("deficit-rangebar", histControls("deficit-range",
       { depth:deficitHistory.length }));
-    host.innerHTML = deficitChart(host.clientWidth || W!, from, defTo);
+    host.innerHTML = deficitChart(host.clientWidth || W, from, defTo);
     put("deficit-records", "");
     attachHistory(host, "deficit-hist-tooltip", "deficitChart");
     put("deficit-trend", trendPill(
@@ -131,7 +131,7 @@ function registerActivityPowerDeficitPages(){
   };
 }
 function registerHouseholdsValuationPages(){
-  sheetRenderers["sheet-metric-households"] = function(W){
+  sheetRenderers["sheet-metric-households"] = function(W = 0){
     var id = "sheet-metric-households";
     var hhCyc = pageCycle(id, DSR_FROM_YEAR);
     var idx = hhCyc ? cycleQtrIdx(DSR_FROM_YEAR, hhCyc, dsrHistory.length) : null;
@@ -142,7 +142,7 @@ function registerHouseholdsValuationPages(){
     host.innerHTML =
       histBar(histControls(id, { depth:Math.floor(dsrHistory.length / 4) }, DSR_FROM_YEAR)) +
       '<div class="page-chart">' + histHead(id) +
-      householdsChart(W!, from, to) +
+      householdsChart(W, from, to) +
       trendPill(trendOf(savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + to), "points", "quarter"),
                 "Saving", true, { rising:"keeping more", falling:"keeping less" }) +
       histTip("households-hist-tooltip") + '</div>';
@@ -192,29 +192,29 @@ function wireMetricPageControls(){
   });
   document.addEventListener("click", function(e){
     var seg = (e.target as Element).closest && (e.target as Element).closest(".range-seg"); if (!seg) return;
-    var mid = (seg.parentNode as Element).getAttribute("data-mode-for");
-    if (mid && (mid in page.mode)){
-      page.mode[mid] = seg.getAttribute("data-mode")!;
+    var mid = (seg.parentNode as Element).getAttribute("data-mode-for"), md = seg.getAttribute("data-mode");
+    if (mid && md != null && (mid in page.mode)){
+      page.mode[mid] = md;
       redrawSheet(mid);
       return;
     }
-    var id = (seg.parentNode as Element).getAttribute("data-range-for")!;
-    if (!(id in page.range)) return;
-    page.range[id] = seg.getAttribute("data-range")!;
+    var id = (seg.parentNode as Element).getAttribute("data-range-for"), rg = seg.getAttribute("data-range");
+    if (id == null || rg == null || !(id in page.range)) return;
+    page.range[id] = rg;
     redrawSheet(id);
   });
 
 }
 function valuationHighlights(capeNow: number, buffNow: number | null){
-  var richer = capeHistory.filter(function(d){ return d.v! > capeNow; });
+  var richer = capeHistory.filter(function(d): d is YearPoint { return d.v != null && d.v > capeNow; });
   var cards = [];
   cards.unshift('<p class="hi-lede">Valuations are what buyers pay for a dollar of earnings, smoothed over ' +
     'ten years. Paying far above the long-run price is appetite running ahead of what the body is actually ' +
     'producing.</p>');
-  cards.push(hiCard("Shiller CAPE", now.valuation.tag!.state!, richer.length === 0
+  cards.push(hiCard("Shiller CAPE", stateOf(tagFor(now.valuation)), richer.length === 0
     ? "At " + capeFmt1(capeNow) + ", richer than every January reading since " + capeHistory[0].y + "."
     : "At " + capeFmt1(capeNow) + ", the " + ordinal(richer.length + 1) + " richest reading since " + capeHistory[0].y +
-      " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v!) + ")"; }).join(" and ") + " ran higher."));
+      " \u2014 only " + richer.map(function(d){ return d.y + " (" + capeFmt1(d.v) + ")"; }).join(" and ") + " ran higher."));
   put("valuation-highlights", highlightsHtml(cards, "", moreRow('<h4>Valuations</h4>' + factsFrom(now.valuation.impression))));
 }
 function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.reading){
@@ -223,10 +223,10 @@ function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.readi
   var cards = ['<p class="hi-lede">A temperature is the one number that says whether something inside is ' +
     'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
     'means anything measured against the level the system is meant to hold.</p>'];
-  cards.push(hiCard("Temperature", tempInd ? tempInd.tag!.state! : "warning",
+  cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
     " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
-  cards.push(hiCard("Where it sits now", tempInd ? tempInd.tag!.state! : "warning",
+  cards.push(hiCard("Where it sits now", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
     r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
   put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
@@ -259,18 +259,18 @@ function wireControlKeys(){
   layer(0, { open:function(){ return Object.keys(pickerOpen).some(function(k){ return pickerOpen[k]; }); }, close:shutPickers });
   document.addEventListener("keydown", function(e){
     var t = e.target as HTMLElement, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
-    var step = { ArrowUp:-1, ArrowDown:1, ArrowLeft:-1, ArrowRight:1 }[e.key];
-    if (step == null && e.key !== "Home" && e.key !== "End") return;
-    if (sel){
-      var id = sel.getAttribute("data-cycles-for")!, opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
-      if (!pickerOpen[id]){ if (e.key === "ArrowDown"){ e.preventDefault(); sel.querySelector<HTMLElement>("[data-picker-toggle]")!.click(); focusQuiet(document.querySelector<HTMLElement>("[data-cycles-for=\"" + id + "\"] .cycsel-opt.on")); } return; }
+    var step = { ArrowUp:-1, ArrowDown:1, ArrowLeft:-1, ArrowRight:1 }[e.key] || 0;
+    if (!step && e.key !== "Home" && e.key !== "End") return;
+    var id = sel && sel.getAttribute("data-cycles-for"); if (sel && id != null){
+      var opts = Array.prototype.slice.call(sel.querySelectorAll(".cycsel-opt"));
+      if (!pickerOpen[id]){ if (e.key === "ArrowDown"){ e.preventDefault(); var tog = sel.querySelector<HTMLElement>("[data-picker-toggle]"); if (tog) tog.click(); focusQuiet(document.querySelector<HTMLElement>("[data-cycles-for=\"" + id + "\"] .cycsel-opt.on")); } return; }
       var i = opts.indexOf(t);
-      var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step!));
+      var j = e.key === "Home" ? 0 : e.key === "End" ? opts.length - 1 : i < 0 ? 0 : Math.max(0, Math.min(opts.length - 1, i + step));
       e.preventDefault(); focusQuiet(opts[j]); return;
     }
     if (!bar || !t.classList.contains("range-seg")) return;
     var segs = Array.prototype.slice.call(bar.querySelectorAll(".range-seg")), k = segs.indexOf(t);
-    var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step! + segs.length) % segs.length;
+    var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step + segs.length) % segs.length;
     e.preventDefault(); if (m !== k){ segs[m].focus(); segs[m].click(); }
   });
 }

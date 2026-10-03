@@ -1,5 +1,5 @@
 import { bootDom } from "./dom.ts";
-import { bootLive, forgetLive } from "./live.ts";
+import { bootLive, bootDone, forgetLive } from "./live.ts";
 import { bootRefreshSeason } from "./refresh-season.ts";
 import { bootData } from "./data.ts";
 import { bootModel } from "./model.ts";
@@ -33,6 +33,7 @@ try {
   bootAnalysis();
   bootTabsMenu();
   bootRepaint();
+  bootDone();
 } catch (e) {
   forgetLive(e);
 }

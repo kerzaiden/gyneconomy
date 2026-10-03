@@ -1,4 +1,4 @@
-import { CHEV, clampPct } from "./format.ts";
+import { bandEnds, CHEV, clampPct } from "./format.ts";
 
 export type Fit = { slope: number; intercept: number; n: number };
 export type Trend = { word: string; span: string; flat: boolean; fit?: Fit };
@@ -16,7 +16,7 @@ export function trendOf(vals: (number | null)[] | null | undefined, unit?: strin
   period = period || "period";
   if (!vals || vals.length < 8) return { word:"unavailable", span:"", flat:true };
   var n = vals.length, sx = 0, sy = 0, sxy = 0, sxx = 0;
-  vals.forEach(function(v, i){ sx += i; sy += v!; sxy += i * v!; sxx += i * i; });
+  vals.forEach(function(v, i){ var x = v == null ? 0 : v; sx += i; sy += x; sxy += i * x; sxx += i * i; });
   var slope = (n * sxy - sx * sy) / ((n * sxx - sx * sx) || 1);
   var dir = slope > 0 ? "rising" : "falling";
   var total = Math.abs(slope) * (n - 1);
@@ -45,11 +45,12 @@ export function trendPill(t: Trend, key?: string | null, toggles?: boolean, word
 /* ---- The record rows ---- */
 // ---- The cycle average component ----
 // ---- The inner pages' charts ----
+function yearsAcross(all: { y?: number }[]){ var a = all[0].y, b = all[all.length - 1].y; if (a == null || b == null) throw new Error("a dated chart has an undated end"); return windowYears(a, b, 5); }
 function xLabelOf(o: XLabelOpts, d: { y?: number }, i: number, all?: { y?: number }[]){
   if (o.xLabel) return o.xLabel(d as never, i);
   if (d.y == null) return "";
   if (all && all.length){
-    var ys = o._years || (o._years = windowYears(all[0].y!, all[all.length - 1].y!, 5));
+    var ys = o._years || (o._years = yearsAcross(all));
     return ys.indexOf(d.y) === -1 ? "" : "\u2019" + String(d.y).slice(2);
   }
   return d.y % 10 ? "" : "\u2019" + String(d.y).slice(2);
@@ -59,7 +60,7 @@ export function fitLine(vals: (number | null)[], per: string, fmt: (v: number) =
   return fit && fit.n > 1 ? fitGroup({ fit:fit, fmt:fmt }, x0, x1, y, W, padL, padR) : "";
 }
 export function fitGroup(o: FitOpts, x0: number, x1: number, y: YScale, W: number, padL: number, padR: number){
-  var f = o.fit!, v0 = f.intercept, v1 = f.intercept + f.slope * (f.n - 1);
+  var f = o.fit; if (!f) return ""; var v0 = f.intercept, v1 = f.intercept + f.slope * (f.n - 1);
   var y0 = parseFloat(y(v0) as string), y1 = parseFloat(y(v1) as string);
   var down = y1 > y0;
   function lab(v: number, x: number, yy: number, above: boolean, anchor: string){
@@ -118,15 +119,17 @@ export function avgRule(x0: number | string, x1: number | string, y: number | st
   return '<path class="temp-avg" d="M' + x0 + ',' + y + 'H' + x1 + '"/>';
 }
 export function vhOpen(W: number, H: number){ return '<svg class="vh-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" '; }
+function autoTicks(o: AxesOpts){
+  var lo = o.lo, hi = o.hi; if (lo == null || hi == null) throw new Error("an axis has neither ticks nor a range"); var span = hi - lo;
+  var step = o.step || [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
+    return span / k <= 4.5; })[0] || 200;
+  var ticks: number[] = [];
+  for (var v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) ticks.push(v);
+  return ticks;
+}
 export function chartAxes(o: AxesOpts){
-  var out: string[] = [], ticks = o.ticks;
-  if (!ticks){
-    var step = o.step || [0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].filter(function(k){
-      return (o.hi! - o.lo!) / k <= 4.5; })[0] || 200;
-    ticks = [];
-    for (var v = Math.ceil(o.lo! / step) * step; v <= o.hi! + 1e-9; v += step) ticks.push(v);
-  }
-  while (ticks.length > 2 && ticks.some(function(t, i){ return i > 0 && o.fmt(t) === o.fmt(ticks![i - 1]); }))
+  var out: string[] = [], ticks = o.ticks || autoTicks(o);
+  while (ticks.length > 2 && ticks.some(function(t, i){ return i > 0 && o.fmt(t) === o.fmt(ticks[i - 1]); }))
     ticks = ticks.filter(function(t, i){ return i % 2 === 0; });
   var fx0 = o.x0 - AXIS.L, fx1 = o.x1 + AXIS.R;
   if (o.top != null && o.bot != null){
@@ -163,11 +166,11 @@ export function divergeChart(o: DivergeOpts, W?: number){
                          base:(padT + ih), skipNear:midY, step:o.step, fmt:(o.tickFmt || o.fmt) })];
   out.push('<path class="dv-mid" d="M' + padL + ',' + midY.toFixed(1) + 'L' + (W - padR) + ',' + midY.toFixed(1) + '"/>');
   o.vals.forEach(function(d, i){
-    var cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(d.v!));
-    if (Math.abs(y1 - midY) < 0.6) y1 = midY + (d.v! >= o.mid ? -0.6 : 0.6);
-    out.push('<path class="dv-bar hcol ' + (d.v! > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
+    var v = d.v == null ? 0 : d.v, cx = (padL + slot * (i + 0.5)).toFixed(1), y1 = parseFloat(y(v));
+    if (Math.abs(y1 - midY) < 0.6) y1 = midY + (v >= o.mid ? -0.6 : 0.6);
+    out.push('<path class="dv-bar hcol ' + (v > o.mid ? "over" : "under") + (o.goodAbove ? " good-above" : "") + '" stroke-width="' + sw.toFixed(1) + '" d="' + colPath(cx, midY, y1, sw) + '"/>');
   });
-  var dAvg = o.vals.reduce(function(a, d){ return a + d.v!; }, 0) / (n || 1);
+  var dAvg = o.vals.reduce(function(a, d){ return a + (d.v == null ? 0 : d.v); }, 0) / (n || 1);
   out.push(avgRule(padL, (W - padR), y(dAvg)));
   if (o.fit && o.fit.n > 1) out.push(fitGroup(o, padL + slot * 0.5, padL + slot * (n - 0.5), y, W, padL, padR));
   o.vals.forEach(function(d, i){
@@ -206,10 +209,8 @@ export function colPeek(all: readonly (number | null)[] | null | undefined, clas
 function meterPeek(m: Meter, state?: string){
   var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
   function at(v: number){ return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / ((m.max - m.min) || 1))); }
-  var o = m.optimal || {} as Partial<Band>;
-  var lo = o.from != null ? o.from : (o.gte != null ? o.gte : m.min);
-  var hi = o.to != null ? o.to : (o.lte != null ? o.lte : m.max);
-  var a = at(lo), c = at(hi);
+  var ends = bandEnds(m.optimal, m.min, m.max);
+  var a = at(ends[0]), c = at(ends[1]);
   if (c - a < sw) c = a + sw;
   var hx = at(m.value as number);
   return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
@@ -258,7 +259,7 @@ export function pulseTraceSvg(rate: number | null, ref: number | null | undefine
     ? [{ r:rate, y:H * 0.52, c:"pt-now" }]
     : [{ r:ref, y:H * 0.76, c:"pt-ref" }, { r:rate, y:H * 0.30, c:"pt-now" }];
   var paths = lanes.map(function(L){
-    var beats = Math.max(0.5, L.r! * span);
+    var beats = Math.max(0.5, (L.r == null ? 0 : L.r) * span);
     return '<path class="' + L.c + '" d="' + beatPath(0, W, L.y, W / beats, amp) + '"/>';
   }).join("");
   return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
@@ -272,7 +273,7 @@ export function peekCard(o: PeekCardOpts){
   var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring")
           : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref)
           : o.meter ? meterPeek(o.meter, o.state)
-          : o.cols ? colPeek(o.cols, o.colClass!, o.colBase, o.colRule)
+          : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule)
           : "";
   return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target +
     '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ', ' + o.value + ' ' + o.unit + ' \u2014 open">' +

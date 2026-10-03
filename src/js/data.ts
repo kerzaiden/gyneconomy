@@ -1,5 +1,5 @@
 import SERIES from "../data/series.json" with { type: "json" };
-import { MONTHS_SHORT } from "./format.ts";
+import { bandEnds, MONTHS_SHORT } from "./format.ts";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.ts";
@@ -186,7 +186,7 @@ export var longCycleSrc: Src[] = [
 function syncGrossDebt(){
   var row = labRow("sheet-metric-debt"), last = grossDebtQuarterly[grossDebtQuarterly.length - 1];
   var ww2 = fiscalHistory.gross.filter(function(d){ return d.y === 1946; })[0].v, v = Math.round(last.v * 10) / 10;
-  var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill: Record<string, string> = { q:q, v:v.toFixed(1), ww2:ww2.toFixed(1), x:(v / row.meter.optimal!.lte!).toFixed(2) };
+  var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill: Record<string, string> = { q:q, v:v.toFixed(1), ww2:ww2.toFixed(1), x:(v / bandEnds(row.meter.optimal, NaN, NaN)[1]).toFixed(2) };
   row.meter.value = v;
   row.flagValue = fill.v + "%";
   row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
@@ -199,27 +199,30 @@ function checkGrossDebt(){
   var g = by(fiscalHistory.gross), bad: string[] = [];
   var top = fiscalHistory.gross.reduce(function(a, d){ return d.v > a.v ? d : a; });
   if (Math.abs(row.meter.max - top.v) > 0.05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-  var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
-  if (n !== 50 || Math.round(sum / n) !== row.meter.optimal!.lte) bad.push("band " + row.meter.optimal!.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
+  var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1]; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
+  if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
   if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
 }
 export function curveAt(m: string): number | null {
   var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0];
   return h && h.y != null ? h.y : null;
 }
-export function curveSpread(){ return curveAt("10Y")! - curveAt("3M")!; }
+function curveNeed(m: string): number { var y = curveAt(m); if (y == null) throw new Error("the yield curve has no " + m + " point"); return y; }
+export function curveSpread(){ return curveNeed("10Y") - curveNeed("3M"); }
 export function policyDirection(){
   return /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
 }
 export function syncCapeHistory(){
-  var last = capeHistory[capeHistory.length - 1], v = valRow("cape")!.meter.value;
+  var last = capeHistory[capeHistory.length - 1], v = fileRow("cape").meter.value;
   if (last.y === calendarTodayY) last.v = v; else capeHistory.push({ y:calendarTodayY, v:v });
 }
 export function valRow(k: string): Row | null {
   for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
   return null;
 }
+export function fileRow(key: string): Row { var r = valRow(key); if (!r) throw new Error("the valuation panel has no " + key + " row"); return r; }
 export var PULSE_PRE2008 = 1.857;
+export var PULSE_STEADY_LO = 0.95, PULSE_STEADY_HI = 1.10;
 export var M2V_FROM_YEAR = 1959;
 export var m2vHistory = SERIES.m2vHistory.map(function(n){ return n / 1000; });
 export var PRODUCTIVITY_SRC: Src[] = [
@@ -263,6 +266,7 @@ function checkFedFundsHistory(){
 }
 export var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
 export var CPI_TARGET = 2;
+export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
 export var GDP_NORM = 2.6;
 function checkMoneyStock(){
   var g = m2Yoy.filter(function(x){ return x != null; });

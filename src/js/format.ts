@@ -6,12 +6,20 @@ export function fmtAsOf(iso: string | null | undefined){
   return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
 }
 export function qAtIndex(y0: number, i: number){ return (y0 + Math.floor(i / 4)) + " Q" + (i % 4 + 1); }
-export function yearOf(d: Point){ return d.y != null ? d.y : parseInt((d.q || d.m)!.slice(0, 4), 10); }
+export function yearOf(d: Point){ if (d.y != null) return d.y; var k = d.q || d.m; if (!k) throw new Error("a point has no date"); return parseInt(k.slice(0, 4), 10); }
+export function metered(m: Meter): number { if (m.value == null) throw new Error("a meter has no value"); return m.value; }
+export function tagFor(x: { tag: Tag | null }): Tag { if (!x.tag) throw new Error("a reading drawn before its tag was set"); return x.tag; }
+export function stateOf(t: Tag): Tone { if (t.state == null) throw new Error("the tag " + t.text + " has no state"); return t.state; }
+export function bandEnds(o: Band | undefined, lo: number, hi: number): [number, number] {
+  if (!o) return [lo, hi];
+  if ("from" in o) return [o.from, o.to];
+  return "gte" in o ? [o.gte, hi] : [lo, o.lte];
+}
 export function mean(a: number[]){ return a.reduce(function(x: number, y: number){ return x + y; }, 0) / a.length; }
 export function atQuarter(d: { q: string }){ return d.q; }
 export function atMonth(d: { m: string }){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }
 export function ordinal(n: number){ var t = n % 100, o = ["th","st","nd","rd"][(t - 20) % 10] || ["th","st","nd","rd"][t] || "th"; return n + o; }
-export function hiCard(name: string, state: State, text?: string | null, body?: string){
+export function hiCard(name: string, state: Tone, text?: string | null, body?: string){
   return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
 }
 export function dropWhatIsShown(full: string | null | undefined, shown: string | null | undefined){
