@@ -86,8 +86,7 @@ function insightWeather(){
 function seasonCards(m: CycleModel){
   var r = seasonReading[m.season] || {};
   return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") +
-    (r.body ? hiCard("In the body", "", r.body) : "") +
-    (r.next ? hiCard("What usually comes next", "", r.next) : "");
+    (r.body ? hiCard("In the body", "", r.body) : "");
 }
 function marketCycleCard(m: CycleModel){
   var years = sp500Years.filter(function(d: YearPoint){ return d.y >= m.era.from && d.y <= m.endYear; });

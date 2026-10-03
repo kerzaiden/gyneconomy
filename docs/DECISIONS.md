@@ -209,6 +209,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   insights. So when you click on more details, we can just show the insights without even calling it insights." Mood's
   own figures, which had a More details of their own, now follow her story in that sheet. The button sits as far
   from the rows above it as from the card's foot ("the padding … is uneven"). (1.2.0)
+- **Weather's insights carry no "What usually comes next" card.** It read as a forecast once it sat under the analysis;
+  Keren: "drop the forecast". The season's prose behind a dial quarter keeps it, one tap further in. (1.2.0)
 - **The analysis is the category as one reading through the cycle on screen, drawn over every other cycle from the
   quarter each opened and matched on its quarter-by-quarter moves.** Keren: "the composite parameter comprised of all
   the subcategories of that category can be more informative if it correlates with past cycles". The composite averages
