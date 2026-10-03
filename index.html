@@ -1558,7 +1558,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.6.0 (721)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.6.1 (722)</span></p>
     </div>
   </div>
 
@@ -1724,6 +1724,12 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
     if (!m) return "";
     return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
+  }
+  function isoDay(s) {
+    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
+    var y = iso ? +iso[1] : shown ? +shown[3] : 0, m = iso ? +iso[2] : shown ? MONTHS_SHORT.indexOf(shown[1]) + 1 : 0, d = iso ? +iso[3] : shown ? +shown[2] : 0;
+    var at = new Date(Date.UTC(y, m - 1, d));
+    return y && m >= 1 && at.getUTCMonth() === m - 1 && at.getUTCDate() === d ? at.toISOString().slice(0, 10) : "";
   }
   function qAtIndex(y0, i) {
     return y0 + Math.floor(i / 4) + " Q" + (i % 4 + 1);
@@ -2070,6 +2076,7 @@
   }
   var liveAsOf = {};
   var liveApplied = {};
+  var liveFloor = {};
   function merge(base, over) {
     return Object.assign({}, base && typeof base === "object" && !Array.isArray(base) ? base : {}, over);
   }
@@ -2088,13 +2095,13 @@
   function docOk(name, d) {
     var r = READINGS[name];
     try {
-      return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d);
+      return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d ? d.asOf : void 0);
     } catch (e) {
       return false;
     }
   }
-  function datedOk(r, d) {
-    return r.kind === "object" || /^\d{4}-\d{2}-\d{2}$/.test(String(d && d.asOf));
+  function datedOk(r, at) {
+    return r.kind === "object" ? at === void 0 || !!isoDay(at) : !!at && isoDay(at) === at;
   }
   function plainText(v) {
     if (typeof v === "string") return !/[<>"]/.test(v);
@@ -2110,9 +2117,19 @@
       return "";
     }
   }
+  function newestDay(name) {
+    var r = READINGS[name], file = r && r.fileAsOf ? isoDay(r.fileAsOf()) : "";
+    if (file > (liveFloor[name] || "")) liveFloor[name] = file;
+    return liveFloor[name] || "";
+  }
+  function raiseFloor(name, d) {
+    var got = isoDay(d && d.asOf);
+    if (got > newestDay(name)) liveFloor[name] = got;
+    return true;
+  }
   function olderThanFile(name, d) {
-    var r = READINGS[name], file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
-    return got < file;
+    var got = isoDay(d && d.asOf);
+    return !!got && got < newestDay(name);
   }
   function liveInto(name) {
     var d = LIVE_CACHE[name];
@@ -2127,7 +2144,7 @@
     try {
       if (!shapeOk(r, value)) throw new Error("shape");
       r.set(value);
-      return true;
+      return raiseFloor(name, d);
     } catch (e) {
       liveApplied[name] = was;
       liveAsOf[name] = asOf;
@@ -31232,6 +31249,12 @@
       state: w.state
     };
   }
+  function fieldsKept(v, target) {
+    var t = target;
+    return Object.entries(v).every(function(e) {
+      return e[0] === "rows" || (t[e[0]] === void 0 ? typeof e[1] === "string" : typeof e[1] === typeof t[e[0]] && (typeof e[1] !== "object" || e[1] === null));
+    });
+  }
   function vixAsOf() {
     return String(now.sentiment.rows[0].sub || "");
   }
@@ -31252,7 +31275,7 @@
           return now.fedFunds.asOf;
         },
         ok: function(v) {
-          return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
+          return fieldsKept(v, now.fedFunds) && isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25;
         },
         set: function(v) {
           if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge({
@@ -31294,7 +31317,7 @@
         kind: "object",
         fileAsOf: vixAsOf,
         ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows, now.sentiment.rows);
+          return fieldsKept(v, now.sentiment) && (v.rows === void 0 || rowsOk(v.rows, now.sentiment.rows));
         },
         set: function(v) {
           now.sentiment = merge(now.sentiment, v.rows ? merge(v, {
@@ -31308,7 +31331,7 @@
         kind: "object",
         fileAsOf: capeAsOf,
         ok: function(v) {
-          return v.rows === void 0 || rowsOk(v.rows, now.valuation.rows);
+          return fieldsKept(v, now.valuation) && (v.rows === void 0 || rowsOk(v.rows, now.valuation.rows));
         },
         set: function(v) {
           now.valuation = merge(now.valuation, v.rows ? merge(v, {

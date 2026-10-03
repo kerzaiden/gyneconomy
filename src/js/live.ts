@@ -1,4 +1,4 @@
-import { fmtAsOf } from "./format.ts";
+import { fmtAsOf, isoDay } from "./format.ts";
 
 export type StepKind = "check" | "derive" | "render" | "wire" | "build" | "live" | "mixed";
 export type GynStep = { name: string; fn: () => unknown; kind: StepKind };
@@ -19,6 +19,7 @@ export type Gyn = {
 };
 
 export var liveAsOf: Record<string, string | undefined> = {}, liveApplied: Record<string, string | undefined> = {};
+var liveFloor: Record<string, string> = {};
 export function merge<B, O>(base: B, over: O): B & O {
   return Object.assign({}, base && typeof base === "object" && !Array.isArray(base) ? base : {}, over) as B & O;
 }
@@ -33,10 +34,10 @@ function docValue(d: LiveDoc | null | undefined): unknown {
 }
 function docOk(name: string, d: LiveDoc | null | undefined){
   var r = READINGS[name];
-  try { return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d); } catch (e) { return false; }
+  try { return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d ? d.asOf : undefined); } catch (e) { return false; }
 }
-function datedOk(r: LiveReading, d: LiveDoc | null | undefined){
-  return r.kind === "object" || /^\d{4}-\d{2}-\d{2}$/.test(String(d && d.asOf));
+function datedOk(r: LiveReading, at: string | undefined){
+  return r.kind === "object" ? at === undefined || !!isoDay(at) : !!at && isoDay(at) === at;
 }
 export function plainText(v: unknown): boolean {
   if (typeof v === "string") return !/[<>"]/.test(v);
@@ -46,9 +47,19 @@ export function plainText(v: unknown): boolean {
 export function liveIsoOf(name: string): string {
   try { return JSON.parse(liveApplied[name] || "{}").asOf || ""; } catch (e) { return ""; }
 }
+function newestDay(name: string){
+  var r = READINGS[name], file = r && r.fileAsOf ? isoDay(r.fileAsOf()) : "";
+  if (file > (liveFloor[name] || "")) liveFloor[name] = file;
+  return liveFloor[name] || "";
+}
+function raiseFloor(name: string, d: LiveDoc | null | undefined){
+  var got = isoDay(d && d.asOf);
+  if (got > newestDay(name)) liveFloor[name] = got;
+  return true;
+}
 function olderThanFile(name: string, d: LiveDoc | null | undefined){
-  var r = READINGS[name], file = r && r.fileAsOf ? Date.parse(r.fileAsOf()) : NaN, got = d && d.asOf ? Date.parse(d.asOf) : NaN;
-  return got < file;
+  var got = isoDay(d && d.asOf);
+  return !!got && got < newestDay(name);
 }
 export function liveInto(name: string){
   var d = LIVE_CACHE[name];
@@ -60,7 +71,7 @@ function landLive(name: string, value: unknown, d: LiveDoc | null | undefined){
   try {
     if (!shapeOk(r, value)) throw new Error("shape");
     r.set(value as never);
-    return true;
+    return raiseFloor(name, d);
   } catch (e) { liveApplied[name] = was; liveAsOf[name] = asOf; return false; }
 }
 // ---- Repaint ----

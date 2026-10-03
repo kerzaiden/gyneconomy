@@ -730,6 +730,10 @@ function deriveHorizon(){
     d2:hznDelta(t10y2yHistory, tN2),
     word:w.word, state:w.state };
 }
+function fieldsKept(v: object, target: object){
+  var t = target as Record<string, unknown>;
+  return Object.entries(v).every(function(e){ return e[0] === "rows" || (t[e[0]] === undefined ? typeof e[1] === "string" : typeof e[1] === typeof t[e[0]] && (typeof e[1] !== "object" || e[1] === null)); });
+}
 function vixAsOf(){ return String(now.sentiment.rows[0].sub || ""); }
 function coincidentAsOf(){ return coincident.map(function(c){ return periodIso(String(c.metricSub || "")); }).sort().pop() || ""; }
 function periodIso(sub: string){
@@ -741,7 +745,7 @@ export function bootReadingRegistry(){
   defineReadings({
     fedFunds: {
       kind: "object", fileAsOf: function(){ return now.fedFunds.asOf; },
-      ok: function(v: Partial<FedFunds>){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
+      ok: function(v: Partial<FedFunds>){ return fieldsKept(v, now.fedFunds) && isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
       set: function(v: Partial<FedFunds>){
         if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge({ lastMove:"", lastMoveLabel:"", asOf:"", next:"" }, v);
         if (v.lastMove !== undefined && (v.lastMove !== now.fedFunds.lastMove || v.asOf !== now.fedFunds.asOf) && !v.turnLabel) v = merge({ turnLabel:"", turnValue:"" }, v);
@@ -759,7 +763,7 @@ export function bootReadingRegistry(){
     },
     sentiment:  {
       kind: "object", fileAsOf: vixAsOf,
-      ok: function(v: Partial<typeof now.sentiment>){ return v.rows === undefined || rowsOk(v.rows, now.sentiment.rows); },
+      ok: function(v: Partial<typeof now.sentiment>){ return fieldsKept(v, now.sentiment) && (v.rows === undefined || rowsOk(v.rows, now.sentiment.rows)); },
       set: function(v: Partial<typeof now.sentiment>){
         now.sentiment = merge(now.sentiment, v.rows ? merge(v, { rows: overRows(now.sentiment.rows, v.rows) }) : v);
         now.vixRow = now.sentiment.rows[0];
@@ -767,7 +771,7 @@ export function bootReadingRegistry(){
     },
     valuation:  {
       kind: "object", fileAsOf: capeAsOf,
-      ok: function(v: Partial<typeof now.valuation>){ return v.rows === undefined || rowsOk(v.rows, now.valuation.rows); },
+      ok: function(v: Partial<typeof now.valuation>){ return fieldsKept(v, now.valuation) && (v.rows === undefined || rowsOk(v.rows, now.valuation.rows)); },
       set: function(v: Partial<typeof now.valuation>){
         now.valuation = merge(now.valuation, v.rows ? merge(v, { rows: overRows(now.valuation.rows, v.rows) }) : v);
         var cape = valRow("cape"); if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
