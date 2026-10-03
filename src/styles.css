@@ -135,7 +135,6 @@
   }
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 64px; }
   .mono{ font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
-  .serif{ font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; }
 
   /* ---- top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu ---- */
   .topbar{
@@ -228,7 +227,6 @@
   .menu-prose{ padding:6px 20px 8px; }
   .menu-prose p{ font-size:var(--type-reading); line-height:1.6; color:var(--text-primary); margin:12px 0; }
   .menu-prose b{ font-weight:600; }
-  .menu-lede .serif{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; }
   .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size:var(--type-reading); line-height: 1.65; margin: 0 0 22px; }
   .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
