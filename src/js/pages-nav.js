@@ -157,6 +157,10 @@ function indCategoryHtml(c, find){
 }
 /* ---- THE NAVIGATION CONTROLLER ---- */
 var NAV = { open: null, panel: null };
+var BACK = { depth: 0, skip: false };
+function backPush(){ try { history.pushState({ gyn: BACK.depth + 1 }, ""); BACK.depth++; } catch (e) {} }
+function backClear(){ if (!BACK.depth) return; BACK.skip = true; history.go(-BACK.depth); BACK.depth = 0; }
+function backPopped(){ if (BACK.skip){ BACK.skip = false; return false; } if (!BACK.depth) return false; BACK.depth--; return true; }
 function buildNav(){
   // ---- The metric page ----
   var cyclePanel = document.querySelector('.tab-panel[data-tab="cycle"]');
@@ -187,8 +191,9 @@ function buildNav(){
     var y = returnScroll;
     window.requestAnimationFrame(function(){ window.scrollTo({ top:y, behavior:"auto" }); });
   }
-  function closeMetricPage(){ pageStack.length = 0; openers.length = 0; homeFromPage(); }
-  function backFromPage(){
+  function closeMetricPage(){ backClear(); pageStack.length = 0; openers.length = 0; homeFromPage(); }
+  function backFromPage(popped){
+    if (popped !== true && BACK.depth){ history.back(); return; }
     var prev = pageStack.pop(), from = openers.pop();
     if (!prev) closeMetricPage();
     else {
@@ -199,12 +204,13 @@ function buildNav(){
     if (!focusQuiet(from)) focusQuiet(byId("topbar-title"));
   }
   layer(4, { open:function(){ return !!openSheet; }, close:backFromPage });
+  window.addEventListener("popstate", function(){ if (backPopped() && openSheet) backFromPage(true); });
   ui.metricPageReset = closeMetricPage;
 
   function openMetricPage(el, title, returning, homeKey){
     if (!el) return;
     seatPageFoot(el);
-    if (!returning && openSheet !== el) openers.push(document.activeElement);
+    if (!returning && openSheet !== el){ openers.push(document.activeElement); backPush(); }
     if (!returning && openSheet && openSheet !== el)
       pageStack.push({ id:openSheet.id, title:byId("topbar-title").textContent, scroll:window.scrollY || 0 });
     var wasOpen = !!openSheet;
@@ -217,7 +223,7 @@ function buildNav(){
     openSheet = el; openHome = el.parentNode;
     homeCtx.hide().forEach(function(n){ if (n) n.hidden = true; });
     el.hidden = false; metricPage.appendChild(el); metricPage.hidden = false;
-    setTopbar(title, backFromPage);
+    setTopbar(title, function(){ backFromPage(); });
     if (!returning) window.scrollTo({ top:0, behavior:"auto" });
     var draw = sheetRenderers[el.id]; if (draw) draw(metricPage.clientWidth);
     collapseEmptyBlocks(el);

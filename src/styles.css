@@ -1311,6 +1311,7 @@
   .detail-modal .metric, .metric-sheet .metric, .sign-detail .metric{ font-size:var(--type-page-title); font-weight:600; letter-spacing:-0.01em; }
   .detail-modal .metric-sub, .metric-sheet .metric-sub, .sign-detail .metric-sub{ font-size:var(--type-interface); color:var(--text-muted); }
   .detail-modal .caption, .metric-sheet .caption, .sign-detail .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin:16px 0 0; }
+  .detail-modal .caption.follow, .metric-sheet .caption.follow, .sign-detail .caption.follow{ margin-top:10px; }
   .detail-modal .facts, .metric-sheet .facts, .sign-detail .facts{ margin:12px 0 0; padding:0; list-style:none; }
   .detail-modal .facts li, .metric-sheet .facts li, .sign-detail .facts li{ position:relative; padding-left:17px; margin-bottom:9px; font-size:var(--type-reading); line-height:1.55; color:var(--text-secondary); }
   .detail-modal .facts li:last-child, .metric-sheet .facts li:last-child, .sign-detail .facts li:last-child{ margin-bottom:0; }

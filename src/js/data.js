@@ -1,6 +1,7 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { MONTHS_SHORT } from "./format.js";
 import { GYN, liveInto, liveIsoOf, merge } from "./live.js";
+import { calendarTodayY } from "./refresh-season.js";
 import { fedFundsHistory, fiscalHistory, gdpGrowthBefore, grossDebtQuarterly, sp500ReturnsBefore, treasuryQuarterly } from "./history-fred.js";
 
 export var CAPE_FAIR = 17;
@@ -57,6 +58,17 @@ var YIELD_CURVE_ASOF = "2026-09-24";
 export function curveAsOf(){
   return liveIsoOf("yieldCurve") || YIELD_CURVE_ASOF;
 }
+function monthsToCurve(ym){
+  var a = curveAsOf();
+  return (+a.slice(0, 4) - +ym.slice(0, 4)) * 12 + (+a.slice(5, 7) - +ym.slice(5, 7));
+}
+export function deriveUninvLag(){
+  var m = monthsToCurve(UNINV_FROM);
+  uninvLagToday.months = m;
+  uninvLagToday.altMonths = monthsToCurve(UNINV_DURABLE);
+  uninvLagToday.meter.value = m;
+  uninvLagToday.meter.max = Math.max(26, m);
+}
 export var t10y3mRecessions = [
   {from:"2007 Q4", to:"2009 Q2", label:"2007–09"},
   {from:"2020 Q1", to:"2020 Q2", label:"2020"}
@@ -68,9 +80,10 @@ export var uninvLagCycles = [
   {cycle:"2007–09", uninv:"Jun–Aug 2007", recession:"Dec 2007", lag:"4–6 mo"},
   {cycle:"2020", uninv:"Oct 2019", recession:"Feb 2020", lag:"4 mo"}
 ];
+var UNINV_FROM = "2024-12", UNINV_DURABLE = "2025-09";
 export var uninvLagToday = {
-  months: 21, altMonths: 12, altFrom: "September 2025",
-  meter: { value: 21, min: 0, max: 26, optimal: {from: 1, to: 10, label: "1–10 mo (past cycles)"} }
+  months: 0, altMonths: 0, altFrom: "September 2025",
+  meter: { value: 0, min: 0, max: 26, optimal: {from: 1, to: 10, label: "1–10 mo (past cycles)"} }
 };
 export var gdpSrc = [{t:"World Bank — GDP growth, annual % (NY.GDP.MKTP.KD.ZG)", u:"https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG"},
   {t:"BEA via FRED — Real GDP, percent change from preceding period, annual, before 1990 (A191RL1A225NBEA)", u:"https://fred.stlouisfed.org/series/A191RL1A225NBEA"}];
@@ -184,6 +197,18 @@ function checkGrossDebt(){
   var sum = 0, n = 0; for (var y = 1976; y <= 2025; y++) if (g[y] != null){ sum += g[y]; n++; }
   if (n !== 50 || Math.round(sum / n) !== row.meter.optimal.lte) bad.push("band " + row.meter.optimal.lte + " vs " + (sum / n).toFixed(2) + " over " + n);
   if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
+}
+export function curveAt(m){
+  var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0];
+  return h && h.y != null ? h.y : null;
+}
+export function curveSpread(){ return curveAt("10Y") - curveAt("3M"); }
+export function policyDirection(){
+  return /^\+/.test(now.fedFunds.lastMove) ? "Tightening" : /^[-\u2212]/.test(now.fedFunds.lastMove) ? "Easing" : "On hold";
+}
+export function syncCapeHistory(){
+  var last = capeHistory[capeHistory.length - 1], v = valRow("cape").meter.value;
+  if (last.y === calendarTodayY) last.v = v; else capeHistory.push({ y:calendarTodayY, v:v });
 }
 export function valRow(k){
   for (var i = 0; i < now.valuation.rows.length; i++) if (now.valuation.rows[i].key === k) return now.valuation.rows[i];
@@ -475,6 +500,8 @@ export function bootData(){
   DEF_1983 = deficitHistory[1983 - DEF_FROM_YEAR];
   GYN.step("checkDesireWindow", checkDesireWindow, "check");
   checkDesireWindow();
+  GYN.step("deriveUninvLag", deriveUninvLag, "derive");
+  deriveUninvLag();
   GYN.step("syncGrossDebt", syncGrossDebt, "derive");
   syncGrossDebt();
   GYN.step("checkGrossDebt", checkGrossDebt, "check");

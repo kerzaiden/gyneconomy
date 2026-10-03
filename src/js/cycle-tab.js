@@ -1,6 +1,6 @@
 import { byId } from "./dom.js";
-import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
-import { CAPE_FAIR, capeHistory, dsrNow, m2Yoy, now, PULSE_PRE2008, SAV_OFFSET, savHistory, savNow, valRow } from "./data.js";
+import { gdpQuarterlyYoY } from "./refresh-season.js";
+import { CAPE_FAIR, capeHistory, dsrNow, m2Yoy, now, PULSE_PRE2008, SAV_OFFSET, savHistory, savNow, syncCapeHistory, valRow } from "./data.js";
 import { nowModel } from "./model.js";
 import { householdsNow, indOf } from "./readings.js";
 import { m2Step } from "./history-charts.js";
@@ -76,8 +76,7 @@ export function renderPeekAndCategories(){
   var r = nowModel.reading, era = nowModel.era;
   var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q.slice(0, 4), 10) >= era.from; });
   var capeNow = valRow("cape").meter.value, buffNow = valRow("buffett").meter.value;
-  var capeLast = capeHistory[capeHistory.length - 1];
-  if (capeLast.y === calendarTodayY) capeLast.v = capeNow; else capeHistory.push({ y:calendarTodayY, v:capeNow });
+  syncCapeHistory();
   host.innerHTML =
     tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) +
     peekOf("sheet-metric-valuation", { value:capeNow.toFixed(1) + "\u00d7", word:now.valuation.tag.text,

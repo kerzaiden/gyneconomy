@@ -115,6 +115,7 @@ test('a live VIX close reaches the Volatility card; one outside its band is refu
   await deliver({ vixClose: { kind: 'scalar', value: 31.7, asOf: '2026-10-01' } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
   assert.equal(String(now.vixRow.flagValue), '31.7');
+  assert.equal(tag('sheet-sign-sentiment'), 'Fearful');
   await deliver({ vixClose: { kind: 'scalar', value: 9999, asOf: '2026-10-02' } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
 });

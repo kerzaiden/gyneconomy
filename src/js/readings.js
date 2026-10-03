@@ -4,7 +4,7 @@ import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.js";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.js";
 import { confidenceHistory, productivityHistory } from "./history-fred.js";
 import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, M2_PACE_HI, M2_PACE_LO, hyQuarterEnds, labRow, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
 import { cpiNow, growthWord } from "./model.js";
 import { HIST_NOTE, histHead, histNote } from "./history.js";
 
@@ -117,12 +117,12 @@ function desireInfoHtml(ind){
       'Index option-adjusted spread \u2014 the extra yield investors demand to lend to companies rated below ' +
       'investment grade, over Treasuries of the same maturity, with the value of any embedded options ' +
       'stripped out (' + ind.metricSub + ').</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Normal here is ' + HY_NORM_LO + '\u2013' + HY_NORM_HI +
+    '<p class="caption follow"><b>Normal here is ' + HY_NORM_LO + '\u2013' + HY_NORM_HI +
       '%</b>, and both edges are the credit market\u2019s own breaks rather than a target: below about ' + HY_NORM_LO + '% is ' +
       'read as complacency, above about ' + HY_NORM_HI + '% as stress, and above 8% as distress. The long-run median since the ' +
       'index began in 1996 is roughly 4.5%, which sits inside the band. An economy has no level it ought to be ' +
       'at, so none of this is an optimum \u2014 it is where this spread has actually sat.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Tight</b> means lenders are asking little to take credit ' +
+    '<p class="caption follow"><b>Tight</b> means lenders are asking little to take credit ' +
       'risk, so appetite is high; <b>wide</b> means they are asking a lot. That is why the figure flags amber ' +
       'while the reading stays good: abnormally tight spreads are bullish risk appetite AND a historically ' +
       'unusual place for compensation to sit. Both are true of the one number. The ends of the scale are the ' +
@@ -139,13 +139,13 @@ function volumeInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
       'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
       '(' + ind.metricSub + ').</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
+    '<p class="caption follow"><b>Her pace is ' + M2_PACE_LO + '\u2013' + M2_PACE_HI + '%</b>, and that is a band computed from ' +
       'this page\u2019s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a ' +
       'year on average (median 6.70%), and the tenth to ninetieth percentile runs 3.3% to 10.3%. So roughly four ' +
       'quarters in five sat inside this band, and the two ends are what unusual looks like in each direction \u2014 ' +
       '<b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: \u22124.6% in ' +
       '2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p>' +
-    '<p class="caption" style="margin-top:10px;">Volume and Pulse are two halves of one number \u2014 nominal output ' +
+    '<p class="caption follow">Volume and Pulse are two halves of one number \u2014 nominal output ' +
       'is the money stock times its velocity \u2014 so neither means much read alone.</p>';
 }
 function pulseInfoHtml(ind){
@@ -153,11 +153,11 @@ function pulseInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
       'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
       'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.7\u20132.2\u00d7 band is the pre-2008 era\u2019s own range</b>, not a ' +
+    '<p class="caption follow"><b>The 1.7\u20132.2\u00d7 band is the pre-2008 era\u2019s own range</b>, not a ' +
       'target \u2014 across the 196 quarters from 1959 Q1 to 2007 Q4 velocity averaged 1.857\u00d7 (median 1.808\u00d7) and ' +
       'ran between 1.652\u00d7 and 2.192\u00d7. It is labelled <b>Pre-2008</b> rather than normal for that reason: the ' +
       'collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p>' +
-    '<p class="caption" style="margin-top:10px;">The ends mean direction as well as level: <b>slow</b> is money ' +
+    '<p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money ' +
       'sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which ' +
       'is a busy economy and, past a point, an inflationary one.</p>';
 }
@@ -165,11 +165,11 @@ function confidenceInfoHtml(f){
   return '<h4>' + f.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
+    '<p class="caption follow"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
       '100 is its long-term average. In the OECD\u2019s words, a reading above 100 \u201csignals a boost in the consumers\u2019 confidence ' +
       'towards the future economic situation\u201d, with households \u201cless prone to save, and more inclined to spend money on major ' +
       'purchases in the next 12 months\u201d; below 100 indicates \u201ca pessimistic attitude towards future developments in the economy\u201d.</p>' +
-    '<p class="caption" style="margin-top:10px;">It is built from household surveys of their finances, the economy, unemployment and ' +
+    '<p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and ' +
       'saving, and the OECD publishes it a few months after the month it describes, which is why the card\u2019s date trails the others.</p>' +
     srcBlock(CONFIDENCE_SRC);
 }
@@ -178,11 +178,11 @@ function productivityInfoHtml(f){
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
       'business sector, against the same quarter a year earlier (' + f.metricSub + '). The record for that ' +
       'series, quarter by quarter, runs ' + f.span + '.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
+    '<p class="caption follow"><b>The 1.3% line is the BLS\u2019s own figure for the slowdown ' +
       'era</b> \u2014 since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year ' +
       'across 1947\u20132018. So the band says something narrower than it looks: above the line is <i>better than ' +
       'the slowdown</i>, not <i>at trend</i>. Today\u2019s ' + f.metric + ' ' + f.wordWhy + '.</p>' +
-    '<p class="caption" style="margin-top:10px;">This is the reading that says whether capacity is being ' +
+    '<p class="caption follow">This is the reading that says whether capacity is being ' +
       'rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from ' +
       'each one, and only the second kind compounds.</p>' +
     srcBlock(PRODUCTIVITY_SRC);
@@ -192,12 +192,12 @@ function activityInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
       'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
       'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The ' + ACT_BAND_LO + '\u2013' + ACT_BAND_HI + '% band brackets the CBO\u2019s noncyclical rate of ' +
+    '<p class="caption follow"><b>The ' + ACT_BAND_LO + '\u2013' + ACT_BAND_HI + '% band brackets the CBO\u2019s noncyclical rate of ' +
       'unemployment</b> \u2014 its estimate of the rate that remains once demand is neither too hot nor too cold, ' +
       'currently around 4.2%. Be clear about what is sourced and what is not: the CBO\u2019s number is published, ' +
       'the two edges are round figures set either side of it rather than a computed interval. There is no ' +
       'official normal range for unemployment, and this is the honest way to draw one.</p>' +
-    '<p class="caption" style="margin-top:10px;">The ends read the opposite way to most bars here: <b>tight</b> ' +
+    '<p class="caption follow">The ends read the opposite way to most bars here: <b>tight</b> ' +
       'is a hot labour market with few people looking, <b>slack</b> is a cold one. And this reading confirms a ' +
       'phase rather than calling it \u2014 unemployment is the textbook lagging indicator, usually trailing a turn ' +
       'by two to three quarters.</p>' +
@@ -211,7 +211,7 @@ function temperatureInfoHtml(ind){
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
       'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
       'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>1–3% is a target band, not a normal range</b> — the one ' +
+    '<p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one ' +
       'band in this app that describes where prices <i>ought</i> to be rather than where they have been. The ' +
       'Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on ' +
       'Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the ' +
@@ -220,13 +220,13 @@ function temperatureInfoHtml(ind){
       'months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed ' +
       'has hit its target rather than about where prices naturally sit. Widen the window and the band stops ' +
       'describing anything: the ends of this same track are −15.8% and +23.7%.</p>' +
-    '<p class="caption" style="margin-top:10px;">And the needle is not measured on the same index as the ' +
+    '<p class="caption follow">And the needle is not measured on the same index as the ' +
       'target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 ' +
       'has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on ' +
       'shelter, and reweights annually rather than monthly, so it catches less of the substitution people do ' +
       'when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: ' +
       '3.4% here is nearer 3% on the Fed’s own gauge.</p>' +
-    '<p class="caption" style="margin-top:10px;">The two ends are not mirror images. <b>Hot</b> erodes what ' +
+    '<p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what ' +
       'money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every ' +
       'debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero ' +
       'rather than at it.</p>' +
@@ -286,12 +286,12 @@ export function growthInfoHtml(){
       '(' + gdpNowQ.q + '), so it is already adjusted for inflation \u2014 this is output, not prices. The ends of ' +
       'the track are the record and they are the same event twice: \u22127.4% in 2020 Q2, the deepest quarter of ' +
       'the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 1.0\u20134.3% band is computed from this page\u2019s own ' +
+    '<p class="caption follow"><b>The 1.0\u20134.3% band is computed from this page\u2019s own ' +
       'series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at ' +
       '0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks ' +
       'like in that direction. There is no official normal rate of growth to point at instead, which is why it ' +
       'is drawn this way and said so.</p>' +
-    '<p class="caption" style="margin-top:10px;">Two other lines matter more than the edges. The dashed line on ' +
+    '<p class="caption follow">Two other lines matter more than the edges. The dashed line on ' +
       'the chart is this series\u2019 own long-run average, <b>' + GDP_NORM + '%</b> \u2014 the middle of the record ' +
       'rather than the edge of it, and the honest answer to "is this quick or slow". And the CBO puts the ' +
       'economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 at 2.1% a year through ' +
@@ -403,12 +403,12 @@ export function horizonInfoHtml(pick){
       'market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly ' +
       'record, ' + m.min.toFixed(2) + ' and +' + m.max.toFixed(2) + ' points; the deepest single DAY of the ' +
       'last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The line at zero is definitional, not drawn</b> — it is ' +
+    '<p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is ' +
       'where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own ' +
       'recession model is built on, using this exact pair of maturities. That model’s FAQ states that an ' +
       'inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. ' +
       'The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p>' +
-    '<p class="caption" style="margin-top:10px;">Read the caution with the signal, because it is the same ' +
+    '<p class="caption follow">Read the caution with the signal, because it is the same ' +
       'source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the ' +
       'crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever ' +
       'inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, ' +
@@ -464,17 +464,17 @@ var riskMatrixNote =
     'debt — Desire’s own figure, read forwards: a wide spread is a lot of compensation for the risk, a tight ' +
     'one is very little. This is the same figure the card above tags as high appetite, seen from the other ' +
     'side: <b>high appetite is what a low-reward market looks like from the inside.</b></p>' +
-  '<p class="caption" style="margin-top:10px;">How to read it. The two readings are placed against each ' +
+  '<p class="caption follow">How to read it. The two readings are placed against each ' +
     'other rather than divided into a single figure, so what you get is a position on two axes rather than one ' +
     'number. It is also not <b>Value at Risk</b>, which is a different and far more precise measure — the loss ' +
     'not exceeded with a stated probability over a stated horizon. This grid has no distribution, no ' +
     'confidence level and no horizon.</p>' +
-  '<p class="caption" style="margin-top:10px;">The bands. A spread under 4% is the euphoric zone (the record ' +
+  '<p class="caption follow">The bands. A spread under 4% is the euphoric zone (the record ' +
     'low is 2.41%, June 2007), over 10% the distressed one (the record high 21.82%, December 2008), and ' +
     'between them is ordinary. CAPE’s 20 and 30 are round numbers sitting close to the terciles of this ' +
     'app’s own 1970–2026 history (16.9 and 26.5); they split those fifty-seven years twenty-four, ' +
     'twenty-one and twelve.</p>' +
-  '<p class="caption" style="margin-top:10px;">No cell carries a rating. The wash deepens toward high risk and ' +
+  '<p class="caption follow">No cell carries a rating. The wash deepens toward high risk and ' +
     'low reward because being paid least when there is most to lose is arithmetic about two readings — a ' +
     'description of where you are standing, not a claim about what happens next. The honest way to say more ' +
     'would be to shade each cell by what followed historically, as the un-inversion panel on the Pressure page ' +
@@ -509,12 +509,12 @@ export function dsrInfoHtml(){
       'as a share of disposable income (' + qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1) + '). The ends of the ' +
       'track are the record: 15.8% in 2007 Q4, at the top of the housing boom, and 9.1% in 2020 Q2, when ' +
       'payments were being deferred and incomes were being topped up at once.</p>' +
-    '<p class="caption" style="margin-top:10px;">The line is <b>this series\u2019 own average since ' + DSR_FROM_YEAR +
+    '<p class="caption follow">The line is <b>this series\u2019 own average since ' + DSR_FROM_YEAR +
       ', ' + DSR_MEAN.toFixed(1) + '%</b> \u2014 and it is the same line this page\u2019s verdict already used, rather ' +
       'than a second opinion drawn beside it. It is one-sided on purpose: a light debt bill is not a condition ' +
       'to flag, and what the reading answers is how far ABOVE the average the burden sits. Today it is below, ' +
       'about a third off the 2007 peak, and has been flat for two years.</p>' +
-    '<p class="caption" style="margin-top:10px;">Read it with the cushion below, never alone. The bill is the ' +
+    '<p class="caption follow">Read it with the cushion below, never alone. The bill is the ' +
       'lighter half of this page\u2019s story; the thin part is what is left over.</p>' +
     srcBlock([
       {t:"Federal Reserve via FRED \u2014 Household Debt Service Payments as a Percent of Disposable Personal Income (TDSP)", u:"https://fred.stlouisfed.org/series/TDSP"}
@@ -525,12 +525,12 @@ export function savInfoHtml(){
     '<p class="caption">What is left after households have spent and paid tax, as a share of disposable ' +
       'income. The ends of the track are the record: 1.8% and 24.4% \u2014 the second of those is 2020, when the ' +
       'stimulus payments arrived and there was nothing open to spend them in.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The 4.5\u201312.2% band is computed rather than chosen</b>: the ' +
+    '<p class="caption follow"><b>The 4.5\u201312.2% band is computed rather than chosen</b>: the ' +
       'tenth to ninetieth percentile of the 318 quarters since 1947, a record long enough to have held every ' +
       'kind of decade. Today\u2019s ' + savNow.toFixed(1) + '% sits <b>below</b> it \u2014 only ' +
       savHistory.filter(function(v, i){ return v <= savNow && i < savHistory.length - 1; }).length +
       ' of those quarters have been lower, and a run of them came between 2005 and early 2008.</p>' +
-    '<p class="caption" style="margin-top:10px;">This is the reading that sets the page\u2019s word, and the bill ' +
+    '<p class="caption follow">This is the reading that sets the page\u2019s word, and the bill ' +
       'above can only make it worse, never better: a household with a cushion can carry a heavy bill, and one ' +
       'without cannot carry a light one.</p>' +
     srcBlock([
@@ -569,7 +569,7 @@ function marketInfoHtml(f){
   return '<h4>' + f.econTerm + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
       'The record, year by year, runs ' + f.span + '.</p>' +
-    '<p class="caption" style="margin-top:10px;"><b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
+    '<p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +
       'dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial\u2019s inner band ' +
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
@@ -581,7 +581,7 @@ function policyFacts(){ return [
   now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
                                       (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
   now.fedFunds.lastMove && now.fedFunds.turnLabel ? { label:now.fedFunds.turnLabel, value:now.fedFunds.turnValue, wordy:true } : null,
-  now.fedFunds.next ? { label:"Next decision", value:now.fedFunds.next } : null
+  now.fedFunds.next && !(Date.parse(now.fedFunds.next) + 864e5 < Date.now()) ? { label:"Next decision", value:now.fedFunds.next } : null
 ].filter(Boolean); }
 export function policyFactRows(){
   return policyFacts().map(function(f){
@@ -722,8 +722,7 @@ function rowsOk(rows, need){
   }) && (need || []).every(function(k){ return rows.some(function(r){ return r.key === k || r.bodyTerm === k; }); });
 }
 function deriveHorizon(){
-  var pick = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
-  var sp = pick("10Y") - pick("3M");
+  var sp = curveSpread();
   var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
   var tN2 = hznLast(t10y2yHistory);
   var dSpread = sN.v - hznBack(t10y3mHistory, sN.i, HZN_BACK);
@@ -740,7 +739,7 @@ export function bootReadingRegistry(){
   /* ---- THE READING REGISTRY ---- */
   defineReadings({
     fedFunds: {
-      kind: "object",
+      kind: "object", fileAsOf: function(){ return now.fedFunds.asOf; },
       ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
       set: function(v){
         if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"", next:"" });
@@ -750,12 +749,12 @@ export function bootReadingRegistry(){
       }
     },
     yieldCurve: {
-      kind: "series",
+      kind: "series", fileAsOf: curveAsOf,
       ok: function(v){
         var has = function(m){ return v.some(function(r){ return r.m === m && r.y !== null; }); };
         return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || (isNum(r.y) && r.y >= 0 && r.y <= 20)); }) && has("10Y") && has("3M");
       },
-      set: function(v){ now.yieldCurve = v; if (horizonRead) deriveHorizon(); }
+      set: function(v){ now.yieldCurve = v; deriveUninvLag(); if (horizonRead) deriveHorizon(); }
     },
     sentiment:  {
       kind: "object",
@@ -777,7 +776,7 @@ export function bootReadingRegistry(){
       onOpen: true
     },
     vixClose: {
-      kind: "scalar", band: [5, 100],
+      kind: "scalar", band: [5, 100], fileAsOf: function(){ return now.sentiment.rows[0].sub; },
       set: function(v){
         var row = now.sentiment.rows[0];
         row.meter.value = v;
@@ -787,7 +786,7 @@ export function bootReadingRegistry(){
     },
     vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ now.vix3mClose = v; }, onOpen: true },
     hyOasNow: {
-      kind: "scalar", band: [1, 30],
+      kind: "scalar", band: [1, 30], fileAsOf: function(){ return desireRow().metricSub.split(", ").pop(); },
       set: function(v){
         var row = desireRow();
         row.meter.value = v;

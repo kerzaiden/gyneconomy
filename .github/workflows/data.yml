@@ -28,6 +28,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Spreadsheet reader with the security fixes (SheetJS publishes them only on its own registry)
+        run: npm i --no-save https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz || echo "::warning title=xlsx::the patched xlsx did not install; using 0.18.5"
+
       - name: Fetch
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}

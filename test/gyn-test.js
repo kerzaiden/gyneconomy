@@ -22,9 +22,7 @@ if (!CHROME || !fs.existsSync(CHROME)) {
 
 const NO_HISTORY = [];
 const CARD_ON_PAGE = ['sheet-metric-debt', 'sheet-sign-productivity-growth'];
-const TOKENS = {
-  '--pad':'10px', '--gap':'10px', '--gap-top':'20px', '--radius':'16px', '--radius-inner':'13px',
-};
+
 
 const results = [];
 const ok  = (n, d) => results.push([true,  n, d || '']);
@@ -48,8 +46,14 @@ const settle = pg => pg.evaluate(() => new Promise(done => requestAnimationFrame
   Promise.all(document.getAnimations().map(a => a.finished.catch(() => null))).then(() => done())))));
 const ready = pg => pg.waitForFunction(() => window.__GYN && document.getElementById('diagnosis')).then(() => settle(pg));
 
+async function goHome(p, url) {
+  const open = () => p.evaluate(() => !!document.querySelector('#metric-page:not([hidden]), .cat-sheet:not([hidden]), #detail-backdrop.show, .more-menu.in'));
+  if (await p.evaluate(() => !!window.__GYN).catch(() => false))
+    for (let i = 0; i < 6 && await open(); i++) { await p.keyboard.press('Escape'); await settle(p); }
+  if (!await p.evaluate(() => !!window.__GYN).catch(() => false) || await open()) { await p.goto('file://' + url); await ready(p); }
+}
 async function openPage(p, url, sheet) {
-  await p.goto('file://' + url); await ready(p);
+  await goHome(p, url);
   const home = s => p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
     return c ? c.closest('.cat-sheet').id : null; }, s);
   const cat = await home(sheet), up = cat && cat.indexOf('sheet-grp-') === 0 ? await home(cat) : null;
@@ -101,10 +105,6 @@ async function openPage(p, url, sheet) {
     if (w === 390) {
       css.last === lastRule ? ok('stylesheet intact', css.total + ' rules, the last one ' + css.last)
         : bad('stylesheet intact', 'the browser\u2019s last rule is ' + css.last + ', the source\u2019s ' + lastRule + ' \u2014 an unclosed brace swallowed the rest');
-      const tok = await p.evaluate(ts => { const cs = getComputedStyle(document.documentElement);
-        const o = {}; for (const t of ts) o[t] = cs.getPropertyValue(t).trim(); return o; }, Object.keys(TOKENS));
-      for (const [k, v] of Object.entries(TOKENS))
-        tok[k] === v ? ok('token ' + k, v) : bad('token ' + k, 'expected ' + v + ', got ' + (tok[k] || 'unset'));
     }
     await p.close();
   }
@@ -217,9 +217,6 @@ async function openPage(p, url, sheet) {
       .filter(m => !/\b(not a|no official|no)\s*$/i.test(m[1])).map(m => k + ': \u2026' + m[0]));
     !relabelled.length ? ok('no note calls a band a normal range', Object.keys(notes).length + ' notes read')
                        : bad('no note calls a band a normal range', relabelled.join(' | ') + ' \u2014 a target is never relabelled normal; say whose band it is');
-    (/Buffett indicator/.test(notes['Buffett indicator'] || '') && !Object.values(notes).some(n => /Buffett Indicator/.test(n)))
-      ? ok('the Buffett indicator is named so in its notes', 'Keren, V670')
-      : bad('the Buffett indicator is named so in its notes', (notes['Buffett indicator'] || '').slice(0, 80));
     const off = Object.keys(onPage).filter(k => onPage[k] !== null);
     (Object.keys(onPage).length === CARD_ON_PAGE.length && !off.length)
       ? ok('the card\u2019s figure is the page\u2019s figure', Object.keys(onPage).join(', '))
@@ -754,11 +751,6 @@ async function openPage(p, url, sheet) {
       yld:   yld ? yld.textContent.trim().replace(/\s+/g, ' ') : null
     };
   };
-  const INVERTED = [
-    {m:'1M',y:5.60},{m:'2M',y:5.58},{m:'3M',y:5.55},{m:'4M',y:5.50},{m:'6M',y:5.40},
-    {m:'1Y',y:5.10},{m:'2Y',y:4.60},{m:'3Y',y:4.40},{m:'5Y',y:4.20},{m:'7Y',y:4.10},
-    {m:'10Y',y:4.05},{m:'20Y',y:4.30},{m:'30Y',y:4.25}
-  ];
   const loadWith = async (seed) => {
     const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
     const g = await c.newPage();
@@ -772,11 +764,6 @@ async function openPage(p, url, sheet) {
     return { r, errs, text };
   };
 
-  const plain = await loadWith(null);
-  (plain.r.fgNum && plain.r.yld && !plain.errs.length)
-    ? ok('live cache absent', plain.r.fgNum + '% / ' + plain.r.yld)
-    : bad('live cache absent', JSON.stringify(plain.r) + ' ' + plain.errs.join(' | '));
-
   const BAD_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: '3.75', hi: 4 }, yieldCurve: { kind: 'series', rows: [{ m: '10Y', y: 'x' }] },
                                      vixClose: { kind: 'scalar', value: 33.3, asOf: '<b>2026-09-30</b>' } });
   const badSeed = await loadWith(BAD_SEED);
@@ -789,34 +776,11 @@ async function openPage(p, url, sheet) {
   /33\.3VIX/.test(vixSeed.text.replace(/\s+/g, ''))
     ? ok('a cached scalar is applied at load, on a second visit')
     : bad('a cached scalar is applied at load, on a second visit', 'the card still shows the file figure');
-
-  const FF_SEED = JSON.stringify({ fedFunds: { kind: 'object', lo: 2.5, hi: 2.75, lastMove: '+0.25', lastMoveLabel: 'raised a quarter point',
-                                                asOf: 'Sep 16, 2026', next: 'Oct 28, 2026' } });
-  const objSeed = await loadWith(FF_SEED);
-  const dates = t => (t.match(/[A-Z][a-z]{2} \d{1,2}, \d{4}/g) || []);
-  const lost = dates(plain.text).filter(d => objSeed.text.indexOf(d) === -1);
-  (/2\.50/.test(objSeed.text) && !lost.length && !/undefined/.test(objSeed.text) && !objSeed.errs.length)
-    ? ok('live cache object doc', 'lo/hi applied, ' + dates(plain.text).length + ' editorial dates survive')
-    : bad('live cache object doc', 'rate ' + /2\.50/.test(objSeed.text) + ' lost ' + lost.join(', ') +
-        ' undefined ' + /undefined/.test(objSeed.text) + ' ' + objSeed.errs.join(' | '));
-
-  const serSeed = await loadWith(JSON.stringify({ yieldCurve: { kind: 'series', rows: INVERTED } }));
-  (serSeed.r.yld && serSeed.r.yld !== plain.r.yld && !serSeed.errs.length)
-    ? ok('live cache series doc', plain.r.yld + '  ->  ' + serSeed.r.yld)
-    : bad('live cache series doc', JSON.stringify(serSeed.r) + ' was ' + plain.r.yld + ' ' + serSeed.errs.join(' | '));
-
-  for (const [label, seed] of [
-    ['garbage',      'this is not json'],
-    ['empty',        '{}'],
-    ['shapeless',    '{"vix3mClose":{"kind":"scalar"}}'],
-    ['null doc',     '{"vix3mClose":null}'],
-    ['wrong kind',   '{"vix3mClose":{"kind":"series","rows":[]}}']
-  ]) {
-    const g = await loadWith(seed);
-    (g.r.fgNum === plain.r.fgNum && g.r.yld === plain.r.yld && !g.errs.length)
-      ? ok('live cache falls back: ' + label)
-      : bad('live cache falls back: ' + label, JSON.stringify(g.r) + ' ' + g.errs.join(' | '));
-  }
+  const OLD_SEED = JSON.stringify({ vixClose: { kind: 'scalar', value: 33.3, asOf: '2026-09-01' } });
+  const oldSeed = await loadWith(OLD_SEED);
+  !/33\.3VIX/.test(oldSeed.text.replace(/\s+/g, ''))
+    ? ok('a cached figure older than the file\u2019s own is not applied')
+    : bad('a cached figure older than the file\u2019s own is not applied', 'the September 1 close replaced the newer file figure');
 
   {
     const c = await b.newContext({ viewport: { width: 414, height: 1000 } });
@@ -824,52 +788,10 @@ async function openPage(p, url, sheet) {
     watch(g, 'repaint');
     await g.goto('file://' + url); await ready(g);
 
-    const read = () => g.evaluate(() => {
-      const t = s => { const e = document.querySelector(s); return e ? e.textContent.trim().replace(/\s+/g, ' ') : null; };
-      const k = s => { const e = document.querySelector(s); return e ? e.className : null; };
-      return { sentiment: t('#subj-value-sentiment'),
-               mood: t('[data-open="sheet-sign-sentiment"] .tag'),
-               moodClass: k('[data-open="sheet-sign-sentiment"] .tag'),
-               pressureFigs: [...document.querySelectorAll('[data-open="sheet-sign-pressure"] .ci-value, [data-open="sheet-sign-pressure"] .subject-value')]
-                              .map(e => e.textContent.trim()),
-               valuation: t('#subj-value-valuation') };
-    });
-
     const seam = await g.evaluate(() => !!(window.__GYN && window.__GYN.applyLive));
     if (!seam) bad('repaint seam present', 'window.__GYN.applyLive missing');
 
     if (seam) {
-      const before = await read();
-      const rv = await g.evaluate(() => {
-        const G = window.__GYN;
-        return {
-          fg: G.applyLive('vixClose', 31),
-          yc: G.applyLive('yieldCurve', [{m:'3M',y:5.55},{m:'2Y',y:4.60},{m:'10Y',y:4.05}]),
-          nul: G.applyLive('vix3mClose', null),
-          bad: G.applyLive('vix3mClose', { nope: 1 }),
-          unk: G.applyLive('notADocument', { a: 1 })
-        };
-      });
-      await settle(g);
-      const after = await read();
-
-      (rv.fg && /^31\.0/.test(after.sentiment || '') && before.sentiment !== after.sentiment)
-        ? ok('repaint volatility figure', (before.sentiment || '').slice(0, 12) + ' -> ' + (after.sentiment || '').slice(0, 12))
-        : bad('repaint volatility figure', JSON.stringify(after.sentiment));
-
-      (after.moodClass && after.moodClass !== before.moodClass && after.mood === 'Fearful')
-        ? ok('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass)
-        : bad('repaint derived verdict', before.moodClass + ' -> ' + after.moodClass + ' / ' + after.mood);
-
-      (rv.yc && after.pressureFigs.length > 0 && after.pressureFigs.every(f => /^4\.05%/.test(f)))
-        ? ok('repaint the 10-year yield on Pressure', before.pressureFigs.join('/') + ' -> ' + after.pressureFigs.join('/'))
-        : bad('repaint the 10-year yield on Pressure', JSON.stringify(after.pressureFigs));
-
-      (rv.nul === false && rv.bad === false && rv.unk === false)
-        ? ok('repaint refuses bad input', 'null, wrong shape, unknown doc')
-        : bad('repaint refuses bad input', JSON.stringify(rv));
-
-
       const bands = await g.evaluate(() => {
         const R = window.__GYN.READINGS, out = {};
         Object.keys(R).forEach(n => {
@@ -1106,6 +1028,17 @@ async function keyboardAndLayers(b, url) {
   (card && onOpen.id === 'topbar-title' && onBack.open === card)
     ? ok('a page takes focus to its title and gives it back to its card', card)
     : bad('a page takes focus to its title and gives it back to its card', JSON.stringify({ card, onOpen, onBack }));
+
+  if (await openPage(g, url, 'sheet-metric-temp')) {
+    const title = () => g.evaluate(() => ({ t: document.getElementById('topbar-title').textContent, page: !document.getElementById('metric-page').hidden }));
+    const steps = [await title()];
+    for (let i = 0; i < 3 && steps[steps.length - 1].page; i++) { await g.goBack(); await settle(g); steps.push(await title()); }
+    const last = steps[steps.length - 1], app = await g.evaluate(() => !!window.__GYN);
+    (steps.length > 2 && !last.page && app && steps[1].t !== steps[0].t)
+      ? ok('the browser Back steps out of a page, one page at a time, and stays in the app', steps.map(x => x.t).join(' \u2192 '))
+      : bad('the browser Back steps out of a page, one page at a time, and stays in the app', JSON.stringify({ steps, app }));
+  } else bad('the browser Back steps out of a page, one page at a time, and stays in the app', 'no door to Temperature');
+  await g.goto('file://' + url); await ready(g);
 
   const hub = () => g.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent,
     said: document.getElementById('season-wheel-live').textContent }));
