@@ -127,6 +127,8 @@ export var PRODUCTIVITY_TREND = 2.1, PRODUCTIVITY_SLOWDOWN = 1.3;
 export var CONFIDENCE_LINE = 100;
 // ---- Desire: real spending on durable goods ----
 export var DESIRE_LINE = 0;
+// ---- Desire: the equity risk premium ----
+export var PREMIUM_LINE = 0;
 /* ---- Institutional trust is not in this panel ---- */
 /* ---- The deficit, year by year ---- */
 export var DEF_FROM_YEAR = 1946;
@@ -211,6 +213,9 @@ export var PRODUCTIVITY_SRC: Src[] = [
 export var DESIRE_SRC: Src[] = [
   {t:"BEA via FRED \u2014 Real personal consumption expenditures: durable goods, chain-type quantity index, monthly since 1959 (DDURRA3M086SBEA)", u:"https://fred.stlouisfed.org/series/DDURRA3M086SBEA"},
   {t:"BEA \u2014 Personal income and outlays, the monthly release behind the series", u:"https://www.bea.gov/data/income-saving/personal-income"}
+];
+export var PREMIUM_SRC: Src[] = [
+  {t:"Robert Shiller \u2014 Online data, U.S. stock markets since 1871: the Excess CAPE Yield, monthly (ie_data.xls)", u:"https://shillerdata.com/#premium"}
 ];
 export var CONFIDENCE_SRC: Src[] = [
   {t:"OECD \u2014 Consumer confidence index (CCI): amplitude adjusted, long-term average 100", u:"https://www.oecd.org/en/data/indicators/consumer-confidence-index-cci.html"},

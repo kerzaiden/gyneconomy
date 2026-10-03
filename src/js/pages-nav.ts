@@ -81,7 +81,7 @@ function renderSignsList(){
       icon: subjectIcon(tag.state, svg),
       text: '<div class="subject-label">' + ind.bodyTerm + ' \u00b7 ' + ind.econTerm + '</div>' +
             '<div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div>' +
-            '<div class="subject-verdict"><span class="tag ' + tag.state + '">' + tag.text + '</span></div>' +
+            '<div class="subject-verdict">' + (tag.text ? '<span class="tag ' + tag.state + '">' + tag.text + '</span>' : '') + '</div>' +
             (ind.peek || "")
     }));
     var d = metricSheet(id);

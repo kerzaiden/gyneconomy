@@ -9,6 +9,7 @@ export var productivityHistory = FRED.productivityHistory;
 export var sp500MonthlyHistory = FRED.sp500MonthlyHistory;
 export var confidenceHistory = FRED.confidenceHistory;
 export var durablesHistory = FRED.durablesHistory;
+export var premiumHistory = FRED.premiumHistory;
 export var gdpYoYBefore = FRED.gdpYoYBefore;
 export var cpiYoYBefore = FRED.cpiYoYBefore;
 export var sp500ReturnsBefore = FRED.sp500ReturnsBefore;
