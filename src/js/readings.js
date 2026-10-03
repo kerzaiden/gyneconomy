@@ -1,10 +1,10 @@
 import { facts, fmtSigned, ledeHtml, monthLabel, qAtIndex, qPretty, srcBlock } from "./format.js";
-import { byId, expandBtn } from "./dom.js";
-import { GYN, LIVE, liveInto } from "./live.js";
+import { byId, expandBtn, ui } from "./dom.js";
+import { defineReadings, GYN, LIVE, liveAsOf, liveInto, merge } from "./live.js";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.js";
 import { confidenceHistory, productivityHistory } from "./history-fred.js";
 import { calendarTodayY, gdpQuarterlyYoY } from "./refresh-season.js";
-import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFunds, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, m2vHistory, m2Yoy, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sentiment, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, valuation, VIX_CALM, VIX_CONVENTION, VIX_FEAR, vixRow, VOL_JOIN, yieldCurve } from "./data.js";
+import { ACT_BAND_HI, ACT_BAND_LO, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyQuarterEnds, labRow, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.js";
 import { cpiNow } from "./model.js";
 import { HIST_NOTE, histHead, histNote } from "./history.js";
 
@@ -103,7 +103,7 @@ export var coincident = [
     src:[{t:"Federal Reserve via FRED \u2014 M2 money stock, monthly since 1959 (M2SL)", u:"https://fred.stlouisfed.org/series/M2SL"}]
   }
 ];
-export function deriveVolumeTag(){
+function deriveVolumeTag(){
   var vol = coincident.filter(function(c){ return c.bodyTerm === "Volume"; })[0];
   if (vol) vol.tag = volumeVerdict(vol.meter.value);
 }
@@ -316,7 +316,7 @@ function velocityVerdict(v){
        : r < 1.25 ? { text:"Fast",      state:"warning" }
                   : { text:"Very fast", state:"serious" };
 }
-export function derivePulseTag(){
+function derivePulseTag(){
   var pulse = coincident.filter(function(c){ return c.bodyTerm === "Pulse"; })[0];
   if (pulse) pulse.tag = velocityVerdict(pulse.meter.value);
 }
@@ -352,15 +352,15 @@ export var lagging = [
   }
 ];
 export function volatilityTag(){
-  var v = vixRow.meter.value;
+  var v = now.vixRow.meter.value;
   return v < VIX_CALM ? { text:"Calm", state:"good" }
        : v <= VIX_FEAR ? { text:"Elevated", state:"warning" }
                        : { text:"Fearful", state:"critical" };
 }
 export function fearCurve(){
-  var near = vixRow && vixRow.meter && vixRow.meter.value;
-  if (typeof near !== "number" || typeof vix3mClose !== "number" || !(vix3mClose > 0)) return null;
-  return Math.round((near / vix3mClose) * 1000) / 1000;
+  var near = now.vixRow && now.vixRow.meter && now.vixRow.meter.value;
+  if (typeof near !== "number" || typeof now.vix3mClose !== "number" || !(now.vix3mClose > 0)) return null;
+  return Math.round((near / now.vix3mClose) * 1000) / 1000;
 }
 export function curveVerdict(r){
   return r == null   ? { text:"No reading", state:"norm" }
@@ -419,7 +419,7 @@ export function horizonInfoHtml(pick){
       'crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever ' +
       'inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, ' +
       'which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' +
-    String(SPREAD_DETAIL || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
+    String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
 }
 var RISK_REWARD = [
   { key:"low",  label:"Low",      at:function(v){ return v < 4; } },
@@ -544,16 +544,16 @@ export function savInfoHtml(){
     ]);
 }
 export function vixPct(v){
-  var m = vixRow.meter;
+  var m = now.vixRow.meter;
   return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
 }
 export function volatilityRing(){
-  var m = vixRow.meter;
+  var m = now.vixRow.meter;
   return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + m.value.toFixed(2) + ", between its record low of " +
     m.min + " and its record high of " + m.max);
 }
 export function volatilityDetailHtml(){
-  var m = vixRow.meter;
+  var m = now.vixRow.meter;
   return '<h4>Volatility</h4><div class="marker-sub">' + curveSub + '</div>' + facts([
     'The <b>VIX</b> is Cboe\u2019s volatility index: what options traders pay to insure the S&amp;P 500 against a fall ' +
       'over the next thirty days, as an annual rate.',
@@ -564,7 +564,7 @@ export function volatilityDetailHtml(){
     'By market convention a VIX <b>below ' + VIX_CALM + '</b> reads calm, <b>' + VIX_CALM + ' to ' + VIX_FEAR + '</b> elevated, ' +
       'and <b>above ' + VIX_FEAR + '</b> fearful; the chart hangs from ' + VIX_CALM + '. The lines are the convention\u2019s, not ours.',
     'Daily record on the VIX since 1990: <b>' + m.min + '</b> low, <b>' + m.max + '</b> high.'
-  ]) + srcBlock(sentiment.src.concat(VIX_CONVENTION));
+  ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
 }
 export function marketWord(v){
   if (v >= 0) return { state:"good", text:"Bull year", says:"a positive total return, which the dial draws as a bull year" };
@@ -580,15 +580,14 @@ function marketInfoHtml(f){
       'colours, so the card, this chart and the cycle read one number.' + (f.open ? ' ' + f.now.y + ' is still open, so its bar is the year so far.' : '') + '</p>' +
     srcBlock(sp500AnnualReturnSource);
 }
-export function rowReadings(){ return coincident.concat(lagging, [productivityReading, confidenceReading, marketReading]); }
+export function rowReadings(){ return [].concat(coincident, lagging, [productivityReading, confidenceReading, marketReading]); }
 export function indOf(R){ return rowReadings().filter(function(x){ return x.bodyTerm === R.term; })[0]; }
-export var SPREAD_DETAIL = "", UNINV_DETAIL = "";
 function policyFacts(){ return [
   { label:"Fed funds target",  value:fedFundsRange() },
-  fedFunds.lastMove ? { label:"Last Fed move", value:fedFunds.lastMove + " on " + fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
-                                      (fedFunds.vote ? " \u00b7 " + fedFunds.vote : ""), wordy:true } : null,
+  now.fedFunds.lastMove ? { label:"Last Fed move", value:now.fedFunds.lastMove + " on " + now.fedFunds.asOf.replace(/,\s*\d{4}$/, "") +
+                                      (now.fedFunds.vote ? " \u00b7 " + now.fedFunds.vote : ""), wordy:true } : null,
   { label:"First hike since",  value:"2023 \u00b7 one more signalled",  wordy:true },
-  fedFunds.next ? { label:"Next decision", value:fedFunds.next } : null
+  now.fedFunds.next ? { label:"Next decision", value:now.fedFunds.next } : null
 ].filter(Boolean); }
 export function policyFactRows(){
   return policyFacts().map(function(f){
@@ -624,12 +623,8 @@ export function indPeriod(R){
   return m ? m[2] : "";
 }
 
-export function setCoincident(v){ coincident = v; return v; }
-export function setVix3mClose(v){ vix3mClose = v; return v; }
-export function setSPREAD_DETAIL(v){ SPREAD_DETAIL = v; return v; }
-export function setUNINV_DETAIL(v){ UNINV_DETAIL = v; return v; }
 
-export var productivityReading, confidenceRecord, confidenceReading, tempInfo, vix3mClose, horizonRead, householdsNow, marketReading;
+export var productivityReading, confidenceRecord, confidenceReading, tempInfo, horizonRead, householdsNow, marketReading;
 var productivityRecord, gdpNowQ, HZN_METERS, curveSub;
 
 export function bootReadings(){
@@ -677,7 +672,7 @@ export function bootReadings(){
         ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
     };
   })(confidenceRecord);
-  valuation.tag = valuationVerdict(valRow("cape").meter.value);
+  now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
   liveInto("capeValue");
   coincident = LIVE("coincident", coincident);
   liveInto("hyOasNow");
@@ -695,9 +690,9 @@ export function bootReadings(){
       'One of the two readings a season is computed from: the level, and the direction of the last twelve months.',
       'It confirms heat that has already built rather than predicting it.'
     ]);
-  vix3mClose = LIVE("vix3mClose", 17.61);
+  now.vix3mClose = LIVE("vix3mClose", 17.61);
   horizonRead = (function(){
-    var pick = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
+    var pick = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : null; };
     var sp = pick("10Y") - pick("3M");
     var sN = hznLast(t10y3mHistory), lN = hznLast(t10yYieldHistory), tN = hznLast(t3mYieldHistory);
     var tN2 = hznLast(t10y2yHistory);
@@ -714,12 +709,12 @@ export function bootReadings(){
     "3m": { min:hznRecord(t10y3mHistory).min, max:hznRecord(t10y3mHistory).max, value:horizonRead.spread,
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } },
     "2y": { min:hznRecord(t10y2yHistory).min, max:hznRecord(t10y2yHistory).max,
-            value:(function(){ var p = function(m){ var h = yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : 0; };
+            value:(function(){ var p = function(m){ var h = now.yieldCurve.filter(function(d){ return d.m === m; })[0]; return h ? h.y : 0; };
                                return p("10Y") - p("2Y"); })(),
             optimal:{ gte:0, label:"0 and above" }, ends:{ low:"Inverted" } }
   };
   householdsNow = householdsWord(dsrNow, savNow);
-  curveSub = "Cboe, " + vixRow.sub;
+  curveSub = "Cboe, " + now.vixRow.sub;
   marketReading = (function(h){
     var now = h[h.length - 1], word = marketWord(now.v), open = now.y === calendarTodayY;
     var lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; }), hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; });
@@ -739,4 +734,77 @@ export function bootReadings(){
         ". The track runs over every year since " + h[0].y + ": " + span + "."
     };
   })(sp500Years);
+}
+function isNum(x){ return typeof x === "number" && isFinite(x); }
+function rowsOk(rows){
+  return Array.isArray(rows) && rows.length > 0 && rows.every(function(r){ return r && typeof r === "object" && (!r.meter || isNum(r.meter.value)); });
+}
+export function desireRow(){ return coincident.filter(function(c){ return c.bodyTerm === "Desire"; })[0]; }
+export function bootReadingRegistry(){
+  /* ---- THE READING REGISTRY ---- */
+  defineReadings({
+    fedFunds: {
+      kind: "object",
+      ok: function(v){ return isNum(v.lo) && isNum(v.hi) && v.lo >= 0 && v.lo <= v.hi && v.hi <= 25; },
+      set: function(v){
+        if (!v.lastMove && (v.lo !== now.fedFunds.lo || v.hi !== now.fedFunds.hi)) v = merge(v, { lastMove:"", lastMoveLabel:"", asOf:"" });
+        if (v.asOf !== undefined && v.asOf !== now.fedFunds.asOf && !v.vote) v = merge(v, { vote:"" });
+        now.fedFunds = merge(now.fedFunds, v);
+      }
+    },
+    yieldCurve: {
+      kind: "series",
+      ok: function(v){ return v.every(function(r){ return r && typeof r.m === "string" && (r.y === null || isNum(r.y)); }); },
+      set: function(v){ now.yieldCurve = v; }
+    },
+    sentiment:  {
+      kind: "object",
+      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
+      set: function(v){ now.sentiment = merge(now.sentiment, v); now.vixRow = now.sentiment.rows[0]; }, onOpen: true
+    },
+    valuation:  {
+      kind: "object",
+      ok: function(v){ return v.rows === undefined || rowsOk(v.rows); },
+      set: function(v){
+        now.valuation = merge(now.valuation, v);
+        if (valRow("cape")) now.valuation.tag = valuationVerdict(valRow("cape").meter.value);
+      }
+    },
+    coincident: {
+      kind: "series",
+      ok: rowsOk,
+      set: function(v){ coincident = v; deriveVolumeTag(); derivePulseTag(); },
+      onOpen: true
+    },
+    vixClose: {
+      kind: "scalar", band: [5, 100],
+      set: function(v){
+        var row = now.sentiment.rows[0];
+        row.meter.value = v;
+        row.flagValue = v.toFixed(1);
+        if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
+      }
+    },
+    vix3mClose: { kind: "scalar", band: [5, 100], set: function(v){ now.vix3mClose = v; }, onOpen: true },
+    hyOasNow: {
+      kind: "scalar", band: [1, 30],
+      set: function(v){
+        var row = desireRow();
+        row.meter.value = v;
+        row.metric = v.toFixed(2) + "%";
+        if (liveAsOf.hyOasNow) row.metricSub = "high-yield OAS, " + liveAsOf.hyOasNow;
+      }
+    },
+    capeValue: {
+      kind: "scalar", band: [4, 60],
+      set: function(v){
+        var row = valRow("cape");
+        row.meter.value = v;
+        row.flagValue = v.toFixed(1) + String(row.flagValue || "").replace(/^[\d.,\s-]+/, "");
+        if (liveAsOf.capeValue) row.sub = liveAsOf.capeValue;
+        now.valuation.tag = valuationVerdict(v);
+      }
+    }
+  });
+  now.fedFunds = LIVE("fedFunds", now.fedFunds);
 }

@@ -3,9 +3,9 @@ import { addSources, byId, put } from "./dom.js";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.js";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.js";
 import { calendarTodayY } from "./refresh-season.js";
-import { buffettHistory, CONFIDENCE_SRC, labRow, longCycleSrc, PRODUCTIVITY_SRC, sp500AnnualReturnSource, valRow, valuation } from "./data.js";
+import { buffettHistory, CONFIDENCE_SRC, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource, valRow } from "./data.js";
 import { currentEra, cycleSlice } from "./model.js";
-import { attachHistory, histControls, histHead, histNote, pageCycle, pageRange, refitHistory, timelineWindow } from "./history.js";
+import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.js";
 import { confidenceReading, confidenceRecord, marketReading, meterFlagged, productivityReading } from "./readings.js";
 import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.js";
 import { catItem, catList, metricSheet, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.js";
@@ -22,7 +22,7 @@ function splitPages(){
   var tenth = function(v){ return v.toFixed(1) + "%"; };
   return {
     "sheet-metric-buffett": { after:"sheet-metric-valuation", row:valRow("buffett"), line:"Buffett’s line",
-      fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(valuation.src.slice(0, 2)),
+      fmt:function(v){ return Math.round(v) + "%"; }, src:BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
       band:"The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, " +
            "buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
       insight:buffettInsight },
@@ -71,7 +71,7 @@ function periodOfSeries(d){ return d.m ? "month" : d.q ? "quarter" : "year"; }
 function drawSplit(s, W){
   var id = s.id, cyc = pageCycle(id);
   var span = cyc ? cycleSlice(s.series, cyc) : null;
-  var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, pageRange[id]);
+  var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
   var tr = trendOf(vals.map(function(d){ return d.v; }), "points", periodOfSeries(s.series[0]));
   var chart = function(w){
     return divergeChart({ vals:vals, mid:s.mid, midLabel:s.midLabel, fmt:s.fmt, tickFmt:s.tick || s.fmt, fit:tr.fit, goodAbove:s.goodAbove,

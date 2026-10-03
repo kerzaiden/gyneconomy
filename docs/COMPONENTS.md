@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared patterns**.
+Generated from commit `2973ac9` on 2026-10-03. **81 components**, **40 shared patterns**.
 
 ## analysis.js
 
@@ -28,19 +28,25 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 | **`chartAxes`** | `.bt-axis` `.bt-frame` `.bt-grid` `.bt-yl` | `charts.js:divergeChart`, `history-charts.js:cpiHistoryChart`, `history-charts.js:deficitChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:fedFundsHistoryChart`, `history-charts.js:gdpHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:unempHistoryChart`, `history-charts.js:velocityHistoryChart`, `render-core.js:renderPressurePage`, `render-pages.js:renderSpreadHistory` |
 | **`colPeek`** | `.heat` `.peek-base` | `analysis.js:eraMini`, `charts.js:peekCard`, `readings.js:bootReadings`, `readings.js:deficitBlock`, `readings.js:derivePulseTag`, `render-core.js:renderPressureRow`, `render-pages.js:renderHormones` |
 | **`crossLine`** | `.hist-cross` | `charts.js:divergeChart`, `history-charts.js:cpiHistoryChart`, `history-charts.js:deficitChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:fedFundsHistoryChart`, `history-charts.js:gdpHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:unempHistoryChart`, `history-charts.js:velocityHistoryChart`, `render-core.js:renderPressurePage` |
-| **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `render-pages.js:renderVolatility` |
+| **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `render-pages.js:renderVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.js:divergeChart`, `charts.js:fitLine`, `history-charts.js:deficitChart`, `render-core.js:ylmFitLine` |
-| **`histBar`** | `.hist-bar` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
-| **`histTip`** | `.gdp-tooltip` `.hist-tip` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`histBar`** | `.hist-bar` | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`histTip`** | `.gdp-tooltip` `.hist-tip` | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`meterPeek`** | `.meterpeek` `.mp-band` `.mp-core` `.mp-here` `.mp-track` | `charts.js:peekCard` |
 | **`peekCard`** | `.peek` `.peek-kicker` `.peek-text` `.peek-unit` `.peek-value` `.peek-word` | `roster.js:peekOf` |
 | **`pulseTraceSvg`** | `.pt-svg` | `charts.js:pulsePeek`, `readings.js:pulseBlock` |
-| **`trendOf`** | `.tp-arrow` | `charts.js:fitLine`, `history-charts.js:deficitChart`, `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
-| **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.js:drawSplit`, `pages-nav.js:registerActivityPowerDeficitPages`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`trendOf`** | `.tp-arrow` | `charts.js:fitLine`, `history-charts.js:deficitChart`, `indicators.js:drawSplit`, `inner-pages.js:registerActivityPowerDeficitPages`, `inner-pages.js:registerHouseholdsValuationPages`, `inner-pages.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-core.js:ylmFitLine`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`trendPill`** | `.can-toggle` `.tp-k` `.trendpill` | `indicators.js:drawSplit`, `inner-pages.js:registerActivityPowerDeficitPages`, `inner-pages.js:registerHouseholdsValuationPages`, `inner-pages.js:registerTempGdpPages`, `render-core.js:registerFlowPages`, `render-core.js:renderPressurePage`, `render-pages.js:renderHorizonPage`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`vGrid`** | `.bt-vgrid` | `charts.js:divergeChart`, `history-charts.js:deficitChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:gdpHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:velocityHistoryChart`, `history-charts.js:yearTicks`, `render-pages.js:renderSpreadHistory` |
 | **`vitalRingSvg`** | `.vital-ring-fill` `.vital-ring-track` | `analysis.js:eraMini`, `charts.js:peekCard`, `readings.js:volatilityRing` |
 | **`xLabel`** | `.bt-xl` | `charts.js:divergeChart`, `history-charts.js:deficitChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:gdpHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:velocityHistoryChart`, `history-charts.js:yearTicks`, `render-pages.js:renderSpreadHistory` |
 | **`zeroRule`** | `.m2-zero` | `history-charts.js:cpiHistoryChart`, `history-charts.js:deficitChart`, `history-charts.js:fedFundsHistoryChart`, `history-charts.js:gdpHistoryChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:unempHistoryChart` |
+
+## cycle-tab.js
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`placeSignPair`** | `.peek-row` | `cycle-tab.js:renderPeekAndCategories` |
 
 ## diagnosis.js
 
@@ -68,14 +74,14 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `dial-cycle.js:quarterSheet`, `insights.js:insightMood`, `pages-nav.js:gdpHighlights`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `dial-cycle.js:quarterSheet`, `inner-pages.js:gdpHighlights`, `inner-pages.js:tempHighlights`, `inner-pages.js:valuationHighlights`, `insights.js:insightMood`, `render-core.js:cardDetailHtml` |
 
 ## format.js
 
 | Component | Owns | Used by |
 |---|---|---|
 | **`facts`** | `.facts` | `analysis.js:symptomNote`, `dial-cycle.js:bootDialCycle`, `format.js:factsFrom`, `insights.js:moodInfo`, `readings.js:bootReadings`, `readings.js:deficitBlock`, `readings.js:volatilityDetailHtml` |
-| **`hiCard`** | `.hi-name` | `indicators.js:buffettInsight`, `indicators.js:confidenceInsight`, `indicators.js:debtInsight`, `indicators.js:interestInsight`, `indicators.js:marketInsight`, `indicators.js:productivityInsight`, `insights.js:insightCirculation`, `insights.js:insightWeather`, `insights.js:marketCycleCard`, `insights.js:moodCard`, `insights.js:seasonCards`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
+| **`hiCard`** | `.hi-name` | `indicators.js:buffettInsight`, `indicators.js:confidenceInsight`, `indicators.js:debtInsight`, `indicators.js:interestInsight`, `indicators.js:marketInsight`, `indicators.js:productivityInsight`, `inner-pages.js:gdpHighlights`, `inner-pages.js:householdsHighlights`, `inner-pages.js:tempHighlights`, `inner-pages.js:valuationHighlights`, `insights.js:insightCirculation`, `insights.js:insightWeather`, `insights.js:marketCycleCard`, `insights.js:moodCard`, `insights.js:seasonCards`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.js:hubSet`, `dial-cycle.js:hubShowYear` |
 | **`ledeHtml`** | `.lede` | `dial-cycle.js:bootDialCycle`, `readings.js:bootReadings`, `readings.js:deficitBlock` |
 | **`maxIn`** | `.peek-chev` | `indicators.js:buffettInsight`, `indicators.js:debtInsight` |
@@ -85,14 +91,14 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`cpiHistoryChart`** | `.temp-col` | `pages-nav.js:registerTempGdpPages` |
-| **`deficitChart`** | `.def-col` `.spread-history-band` | `pages-nav.js:registerActivityPowerDeficitPages` |
+| **`cpiHistoryChart`** | `.temp-col` | `inner-pages.js:registerTempGdpPages` |
+| **`deficitChart`** | `.def-col` `.spread-history-band` | `inner-pages.js:registerActivityPowerDeficitPages` |
 | **`desireHistoryChart`** | `.hy-avg` `.hy-col2` | `render-core.js:registerFlowPages` |
 | **`fedFundsHistoryChart`** | `.ff-col` | `render-pages.js:renderHormones` |
-| **`gdpHistoryChart`** | `.growth-col` | `pages-nav.js:registerTempGdpPages` |
-| **`householdsChart`** | `.bill` `.hh-col` `.kept` | `pages-nav.js:registerHouseholdsValuationPages` |
+| **`gdpHistoryChart`** | `.growth-col` | `inner-pages.js:registerTempGdpPages` |
+| **`householdsChart`** | `.bill` `.hh-col` `.kept` | `inner-pages.js:registerHouseholdsValuationPages` |
 | **`m2GrowthChart`** | `.m2-col` | `render-core.js:registerFlowPages` |
-| **`unempHistoryChart`** | `.unemp-col` | `pages-nav.js:registerActivityPowerDeficitPages` |
+| **`unempHistoryChart`** | `.unemp-col` | `inner-pages.js:registerActivityPowerDeficitPages` |
 | **`velocityHistoryChart`** | `.pv-col` | `render-core.js:registerFlowPages` |
 
 ## history.js
@@ -101,7 +107,7 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 |---|---|---|
 | **`cyclePicker`** | `.cycsel-btn` | `history.js:histControls` |
 | **`headMenuHtml`** | `.bh-back` `.bh-grp-row` `.bh-sep` | `history.js:histHead`, `history.js:paintHeadMenus` |
-| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `pages-nav.js:registerTempGdpPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:pressureHead`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| **`histHead`** | `.band-head` `.bh-mark` `.bh-menu` `.bh-more` `.bh-more-wrap` `.bh-sigma` `.bh-title` | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `inner-pages.js:registerTempGdpPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:pressureHead`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
 | **`histKeysWire`** | `.sr-only` | `history.js:wireHistHover` |
 | **`histReadEnsure`** | `.hist-read` `.hr-label` `.hr-plate` `.hr-value` | `history.js:histKeysWire`, `history.js:wireHistHover`, `render-pages.js:renderSpreadHistory` |
 
@@ -109,7 +115,7 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`appendPicks`** | `.cat-group` | `pages-nav.js:buildCategories` |
+| **`appendPicks`** | `.cat-group` | `cycle-tab.js:buildCategories` |
 
 ## insights.js
 
@@ -127,7 +133,6 @@ Generated from commit `3072ab4` on 2026-10-03. **81 components**, **40 shared pa
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.js:renderSignsList` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-name` | `pages-nav.js:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.js:indRows` |
-| **`placeSignPair`** | `.peek-row` | `pages-nav.js:renderPeekAndCategories` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | `pages-nav.js:bootPagesNav` |
 
 ## readings.js
@@ -249,8 +254,8 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | Class | Places | Written by |
 |---|---|---|
 | `.caption` | 20 | `dial-cycle.js:quarterPopup`, `dial-cycle.js:renderCycleKicker`, `readings.js:activityInfoHtml`, `readings.js:confidenceInfoHtml`, `readings.js:desireInfoHtml`, `readings.js:dsrInfoHtml`, `readings.js:growthInfoHtml`, `readings.js:horizonInfoHtml`, `readings.js:marketInfoHtml`, `readings.js:productivityInfoHtml`, `readings.js:pulseInfoHtml`, `readings.js:riskMatrixBlock`, `readings.js:savInfoHtml`, `readings.js:temperatureInfoHtml`, `readings.js:volumeInfoHtml`, `render-core.js:pressureMaturities`, `render-pages.js:deriveUninversionDetail`, `render-pages.js:renderSpreadHistory`, `render-pages.js:spreadSeries`, `tabs-menu.js:renderSeasonRows` |
-| `.page-chart` | 12 | `indicators.js:drawSplit`, `pages-nav.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:pulseBlock`, `readings.js:riskMatrixBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:cardDetailHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
-| `.hi-lede` | 10 | `format.js:lede`, `insights.js:insightCirculation`, `pages-nav.js:gdpHighlights`, `pages-nav.js:householdsHighlights`, `pages-nav.js:tempHighlights`, `pages-nav.js:valuationHighlights`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
+| `.page-chart` | 12 | `indicators.js:drawSplit`, `inner-pages.js:registerHouseholdsValuationPages`, `readings.js:activityStackHtml`, `readings.js:deficitBlock`, `readings.js:desireBlock`, `readings.js:pulseBlock`, `readings.js:riskMatrixBlock`, `readings.js:velocityRecordBlock`, `readings.js:volumeBlock`, `render-core.js:cardDetailHtml`, `render-pages.js:renderHormones`, `render-pages.js:renderVolatility` |
+| `.hi-lede` | 10 | `format.js:lede`, `inner-pages.js:gdpHighlights`, `inner-pages.js:householdsHighlights`, `inner-pages.js:tempHighlights`, `inner-pages.js:valuationHighlights`, `insights.js:insightCirculation`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights`, `render-pages.js:volatilityHighlights` |
 | `.hcol` | 8 | `charts.js:divergeChart`, `history-charts.js:cpiHistoryChart`, `history-charts.js:desireHistoryChart`, `history-charts.js:fedFundsHistoryChart`, `history-charts.js:householdsChart`, `history-charts.js:m2GrowthChart`, `history-charts.js:unempHistoryChart`, `history-charts.js:velocityHistoryChart` |
 | `.highlights` | 7 | `format.js:highlightsHtml`, `insights.js:insightCirculation`, `insights.js:insightWeather`, `render-core.js:cardDetailHtml`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights` |
 | `.hi-head` | 7 | `format.js:highlightsHtml`, `insights.js:insightCirculation`, `insights.js:insightWeather`, `render-core.js:cardDetailHtml`, `render-core.js:renderPressureInsights`, `render-pages.js:renderHormones`, `render-pages.js:spreadInsights` |
@@ -267,6 +272,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.rangebar` | 3 | `history.js:modeBar`, `history.js:rangeBar`, `pages-nav.js:buildSearch` |
 | `.vh-mean` | 2 | `charts.js:meanRule`, `history-charts.js:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.js:vhOpen`, `history-charts.js:householdsChart` |
+| `.cat-list` | 2 | `cycle-tab.js:buildCategories`, `render-core.js:catList` |
 | `.dx-mark` | 2 | `diagnosis.js:dxHead`, `diagnosis.js:moodDoor` |
 | `.legend-row` | 2 | `dial-cycle.js:renderCycleKicker`, `readings.js:deficitBlock` |
 | `.expand-btn` | 2 | `dial-cycle.js:renderCycleKicker`, `dom.js:expandBtn` |
@@ -283,7 +289,6 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.subject` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.subject-summary` | 2 | `pages-nav.js:convertLeadingSigns`, `render-core.js:subjectRow` |
 | `.subject-value` | 2 | `pages-nav.js:indRow`, `pages-nav.js:renderSignsList` |
-| `.cat-list` | 2 | `pages-nav.js:buildCategories`, `render-core.js:catList` |
 | `.spread-history-head` | 2 | `readings.js:pulseBlock`, `readings.js:riskMatrixBlock` |
 | `.pt-note` | 2 | `readings.js:pulseBlock`, `readings.js:riskMatrixBlock` |
 | `.lag-row` | 2 | `render-pages.js:deriveUninversionDetail`, `tabs-menu.js:renderSeasonRows` |

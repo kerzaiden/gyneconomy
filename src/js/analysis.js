@@ -1,14 +1,14 @@
 import { CHEV, facts, fmtSigned } from "./format.js";
-import { addSources, byId, detailSlot } from "./dom.js";
+import { addSources, byId, detailSlot, ui } from "./dom.js";
 import { GYN, repaintLive } from "./live.js";
 import { colPeek, pulsePeek, vitalRingSvg } from "./charts.js";
 import { calendarTodayY } from "./refresh-season.js";
 import { marketCycles, sp500AnnualReturns, sp500AnnualReturnSource, typicalCycleSrc } from "./data.js";
 import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.js";
-import { pageCycles, pageMode } from "./history.js";
+import { page } from "./history.js";
 import { CATEGORIES } from "./roster.js";
-import { cycleViewEl, setCalendarReset, setEraPageBack, setTopbar, setTopbarBack } from "./render-pages.js";
-import { eraFig, eraOpen, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, setEraOpen, upTo } from "./era.js";
+import { cycleViewEl, setTopbar } from "./render-pages.js";
+import { eraFig, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, upTo } from "./era.js";
 import { replaceInsights } from "./insights.js";
 import { marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.js";
 
@@ -78,7 +78,7 @@ function renderCycleList(){
     }
     enterEra(era, detail);
     listWrap.hidden = true; detail.hidden = false;
-    setTopbar(era.name, setEraPageBack(back));
+    setTopbar(era.name, (ui.eraPageBack = back));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function back(){
@@ -88,7 +88,7 @@ function renderCycleList(){
   }
   list.addEventListener("click", function(e){ var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open"); if (row) open(parseInt(row.getAttribute("data-era"), 10)); });
   list.addEventListener("keydown", function(e){ if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("era-row")){ e.preventDefault(); open(parseInt(e.target.getAttribute("data-era"), 10)); } });
-  setCalendarReset(function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; setTopbarBack(null); byId("topbar-back").hidden = true; });
+  ui.calendarReset = function(){ leaveEra(); detail.hidden = true; listWrap.hidden = false; ui.topbarBack = null; byId("topbar-back").hidden = true; };
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }
 // ---- A closed cycle, shown on the Cycle tab's own page ----
@@ -146,23 +146,23 @@ function eraCards(era){
 }
 function eraShow(era){
   eraCards(era);
-  if (era && !modeHome){ modeHome = {}; for (var k in pageMode) modeHome[k] = pageMode[k]; }
-  for (var id in pageCycles){ pageCycles[id] = era ? era.name : null; pageMode[id] = era ? "cycles" : modeHome ? modeHome[id] : pageMode[id]; }
+  if (era && !modeHome){ modeHome = {}; for (var k in page.mode) modeHome[k] = page.mode[k]; }
+  for (var id in page.cycles){ page.cycles[id] = era ? era.name : null; page.mode[id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode[id]; }
   if (!era) modeHome = null;
   CATEGORIES.forEach(replaceInsights);
 }
 function enterEra(era, page){
   var ta = byId("today-analysis");
   if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
-  setEraOpen(era); showCycle(era);
+  ui.eraOpen = era; showCycle(era);
   page.appendChild(cycleViewEl); page.appendChild(ta);
   eraShow(era);
 }
 function leaveEra(){
-  if (!eraOpen) return;
+  if (!ui.eraOpen) return;
   var ta = byId("today-analysis");
   taHome.parent.insertBefore(ta, taHome.next); taHome.parent.insertBefore(cycleViewEl, ta);
-  setEraOpen(null); eraShow(null); showCycle(currentEra); repaintLive();
+  ui.eraOpen = null; eraShow(null); showCycle(currentEra); repaintLive();
 }
 /* ---- THE ROSTER AS SERIES ---- */
 // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
@@ -173,11 +173,11 @@ function cycleSymptoms(cyc, years){
     var cells = years.map(function(y){
       if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return { y:y, state:y === calendarTodayY && cyc.ongoing ? "now" : "ahead" };
       var best = null;
-      r.seen.forEach(function(d){
-        if (+d.k.slice(0, 4) !== y) return;
+      for (var d of r.seen){
+        if (+d.k.slice(0, 4) !== y) continue;
         var gap = Math.abs(r.place(d.v) - now);
         if (!best || gap < best.gap) best = { d:d, gap:gap };
-      });
+      }
       if (!best) return { y:y, state:"na" };
       measured = true;
       return { y:y, state:best.gap <= ALIKE ? "on" : "off", best:best.d };

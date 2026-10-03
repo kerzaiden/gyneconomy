@@ -2,7 +2,7 @@ import { monthLabel, qLabel, yearOf } from "./format.js";
 import { addSources } from "./dom.js";
 import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.js";
 import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.js";
-import { buffettHistory, capeHistory, gdpSrc, marketCycles, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth, vixRow } from "./data.js";
+import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.js";
 
 // ---- The season, computed ----
 function slopeOf(vals){
@@ -153,7 +153,7 @@ var MOOD_RISING = [["Despair", 0], ["Depression", 5], ["Hope", 24], ["Optimism",
 var MOOD_FALLING = [["Despair", 0], ["Panic", 9], ["Desperation", 30], ["Fear", 52], ["Denial", 74], ["Anxiety", 91], ["Euphoria", 100]];
 function moodWord(pct, change){
   if (pct == null || change == null) return null;
-  return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(s[1] - pct) < Math.abs(a[1] - pct) ? s : a; })[0];
+  return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s){ return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a; })[0];
 }
 function moodRead(x, before){
   var ago = before[before.length - MOOD_TURN];
@@ -170,7 +170,7 @@ export function moodTrack(){
   return moodCache;
 }
 export function moodToday(){
-  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, vixRow.meter.value);
+  var x = moodAt(sp500MonthlyHistory[sp500MonthlyHistory.length - 1].m, now.vixRow.meter.value);
   return x && moodRead(x, moodTrack().filter(function(p){ return p.m < x.m; }));
 }
 export function cycleStory(c){
@@ -269,8 +269,7 @@ export function eraMarketTotal(cyc){
   return years.length ? cum[years[years.length - 1]] : null;
 }
 
-export function setMoodLists(v){ moodLists = v; return v; }
-export function setMoodCache(v){ moodCache = v; return v; }
+export function forgetMood(){ moodLists = null; moodCache = null; }
 
 export var cycleYtdFraction, nowModel, cpiNow, currentSeason, seasonWhy, currentEra;
 var seasonTrackAll, seasonTrackYears, seasonTrack, regimeByQ, readingNow, cpiDirection, cpiHot, cpiCold, growthSlopeQ, growthTrendNow, gdpLatest;
@@ -314,7 +313,7 @@ export function bootModel(){
     return out;
   })();
   // ---- One cycle, as the cycle view reads it ----
-  cycleYtdFraction = (DATA_COMPILED - new Date(calendarTodayY, 0, 1)) / (new Date(calendarTodayY + 1, 0, 1) - new Date(calendarTodayY, 0, 1));
+  cycleYtdFraction = (+DATA_COMPILED - +new Date(calendarTodayY, 0, 1)) / (+new Date(calendarTodayY + 1, 0, 1) - +new Date(calendarTodayY, 0, 1));
   nowModel = cycleModel(currentEra);
   readingNow = nowModel.reading;
   cpiNow = readingNow.cpiNow;

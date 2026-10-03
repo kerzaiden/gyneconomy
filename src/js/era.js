@@ -16,10 +16,9 @@ export function readDoor(open){
            unit:unit ? unit.textContent.trim() : "", word:word ? word.textContent.trim() : "" };
 }
 export function rosterRows(){ return readingRoster().byId; }
-export var eraOpen = null;
 export function kT(k){
   var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-  return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
+  return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
 }
 export function upTo(list, k){ var t = kT(k) + 1e-6; return list.filter(function(d){ return d.v != null && kT(d.k) <= t; }); }
 export function pairAt(r, k){ var p = r.pair ? upTo(r.pair, k).pop() : null; return p ? p.v : null; }
@@ -56,5 +55,3 @@ export function pastFigure(r, v, second){
   return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
 }
 export function prettyK(r, k){ return r.pre ? r.pre + k : prettyKey(k); }
-
-export function setEraOpen(v){ eraOpen = v; return v; }

@@ -1,21 +1,11 @@
 #!/usr/bin/env node
 const fs = require('fs'), path = require('path');
 
-function source(file) { return fs.readFileSync(path.join(__dirname, '..', 'src/js', file), 'utf8'); }
 function literal(file, name) {
   const [base, member] = name.split('.');
-  if (member) return literal(file, base)[member];
-  const s = source(file), at = s.indexOf('var ' + name + ' = ');
-  if (at < 0) throw new Error('not found: ' + name + ' in ' + file);
-  const c = s[s.indexOf('=', at) + 2];
-  const open = s.indexOf(c === '(' || c === '{' ? c : '[', at);
-  const shut = { '(': ')', '{': '}', '[': ']' }[s[open]];
-  let depth = 0, i = open;
-  for (; i < s.length; i++) {
-    if (s[i] === s[open]) depth++;
-    else if (s[i] === shut) { depth--; if (!depth) break; }
-  }
-  return new Function('return ' + s.slice(open, i + 1))();
+  const v = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src/data', file), 'utf8'))[base];
+  if (v === undefined) throw new Error('not found: ' + name + ' in ' + file);
+  return member ? v[member] : v;
 }
 
 let pass = 0, fail = 0;
@@ -37,26 +27,26 @@ const step = {
 const KNOWN_GAPS = { cpiYoYHistory: '2025-09 -> 2025-11' };
 
 const KEYED = [
-  ['refresh-season.js', 'cpiYoYHistory',           'm', 440, [-5, 20]],
-  ['refresh-season.js', 'gdpQuarterlyYoY',         'q', 150, [-15, 20]],
-  ...['m3', 'y2', 'y5', 'y10', 'y30'].map(k => ['history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
-  ...['s3m', 's2y'].map(k => ['history-fred.js', 'treasuryQuarterly.' + k, 'q', 86, [-5, 6], 3]),
-  ['history-fred.js',  'fedFundsHistory',         'm', 860, [0, 25], 6],
-  ['history-fred.js',  'volatilityHistory',       'm', 480, [5, 100], 6],
-  ['history-fred.js',  'productivityHistory',     'q', 300, [-15, 15], 3],
-  ['history-fred.js',  'sp500MonthlyHistory',     'm', 900, [5, 50000], 6],
-  ['history-fred.js',  'confidenceHistory',       'm', 790, [50, 150], 6],
-  ['history-fred.js',  'grossDebtQuarterly',      'q', 235, [10, 200], 4],
-  ['history-fred.js',  'fiscalHistory.gross',     'y',  85, [10, 200], 2],
-  ['history-fred.js',  'fiscalHistory.held',      'y',  85, [10, 200], 2],
-  ['history-fred.js',  'fiscalHistory.interest',  'y',  84, [0, 10], 2],
-  ['history-fred.js',  'fiscalHistory.budget',    'y',  95, [-40, 10], 2],
-  ['history-fred.js',  'gdpYoYBefore',            'q', 160, [-15, 20]],
-  ['history-fred.js',  'cpiYoYBefore',            'm', 730, [-15, 25]],
-  ['history-fred.js',  'sp500ReturnsBefore',      'y',  62, [-60, 70]],
-  ['history-fred.js',  'gdpGrowthBefore',         'y',  60, [-20, 25]],
-  ['data.js',           'buffettHistory',          'q', 220, [10, 400]],
-  ['data.js',           'capeHistory',             'y',  55, [4, 60]],
+  ['series.json', 'cpiYoYHistory',           'm', 440, [-5, 20]],
+  ['series.json', 'gdpQuarterlyYoY',         'q', 150, [-15, 20]],
+  ...['m3', 'y2', 'y5', 'y10', 'y30'].map(k => ['fred.json',   'treasuryQuarterly.' + k, 'q', 86, [0, 20], 3]),
+  ...['s3m', 's2y'].map(k => ['fred.json',   'treasuryQuarterly.' + k, 'q', 86, [-5, 6], 3]),
+  ['fred.json',   'fedFundsHistory',         'm', 860, [0, 25], 6],
+  ['fred.json',   'volatilityHistory',       'm', 480, [5, 100], 6],
+  ['fred.json',   'productivityHistory',     'q', 300, [-15, 15], 3],
+  ['fred.json',   'sp500MonthlyHistory',     'm', 900, [5, 50000], 6],
+  ['fred.json',   'confidenceHistory',       'm', 790, [50, 150], 6],
+  ['fred.json',   'grossDebtQuarterly',      'q', 235, [10, 200], 4],
+  ['fred.json',   'fiscalHistory.gross',     'y',  85, [10, 200], 2],
+  ['fred.json',   'fiscalHistory.held',      'y',  85, [10, 200], 2],
+  ['fred.json',   'fiscalHistory.interest',  'y',  84, [0, 10], 2],
+  ['fred.json',   'fiscalHistory.budget',    'y',  95, [-40, 10], 2],
+  ['fred.json',   'gdpYoYBefore',            'q', 160, [-15, 20]],
+  ['fred.json',   'cpiYoYBefore',            'm', 730, [-15, 25]],
+  ['fred.json',   'sp500ReturnsBefore',      'y',  62, [-60, 70]],
+  ['fred.json',   'gdpGrowthBefore',         'y',  60, [-20, 25]],
+  ['series.json', 'buffettHistory',          'q', 220, [10, 400]],
+  ['series.json', 'capeHistory',             'y',  55, [4, 60]],
 ];
 const TODAY = new Date();
 const NOW = { m: TODAY.getUTCFullYear() * 12 + TODAY.getUTCMonth() + 1,
@@ -79,21 +69,26 @@ for (const [file, name, key, floor, [lo, hi], lag] of KEYED) {
 }
 
 const BARE = [
-  ['data.js',      'm2Level',        260, [200,   40000]],
-  ['data.js',      'm2vHistory',     260, [900,    2600]],
-  ['data.js',      'dsrHistory',      80, [7,        18]],
-  ['data.js',      'deficitHistory',  78, [-20,      8]],
-  ['data.js',      'unempHistory',   930, [2,        16]]
+  ['series.json', 'm2Level',        260, [200,   40000]],
+  ['series.json', 'm2vHistory',     260, [900,    2600]],
+  ['series.json', 'dsrHistory',      80, [7,        18]],
+  ['series.json', 'deficitHistory',  78, [-20,      8]],
+  ['series.json', 'unempHistory',   930, [2,        16]]
 ];
 for (const [file, name, floor, [lo, hi]] of BARE) {
   const vals = literal(file, name);
-  const raw = Array.isArray(vals) && typeof vals[0] === 'number' ? vals
-            : String(vals).trim().split(/\s+/);
-  atLeast(name + ': length', raw.length, floor);
-  const nums = raw.filter(t => t !== 'x').map(Number);
+  atLeast(name + ': length', vals.length, floor);
+  const nums = vals.filter(v => v != null);
   ok(name + ': every value is a number', nums.every(Number.isFinite), true);
   const min = Math.min.apply(null, nums), max = Math.max.apply(null, nums);
   ok(name + ': stays in band', min >= lo && max <= hi, true);
+}
+
+const JS = fs.readdirSync(path.join(__dirname, '..', 'src/js')).filter(f => f.endsWith('.js')).map(f => fs.readFileSync(path.join(__dirname, '..', 'src/js', f), 'utf8')).join('\n');
+for (const [file, alias] of [['series.json', 'SERIES'], ['fred.json', 'FRED']]) {
+  const keys = Object.keys(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src/data', file), 'utf8'))).sort();
+  const read = [...new Set([...JS.matchAll(new RegExp('\\b' + alias + '\\.(\\w+)', 'g'))].map(m => m[1]))].sort();
+  ok(file + ': the code reads every figure in it, and no other', read.join(' '), keys.join(' '));
 }
 
 console.log('\n' + pass + '/' + (pass + fail) + ' passed');

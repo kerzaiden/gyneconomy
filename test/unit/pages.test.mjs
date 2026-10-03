@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
 import { sheetRenderers } from '../../src/js/render-core.js';
 import { ROSTER } from '../../src/js/roster.js';
-import { HIST_HEAD } from '../../src/js/history.js';
+import { page } from '../../src/js/history.js';
 import { histFrame } from '../../src/js/charts.js';
 import { cpiHistoryChart, gdpHistoryChart, unempHistoryChart, fedFundsHistoryChart, householdsChart, m2GrowthChart, deficitChart, velocityHistoryChart, desireHistoryChart } from '../../src/js/history-charts.js';
 
@@ -14,7 +14,7 @@ const WIDTHS = [320, 390, 768, 1280];
 test('every reading in the roster has a page that draws it', () => {
   for (const R of ROSTER) {
     assert.equal(typeof sheetRenderers[R.id], 'function', R.name + ' has no renderer');
-    assert.equal(HIST_HEAD[R.hk || R.id].title, R.head, R.name + ' head');
+    assert.equal(page.head[R.hk || R.id].title, R.head, R.name + ' head');
   }
 });
 

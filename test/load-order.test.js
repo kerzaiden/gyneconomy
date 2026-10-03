@@ -27,5 +27,10 @@ ok('a boot that reads what a later boot sets is caught', booted(['export var b;\
 ok('the same boots in the other order pass', booted(['export var b;\nexport function bootA(){ a = b; }', 'export function bootB(){ b = 1; }'], ['bootB', 'bootA']), []);
 ok('a boot nobody calls does not run', booted(['export function bootA(){ a = b; }', 'var b;'], []), []);
 
+ok('a store property read before anything sets it is caught', late('var page = { mode: undefined };', 'var a = page.mode;', 'page.mode = 1;'), ['page.mode']);
+ok('a store property set before it is read passes', late('var page = { mode: undefined };', 'page.mode = 1;', 'var a = page.mode;'), []);
+ok('a store property given a value where the store is declared is set', late('var page = { mode: "years" };', 'var a = page.mode;'), []);
+ok('a store read in a called function is caught', booted(['export var page = { head: undefined };\nexport function bootA(){ show(); }\nfunction show(){ return page.head.x; }', 'export function bootB(){ page.head = {}; }'], ['bootA', 'bootB']), ['page.head']);
+ok('an object holding functions is not a store', late('var o = { f: function(){}, g: undefined };', 'var a = o.g;'), []);
 console.log('\n' + pass + '/' + (pass + fail) + ' passed');
 process.exit(fail ? 1 : 0);

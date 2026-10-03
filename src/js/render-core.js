@@ -1,11 +1,11 @@
 import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock } from "./format.js";
-import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl } from "./dom.js";
+import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl, ui } from "./dom.js";
 import { GYN } from "./live.js";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.js";
 import { dataCompiledLabel } from "./refresh-season.js";
-import { curveAsOf, fedFunds, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory, yieldCurve } from "./data.js";
+import { curveAsOf, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.js";
 import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.js";
-import { attachHistory, headPickRow, HIST_HEAD, HIST_NOTE, histControls, histHead, hyWindowFrom, PAGE_STOPS, pageCycle, pageRange, qWindowFrom, rangeBar, timelineFor } from "./history.js";
+import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, hyWindowFrom, page, pageCycle, qWindowFrom, rangeBar, timelineFor } from "./history.js";
 import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.js";
 import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.js";
 import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
@@ -52,7 +52,7 @@ function wireDetailModal(){
     var chip = e.target.closest && e.target.closest('.timing[data-ind-tab]'); if (!chip) return;
     e.preventDefault(); e.stopPropagation();
     close();
-    if (openIndicatorsPage) openIndicatorsPage(chip.getAttribute('data-ind-tab'));
+    if (ui.openIndicatorsPage) ui.openIndicatorsPage(chip.getAttribute('data-ind-tab'));
   });
 }
 export var detailClose = null;
@@ -110,7 +110,6 @@ function headHtml(ind, noMark){
     rosterFor(ind).mark() + '</span></span>';
   return '<div class="card-head">' + mk + '<div class="card-titles"><span class="body-term">' + ind.bodyTerm + '</span><span class="econ-term">' + ind.econTerm + '</span></div><span class="tag ' + ind.tag.state + '">' + ind.tag.text + '</span></div>';
 }
-export var heldHighlights = "";
 export function cardDetailHtml(ind, opts){
   opts = opts || {};
   var facts = [].concat(ind.facts || [], ind.aux || []);
@@ -128,7 +127,7 @@ export function cardDetailHtml(ind, opts){
     if (!lede && !figs) return "";
     var block = '<section class="highlights"><div class="hi-head">Insights</div>' +
       (lede ? '<div class="hi-card"><p>' + lede + '</p></div>' : "") + figs + '</section>';
-    if (opts.deferHighlights){ heldHighlights = block; return ""; }
+    if (opts.deferHighlights){ ui.heldHighlights = block; return ""; }
     return block;
   })() +
     (function(){
@@ -141,7 +140,7 @@ export function cardDetailHtml(ind, opts){
 var CURVE_KEY = { "3m":"3M", "2y":"2Y", "5y":"5Y", "10y":"10Y", "30y":"30Y" };
 function latestYieldPoint(){
   var iso = curveAsOf(), mm = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
-  var at = function(k){ var h = yieldCurve.filter(function(d){ return d.m === k; })[0]; return h && h.y != null ? h.y : null; };
+  var at = function(k){ var h = now.yieldCurve.filter(function(d){ return d.m === k; })[0]; return h && h.y != null ? h.y : null; };
   var v = {}, all = !!mm;
   Object.keys(CURVE_KEY).forEach(function(c){ v[c] = at(CURVE_KEY[c]); if (v[c] == null) all = false; });
   if (!all) return null;
@@ -180,7 +179,7 @@ function registerFlowPages(){
   function drawVelocityRecord(){
     var host = byId("pulse-record");
     if (!host || !host.clientWidth) return;
-    var key = pageRange["pulse-range"];
+    var key = page.range["pulse-range"];
     var pulCyc = pageCycle("pulse-range");
     var pulIdx = pulCyc ? cycleQtrIdx(M2V_FROM_YEAR, pulCyc, m2vHistory.length) : null;
     var bar = put("pulse-timeline", histControls("pulse-range",
@@ -196,7 +195,7 @@ function registerFlowPages(){
   function drawM2Record(){
     var host = byId("m2-record");
     if (!host || !host.clientWidth) return;
-    var len = m2Yoy.length - 4, key = pageRange["volume-range"];
+    var len = m2Yoy.length - 4, key = page.range["volume-range"];
     var volCyc = pageCycle("volume-range");
     var volIdx = volCyc ? cycleQtrIdx(M2_FROM_YEAR + 1, volCyc, len) : null;
     var bar = put("volume-timeline", histControls("volume-range",
@@ -212,12 +211,12 @@ function registerFlowPages(){
   function drawDesireRecord(){
     var host = byId("desire-record");
     if (!host || !host.clientWidth) return;
-    var from = hyWindowFrom(pageRange["desire-range"]);
+    var from = hyWindowFrom(page.range["desire-range"]);
     var win = hyOas.slice(from);
     var bar = byId("desire-timeline");
     if (bar) bar.innerHTML = '<div class="hist-controls">' +
-      rangeBar("desire-range", timelineFor({ depth:3, stops:PAGE_STOPS["desire-range"] }),
-               pageRange["desire-range"]) + '</div>';
+      rangeBar("desire-range", timelineFor({ depth:3, stops:page.stops["desire-range"] }),
+               page.range["desire-range"]) + '</div>';
     host.innerHTML = desireHistoryChart(host.clientWidth, from);
     attachHistory(host, "desire-hist-tooltip", "desireHistoryChart");
     put("desire-trend", trendPill(trendOf(win, "points", "day"), null, true,
@@ -231,7 +230,7 @@ function registerFlowPages(){
   })();
 }
 function renderPressureRow(){
-  var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+  var y10 = (now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
   put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
     '<span class="unit">10-year Treasury</span>');
   var rowSay = byId("subj-say-pressure");
@@ -290,7 +289,7 @@ function ylmFitLine(svg, maturities, ylmFrom, ylmTo, x, y, W, padL, padR){
       x(ylmFrom), x(ylmTo - 1), y, W, padL, padR));
 }
 function pressureHead(maturities, mat, title, note){
-  var H = HIST_HEAD["pressure-range"], spread = pressureView === "spread";
+  var H = page.head["pressure-range"], spread = pressureView === "spread";
   H.title = spread ? spreadLabel(spreadPick) + " Treasury Spread" : title;
   H.menu = function(){
     return [
@@ -359,7 +358,7 @@ function renderPressurePage(){
 
 
   function render(){
-    var shell = svg.parentNode;
+    var shell = svg.parentElement;
     F = histFrame(shell && shell.clientWidth); W = F.W; H = F.H;
     innerW = W - padL - padR; innerH = H - padT - padB;
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
@@ -395,7 +394,7 @@ function renderPressurePage(){
     var hit = el("rect", {x:padL, y:0, width:innerW, height:H, class:"hero-hit"});
     svg.appendChild(hit);
 
-    var shell = byId("ylm-shell");
+    shell = byId("ylm-shell");
     attachHistory(shell, "ylm-tooltip", "ylm");
   }
 
@@ -417,7 +416,7 @@ function renderPressurePage(){
     var ylmY0 = parseInt(quarters[0].slice(0, 4), 10);
     var ylmCyc = pageCycle("pressure-range", ylmY0);
     var ylmSpan = ylmCyc ? cycleSlice(maturities[0].data, ylmCyc) : null;
-    ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, pageRange["pressure-range"]);
+    ylmFrom = ylmSpan ? ylmSpan[0] : qWindowFrom(quarters.length, page.range["pressure-range"]);
     ylmTo   = ylmSpan ? ylmSpan[1] : quarters.length;
     put("pressure-timeline", histControls("pressure-range",
       { depth:Math.floor(quarters.length / 4) }, ylmY0));
@@ -432,9 +431,9 @@ function renderPressurePage(){
   }
   function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())); }
   function drawPressure(){
-    var spread = pressureView === "spread" && drawSpreadView;
+    var spread = pressureView === "spread" && ui.drawSpreadView;
     showPressureView(!!spread);
-    if (spread) drawSpreadView(); else { drawYlm(); renderPressureInsights(); }
+    if (spread) ui.drawSpreadView(); else { drawYlm(); renderPressureInsights(); }
     drawPressureHead();
   }
   drawsPage("sheet-sign-pressure", drawPressure);
@@ -446,7 +445,7 @@ function renderPressurePage(){
 /* ---- Pressure's Insights ---- */
 function renderPressureInsights(){
   var ins = byId("pressure-insights"); if (!ins || !t10yYieldHistory.length) return;
-  var y10 = (yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
+  var y10 = (now.yieldCurve.filter(function(d){ return d.m === "10Y"; })[0] || {}).y;
   var seen = t10yYieldHistory.filter(function(d){ return d.v != null; });
   var hi = seen.reduce(function(a, d){ return d.v > a.v ? d : a; });
   var lo = seen.reduce(function(a, d){ return d.v < a.v ? d : a; });
@@ -462,7 +461,7 @@ function renderPressureInsights(){
     "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " +
     "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " +
     "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" +
-    (fedFunds && fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
+    (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
     "; this is that rate as the market re-prices it ten years out" +
     (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
   cards.push(hiCard("Pressure on the borrower", "",
@@ -485,13 +484,12 @@ export function marketPeek(y, from){
   return w && peekOf("sheet-sign-market", { value:fmtSigned(v, 1) + "%", word:w.text, state:w.state, colBase:0, colRule:true,
     cols:sp500Years.filter(function(d){ return d.y >= from && d.y <= y; }).map(function(d){ return d.v; }), colClass:marketCol });
 }
-export var drawSpreadWindow = null, spreadPick = "3m", pressureView = "yield", drawSpreadView = null;
+export var spreadPick = "3m", pressureView = "yield";
 var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
 function spreadLabel(key){
   var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
   return r ? r.label : HZN_SPREADS[0].label;
 }
-var openIndicatorsPage = null;
 function peekArt(src){ return src.querySelector(".peek-chart"); }
 export function catItem(src, key){
   var open = src.getAttribute("data-open");
@@ -554,11 +552,6 @@ export function gdpPeek(r, gq){
     word:growthShownCap(r.regime), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
     colClass:function(v, i){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
 }
-
-export function setHeldHighlights(v){ heldHighlights = v; return v; }
-export function setOpenIndicatorsPage(v){ openIndicatorsPage = v; return v; }
-export function setDrawSpreadWindow(v){ drawSpreadWindow = v; return v; }
-export function setDrawSpreadView(v){ drawSpreadView = v; return v; }
 
 export function bootRenderCore(){
   GYN.step("wireDetailModal", wireDetailModal, "wire");

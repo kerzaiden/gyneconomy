@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-const { damodaranReturns, yoyMonthly, earlyBlock, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { damodaranReturns, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -52,8 +53,8 @@ ok('a quarter wholly inside the gap is null',
    withoutGap(qm(g30), g30, ['2002-03', '2006-01']).map(x => [x.q, x.v]), [['2005 Q4', null], ['2006 Q1', 4.6]]);
 
 ok('the treasury block is written with its partial mark',
-   /treasuryQuarterly = \{\s*y10:\[\{q:"2026 Q3",v:4\.7,partial:true\}\]/.test(emit([], [], null,
-     { y10: [{ q: '2026 Q3', v: 4.7, partial: true }] })), true);
+   J(emit([], [], null, { y10: [{ q: '2026 Q3', v: 4.7, partial: true }, { q: '2026 Q2', v: 4.6, partial: false }] })).treasuryQuarterly,
+   { y10: [{ q: '2026 Q3', v: 4.7, partial: true }, { q: '2026 Q2', v: 4.6 }] });
 
 ok('a fiscal-year series keeps its years',
    fiscalYears([d('1946-01-01', 106.3), d('2007-01-01', 34.79)], 0, 300),
@@ -64,14 +65,13 @@ ok('a value outside the band is left out, not clamped',
    fiscalYears([d('1946-01-01', 999)], 0, 300), []);
 throws('a date that is not 1 January is refused', () => fiscalYears([d('1946-10-01', 1)], 0, 300), /not a fiscal-year date/);
 
-ok('the generated file carries no comment',
-   /\/\*|\/\//.test(emit([], [], { gross: [], held: [], interest: [], budget: [], grossQ: [] },
-     { y10: [{ q: '2026 Q3', v: 4.7 }] })), false);
+ok('the generated file is JSON, one series to a line',
+   emit([], [], { gross: [], held: [], interest: [], budget: [], grossQ: [] }, { y10: [{ q: '2026 Q3', v: 4.7 }] }).split('\n').length,
+   Object.keys(J(emit([], [], { gross: [], held: [], interest: [], budget: [], grossQ: [] }, { y10: [{ q: '2026 Q3', v: 4.7 }] }))).length + 3);
 ok('without fiscal data, no fiscal block is written',
-   /fiscalHistory/.test(emit([], [])), false);
+   'fiscalHistory' in J(emit([], [])), false);
 ok('with fiscal data, the block is written',
-   /var fiscalHistory = \{\s*gross:\[\{y:1946,v:118\}\]/.test(emit([], [],
-     { gross: [{ y: 1946, v: 118 }], held: [], interest: [], budget: [], grossQ: [] })), true);
+   J(emit([], [], { gross: [{ y: 1946, v: 118 }], held: [], interest: [], budget: [], grossQ: [] })).fiscalHistory.gross, [{ y: 1946, v: 118 }]);
 
 ok('each quarter start month names its quarter',
    quarterly([d('1990-01-01', 1), d('1990-04-01', 2), d('1990-07-01', 3), d('1990-10-01', 4)], -100, 100),
@@ -93,7 +93,7 @@ ok('year over year compares a quarter with the same quarter a year before',
 ok('a quarter without its year-earlier twin is left out',
    yoyQuarterly([{ q: '1947 Q1', v: 30 }, { q: '1948 Q2', v: 31 }], -20, 30), []);
 ok('with productivity, its series is written',
-   /var productivityHistory = \[\{q:"2026 Q2",v:2\.2\}\]/.test(emit([], [], null, null, [{ q: '2026 Q2', v: 2.2 }])), true);
+   J(emit([], [], null, null, [{ q: '2026 Q2', v: 2.2 }])).productivityHistory, [{ q: '2026 Q2', v: 2.2 }]);
 const sdmxSeries = (key, obs) => '<generic:Series><generic:SeriesKey><generic:Value id="MEASURE" value="' + key + '" /></generic:SeriesKey>' +
   obs.map(([m, v]) => '<generic:Obs><generic:ObsDimension value="' + m + '" /><generic:ObsValue value="' + v + '" /></generic:Obs>').join('') + '</generic:Series>';
 ok('the OECD reply is read month by month, in month order',
@@ -103,10 +103,12 @@ ok('two series in one reply is refused, not guessed between',
    (() => { try { oecdRows(sdmxSeries('CCICP', [['2024-01', '98.7']]) + sdmxSeries('BCICP', [['2024-01', '99']])); return 'kept'; }
             catch (e) { return /more than one series.*BCICP/.test(e.message); } })(), true);
 ok('consumer confidence is written after the S&P 500, and the early seasons last',
-   /export var sp500MonthlyHistory = \[\];\nexport var confidenceHistory = \[\{m:"2026-06",v:98\.7\}\];\nexport var gdpYoYBefore = \[\];\nexport var cpiYoYBefore = \[\];\nexport var sp500ReturnsBefore = \{\};\nexport var gdpGrowthBefore = \{\};\n$/.test(emit([], [], null, null, null, [], [{ m: '2026-06', v: 98.7 }])), true);
+   Object.keys(J(emit([], [], null, null, null, [], [{ m: '2026-06', v: 98.7 }]))),
+   ['fedFundsHistory', 'volatilityHistory', 'sp500MonthlyHistory', 'confidenceHistory', 'gdpYoYBefore', 'cpiYoYBefore', 'sp500ReturnsBefore', 'gdpGrowthBefore']);
 ok('the early seasons are written as the app reads them',
-   earlyBlock({ gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }),
-   'export var gdpYoYBefore = [{q:"1948 Q1",v:4.21}];\nexport var cpiYoYBefore = [{m:"1948-01",v:10.24}];\nexport var sp500ReturnsBefore = {1948:5.7,1949:18.3};\nexport var gdpGrowthBefore = {1948:4.1};\n');
+   (({ gdpYoYBefore, cpiYoYBefore, sp500ReturnsBefore, gdpGrowthBefore }) => ({ gdpYoYBefore, cpiYoYBefore, sp500ReturnsBefore, gdpGrowthBefore }))(J(emit([], [], null, null, null, null, null,
+     { gdp: [{ q: '1948 Q1', v: 4.21 }], cpi: [{ m: '1948-01', v: 10.24 }], returns: { 1948: 5.7, 1949: 18.3 }, growth: { 1948: 4.1 } }))),
+   { gdpYoYBefore: [{ q: '1948 Q1', v: 4.21 }], cpiYoYBefore: [{ m: '1948-01', v: 10.24 }], sp500ReturnsBefore: { 1948: 5.7, 1949: 18.3 }, gdpGrowthBefore: { 1948: 4.1 } });
 const dTable = '<table><tr><th>Year</th><th>S&amp;P 500</th></tr><tr><td>1947</td><td>5.20%</td></tr>' +
   '<tr><td>1948</td><td>5.70%</td><td>1.0%</td></tr><tr><td> 1949 </td><td><b>18.30%</b></td></tr><tr><td>1950</td><td>30.81%</td></tr></table>';
 ok('the Damodaran table is read year by year inside the window', damodaranReturns(dTable, 1948, 1950), { 1948: 5.7, 1949: 18.3 });
@@ -128,8 +130,8 @@ ok('the VIX starts where the VXO hands over',
    [{ m: '1987-10', v: 150.19 }, { m: '1989-12', v: 23 }, { m: '1990-01', v: 17.24 }]);
 ok('the join is January 1990, the first month of the VIX', VOL_JOIN, '1990-01');
 ok('volatility is written after the Fed funds rate, and the fear curve no longer is',
-   [/^export var fedFundsHistory = \[\];\nexport var volatilityHistory = \[\{m:"1990-01",v:17\.24\}\];/.test(emit([], [{ m: '1990-01', v: 17.24 }])),
-    /fearCurve/.test(emit([], []))], [true, false]);
+   [Object.keys(J(emit([], [{ m: '1990-01', v: 17.24 }]))).slice(0, 2).join(' '), J(emit([], [{ m: '1990-01', v: 17.24 }])).volatilityHistory, 'fearCurve' in J(emit([], []))],
+   ['fedFundsHistory volatilityHistory', [{ m: '1990-01', v: 17.24 }], false]);
 ok('band rejects NaN', band(NaN, 0, 25), false);
 ok('band is inclusive at both ends', [band(0, 0, 25), band(25, 0, 25)], [true, true]);
 

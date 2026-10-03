@@ -1,11 +1,10 @@
 import { facts, fmtSigned, hiCard, highlightsHtml, lede, monthLabel, srcBlock } from "./format.js";
-import { moreRow } from "./dom.js";
+import { moreRow, ui } from "./dom.js";
 import { calendarTodayY, cpiYoYHistory, cycleNowNote, wheelMeta } from "./refresh-season.js";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.js";
 import { currentEra, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.js";
 import { indOf } from "./readings.js";
 import { ROSTER_BY } from "./roster.js";
-import { eraOpen } from "./era.js";
 
 function insightCirculation(){
   var vel = m2vHistory, n = vel.length;
@@ -123,13 +122,13 @@ function moodCallout(x, y, lines, from, to){
     lines.map(function(t, i){ return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + '</text>'; }).join("");
 }
 function moodCycleSvg(now){
-  var pts = MOOD_CHART.map(function(s){ return [s[1], s[2]]; });
+  var pts = MOOD_CHART.map(function(s){ return [+s[1], +s[2]]; });
   var out = ['<path class="mood-line" d="' + curvePath([[156, 322]].concat(pts, [[995, 272]])) + '"/>',
     moodCallout(362, 430, ["Point of maximum", "financial risk"], 400, 160), moodCallout(745, 195, ["Point of maximum", "financial opportunity"], 245, 452)];
   MOOD_CHART.forEach(function(s){
     var on = s[0] === now ? " now" : "";
     out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
-    out.push('<text class="mood-lab' + on + '" x="' + (s[1] + s[4]) + '" y="' + (s[2] + s[5]) + '" text-anchor="' + s[6] + '">' + s[0].toUpperCase() + '</text>');
+    out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + '</text>');
   });
   return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' +
     (now ? ", with today at " + now : "") + '.">' + out.join("") + '</svg>';
@@ -150,7 +149,7 @@ function moodFigures(d){
     ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
 }
 function moodCard(d){
-  var c = eraOpen || currentEra, s = cycleStory(c);
+  var c = ui.eraOpen || currentEra, s = cycleStory(c);
   return hiCard("She\u2019s in " + d.word, "", s ? c.name + ", " + c.from + "\u2013" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
 }
 function insightMood(){

@@ -50,11 +50,19 @@ function analyze(mods, bootOrder) {
     else if (p.type === 'RestElement') pattern(p.argument, into);
   }
 
-  const moduleVars = new Set(), moduleFns = new Map();
+  const moduleVars = new Set(), moduleFns = new Map(), stores = new Set();
+  const plain = v => !isFn(v) && v.type !== 'CallExpression' && v.type !== 'NewExpression';
   top.forEach(s => {
     if (s.type === 'FunctionDeclaration') moduleFns.set(s.id.name, s);
     else declared(s, moduleVars);
+    if (s.type === 'VariableDeclaration') s.declarations.forEach(d => {
+      if (d.id.type !== 'Identifier' || !d.init || d.init.type !== 'ObjectExpression') return;
+      if (!d.init.properties.every(p => p.type === 'Property' && !p.computed && p.key.type === 'Identifier' && plain(p.value))) return;
+      stores.add(d.id.name);
+      d.init.properties.forEach(p => moduleVars.add(d.id.name + '.' + p.key.name));
+    });
   });
+  const storeKey = n => n && n.type === 'MemberExpression' && !n.computed && n.object.type === 'Identifier' && stores.has(n.object.name) ? n.object.name + '.' + n.property.name : null;
 
   const RUNS_NOW = new Set(['forEach', 'map', 'filter', 'reduce', 'reduceRight', 'some', 'every', 'sort', 'find', 'findIndex', 'flatMap']);
 
@@ -86,6 +94,11 @@ function analyze(mods, bootOrder) {
       if (n.type === 'UnaryExpression' && n.operator === 'typeof' && n.argument.type === 'Identifier') return;
       if (n.type === 'AssignmentExpression' || n.type === 'UpdateExpression') {
         const t = n.type === 'AssignmentExpression' ? n.left : n.argument;
+        const sk = storeKey(t);
+        if (sk && !local(t.object.name) && moduleVars.has(sk)) {
+          if (n.type === 'UpdateExpression' || n.operator !== '=') read({ name: sk, start: t.start });
+          visit(n.right); out.writes.add(sk); return;
+        }
         if (t.type === 'Identifier') {
           if (!local(t.name) && moduleVars.has(t.name)) {
             if (n.type === 'UpdateExpression' || n.operator !== '=') read(t);
@@ -93,9 +106,19 @@ function analyze(mods, bootOrder) {
           }
         }
       }
-      if (n.type === 'VariableDeclarator') { visit(n.init); if (scopes.length === 0 && n.init) pattern(n.id, out.writes); return; }
+      if (n.type === 'VariableDeclarator') {
+        visit(n.init);
+        if (scopes.length === 0 && n.init) pattern(n.id, out.writes);
+        if (scopes.length === 0 && n.id.type === 'Identifier' && stores.has(n.id.name))
+          n.init.properties.forEach(p => { if (!(p.value.type === 'Identifier' && p.value.name === 'undefined')) out.writes.add(n.id.name + '.' + p.key.name); });
+        return;
+      }
       if (n.type === 'Identifier') { read(n, parent); return; }
-      if (n.type === 'MemberExpression') { visit(n.object, n); if (n.computed) visit(n.property, n); return; }
+      if (n.type === 'MemberExpression') {
+        const sk = storeKey(n);
+        if (sk && !local(n.object.name) && moduleVars.has(sk)) read({ name: sk, start: n.start });
+        visit(n.object, n); if (n.computed) visit(n.property, n); return;
+      }
       if (n.type === 'Property') { if (n.computed) visit(n.key, n); visit(n.value, n); return; }
       if (n.type === 'LabeledStatement' || n.type === 'BreakStatement' || n.type === 'ContinueStatement') { if (n.body) visit(n.body, n); return; }
       for (const k in n) {

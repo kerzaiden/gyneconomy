@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "skipLibCheck": true
+  },
+  "include": ["src/js/*.js", "src/globals.d.ts"]
+}

@@ -127,7 +127,7 @@ function audit(files, html, css) {
 if (require.main === module) {
   const dir = path.join(ROOT, 'src', 'js');
   const files = {};
-  fs.readdirSync(dir).filter(f => f.endsWith('.js') && f !== 'history-fred.js')
+  fs.readdirSync(dir).filter(f => f.endsWith('.js'))
     .forEach(f => { files[f] = fs.readFileSync(path.join(dir, f), 'utf8'); });
   const out = audit(files, fs.readFileSync(path.join(ROOT, 'src', 'page-body.html'), 'utf8'),
                     fs.readFileSync(path.join(ROOT, 'src', 'styles.css'), 'utf8'));

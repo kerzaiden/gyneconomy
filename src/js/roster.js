@@ -4,8 +4,8 @@ import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondS
 import { peekCard } from "./charts.js";
 import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.js";
 import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.js";
-import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, fedFunds, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.js";
-import { setHIST_HEAD, setPAGE_STOPS, setPageCycles, setPageMode, setPageRange } from "./history.js";
+import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.js";
+import { page } from "./history.js";
 import { indPeriod, vixPct } from "./readings.js";
 
 // ---- The roster: every reading, declared once ----
@@ -90,7 +90,7 @@ export function bootRoster(){
       head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
     { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
-      when:function(){ return fedFunds.asOf; }, live:["fedFunds"] },
+      when:function(){ return now.fedFunds.asOf; }, live:["fedFunds"] },
     { id:"sheet-sign-pressure", name:"Pressure", cat:"circulation", timing:"leading", mark:gaugeSvg, door:"subject", hk:"pressure-range",
       head:"", stops:["5y", "10y", "max"], hist:{ s:t10yYieldHistory, k:"q" }, rule:true, when:function(){ return isoLabel(curveAsOf()); }, live:["yieldCurve"] },
     { id:"sheet-sign-pulse", name:"Pulse", cat:"circulation", timing:"coincident", mark:ecgSvg, door:"pair", term:"Pulse", hk:"pulse-range",
@@ -132,11 +132,11 @@ export function bootRoster(){
       mid:PRODUCTIVITY_SLOWDOWN, when:lastDate }
   ];
   ROSTER.forEach(function(R){ ROSTER_BY[R.id] = R; });
-  setPageMode(pageState(function(R){ return R.cycles === false ? undefined : "cycles"; }));
-  setPageCycles(pageState(function(R){ return R.cycles === false ? undefined : null; }));
-  setPageRange(pageState(function(R){ return R.range || "10y"; }));
-  setPAGE_STOPS(pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; }));
-  setHIST_HEAD(pageState(function(R){ return { mark:R.mark, title:R.head }; }));
+  page.mode = pageState(function(R){ return R.cycles === false ? undefined : "cycles"; });
+  page.cycles = pageState(function(R){ return R.cycles === false ? undefined : null; });
+  page.range = pageState(function(R){ return R.range || "10y"; });
+  page.stops = pageState(function(R){ return R.stops || ["5y", "10y", "25y", "max"]; });
+  page.head = pageState(function(R){ return { mark:R.mark, title:R.head }; });
   GYN.step("checkRoster", checkRoster, "check");
   checkRoster();
   GYN.ROSTER = ROSTER;
