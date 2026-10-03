@@ -434,6 +434,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   seasons since 1989 against 62). It moved today from Summer to Autumn–Stagflation (since Q3 2025), changed 33
   of 147 past quarters, and took the Summers from 8 to 11. The inputs sit on screen so the reader can check the
   call. (V221, Sep 18, 2026; V687)
+- **The season model's flat tolerances (±0.025 pp a quarter, ±0.02 pp a month, ±0.1 pp a year before 1949) are
+  Keren's call under the rule that cut-offs come from convention or the record.** A 95% significance test on the
+  same slopes was measured first and would have moved 123 of 382 quarters: it cannot run on the two annual figures
+  before 1950 (1932 read Spring), and eight quarters seldom clear 95% until a turn is well under way (2020 Q2 read
+  Spring). The test asks whether a trend is certain; a season has to say it has turned before certainty arrives.
+  Keren: "Keep mine". (1.2.2; the full list is in code-review/trends-1.3.0.md in the project files)
 - **In expansion, hot is Summer, and otherwise heating is Spring–Reflation and cooling is Spring–Deflation. In
   contraction, cold is Winter, and otherwise cooling is Autumn–Disinflation and heating or steady is
   Autumn–Stagflation, within or above the range.** Keren's season table. (undated, Sep 18–19, 2026)
@@ -577,8 +583,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   the record.** It was typed by hand on each row. (1.2.0)
 - **Still to derive:** CAPE's five bands (0.75 / 0.95 / 1.15 / 1.60 × fair value) wait for percentiles of
   Shiller's monthly series since 1871, which the container cannot reach; Activity's 3.5–5% band is round figures
-  either side of the CBO's noncyclical rate; Horizon's "Guarded" (a change under 0.05) and the trend pill's
-  "flat" go with the trend test (1.3.0). (1.2.0)
+  either side of the CBO's noncyclical rate; Horizon's "Guarded" (a change under 0.05), the trend pill's
+  "flat" (a change under a tenth of the window's range) and a cycle's growth trend (±0.1 pp a year) are hand-set
+  and wait on their own decision. (1.2.0, 1.2.2)
 - **A reading's verdict word and the band or line drawn for it come from the same threshold, so they can never
   disagree.** The word comes off the band's own ends (Volatility) or the line the word already uses
   (Households' bill at its own mean). (V464, V492)

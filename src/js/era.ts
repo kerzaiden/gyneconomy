@@ -44,7 +44,7 @@ function rosterRow(R: RosterRow): EraRow {
   };
   r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
   if (R.pair) r.pair = keyed(R.pair);
-  if (R.peek) r.peek = R.peek === "pair" ? r.pair : keyed(R.peek);
+  if (R.peek) r.peek = r.pair;
   return r;
 }
 var __roster: EraRoster | null = null;

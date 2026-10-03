@@ -63,7 +63,7 @@ function landLive(name: string, value: unknown, d: LiveDoc | null | undefined){
     return true;
   } catch (e) { liveApplied[name] = was; liveAsOf[name] = asOf; return false; }
 }
-/* ---- Repaint ---- */
+// ---- Repaint ----
 export function repaintLive(){
   LIVE_NAMES.forEach(function(n){
     (painters[n] || []).forEach(function(fn){ try { fn(); } catch (e) { if (window.console) console.warn("repaint " + n + " failed", e); } });

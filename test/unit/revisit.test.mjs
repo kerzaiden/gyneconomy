@@ -14,7 +14,7 @@ globalThis.gynCache = {
 const { errors, window } = await import('./dom.mjs');
 const { coincident: after } = await import('../../src/js/readings.ts');
 const { liveApplied, refreshLiveData } = await import('../../src/js/live.ts');
-const { capeHistory, syncCapeHistory } = await import('../../src/js/data.ts');
+const { capeHistory, syncCapeHistory, fileRow } = await import('../../src/js/data.ts');
 
 test('a cached coincident document keeps the page each row draws', () => {
   assert.equal(liveApplied.coincident, JSON.stringify(globalThis.gynCache.coincident));
@@ -31,6 +31,7 @@ test('every live scalar knows its file date, so an older cached one is refused',
 });
 
 test('a CAPE figure from a new year adds that year instead of overwriting the last', () => {
+  assert.equal(fileRow('cape').meter.value, 30.1, 'the cached figure is applied at load');
   syncCapeHistory();
   assert.equal(capeAsOf(), '2027-01-15');
   assert.deepEqual(capeHistory.slice(-2), [{ y: 2026, v: 39.65 }, { y: 2027, v: 30.1 }]);

@@ -42,7 +42,7 @@ export function trendPill(t: Trend, key?: string | null, toggles?: boolean, word
     'aria-label="Show the trend on the chart">' + inner + '</button>';
 }
 // ---- Insights: what the series says about today, computed ----
-/* ---- The record rows ---- */
+// ---- The record rows ----
 // ---- The cycle average component ----
 // ---- The inner pages' charts ----
 function yearsAcross(all: { y?: number }[]){ var a = all[0].y, b = all[all.length - 1].y; if (a == null || b == null) throw new Error("a dated chart has an undated end"); return windowYears(a, b, 5); }
@@ -75,7 +75,7 @@ export function fitGroup(o: FitOpts, x0: number, x1: number, y: YScale, W: numbe
     lab(v1, W - padR - 1, y1, down, "end") +
   '</g>';
 }
-/* ---- The history component's axes ---- */
+// ---- The history component's axes ----
 export function vGrid(x: number | string, top: number | string, bot: number | string){
   return '<path class="bt-vgrid" d="M' + (+x).toFixed(1) + ',' + (+top).toFixed(1) +
          'L' + (+x).toFixed(1) + ',' + (+bot).toFixed(1) + '"/>';

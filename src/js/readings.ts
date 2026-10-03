@@ -557,7 +557,6 @@ export function indPeriod(R: { term?: string }){
   return m ? m[2] : "";
 }
 
-
 export var productivityReading: ProductivityReading, confidenceRecord: SeriesRecord<MonthPoint>, confidenceReading: ConfidenceReading, desireRecord: SeriesRecord<MonthPoint>, desireReading: DesireReading, premiumRecord: SeriesRecord<MonthPoint>, premiumReading: PremiumReading, tempInfo: string, horizonRead: HorizonRead, householdsNow: { word: string; state: State }, marketReading: MarketReading;
 var productivityRecord: SeriesRecord<QuarterPoint>, gdpNowQ: QuarterPoint, HZN_METERS: Record<string, { min: number; max: number }>;
 
@@ -634,7 +633,6 @@ function deriveFeelingReadings(){
   })(premiumRecord);
 }
 export function bootReadings(){
-  /* ---- Productivity growth is not in this panel ---- */
   productivityRecord = (function(){
     var h = productivityHistory;
     return { now:h[h.length - 1], lo:h.reduce(function(a, d){ return d.v < a.v ? d : a; }),
@@ -742,7 +740,7 @@ function periodIso(sub: string){
   return q ? q[2] + "-" + ("0" + ((+q[1] - 1) * 3 + 1)).slice(-2) + "-01" : m && i >= 0 ? m[2] + "-" + ("0" + (i + 1)).slice(-2) + "-01" : "";
 }
 export function bootReadingRegistry(){
-  /* ---- THE READING REGISTRY ---- */
+  // ---- THE READING REGISTRY ----
   defineReadings({
     fedFunds: {
       kind: "object", fileAsOf: function(){ return now.fedFunds.asOf; },

@@ -18,7 +18,7 @@ export var page = {
   head: undefined,
   y0: undefined
 } as unknown as PageStore;
-/* ---- the history card's head ---- */
+// ---- the history card's head ----
 export var HIST_NOTE: Record<string, string | (() => string)> = {};
 var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
   '<circle cx="5.4" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.75"/><circle cx="18.6" cy="12" r="1.75"/></svg>';
