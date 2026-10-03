@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `20e55df` on 2026-10-03. **80 components**, **44 shared patterns**.
+Generated from commit `2f6ba8d` on 2026-10-03. **82 components**, **44 shared patterns**.
 
 ## analysis.ts
 
@@ -141,7 +141,9 @@ Generated from commit `20e55df` on 2026-10-03. **80 components**, **44 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`phaseClock`** | `.clock` `.clock-asset` `.clock-axis` `.clock-hand` `.clock-pin` | `portfolio.ts:clockHtml` |
+| **`gridHtml`** | `.sc-grid` | `portfolio.ts:clockHtml` |
+| **`heat`** | `.sc-cell` `.thin` | `portfolio.ts:gridHtml` |
+| **`seasonClock`** | `.clock` `.clock-asset` `.clock-axis` `.clock-hand` `.clock-pin` `.clock-q` | `portfolio.ts:clockHtml` |
 
 ## quarter-sheet.ts
 
@@ -194,8 +196,8 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`byId`** | dom.ts | 34 places |
 | **`need`** | dom.ts | 27 places |
+| **`fmtSigned`** | format.ts | 24 places |
 | **`put`** | dom.ts | 24 places |
-| **`fmtSigned`** | format.ts | 23 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`publishGeom`** | charts.ts | 11 places |
@@ -222,6 +224,8 @@ renderer speaks. Listed most-used first.
 | **`mean`** | format.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
+| **`seasonGroup`** | model.ts | 6 places |
+| **`seasonTitle`** | model.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
 | **`detailSlot`** | dom.ts | 5 places |
@@ -231,20 +235,20 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 5 places |
 | **`moodTrack`** | model.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
-| **`seasonGroup`** | model.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
-| **`auxStat`** | format.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fmtYears`** | cycle-analysis.ts | 4 places |
+| **`grid`** | portfolio.ts | 4 places |
 | **`isoDay`** | format.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
+| **`auxStat`** | format.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
@@ -256,6 +260,7 @@ renderer speaks. Listed most-used first.
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
 | **`keyed`** | roster.ts | 3 places |
+| **`leader`** | portfolio.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`median`** | cycle-analysis.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
@@ -303,12 +308,12 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
+| `.now` | 3 | `category-analysis.ts:chartHtml`, `portfolio.ts:gridHtml`, `portfolio.ts:seasonClock` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.rangebar` | 3 | `history.ts:modeBar`, `history.ts:rangeBar`, `pages-nav.ts:buildSearch` |
 | `.era-bands` | 2 | `analysis.ts:cycleRowsHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
-| `.now` | 2 | `category-analysis.ts:chartHtml`, `portfolio.ts:phaseClock` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,183 lines** in 35 files, about 602 KB, roughly **171 thousand tokens**. No session can
+The source is **9,212 lines** in 35 files, about 603 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `bcb6e8c` on 2026-10-03.
+Generated from commit `2f6ba8d` on 2026-10-03.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `bcb6e8c` on 2026-10-03.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,357 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,366 | the whole stylesheet, every token and rule |
 | `page-body.html` | 391 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **589** top-level functions, **103** top-level vars, **343** exported names, **19** boots.
+Counts: **31** modules, **592** top-level functions, **103** top-level vars, **343** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -42,7 +42,7 @@ Counts: **31** modules, **589** top-level functions, **103** top-level vars, **3
 | `js/diagnosis.ts` | 80 | 12 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
 | `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
-| `js/portfolio.ts` | 147 | 14 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/portfolio.ts` | 167 | 17 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
@@ -84,7 +84,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:76`–79 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
 | 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
-| 16 | `bootPortfolio` | `js/portfolio.ts:146`–? |
+| 16 | `bootPortfolio` | `js/portfolio.ts:166`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
 | 18 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 19 | `bootRepaint` | `js/repaint.ts:65`–81 |
@@ -726,24 +726,27 @@ falls in. **export** marks a name other modules import.
 
 ### `js/portfolio.ts`
 
-#### PORTFOLIO: the Investment Clock and the All Seasons portfolio
+#### PORTFOLIO: the Season Clock and the All Seasons portfolio
 
 | Line | Name | Anchor |
 |---|---|---|
 | 27 | `ALL_SEASONS` | `var ALL_SEASONS =` |
 | 34 | `WEATHER` | `var WEATHER =` |
-| 41 | `phaseOf` | `function phaseOf(` |
-| 45 | `monthPlus` | `function monthPlus(` |
-| 50 | `runs` | `function runs(` |
-| 69 | `phaseMid` | `function phaseMid(` |
-| 73 | `phaseRecord` | `function phaseRecord(` |
-| 81 | `wedge` | `function wedge(` |
-| 85 | `phaseClock` | `function phaseClock(` |
-| 103 | `clockDetail` | `function clockDetail(` |
-| 112 | `clockHtml` | `function clockHtml(` |
-| 124 | `seasonsDetail` | `function seasonsDetail(` |
-| 132 | `seasonsHtml` | `function seasonsHtml(` |
-| 141 | `buildPortfolio` | `function buildPortfolio(` |
+| 41 | `mid` | `function mid(` |
+| 45 | `seasonOfYears` | `function seasonOfYears(` |
+| 61 | `realOf` | `function realOf(` |
+| 72 | `grid` | `function grid(` |
+| 87 | `counts` | `function counts(` |
+| 88 | `leader` | `function leader(` |
+| 92 | `wedge` | `function wedge(` |
+| 96 | `seasonClock` | `function seasonClock(` |
+| 115 | `heat` | `function heat(` |
+| 120 | `gridHtml` | `function gridHtml(` |
+| 128 | `clockDetail` | `function clockDetail(` |
+| 138 | `clockHtml` | `function clockHtml(` |
+| 145 | `seasonsDetail` | `function seasonsDetail(` |
+| 153 | `seasonsHtml` | `function seasonsHtml(` |
+| 162 | `buildPortfolio` | `function buildPortfolio(` |
 
 ### `js/pages-nav.ts`
 
@@ -1235,15 +1238,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 850 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 1,019 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 1,034 | The symptoms: a cycle's years against today |
-| 1,131 | hero: yield curve |
-| 1,161 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,180 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,207 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,215 | long cycle (structural layer) |
-| 1,222 | indicator grid |
-| 1,248 | info icon + popover (progressive disclosure for longer notes) |
-| 1,262 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,347 | footer |
+| 1,140 | hero: yield curve |
+| 1,170 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,189 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,216 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,224 | long cycle (structural layer) |
+| 1,231 | indicator grid |
+| 1,257 | info icon + popover (progressive disclosure for longer notes) |
+| 1,271 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,356 | footer |
 
 ## Markup landmarks
 

@@ -1,24 +1,24 @@
 import { auxStat, facts, fmtSigned, srcBlock } from "./format.ts";
 import { moreRow, need } from "./dom.ts";
-import { cpiYoYHistory } from "./refresh-season.ts";
-import { assetReturns, fedFundsHistory, sp500MonthlyHistory } from "./history-fred.ts";
+import { cpiYoYHistory, wheelMeta } from "./refresh-season.ts";
+import { assetReturns } from "./history-fred.ts";
 import { marketCycles } from "./data.ts";
-import { cycleModel, nowModel, QUARTER_END_MONTH } from "./model.ts";
+import { cycleModel, nowModel, seasonGroup, seasonTitle } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 
-// ---- PORTFOLIO: the Investment Clock and the All Seasons portfolio ----
-type Phase = "reflation" | "recovery" | "overheat" | "stagflation";
-type Run = { phase: Phase; stocks: number; cash: number | null; fresh: boolean };
+// ---- PORTFOLIO: the Season Clock and the All Seasons portfolio ----
+type Asset = { key: string; name: string; from: number };
+type Cell = { median: number; mean: number; up: number; top: number; n: number };
 
-var PHASES: Phase[] = ["reflation", "recovery", "overheat", "stagflation"];
-var CLOCK: Record<Phase, { name: string; asset: string; growth: string; prices: string; seasons: string }> = {
-  reflation:{ name:"Reflation", asset:"Bonds", growth:"slowing", prices:"cooling", seasons:"Autumn · disinflation, and a cooling Winter" },
-  recovery:{ name:"Recovery", asset:"Stocks", growth:"picking up", prices:"cooling", seasons:"Spring · deflation, and a cooling Summer" },
-  overheat:{ name:"Overheat", asset:"Commodities", growth:"picking up", prices:"heating", seasons:"Spring · reflation, and Summer" },
-  stagflation:{ name:"Stagflation", asset:"Cash", growth:"slowing", prices:"heating", seasons:"Autumn · stagflation, and a heating Winter" }
-};
+var ASSETS: Asset[] = [
+  { key:"stocks", name:"Stocks", from:0 }, { key:"bonds", name:"Bonds", from:0 }, { key:"baa", name:"Corp.", from:0 },
+  { key:"bills", name:"Cash", from:0 }, { key:"gold", name:"Gold", from:1972 }, { key:"estate", name:"Homes", from:0 }
+];
+var ASSET_LONG: Record<string, string> = { stocks:"stocks have", bonds:"Treasury bonds have", baa:"corporate bonds have", bills:"cash has", gold:"gold has", estate:"homes have" };
+var CLOCK_SEASONS: Season[] = ["winter", "spring", "springdeflation", "summer", "autumn", "lateautumn"];
 var CLOCK_SRC: Src[] = [
-  {t:"Merrill Lynch \u2014 The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004; US data 1973\u20132004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public", u:"https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"}
+  {t:"Aswath Damodaran, NYU Stern — Historical Returns on Stocks, Bonds, Bills, Real Estate and Gold, annual since 1928", u:"https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"},
+  {t:"Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public", u:"https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"}
 ];
 var SEASONS_SRC: Src[] = [
   {t:"Bridgewater Associates — The All Weather Story (2012)", u:"https://www.bridgewater.com/resources/all-weather-story.pdf"},
@@ -38,88 +38,109 @@ var WEATHER = [
   { when:"Prices cooling", holds:"Stocks, Treasuries", test:function(r: ModelReading){ return r.cpiDirection === "falling"; } }
 ];
 
-function phaseOf(r: ModelReading): Phase {
-  var cooling = r.cpiDirection === "falling";
-  return r.regime === "expansion" ? (cooling ? "recovery" : "overheat") : (cooling ? "reflation" : "stagflation");
-}
-function monthPlus(m: string, k: number){
-  var i = +m.slice(0, 4) * 12 + (+m.slice(5) - 1) + k;
-  return Math.floor(i / 12) + "-" + String(i % 12 + 1).padStart(2, "0");
-}
-var runsCache: Run[] | null = null;
-function runs(){
-  if (runsCache) return runsCache;
-  var sp: Record<string, number> = {}, cpi: Record<string, number> = {}, ff: Record<string, number> = {}, out: Run[] = [], last: Phase | null = null;
-  sp500MonthlyHistory.forEach(function(d){ sp[d.m] = d.v; });
-  cpiYoYHistory.forEach(function(d){ cpi[d.m] = d.v; });
-  fedFundsHistory.forEach(function(d){ if (d.v != null) ff[d.m] = d.v; });
-  marketCycles.forEach(function(c){
-    cycleModel(c).track.forEach(function(seg){
-      if (seg.isNow || seg.reading.annual) return;
-      var p = phaseOf(seg.reading), m = seg.q.slice(0, 4) + "-" + QUARTER_END_MONTH[seg.q.slice(5)], m12 = monthPlus(m, 12);
-      var fresh = p !== last; last = p;
-      if (sp[m] == null || sp[m12] == null || cpi[m12] == null) return;
-      var f = 1;
-      for (var k = 1; k <= 12 && f; k++) f = ff[monthPlus(m, k)] != null ? f * (1 + ff[monthPlus(m, k)] / 1200) : 0;
-      out.push({ phase:p, stocks:(sp[m12] / sp[m] - 1) * 100 - cpi[m12], cash:f ? (f - 1) * 100 - cpi[m12] : null, fresh:fresh });
-    });
-  });
-  return (runsCache = out);
-}
-function phaseMid(vs: number[]){
+function mid(vs: number[]){
   var s = vs.slice().sort(function(a, b){ return a - b; }), n = s.length;
   return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
 }
-function phaseRecord(p: Phase){
-  var r = runs().filter(function(x){ return x.phase === p; }), paired = r.filter(function(x){ return x.cash != null; });
-  return { n:r.length, episodes:r.filter(function(x){ return x.fresh; }).length,
-           stocks:phaseMid(r.map(function(x){ return x.stocks; })),
-           up:Math.round(100 * r.filter(function(x){ return x.stocks > 0; }).length / r.length),
-           beat:paired.filter(function(x){ return x.stocks > (x.cash as number); }).length, paired:paired.length };
+function seasonOfYears(){
+  var weight: Record<number, Record<string, number>> = {}, out: Record<number, Season> = {};
+  marketCycles.forEach(function(c){
+    cycleModel(c).track.forEach(function(seg){
+      if (seg.isNow) return;
+      var y = +seg.q.slice(0, 4), w = weight[y] = weight[y] || {};
+      w[seg.season] = (w[seg.season] || 0) + seg.to - seg.from;
+    });
+  });
+  Object.keys(weight).forEach(function(y){
+    var w = weight[+y], full = Object.keys(w).reduce(function(a, k){ return a + w[k]; }, 0);
+    if (full >= 0.999) out[+y] = Object.keys(w).sort(function(a, b){ return w[b] - w[a]; })[0] as Season;
+  });
+  return out;
 }
-
+var gridCache: Record<string, Record<string, Cell>> | null = null;
+function realOf(){
+  var infl: Record<number, number> = {}, out: Record<string, Record<number, number>> = {};
+  cpiYoYHistory.forEach(function(d){ if (d.m.slice(5) === "12") infl[+d.m.slice(0, 4)] = d.v; });
+  ASSETS.forEach(function(a){
+    out[a.key] = {};
+    (assetReturns[a.key] || []).forEach(function(d){
+      if (d.y >= a.from && infl[d.y] != null) out[a.key][d.y] = ((1 + d.v / 100) / (1 + infl[d.y] / 100) - 1) * 100;
+    });
+  });
+  return out;
+}
+function grid(){
+  if (gridCache) return gridCache;
+  var real = realOf(), season = seasonOfYears(), out: Record<string, Record<string, Cell>> = {};
+  CLOCK_SEASONS.forEach(function(s){
+    var years = Object.keys(season).map(Number).filter(function(y){ return season[y] === s && real.stocks[y] != null; });
+    out[s] = {};
+    ASSETS.forEach(function(a){
+      var ys = years.filter(function(y){ return real[a.key][y] != null; }), vs = ys.map(function(y){ return real[a.key][y]; });
+      var top = ys.filter(function(y){ return ASSETS.every(function(b){ return real[b.key][y] == null || real[b.key][y] <= real[a.key][y]; }); }).length;
+      out[s][a.key] = { median:vs.length ? mid(vs) : NaN, mean:vs.length ? vs.reduce(function(p, q){ return p + q; }, 0) / vs.length : NaN,
+                        up:vs.filter(function(v){ return v > 0; }).length, top:top, n:vs.length };
+    });
+  });
+  return (gridCache = out);
+}
+function counts(s: Season, a: Asset){ var g = grid()[s]; return g[a.key].n * 2 >= g.stocks.n; }
+function leader(s: Season){
+  var g = grid()[s];
+  return ASSETS.filter(function(a){ return counts(s, a); }).sort(function(a, b){ return g[b.key].median - g[a.key].median; })[0];
+}
 function wedge(cx: number, cy: number, r: number, a0: number, a1: number){
   var p = function(a: number){ return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1); };
   return "M" + cx + "," + cy + "L" + p(a0) + "A" + r + "," + r + " 0 0 1 " + p(a1) + "Z";
 }
-function phaseClock(now: Phase){
-  var S = 300, wide = 380, cx = 190, cy = 150, r = 116, out: string[] = [];
-  var at: Record<Phase, number> = { recovery:-Math.PI, overheat:-Math.PI / 2, stagflation:0, reflation:Math.PI / 2 };
-  PHASES.forEach(function(p){
-    var a0 = at[p], mid = a0 + Math.PI / 4, lx = cx + r * 0.56 * Math.cos(mid), ly = cy + r * 0.56 * Math.sin(mid);
-    out.push('<path class="clock-q' + (p === now ? " now" : "") + '" d="' + wedge(cx, cy, r, a0, a0 + Math.PI / 2) + '"/>');
-    out.push('<text class="clock-name' + (p === now ? " now" : "") + '" x="' + lx.toFixed(1) + '" y="' + (ly - 4).toFixed(1) + '" text-anchor="middle">' + CLOCK[p].name + '</text>');
-    out.push('<text class="clock-asset" x="' + lx.toFixed(1) + '" y="' + (ly + 14).toFixed(1) + '" text-anchor="middle">' + CLOCK[p].asset + '</text>');
+function seasonClock(now: Season){
+  var S = 320, cx = 160, cy = 160, r = 112, out: string[] = [], Q = Math.PI / 2;
+  var span: Record<string, [number, number]> = { winter:[-2 * Q, -Q], spring:[-Q, -Q / 2], springdeflation:[-Q / 2, 0], summer:[0, Q], autumn:[Q, 1.5 * Q], lateautumn:[1.5 * Q, 2 * Q] };
+  CLOCK_SEASONS.forEach(function(s){
+    var a = span[s], m = (a[0] + a[1]) / 2, k = a[1] - a[0] > Q * 0.9 ? 0.55 : 0.68;
+    var lx = cx + r * k * Math.cos(m), ly = cy + r * k * Math.sin(m), meta = wheelMeta[s];
+    out.push('<path class="clock-q ' + seasonGroup(s) + (s === now ? " now" : "") + '" d="' + wedge(cx, cy, r, a[0], a[1]) + '"/>');
+    out.push('<text class="clock-name' + (s === now ? " now" : "") + '" x="' + lx.toFixed(1) + '" y="' + (ly - 3).toFixed(1) + '" text-anchor="middle">' + leader(s).name + '</text>');
+    if (meta.theme && s !== "summer" && s !== "winter") out.push('<text class="clock-asset" x="' + lx.toFixed(1) + '" y="' + (ly + 13).toFixed(1) + '" text-anchor="middle">' + meta.theme + '</text>');
   });
-  var hand = at[now] + Math.PI / 4;
+  [["Winter", -1.5 * Q], ["Spring", -0.5 * Q], ["Summer", 0.5 * Q], ["Autumn", 1.5 * Q]].forEach(function(l){
+    var a = l[1] as number, x = cx + (r + 22) * Math.cos(a), y = cy + (r + 22) * Math.sin(a) + 4;
+    out.push('<text class="clock-axis" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="middle">' + l[0] + '</text>');
+  });
+  var hand = (span[now][0] + span[now][1]) / 2;
   out.push('<line class="clock-hand" x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * 0.3 * Math.cos(hand)).toFixed(1) + '" y2="' + (cy + r * 0.3 * Math.sin(hand)).toFixed(1) + '"/>');
   out.push('<circle class="clock-pin" cx="' + cx + '" cy="' + cy + '" r="5"/>');
-  out.push('<text class="clock-axis" x="' + cx + '" y="18" text-anchor="middle">Growth picking up</text>');
-  out.push('<text class="clock-axis" x="' + cx + '" y="' + (S - 6) + '" text-anchor="middle">Growth slowing</text>');
-  out.push('<text class="clock-axis" x="4" y="' + (cy + 4) + '">Prices</text><text class="clock-axis" x="4" y="' + (cy + 20) + '">cooling</text>');
-  out.push('<text class="clock-axis" x="' + (wide - 4) + '" y="' + (cy + 4) + '" text-anchor="end">Prices</text><text class="clock-axis" x="' + (wide - 4) + '" y="' + (cy + 20) + '" text-anchor="end">heating</text>');
-  return '<svg class="clock" viewBox="0 0 ' + wide + ' ' + S + '" role="img" aria-label="The Investment Clock, pointing at ' + CLOCK[now].name + '">' + out.join("") + '</svg>';
+  return '<svg class="clock" viewBox="0 20 ' + S + ' ' + (S - 40) + '" role="img" aria-label="The Season Clock, pointing at ' + seasonTitle(wheelMeta[now]) + '">' + out.join("") + '</svg>';
+}
+function heat(v: number, thin: boolean){
+  if (isNaN(v) || thin) return '<td class="sc-cell thin">' + (isNaN(v) ? "—" : fmtSigned(v, 0)) + '</td>';
+  var p = Math.min(60, Math.round(Math.abs(v) * 3));
+  return '<td class="sc-cell" style="background:color-mix(in srgb, var(' + (v >= 0 ? "--ovulate" : "--bleed-mid") + ') ' + p + '%, var(--surface))">' + fmtSigned(v, 0) + '</td>';
+}
+function gridHtml(now: Season){
+  var g = grid();
+  return '<table class="sc-grid"><thead><tr><th></th>' + ASSETS.map(function(a){ return '<th>' + a.name + '</th>'; }).join("") + '</tr></thead><tbody>' +
+    CLOCK_SEASONS.map(function(s){
+      return '<tr' + (s === now ? ' class="now"' : '') + '><th>' + seasonTitle(wheelMeta[s]).replace(" · ", "<br><small>") + (wheelMeta[s].theme ? "</small>" : "") + ' <small>' + g[s].stocks.n + 'y</small></th>' +
+        ASSETS.map(function(a){ return heat(g[s][a.key].median, !counts(s, a)); }).join("") + '</tr>';
+    }).join("") + '</tbody></table>';
 }
 function clockDetail(){
+  var g = grid();
   return '<h4>How the clock reads</h4>' + facts([
-    "Merrill Lynch’s Investment Clock (2004) splits the cycle by two directions: whether growth is picking up or slowing, and whether inflation is rising or falling. It turns clockwise, Reflation, Recovery, Overheat, Stagflation, and names the asset that led in each phase in US data from 1973 to 2004.",
-    "Here both directions are the Season Model’s own: growth is its expansion or contraction, prices its CPI trend over twelve months, with steady prices counted as heating, as the Season Model counts them.",
-    "So each phase holds parts of her seasons: " + PHASES.map(function(p){ return "<b>" + CLOCK[p].name + "</b>, " + CLOCK[p].seasons; }).join("; ") + ". Mind the names: her Spring · reflation sits in the clock\u2019s Overheat, and the clock\u2019s Reflation is slowing growth with cooling prices.",
-    "The figures are what followed in the record, every quarter the model has read since 1950: the S&amp;P&nbsp;500’s change over the next twelve months less CPI (prices, not dividends), and cash as the Fed funds rate held for the same twelve months. Neighbouring quarters overlap, so a phase rests on its runs, not its quarters.",
-    "The clock’s bonds and commodities need long histories the app does not carry yet. This is the record and a published model, not a forecast or advice."
+    "The Season Clock is the Investment Clock’s idea, an asset for each phase of the economy, read through her six seasons instead of Merrill Lynch’s four phases, and measured on her own record.",
+    "Each calendar year since 1928 is given the season that held most of it, by quarter (by year before 1949). Each cell is the median return of that asset in those years, after that year’s inflation (December CPI); green above zero, red below, deeper the larger.",
+    "The returns are Aswath Damodaran’s annual series: the S&amp;P&nbsp;500 with dividends, the 10-year Treasury bond, Baa corporate bonds, the 3-month Treasury bill for cash, home prices, and gold. Gold counts from 1972: before August 1971 its price was fixed by law. A cell measured in fewer than half of its season’s years is left grey and cannot lead.",
+    "The clock names the asset with the highest median in each season. " + CLOCK_SEASONS.map(function(s){ var l = leader(s), c = g[s][l.key]; return seasonTitle(wheelMeta[s]) + ": " + ASSET_LONG[l.key].replace(/ ha(ve|s)$/, "") + ", best of the six in " + c.top + " of " + c.n + " years"; }).join("; ") + ".",
+    "It describes what each asset did while a season lasted, not what came next: the season at a year’s close says much less about the following year. A season with few years, Winter above all, rests on few episodes. This is the record, not a forecast or advice."
   ]) + srcBlock(CLOCK_SRC);
 }
-function clockHtml(r: ModelReading){
-  var now = phaseOf(r), c = CLOCK[now], rec = phaseRecord(now);
-  var rows = PHASES.map(function(p){
-    var x = phaseRecord(p);
-    return auxStat({ label:CLOCK[p].name + " · " + CLOCK[p].asset.toLowerCase() + (p === now ? " · today" : ""), value:fmtSigned(x.stocks, 1) + "% · up " + x.up + "%" });
-  }).join("");
-  return '<div class="cat-analysis cat-mood"><div class="ca-name">Investment Clock</div>' +
-    '<p class="ca-say">Growth is ' + c.growth + ' and prices are ' + c.prices + ': on the Investment Clock that is ' + c.name + ', the phase where it favours ' + c.asset.toLowerCase() + '.</p>' +
-    phaseClock(now) +
-    '<p class="ca-note">In ' + rec.episodes + ' runs of ' + c.name + ' since 1950, stocks beat cash over the next year in ' + rec.beat + ' of ' + rec.paired + ' quarters. Stocks over the next year, after inflation, median and how often up:</p>' +
-    rows + moreRow(clockDetail()) + '</div>';
+function clockHtml(){
+  var now = nowModel.season, l = leader(now), c = grid()[now][l.key];
+  return '<div class="cat-analysis cat-mood"><div class="ca-name">Season Clock</div>' +
+    '<p class="ca-say">In ' + seasonTitle(wheelMeta[now]) + ', ' + ASSET_LONG[l.key] + ' led: a median ' + fmtSigned(c.median, 1) + '% a year after inflation, best of the six in ' + c.top + ' of ' + c.n + ' years.</p>' +
+    seasonClock(now) + '<p class="ca-note">Median return after inflation, by the season that held the year, since 1928:</p>' + gridHtml(now) +
+    moreRow(clockDetail()) + '</div>';
 }
 function seasonsDetail(){
   return '<h4>How the portfolio reads</h4>' + facts([
@@ -140,7 +161,6 @@ function seasonsHtml(r: ModelReading){
 }
 function buildPortfolio(){
   var host = need("panel-portfolio"), r = nowModel.reading;
-  host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml(r) + seasonsHtml(r) + '</div>';
-  host.dataset.assets = String(Object.keys(assetReturns).filter(function(k){ return assetReturns[k].length; }).length);
+  host.innerHTML = '<div class="dx" id="portfolio">' + clockHtml() + seasonsHtml(r) + '</div>';
 }
 export function bootPortfolio(){ buildPortfolio(); }
