@@ -1562,7 +1562,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.8.0 (724)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.8.0 (726)</span></p>
     </div>
   </div>
 
@@ -1585,7 +1585,7 @@
 
       <h3 class="menu-section">The six seasons</h3>
       <div class="menu-card menu-prose">
-        <p>A season is computed from two readings, never set by hand. <b>Growth</b> is the direction of real GDP. Each quarter is measured against the same quarter a year earlier, and the season reads the trend through the last six of those readings — a year and a half of them: rising is expansion, falling is contraction, and a flat stretch continues whichever came before it. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
+        <p>A season is computed from two readings, never set by hand. <b>Growth</b> is the direction of real GDP. Each quarter is measured against the same quarter a year earlier, and the season reads the trend through the last eight of those readings — two years of them: rising is expansion, falling is contraction, and a flat stretch continues whichever came before it; a quarter below a year earlier is always contraction. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
         <p>In expansion, hot prices make <b>Summer — inflation</b>; otherwise the direction decides — heating is <b>Spring — reflation</b>, cooling is <b>Spring — deflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; otherwise cooling is <b>Autumn — disinflation</b> and heating or steady is <b>Autumn — stagflation</b>.</p>
         <p>The 1–3% band is the board's own fixed tolerance around the Fed's 2% point objective, read on CPI. The full rule, with today's row marked, is on the Content tab under <b>The Season Model</b>.</p>
       </div>
@@ -32065,19 +32065,23 @@
     }, X(0), X(n - 1), Y, R, L, 0));
     return vhOpen(W, H) + 'aria-label="The federal deficit or surplus as a share of GDP, every fiscal year from ' + y0 + " to " + y1 + ', with the fiscal years that contained a recession shaded and the 1983 level marked">' + out.join("") + "</svg>";
   }
+  function colScale(F, n, lo, hi) {
+    var h = (F.R - F.L) / (2 * Math.max(1, n));
+    return {
+      X: function(i) {
+        return F.L + h + (F.R - F.L - 2 * h) * i / Math.max(1, n - 1);
+      },
+      Y: function(v) {
+        return F.B - (F.B - F.T) * (v - lo) / (hi - lo);
+      }
+    };
+  }
   function velocityHistoryChart(Wpx, from, to) {
     var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
     var ser = m2vHistory.slice(from, to == null ? void 0 : to), n = ser.length;
     var sc = windowScale(ser, [ PULSE_PRE2008 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var X = function(i) {
-      var h = (R - L) / (2 * Math.max(1, n));
-      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32178,14 +32182,7 @@
     var sc = windowScale(seen.map(function(d) {
       return d.v;
     }), [ 0, NROU_NOW ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32264,14 +32261,7 @@
     var sc = windowScale(seen.map(function(d) {
       return d.v;
     }), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32347,14 +32337,7 @@
     var kept = savHistory.slice(SAV_OFFSET + from, SAV_OFFSET + hi);
     var n = bill.length;
     var sc = windowScale(bill.concat(kept), [ 0 ]);
-    var LO = sc.lo, HI = sc.hi;
-    var X = function(i) {
-      var h = (R - L) / (2 * Math.max(1, n));
-      return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32429,14 +32412,7 @@
     var sc = windowScale(vals.map(function(d) {
       return d.v;
     }), [ 0, CPI_TARGET ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32513,14 +32489,7 @@
     var sc = windowScale(vals.map(function(d) {
       return d.v;
     }), [ 0, GDP_NORM ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
@@ -32599,14 +32568,7 @@
     var y0 = M2_FROM_YEAR + 1 + Math.floor(from / 4);
     var y1 = M2_FROM_YEAR + 1 + Math.floor(((to == null ? all.length : to) - 1) / 4);
     var sc = windowScale(vals, [ 0, M2_NORM ]);
-    var LO = sc.lo, HI = sc.hi;
-    var halfCol = (R - L) / (2 * Math.max(1, n));
-    var X = function(i) {
-      return L + halfCol + (R - L - 2 * halfCol) * i / Math.max(1, n - 1);
-    };
-    var Y = function(v) {
-      return B - (B - T) * (v - LO) / (HI - LO);
-    };
+    var LO = sc.lo, HI = sc.hi, cs = colScale(F, n, LO, HI), X = cs.X, Y = cs.Y;
     var f = function(v) {
       return v.toFixed(1);
     };
