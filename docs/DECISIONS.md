@@ -557,6 +557,24 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Bands and verdicts
 
+- **Every cut-off and every trend comes from a published convention or from the reading's own record ("the cycle
+  data"); none is chosen by hand.** Keren: "the cutoffs and the trends all come from convention, or from the cycle
+  data". A derived cut-off is computed in code from the series it reads (`pctl` on the record), so it moves when the
+  record does, and the (i) says how. A zone with neither a convention nor a usable record is not drawn. Where a
+  verdict still rests on a hand-set number, it is listed under "Still to derive" below. (1.2.0)
+- **Unemployment above its band is graded by the Sahm rule: serious when the three-month average stands 0.5
+  points or more above its low of the previous twelve months, otherwise warning.** Keren chose the convention
+  (Claudia Sahm, 2019; FRED SAHMREALTIME) over percentiles of a record that mixes regimes. The old 6.5% and 8.5%
+  grades had no source; the Fed's 6.5% (Dec 2012) was a policy threshold, not a severity. (1.2.0)
+- **Horizon has no "Undecided" zone and Pressure no "Steep" zone.** Keren: "remove both"; neither had a source, and
+  the Treasury record is too short and too long on the zero floor for percentiles. Horizon turns Pessimistic at
+  inversion, zero by definition. (1.2.0)
+- **Structural readings take their colour from their band and record: serious above the band, critical at or past
+  the record.** It was typed by hand on each row. (1.2.0)
+- **Still to derive:** CAPE's five bands (0.75 / 0.95 / 1.15 / 1.60 × fair value) wait for percentiles of
+  Shiller's monthly series since 1871, which the container cannot reach; Activity's 3.5–5% band is round figures
+  either side of the CBO's noncyclical rate; Horizon's "Guarded" (a change under 0.05) and the trend pill's
+  "flat" go with the trend test (1.3.0). (1.2.0)
 - **A reading's verdict word and the band or line drawn for it come from the same threshold, so they can never
   disagree.** The word comes off the band's own ends (Volatility) or the line the word already uses
   (Households' bill at its own mean). (V464, V492)
@@ -578,6 +596,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Undervalued, Fairly valued, Overvalued, Highly overvalued.** "Richly priced" was hand-set and belonged to no
   scale. (V290)
 - **The Buffett indicator's 80% line is cited to Buffett's Fortune article of Dec 10, 2001.** (V658)
+- **Pulse's Steady band is the 10th–90th percentile of 1959–2007 (1.70–2.14×), and Very slow and Very fast lie
+  beyond that era's own extremes (1.652× and 2.192×).** Computed under Keren's rule; it was 0.95–1.10 and 0.75 /
+  1.25 times the mean, by hand. Today's 1.42× is below anything 1959–2007 saw, so it reads Very slow. (1.2.0)
+- **Volume's pace is the 10th–90th percentile of 1960–2019 (3.4–10.3%, rounded to a tenth like Growth), and
+  Flooding lies beyond that span's maximum (13.5%); the columns step at the same edges.** It was 3.5–10 and 16, by
+  hand, while the (i) already said "computed". (1.2.0)
+- **Households' cushion steps at the saving record's 5th percentile (3.3%), 10th (4.5%) and median (8.75%).**
+  3 and 7 were hand-set. (1.2.0)
+- **Temperature's 1–3% matches the inflation-control range the Bank of Canada and the Reserve Bank of New
+  Zealand use around a 2% target; its column shades above 3% step at the record's 90th and 95th percentiles.**
+  (1.2.0)
 - **Pulse's verdict is five bands against the 1959–2007 mean, both extremes flagged; the spectrum's ends say
   what velocity means (slow is hoarding, fast is spending).** Keren: "I would rather have an indicator that
   tells me: is the velocity fast or slow"; a stalled circulation and a feverish one are both unhealthy. (V297,
@@ -870,8 +899,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   miniature, and its history is bars like every other.** Keren: "if we're talking about the pulse, I kinda want
   to see a pulse"; "I want it to look like a real heartbeat"; confirmed at V668. (V297, V298, V496, V668)
 - **Pressure's maturity history is columns, each coloured by what the curve was doing that quarter (inverted,
-  normal or steep, from the one `pressureZone()` lookup), in `--critical`, `--season-autumn` and `--good` at
-  full weight: colour shows the curve, height the yield.** Keren: "a colour that represents the pressure like
+  or normal, from the one `pressureZone()` lookup), in `--critical` and `--season-autumn` at full weight: colour
+  shows the curve, height the yield.** "Steep" went at 1.2.0 (no source). Keren: "a colour that represents the pressure like
   we do"; the pale zone tones failed to separate under protanopia. (V394)
 - **Pressure's history keeps quarterly averages, but the column for the quarter still running is the latest
   close from the par curve, labelled with its date (added at the end if the history has not reached that

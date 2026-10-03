@@ -770,7 +770,6 @@
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
   .yl-col.normal{ stroke:var(--season-autumn); }
-  .yl-col.steep{ stroke:var(--good); }
   .meterpeek .mp-track, .meterpeek .mp-band{ fill:none; stroke-linecap:round; vector-effect:non-scaling-stroke; }
   .meterpeek .mp-track{ stroke:var(--border); opacity:0.6; }
   .meterpeek .mp-band{ stroke:var(--good); opacity:0.85; }
@@ -1550,7 +1549,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.1.2 (713)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.2.0 (714)</span></p>
     </div>
   </div>
 
@@ -1742,6 +1741,15 @@
     if (!o) return [ lo, hi ];
     if ("from" in o) return [ o.from, o.to ];
     return "gte" in o ? [ o.gte, hi ] : [ lo, o.lte ];
+  }
+  function pctl(a, p) {
+    var s = a.slice().sort(function(x, y) {
+      return x - y;
+    }), h = (s.length - 1) * p, l = Math.floor(h);
+    return s[l] + (s[Math.min(l + 1, s.length - 1)] - s[l]) * (h - l);
+  }
+  function round1(v) {
+    return Math.round(v * 10) / 10;
   }
   function mean(a) {
     return a.reduce(function(x, y) {
@@ -27701,6 +27709,10 @@
     gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
     calendarTodayY = DATA_COMPILED.getFullYear();
   }
+  var BUFFETT_LINE = 80;
+  var DEBT_LINE = 70;
+  var INTEREST_LINE = 2;
+  var DEFICIT_LINE = 3.8;
   var CAPE_FAIR = 17;
   var VIX_CALM = 20;
   var VIX_FEAR = 30;
@@ -27826,8 +27838,8 @@
           max: 256,
           value: 256,
           optimal: {
-            lte: 80,
-            label: "≤ 80%"
+            lte: BUFFETT_LINE,
+            label: "≤ " + BUFFETT_LINE + "%"
           },
           ends: {
             zone: "Buffett’s zone",
@@ -27955,8 +27967,8 @@
       max: 125.9,
       value: null,
       optimal: {
-        lte: 70,
-        label: "≤ 70%"
+        lte: DEBT_LINE,
+        label: "≤ " + DEBT_LINE + "%"
       },
       ends: {
         zone: "50-year average",
@@ -27967,7 +27979,7 @@
     note: "{q}, gross federal debt as a share of GDP (Treasury and BEA via FRED, GFDEGDQ188S) — the figure the headlines quote. Gross debt is everything the government owes: debt held by the public, which CBO puts at about 101% of GDP for FY2026, plus roughly a fifth of GDP it owes to its own accounts, mostly the Social Security trust funds. On this measure the WWII record is already broken: gross debt peaked at {ww2}% in FY1946 and went higher in the pandemic, to 125.9% in FY2020 — the top of this bar (OMB via FRED, GFDGDPA188S, by fiscal year). The bar starts at zero, the one time the debt was effectively retired (1835, under Andrew Jackson — Treasury's own ledger shows just $33,733 outstanding). The green band ends at 70% of GDP: the average of this same series over the last fifty fiscal years, FY1976–FY2025. CBO publishes a 50-year average only for debt held by the public (51%), so this one is computed here, by CBO's rule — the same computation on the held series gives 50.5%, which is how the rule was checked. Today's {v}% is about {x} times it.",
     direction: "up",
     flagValue: "",
-    flagState: "serious",
+    flagState: "na",
     id: "sheet-metric-debt"
   }, {
     sub: "net interest costs ÷ GDP",
@@ -27976,8 +27988,8 @@
       max: 3.3,
       value: 3.3,
       optimal: {
-        lte: 2,
-        label: "≤ 2.0%"
+        lte: INTEREST_LINE,
+        label: "≤ " + INTEREST_LINE.toFixed(1) + "%"
       },
       ends: {
         zone: "50-year average",
@@ -27988,7 +28000,7 @@
     note: "FY2026, $1.0T, CBO's February 2026 projection. Already the highest on record — the previous peak was 3.2% in FY1991, and WWII's debt was bigger but financed near-zero, so this is uncharted territory (CBO: 4.6% by 2036). Bar runs from the FY1942 low (0.6%) to today. This is the one marker sitting right at the historic edge of its own range. The green band ends at 2.0% of GDP, CBO's 50-year average for net interest, which over that half-century ran between 1.2% and 3.2% — the 3.2% high was 1991.",
     direction: "up",
     flagValue: "3.3%",
-    flagState: "critical",
+    flagState: "na",
     id: "sheet-metric-interest"
   }, {
     sub: "federal deficit or surplus ÷ GDP",
@@ -27997,8 +28009,8 @@
       max: 26.9,
       value: 5.8,
       optimal: {
-        lte: 3.8,
-        label: "≤ 3.8%"
+        lte: DEFICIT_LINE,
+        label: "≤ " + DEFICIT_LINE + "%"
       },
       ends: {
         zone: "50-year average",
@@ -28009,7 +28021,7 @@
     note: "FY2026, ~$1.9T, CBO's February 2026 projection (FY2025 actual: 5.8%). Below emergency-level spikes, but deficits this size used to require a recession or a war — neither is present now. Range spans the largest surplus of the modern era (FY2000, +2.3% of GDP; the last one was FY2001, +1.2%) to the WWII deficit peak (FY1943, 26.9%), both from the OMB series on FRED. The green band ends at 3.8% of GDP, CBO's stated average deficit over the last fifty years; this year's 5.8% is half again as large.",
     direction: "up",
     flagValue: "5.8%",
-    flagState: "serious",
+    flagState: "na",
     id: "sheet-marker-deficit"
   } ];
   function labRow(id) {
@@ -28058,8 +28070,6 @@
     return (now.fedFunds.lo === now.fedFunds.hi ? now.fedFunds.lo.toFixed(2) : now.fedFunds.lo.toFixed(2) + "–" + now.fedFunds.hi.toFixed(2)) + "%";
   }
   var buffettHistory = series_default.buffettHistory;
-  var M2_PACE_LO = 3.5;
-  var M2_PACE_HI = 10;
   var capeHistory = series_default.capeHistory;
   var longCycleSrc = [ {
     t: "CBO — The Budget and Economic Outlook: 2026 to 2036 (Feb 2026)",
@@ -28120,6 +28130,15 @@
       return fill[k] != null ? fill[k] : m;
     });
   }
+  function stressOf(m) {
+    var v = metered(m), hi = bandEnds(m.optimal, -Infinity, Infinity)[1];
+    return v <= hi ? "good" : v >= m.max ? "critical" : "serious";
+  }
+  function deriveStress() {
+    labPanel.forEach(function(r) {
+      r.flagState = stressOf(r.meter);
+    });
+  }
   function checkGrossDebt() {
     if (typeof fiscalHistory === "undefined" || !fiscalHistory.gross) return console.warn("checkGrossDebt: no fiscalHistory");
     var row = labRow("sheet-metric-debt"), by = function(a) {
@@ -28178,13 +28197,16 @@
     if (!r) throw new Error("the valuation panel has no " + key + " row");
     return r;
   }
-  var PULSE_PRE2008 = 1.857;
-  var PULSE_STEADY_LO = .95;
-  var PULSE_STEADY_HI = 1.1;
   var M2V_FROM_YEAR = 1959;
   var m2vHistory = series_default.m2vHistory.map(function(n) {
     return n / 1e3;
   });
+  var m2vPre = m2vHistory.slice(0, (2008 - M2V_FROM_YEAR) * 4);
+  var PULSE_PRE2008 = mean(m2vPre);
+  var PULSE_STEADY_LO = pctl(m2vPre, .1) / PULSE_PRE2008;
+  var PULSE_STEADY_HI = pctl(m2vPre, .9) / PULSE_PRE2008;
+  var PULSE_FLOOR = Math.min.apply(null, m2vPre) / PULSE_PRE2008;
+  var PULSE_CEIL = Math.max.apply(null, m2vPre) / PULSE_PRE2008;
   var PRODUCTIVITY_SRC = [ {
     t: "BLS — Productivity and Costs",
     u: "https://www.bls.gov/productivity/"
@@ -28222,6 +28244,10 @@
   var m2Yoy = m2Level.map(function(v, i) {
     return i < 4 ? null : (v / m2Level[i - 4] - 1) * 100;
   });
+  var m2Ref = m2Yoy.slice(4, 4 + (2020 - 1960) * 4);
+  var M2_PACE_LO = round1(pctl(m2Ref, .1));
+  var M2_PACE_HI = round1(pctl(m2Ref, .9));
+  var M2_FLOOD = round1(Math.max.apply(null, m2Ref));
   var M2_NORM = 6.8;
   var UNEMP_FROM_YEAR = 1948;
   var unempHistory = series_default.unempHistory.map(function(t, i) {
@@ -28239,6 +28265,31 @@
     });
     var hi = Math.max.apply(null, vs), lo = Math.min.apply(null, vs);
     if (unempHistory.length !== 944 || Math.abs(hi - 14.8) > 1e-9 || Math.abs(lo - 2.5) > 1e-9 || unempHistory[0].m !== "1948-01" || unempHistory[unempHistory.length - 1].m !== "2026-08") console.warn("unempHistory failed its check", unempHistory.length, lo, hi, unempHistory[0].m, unempHistory[unempHistory.length - 1].m);
+  }
+  var SAHM_TRIGGER = .5;
+  var unempSahm = unempHistory.map(function(d, i) {
+    return sahmAt(i);
+  });
+  function avg3(i) {
+    var a = unempHistory.slice(i - 2, i + 1).map(function(d) {
+      return d.v;
+    });
+    return i < 2 || a.some(function(v) {
+      return v == null;
+    }) ? null : mean(a);
+  }
+  function sahmAt(i) {
+    var now3 = avg3(i), low = Infinity;
+    for (var j = i - 12; j < i; j++) {
+      var a = j >= 0 ? avg3(j) : null;
+      if (a == null) return null;
+      low = Math.min(low, a);
+    }
+    return now3 == null ? null : now3 - low;
+  }
+  function sahmOf(m) {
+    var i = (Number(m.slice(0, 4)) - UNEMP_FROM_YEAR) * 12 + Number(m.slice(5, 7)) - 1;
+    return unempSahm[i] == null ? null : unempSahm[i];
   }
   var NROU_NOW = 4.2;
   function checkFedFundsHistory() {
@@ -28352,6 +28403,9 @@
   var dsrHistory = series_default.dsrHistory;
   var SAV_FROM_YEAR = 1947;
   var savHistory = series_default.savHistory;
+  var SAV_THIN = pctl(savHistory, .05);
+  var SAV_LOW = pctl(savHistory, .1);
+  var SAV_MID = pctl(savHistory, .5);
   function checkHouseholdHistories() {
     var dHi = Math.max.apply(null, dsrHistory), dLo = Math.min.apply(null, dsrHistory);
     if (dsrHistory.length !== 86 || Math.abs(dHi - 15.846367) > 1e-6 || Math.abs(dLo - 9.051457) > 1e-6) console.warn("dsrHistory failed its check", dsrHistory.length, dHi, dLo);
@@ -28565,6 +28619,8 @@
     deriveUninvLag();
     GYN.step("syncGrossDebt", syncGrossDebt, "derive");
     syncGrossDebt();
+    GYN.step("deriveStress", deriveStress, "derive");
+    deriveStress();
     GYN.step("checkGrossDebt", checkGrossDebt, "check");
     checkGrossDebt();
     liveInto("sentiment");
@@ -30295,10 +30351,10 @@
     return m.value != null && (m.value < ends[0] || m.value > ends[1]);
   }
   function volumeInfoHtml(ind) {
-    return "<h4>" + ind.econTerm + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. M2 is the money stock — cash, chequing and savings deposits, and retail money-market funds — read as the year-over-year change (" + ind.metricSub + ').</p><p class="caption follow"><b>Her pace is ' + M2_PACE_LO + "–" + M2_PACE_HI + '%</b>, and that is a band computed from this page’s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a year on average (median 6.70%), and the tenth to ninetieth percentile runs 3.3% to 10.3%. So roughly four quarters in five sat inside this band, and the two ends are what unusual looks like in each direction — <b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: −4.6% in 2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p><p class="caption follow">Volume and Pulse are two halves of one number — nominal output is the money stock times its velocity — so neither means much read alone.</p>';
+    return "<h4>" + ind.econTerm + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. M2 is the money stock — cash, chequing and savings deposits, and retail money-market funds — read as the year-over-year change (" + ind.metricSub + ').</p><p class="caption follow"><b>Her pace is ' + M2_PACE_LO + "–" + M2_PACE_HI + "%</b>, and that is a band computed from this page’s own series rather than chosen: across the 240 quarters from 1960 to 2019, M2 grew 6.80% a year on average (median 6.70%), and the tenth to ninetieth percentile runs " + M2_PACE_LO + "% to " + M2_PACE_HI + '%. So roughly four quarters in five sat inside this band, and the two ends are what unusual looks like in each direction — <b>draining</b> below it, <b>flooding</b> above. The ends of the track are the record itself: −4.6% in 2023 Q2, the only contraction in the series, and +25.6% in 2021 Q1.</p><p class="caption follow">Volume and Pulse are two halves of one number — nominal output is the money stock times its velocity — so neither means much read alone.</p>';
   }
   function pulseInfoHtml(ind) {
-    return "<h4>" + ind.econTerm + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. Velocity is how many times the same dollar changes hands in a year, nominal GDP divided by M2 (" + ind.metricSub + '). The track’s ends are the record: 1.126× in 2020 Q2 and 2.192× in 1997 Q3.</p><p class="caption follow"><b>The 1.7–2.2× band is the pre-2008 era’s own range</b>, not a target — across the 196 quarters from 1959 Q1 to 2007 Q4 velocity averaged 1.857× (median 1.808×) and ran between 1.652× and 2.192×. It is labelled <b>Pre-2008</b> rather than normal for that reason: the collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p><p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which is a busy economy and, past a point, an inflationary one.</p>';
+    return "<h4>" + ind.econTerm + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. Velocity is how many times the same dollar changes hands in a year, nominal GDP divided by M2 (" + ind.metricSub + '). The track’s ends are the record: 1.126× in 2020 Q2 and 2.192× in 1997 Q3.</p><p class="caption follow"><b>The ' + (PULSE_PRE2008 * PULSE_STEADY_LO).toFixed(2) + "–" + (PULSE_PRE2008 * PULSE_STEADY_HI).toFixed(2) + "× band is the pre-2008 era’s own middle</b>, not a target — the tenth to ninetieth percentile of the 196 quarters from 1959 Q1 to 2007 Q4, when velocity averaged " + PULSE_PRE2008.toFixed(3) + "× (median 1.808×) and ran between " + (PULSE_PRE2008 * PULSE_FLOOR).toFixed(3) + "× and " + (PULSE_PRE2008 * PULSE_CEIL).toFixed(3) + '×. Beyond those two, the era’s own extremes, the word is <b>very</b> slow or fast. It is labelled <b>Pre-2008</b> rather than normal for that reason: the collapse after 2008 may be the new ordinary, and calling the old range normal would beg that question.</p><p class="caption follow">The ends mean direction as well as level: <b>slow</b> is money sitting still, the signature of a stalled economy, and <b>fast</b> is money changing hands quickly, which is a busy economy and, past a point, an inflationary one.</p>';
   }
   function confidenceInfoHtml(f) {
     return "<h4>" + f.econTerm + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + ", " + f.wordSays + " (" + f.metricSub + "). The record, month by month, runs " + f.span + '.</p><p class="caption follow"><b>The 100 line is the OECD’s own</b>: the index is amplitude adjusted so that 100 is its long-term average. In the OECD’s words, a reading above 100 “signals a boost in the consumers’ confidence towards the future economic situation”, with households “less prone to save, and more inclined to spend money on major purchases in the next 12 months”; below 100 indicates “a pessimistic attitude towards future developments in the economy”.</p><p class="caption follow">It is built from household surveys of their finances, the economy, unemployment and saving, and the OECD publishes it a few months after the month it describes, which is why the card’s date trails the others.</p>' + srcBlock(CONFIDENCE_SRC);
@@ -30354,7 +30410,7 @@
     } : g < M2_PACE_HI ? {
       text: "Steady",
       state: "good"
-    } : g < 16 ? {
+    } : g <= M2_FLOOD ? {
       text: "Filling",
       state: "warning"
     } : {
@@ -30362,8 +30418,12 @@
       state: "serious"
     };
   }
-  function unempState(v) {
-    return v < ACT_BAND_LO ? "tight" : v <= ACT_BAND_HI ? "good" : v < 6.5 ? "warning" : v < 8.5 ? "serious" : "critical";
+  function unempState(v, sahm) {
+    return v < ACT_BAND_LO ? "tight" : v <= ACT_BAND_HI ? "good" : sahm != null && sahm >= SAHM_TRIGGER ? "serious" : "warning";
+  }
+  function sahmNow() {
+    for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i];
+    return null;
   }
   function growthInfoHtml() {
     return '<h4>Real GDP growth</h4><p class="caption">The figure is real gross domestic product against the same quarter a year earlier (' + gdpNowQ.q + '), so it is already adjusted for inflation — this is output, not prices. The ends of the track are the record and they are the same event twice: −7.4% in 2020 Q2, the deepest quarter of the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p><p class="caption follow"><b>The 1.0–4.3% band is computed from this page’s own series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at 0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks like in that direction. There is no official normal rate of growth to point at instead, which is why it is drawn this way and said so.</p><p class="caption follow">Two other lines matter more than the edges. The dashed line on the chart is this series’ own long-run average, <b>' + GDP_NORM + '%</b> — the middle of the record rather than the edge of it, and the honest answer to "is this quick or slow". And the CBO puts the economy’s <b>potential</b> growth — what it can sustain without overheating — at 2.1% a year through 2030, easing to 1.8% after that as the population ages. Today’s reading sits inside the band, below the long-run average, and almost exactly at potential: the economy is growing about as fast as it can.</p>' + srcBlock([ {
@@ -30376,7 +30436,7 @@
   }
   function velocityVerdict(v) {
     var r = v / PULSE_PRE2008;
-    return r < .75 ? {
+    return r < PULSE_FLOOR ? {
       text: "Very slow",
       state: "serious"
     } : r < PULSE_STEADY_LO ? {
@@ -30385,7 +30445,7 @@
     } : r <= PULSE_STEADY_HI ? {
       text: "Steady",
       state: "good"
-    } : r < 1.25 ? {
+    } : r <= PULSE_CEIL ? {
       text: "Fast",
       state: "warning"
     } : {
@@ -30399,7 +30459,7 @@
       state: "warning"
     } : {
       text: v <= ACT_BAND_HI ? "Solid" : "Slack",
-      state: unempState(v)
+      state: unempState(v, sahmNow())
     };
   }
   function temperatureWord(v) {
@@ -30468,11 +30528,11 @@
     get peek() {
       var seen = unempHistory.filter(function(d) {
         return d.v != null;
-      }).map(function(d) {
-        return d.v;
       });
-      return colPeek(seen, function(v) {
-        return "unemp-col " + unempState(v);
+      return colPeek(seen.map(function(d) {
+        return d.v;
+      }), function(v, i) {
+        return "unemp-col " + unempState(v, sahmOf(seen[i].m));
       });
     },
     src: [ {
@@ -30592,11 +30652,6 @@
     key: "normal",
     label: "Normal",
     from: 0,
-    to: 2.5
-  }, {
-    key: "steep",
-    label: "Steep",
-    from: 2.5,
     to: 4
   } ];
   function pressureZone(v) {
@@ -30642,13 +30697,9 @@
     return null;
   }
   function horizonWord(sp, dLong, dShort, dSpread) {
-    if (sp < -.1) return {
+    if (sp < 0) return {
       word: "Pessimistic",
       state: "critical"
-    };
-    if (sp < .25) return {
-      word: "Undecided",
-      state: "warning"
     };
     if (dSpread <= .05) return {
       word: "Guarded",
@@ -30664,7 +30715,7 @@
   }
   function horizonInfoHtml(pick) {
     var m = HZN_METERS[pick], shortLeg = pick === "2y" ? "2-year" : "3-month";
-    return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption follow">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, which is why the word this page gives a spread under 0.25 is <b>Undecided</b>.</p>' + String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
+    return "<h4>10-year minus " + shortLeg + '</h4><p class="caption">What the long end of the curve pays over the short end, in percentage points. It is a forecast rather than a measurement: the long rate is the market’s own average of where it expects the short rate to be for the next ten years, so a curve that slopes down is a market expecting cuts, and a market expecting cuts is a market expecting trouble. The ends of the track are this series’ quarterly record, ' + m.min.toFixed(2) + " and +" + m.max.toFixed(2) + ' points; the deepest single DAY of the last inversion was −1.89, in May 2023, below the quarterly low because a quarter is an average.</p><p class="caption follow"><b>The line at zero is definitional, not drawn</b> — it is where an upward-sloping curve becomes an inverted one, and it is the threshold the New York Fed’s own recession model is built on, using this exact pair of maturities. That model’s FAQ states that an inversion has preceded every U.S. recession on record since 1960, with a single false signal in 1967. The band is one-sided because a steeper curve is not a worse one: there is nothing to flag above zero.</p><p class="caption follow">Read the caution with the signal, because it is the same source’s. The New York Fed is explicit that it is the <b>level</b> of the spread that forecasts, not the crossing — in two episodes in the 1990s the spread fell to 42 and then 12 basis points without ever inverting, and nothing followed. A reading just above zero is not the all-clear the colour suggests, but no source says where “just above” ends, so the page draws no zone for it.</p>' + String(ui.spreadDetail || "").replace(/^\s*<h4>[\s\S]*?<\/h4>/, "");
   }
   function pulseBlock(rate, ref, ind) {
     var slower = Math.round((1 - rate / ref) * 100);
@@ -30673,15 +30724,15 @@
   }
   function householdsWord(bill, kept) {
     var heavy = bill > DSR_MEAN;
-    if (kept < 3) return {
+    if (kept < SAV_THIN) return {
       word: heavy ? "Overstretched" : "Stretched",
       state: "serious"
     };
-    if (kept < 4.5) return {
+    if (kept < SAV_LOW) return {
       word: heavy ? "Stretched" : "Thin cover",
       state: "warning"
     };
-    if (kept < 7) return {
+    if (kept < SAV_MID) return {
       word: heavy ? "Thin cover" : "Covered",
       state: "good"
     };
@@ -31659,7 +31710,7 @@
         s: buffettHistory,
         k: "q"
       },
-      mid: 80,
+      mid: BUFFETT_LINE,
       when: lastDate,
       cardUnit: "of GDP",
       live: [ "valuation" ]
@@ -31745,7 +31796,7 @@
         s: grossDebtQuarterly,
         k: "q"
       },
-      mid: 70,
+      mid: DEBT_LINE,
       when: labPeriod,
       cardUnit: "of GDP"
     }, {
@@ -31761,7 +31812,7 @@
         s: fiscalHistory.interest,
         k: "y"
       },
-      mid: 2,
+      mid: INTEREST_LINE,
       when: labPeriod,
       cardUnit: "of GDP"
     }, {
@@ -31781,7 +31832,7 @@
         y0: DEF_FROM_YEAR
       },
       flip: true,
-      mid: 3.8,
+      mid: DEFICIT_LINE,
       when: labPeriod,
       cardUnit: "deficit, of GDP"
     }, {
@@ -32125,7 +32176,7 @@
     var sw = colWidth((R - L) / n);
     vals.forEach(function(d, i) {
       if (d.v == null) return;
-      out.push('<path class="unemp-col hcol ' + unempState(d.v) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
+      out.push('<path class="unemp-col hcol ' + unempState(d.v, sahmOf(d.m)) + '" stroke-width="' + sw.toFixed(2) + '" d="' + colPath(X(i), zero, Y(d.v), sw) + '"/>');
     });
     var avgV = seen.reduce(function(a, d) {
       return a + d.v;
@@ -32595,11 +32646,21 @@
     return vhOpen(W, H) + 'aria-label="Money stock growth year over year, every quarter from ' + y0 + " to " + y1 + ", against the long-run norm of " + M2_NORM + ' per cent">' + out.join("") + "</svg>";
   }
   function m2Step(v) {
-    return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
+    return v < 0 ? "v5" : v < M2_PACE_LO ? "v4" : v < M2_NORM ? "v3" : v < M2_PACE_HI ? "v2" : v <= M2_FLOOD ? "v1" : "v0";
+  }
+  var heatTop = [];
+  function heatEdges() {
+    if (!heatTop.length) {
+      var all = cpiYoYHistory.map(function(d) {
+        return d.v;
+      });
+      heatTop = [ pctl(all, .9), pctl(all, .95) ];
+    }
+    return heatTop;
   }
   function heatStep(v) {
-    if (v < 1) return "s0";
-    return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
+    var top = heatEdges();
+    return v < TEMP_BAND_LO ? "s0" : v < CPI_TARGET ? "s1" : v < TEMP_BAND_HI ? "s2" : v < top[0] ? "s3" : v < top[1] ? "s4" : "s5";
   }
   var catSnap = {};
   function metricSheet(id) {
@@ -33108,9 +33169,6 @@
         }, {
           label: "Normal",
           swatch: "var(--season-autumn)"
-        }, {
-          label: "Steep",
-          swatch: "var(--good)"
         } ],
         vals: picked ? picked.data.slice(ylmFrom, ylmTo).map(function(d) {
           return d.v == null ? null : {
