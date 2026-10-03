@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
 import { ui } from '../../src/js/dom.ts';
-import { refreshLiveData, liveApplied, forgetLive } from '../../src/js/live.ts';
+import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PACE_HI } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord } from '../../src/js/readings.ts';
@@ -140,7 +140,7 @@ test('a live VIX close reaches the Volatility card; one outside its band is refu
 
 test('a live yield curve moves the 10-year figure on the Pressure card', async () => {
   const rows = now.yieldCurve.map(r => r.m === '10Y' ? { ...r, y: 4.44 } : r);
-  await deliver({ yieldCurve: { kind: 'series', rows } });
+  await deliver({ yieldCurve: { kind: 'series', rows, asOf: READINGS.yieldCurve.fileAsOf() } });
   assert.equal(value('sheet-sign-pressure'), '4.44%');
 });
 
@@ -162,8 +162,16 @@ test('the debt card reads the last backfilled quarter', () => {
 });
 
 test('a newer live document dates its card with its own day', async () => {
-  await deliver({ yieldCurve: { kind: 'series', rows: now.yieldCurve, asOf: '2026-10-05' } });
-  assert.equal(when('sheet-sign-pressure'), 'Oct 5, 2026');
+  const next = new Date(Date.parse(READINGS.yieldCurve.fileAsOf()) + 3 * 864e5), iso = next.toISOString().slice(0, 10);
+  await deliver({ yieldCurve: { kind: 'series', rows: now.yieldCurve, asOf: iso } });
+  assert.equal(when('sheet-sign-pressure'), next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }));
+});
+
+test('a dated document whose day is not ISO is refused', async () => {
+  const before = when('sheet-sign-sentiment');
+  await deliver({ vixClose: { kind: 'scalar', value: 20, asOf: 'Dec 31, 2099' } });
+  assert.equal(when('sheet-sign-sentiment'), before);
+  assert.notEqual(liveApplied.vixClose && JSON.parse(liveApplied.vixClose).asOf, 'Dec 31, 2099');
 });
 
 test('a live document that would break the page is refused and not kept', async () => {

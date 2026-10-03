@@ -1550,7 +1550,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.1.0 (711)</span></p>
+      <p class="menu-version"><span id="app-version">Version 1.1.1 (712)</span></p>
     </div>
   </div>
 
@@ -2068,10 +2068,13 @@
   function docOk(name, d) {
     var r = READINGS[name];
     try {
-      return !!r && shapeOk(r, docValue(d)) && plainText(d);
+      return !!r && shapeOk(r, docValue(d)) && plainText(d) && datedOk(r, d);
     } catch (e) {
       return false;
     }
+  }
+  function datedOk(r, d) {
+    return r.kind === "object" || /^\d{4}-\d{2}-\d{2}$/.test(String(d && d.asOf));
   }
   function plainText(v) {
     if (typeof v === "string") return !/[<>"]/.test(v);
