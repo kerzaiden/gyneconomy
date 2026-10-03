@@ -1282,11 +1282,11 @@
   .detail-modal .facts li::before, .metric-sheet .facts li::before, .sign-detail .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
   .detail-modal .facts li b, .metric-sheet .facts li b, .sign-detail .facts li b{ color:var(--text-primary); font-weight:600; }
   .detail-modal .lede, .metric-sheet .lede, .sign-detail .lede{ font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); margin:0; }
-  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat{
+  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat, .cat-analysis .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:14px;
   }
-  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
+  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b, .cat-analysis .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
   .aux-stat.wordy b{ font-family:"Public Sans",sans-serif !important; font-weight:600; }
   .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
   .detail-modal .src a, .metric-sheet .src a, .sign-detail .src a{ color:var(--text-muted); }
@@ -28192,12 +28192,12 @@
       return d.v > a.v ? d : a;
     });
     if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-    var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1];
+    var sum = 0, n = 0, cap2 = bandEnds(row.meter.optimal, NaN, NaN)[1];
     for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
       sum += g[y];
       n++;
     }
-    if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
+    if (n !== 50 || Math.round(sum / n) !== cap2) bad.push("band " + cap2 + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   function curveAt(m) {
@@ -29343,8 +29343,8 @@
     falling: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5L7 9l3-3 3.2 4.2"/><path d="M13.2 7v3.2H10"/></svg>'
   };
   function trendPill(t, key, toggles, words) {
-    var word = words && words[t.word] || t.word;
-    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
+    var word2 = words && words[t.word] || t.word;
+    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word2 + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
     var none = t.word === "unavailable";
     if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + "</div>";
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" aria-label="Show the trend on the chart">' + inner + "</button>";
@@ -30899,7 +30899,7 @@
       };
     }();
     confidenceReading = function(R) {
-      var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
+      var word2 = confidenceWord(R.now.v), at = monthLabel(R.now.m);
       var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Confidence",
@@ -30916,10 +30916,10 @@
         metricSub: "OECD index, United States, " + at,
         metric: R.now.v.toFixed(1),
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -30941,7 +30941,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
+        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word2.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
       };
     }(confidenceRecord);
     desireRecord = function() {
@@ -30957,7 +30957,7 @@
       };
     }();
     desireReading = function(R) {
-      var word = desireWord(R.now.v), at = monthLabel(R.now.m);
+      var word2 = desireWord(R.now.v), at = monthLabel(R.now.m);
       var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Desire",
@@ -30974,10 +30974,10 @@
         metricSub: "consumer demand, YoY, " + at,
         metric: fmtSigned(R.now.v, 1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -30999,7 +30999,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word2.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
     premiumRecord = function() {
@@ -31073,7 +31073,7 @@
       };
     }();
     productivityReading = function(R) {
-      var word = productivityWord(R.now.v);
+      var word2 = productivityWord(R.now.v);
       var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
       return {
         bodyTerm: "Productivity growth",
@@ -31090,10 +31090,10 @@
         metricSub: "nonfarm business output per hour, YoY, " + at,
         metric: R.now.v.toFixed(1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordWhy: word.why,
+        wordWhy: word2.why,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -31108,7 +31108,7 @@
         },
         span: span,
         lead: "",
-        caption: at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+        caption: at + ", BLS output per hour vs. a year earlier, " + word2.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
       };
     }(productivityRecord);
     deriveFeelingReadings();
@@ -31138,7 +31138,7 @@
     };
     householdsNow = householdsWord(dsrNow, savNow);
     marketReading = function(h) {
-      var now2 = h[h.length - 1], word = marketWord(now2.v), open = now2.y === calendarTodayY;
+      var now2 = h[h.length - 1], word2 = marketWord(now2.v), open = now2.y === calendarTodayY;
       var lo = h.reduce(function(a, d) {
         return d.v < a.v ? d : a;
       }), hi = h.reduce(function(a, d) {
@@ -31164,10 +31164,10 @@
         open: open,
         metric: fmtSigned(now2.v, 1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: lo.v,
           max: hi.v,
@@ -31187,7 +31187,7 @@
           }), marketCol, 0, true);
         },
         lead: "",
-        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
+        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word2.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
       };
     }(sp500Years);
   }
@@ -33195,7 +33195,7 @@
       attachHistory(shell, "ylm-tooltip", "ylm");
     }
     var matPick = "10y";
-    GYN.on("pickSeries", function(bar, code) {
+    GYN.on("pickSeries", function(bar2, code) {
       matPick = code;
       pressureView = "yield";
       maturities.forEach(function(m) {
@@ -33374,10 +33374,10 @@
       if (unit) unit.className = "ci-unit";
       read.appendChild(val);
     }
-    var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-    if (!word || !word.textContent.trim()) word = val && val.querySelector(".tag") || document.createElement("span");
-    word.classList.add("ci-word");
-    read.appendChild(word);
+    var word2 = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+    if (!word2 || !word2.textContent.trim()) word2 = val && val.querySelector(".tag") || document.createElement("span");
+    word2.classList.add("ci-word");
+    read.appendChild(word2);
     body.appendChild(read);
     var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
     if (mini) {
@@ -33399,10 +33399,10 @@
     return item;
   }
   function tempPeek(r, value, cpi) {
-    var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+    var word2 = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
     return peekOf("sheet-metric-temp", {
       value: value,
-      word: word,
+      word: word2,
       state: heatStep(r.cpiNow),
       cols: cpi.map(function(d) {
         return d.v;
@@ -33741,17 +33741,17 @@
       return a === -1 ? null : [ a, b ];
     }
     function draw() {
-      var bar = byId("hormones-history");
-      if (!bar) return;
+      var bar2 = byId("hormones-history");
+      if (!bar2) return;
       var id = "hormones-range";
       var cyc = pageCycle(id);
       var span = cyc ? ffCycleMonths(cyc) : null;
       var from = span ? span[0] : mWindowFrom(fedFundsHistory.length, page.range[id]);
       var to = span ? span[1] : void 0;
       var win = fedFundsHistory.slice(from, to);
-      bar.innerHTML = histBar(histControls(id, {
+      bar2.innerHTML = histBar(histControls(id, {
         series: fedFundsHistory
-      }, FF_Y0)) + '<div class="page-chart">' + histHead(id) + fedFundsHistoryChart(bar.clientWidth || 340, from, {
+      }, FF_Y0)) + '<div class="page-chart">' + histHead(id) + fedFundsHistoryChart(bar2.clientWidth || 340, from, {
         to: to,
         cycle: !!span
       }) + histTip("hormones-hist-tooltip") + '<div id="hormones-trend"></div></div>';
@@ -33761,7 +33761,7 @@
         rising: "tightening",
         falling: "easing"
       }));
-      var box = bar.querySelector(".page-chart");
+      var box = bar2.querySelector(".page-chart");
       refitHistory(box, function(w) {
         return fedFundsHistoryChart(w, from, {
           to: to,
@@ -33973,6 +33973,210 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
+  var GROUPS = [ "spring", "summer", "autumn", "winter" ];
+  var GROUP_NAME = {
+    spring: "Spring",
+    summer: "Summer",
+    autumn: "Autumn",
+    winter: "Winter"
+  };
+  var TEMPS = [ "hot", "warm", "cold" ];
+  var TEMP_NAME = {
+    hot: "Hot",
+    warm: "Warm",
+    cold: "Cold"
+  };
+  var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
+  function cycleStats(m) {
+    var c = m.era, signs = [], seasons = {}, temp = {
+      hot: 0,
+      warm: 0,
+      cold: 0
+    };
+    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
+    var bleed = 0;
+    while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
+    GROUPS.forEach(function(g) {
+      seasons[g] = 0;
+    });
+    m.track.forEach(function(seg) {
+      seasons[seasonGroup(seg.season)] += seg.to - seg.from;
+    });
+    m.cpi.forEach(function(d) {
+      temp[d.v > TEMP_BAND_HI ? "hot" : d.v < TEMP_BAND_LO ? "cold" : "warm"]++;
+    });
+    return {
+      c: c,
+      years: m.elapsedYears,
+      bull: signs.filter(Boolean).length,
+      bleed: bleed,
+      seasons: seasons,
+      temp: temp,
+      months: m.cpi.length
+    };
+  }
+  var recordCache = null;
+  function record() {
+    return recordCache || (recordCache = marketCycles.filter(function(c) {
+      return !c.ongoing;
+    }).map(function(c) {
+      return cycleStats(cycleModel(c));
+    }));
+  }
+  function median(vs) {
+    var s = vs.slice().sort(function(a, b) {
+      return a - b;
+    }), n = s.length;
+    return n ? n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2 : 0;
+  }
+  function fmtYears(v) {
+    var q = Math.round(v * 4), whole = Math.floor(q / 4), frac = [ "", "¼", "½", "¾" ][q % 4];
+    if (!q) return "none";
+    return (whole || !frac ? String(whole) : "") + frac + (q === 4 ? " year" : q < 4 ? " year" : " years");
+  }
+  function share(part2, whole) {
+    return whole ? Math.round(100 * part2 / whole) : 0;
+  }
+  function topTemp(s) {
+    return TEMPS.slice().sort(function(a, b) {
+      return s.temp[b] - s.temp[a];
+    })[0];
+  }
+  function topSeason(s) {
+    return GROUPS.slice().sort(function(a, b) {
+      return s.seasons[b] - s.seasons[a];
+    })[0];
+  }
+  function word(n) {
+    return NUM[n] || String(n);
+  }
+  function cap(t) {
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function sayLength(s, rec) {
+    var open = !!s.c.ongoing, others = rec.filter(function(r) {
+      return r.c !== s.c;
+    });
+    var shorter = others.filter(function(r) {
+      return r.years < s.years;
+    }).length, longer = others.filter(function(r) {
+      return r.years > s.years;
+    }).length;
+    var rank = shorter > longer ? "longer than " + shorter + " of the " + others.length + " closed cycles" : longer > shorter ? "shorter than " + longer + " of the " + others.length + " closed cycles" : "as long as the typical closed cycle";
+    if (open) return "The " + s.c.name + " has run " + fmtYears(s.years) + " so far; the median closed cycle ran " + fmtYears(median(rec.map(function(r) {
+      return r.years;
+    }))) + ". ";
+    return "The " + s.c.name + " ran " + fmtYears(s.years) + ", " + rank + ". ";
+  }
+  function sayMarket(s) {
+    var bull = cap(word(s.bull)) + " bull year" + (s.bull === 1 ? "" : "s");
+    if (s.c.ongoing && !s.bleed) return bull + " and no bleed yet. ";
+    return bull + (s.c.ongoing ? " and a bleed of " : " paid for a bleed of ") + word(s.bleed) + " year" + (s.bleed === 1 ? "" : "s") + ". ";
+  }
+  function sayClimate(s) {
+    var t = topTemp(s), p = share(s.temp[t], s.months), open = !!s.c.ongoing;
+    return "Prices " + (open ? "have run " : "ran ") + (p >= 50 ? "mostly " : "most often ") + t + " (" + p + "% of its months), and " + GROUP_NAME[topSeason(s)] + (open ? " has held it longest." : " held it longest.");
+  }
+  function statRows(s, rec) {
+    var med = function(f) {
+      return median(rec.map(f));
+    };
+    var out = [ auxStat({
+      label: "Length",
+      value: fmtYears(s.years) + " · median " + fmtYears(med(function(r) {
+        return r.years;
+      }))
+    }), auxStat({
+      label: "Bull years",
+      value: s.bull + " · median " + med(function(r) {
+        return r.bull;
+      })
+    }), auxStat({
+      label: "Bleed",
+      value: (s.bleed ? fmtYears(s.bleed) : s.c.ongoing ? "not yet" : "none") + " · median " + fmtYears(med(function(r) {
+        return r.bleed;
+      }))
+    }) ];
+    var span = GROUPS.reduce(function(a, g) {
+      return a + s.seasons[g];
+    }, 0);
+    GROUPS.forEach(function(g) {
+      out.push(auxStat({
+        label: GROUP_NAME[g],
+        value: fmtYears(s.seasons[g]) + (s.seasons[g] ? " · " + share(s.seasons[g], span) + "%" : "")
+      }));
+    });
+    out.push(auxStat({
+      label: "Temperature",
+      value: TEMPS.filter(function(t) {
+        return s.temp[t];
+      }).map(function(t) {
+        return TEMP_NAME[t] + " " + share(s.temp[t], s.months) + "%";
+      }).join(" · ")
+    }));
+    return out.join("");
+  }
+  function recordFacts(rec) {
+    var lens = rec.map(function(r) {
+      return r.years;
+    }), oneYear = rec.filter(function(r) {
+      return r.bleed === 1;
+    }).length;
+    var spans = rec.map(function(r) {
+      return GROUPS.reduce(function(a, g) {
+        return a + r.seasons[g];
+      }, 0);
+    });
+    var seasonMed = GROUPS.map(function(g) {
+      return Math.round(median(rec.map(function(r, i) {
+        return 100 * r.seasons[g] / (spans[i] || 1);
+      }))) + "% in " + GROUP_NAME[g];
+    });
+    seasonMed[3] = "and " + seasonMed[3];
+    var mostly = TEMPS.map(function(t) {
+      return rec.filter(function(r) {
+        return topTemp(r) === t;
+      }).length + " " + t;
+    });
+    mostly[2] = "and " + mostly[2];
+    return [ "The " + rec.length + " closed cycles, from " + rec[0].c.from + " to " + rec[rec.length - 1].c.to + ", ran from " + fmtYears(Math.min.apply(null, lens)) + " to " + fmtYears(Math.max.apply(null, lens)) + "; the median is " + fmtYears(median(lens)) + ".", "The bleed lasted one year in " + oneYear + " of them; the median cycle had " + median(rec.map(function(r) {
+      return r.bull;
+    })) + " bull years before it.", "The median cycle spent " + seasonMed.join(", ") + ".", "Counted by the temperature most of their months had, the closed cycles ran " + mostly.join(", ") + "." ];
+  }
+  function statDetail(s, rec) {
+    return "<h4>How the analysis reads</h4>" + facts([ "A cycle runs from its first bull year to its last bear year. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle." + (s.c.ongoing ? " The year in progress counts at its return so far." : ""), "The seasons are the Season Model’s, read each quarter (each year before 1949) and summed by season; the share is of the time the model has read.", "Temperature is each month’s CPI against the " + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% band: hot above it, warm inside it, cold below it.", "Each median is taken over the closed cycles, so it is the record’s middle, not a target. This is a description of the record, not a forecast." ]) + "<h4>Across the record</h4>" + facts(recordFacts(rec));
+  }
+  function bar(runs) {
+    var live = runs.filter(function(r) {
+      return r.n > 0;
+    });
+    return '<div class="strip" role="img" aria-label="' + live.map(function(r) {
+      return r.what;
+    }).join(", ") + '">' + live.map(function(r) {
+      return '<span class="strip-run ' + r.cls + '" style="flex:' + r.n + ' 1 0" title="' + r.what + '"></span>';
+    }).join("") + "</div>";
+  }
+  function bars(s) {
+    return bar(GROUPS.map(function(g) {
+      return {
+        cls: g,
+        n: s.seasons[g],
+        what: GROUP_NAME[g] + " " + fmtYears(s.seasons[g])
+      };
+    })) + bar([ {
+      cls: "mkt-up",
+      n: s.bull,
+      what: s.bull + " bull years"
+    }, {
+      cls: "mkt-down",
+      n: s.bleed,
+      what: s.bleed + " bear years"
+    } ]);
+  }
+  function cycleAnalysisHtml(m) {
+    var s = cycleStats(m), rec = record();
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">Cycle analysis</div><p class="ca-say">' + sayLength(s, rec) + sayMarket(s) + sayClimate(s) + '</p><div class="era-bands">' + bars(s) + "</div>" + statRows(s, rec) + moreRow(statDetail(s, rec)) + "</div>";
+  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
@@ -33988,7 +34192,7 @@
       after: yearAfter(marketMonths(), m.endMonth)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 a year after the close", "<b>" + pct(d.after) + "</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 a year after the close", "<b>" + pct(d.after) + "</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -34590,7 +34794,7 @@
   function readDoor(open) {
     var item = document.querySelector('.cat-item[data-open="' + open + '"]');
     if (!item) return null;
-    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word2 = face.word;
     var figure = val ? val.cloneNode(true) : null;
     if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
       n.remove();
@@ -34599,7 +34803,7 @@
       name: item.getAttribute("data-title"),
       figure: figure ? figure.textContent.trim() : "",
       unit: unit ? unit.textContent.trim() : "",
-      word: word ? word.textContent.trim() : ""
+      word: word2 ? word2.textContent.trim() : ""
     };
   }
   function rosterRows() {
@@ -34741,9 +34945,9 @@
       if (rows[i].gap > GAP_BAND) run++; else break;
     }
     var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
     var spell = function(n) {
-      return NUM[n] || String(n);
+      return NUM2[n] || String(n);
     };
     var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
     var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
@@ -35365,11 +35569,11 @@
   }
   function eraCard(item, r, era) {
     var val = part(item, ".ci-value"), when = part(item, ".ci-when"), mini = item.querySelector(".ci-mini");
-    var word = item.querySelector(".ci-word");
+    var word2 = item.querySelector(".ci-word");
     var t = item.__today || (item.__today = {
       value: val.innerHTML,
       text: lead(val).nodeValue,
-      word: word ? word.innerHTML : null,
+      word: word2 ? word2.innerHTML : null,
       when: when.textContent,
       mini: mini ? mini.innerHTML : ""
     });
@@ -35378,27 +35582,27 @@
       when.textContent = t.when;
       item.__today = null;
       if (mini) mini.innerHTML = t.mini;
-      if (word && t.word == null) word.remove(); else if (word && t.word != null) word.innerHTML = t.word;
+      if (word2 && t.word == null) word2.remove(); else if (word2 && t.word != null) word2.innerHTML = t.word;
       return;
     }
     var e = r ? eraReading(r, era) : {
       none: true,
       word: "No history in the app"
     };
-    if (!word) {
-      word = document.createElement("span");
-      word.className = "ci-word";
-      parentOf(val).appendChild(word);
+    if (!word2) {
+      word2 = document.createElement("span");
+      word2.className = "ci-word";
+      parentOf(val).appendChild(word2);
     }
     when.textContent = e.none ? "" : e.when;
     if (mini) mini.innerHTML = e.none ? "" : eraMini(t, e.row, e);
     if (e.none) {
       val.innerHTML = "—";
-      word.textContent = e.word;
+      word2.textContent = e.word;
       return;
     }
     eraValue(val, t, e.row, e);
-    word.textContent = eraRange(t, e.row, e);
+    word2.textContent = eraRange(t, e.row, e);
   }
   function eraCards(era) {
     var rows = rosterRows();
@@ -36065,9 +36269,9 @@
   }
   function registerActivityPowerDeficitPages() {
     sheetRenderers["sheet-sign-activity"] = function(W = 0) {
-      var id = "sheet-sign-activity", bar = byId("act-rangebar");
-      if (!bar) return;
-      bar.innerHTML = histControls(id, {
+      var id = "sheet-sign-activity", bar2 = byId("act-rangebar");
+      if (!bar2) return;
+      bar2.innerHTML = histControls(id, {
         series: unempHistory
       });
       var hist = byId("act-history");
@@ -36272,7 +36476,7 @@
       close: shutPickers
     });
     document.addEventListener("keydown", function(e) {
-      var t = e.target, sel = t.closest && t.closest(".cycsel"), bar = t.closest && t.closest(".rangebar");
+      var t = e.target, sel = t.closest && t.closest(".cycsel"), bar2 = t.closest && t.closest(".rangebar");
       var step = {
         ArrowUp: -1,
         ArrowDown: 1,
@@ -36298,8 +36502,8 @@
         focusQuiet(opts[j]);
         return;
       }
-      if (!bar || !t.classList.contains("range-seg")) return;
-      var segs = Array.prototype.slice.call(bar.querySelectorAll(".range-seg")), k = segs.indexOf(t);
+      if (!bar2 || !t.classList.contains("range-seg")) return;
+      var segs = Array.prototype.slice.call(bar2.querySelectorAll(".range-seg")), k = segs.indexOf(t);
       var m = e.key === "Home" ? 0 : e.key === "End" ? segs.length - 1 : (k + step + segs.length) % segs.length;
       e.preventDefault();
       if (m !== k) {
@@ -36596,14 +36800,14 @@
       s: ""
     };
     var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-    var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
+    var unit = u ? u.textContent.trim() : "", word2 = t ? t.textContent.trim() : "";
     var st = t ? (t.className.match(/good|warning|serious|critical/) || [ "" ])[0] : "";
     if (u) u.remove();
     if (t) t.remove();
     return {
       v: c.textContent.trim(),
       u: unit,
-      w: word,
+      w: word2,
       s: st
     };
   }
@@ -36786,8 +36990,8 @@
       homeCtx.hide().forEach(function(n) {
         if (n) n.hidden = false;
       });
-      var bar = homeCtx.bar();
-      setTopbar(bar[0], bar[1]);
+      var bar2 = homeCtx.bar();
+      setTopbar(bar2[0], bar2[1]);
       if (keepScroll) return;
       scrollSoon(returnScroll);
     }

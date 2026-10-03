@@ -8,13 +8,13 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared patterns**.
+Generated from commit `7ea9766` on 2026-10-03. **80 components**, **40 shared patterns**.
 
 ## analysis.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`cycleRowsHtml`** | `.chip` `.data` `.era-bands` `.era-econ` `.era-foot` `.era-head` `.era-name` `.era-open` `.era-row` `.era-years` | `analysis.ts:wireCycleData` |
+| **`cycleRowsHtml`** | `.chip` `.data` `.era-econ` `.era-foot` `.era-head` `.era-name` `.era-open` `.era-row` `.era-years` | `analysis.ts:wireCycleData` |
 | **`cycleTrack`** | `.cyc-scale` `.cyc-track` `.sx-foot` `.sx-yrs` | `analysis.ts:cycleRowsHtml` |
 | **`eraCard`** | `.ci-word` | `analysis.ts:eraCards` |
 | **`symptomLegend`** | `.sx-down` `.sx-keys` `.sx-now` `.sx-off` | `analysis.ts:wireCycleData` |
@@ -24,7 +24,6 @@ Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`analysisHtml`** | `.ca-name` `.ca-say` `.cat-analysis` | `category-analysis.ts:replaceCategory`, `cycle-tab.ts:buildCategories` |
 | **`chartHtml`** | `.ca-dot` `.ca-key` `.near` `.now` | `category-analysis.ts:analysisHtml` |
 
 ## charts.ts
@@ -60,7 +59,7 @@ Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`buildDiagnosis`** | `.dx` | `diagnosis.ts:bootDiagnosis` |
-| **`moodDoor`** | `.cat-mood` `.trend-card` `.trend-head` | `diagnosis.ts:diagnosisHtml` |
+| **`moodDoor`** | `.trend-card` `.trend-head` | `diagnosis.ts:diagnosisHtml` |
 | **`trendText`** | `.trend-text` | `diagnosis.ts:diagnosisHtml` |
 | **`yearByYear`** | `.dx-sys` `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
 | **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
@@ -78,13 +77,13 @@ Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
 
 ## format.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`facts`** | `.facts` | `analysis.ts:symptomNote`, `category-analysis.ts:detail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `readings.ts:bootReadings`, `readings.ts:deficitBlock`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:seasonModelNote` |
+| **`facts`** | `.facts` | `analysis.ts:symptomNote`, `category-analysis.ts:detail`, `cycle-analysis.ts:statDetail`, `dial-cycle.ts:bootDialCycle`, `format.ts:factsFrom`, `insights.ts:moodInfo`, `readings.ts:bootReadings`, `readings.ts:deficitBlock`, `readings.ts:volatilityDetailHtml`, `tabs-menu.ts:seasonModelNote` |
 | **`hiCard`** | `.hi-name` | `indicators.ts:buffettInsight`, `indicators.ts:confidenceInsight`, `indicators.ts:debtInsight`, `indicators.ts:desireInsight`, `indicators.ts:interestInsight`, `indicators.ts:marketInsight`, `indicators.ts:premiumInsight`, `indicators.ts:productivityInsight`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `insights.ts:insightCirculation`, `insights.ts:insightWeather`, `insights.ts:marketCycleCard`, `insights.ts:moodCard`, `insights.ts:seasonCards`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights`, `render-pages.ts:volatilityHighlights` |
 | **`highlightsHtml`** | `.peek-chev` | `indicators.ts:mountSplit`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:householdsHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `render-pages.ts:volatilityHighlights` |
 | **`hubLine`** | `.hub-line` | `dial-cycle.ts:hubSet`, `dial-cycle.ts:hubShowYear` |
@@ -227,19 +226,21 @@ renderer speaks. Listed most-used first.
 | **`moodToday`** | model.ts | 5 places |
 | **`moodTrack`** | model.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`seasonGroup`** | model.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
+| **`fmtYears`** | cycle-analysis.ts | 4 places |
 | **`isoDay`** | format.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
-| **`seasonGroup`** | model.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
+| **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
@@ -250,6 +251,7 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | readings.ts | 3 places |
 | **`keyed`** | roster.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
+| **`median`** | cycle-analysis.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
@@ -291,15 +293,20 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
+| `.strip` | 3 | `cycle-analysis.ts:bar`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
+| `.strip-run` | 3 | `cycle-analysis.ts:bar`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.rangebar` | 3 | `history.ts:modeBar`, `history.ts:rangeBar`, `pages-nav.ts:buildSearch` |
+| `.era-bands` | 2 | `analysis.ts:cycleRowsHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
+| `.cat-analysis` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
+| `.ca-name` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
+| `.ca-say` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
+| `.cat-mood` | 2 | `cycle-analysis.ts:cycleAnalysisHtml`, `diagnosis.ts:moodDoor` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:moodDoor`, `diagnosis.ts:yearByYear` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |
-| `.strip-run` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
-| `.strip` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.hi-card` | 2 | `format.ts:hiCard`, `render-core.ts:cardDetailHtml` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.cycsel-tick` | 2 | `history.ts:cyclePicker`, `history.ts:headPickRow` |

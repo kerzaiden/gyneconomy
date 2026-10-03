@@ -1297,11 +1297,11 @@
   .detail-modal .facts li::before, .metric-sheet .facts li::before, .sign-detail .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
   .detail-modal .facts li b, .metric-sheet .facts li b, .sign-detail .facts li b{ color:var(--text-primary); font-weight:600; }
   .detail-modal .lede, .metric-sheet .lede, .sign-detail .lede{ font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); margin:0; }
-  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat{
+  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat, .cat-analysis .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:14px;
   }
-  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
+  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b, .cat-analysis .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
   .aux-stat.wordy b{ font-family:"Public Sans",sans-serif !important; font-weight:600; }
   .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
   .detail-modal .src a, .metric-sheet .src a, .sign-detail .src a{ color:var(--text-muted); }
