@@ -1,13 +1,16 @@
-import { byId } from "./refresh-season.js";
+import { CHEV, facts, fmtSigned } from "./format.js";
+import { addSources, byId, detailSlot } from "./dom.js";
 import { GYN, repaintLive } from "./live.js";
-import { calendarTodayY, colPeek, cycLabel } from "./charts.js";
-import { CHEV, currentEra, marketCycles, pulsePeek, sp500AnnualReturns, sp500AnnualReturnSource, typicalCycleSrc } from "./forms.js";
-import { CATEGORIES, keyed, pageCycles, pageMode, prettyKey, ROSTER } from "./roster.js";
-import { addSources, nowModel, vitalRingSvg } from "./model.js";
-import { detailSlot, facts } from "./render-core.js";
-import { calendarReset, cycleViewEl, eraGrowth, eraInflation, eraMarketTotal, eraPageBack, fmtSigned, setCalendarReset, setEraPageBack, setTopbar, setTopbarBack, topbarBack } from "./render-pages.js";
+import { colPeek, pulsePeek, vitalRingSvg } from "./charts.js";
+import { calendarTodayY } from "./refresh-season.js";
+import { marketCycles, sp500AnnualReturns, sp500AnnualReturnSource, typicalCycleSrc } from "./data.js";
+import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.js";
+import { pageCycles, pageMode } from "./history.js";
+import { CATEGORIES } from "./roster.js";
+import { cycleViewEl, setCalendarReset, setEraPageBack, setTopbar, setTopbarBack } from "./render-pages.js";
+import { eraFig, eraOpen, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, setEraOpen, upTo } from "./era.js";
+import { replaceInsights } from "./insights.js";
 import { marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.js";
-import { readDoor, replaceInsights, rosterRows } from "./pages-nav.js";
 
 // ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
 var CYCLE_DATA_KEY = "gyn.cycleData", YEAR_W = 36, ALIKE = 5;
@@ -89,13 +92,7 @@ function renderCycleList(){
   addSources(sp500AnnualReturnSource); addSources(typicalCycleSrc);
 }
 // ---- A closed cycle, shown on the Cycle tab's own page ----
-export var eraOpen = null, taHome = null, modeHome = null;
-function kT(k){
-  var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-  return +s.slice(0, 4) + (m ? (m[1] - 1) / 12 : q ? (q[1] - 1) / 4 : 0);
-}
-function upTo(list, k){ var t = kT(k) + 1e-6; return list.filter(function(d){ return d.v != null && kT(d.k) <= t; }); }
-export function pairAt(r, k){ var p = r.pair ? upTo(r.pair, k).pop() : null; return p ? p.v : null; }
+var taHome = null, modeHome = null;
 function eraReading(r, era){
   var from = era.from, to = era.to || calendarTodayY;
   var span = r.seen.filter(function(d){ var y = +d.k.slice(0, 4); return y >= from && y <= to; });
@@ -105,13 +102,6 @@ function eraReading(r, era){
   return { v:sign * end.v, raw:end.v, lo:Math.min.apply(null, vs), hi:Math.max.apply(null, vs), when:prettyK(r, end.k),
            second:second && kT(second.k) >= from ? second.v : null,
            peek:upTo(r.peek || r.seen, end.k).map(function(d){ return sign * d.v; }) };
-}
-function eraFig(today){
-  var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || ["", ""];
-  var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("\u2248", "");
-  var suf = (/[^\d]*$/.exec(today) || [""])[0], signed = /^[+\-\u2212]/.test(tok[0]);
-  function one(x){ var a = Math.abs(x).toFixed(dp); return (+a === 0 ? "" : x < 0 ? "\u2212" : signed ? "+" : "") + a; }
-  return function(x, y){ return pre + one(x) + (y != null ? "/" + one(y) : suf); };
 }
 function eraValue(val, t, r, e){
   val.innerHTML = t.value;
@@ -164,7 +154,7 @@ function eraShow(era){
 function enterEra(era, page){
   var ta = byId("today-analysis");
   if (!taHome) taHome = { parent:ta.parentNode, next:ta.nextSibling };
-  eraOpen = era; showCycle(era);
+  setEraOpen(era); showCycle(era);
   page.appendChild(cycleViewEl); page.appendChild(ta);
   eraShow(era);
 }
@@ -172,36 +162,9 @@ function leaveEra(){
   if (!eraOpen) return;
   var ta = byId("today-analysis");
   taHome.parent.insertBefore(ta, taHome.next); taHome.parent.insertBefore(cycleViewEl, ta);
-  eraOpen = null; eraShow(null); showCycle(currentEra); repaintLive();
+  setEraOpen(null); eraShow(null); showCycle(currentEra); repaintLive();
 }
 /* ---- THE ROSTER AS SERIES ---- */
-function rosterRow(R){
-  var r = Object.create(R), seen = keyed(R.hist).filter(function(d){ return d.v != null; });
-  var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });
-  r.place = function(v){
-    var lo = 0, hi = sorted.length;
-    while (lo < hi){ var mid = (lo + hi) >> 1; if (sorted[mid] < v) lo = mid + 1; else hi = mid; }
-    return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-  };
-  r.first = seen[0]; r.now = seen[seen.length - 1]; r.seen = seen;
-  if (R.pair) r.pair = keyed(R.pair);
-  if (R.peek) r.peek = R.peek === "pair" ? r.pair : keyed(R.peek);
-  return r;
-}
-var __roster = null;
-export function readingRoster(){
-  if (__roster) return __roster;
-  __roster = ROSTER.filter(function(R){ return R.hist; }).map(rosterRow);
-  __roster.byId = {};
-  __roster.forEach(function(r){ __roster.byId[r.id] = r; });
-  return __roster;
-}
-function withUnit(fig, unit){ return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : ""); }
-export function pastFigure(r, v, second){
-  var card = readDoor(r.id), fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
-  return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
-}
-export function prettyK(r, k){ return r.pre ? r.pre + k : prettyKey(k); }
 // ---- RENDER: the symptoms — the years of a cycle a reading sat where it sits today ----
 function cycleSymptoms(cyc, years){
   var rows = [], quiet = [], absent = [];

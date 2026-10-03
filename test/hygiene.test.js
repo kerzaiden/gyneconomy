@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -26,6 +26,8 @@ ok('a margin in a history chart is caught', chartFrames('a.js', '\nfunction draw
 ok('an unused function is caught', unused('function lonely(){}', '', ''), ['function lonely is never used']);
 ok('a function declared twice is caught', twice('function trendOf(a){}\nexport function trendOf(b){}\n'), ['function trendOf is declared 2 times; the last one silently replaces the others']);
 ok('an inner function of the same name is not a second declaration', twice('function draw(){}\n  function draw(){}\n'), []);
+ok('modules that import downward pass', cycles({ 'a.js':'import { x } from "./b.js";', 'b.js':'import { y } from "./c.js";', 'c.js':'' }), []);
+ok('modules that import in a circle are caught', cycles({ 'a.js':'import { x } from "./b.js";', 'b.js':'import { y } from "./a.js";' }), ['modules import in a circle: a.js \u2192 b.js \u2192 a.js']);
 ok('a used function passes', unused('function a(){} a();', '', ''), []);
 ok('an unused style is caught', unused('', '<div class="b"></div>', '.gone{ x:1 }'), ['style .gone matches nothing in the app']);
 ok('a class built at run time passes', unused('', '', '.cat-mood{ x:1 } .f3{ x:1 }'), []);

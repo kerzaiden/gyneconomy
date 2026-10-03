@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
 import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, seasonGroup } from '../../src/js/model.js';
-import { marketCycles } from '../../src/js/forms.js';
+import { marketCycles } from '../../src/js/data.js';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.js';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];

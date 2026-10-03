@@ -1164,6 +1164,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   recommended. make this app a nine", then "Make sure the documentation and the testing is lean and efficient."
   Claude chose esbuild as the bundler and jsdom for the unit tests (each a dev dependency only, never shipped), and
   left the manual artifact republish as it is: only a session can publish. (V695)
+- **The modules are layered: each imports only from those below it, and no two import each other.** Keren, on
+  "the modules lean on each other heavily. Untangling them is the next step": "do it". Claude chose the layers
+  (from `format` and `dom` up to `repaint` and `main`) and folded `components.js` and `forms.js` into them. (V696)
 
 - **Version history lives in git, in the commits and tags; decisions live in this register, never in code
   comments.** Keren: "Moving version history out of code comments — do it." (V649)

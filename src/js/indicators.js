@@ -1,15 +1,14 @@
-import { byId, put } from "./refresh-season.js";
+import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, qPretty, srcBlock, yearOf } from "./format.js";
+import { addSources, byId, put } from "./dom.js";
+import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.js";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.js";
-import { confidenceReading, confidenceRecord, labRow, productivityReading } from "./data.js";
-import { buffettHistory, longCycleSrc, refitHistory, timelineWindow, valRow, valuation, windowYears } from "./components.js";
-import { CONFIDENCE_SRC, histHead, histNote, meterFlagged, PRODUCTIVITY_SRC } from "./history.js";
-import { atMonth, attachHistory, calendarTodayY, cycleSlice, divergeChart, hiCard, highlightsHtml, histBar, histControls, histTip, maxIn, pageCycle, trendOf, trendPill, yearOf } from "./charts.js";
-import { currentEra, marketReading, markSvg, sp500AnnualReturnSource } from "./forms.js";
-import { GROUP_MARK, keyed, pageRange, peekOf, ROSTER } from "./roster.js";
-import { addSources } from "./model.js";
-import { factsFrom, metricSheet, registerTiming, sheetRenderers, srcBlock, subjectIcon, timingPill } from "./render-core.js";
-import { fmtSigned } from "./render-pages.js";
-import { catItem, qPretty } from "./pages-nav.js";
+import { calendarTodayY } from "./refresh-season.js";
+import { buffettHistory, CONFIDENCE_SRC, labRow, longCycleSrc, PRODUCTIVITY_SRC, sp500AnnualReturnSource, valRow, valuation } from "./data.js";
+import { currentEra, cycleSlice } from "./model.js";
+import { attachHistory, histControls, histHead, histNote, pageCycle, pageRange, refitHistory, timelineWindow } from "./history.js";
+import { confidenceReading, confidenceRecord, marketReading, meterFlagged, productivityReading } from "./readings.js";
+import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.js";
+import { catItem, catList, metricSheet, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.js";
 
 // ---- The split indicators: one card and one page each ----
 var BUFFETT_2001 = [
@@ -18,13 +17,6 @@ var BUFFETT_2001 = [
   { t:"Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
     u:"https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf" }
 ];
-export function debtSvg(){ return markSvg('<path d="M4 20h16M6.5 16h11M9 12h6M11 8h2" stroke-width="1.9"/>'); }
-export function interestSvg(){ return markSvg('<path d="M18.5 5.5 5.5 18.5" stroke-width="1.9"/>' +
-  '<circle cx="7.2" cy="7.2" r="2.3" stroke-width="1.7"/><circle cx="16.8" cy="16.8" r="2.3" stroke-width="1.7"/>'); }
-export function budgetSvg(){ return markSvg('<path d="M12 4v16M8 20h8M4.5 8h15" stroke-width="1.8"/>' +
-  '<path d="M4.5 8 2.5 13.5h4zM19.5 8l-2 5.5h4z" stroke-width="1.6"/>'); }
-export function lede(text){ return '<p class="hi-lede">' + text + '</p>'; }
-export function periodOf(row){ return (/^(FY\d{4}|Q[1-4] \d{4})/.exec(row.shortNote || "") || [])[1] || ""; }
 function meterWord(m){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(){
   var tenth = function(v){ return v.toFixed(1) + "%"; };
@@ -130,7 +122,6 @@ export function catSheet(id, key){
   sheet.className += " cat-sheet cat-" + key;
   return sheet;
 }
-export function catList(html){ return '<div class="cat-list">' + html + '</div>'; }
 export function groupId(name){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }
 function groupCard(grp, name){
   var first = grp.firstChild, card = first.cloneNode(true);

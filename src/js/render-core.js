@@ -1,41 +1,20 @@
-import { byId, dataCompiledLabel, focusQuiet, layer, onScreen, put } from "./refresh-season.js";
-import { fedFunds, fedFundsRange, fmtAsOf, GYN } from "./live.js";
-import { curveAsOf, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory, yieldCurve } from "./data.js";
-import { desireHistoryChart, hyOas, hyWindowFrom, M2V_FROM_YEAR, m2vHistory, qWindowFrom, timelineFor, velocityHistoryChart } from "./components.js";
-import { headPickRow, HIST_NOTE, histHead, M2_FROM_YEAR, m2GrowthChart, m2Yoy } from "./history.js";
-import { attachHistory, AXIS, chartAxes, colPeek, colWidth, crossLine, cycleQtrIdx, cycleSlice, dropWhatIsShown, fitGroup, hiCard, histControls, histFrame, horizonInfoHtml, mean, moreRow, openCycle, pageCycle, pressureZone, publishGeom, rangeBar, trendOf, trendPill } from "./charts.js";
-import { CHEV } from "./forms.js";
-import { HIST_HEAD, PAGE_STOPS, pageRange, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
-import { addSources, drawSpreadView, HZN_SPREADS, pressureView, setPressureView, setSpreadPick, spreadLabel, spreadPick, svgEl } from "./model.js";
-import { openIndicatorsPage } from "./render-pages.js";
+import { CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock } from "./format.js";
+import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, onScreen, put, svgEl } from "./dom.js";
+import { GYN } from "./live.js";
+import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.js";
+import { dataCompiledLabel } from "./refresh-season.js";
+import { curveAsOf, fedFunds, fedFundsRange, hyOas, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory, yieldCurve } from "./data.js";
+import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.js";
+import { attachHistory, headPickRow, HIST_HEAD, HIST_NOTE, histControls, histHead, hyWindowFrom, PAGE_STOPS, pageCycle, pageRange, qWindowFrom, rangeBar, timelineFor } from "./history.js";
+import { DATED_UNIT, growthShownCap, horizonInfoHtml, marketCol, marketWord, phaseClass, pressureZone } from "./readings.js";
+import { desireHistoryChart, heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.js";
+import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.js";
 
 // ---- RENDER: range bars + card helpers ----
-export function clampPct(v, lo, hi){ return Math.max(0, Math.min(100, ((v - lo) / (hi - lo)) * 100)); }
-export var detailTexts = [];
-export function detailSlot(html){
-  var key = String(html == null ? "" : html);
-  var idx = detailSlots[key];
-  if (idx === undefined){
-    idx = detailTexts.length;
-    detailTexts.push(key);
-    detailSlots[key] = idx;
-  }
-  return idx;
-}
 export function metricSheet(id){
   var sheet = document.createElement("div");
   sheet.className = "metric-sheet"; sheet.id = id; sheet.hidden = true;
   return sheet;
-}
-export function ledeHtml(text){ return '<p class="lede">' + text + '</p>'; }
-export function facts(list){ return '<ul class="facts">' + list.map(function(f){ return "<li>" + f + "</li>"; }).join("") + '</ul>'; }
-export function factsFrom(text){
-  var parts = String(text).replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-Z(“"'"'"'])/);
-  return facts(parts.filter(function(x){ return x.trim(); }));
-}
-export function expandBtn(fullHtml){
-  return '<button type="button" class="expand-btn" data-detail-idx="' + detailSlot(fullHtml) +
-         '" aria-label="Expand details">i</button>';
 }
 export var sheetRenderers = {};
 export function drawsPage(id, draw){ sheetRenderers[id] = draw; if (ROSTER_BY[id].hk) sheetRenderers[ROSTER_BY[id].hk] = draw; }
@@ -77,7 +56,6 @@ function wireDetailModal(){
   });
 }
 export var detailClose = null;
-export function srcBlock(list){ return '<div class="src">' + srcHtml(list) + '</div>'; }
 /* ---- THE SUBJECT ROW ---- */
 export function subjectRow(o){
   return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
@@ -90,7 +68,6 @@ export function subjectRow(o){
     '</div></div>';
 }
 export function subjectIcon(state, svg){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
-function srcHtml(list){ return list.map(function(s){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
 function timingMark(kind){
   var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
   return '<svg viewBox="0 0 20 12" aria-hidden="true">' +
@@ -425,10 +402,10 @@ function renderPressurePage(){
   var matPick = "10y";
   var SERIES = maturities.map(function(m){ return { key:m.code, label:m.name.replace("-Month", "M").replace("-Year", "Y") }; });
   GYN.on("pickSeries", function(bar, code){
-    matPick = code; setPressureView("yield"); maturities.forEach(function(m){ m.on = (m.code === matPick); });
+    matPick = code; pressureView = "yield"; maturities.forEach(function(m){ m.on = (m.code === matPick); });
     drawPressure();
   });
-  GYN.on("pickSpread", function(code){ setSpreadPick(code); setPressureView("spread"); drawPressure(); });
+  GYN.on("pickSpread", function(code){ spreadPick = code; pressureView = "spread"; drawPressure(); });
   registerFlowPages();
 
   function matOf(code){ return maturities.filter(function(m){ return m.code === code; })[0]; }
@@ -502,13 +479,88 @@ function renderPressureInsights(){
     "relief; a low level with a steep curve is one at rest that expects to work."));
   ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '</section>';
 }
+export function catList(html){ return '<div class="cat-list">' + html + '</div>'; }
+export function marketPeek(y, from){
+  var v = sp500AnnualReturns[y], w = v == null ? null : marketWord(v);
+  return w && peekOf("sheet-sign-market", { value:fmtSigned(v, 1) + "%", word:w.text, state:w.state, colBase:0, colRule:true,
+    cols:sp500Years.filter(function(d){ return d.y >= from && d.y <= y; }).map(function(d){ return d.v; }), colClass:marketCol });
+}
+export var drawSpreadWindow = null, spreadPick = "3m", pressureView = "yield", drawSpreadView = null;
+var HZN_SPREADS = [{ key:"3m", label:"10Y − 3M" }, { key:"2y", label:"10Y − 2Y" }];
+function spreadLabel(key){
+  var r = HZN_SPREADS.filter(function(x){ return x.key === key; })[0];
+  return r ? r.label : HZN_SPREADS[0].label;
+}
+var openIndicatorsPage = null;
+function peekArt(src){ return src.querySelector(".peek-chart"); }
+export function catItem(src, key){
+  var open = src.getAttribute("data-open");
+  var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
+  (window.__CAT_SNAP = window.__CAT_SNAP || {})[open] = src.cloneNode(true);
+  var item = catCard(src, cardDate(ROSTER_BY[open]));
+  if (src.parentNode) src.parentNode.removeChild(src);
+  return item;
+}
+export function catCard(src, when){
+  var open = src.getAttribute("data-open"), item = document.createElement("button");
+  item.type = "button"; item.className = "cat-item";
+  item.setAttribute("data-open", open);
+  item.setAttribute("data-title", src.getAttribute("data-title") || "");
+  var head = document.createElement("div"); head.className = "ci-head";
+  var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
+  holder.className = "peek-mark"; if (glyph) holder.appendChild(glyph);
+  head.appendChild(holder);
+  var nm = document.createElement("span"); nm.className = "ci-name";
+  var kick = src.querySelector(".peek-kicker");
+  nm.textContent = kick ? kick.textContent.replace(/\s+/g, " ").trim()
+                        : (src.getAttribute("data-title") || "");
+  head.appendChild(nm);
+  var body = document.createElement("div"); body.className = "ci-body";
+  var read = document.createElement("div"); read.className = "ci-read";
+  var val = src.querySelector(".peek-value, .subject-value");
+  if (val){
+    var unit = val.querySelector(".peek-unit, .unit");
+    if (unit){
+      var m = DATED_UNIT.exec(unit.textContent.trim());
+      if (m){ unit.textContent = m[1]; if (!when) when = m[2]; }
+    }
+    val.className = "ci-value";
+    if (unit) unit.className = "ci-unit";
+    read.appendChild(val);
+  }
+  var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+  if (!word || !word.textContent.trim()) word = (val && val.querySelector(".tag")) || document.createElement("span");
+  word.classList.add("ci-word"); read.appendChild(word);
+  body.appendChild(read);
+  var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
+  if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
+             slot.appendChild(mini); body.appendChild(slot); }
+  var wh = document.createElement("span"); wh.className = "ci-when"; wh.textContent = when;
+  head.appendChild(wh);
+  var chev = document.createElement("span");
+  chev.innerHTML = CHEV;
+  head.appendChild(chev.firstChild);
+  item.appendChild(head); item.appendChild(body);
+  return item;
+}
+export function tempPeek(r, value, cpi){
+  var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +
+    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+  return peekOf("sheet-metric-temp", { value:value, word:word, state:heatStep(r.cpiNow),
+    cols:cpi.map(function(d){ return d.v; }), colClass:function(v){ return "temp-col " + heatStep(v); } });
+}
+export function gdpPeek(r, gq){
+  return peekOf("sheet-metric-gdp", { value:fmtSigned(r.gdpLatest.v, 1) + "%",
+    word:growthShownCap(r.regime), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
+    colClass:function(v, i){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
+}
 
 export function setHeldHighlights(v){ heldHighlights = v; return v; }
-
-var detailSlots;
+export function setOpenIndicatorsPage(v){ openIndicatorsPage = v; return v; }
+export function setDrawSpreadWindow(v){ drawSpreadWindow = v; return v; }
+export function setDrawSpreadView(v){ drawSpreadView = v; return v; }
 
 export function bootRenderCore(){
-  detailSlots = Object.create(null);
   GYN.step("wireDetailModal", wireDetailModal, "wire");
   wireDetailModal();
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----

@@ -71,8 +71,8 @@ console.log('\nThe growth window is said one way\n');
 }
 console.log('\nProductivity\u2019s word follows the two BLS lines its note cites\n');
 {
-  const DATA = fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8');
-  const consts = /\n(?:export )?(var PRODUCTIVITY_TREND = [^\n]*;)/.exec(DATA)[1];
+  const consts = /\n(?:export )?(var PRODUCTIVITY_TREND = [^\n]*;)/.exec(fs.readFileSync(path.join(__dirname, '..', 'src/js/data.js'), 'utf8'))[1];
+  const DATA = fs.readFileSync(path.join(__dirname, '..', 'src/js/readings.js'), 'utf8');
   const start = DATA.indexOf('function productivityWord(');
   let i = DATA.indexOf('{', start), d = 0, j = i;
   for (; j < DATA.length; j++) { if (DATA[j] === '{') d++; else if (DATA[j] === '}') { d--; if (!d) break; } }
@@ -80,8 +80,7 @@ console.log('\nProductivity\u2019s word follows the two BLS lines its note cites
   ok('at or above the long-run line is above trend', [W.productivityWord(2.2).text, W.productivityWord(2.1).text], ['Above trend', 'Above trend']);
   ok('between the lines is above the slowdown', [W.productivityWord(2.09).text, W.productivityWord(1.3).text], ['Above the slowdown', 'Above the slowdown']);
   ok('below the slowdown line says so, and is not good', [W.productivityWord(1.29).text, W.productivityWord(1.29).state], ['Below the slowdown', 'warning']);
-  const NOTE = fs.readFileSync(path.join(__dirname, '..', 'src/js/history.js'), 'utf8');
-  const note = NOTE.slice(NOTE.indexOf('function productivityInfoHtml'), NOTE.indexOf('function outputInfoHtml'));
+  const note = DATA.slice(DATA.indexOf('function productivityInfoHtml'), DATA.indexOf('\n}\n', DATA.indexOf('function productivityInfoHtml')));
   ok('the note cites both lines the word is read against',
      [note.indexOf(W.PRODUCTIVITY_SLOWDOWN + '% a year') > -1, note.indexOf(W.PRODUCTIVITY_TREND + '% a year') > -1], [true, true]);
 }

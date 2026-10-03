@@ -1,15 +1,13 @@
-import { asOfLabel, byId, elFrom, gdpQuarterlyYoY, hubTodayHtml, put, rovingKeys, wheelMeta } from "./refresh-season.js";
+import { facts, fmtSigned, hubLine, ledeHtml, monthLabel, popHead, qLabel, srcBlock } from "./format.js";
+import { byId, detailSlot, detailTexts, elFrom, moreRow, put, rovingKeys } from "./dom.js";
 import { GYN } from "./live.js";
-import { gdpSrc } from "./data.js";
-import { M2_NORM } from "./history.js";
-import { calendarTodayY, moreRow, seasonReading } from "./charts.js";
-import { marketPeek, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./forms.js";
+import { asOfLabel, calendarTodayY, gdpQuarterlyYoY, hubTodayHtml, wheelMeta } from "./refresh-season.js";
+import { gdpSrc, seasonReading, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.js";
+import { cycleModel, cycleYtdFraction, QUARTER_END_MONTH, seasonGroup, seasonTitle } from "./model.js";
 import { CATEGORIES } from "./roster.js";
-import { cycleModel, cycleYtdFraction, monthLabel, qLabel, QUARTER_END_MONTH, seasonGroup, seasonTitle } from "./model.js";
-import { detailSlot, detailTexts, facts, ledeHtml, srcBlock } from "./render-core.js";
-import { fmtSigned, setShownEra, shownEra } from "./render-pages.js";
-import { catList } from "./indicators.js";
-import { catCard, gdpPeek, renderDiagnosis, tempPeek } from "./pages-nav.js";
+import { catCard, catList, gdpPeek, marketPeek, tempPeek } from "./render-core.js";
+import { setShownEra, shownEra } from "./render-pages.js";
+import { renderDiagnosis } from "./diagnosis.js";
 
 // ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
 function drawDial(m){
@@ -134,7 +132,6 @@ function renderCycleKicker(){
   put("cycle-kicker", "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
 }
 // ---- the hub: the reading inside the circle ----
-var dialState;
 function hubSet(dateHtml, meta, y, open){
   put("season-wheel-hub-date", dateHtml);
   var themeEl = byId("season-wheel-hub-theme"), ret = sp500AnnualReturns[y];
@@ -161,8 +158,6 @@ function quarterCards(m, seg){
   return '<div class="cat-sheet cat-weather">' +
     catList(cards.map(function(c){ return c[0] ? catCard(elFrom(c[0]), c[1]).outerHTML : ""; }).join("")) + '</div>';
 }
-function popHead(title, sub){ return '<h4>' + title + '</h4><span class="marker-sub">' + sub + '</span>'; }
-function hubLine(html){ return '<span class="hub-line">' + html + '</span>'; }
 function quarterSheet(m, seg, isPresent){
   var meta = wheelMeta[seg.season], about = meta.name + (meta.theme ? ", " + meta.theme : "");
   return popHead(meta.name + (meta.theme ? ' \u00b7 ' + meta.theme : ''), qLabel(seg.q) + ' \u00b7 year ' + (Math.floor(seg.from) + 1) + ' of the ' + m.era.name) +
@@ -308,13 +303,6 @@ function dialSay(){
   var when = q ? qLabel(q.seg.q) : m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth);
   byId("season-wheel-live").textContent = when + ", " + meta.name + (meta.theme ? ", " + meta.theme : "");
 }
-export function m2Step(v){
-  return v < 0 ? "v5" : v < 3 ? "v4" : v < M2_NORM ? "v3" : v < 12 ? "v2" : v < 20 ? "v1" : "v0";
-}
-export function heatStep(v){
-  if (v < 1) return "s0";
-  return v < 2 ? "s1" : v < 3 ? "s2" : v < 4.5 ? "s3" : v < 6.5 ? "s4" : "s5";
-}
 // ---- the whole view, for one cycle ----
 export function renderCycleView(m){
   drawDial(m);
@@ -413,7 +401,7 @@ export function settleStrips(){
 }
 
 export var growthDetail;
-var hubDetailIdx;
+var dialState, hubDetailIdx;
 
 export function bootDialCycle(){
   GYN.step("wireThemeChoice", wireThemeChoice, "wire");
