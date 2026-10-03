@@ -173,7 +173,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (productivity) out.productivityHistory = q(productivity);
   if (sp500) out.sp500MonthlyHistory = m(sp500);
   if (confidence) out.confidenceHistory = m(confidence);
-  if (durables) out.durablesHistory = m(durables);
+  if (durables) out.durablesHistory = q(durables);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -239,9 +239,9 @@ async function main() {
   say('OECD CCI (US) ' + confidence.length + ' months, ' + confidence[0].m + ' → ' + confidence[confidence.length - 1].m);
 
   const early = await earlySeasons();
-  const durables = yoyMonthly(await fredSeries('PCEDGC96', '1959-01-01'), -60, 80);
-  if (!durables.length) throw new Error('PCEDGC96: no year-over-year month');
-  say('PCEDGC96 YoY  ' + durables.length + ' months, ' + durables[0].m + ' → ' + durables[durables.length - 1].m);
+  const durables = yoyQuarterly(quarterly(await fredSeries('PCDGCC96', '1947-01-01'), 1, 1e5), -60, 80);
+  if (!durables.length) throw new Error('PCDGCC96: no year-over-year quarter');
+  say('PCDGCC96 YoY  ' + durables.length + ' quarters, ' + durables[0].q + ' → ' + durables[durables.length - 1].q);
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
