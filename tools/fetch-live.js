@@ -335,15 +335,7 @@ else (async () => {
     say('vix3m       ' + vix3m.value + '  ' + vix3m.date);
   } catch (e) { failed.push('vix3mClose: ' + e.message); vix3m = null; }
 
-  let oas = null;
-  try {
-    oas = await fredLatest('BAMLH0A0HYM2');
-    if (oas.value < 1 || oas.value > 30) throw new Error('OAS ' + oas.value + ' out of band');
-    say('hyOas       ' + oas.value + '%  ' + oas.date);
-  } catch (e) { failed.push('hyOas: ' + e.message); oas = null; }
-
   if (vix) out.vixClose = { kind: 'scalar', value: vix.value, asOf: vix.date };
-  if (oas) out.hyOasNow = { kind: 'scalar', value: oas.value, asOf: oas.date };
   if (vix3m) out.vix3mClose = { kind: 'scalar', value: vix3m.value, asOf: vix3m.date };
 
   try {

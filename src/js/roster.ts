@@ -2,11 +2,11 @@ import { MONTHS_SHORT, prettyKey, qAtIndex } from "./format.ts";
 import { GYN, LIVE_NAMES, liveIsoOf } from "./live.ts";
 import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { peekCard } from "./charts.ts";
-import { confidenceHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, durablesHistory, fedFundsHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, dsrHistory, hyAt, hyOas, hyQuarters, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEF_FROM_YEAR, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
 import { page } from "./history.ts";
-import { desireRow, indPeriod, vixPct } from "./readings.ts";
+import { indPeriod, vixPct } from "./readings.ts";
 
 // ---- The roster: every reading, declared once ----
 export type Category = { key: string; title: string; shown: number; onDial?: boolean; inTrend?: boolean };
@@ -36,9 +36,6 @@ export function keyed(h: HistSpec | (() => Keyed[])): Keyed[] {
          : { k:h.k === "y" ? String((d as Point).y) : (d as Point)[h.k] as string, v:(d as Point).v };
   });
 }
-function hyMonths(): Keyed[] {
-  return hyOas.map(function(v, i){ var a = hyAt(i); return { k:a.y + "-" + ("0" + a.m).slice(-2), v:v }; });
-}
 function lastDate(R: RosterRow){ var h = keyed(R.hist); return prettyKey(h[h.length - 1].k); }
 function compiledDay(){ return dataCompiledLabel; }
 function isoLabel(iso: string | null | undefined){
@@ -49,10 +46,6 @@ export function paintWhen(sheet: string){
   var R = ROSTER_BY[sheet], when = cardDate(R);
   if (!when) return;
   Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w: Element){ w.textContent = when; });
-}
-function desireWhen(){
-  var m = /(\w{3}) (\d{1,2}),? (\d{4})$/.exec(String((desireRow() || {} as Partial<Indicator>).metricSub || ""));
-  return isoLabel(liveIsoOf("hyOasNow")) || (m ? m[1] + " " + m[2] + ", " + m[3] : "");
 }
 function labPeriod(R: RosterRow){ return periodOf(labRow(R.id)); }
 export function rosterFor(ind: { bodyTerm: string }): RosterRow { return ROSTER.filter(function(R){ return R.term === ind.bodyTerm; })[0]; }
@@ -113,9 +106,9 @@ export function bootRoster(){
     { id:"sheet-sign-sentiment", name:"Volatility", cat:"mood", timing:"leading", mark:volatilitySvg, door:"subject", hk:"fear-range",
       head:"Cboe Volatility Index (VIX)", hist:{ s:volatilityHistory, k:"m" }, ring:vixPct, miniSel:".subject-ring > svg",
       when:function(){ return isoLabel(liveIsoOf("vixClose")) || compiledDay(); }, live:["sentiment", "vixClose", "vix3mClose"] },
-    { id:"sheet-sign-desire", name:"Desire", cat:"mood", timing:"coincident", mark:flameSvg, door:"row", term:"Desire", hk:"desire-range",
-      head:"High-Yield Spread over Treasuries", range:"max", cycles:false, stops:["1y", "max"], hist:hyMonths, peek:hyQuarters,
-      when:desireWhen, live:["coincident", "hyOasNow"] },
+    { id:"sheet-sign-desire", name:"Desire", cat:"mood", timing:"coincident", mark:flameSvg, door:"row", term:"Desire",
+      head:"Real Spending on Durable Goods", hist:{ s:durablesHistory, k:"m" }, mid:DESIRE_LINE, when:lastDate,
+      cardUnit:"durables, YoY" },
     { id:"sheet-sign-confidence", name:"Confidence", cat:"mood", timing:"leading", mark:bagSvg, door:"row", term:"Confidence",
       head:"OECD Consumer Confidence", hist:{ s:confidenceHistory, k:"m" }, mid:CONFIDENCE_LINE, when:lastDate,
       cardUnit:"OECD index" },

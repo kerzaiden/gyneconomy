@@ -691,9 +691,9 @@ async function openPage(p, url, sheet) {
       : bad('past-cycle cards keep today\u2019s design', JSON.stringify(drift.map(k => [k, todaySig[k], eraSig[k]])));
     const blank = got ? got.filter(i => i.val === '\u2014') : [];
     const noHistory = got ? got.filter(i => i.word === 'No history in the app').map(i => i.open) : [];
-    (blank.length && noHistory.every(o => NO_HISTORY.includes(o)) &&
+    (noHistory.every(o => NO_HISTORY.includes(o)) &&
      blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)))
-      ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · '))
+      ? ok('cycle categories leave a short record blank', blank.map(i => i.name + ': ' + i.word).join(' · ') || 'every card measured in this cycle')
       : bad('cycle categories leave a short record blank', JSON.stringify(blank));
 
     await click(p, '#sheet-cat-mood .cat-item[data-open="sheet-grp-valuations"]');
@@ -875,7 +875,7 @@ async function openPage(p, url, sheet) {
       JSON.stringify(roster.ids) === JSON.stringify(roster.cards)
         ? ok('the roster is every card, in card order', roster.ids.length + ' readings')
         : bad('the roster is every card, in card order', 'roster ' + roster.ids.join(',') + ' / cards ' + roster.cards.join(','));
-      (roster.lazy > 0 && roster.keyed)
+      roster.keyed
         ? ok('every series the past cycles read is keyed points', roster.lazy + ' computed series')
         : bad('every series the past cycles read is keyed points', 'a computed series returns bare numbers');
       ['declared twice', 'is split', 'no live reading nowhere'].every(w => roster.warned.indexOf(w) !== -1)

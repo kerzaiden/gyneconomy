@@ -7,10 +7,10 @@ import { now, fedFundsRange, labRow, m2vHistory, unempHistory, M2_PACE_LO, M2_PA
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict } from '../../src/js/readings.ts';
 import { ROSTER } from '../../src/js/roster.ts';
-import { grossDebtQuarterly, productivityHistory, confidenceHistory } from '../../src/js/history-fred.ts';
+import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.ts';
-import { seasonName } from '../../src/js/format.ts';
+import { fmtSigned, seasonName } from '../../src/js/format.ts';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
 const value = sheet => card(sheet).querySelector('.ci-value').firstChild.nodeValue;
@@ -38,6 +38,7 @@ test('each card prints the last value of its own record', () => {
     'sheet-sign-pulse': last(m2vHistory).toFixed(2) + '\u00d7',
     'sheet-sign-activity': r1(last(unempHistory).v) + '%',
     'sheet-sign-productivity-growth': r1(last(productivityHistory).v) + '%',
+    'sheet-sign-desire': fmtSigned(last(durablesHistory).v, 1) + '%',
     'sheet-sign-confidence': r1(last(confidenceHistory).v),
     'sheet-metric-debt': r1(last(grossDebtQuarterly).v) + '%'
   };
@@ -46,7 +47,7 @@ test('each card prints the last value of its own record', () => {
 
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
-  Desire: { from: 3.5, to: 6 }, Pulse: { from: 1.7, to: 2.19 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
+  Desire: { gte: 0 }, Pulse: { from: 1.7, to: 2.19 }, Volume: { from: 3.5, to: 10 }, Activity: { from: 3.5, to: 5 },
   Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
@@ -126,10 +127,11 @@ test('a live yield curve moves the 10-year figure on the Pressure card', async (
   assert.equal(value('sheet-sign-pressure'), '4.44%');
 });
 
-test('a live CAPE and high-yield spread reach the Valuations and Desire cards', async () => {
+test('a live CAPE reaches the Valuations card, and a high-yield spread left in the database is ignored', async () => {
+  const desire = value('sheet-sign-desire');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-01' }, hyOasNow: { kind: 'scalar', value: 4.1, asOf: '2026-10-01' } });
   assert.equal(value('sheet-metric-valuation'), '35.2×');
-  assert.equal(value('sheet-sign-desire'), '4.10%');
+  assert.equal(value('sheet-sign-desire'), desire);
   assert.deepEqual(errors, []);
 });
 
@@ -143,9 +145,8 @@ test('the debt card reads the last backfilled quarter', () => {
 });
 
 test('a newer live document dates its card with its own day', async () => {
-  await deliver({ yieldCurve: { kind: 'series', rows: now.yieldCurve, asOf: '2026-10-05' }, hyOasNow: { kind: 'scalar', value: 3.3, asOf: '2026-10-05' } });
+  await deliver({ yieldCurve: { kind: 'series', rows: now.yieldCurve, asOf: '2026-10-05' } });
   assert.equal(when('sheet-sign-pressure'), 'Oct 5, 2026');
-  assert.equal(when('sheet-sign-desire'), 'Oct 5, 2026');
 });
 
 test('a live document that would break the page is refused and not kept', async () => {

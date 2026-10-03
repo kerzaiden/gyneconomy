@@ -67,8 +67,8 @@ blank the app on every later visit):
   valuation must keep its CAPE row, the coincident rows all three readings, and a yield curve its 3M and 10Y
   inside the fetcher's own 0–20% band. If boot still throws with documents stored, `forgetLive` drops them
   and reloads once on the file's figures (`gyn.forgot` in session storage stops a loop).
-- **Every reading is applied at load.** A scalar that lands inside an object row (`vixClose`, `capeValue`,
-  `hyOasNow`) is applied by `liveInto` right after its row exists, so a second visit no longer shows the file's
+- **Every reading is applied at load.** A scalar that lands inside an object row (`vixClose`,
+  `capeValue`) is applied by `liveInto` right after its row exists, so a second visit no longer shows the file's
   figures.
 - **Applied, not cached, decides a repaint.** `receive` compares a document with what this page load applied
   (`liveApplied`), never with storage, so an unchanged value that was never applied still lands.
@@ -77,7 +77,7 @@ blank the app on every later visit):
   shows the build's figure, not last month's cache.
 - **A past cycle is not overwritten.** `paintReading` leaves a card that a past cycle has taken over, and
   `leaveEra` runs `repaintLive` so the card comes back with today's live figure, not the snapshot.
-- **A card's date is its figure's date.** Pressure, Volatility and Desire date their cards from the applied
+- **A card's date is its figure's date.** Pressure and Volatility date their cards from the applied
   document's `asOf`, and `paintWhen` repaints the date with the figure. `liveApplied` is written before the
   painters run (V698; it was written after, so a card carried the previous document's date).
 - **What is derived from a live figure is derived again when it lands (V698).** A note that quotes a live
@@ -340,7 +340,7 @@ the manifest's; now each module says what it imports.
   Types are syntax, not comments, so the no-comments rule holds. The tools that read the source (`load-order`,
   `uncomment`) parse it after `stripTypeScriptTypes`, which blanks the types and keeps every position; the function
   sizes are measured on TypeScript's own syntax tree, arrow functions and callbacks included.
-- **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`HY_NORM_*`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
+- **A band is declared once and pinned (V700).** Each range a meter draws is a named constant in `data.ts` (`DESIRE_LINE`, `M2_PACE_*`, `ACT_BAND_*`, `VIX_CALM`, `CAPE_FAIR`), and the meter, its label, the verdict word and the note that quotes it all read that constant. The unit tests pin every band to its value and check that each label says the same numbers, so moving a band fails `check` until the pin moves with Keren’s decision. They also check that each card prints the last value of its own record.
 - **The modules are layers, and a module imports only from layers below it** (V696; `npm run hygiene` fails on
   any circle). From the bottom: `format` (text and numbers), `dom` (elements, layers, focus), `live` (the live-data
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
@@ -514,9 +514,7 @@ the other. To close a cycle: set `to`, drop `ongoing`, open the next, add its `c
 BEA's annualized print (−28.0 to +34.9 across 2020) is never carried and never feeds the season model.
 
 **A gap is drawn as a gap.** Oct 2025 has no BLS reading: no column, out of every average; the 30-year
-yield's 2005 gap is real. Match by date, never by row offset. FRED's high-yield OAS window rolls three
-years, so its record low and high are cited on the meter's scale and **cannot be drawn** — never invent
-the missing years, never re-scale the meter to the window.
+yield's 2005 gap is real. Match by date, never by row offset.
 
 **Sources policy.** Every figure cites a primary source: agency, central bank, index originator. No news
 sites, no aggregators. Two compilations cited and labelled: Slickcharts for S&P total returns (cross-checked
@@ -542,7 +540,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 | VIX (close) | 9.14 Nov 3 2017 – 82.69 Mar 16 2020, Cboe via FRED VIXCLS | the market convention (V663, Keren: "set the rules per convention"), `VIX_CALM` 20 and `VIX_FEAR` 30, cited to Chase and TD in `VIX_CONVENTION`: Calm below 20, Elevated 20–30, Fearful above 30; the chart hangs from 20. Its ring is the reading's place between the record low and high on a log scale (`vixPct`) |
 | Buffett Indicator | 32% Q2 1982 – 256% Q2 2026; Fed Z.1 NCBEILQ027S ÷ FRED GDP | ≤ 80%, his 2001 *Fortune* figure |
 | Shiller CAPE | 4.78 Dec 1920 – 44.19 Dec 1999 | ≤ 17×, the series' long-run mean 17.42 |
-| High-yield OAS | 2.41% Jun 2007 – 21.82% Dec 2008, ICE BofA via FRED BAMLH0A0HYM2 | 3.5–6%, `HY_NORM_LO`/`HY_NORM_HI`, four sources in the (i) |
+| Durable goods spending (Desire) | the monthly record since 1960, BEA via FRED DDURRA3M086SBEA | ≥ 0, definitional (more or less than a year earlier) |
 | ISM Manufacturing PMI | 29.4 May 1980 – 77.5 Jul 1950 | ≥ 50, definitional |
 | Unemployment | 2.5% May–Jun 1953 (FRED UNRATE) – 24.9% 1933 (Census) | 3.5–5%, bracketing CBO's NROU ~4.2%; the (i) says which half is sourced |
 | CPI YoY | −15.8% Jun 1921 – 23.7% Jun 1920, BLS | 1–3%, a TARGET |
@@ -554,7 +552,7 @@ reconciled away. **Never restore the word "optimal" on an economic reading.**
 **What each band is**, and the (i) says which: computed from the app's own series (Pulse's pre-2008 range,
 deliberately not "normal"); the 10th–90th percentile where no published norm exists and the series is long
 enough to speak, **and the window is free of a policy floor** (79 years of saving qualifies; the Treasury
-series does not); cited to an outside authority (Desire, CAPE, Buffett); definitional (PMI 50, Horizon's
+series does not); cited to an outside authority (CAPE, Buffett); definitional (PMI 50, Horizon's and Desire's
 zero); bracketed around a published estimate; read one-sided against CBO's 50-year averages (a two-sided
 band would flag the healthy end); against its own mean (debt service — when a verdict already contains a
 threshold, the bar takes that threshold); editorial and Keren's (Temperature). **A band ships with its
@@ -569,9 +567,6 @@ moving anything — only Keren moves the band.
 **Pressure has no band, by decision.** There is no published normal range for an interest rate, and the
 percentile construction fails here: the 87 quarters held contain a decade of a zero-pinned short end. Keren
 was offered three constructions and chose none. **Do not draw one without asking her again.**
-
-**Desire's tag and figure are allowed to disagree** — `High appetite` in green beside `2.73%` in amber.
-Only the band's floor is forced into the chart's scale, never the ceiling.
 
 The three fiscal markers are one balance sheet asked three questions — stock, flow, carrying cost. Until
 V660 they were also summed into Power (100 − their stress composite); Keren removed it, and
@@ -723,7 +718,7 @@ the parent component"): 335px on a phone, 375px wide, 25% taller than before so 
 `divergeChart` and Pressure's two views read `histFrame(W).H` rather than their own numbers, and every axis
 chart takes its four margins from the frame too (`F.L`, `W - F.R`, `F.T`, `H - F.B`); GDP's year-on-year view, the
 one exception, was removed in V668; **the title names the series, never the page** ("CPI, YoY"). **Pressure is the one page
-with no reading, by Keren's decision.** Desire has a bare range bar and no mode bar.
+with no reading, by Keren's decision.**
 
 - **One affordance per subject.** When the chart draws a reading, its note goes in the head's `⋯` menu
   and the row carries no (i). A row that is a door carries the chevron only.

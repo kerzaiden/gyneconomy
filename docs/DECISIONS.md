@@ -509,8 +509,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **In Valuations, Shiller CAPE comes before the Buffett indicator, and the page ends on its own evidence:
   don't re-add "The number you hear quoted" or "What it is and is not"; the caveat stays behind More
   details.** Keren: "Shiller CAPE above the Buffett indicator"; she removed both closing cards. (V365, V494)
-- **The high-yield spread is Desire's figure and appears on no other reading.** It was once tagged good on
-  Desire and warning elsewhere; Keren: "is it the same thing? If so, unite it". (V464)
+- **Desire is consumer demand: real spending on durable goods (BEA's chain-type quantity index, FRED
+  DDURRA3M086SBEA), year over year, monthly from 1960, read against zero only.** Keren's Trello ticket defined desire as a want beyond need and demand as
+  desire plus the means to pay; she likened it to the appetite for life that comes with ovulation. The
+  high-yield spread it replaced is gone from the app, not moved: Keren chose "Durables, spread dropped" after
+  asking whether it duplicated Pressure's Treasury spreads (it did not; those are the yield curve). The quantity
+  index, because BEA's chained-dollar levels begin only in 2007; its growth is real spending growth. Growth rather than durables' share of spending is
+  Claude's call: the share drifts down for decades as goods cheapen against services. Zero is a fact, not a band; any other line on Desire is Keren's to set. The Risk/Reward grid, which needed the
+  spread, went with it. (V703)
 - **Momentum is dropped: Mood has no Momentum card or page.** Keren: "I think the momentum KPI is not very
   informative. So let's drop it." It ran from V672 to V676 (a twelve-month change, a speedometer, then a trend
   alarm against cash); then "Remove the trend against cash. In the diagnosis." The Diagnosis reads Momentum as it
@@ -582,15 +588,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Households' bill is read one-sided against the debt-service series' own mean (`DSR_MEAN`); the cushion
   (saving) takes the 10th–90th percentile of its quarters back to 1947.** The bill reuses the line its word
   already used; the saving record has no policy floor anywhere in it. (V492)
-- **Desire's band is the credit market's documented breaks: below 3.5% is complacency, above 6% is stress,
-  with the 1996-on median (~4.5%) inside.** Keren chose these citable edges over an unsourced 4–5% that had
-  been promoted to a "normal range"; the (i) states them and their sources. (V480)
-- **The Risk/Reward grid on Desire puts risk (CAPE) up the side and reward (the high-yield spread) along the
-  bottom, inside an L of axis rules; it is a position on two axes, not a computed ratio, and its note says
-  so; it is titled "Risk / Reward", never "Ratio".** The L is what Keren meant by "borderlines outside the
-  metric". (V343, V668)
-- **Desire's long caption is gone; the page reads only its short caption.** Keren: "Desire note: remove".
-  (V655)
 - **Every line that says what followed also says how many separate spells it rests on, not only how many
   months.** Keren said "go" to applying time series analysis this way: neighbouring months share most of their next
   year (serial dependence), so a share of months overstates its own weight. The Diagnosis's record reads "N months
@@ -785,8 +782,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Every history page opens in Cycles mode on the current cycle (the front page's cycle), and the mode bar
   reads Cycles on the left and Years on the right.** This is a cycle-tracking app: a reader who taps a reading
   from the current cycle expects that cycle, not a 10-year window. (V410, V417, V418)
-- **In Years mode every history opens on 10Y, the same on every page; Desire offers only 1Y and Max and opens
-  on Max.** Keren: "make the default marker 10 years"; a shared control must never start in different places.
+- **In Years mode every history opens on 10Y, the same on every page.** Keren: "make the default marker 10 years"; a shared control must never start in different places.
   (V368)
 - **The window control sits on the page's own ground above the history card, with `--gap-top` above it; the
   mode bar and the cycle picker (or the years ruler) share one row, the mode bar sized to its two words and
@@ -798,7 +794,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Don't re-add a multi-cycle overlay: the chart shows one cycle at a time, drawn exactly as in Years mode.**
   Five cycles at once forced grey lines that cannot carry the heat ramp; Keren: "I want the same visuals as
   the years." (V420)
-- **The Years ruler draws its stops from the one `TIMELINE_STOPS` list (5Y, 10Y, 25Y, Max, and Desire's 1Y),
+- **The Years ruler draws its stops from the one `TIMELINE_STOPS` list (5Y, 10Y, 25Y, Max),
   with the same labels and order on every page; a page offers a stop only by naming it in its own `stops`, and
   only if its data can fill it; 50Y does not exist.** Keren: "when I change one component, it changes across
   the board"; "we don't want to look at different pages and catch inconsistencies all the time." Two stops
@@ -1051,7 +1047,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   mis-transcribed digit cannot then sit in the app unnoticed. (V299, V306, V358, V643)
 - **Provenance lives on each figure: every card names the day its number derives from, and the Sources screen
   gives the compile date, taken from `DATA_COMPILED`, and names the readings that refresh themselves every
-  weekday (the Treasury yields, the Fed funds rate, the VIX and VIX3M, the high-yield spread, Shiller's CAPE);
+  weekday (the Treasury yields, the Fed funds rate, the VIX and VIX3M, Shiller's CAPE);
   everything else is compiled by hand.** This is why the dial can say "today"; Keren merged the menu's footnote
   and footer into one paragraph, and at V668 chose to name the weekday refresh. (V356, V651, V668)
 - **Every weekday the Data workflow commits the daily figures and then starts the site deploy, so the hosted
@@ -1068,13 +1064,6 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   September 2024 on tradeline data including escrow, so the two are not comparable. (V460)
 - **The personal saving rate (BEA, FRED A072RC1Q156SBEA) is kept in full from 1947.** A claim about the record
   has to be checkable against the record. (V460)
-- **Desire's high-yield OAS (ICE BofA, FRED BAMLH0A0HYM2) is the three years FRED carries; the record low
-  (2.41%, June 2007) and high (21.82%, December 2008) are cited, never drawn, and the missing years are never
-  invented.** ICE licenses the series to FRED on a rolling three-year window. (V475)
-- **Desire's history is kept daily, the one daily series in the app; the nightly task refreshes the reading's
-  figure, and the block is replaced whole about once a quarter rather than appended.** Quarterly averaging
-  would erase the window's only shock (April 7, 2025, 4.61%), and a nightly append would grow the file without
-  end. (V475, V500)
 - **Unemployment is monthly, seasonally adjusted, from January 1948; October 2025 has no reading and is kept
   as a gap, drawn as nothing and left out of every average.** BLS did not publish that month, and joining
   across it would invent a figure. (V498)
@@ -1133,8 +1122,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Optimism through Euphoria, Anxiety, Denial, Fear, Desperation, Panic, Despair, Depression and Hope back to
   Optimism, its colours and both callouts), with today's stage lit.** Keren: "Build it exactly as the reference.
   We don't want to be unique here." Her mood is the average of three rank-to-date readings turned toward
-  appetite: valuations (CAPE and Buffett), calm (the VIX upside down) and consumer confidence; Desire (too short)
-  and Horizon (its level does not sort mood) stay out. That mood is ranked against her own past moods: "One
+  appetite: valuations (CAPE and Buffett), calm (the VIX upside down) and consumer confidence; Desire (spending, not
+  feeling) and Horizon (its level does not sort mood) stay out. That mood is ranked against her own past moods: "One
   person's euphoria is not another person's euphoria … where is she now in relation to her own history of
   emotions." Her direction over three months picks the side of the chart (Keren chose "Direction" on the card;
   three months is Claude's default) and her rank picks the stage on that side whose height on the chart is

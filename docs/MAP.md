@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,746 lines** in 31 files, about 568 KB, roughly **161 thousand tokens**. No session can
+The source is **8,547 lines** in 31 files, about 555 KB, roughly **158 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `aa82770` on 2026-10-03.
+Generated from commit `4df59d1` on 2026-10-03.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `aa82770` on 2026-10-03.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,367 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,333 | the whole stylesheet, every token and rule |
 | `page-body.html` | 390 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 27 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **27** modules, **488** top-level functions, **90** top-level vars, **319** exported names, **17** boots.
+Counts: **27** modules, **477** top-level functions, **87** top-level vars, **308** exported names, **17** boots.
 
 ## Modules, in boot order
 
@@ -32,26 +32,26 @@ Counts: **27** modules, **488** top-level functions, **90** top-level vars, **31
 | `js/dom.ts` | 150 | 17 | `format` |
 | `js/live.ts` | 188 | 18 | `format` |
 | `js/refresh-season.ts` | 39 | 4 | `format`, `history-fred` |
-| `js/data.ts` | 539 | 64 | `format`, `history-fred`, `live`, `refresh-season` |
+| `js/data.ts` | 518 | 56 | `history-fred`, `live`, `refresh-season` |
 | `js/model.ts` | 343 | 43 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
-| `js/history.ts` | 478 | 36 | `charts`, `data`, `dom`, `format`, `live`, `model` |
-| `js/readings.ts` | 821 | 60 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
-| `js/roster.ts` | 150 | 14 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
-| `js/render-core.ts` | 579 | 35 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
+| `js/history.ts` | 469 | 35 | `charts`, `data`, `dom`, `format`, `live`, `model` |
+| `js/readings.ts` | 742 | 57 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
+| `js/roster.ts` | 143 | 12 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
+| `js/render-core.ts` | 564 | 35 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 454 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 88 | 17 | `dom`, `era`, `format`, `live`, `marks`, `model`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 438 | 21 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/analysis.ts` | 247 | 20 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
 | `js/pages-nav.ts` | 330 | 18 | `cycle-tab`, `data`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 191 | 4 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `refresh-season`, `render-pages` |
-| `js/repaint.ts` | 92 | 11 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
+| `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/charts.ts` | 299 | 37 | `format` |
 | `js/cycle-tab.ts` | 98 | 4 | `data`, `dom`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 57 | 29 | — |
-| `js/history-charts.ts` | 458 | 12 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
+| `js/history-charts.ts` | 417 | 11 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 16 | 13 | — |
-| `js/indicators.ts` | 246 | 29 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
+| `js/indicators.ts` | 263 | 31 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 188 | 16 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/marks.ts` | 61 | 22 | — |
@@ -68,20 +68,20 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 1 | `bootDom` | `js/dom.ts:140`–149 |
 | 2 | `bootLive` | `js/live.ts:182`–187 |
 | 3 | `bootRefreshSeason` | `js/refresh-season.ts:29`–38 |
-| 4 | `bootData` | `js/data.ts:487`–538 |
+| 4 | `bootData` | `js/data.ts:468`–517 |
 | 5 | `bootModel` | `js/model.ts:296`–342 |
-| 6 | `bootHistory` | `js/history.ts:453`–477 |
-| 7 | `bootReadings` | `js/readings.ts:633`–727 |
-| 8 | `bootReadingRegistry` | `js/readings.ts:749`–820 |
-| 9 | `bootRoster` | `js/roster.ts:88`–149 |
-| 10 | `bootRenderCore` | `js/render-core.ts:568`–578 |
+| 6 | `bootHistory` | `js/history.ts:444`–468 |
+| 7 | `bootReadings` | `js/readings.ts:587`–658 |
+| 8 | `bootReadingRegistry` | `js/readings.ts:679`–741 |
+| 9 | `bootRoster` | `js/roster.ts:81`–142 |
+| 10 | `bootRenderCore` | `js/render-core.ts:553`–563 |
 | 11 | `bootRenderPages` | `js/render-pages.ts:436`–453 |
 | 12 | `bootDiagnosis` | `js/diagnosis.ts:84`–87 |
 | 13 | `bootDialCycle` | `js/dial-cycle.ts:414`–437 |
 | 14 | `bootAnalysis` | `js/analysis.ts:242`–246 |
 | 15 | `bootPagesNav` | `js/pages-nav.ts:322`–329 |
 | 16 | `bootTabsMenu` | `js/tabs-menu.ts:181`–190 |
-| 17 | `bootRepaint` | `js/repaint.ts:73`–91 |
+| 17 | `bootRepaint` | `js/repaint.ts:65`–81 |
 
 ## Script, module by module
 
@@ -164,90 +164,87 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 12 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
-| 13 | `VIX_CALM` · export | `var VIX_CALM =` |
+| 11 | `CAPE_FAIR` · export | `var CAPE_FAIR =` |
+| 12 | `VIX_CALM` · export | `var VIX_CALM =` |
 
 #### DATA (single source of truth — edit here on refresh)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 62 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
-| 63 | `curveAsOf` · export | `function curveAsOf(` |
-| 66 | `monthsToCurve` | `function monthsToCurve(` |
-| 70 | `deriveUninvLag` · export | `function deriveUninvLag(` |
-| 77 | `t10y3mRecessions` · export | `var t10y3mRecessions =` |
+| 61 | `YIELD_CURVE_ASOF` | `var YIELD_CURVE_ASOF =` |
+| 62 | `curveAsOf` · export | `function curveAsOf(` |
+| 65 | `monthsToCurve` | `function monthsToCurve(` |
+| 69 | `deriveUninvLag` · export | `function deriveUninvLag(` |
+| 76 | `t10y3mRecessions` · export | `var t10y3mRecessions =` |
 
 #### Un-inversion → recession lag, computed from actual history (not a forecasting model or a survey)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 88 | `UNINV_FROM` | `var UNINV_FROM =` |
-| 89 | `uninvLagToday` · export | `var uninvLagToday =` |
-| 124 | `labRow` · export | `function labRow(` |
-| 125 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
+| 87 | `UNINV_FROM` | `var UNINV_FROM =` |
+| 88 | `uninvLagToday` · export | `var uninvLagToday =` |
+| 123 | `labRow` · export | `function labRow(` |
+| 124 | `PRODUCTIVITY_TREND` · export | `var PRODUCTIVITY_TREND =` |
 
 #### Consumer confidence
 
 | Line | Name | Anchor |
 |---|---|---|
-| 127 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
+| 126 | `CONFIDENCE_LINE` · export | `var CONFIDENCE_LINE =` |
+
+#### Desire: real spending on durable goods
+
+| Line | Name | Anchor |
+|---|---|---|
+| 128 | `DESIRE_LINE` · export | `var DESIRE_LINE =` |
 
 #### The deficit, year by year
 
 | Line | Name | Anchor |
 |---|---|---|
-| 130 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
-| 131 | `deficitHistory` · export | `var deficitHistory =` |
-| 132 | `DEF_MEAN` · export | `var DEF_MEAN =` |
-| 135 | `checkDeficitHistory` | `function checkDeficitHistory(` |
-| 140 | `fedFundsRange` · export | `function fedFundsRange(` |
-| 144 | `buffettHistory` · export | `var buffettHistory =` |
-| 145 | `HY_NORM_LO` · export | `var HY_NORM_LO =` |
+| 131 | `DEF_FROM_YEAR` · export | `var DEF_FROM_YEAR =` |
+| 132 | `deficitHistory` · export | `var deficitHistory =` |
+| 133 | `DEF_MEAN` · export | `var DEF_MEAN =` |
+| 136 | `checkDeficitHistory` | `function checkDeficitHistory(` |
+| 141 | `fedFundsRange` · export | `function fedFundsRange(` |
+| 145 | `buffettHistory` · export | `var buffettHistory =` |
 | 146 | `M2_PACE_LO` · export | `var M2_PACE_LO =` |
-| 147 | `hyDates` · export | `var hyDates =` |
-| 148 | `hyOas` · export | `var hyOas =` |
-| 149 | `checkDesireWindow` | `function checkDesireWindow(` |
-| 155 | `hyAt` · export | `function hyAt(` |
-| 159 | `hyLabel` · export | `function hyLabel(` |
-| 160 | `hyNum` · export | `function hyNum(` |
-| 161 | `hyQuarters` · export | `function hyQuarters(` |
-| 169 | `hyQuarterEnds` · export | `function hyQuarterEnds(` |
-| 186 | `syncGrossDebt` | `function syncGrossDebt(` |
-| 196 | `checkGrossDebt` | `function checkGrossDebt(` |
-| 206 | `curveAt` · export | `function curveAt(` |
-| 210 | `curveSpread` · export | `function curveSpread(` |
-| 211 | `policyDirection` · export | `function policyDirection(` |
-| 214 | `syncCapeHistory` · export | `function syncCapeHistory(` |
-| 218 | `valRow` · export | `function valRow(` |
-| 222 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
-| 223 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
-| 224 | `m2vHistory` · export | `var m2vHistory =` |
-| 234 | `checkVelocityHistory` | `function checkVelocityHistory(` |
-| 239 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
-| 240 | `m2Level` | `var m2Level =` |
-| 241 | `m2Yoy` · export | `var m2Yoy =` |
-| 242 | `M2_NORM` · export | `var M2_NORM =` |
-| 243 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
-| 244 | `unempHistory` · export | `var unempHistory =` |
-| 248 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
-| 256 | `NROU_NOW` · export | `var NROU_NOW =` |
-| 257 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
-| 264 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
-| 265 | `CPI_TARGET` · export | `var CPI_TARGET =` |
-| 266 | `GDP_NORM` · export | `var GDP_NORM =` |
-| 267 | `checkMoneyStock` | `function checkMoneyStock(` |
-| 330 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 331 | `dsrHistory` · export | `var dsrHistory =` |
-| 332 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
-| 333 | `savHistory` · export | `var savHistory =` |
-| 334 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 342 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 343 | `dsrNow` · export | `var dsrNow =` |
-| 344 | `savNow` · export | `var savNow =` |
-| 345 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 346 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 357 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 479 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 163 | `syncGrossDebt` | `function syncGrossDebt(` |
+| 173 | `checkGrossDebt` | `function checkGrossDebt(` |
+| 183 | `curveAt` · export | `function curveAt(` |
+| 187 | `curveSpread` · export | `function curveSpread(` |
+| 188 | `policyDirection` · export | `function policyDirection(` |
+| 191 | `syncCapeHistory` · export | `function syncCapeHistory(` |
+| 195 | `valRow` · export | `function valRow(` |
+| 199 | `PULSE_PRE2008` · export | `var PULSE_PRE2008 =` |
+| 200 | `M2V_FROM_YEAR` · export | `var M2V_FROM_YEAR =` |
+| 201 | `m2vHistory` · export | `var m2vHistory =` |
+| 215 | `checkVelocityHistory` | `function checkVelocityHistory(` |
+| 220 | `M2_FROM_YEAR` · export | `var M2_FROM_YEAR =` |
+| 221 | `m2Level` | `var m2Level =` |
+| 222 | `m2Yoy` · export | `var m2Yoy =` |
+| 223 | `M2_NORM` · export | `var M2_NORM =` |
+| 224 | `UNEMP_FROM_YEAR` | `var UNEMP_FROM_YEAR =` |
+| 225 | `unempHistory` · export | `var unempHistory =` |
+| 229 | `checkUnemploymentHistory` | `function checkUnemploymentHistory(` |
+| 237 | `NROU_NOW` · export | `var NROU_NOW =` |
+| 238 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
+| 245 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
+| 246 | `CPI_TARGET` · export | `var CPI_TARGET =` |
+| 247 | `GDP_NORM` · export | `var GDP_NORM =` |
+| 248 | `checkMoneyStock` | `function checkMoneyStock(` |
+| 311 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
+| 312 | `dsrHistory` · export | `var dsrHistory =` |
+| 313 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
+| 314 | `savHistory` · export | `var savHistory =` |
+| 315 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 323 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 324 | `dsrNow` · export | `var dsrNow =` |
+| 325 | `savNow` · export | `var savNow =` |
+| 326 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 327 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 338 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 460 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/model.ts`
 
@@ -336,31 +333,30 @@ falls in. **export** marks a name other modules import.
 | 93 | `headMenuShut` | `function headMenuShut(` |
 | 98 | `histNote` · export | `function histNote(` |
 | 99 | `TIMELINE_STOPS` | `var TIMELINE_STOPS =` |
-| 108 | `timelineSpan` · export | `function timelineSpan(` |
-| 113 | `timelineFor` · export | `function timelineFor(` |
-| 130 | `windowScale` · export | `function windowScale(` |
-| 145 | `histReadEnsure` · export | `function histReadEnsure(` |
-| 165 | `histReadFill` · export | `function histReadFill(` |
-| 215 | `histAxisEnds` | `function histAxisEnds(` |
-| 226 | `histLegend` · export | `function histLegend(` |
-| 285 | `refitHistory` · export | `function refitHistory(` |
-| 295 | `wireHistHover` | `function wireHistHover(` |
-| 328 | `histShow` | `function histShow(` |
-| 337 | `histLive` | `function histLive(` |
-| 344 | `histKeysWire` | `function histKeysWire(` |
-| 358 | `mWindowFrom` · export | `function mWindowFrom(` |
-| 362 | `qWindowFrom` · export | `function qWindowFrom(` |
-| 366 | `defFrom` · export | `function defFrom(` |
-| 370 | `hyWindowFrom` · export | `function hyWindowFrom(` |
-| 378 | `tabSegs` · export | `function tabSegs(` |
-| 386 | `modeBar` | `function modeBar(` |
-| 391 | `controlKeys` · export | `function controlKeys(` |
-| 399 | `histControls` · export | `function histControls(` |
-| 409 | `pageCycle` · export | `function pageCycle(` |
-| 414 | `cyclePicker` | `function cyclePicker(` |
-| 433 | `rangeBar` · export | `function rangeBar(` |
-| 438 | `headSigma` · export | `function headSigma(` |
-| 443 | `attachHistory` · export | `function attachHistory(` |
+| 107 | `timelineSpan` · export | `function timelineSpan(` |
+| 112 | `timelineFor` · export | `function timelineFor(` |
+| 129 | `windowScale` · export | `function windowScale(` |
+| 144 | `histReadEnsure` · export | `function histReadEnsure(` |
+| 164 | `histReadFill` · export | `function histReadFill(` |
+| 214 | `histAxisEnds` | `function histAxisEnds(` |
+| 225 | `histLegend` · export | `function histLegend(` |
+| 284 | `refitHistory` · export | `function refitHistory(` |
+| 294 | `wireHistHover` | `function wireHistHover(` |
+| 327 | `histShow` | `function histShow(` |
+| 336 | `histLive` | `function histLive(` |
+| 343 | `histKeysWire` | `function histKeysWire(` |
+| 357 | `mWindowFrom` · export | `function mWindowFrom(` |
+| 361 | `qWindowFrom` · export | `function qWindowFrom(` |
+| 365 | `defFrom` · export | `function defFrom(` |
+| 369 | `tabSegs` · export | `function tabSegs(` |
+| 377 | `modeBar` | `function modeBar(` |
+| 382 | `controlKeys` · export | `function controlKeys(` |
+| 390 | `histControls` · export | `function histControls(` |
+| 400 | `pageCycle` · export | `function pageCycle(` |
+| 405 | `cyclePicker` | `function cyclePicker(` |
+| 424 | `rangeBar` · export | `function rangeBar(` |
+| 429 | `headSigma` · export | `function headSigma(` |
+| 434 | `attachHistory` · export | `function attachHistory(` |
 
 ### `js/readings.ts`
 
@@ -370,69 +366,66 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 22 | `productivityWord` | `function productivityWord(` |
 | 33 | `confidenceWord` | `function confidenceWord(` |
-| 39 | `deficitBlock` · export | `function deficitBlock(` |
-| 114 | `deriveVolumeTag` | `function deriveVolumeTag(` |
-| 118 | `meterFlagged` · export | `function meterFlagged(` |
-| 125 | `desireInfoHtml` | `function desireInfoHtml(` |
-| 148 | `volumeInfoHtml` | `function volumeInfoHtml(` |
-| 162 | `pulseInfoHtml` | `function pulseInfoHtml(` |
-| 175 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
-| 187 | `productivityInfoHtml` | `function productivityInfoHtml(` |
-| 201 | `activityInfoHtml` | `function activityInfoHtml(` |
-| 220 | `temperatureInfoHtml` | `function temperatureInfoHtml(` |
-| 251 | `desireBlock` | `function desireBlock(` |
-| 261 | `volumeBlock` | `function volumeBlock(` |
-| 271 | `velocityRecordBlock` | `function velocityRecordBlock(` |
-| 281 | `volumeVerdict` · export | `function volumeVerdict(` |
-| 288 | `unempState` · export | `function unempState(` |
-| 294 | `growthInfoHtml` · export | `function growthInfoHtml(` |
-| 316 | `velocityVerdict` | `function velocityVerdict(` |
-| 324 | `derivePulseTag` | `function derivePulseTag(` |
-| 359 | `volatilityTag` · export | `function volatilityTag(` |
-| 365 | `fearCurve` · export | `function fearCurve(` |
-| 370 | `curveVerdict` · export | `function curveVerdict(` |
-| 375 | `valuationVerdict` · export | `function valuationVerdict(` |
-| 383 | `tempCaptionFull` · export | `var tempCaptionFull =` |
-| 384 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
-| 389 | `pressureZone` · export | `function pressureZone(` |
-| 395 | `HZN_BACK` | `var HZN_BACK =` |
-| 396 | `hznLast` | `function hznLast(` |
-| 397 | `hznRecord` | `function hznRecord(` |
-| 401 | `hznBack` | `function hznBack(` |
-| 402 | `horizonWord` | `function horizonWord(` |
-| 408 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
-| 439 | `riskCell` | `function riskCell(` |
-| 440 | `riskMatrixBlock` · export | `function riskMatrixBlock(` |
-| 470 | `riskMatrixNote` | `var riskMatrixNote =` |
-| 494 | `pulseBlock` | `function pulseBlock(` |
-| 510 | `householdsWord` | `function householdsWord(` |
-| 517 | `dsrInfoHtml` · export | `function dsrInfoHtml(` |
-| 534 | `savInfoHtml` · export | `function savInfoHtml(` |
-| 551 | `vixPct` · export | `function vixPct(` |
-| 555 | `volatilityRing` · export | `function volatilityRing(` |
-| 560 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
-| 574 | `marketWord` · export | `function marketWord(` |
-| 578 | `marketCol` · export | `function marketCol(` |
-| 579 | `marketInfoHtml` | `function marketInfoHtml(` |
-| 588 | `rowReadings` · export | `function rowReadings(` |
-| 589 | `indOf` · export | `function indOf(` |
-| 590 | `policyFacts` | `function policyFacts(` |
-| 597 | `policyFactRows` · export | `function policyFactRows(` |
-| 603 | `growthShownCap` · export | `function growthShownCap(` |
-| 604 | `phaseClass` · export | `function phaseClass(` |
-| 605 | `activityStackHtml` | `function activityStackHtml(` |
-| 615 | `seatTemperature` | `function seatTemperature(` |
-| 623 | `DATED_UNIT` · export | `var DATED_UNIT =` |
-| 624 | `indPeriod` · export | `function indPeriod(` |
+| 39 | `desireWord` | `function desireWord(` |
+| 45 | `deficitBlock` · export | `function deficitBlock(` |
+| 107 | `deriveVolumeTag` | `function deriveVolumeTag(` |
+| 111 | `meterFlagged` · export | `function meterFlagged(` |
+| 118 | `volumeInfoHtml` | `function volumeInfoHtml(` |
+| 132 | `pulseInfoHtml` | `function pulseInfoHtml(` |
+| 145 | `confidenceInfoHtml` | `function confidenceInfoHtml(` |
+| 157 | `desireInfoHtml` | `function desireInfoHtml(` |
+| 168 | `productivityInfoHtml` | `function productivityInfoHtml(` |
+| 182 | `activityInfoHtml` | `function activityInfoHtml(` |
+| 201 | `temperatureInfoHtml` | `function temperatureInfoHtml(` |
+| 232 | `volumeBlock` | `function volumeBlock(` |
+| 242 | `velocityRecordBlock` | `function velocityRecordBlock(` |
+| 252 | `volumeVerdict` · export | `function volumeVerdict(` |
+| 259 | `unempState` · export | `function unempState(` |
+| 265 | `growthInfoHtml` · export | `function growthInfoHtml(` |
+| 287 | `velocityVerdict` | `function velocityVerdict(` |
+| 295 | `derivePulseTag` | `function derivePulseTag(` |
+| 330 | `volatilityTag` · export | `function volatilityTag(` |
+| 336 | `fearCurve` · export | `function fearCurve(` |
+| 341 | `curveVerdict` · export | `function curveVerdict(` |
+| 346 | `valuationVerdict` · export | `function valuationVerdict(` |
+| 354 | `tempCaptionFull` · export | `var tempCaptionFull =` |
+| 355 | `PRESSURE_ZONES` | `var PRESSURE_ZONES =` |
+| 360 | `pressureZone` · export | `function pressureZone(` |
+| 366 | `HZN_BACK` | `var HZN_BACK =` |
+| 367 | `hznLast` | `function hznLast(` |
+| 368 | `hznRecord` | `function hznRecord(` |
+| 372 | `hznBack` | `function hznBack(` |
+| 373 | `horizonWord` | `function horizonWord(` |
+| 379 | `horizonInfoHtml` · export | `function horizonInfoHtml(` |
+| 400 | `pulseBlock` | `function pulseBlock(` |
+| 416 | `householdsWord` | `function householdsWord(` |
+| 423 | `dsrInfoHtml` · export | `function dsrInfoHtml(` |
+| 440 | `savInfoHtml` · export | `function savInfoHtml(` |
+| 457 | `vixPct` · export | `function vixPct(` |
+| 461 | `volatilityRing` · export | `function volatilityRing(` |
+| 466 | `volatilityDetailHtml` · export | `function volatilityDetailHtml(` |
+| 480 | `marketWord` · export | `function marketWord(` |
+| 484 | `marketCol` · export | `function marketCol(` |
+| 485 | `marketInfoHtml` | `function marketInfoHtml(` |
+| 494 | `rowReadings` · export | `function rowReadings(` |
+| 495 | `indOf` · export | `function indOf(` |
+| 496 | `policyFacts` | `function policyFacts(` |
+| 503 | `policyFactRows` · export | `function policyFactRows(` |
+| 509 | `growthShownCap` · export | `function growthShownCap(` |
+| 510 | `phaseClass` · export | `function phaseClass(` |
+| 511 | `activityStackHtml` | `function activityStackHtml(` |
+| 521 | `seatTemperature` | `function seatTemperature(` |
+| 529 | `DATED_UNIT` · export | `var DATED_UNIT =` |
+| 530 | `indPeriod` · export | `function indPeriod(` |
+| 539 | `deriveFeelingReadings` | `function deriveFeelingReadings(` |
 
 #### Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring
 
 | Line | Name | Anchor |
 |---|---|---|
-| 728 | `isNum` | `function isNum(` |
-| 729 | `rowsOk` | `function rowsOk(` |
-| 735 | `deriveHorizon` | `function deriveHorizon(` |
-| 748 | `desireRow` · export | `function desireRow(` |
+| 659 | `isNum` | `function isNum(` |
+| 660 | `rowsOk` | `function rowsOk(` |
+| 666 | `deriveHorizon` | `function deriveHorizon(` |
 
 ### `js/roster.ts`
 
@@ -441,19 +434,17 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 32 | `keyed` · export | `function keyed(` |
-| 39 | `hyMonths` | `function hyMonths(` |
-| 42 | `lastDate` | `function lastDate(` |
-| 43 | `compiledDay` | `function compiledDay(` |
-| 44 | `isoLabel` | `function isoLabel(` |
-| 48 | `paintWhen` · export | `function paintWhen(` |
-| 53 | `desireWhen` | `function desireWhen(` |
-| 57 | `labPeriod` | `function labPeriod(` |
-| 58 | `rosterFor` · export | `function rosterFor(` |
-| 59 | `peekOf` · export | `function peekOf(` |
-| 64 | `cardDate` · export | `function cardDate(` |
-| 65 | `checkRoster` | `function checkRoster(` |
-| 83 | `periodOf` · export | `function periodOf(` |
-| 84 | `categoriesShown` · export | `function categoriesShown(` |
+| 39 | `lastDate` | `function lastDate(` |
+| 40 | `compiledDay` | `function compiledDay(` |
+| 41 | `isoLabel` | `function isoLabel(` |
+| 45 | `paintWhen` · export | `function paintWhen(` |
+| 50 | `labPeriod` | `function labPeriod(` |
+| 51 | `rosterFor` · export | `function rosterFor(` |
+| 52 | `peekOf` · export | `function peekOf(` |
+| 57 | `cardDate` · export | `function cardDate(` |
+| 58 | `checkRoster` | `function checkRoster(` |
+| 76 | `periodOf` · export | `function periodOf(` |
+| 77 | `categoriesShown` · export | `function categoriesShown(` |
 
 ### `js/render-core.ts`
 
@@ -488,29 +479,29 @@ falls in. **export** marks a name other modules import.
 | 162 | `withLatestPoint` | `function withLatestPoint(` |
 | 167 | `pressureMaturities` | `function pressureMaturities(` |
 | 191 | `registerFlowPages` | `function registerFlowPages(` |
-| 245 | `renderPressureRow` | `function renderPressureRow(` |
-| 253 | `ylmYearMarks` | `function ylmYearMarks(` |
-| 272 | `ylmColumns` | `function ylmColumns(` |
-| 292 | `ylmFitLine` | `function ylmFitLine(` |
-| 304 | `pressureHead` | `function pressureHead(` |
-| 322 | `showPressureView` | `function showPressureView(` |
-| 327 | `renderPressurePage` | `function renderPressurePage(` |
+| 230 | `renderPressureRow` | `function renderPressureRow(` |
+| 238 | `ylmYearMarks` | `function ylmYearMarks(` |
+| 257 | `ylmColumns` | `function ylmColumns(` |
+| 277 | `ylmFitLine` | `function ylmFitLine(` |
+| 289 | `pressureHead` | `function pressureHead(` |
+| 307 | `showPressureView` | `function showPressureView(` |
+| 312 | `renderPressurePage` | `function renderPressurePage(` |
 
 #### Pressure's Insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 458 | `renderPressureInsights` | `function renderPressureInsights(` |
-| 493 | `catList` · export | `function catList(` |
-| 494 | `marketPeek` · export | `function marketPeek(` |
-| 499 | `spreadPick` · export | `var spreadPick =` |
-| 500 | `HZN_SPREADS` | `var HZN_SPREADS =` |
-| 501 | `spreadLabel` | `function spreadLabel(` |
-| 505 | `peekArt` | `function peekArt(` |
-| 506 | `catItem` · export | `function catItem(` |
-| 514 | `catCard` · export | `function catCard(` |
-| 556 | `tempPeek` · export | `function tempPeek(` |
-| 562 | `gdpPeek` · export | `function gdpPeek(` |
+| 443 | `renderPressureInsights` | `function renderPressureInsights(` |
+| 478 | `catList` · export | `function catList(` |
+| 479 | `marketPeek` · export | `function marketPeek(` |
+| 484 | `spreadPick` · export | `var spreadPick =` |
+| 485 | `HZN_SPREADS` | `var HZN_SPREADS =` |
+| 486 | `spreadLabel` | `function spreadLabel(` |
+| 490 | `peekArt` | `function peekArt(` |
+| 491 | `catItem` · export | `function catItem(` |
+| 499 | `catCard` · export | `function catCard(` |
+| 541 | `tempPeek` · export | `function tempPeek(` |
+| 547 | `gdpPeek` · export | `function gdpPeek(` |
 
 ### `js/render-pages.ts`
 
@@ -752,11 +743,10 @@ falls in. **export** marks a name other modules import.
 | 37 | `repaintVolatility` | `function repaintVolatility(` |
 | 41 | `repaintPressureRow` | `function repaintPressureRow(` |
 | 46 | `repaintPressureChart` | `function repaintPressureChart(` |
-| 50 | `repaintDesire` | `function repaintDesire(` |
-| 58 | `syncCape` | `function syncCape(` |
-| 59 | `repaintValuationRow` | `function repaintValuationRow(` |
-| 64 | `repaintPolicy` | `function repaintPolicy(` |
-| 68 | `repaintDiagnosis` | `function repaintDiagnosis(` |
+| 50 | `syncCape` | `function syncCape(` |
+| 51 | `repaintValuationRow` | `function repaintValuationRow(` |
+| 56 | `repaintPolicy` | `function repaintPolicy(` |
+| 60 | `repaintDiagnosis` | `function repaintDiagnosis(` |
 
 ### `js/charts.ts`
 
@@ -889,16 +879,15 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 11 | `deficitChart` · export | `function deficitChart(` |
 | 78 | `velocityHistoryChart` · export | `function velocityHistoryChart(` |
-| 129 | `desireHistoryChart` · export | `function desireHistoryChart(` |
-| 170 | `yearTicks` | `function yearTicks(` |
-| 185 | `unempHistoryChart` · export | `function unempHistoryChart(` |
-| 226 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
-| 271 | `householdsChart` · export | `function householdsChart(` |
-| 316 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
-| 357 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
-| 407 | `m2GrowthChart` · export | `function m2GrowthChart(` |
-| 451 | `m2Step` · export | `function m2Step(` |
-| 454 | `heatStep` · export | `function heatStep(` |
+| 129 | `yearTicks` | `function yearTicks(` |
+| 144 | `unempHistoryChart` · export | `function unempHistoryChart(` |
+| 185 | `fedFundsHistoryChart` · export | `function fedFundsHistoryChart(` |
+| 230 | `householdsChart` · export | `function householdsChart(` |
+| 275 | `cpiHistoryChart` · export | `function cpiHistoryChart(` |
+| 316 | `gdpHistoryChart` · export | `function gdpHistoryChart(` |
+| 366 | `m2GrowthChart` · export | `function m2GrowthChart(` |
+| 410 | `m2Step` · export | `function m2Step(` |
+| 413 | `heatStep` · export | `function heatStep(` |
 
 ### `js/history-fred.ts`
 
@@ -930,36 +919,38 @@ falls in. **export** marks a name other modules import.
 | 28 | `meterWord` | `function meterWord(` |
 | 29 | `splitPages` | `function splitPages(` |
 | 46 | `confidencePage` | `function confidencePage(` |
-| 52 | `marketPage` | `function marketPage(` |
-| 58 | `productivityPage` | `function productivityPage(` |
-| 63 | `splitSpec` | `function splitSpec(` |
-| 69 | `splitInfo` | `function splitInfo(` |
-| 73 | `periodTicks` | `function periodTicks(` |
-| 78 | `periodOfSeries` | `function periodOfSeries(` |
-| 79 | `drawSplit` | `function drawSplit(` |
-| 96 | `mountSplit` | `function mountSplit(` |
-| 109 | `splitPeek` | `function splitPeek(` |
-| 116 | `indicatorPeeks` · export | `function indicatorPeeks(` |
-| 124 | `deficitPeek` | `function deficitPeek(` |
-| 128 | `catSheet` · export | `function catSheet(` |
-| 133 | `groupId` · export | `function groupId(` |
-| 134 | `groupCard` | `function groupCard(` |
-| 142 | `groupSheet` | `function groupSheet(` |
-| 149 | `appendPicks` · export | `function appendPicks(` |
-| 157 | `doorSel` | `function doorSel(` |
-| 158 | `catPicks` · export | `function catPicks(` |
+| 52 | `desirePage` | `function desirePage(` |
+| 58 | `marketPage` | `function marketPage(` |
+| 64 | `productivityPage` | `function productivityPage(` |
+| 69 | `splitSpec` | `function splitSpec(` |
+| 75 | `splitInfo` | `function splitInfo(` |
+| 79 | `periodTicks` | `function periodTicks(` |
+| 84 | `periodOfSeries` | `function periodOfSeries(` |
+| 85 | `drawSplit` | `function drawSplit(` |
+| 102 | `mountSplit` | `function mountSplit(` |
+| 115 | `splitPeek` | `function splitPeek(` |
+| 122 | `indicatorPeeks` · export | `function indicatorPeeks(` |
+| 130 | `deficitPeek` | `function deficitPeek(` |
+| 134 | `catSheet` · export | `function catSheet(` |
+| 139 | `groupId` · export | `function groupId(` |
+| 140 | `groupCard` | `function groupCard(` |
+| 148 | `groupSheet` | `function groupSheet(` |
+| 155 | `appendPicks` · export | `function appendPicks(` |
+| 163 | `doorSel` | `function doorSel(` |
+| 164 | `catPicks` · export | `function catPicks(` |
 
 #### The split indicators' insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 170 | `buffettInsight` | `function buffettInsight(` |
-| 185 | `debtInsight` | `function debtInsight(` |
-| 200 | `productivityInsight` | `function productivityInsight(` |
-| 210 | `confidenceInsight` | `function confidenceInsight(` |
-| 221 | `ORDINAL` | `var ORDINAL =` |
-| 222 | `marketInsight` | `function marketInsight(` |
-| 234 | `interestInsight` | `function interestInsight(` |
+| 176 | `buffettInsight` | `function buffettInsight(` |
+| 191 | `debtInsight` | `function debtInsight(` |
+| 206 | `productivityInsight` | `function productivityInsight(` |
+| 216 | `confidenceInsight` | `function confidenceInsight(` |
+| 227 | `desireInsight` | `function desireInsight(` |
+| 238 | `ORDINAL` | `var ORDINAL =` |
+| 239 | `marketInsight` | `function marketInsight(` |
+| 251 | `interestInsight` | `function interestInsight(` |
 
 ### `js/inner-pages.ts`
 
@@ -1072,20 +1063,20 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 483 | journal (editorial content tab) |
 | 489 | content tab: reading companion |
 | 538 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 732 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 807 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 880 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,049 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,064 | The symptoms: a cycle's years against today |
-| 1,141 | hero: yield curve |
-| 1,171 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,190 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,217 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,225 | long cycle (structural layer) |
-| 1,232 | indicator grid |
-| 1,258 | info icon + popover (progressive disclosure for longer notes) |
-| 1,272 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,357 | footer |
+| 729 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 773 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 846 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,015 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,030 | The symptoms: a cycle's years against today |
+| 1,107 | hero: yield curve |
+| 1,137 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,156 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,183 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,191 | long cycle (structural layer) |
+| 1,198 | indicator grid |
+| 1,224 | info icon + popover (progressive disclosure for longer notes) |
+| 1,238 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,323 | footer |
 
 ## Markup landmarks
 

@@ -3,7 +3,7 @@ import { atMonth, atQuarter, fmtSigned, qAtIndex } from "./format.ts";
 import { avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
 import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, HY_NORM_HI, HY_NORM_LO, hyAt, hyLabel, hyOas, M2_FROM_YEAR, M2_NORM, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, unempHistory } from "./data.ts";
+import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FROM_YEAR, M2_NORM, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, unempHistory } from "./data.ts";
 import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
 import { unempState } from "./readings.ts";
@@ -125,47 +125,6 @@ export function velocityHistoryChart(Wpx: number, from: number, to?: number | nu
     'aria-label="Velocity of M2, every quarter from ' + y0 + ' to ' + y1 +
     ', against the 1959 to 2007 average of ' + PULSE_PRE2008.toFixed(2) + ' times">' +
     out.join("") + '</svg>';
-}
-export function desireHistoryChart(Wpx: number, from: number){
-  var F = histFrame(Wpx), W = F.W, H = F.H,
-      L = F.L, R = F.R, T = F.T, B = F.B;
-  from = from || 0;
-  var ser = hyOas.slice(from), n = ser.length;
-  var sc = windowScale(ser, [0, HY_NORM_LO]);
-  var LO = sc.lo, HI = sc.hi;
-  var X = function(i: number){ var h = (R - L) / (2 * Math.max(1, n));
-    return L + h + (R - L - 2 * h) * i / Math.max(1, n - 1); };
-  var Y = function(v: number){ return B - (B - T) * (v - LO) / (HI - LO); };
-  var f = function(v: number){ return v.toFixed(1); };
-  var out: string[] = [];
-  out.push(chartAxes({ ticks:sc.ticks, y:Y, x0:L, x1:R, base:B, top:(T - AXIS.LEG - AXIS.READ), bot:B,
-    fmt:function(g: number){ return g.toFixed(1) + "%"; } }));
-  var y0 = hyAt(from).y, seen: Record<number, number> = {};
-  for (var gi = 0; gi < n; gi++){
-    var yr = hyAt(from + gi).y;
-    if (seen[yr] || yr === y0){ seen[yr] = 1; continue; }
-    seen[yr] = 1;
-    out.unshift(vGrid(X(gi), T, B));
-    out.push(xLabel(f(X(gi)), yr, B + 17));
-  }
-  out.push(crossLine(T, B));
-  var hyAvg = ser.reduce(function(a, v){ return a + v; }, 0) / (n || 1);
-  publishGeom("desireHistoryChart", { L:L, R:R, T:T, B:B, W:W, n:n,
-                   at:function(d: unknown, i: number){ return hyLabel(from + i); },
-                   fmt:function(v: number){ return v.toFixed(2) + "%"; },
-                   refs:[{ label:"Average", v:hyAvg, cls:"hy-avg" }],
-                   vals:ser.map(function(v: number){ return { v:v }; }) });
-  out.push('<path class="hy-avg" d="M' + f(X(0)) + ',' + f(Y(hyAvg)) + 'H' + f(X(n - 1)) + '"/>');
-  var hySlot = (R - L) / Math.max(1, n), hySw = colWidth(hySlot);
-  ser.forEach(function(v, i){
-    var st = v < HY_NORM_LO ? "tight" : v <= HY_NORM_HI ? "good" : v < 10 ? "warning" : "serious";
-    out.push('<path class="hy-col2 hcol ' + st + '" stroke-width="' + hySw.toFixed(2) +
-      '" d="' + colPath(X(i), Y(0), Y(v), hySw) + '"/>');
-  });
-  out.push(fitLine(ser, "day", function(v: number){ return v.toFixed(2) + "%"; }, X(0), X(n - 1), Y, R, L, 0));
-  return vhOpen(W, H) +
-    'aria-label="High-yield credit spread, every trading day from ' + hyLabel(from) + ' to ' + hyLabel(hyOas.length - 1) +
-    ', against the normal ' + HY_NORM_LO + ' to ' + HY_NORM_HI + ' percent band">' + out.join("") + '</svg>';
 }
 function yearTicks(out: string[], vals: { m: string }[], w: { y0: number; y1: number; cycle?: boolean; narrow: boolean }, X: (i: number) => number, T: number, B: number, f: (v: number) => string){
   var years = windowYears(w.y0, w.y1, w.narrow ? 4 : 5);
