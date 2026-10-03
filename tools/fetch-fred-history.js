@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const OUT = path.join(__dirname, '..', 'src', 'js', 'history-fred.js');
+const OUT = path.join(__dirname, '..', 'src', 'data', 'fred.json');
 const KEY = process.env.FRED_API_KEY;
 
 const say = m => console.log(m);
@@ -157,44 +157,24 @@ function fiscalYears(rows, lo, hi) {
 }
 
 function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early) {
-  const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
-  const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return `export var fedFundsHistory = [${rows(fedFunds)}];
-export var volatilityHistory = [${rows(volatility)}];
-` + (fiscal ? fiscalBlock(fiscal) : '') + (treasury ? treasuryBlock(treasury) : '') +
-    (productivity ? 'export var productivityHistory = [' + qrows(productivity) + '];\n' : '') +
-    (sp500 ? 'export var sp500MonthlyHistory = [' + rows(sp500) + '];\n' : '') +
-    (confidence ? 'export var confidenceHistory = [' + rows(confidence) + '];\n' : '') + earlyBlock(early);
-}
-
-function earlyBlock(e) {
-  e = e || { gdp: [], cpi: [], returns: {}, growth: {} };
-  const rows = a => a.map(d => '{m:"' + d.m + '",v:' + d.v + '}').join(',');
-  const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return 'export var gdpYoYBefore = [' + qrows(e.gdp) + '];\nexport var cpiYoYBefore = [' + rows(e.cpi) + '];\n' +
-    'export var sp500ReturnsBefore = {' + Object.keys(e.returns).map(y => y + ':' + e.returns[y]).join(',') + '};\n' +
-    'export var gdpGrowthBefore = {' + Object.keys(e.growth || {}).map(y => y + ':' + e.growth[y]).join(',') + '};\n';
-}
-
-function treasuryBlock(t) {
-  const rows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + (d.partial ? ',partial:true' : '') + '}').join(',');
-  return `export var treasuryQuarterly = {
-${Object.keys(t).map(k => '  ' + k + ':[' + rows(t[k]) + ']').join(',\n')}
-};
-`;
-}
-
-function fiscalBlock(f) {
-  const yrows = a => a.map(d => '{y:' + d.y + ',v:' + d.v + '}').join(',');
-  const qrows = a => a.map(d => '{q:"' + d.q + '",v:' + d.v + '}').join(',');
-  return `export var fiscalHistory = {
-  gross:[${yrows(f.gross)}],
-  held:[${yrows(f.held)}],
-  interest:[${yrows(f.interest)}],
-  budget:[${yrows(f.budget)}]
-};
-export var grossDebtQuarterly = [${qrows(f.grossQ)}];
-`;
+  const m = a => a.map(d => ({ m: d.m, v: d.v }));
+  const q = a => a.map(d => ({ q: d.q, v: d.v }));
+  const y = a => a.map(d => ({ y: d.y, v: d.v }));
+  const e = early || { gdp: [], cpi: [], returns: {}, growth: {} };
+  const out = { fedFundsHistory: m(fedFunds), volatilityHistory: m(volatility) };
+  if (fiscal) {
+    out.fiscalHistory = { gross: y(fiscal.gross), held: y(fiscal.held), interest: y(fiscal.interest), budget: y(fiscal.budget) };
+    out.grossDebtQuarterly = q(fiscal.grossQ);
+  }
+  if (treasury) {
+    out.treasuryQuarterly = {};
+    for (const k of Object.keys(treasury)) out.treasuryQuarterly[k] = treasury[k].map(d => d.partial ? { q: d.q, v: d.v, partial: true } : { q: d.q, v: d.v });
+  }
+  if (productivity) out.productivityHistory = q(productivity);
+  if (sp500) out.sp500MonthlyHistory = m(sp500);
+  if (confidence) out.confidenceHistory = m(confidence);
+  Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
+  return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
 
 async function main() {
@@ -287,5 +267,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { damodaranReturns, yoyMonthly, yoyQuarterly2, earlyBlock, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { damodaranReturns, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

@@ -6,7 +6,7 @@ import { trendOf, histFrame, colPath, colWidth, AXIS } from '../../src/js/charts
 import { curveVerdict, valuationVerdict } from '../../src/js/readings.js';
 import { ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, prettyKey, monthLabel } from '../../src/js/format.js';
 import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.js';
-import { merge } from '../../src/js/live.js';
+import { merge, plainText } from '../../src/js/live.js';
 import { seasonGroup, seasonTitle, yearAfter } from '../../src/js/model.js';
 import * as fred from '../../src/js/history-fred.js';
 
@@ -94,16 +94,23 @@ test('merge lays a live document over the literal, one level deep', () => {
   assert.deepEqual(merge({ a: 1, b: { c: 1 } }, { b: { d: 2 } }), { a: 1, b: { d: 2 } });
 });
 
+test('a live document carries plain text only, at any depth', () => {
+  assert.equal(plainText({ kind:'object', lastMoveLabel:'raised a quarter point', rows:[{ m:'1M', y:4.1 }] }), true);
+  assert.equal(plainText({ kind:'object', lastMoveLabel:'<img src=x onerror=alert(1)>' }), false);
+  assert.equal(plainText({ kind:'object', rows:[{ label:'a" onmouseover="x' }] }), false);
+  assert.equal(plainText({ kind:'object', ['<b>']:1 }), false);
+});
+
 test('dates and the Fed range are written once', () => {
   assert.equal(fmtAsOf('2026-09-30'), 'Sep 30 2026');
   assert.match(fedFundsRange(), /^\d\.\d\d(–\d\.\d\d)?%$/);
 });
 
-test('the Fred backfill writes the stored module back byte for byte', () => {
+test('the Fred backfill writes the stored figures back byte for byte', () => {
   const { emit } = require('../../tools/fetch-fred-history.js');
   const early = { gdp: fred.gdpYoYBefore, cpi: fred.cpiYoYBefore, returns: fred.sp500ReturnsBefore, growth: fred.gdpGrowthBefore };
   const fiscal = Object.assign({}, fred.fiscalHistory, { grossQ: fred.grossDebtQuarterly });
   const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, fred.treasuryQuarterly, fred.productivityHistory,
     fred.sp500MonthlyHistory, fred.confidenceHistory, early);
-  assert.equal(out, fs.readFileSync(new URL('../../src/js/history-fred.js', import.meta.url), 'utf8'));
+  assert.equal(out, fs.readFileSync(new URL('../../src/data/fred.json', import.meta.url), 'utf8'));
 });

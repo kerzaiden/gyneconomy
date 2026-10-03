@@ -19,7 +19,12 @@ export function docValue(d){
 }
 export function docOk(name, d){
   var r = READINGS[name];
-  try { return !!r && shapeOk(r, docValue(d)) && JSON.stringify(d).indexOf("<") < 0; } catch (e) { return false; }
+  try { return !!r && shapeOk(r, docValue(d)) && plainText(d); } catch (e) { return false; }
+}
+export function plainText(v){
+  if (typeof v === "string") return !/[<>"]/.test(v);
+  if (v && typeof v === "object") return Object.keys(v).every(function(k){ return plainText(k) && plainText(v[k]); });
+  return true;
 }
 export function LIVE(name, fallback){
   var d = LIVE_CACHE[name];
