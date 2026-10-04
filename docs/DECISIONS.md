@@ -1186,7 +1186,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   its first and last month (one word when they agree; none before her mood can be read) and the S&P 500's return
   for the year ("so far" for the year in progress), all from the app's own record, nothing written by hand. The
   year opens the sheet of its last quarter, the one the dial's centre opens. A closed cycle ends on "After": the
-  S&P 500 a year after the close. (1.8.0)
+  S&P 500 a year after the close. That figure is the S&P 500's return in the calendar year after the close, from
+  the yearly record the rows above it print, so every cycle back to 1928 ends on one; Claude's call, replacing the
+  monthly average twelve months on, which opens in 1948 and left the five cycles before 1947 without it. (1.8.0,
+  0.1.1)
 - **The Mood page has one Insights box (since 1.5.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
@@ -1251,6 +1254,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   version's merge commit, and a GitHub Release built on that tag, its notes taken from the merge. The Tag workflow
   makes both. The tags 1.0.0 to 1.8.0 stay on their commits but get no Release, so the Releases page starts at
   0.0.9. "Next version, 0.0.9 ships as it is, and the fix comes at 0.1.0." (0.1.0)
+- **A number the abandoned line already tagged is never tagged or released over.** The tags v1.0.0 to v1.8.0
+  name commits of the line given up, so the draft's own 1.0.0 cannot take its tag while they stand. The Tag
+  workflow names such a version and turns red instead of skipping it or putting its Release on the old commit,
+  and `npm run bump` refuses the number. Claude's call, for Keren to overturn; retiring the old tags before 1.0.0
+  is hers to decide. (0.1.1)
 - **Which number moves:**
   - **Major** for a redesign, or a change to how the app is read: a season, cycle or mood model redefined,
     a category or tab added or removed, the book's framework changed.

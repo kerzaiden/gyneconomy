@@ -1311,6 +1311,7 @@
   .card .details-link:hover{ text-decoration:underline; }
 
   .card .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin: 6px 0 10px; flex:1; }
+  .caption.era-blurb{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .card .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:auto;
@@ -1563,7 +1564,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.1.0 (728)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.1.1 (729)</span></p>
     </div>
   </div>
 
@@ -2127,8 +2128,8 @@
     return true;
   }
   function olderThanFile(name, d) {
-    var got = isoDay(d && d.asOf);
-    return !!got && got < newestDay(name);
+    var floor = newestDay(name), got = isoDay(d && d.asOf);
+    return !!got && got < floor;
   }
   function liveInto(name) {
     var d = LIVE_CACHE[name];
@@ -28930,22 +28931,9 @@
       return x != null && x < v;
     }).length / prior.length;
   }
-  var marketCache = null;
-  function marketMonths() {
-    if (marketCache) return marketCache;
-    var spAt = {};
-    sp500MonthlyHistory.forEach(function(d, i) {
-      spAt[d.m] = i;
-    });
-    marketCache = {
-      sp: sp500MonthlyHistory,
-      spAt: spAt
-    };
-    return marketCache;
-  }
-  function yearAfter(S, m) {
-    var i = S.spAt[m];
-    return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
+  function yearAfter(endYear) {
+    var v = sp500AnnualReturns[endYear + 1];
+    return v != null ? v : null;
   }
   function diagnoseToday() {
     var x = moodToday();
@@ -29009,10 +28997,10 @@
   var MOOD_TURN = 3;
   var MOOD_RISING = [ [ "Despair", 0 ], [ "Depression", 5 ], [ "Hope", 24 ], [ "Optimism", 51 ], [ "Excitement", 75 ], [ "Thrill", 92 ], [ "Euphoria", 100 ] ];
   var MOOD_FALLING = [ [ "Despair", 0 ], [ "Panic", 9 ], [ "Desperation", 30 ], [ "Fear", 52 ], [ "Denial", 74 ], [ "Anxiety", 91 ], [ "Euphoria", 100 ] ];
-  function moodWord(pct2, change) {
-    if (pct2 == null || change == null) return null;
+  function moodWord(pct, change) {
+    if (pct == null || change == null) return null;
     return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s) {
-      return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
+      return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a;
     })[0];
   }
   function moodRead(x, before) {
@@ -29653,9 +29641,9 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct2, state, label, cls) {
+  function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
+    var offset = c * (1 - clampPct(pct, 0, 100) / 100);
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
@@ -33278,13 +33266,13 @@
     var cycAvg = inCycle.length ? mean(inCycle.map(function(d) {
       return d.v;
     })) : null;
-    var pct2 = function(v) {
+    var pct = function(v) {
       return v.toFixed(2) + "%";
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -33957,7 +33945,7 @@
     var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
     var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
     var reading = seasonReading[seg.season] || {};
-    return head + (isPresent ? `<p class="caption" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">` + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
+    return head + (isPresent ? '<p class="caption era-blurb">' + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
       return "<li>" + w + "</li>";
     }).join("") + "</ul></div>" : "") + (reading.fromTheBook && reading.fromTheBook.length ? '<div class="reading-book"><h5>From the book</h5>' + reading.fromTheBook.map(function(x) {
       return "<blockquote>" + x.text + (x.title ? '<br><span class="marker-sub">— ' + x.title + "</span>" : "") + "</blockquote>";
@@ -33975,15 +33963,12 @@
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
   } ];
-  function pct(v) {
-    return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
-  }
   function diagnosisHtml(m) {
     var open = m.ongoing, d = open ? diagnoseToday() : {
-      after: yearAfter(marketMonths(), m.endMonth)
+      after: yearAfter(m.endYear)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 a year after the close", "<b>" + pct(d.after) + "</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -35602,13 +35587,13 @@
     };
   }
   function desirePage() {
-    var r = desireReading, pct2 = function(v) {
+    var r = desireReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -35625,13 +35610,13 @@
     };
   }
   function premiumPage() {
-    var r = premiumReading, pct2 = function(v) {
+    var r = premiumReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No premium",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -35648,13 +35633,13 @@
     };
   }
   function marketPage() {
-    var r = marketReading, pct2 = function(v) {
+    var r = marketReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },

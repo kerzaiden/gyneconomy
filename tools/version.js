@@ -49,6 +49,13 @@ function fromTags(lines) {
   return { build, version };
 }
 
+function tagged(version) {
+  try {
+    execSync('git rev-parse -q --verify refs/tags/v' + version, { cwd: ROOT, stdio: 'ignore' });
+    return true;
+  } catch (e) { return false; }
+}
+
 function newestTags() {
   try {
     const out = execSync('git tag --list "v[0-9]*" --format="%(refname:short)%09%(contents:subject)"',
@@ -90,4 +97,4 @@ function setPackage(v) {
   return true;
 }
 
-module.exports = { read, next, compare, label, fromTags, newestTags, swBuild, bodyLabel, stamp, setPackage };
+module.exports = { read, next, compare, label, fromTags, newestTags, tagged, swBuild, bodyLabel, stamp, setPackage };

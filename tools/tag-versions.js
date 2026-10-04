@@ -45,6 +45,18 @@ function plan(log, tags, buildAt) {
   return out.reverse();
 }
 
+function taken(log, at) {
+  return line(log).filter(v => at['v' + v.version] && at['v' + v.version] !== v.sha)
+    .map(v => ({ tag: 'v' + v.version, sha: v.sha, held: at['v' + v.version] }));
+}
+
+function tagCommits(sh) {
+  const at = {};
+  sh('git for-each-ref refs/tags --format="%(refname:short) %(*objectname) %(objectname)"').split('\n').filter(Boolean)
+    .forEach(l => { const [name, peeled, own] = l.split(' '); at[name] = peeled || own; });
+  return at;
+}
+
 function notes(body, build) {
   const kept = body.split('\n').filter(l => !TRAILER.test(l)).join('\n').trim();
   return 'Build ' + build + '.' + (kept ? '\n\n' + kept : '') + '\n';
@@ -65,8 +77,8 @@ function hasRelease(tag) {
 }
 
 function release(sh, log, buildAt) {
-  const tags = new Set(sh('git tag --list "v[0-9]*.*"').split('\n').filter(Boolean));
-  const todo = line(log).filter(v => tags.has('v' + v.version)).reverse();
+  const at = tagCommits(sh);
+  const todo = line(log).filter(v => at['v' + v.version] === v.sha).reverse();
   todo.forEach((v, i) => {
     const tag = 'v' + v.version;
     if (hasRelease(tag)) return;
@@ -92,8 +104,10 @@ function main() {
     if (!pushTag(t.tag)) lost.push(t.tag);
   }
   if (lost.length) console.log('\nrefused by GitHub, left untagged: ' + lost.join(', '));
+  const held = taken(log, tagCommits(sh));
+  held.forEach(h => console.log('\n' + h.tag + ' already names ' + h.held.slice(0, 7) + ' from a line given up, so ' + h.sha.slice(0, 7) + ' is left untagged and gets no Release'));
   if (process.argv.includes('--release')) release(sh, log, buildAt);
-  if (lost.some(t => /^v\d+\.\d+\.\d+$/.test(t))) process.exitCode = 1;
+  if (held.length || lost.some(t => /^v\d+\.\d+\.\d+$/.test(t))) process.exitCode = 1;
 }
 
-if (require.main === module) main(); else module.exports = { plan, line, notes, slug };
+if (require.main === module) main(); else module.exports = { plan, line, taken, notes, slug };
