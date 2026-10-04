@@ -298,8 +298,7 @@ async function openPage(p, url, sheet) {
     });
     const today = await read();
     await sweep(p);
-    const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
-    (today && today.visible && FEEL.test(today.title) && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
+    (today && today.visible && today.title === 'AI Cycle' && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
      today.boxes === 'trend,trend,sys' && today.doors === 1 && !today.after)
       ? ok('the Diagnosis sits under the dial: the story, then the cycle year by year', today.title)
       : bad('the Diagnosis sits under the dial: the story, then the cycle year by year', JSON.stringify(today));
@@ -312,11 +311,11 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => [...document.querySelectorAll('.era-row')].find(r => /Big Tech/.test(r.textContent)).click());
     await settle(p);
     const past = await read();
-    const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] + 1);
+    const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
     (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'trend,trend,sys' && past.doors === 1 && past.after &&
      yearRun(past.years) && past.opens >= past.years.length - 1)
-      ? ok('the cycle reads year by year, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
-      : bad('the cycle reads year by year, each year opening its quarter, today and at a close', JSON.stringify([today, past]));
+      ? ok('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
+      : bad('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', JSON.stringify([today, past]));
     const pastFigs = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(item => {
       const v = item.querySelector('.ci-value');
       return v && item.__today ? { name: item.dataset.title, fig: v.firstChild.nodeValue.trim(), today: item.__today.text.trim() } : null;
@@ -336,7 +335,7 @@ async function openPage(p, url, sheet) {
     (!spill.length)
       ? ok('a closed cycle\u2019s preview columns stay inside their card', 'none past the frame')
       : bad('a closed cycle\u2019s preview columns stay inside their card', JSON.stringify(spill));
-    (past && past.visible && past.title === 'Cycle story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -502,8 +501,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
     const feel = await p.evaluate(() => {
       const card = document.querySelector('#diagnosis .trend-card');
-      return { stage: document.querySelector('#diagnosis .trend-head').textContent.trim().split(' ')[0],
-        head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
+      return { head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
     });
     await click(p, '#diagnosis .trend-card'); await settle(p);
     await click(p, '#sheet-cat-mood:not([hidden]) .cat-analysis .more-row'); await settle(p);
@@ -516,10 +514,10 @@ async function openPage(p, url, sheet) {
     });
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (feel.head && feel.head.indexOf(feel.stage + ' in ') === 0 && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
+    (feel.head === 'AI Cycle' && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
-     cyc.es === '0:1' && feel.stage.toUpperCase() === cyc.now[0])
+     cyc.es === '0:1')
       ? ok('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
       : bad('the trend card opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '#season-wheel-hub-open'); await settle(p);

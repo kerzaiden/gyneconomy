@@ -73,5 +73,4 @@ export function fmtSigned(v: number, dp: number){ var a = Math.abs(v).toFixed(dp
 export function popHead(title: string, sub: string){ return '<h4>' + title + '</h4><span class="marker-sub">' + sub + '</span>'; }
 export function hubLine(html: string){ return '<span class="hub-line">' + html + '</span>'; }
 export function qPretty(q: unknown){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
-export function seasonName(s: string){ return s.charAt(0).toUpperCase() + s.slice(1); }
 export function capeFmt1(v: number){ return v.toFixed(1) + "\u00d7"; }

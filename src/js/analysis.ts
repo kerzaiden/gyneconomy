@@ -1,4 +1,4 @@
-import { CHEV, fmtSigned } from "./format.ts";
+import { CHEV } from "./format.ts";
 import { addSources, need, ui } from "./dom.ts";
 import { GYN, repaintLive } from "./live.ts";
 import { colPeek, pulsePeek, vitalRingSvg } from "./charts.ts";
@@ -7,6 +7,7 @@ import { marketCycles, sp500AnnualReturnSource, typicalCycleSrc } from "./data.t
 import { currentEra, cycLabel, eraGrowth, eraInflation, eraMarketTotal, nowModel } from "./model.ts";
 import { page } from "./history.ts";
 import { CATEGORIES } from "./roster.ts";
+import { econChips } from "./render-core.ts";
 import { setTopbar } from "./render-pages.ts";
 import { eraFig, kT, prettyK, readingRoster, rosterRows, upTo } from "./era.ts";
 import { replaceCategory } from "./category-analysis.ts";
@@ -26,11 +27,7 @@ function cycleRowsHtml(){
     var head = '<span class="era-name">' + cyc.name + '</span>' +
       '<span class="era-years">' + cycLabel(cyc).years + ' <b>(' + strip.years + 'Y)</b></span>' + CHEV;
     var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
-    var foot = '<div class="era-foot"><span class="era-econ">' +
-      '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span>' +
-      '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + '%</span>' +
-      (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + '%' + (cyc.ongoing ? '<span class="unit"> so far</span>' : '') + '</span>' : '') +
-      '</span></div>';
+    var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
     return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div>' +
           '<div class="era-bands">' + bands + '</div>' + foot + '</div>';
   }).join('');
