@@ -388,15 +388,19 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const chartOf = () => p.evaluate(() => {
       const s = document.querySelector('#metric-page #sheet-cycle-chart'), c = s && s.querySelector('.labs');
-      return c ? { open: !s.hidden, name: s.querySelector('.ca-name').textContent, picked: s.querySelector('.cycsel-btn .cycsel-nm').textContent,
-        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length } : null;
+      return c ? { open: !s.hidden, picked: s.querySelector('.cycsel-btn .cycsel-nm').textContent,
+        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length,
+        seen: [...c.querySelectorAll('.lab-item')].filter(e => e.offsetParent).length } : null;
     });
     const chart = await chartOf();
+    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="abnormal"]').click());
+    const risky = await chartOf();
+    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="all"]').click());
     await p.evaluate(() => [...document.querySelectorAll('#sheet-cycle-chart .cycsel-opt')].find(o => /Nifty Fifty/.test(o.textContent)).click());
     await settle(p);
     const picked = await chartOf();
-    (chart && chart.open && chart.name === 'Dot-Com Cycle' && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 &&
-     picked && picked.name === 'Nifty Fifty Cycle')
+    (chart && chart.open && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
+     risky.seen === chart.risk && picked && picked.picked === 'Nifty Fifty')
       ? ok('a past cycle opens its own blood test', chart.items + ' readings, ' + chart.risk + ' at risk')
       : bad('a past cycle opens its own blood test', JSON.stringify(chart));
   }

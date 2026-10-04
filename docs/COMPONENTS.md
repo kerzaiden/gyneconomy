@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared patterns**.
+Generated from commit `4a23aab` on 2026-10-04. **83 components**, **37 shared patterns**.
 
 ## analysis.ts
 
@@ -21,6 +21,7 @@ Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
+| **`analysisHtml`** | `.ca-name` `.ca-say` | `category-analysis.ts:replaceCategory`, `cycle-tab.ts:buildCategories` |
 | **`chartHtml`** | `.ca-dot` `.ca-key` `.near` `.now` | `category-analysis.ts:analysisHtml` |
 
 ## charts.ts
@@ -49,11 +50,11 @@ Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`bySystem`** | `.lab-sec` | `cycle-analysis.ts:report` |
+| **`bySystem`** | `.lab-sec` | `cycle-analysis.ts:drawChart` |
+| **`drawChart`** | `.labs` | — |
 | **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:bySystem` |
-| **`report`** | `.lab-chips` `.lab-f` `.labs` | `cycle-analysis.ts:cycleAnalysisHtml` |
 | **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
-| **`scoreBox`** | `.lab-score-v` | `cycle-analysis.ts:chartDoor`, `cycle-analysis.ts:report` |
+| **`scoreBox`** | `.lab-score` `.lab-score-v` | `cycle-analysis.ts:chartDoor` |
 
 ## cycle-tab.ts
 
@@ -82,7 +83,7 @@ Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
 | **`trendDoor`** | `.trend-card` `.trend-head` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:moodDoor` |
 | **`trendText`** | `.trend-text` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:diagnosisHtml` |
 
@@ -139,7 +140,7 @@ Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`buildSearch`** | `.ind-hint` `.ind-tabs` `.search-none` | `pages-nav.ts:renderPagesAndNav` |
+| **`buildSearch`** | `.ind-hint` `.search-none` | `pages-nav.ts:renderPagesAndNav` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.ts:renderSignsList` |
 | **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-name` | `pages-nav.ts:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.ts:indRows` |
@@ -245,10 +246,10 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |
+| **`tabBar`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
-| **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
@@ -272,7 +273,6 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
-| **`tabSegs`** | history.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
@@ -302,14 +302,11 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
-| `.rangebar` | 3 | `history.ts:modeBar`, `history.ts:rangeBar`, `pages-nav.ts:buildSearch` |
-| `.cat-analysis` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
-| `.ca-name` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
-| `.ca-say` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml` |
+| `.cat-analysis` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:drawChart` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
-| `.cat-mood` | 2 | `cycle-analysis.ts:cycleAnalysisHtml`, `dom.ts:trendDoor` |
+| `.cat-mood` | 2 | `cycle-analysis.ts:drawChart`, `dom.ts:trendDoor` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:yearByYear`, `dom.ts:trendDoor` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |

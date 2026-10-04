@@ -374,9 +374,11 @@ export function tabSegs(items: string[][], active: string | undefined, attr: str
       '" tabindex="' + (on || (!any && !i) ? 0 : -1) + '" ' + attr + '="' + t[0] + '">' + t[1] + '</button>';
   }).join("");
 }
+export function tabBar(attrs: string, items: string[][], active: string | undefined, attr: string, cls?: string){
+  return '<div class="rangebar' + (cls ? " " + cls : "") + '" role="tablist" ' + attrs + '>' + tabSegs(items, active, attr) + '</div>';
+}
 function modeBar(id: string, active: string | undefined, extra?: string[][]){
-  return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' +
-    tabSegs([["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []), active, "data-mode") + '</div>';
+  return tabBar('data-mode-for="' + id + '"', [["cycles", "Cycles"], ["calendar", "Years"]].concat(extra || []), active, "data-mode");
 }
 export var pickerOpen: Record<string, boolean> = {};
 export function controlKeys(el: Element | null): string[] {
@@ -425,8 +427,7 @@ function cyclePicker(id: string, picked: string | null | undefined, minYear?: nu
 }
 export function rangeBar(id: string, ranges: { key: string; label: string }[] | null | undefined, active: string){
   if (!ranges || ranges.length < 2) return "";
-  return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' +
-    tabSegs(ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range") + '</div>';
+  return tabBar('data-range-for="' + id + '"', ranges.map(function(r){ return [r.key, r.label]; }), active, "data-range");
 }
 export function headSigma(id: string, text?: string | null){
   var el = byId("bh-sigma-" + id); if (!el) return;

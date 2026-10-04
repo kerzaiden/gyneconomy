@@ -1042,9 +1042,7 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
-  .labs{ margin-top:12px; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
-  .lab-score.flat{ padding:4px 0 0; border:0; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 0 0; }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -1052,16 +1050,10 @@
   .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
   .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--good); stroke-linecap:round; }
-  .lab-chips{ display:flex; gap:5px; margin:12px 0 4px; overflow-x:auto; }
-  .lab-f{ position:absolute; opacity:0; pointer-events:none; }
-  .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
-  .lab-chips label span{ color:var(--text-muted); }
-  .lab-f:checked + label{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
-  .lab-f:checked + label span{ color:inherit; }
-  .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
-  .labs:has(.lab-f[value="abnormal"]:checked) :is(.lab-item:not(.t-abnormal), .lab-sec:not(:has(.t-abnormal))),
-  .labs:has(.lab-f[value="borderline"]:checked) :is(.lab-item:not(.t-borderline), .lab-sec:not(:has(.t-borderline))),
-  .labs:has(.lab-f[value="optimal"]:checked) :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
+  [data-show="abnormal"] .labs :is(.lab-item:not(.t-abnormal), .lab-sec:not(:has(.t-abnormal))),
+  [data-show="borderline"] .labs :is(.lab-item:not(.t-borderline), .lab-sec:not(:has(.t-borderline))),
+  [data-show="optimal"] .labs :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
+  .lab-sec:first-child h2{ margin-top:0; }
   .lab-sec h2{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--good); position:relative; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0 11px 13px; border-bottom:1px solid var(--border); }
@@ -1153,6 +1145,7 @@
     box-shadow:0 1px 2px rgba(0,0,0,0.04); padding:14px; margin-inline:0;
   }
   .hist-bar{ margin:var(--gap-top) 0 var(--gap); }
+  .hist-bar > * + *{ margin-top:var(--gap); }
   #metric-page :has(.hist-bar){ margin-top:0; }
   #metric-page .hist-bar{ margin-top:var(--gap-top); }
   .hist-bar > * + *{ margin-top:8px; }
@@ -1707,8 +1700,8 @@
     return MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + " " + m[1];
   }
   function isoDay(s) {
-    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
-    var y = iso ? +iso[1] : shown ? +shown[3] : 0, m = iso ? +iso[2] : shown ? MONTHS_SHORT.indexOf(shown[1]) + 1 : 0, d = iso ? +iso[3] : shown ? +shown[2] : 0;
+    var t = String(s || ""), iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t), shown2 = /^([A-Z][a-z]{2}) (\d{1,2}),? (\d{4})$/.exec(t);
+    var y = iso ? +iso[1] : shown2 ? +shown2[3] : 0, m = iso ? +iso[2] : shown2 ? MONTHS_SHORT.indexOf(shown2[1]) + 1 : 0, d = iso ? +iso[3] : shown2 ? +shown2[2] : 0;
     var at = new Date(Date.UTC(y, m - 1, d));
     return y && m >= 1 && at.getUTCMonth() === m - 1 && at.getUTCDate() === d ? at.toISOString().slice(0, 10) : "";
   }
@@ -1765,11 +1758,11 @@
   function hiCard(name, state2, text, body) {
     return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
-  function dropWhatIsShown(full, shown) {
-    if (!full || !shown) return full || "";
+  function dropWhatIsShown(full, shown2) {
+    if (!full || !shown2) return full || "";
     var norm = function(x) {
       return x.replace(/\s+/g, " ").trim();
-    }, seen = norm(shown);
+    }, seen = norm(shown2);
     var parts = full.split(new RegExp("(?<=[.!?])\\s+")), i = 0;
     while (i < parts.length && parts[i] && seen.indexOf(norm(parts[i])) !== -1) i++;
     return i ? parts.slice(i).join(" ").replace(/^\s+/, "") : full;
@@ -30099,8 +30092,11 @@
       return '<button type="button" class="range-seg' + (on ? " on" : "") + '" role="tab" aria-selected="' + on + '" tabindex="' + (on || !any && !i ? 0 : -1) + '" ' + attr + '="' + t[0] + '">' + t[1] + "</button>";
     }).join("");
   }
+  function tabBar(attrs, items, active, attr, cls) {
+    return '<div class="rangebar' + (cls ? " " + cls : "") + '" role="tablist" ' + attrs + ">" + tabSegs(items, active, attr) + "</div>";
+  }
   function modeBar(id, active, extra) {
-    return '<div class="rangebar" role="tablist" data-mode-for="' + id + '">' + tabSegs([ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ].concat(extra || []), active, "data-mode") + "</div>";
+    return tabBar('data-mode-for="' + id + '"', [ [ "cycles", "Cycles" ], [ "calendar", "Years" ] ].concat(extra || []), active, "data-mode");
   }
   var pickerOpen = {};
   function controlKeys(el) {
@@ -30152,9 +30148,9 @@
   }
   function rangeBar(id, ranges, active) {
     if (!ranges || ranges.length < 2) return "";
-    return '<div class="rangebar" role="tablist" data-range-for="' + id + '">' + tabSegs(ranges.map(function(r) {
+    return tabBar('data-range-for="' + id + '"', ranges.map(function(r) {
       return [ r.key, r.label ];
-    }), active, "data-range") + "</div>";
+    }), active, "data-range");
   }
   function headSigma(id, text) {
     var el = byId("bh-sigma-" + id);
@@ -34088,9 +34084,9 @@
     var r = 21, c = 2 * Math.PI * r;
     return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
-  function scoreBox(i, cls) {
+  function scoreBox(i) {
     var s = score(i);
-    return '<span class="lab-score' + cls + '"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
+    return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
   }
   function bySystem(i, j) {
     var rank = TIERS.map(function(t) {
@@ -34109,19 +34105,26 @@
       }).join("") + "</ul></section>" : "";
     }).join("");
   }
-  function report(i) {
-    var j = judged(i), by = {}, id = "labf-" + marketCycles[i].from;
-    TIERS.forEach(function(t) {
-      by[t.key] = j.filter(function(l) {
+  var shown = {
+    tier: "all"
+  };
+  function tierTabs(i, j) {
+    var segs = [ [ "all", "All " + j.length ] ].concat(TIERS.map(function(t) {
+      return [ t.key, t.title + " " + j.filter(function(l) {
         return tier(l, i) === t.key;
-      });
+      }).length ];
+    }));
+    return tabBar('aria-label="Filter the results"', segs, shown.tier, "data-lab-tier");
+  }
+  function pickTier(sheet, seg) {
+    shown.tier = seg.getAttribute("data-lab-tier") || "all";
+    sheet.setAttribute("data-show", shown.tier);
+    Array.prototype.forEach.call(sheet.querySelectorAll("[data-lab-tier]"), function(b) {
+      var on = b === seg;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
     });
-    var chip = function(key, title, n) {
-      return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
-    };
-    return '<div class="labs">' + scoreBox(i, "") + '<div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
-      return chip(t.key, t.title, by[t.key].length);
-    }).join("") + "</div>" + bySystem(i, j) + "</div>";
   }
   function judged(i) {
     return labs().filter(function(l) {
@@ -34168,26 +34171,30 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the health results read</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health results describe her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
-  }
-  function cycleAnalysisHtml(m) {
-    var i = marketCycles.indexOf(m.era);
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
+    return "<h4>How the health chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   var CHART_ID = "sheet-cycle-chart";
-  var CHART_NAME = "Health results";
+  var CHART_NAME = "Health chart";
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i, " flat"));
+    return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i));
   }
   function drawChart() {
     var sheet = byId(CHART_ID), c = pageCycle(CHART_ID);
-    if (sheet && c) sheet.innerHTML = histBar(cycleControls(CHART_ID)) + cycleAnalysisHtml(cycleModel(c));
+    if (!sheet || !c) return;
+    sheet.setAttribute("data-show", shown.tier);
+    var i = marketCycles.indexOf(c), j = judged(i);
+    sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) + '<div class="cat-analysis cat-mood labs">' + bySystem(i, j) + moreRow(chartDetail()) + "</div>";
   }
   function buildCycleChart(home) {
     page.mode[CHART_ID] = "cycles";
     page.cycles[CHART_ID] = null;
-    home.appendChild(metricSheet(CHART_ID));
+    var sheet = metricSheet(CHART_ID);
+    home.appendChild(sheet);
+    sheet.addEventListener("click", function(e) {
+      var seg = e.target.closest && e.target.closest("[data-lab-tier]");
+      if (seg) pickTier(sheet, seg);
+    });
     home.addEventListener("click", function(e) {
       if (e.target.closest && e.target.closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
     });
@@ -34504,7 +34511,7 @@
         el.classList.add("active");
       });
     }
-    var shown = false;
+    var shown2 = false;
     function readTarget(el) {
       var t = el.closest && el.closest("[data-q], [data-year]");
       if (!t) return false;
@@ -34517,12 +34524,12 @@
         mark(null);
         hubShowYear(+(t.getAttribute("data-year") || ""));
       }
-      shown = true;
+      shown2 = true;
       return true;
     }
     function reset() {
-      if (scrubbing || !dialState || !shown) return;
-      shown = false;
+      if (scrubbing || !dialState || !shown2) return;
+      shown2 = false;
       mark(dialState.parked);
       hubShowDefault();
     }
@@ -34540,7 +34547,7 @@
     document.addEventListener("click", function(e) {
       if (!(e.target instanceof Node) || dial.contains(e.target) || hub.contains(e.target)) return;
       if (!scrubbing && dialState && dialState.parked != null) {
-        shown = false;
+        shown2 = false;
         goTo(-1);
         return;
       }
@@ -34621,7 +34628,7 @@
       var i = dialKeyStep(e.key);
       if (i == null) return;
       e.preventDefault();
-      shown = false;
+      shown2 = false;
       goTo(i);
       dialSay();
     });
@@ -36996,9 +37003,9 @@
         find[e.title] = [ e.title, e.sub, e.metricSub, ROSTER_BY[e.target].group ].join(" ").toLowerCase();
       });
     });
-    host.innerHTML = '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' + tabSegs(IND_TABS.map(function(t) {
+    host.innerHTML = tabBar('aria-label="Filter by timing"', IND_TABS.map(function(t) {
       return [ t.key, t.label ];
-    }), IND_TABS[0].key, "data-ind-tab") + '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c) {
+    }), IND_TABS[0].key, "data-ind-tab", "ind-tabs") + '<p class="ind-hint" hidden></p>' + categoriesShown().map(function(c) {
       return indCategoryHtml(c, find);
     }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
