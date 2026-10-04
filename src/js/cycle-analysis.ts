@@ -86,7 +86,7 @@ function labItem(l: Lab, i: number){
   var st = state(l, i), n = normAt(l, i) as Norm;
   return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
     '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
-    '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " to " + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
+    '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
 }
 function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;

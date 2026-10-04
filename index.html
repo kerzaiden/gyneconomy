@@ -34176,7 +34176,7 @@
     var st = state(l, i), n = normAt(l, i);
     return '<li class="lab-item ' + TIERS.filter(function(t) {
       return t.key === tier(l, i);
-    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>" + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " to " + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
+    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>" + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
