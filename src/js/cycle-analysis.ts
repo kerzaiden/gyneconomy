@@ -11,7 +11,7 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number; n: number; min: number; max: number };
-type Lab = { id: string; name: string; cat: string; unit: string; per: (number | null)[]; norm: Norm | null };
+type Lab = { id: string; name: string; cat: string; unit: string; per: (number | null)[]; span: (number[] | null)[]; norm: Norm | null; now: Norm | null };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -37,17 +37,26 @@ var visitCache: Visit[] | null = null;
 function visits(){ return visitCache || (visitCache = marketCycles.map(function(c){ return visitOf(cycleModel(c)); })); }
 function cycleLab(id: string, name: string, f: (v: Visit) => number): Lab {
   var per = visits().map(f);
-  return { id:id, name:name, cat:"cycle", unit:" yr", per:per, norm:normOf(per.slice(0, closedCount())) };
+  return { id:id, name:name, cat:"cycle", unit:" yr", per:per, span:[], norm:normOf(per.slice(0, closedCount())), now:null };
+}
+function cycleReadings(R: RosterRow){
+  var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
+  return marketCycles.map(function(c){
+    return first > c.from ? [] : h.filter(function(d){ var y = +d.k.slice(0, 4); return y >= c.from && (c.ongoing || y <= c.to); }).map(function(d){ return d.v as number; });
+  });
+}
+function readingsNorm(seen: number[][]){
+  var closed = seen.slice(0, closedCount()).filter(function(vs){ return vs.length; }), now = normOf(([] as number[]).concat.apply([], closed));
+  if (now) now.n = closed.length;
+  return now;
 }
 function readingLab(R: RosterRow): Lab {
-  var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
-  var per = marketCycles.map(function(c){
-    if (first > c.from) return null;
-    var vs = h.filter(function(d){ var y = +d.k.slice(0, 4); return y >= c.from && (c.ongoing || y <= c.to); }).map(function(d){ return d.v as number; });
-    return vs.length ? vs.reduce(function(a, b){ return a + b; }, 0) / vs.length : null;
-  });
+  var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; };
+  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? vs[vs.length - 1] : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
   var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
-  return { id:R.id, name:R.name, cat:R.cat, unit:unit, per:per, norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
+  return { id:R.id, name:R.name, cat:R.cat, unit:unit, per:per, now:readingsNorm(seen),
+    span:seen.map(function(vs, i){ return vs.length > 1 && !open(i) ? [Math.min.apply(null, vs), Math.max.apply(null, vs)] : null; }),
+    norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
 function labs(){
@@ -57,8 +66,9 @@ function labs(){
     cycleLab("bleed", "Bleed", function(v){ return v.bleed; })
   ].concat(ROSTER.map(readingLab)));
 }
+function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norm; }
 function state(l: Lab, i: number){
-  var v = l.per[i], n = l.norm;
+  var v = l.per[i], n = normAt(l, i);
   if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
   return v > n.fence ? "high" : v < n.floor ? "low" : "";
 }
@@ -69,13 +79,17 @@ function fmt(l: Lab, v: number){
 }
 var TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
 function tier(l: Lab, i: number){
-  var v = l.per[i] as number, n = l.norm as Norm;
+  var v = l.per[i] as number, n = normAt(l, i) as Norm;
   return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
 }
 function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
+function labName(l: Lab, i: number){
+  var sp = l.span[i];
+  return '<div><b>' + l.name + '</b>' + (sp ? '<small>Low ' + fmt(l, sp[0]) + ' · high ' + fmt(l, sp[1]) + '</small>' : '') + '</div>';
+}
 function labItem(l: Lab, i: number){
-  var st = state(l, i), n = l.norm as Norm;
-  return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
+  var st = state(l, i), n = normAt(l, i) as Norm;
+  return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '">' + labName(l, i) +
     '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
     '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " to " + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
 }
@@ -108,7 +122,7 @@ function pickTier(sheet: HTMLElement, seg: Element){
     b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
   });
 }
-function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
+function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 function outside(i: number){ return labs().filter(function(l){ var st = state(l, i); return st === "high" || st === "low"; }); }
 function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
@@ -126,7 +140,7 @@ function visitNote(i: number){
 }
 function chartDetail(){
   return '<h4>How the health chart reads</h4>' + facts([
-    "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
+    "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year, with its low and high under its name. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
     "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.",
     "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
