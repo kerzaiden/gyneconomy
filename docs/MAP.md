@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,301 lines** in 35 files, about 611 KB, roughly **173 thousand tokens**. No session can
+The source is **9,282 lines** in 35 files, about 610 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `ebc80db` on 2026-10-04.
+Generated from commit `64ac06c` on 2026-10-04.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `ebc80db` on 2026-10-04.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,366 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,367 | the whole stylesheet, every token and rule |
 | `page-body.html` | 391 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **605** top-level functions, **104** top-level vars, **344** exported names, **19** boots.
+Counts: **31** modules, **602** top-level functions, **103** top-level vars, **344** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **605** top-level functions, **104** top-level vars, **3
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 116 | 20 | `data`, `dom`, `format`, `model` |
+| `js/cycle-analysis.ts` | 96 | 16 | `data`, `dom`, `format`, `model` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 79 | 37 | — |
@@ -941,30 +941,26 @@ falls in. **export** marks a name other modules import.
 
 ### `js/cycle-analysis.ts`
 
-#### Cycle analysis: length, bull years against the bleed, the seasons and the temperature
+#### Her chart: every cycle's length, bull years, bleed and temperature, against her own normal ranges
 
 | Line | Name | Anchor |
 |---|---|---|
-| 11 | `GROUPS` | `var GROUPS =` |
-| 15 | `NUM` | `var NUM =` |
-| 17 | `cycleStats` | `function cycleStats(` |
-| 28 | `record` | `function record(` |
-| 31 | `median` | `function median(` |
-| 35 | `fmtYears` | `function fmtYears(` |
-| 40 | `share` | `function share(` |
-| 41 | `topTemp` | `function topTemp(` |
-| 42 | `topSeason` | `function topSeason(` |
-| 43 | `word` | `function word(` |
-| 44 | `cap` | `function cap(` |
-| 46 | `sayLength` | `function sayLength(` |
-| 54 | `sayMarket` | `function sayMarket(` |
-| 59 | `sayClimate` | `function sayClimate(` |
-| 64 | `statRows` | `function statRows(` |
-| 78 | `recordFacts` | `function recordFacts(` |
-| 92 | `statDetail` | `function statDetail(` |
-| 100 | `bar` | `function bar(` |
-| 105 | `bars` | `function bars(` |
-| 109 | `cycleAnalysisHtml` · export | `function cycleAnalysisHtml(` |
+| 12 | `NUM` | `var NUM =` |
+| 15 | `chartOf` | `function chartOf(` |
+| 24 | `charts` | `function charts(` |
+| 25 | `quartile` | `function quartile(` |
+| 29 | `normOf` | `function normOf(` |
+| 33 | `norms` | `function norms(` |
+| 39 | `flags` | `function flags(` |
+| 47 | `fmtYears` | `function fmtYears(` |
+| 51 | `pc` | `function pc(` |
+| 52 | `word` | `function word(` |
+| 53 | `shortName` | `function shortName(` |
+| 55 | `visitNote` | `function visitNote(` |
+| 64 | `chartTable` | `function chartTable(` |
+| 73 | `normRows` | `function normRows(` |
+| 80 | `chartDetail` | `function chartDetail(` |
+| 91 | `cycleAnalysisHtml` · export | `function cycleAnalysisHtml(` |
 
 ### `js/cycle-tab.ts`
 
@@ -1252,15 +1248,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 850 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 1,019 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 1,034 | The symptoms: a cycle's years against today |
-| 1,140 | hero: yield curve |
-| 1,170 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,189 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,216 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,224 | long cycle (structural layer) |
-| 1,231 | indicator grid |
-| 1,257 | info icon + popover (progressive disclosure for longer notes) |
-| 1,271 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,356 | footer |
+| 1,141 | hero: yield curve |
+| 1,171 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,190 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,217 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,225 | long cycle (structural layer) |
+| 1,232 | indicator grid |
+| 1,258 | info icon + popover (progressive disclosure for longer notes) |
+| 1,272 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,357 | footer |
 
 ## Markup landmarks
 
