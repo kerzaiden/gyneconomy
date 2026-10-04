@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,095 lines** in 35 files, about 596 KB, roughly **169 thousand tokens**. No session can
+The source is **9,117 lines** in 35 files, about 598 KB, roughly **170 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `f5d012d` on 2026-10-04.
+Generated from commit `c9f0c6b` on 2026-10-04.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `f5d012d` on 2026-10-04.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,343 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,354 | the whole stylesheet, every token and rule |
 | `page-body.html` | 368 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **613** top-level functions, **105** top-level vars, **357** exported names, **19** boots.
+Counts: **31** modules, **617** top-level functions, **105** top-level vars, **359** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **613** top-level functions, **105** top-level vars, **3
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 178 | 39 | `charts`, `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 186 | 41 | `charts`, `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
 | `js/format.ts` | 77 | 35 | — |
@@ -57,7 +57,7 @@ Counts: **31** modules, **613** top-level functions, **105** top-level vars, **3
 | `js/indicators.ts` | 283 | 34 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 181 | 16 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 66 | 25 | — |
+| `js/marks.ts` | 69 | 27 | — |
 | `js/quarter-sheet.ts` | 52 | 4 | `data`, `dom`, `format`, `model`, `refresh-season`, `render-core` |
 | `js/main.ts` | 42 | 0 | `analysis`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
@@ -957,26 +957,28 @@ falls in. **export** marks a name other modules import.
 | 78 | `tier` | `function tier(` |
 | 82 | `catTitle` | `function catTitle(` |
 | 83 | `where` | `function where(` |
-| 87 | `labItem` | `function labItem(` |
-| 93 | `ring` | `function ring(` |
-| 97 | `scoreBox` | `function scoreBox(` |
-| 102 | `labSec` | `function labSec(` |
-| 106 | `bySystem` | `function bySystem(` |
-| 113 | `shown` | `var shown =` |
-| 114 | `tierTabs` | `function tierTabs(` |
-| 118 | `pickTier` | `function pickTier(` |
-| 126 | `judged` | `function judged(` |
-| 127 | `score` | `function score(` |
-| 128 | `outside` | `function outside(` |
-| 129 | `listWords` | `function listWords(` |
-| 130 | `word` | `function word(` |
-| 131 | `cap` | `function cap(` |
-| 133 | `visitNote` | `function visitNote(` |
-| 142 | `chartDetail` | `function chartDetail(` |
-| 151 | `CHART_ID` | `var CHART_ID =` |
-| 152 | `chartDoor` · export | `function chartDoor(` |
-| 156 | `drawChart` | `function drawChart(` |
-| 164 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 87 | `side` | `function side(` |
+| 88 | `labItem` | `function labItem(` |
+| 94 | `ring` | `function ring(` |
+| 98 | `scoreBox` | `function scoreBox(` |
+| 104 | `labSec` | `function labSec(` |
+| 110 | `bySystem` | `function bySystem(` |
+| 117 | `shown` | `var shown =` |
+| 118 | `tierTabs` | `function tierTabs(` |
+| 122 | `pickTier` | `function pickTier(` |
+| 130 | `judged` | `function judged(` |
+| 131 | `score` | `function score(` |
+| 132 | `outside` | `function outside(` |
+| 133 | `listWords` | `function listWords(` |
+| 134 | `word` | `function word(` |
+| 135 | `cap` | `function cap(` |
+| 137 | `visitNote` | `function visitNote(` |
+| 146 | `chartDetail` | `function chartDetail(` |
+| 155 | `CHART_ID` | `var CHART_ID =` |
+| 156 | `chartDoor` · export | `function chartDoor(` |
+| 160 | `drawChart` | `function drawChart(` |
+| 168 | `fold` | `function fold(` |
+| 172 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 
@@ -1199,12 +1201,14 @@ falls in. **export** marks a name other modules import.
 | 44 | `slidersSvg` · export | `function slidersSvg(` |
 | 46 | `chartSvg` · export | `function chartSvg(` |
 | 48 | `ecgSvg` · export | `function ecgSvg(` |
-| 50 | `circulationSvg` · export | `function circulationSvg(` |
-| 51 | `boltSvg` · export | `function boltSvg(` |
-| 52 | `houseSvg` · export | `function houseSvg(` |
-| 55 | `marketSvg` · export | `function marketSvg(` |
-| 58 | `bagSvg` · export | `function bagSvg(` |
-| 61 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 50 | `weatherSvg` · export | `function weatherSvg(` |
+| 52 | `moodSvg` · export | `function moodSvg(` |
+| 53 | `circulationSvg` · export | `function circulationSvg(` |
+| 54 | `boltSvg` · export | `function boltSvg(` |
+| 55 | `houseSvg` · export | `function houseSvg(` |
+| 58 | `marketSvg` · export | `function marketSvg(` |
+| 61 | `bagSvg` · export | `function bagSvg(` |
+| 64 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ### `js/quarter-sheet.ts`
 
@@ -1261,15 +1265,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 864 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 1,034 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 1,049 | The symptoms: a cycle's years against today |
-| 1,115 | hero: yield curve |
-| 1,145 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,164 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,192 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,200 | long cycle (structural layer) |
-| 1,207 | indicator grid |
-| 1,233 | info icon + popover (progressive disclosure for longer notes) |
-| 1,247 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,333 | footer |
+| 1,126 | hero: yield curve |
+| 1,156 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,175 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,203 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,211 | long cycle (structural layer) |
+| 1,218 | indicator grid |
+| 1,244 | info icon + popover (progressive disclosure for longer notes) |
+| 1,258 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,344 | footer |
 
 ## Markup landmarks
 

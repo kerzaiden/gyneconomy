@@ -1076,13 +1076,24 @@
   [data-show="optimal"] .labs :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
   :where(.lab-sec){ --cat:var(--text-muted); }
   .lab-sec + .lab-sec{ margin-top:14px; }
-  .lab-sec h2{ justify-content:space-between; align-items:baseline; gap:10px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-head{ width:100%; text-align:left; cursor:pointer; font:inherit; }
+  .lab-head[aria-expanded="false"]{ border-bottom-color:transparent; }
+  .lab-head[aria-expanded="false"] + ul{ display:none; }
+  .lab-head .peek-chev{ color:var(--cat); transform:rotate(90deg); transition:transform .16s ease; }
+  .lab-head[aria-expanded="false"] .peek-chev{ transform:none; }
+  .lab-head:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
+  .lab-mark svg{ width:22px; height:22px; }
+  .lab-tally{ font-size:var(--type-meta); font-weight:600; color:var(--text-muted); font-variant-numeric:tabular-nums; }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--good); display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 16px; border-bottom:1px solid var(--border); }
   .lab-item:last-child{ border-bottom:0; }
   .lab-item.t-borderline{ --tier:var(--season-autumn); }
   .lab-item.t-abnormal{ --tier:var(--critical); }
-  .lab-res b::before{ content:""; display:inline-block; width:8px; height:8px; margin-right:8px; border-radius:50%; vertical-align:1px; background:var(--tier); }
+  .lab-res b::before{ content:""; display:inline-block; width:9px; height:8px; margin-right:8px; vertical-align:1px; background:var(--tier); }
+  .lab-item.to-up .lab-res b::before{ clip-path:polygon(50% 0, 100% 100%, 0 100%); }
+  .lab-item.to-down .lab-res b::before{ clip-path:polygon(0 0, 100% 0, 50% 100%); }
+  .lab-item.to-level .lab-res b::before{ height:7px; background:linear-gradient(var(--tier) 0 2px, transparent 2px 5px, var(--tier) 5px 7px); }
   .lab-item:not(.t-optimal) .lab-where{ font-weight:500; color:color-mix(in srgb, var(--tier) 75%, var(--text-primary)); }
   .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
   .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }

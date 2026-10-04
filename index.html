@@ -1069,13 +1069,24 @@
   [data-show="optimal"] .labs :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
   :where(.lab-sec){ --cat:var(--text-muted); }
   .lab-sec + .lab-sec{ margin-top:14px; }
-  .lab-sec h2{ justify-content:space-between; align-items:baseline; gap:10px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-head{ width:100%; text-align:left; cursor:pointer; font:inherit; }
+  .lab-head[aria-expanded="false"]{ border-bottom-color:transparent; }
+  .lab-head[aria-expanded="false"] + ul{ display:none; }
+  .lab-head .peek-chev{ color:var(--cat); transform:rotate(90deg); transition:transform .16s ease; }
+  .lab-head[aria-expanded="false"] .peek-chev{ transform:none; }
+  .lab-head:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
+  .lab-mark svg{ width:22px; height:22px; }
+  .lab-tally{ font-size:var(--type-meta); font-weight:600; color:var(--text-muted); font-variant-numeric:tabular-nums; }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--good); display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 16px; border-bottom:1px solid var(--border); }
   .lab-item:last-child{ border-bottom:0; }
   .lab-item.t-borderline{ --tier:var(--season-autumn); }
   .lab-item.t-abnormal{ --tier:var(--critical); }
-  .lab-res b::before{ content:""; display:inline-block; width:8px; height:8px; margin-right:8px; border-radius:50%; vertical-align:1px; background:var(--tier); }
+  .lab-res b::before{ content:""; display:inline-block; width:9px; height:8px; margin-right:8px; vertical-align:1px; background:var(--tier); }
+  .lab-item.to-up .lab-res b::before{ clip-path:polygon(50% 0, 100% 100%, 0 100%); }
+  .lab-item.to-down .lab-res b::before{ clip-path:polygon(0 0, 100% 0, 50% 100%); }
+  .lab-item.to-level .lab-res b::before{ height:7px; background:linear-gradient(var(--tier) 0 2px, transparent 2px 5px, var(--tier) 5px 7px); }
   .lab-item:not(.t-optimal) .lab-where{ font-weight:500; color:color-mix(in srgb, var(--tier) 75%, var(--text-primary)); }
   .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
   .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
@@ -31011,7 +31022,7 @@
     }();
     premiumReading = function(R) {
       var at = monthLabel(R.now.m);
-      var side = "stocks earn " + Math.abs(R.now.v).toFixed(1) + " points a year " + (R.now.v >= PREMIUM_LINE ? "more" : "less") + " than bonds after inflation";
+      var side2 = "stocks earn " + Math.abs(R.now.v).toFixed(1) + " points a year " + (R.now.v >= PREMIUM_LINE ? "more" : "less") + " than bonds after inflation";
       var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Equity risk premium",
@@ -31031,7 +31042,7 @@
           state: "norm",
           text: ""
         },
-        side: side,
+        side: side2,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -31050,7 +31061,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", Shiller’s Excess CAPE Yield at " + fmtSigned(R.now.v, 1) + "%: " + side + ". The track runs over the monthly record since " + monthLabel(premiumHistory[0].m) + ": " + span + "."
+        caption: at + ", Shiller’s Excess CAPE Yield at " + fmtSigned(R.now.v, 1) + "%: " + side2 + ". The track runs over the monthly record since " + monthLabel(premiumHistory[0].m) + ": " + span + "."
       };
     }(premiumRecord);
   }
@@ -31438,6 +31449,12 @@
   }
   function ecgSvg() {
     return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
+  }
+  function weatherSvg() {
+    return markSvg('<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95" stroke-width="1.9"/><path d="M12.75 8.06A3.1 3.1 0 1 1 15.26 11.65" stroke-width="1.9"/><path d="M7.8 19.2h6.9a3.2 3.2 0 0 0 .25-6.4 4.8 4.8 0 0 0-9.05-.95 3.7 3.7 0 0 0 1.9 7.35z" stroke-width="1.9"/>');
+  }
+  function moodSvg() {
+    return markSvg('<path d="M3.6 6.4q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 12q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/><path d="M3.6 17.6q4.2-3.4 8.4 0t8.4 0" stroke-width="1.9"/>');
   }
   function circulationSvg() {
     return dropSvg(1.9);
@@ -34175,12 +34192,16 @@
     })[0].title;
   }
   function where(l, i) {
-    var v = l.per[i], n = normAt(l, i), side = v > n.hi ? "above" : v < n.lo ? "below" : "";
-    return !side ? "In range" : state(l, i) ? "Far " + side + " range" : cap(side) + " range";
+    var v = l.per[i], n = normAt(l, i), side2 = v > n.hi ? "above" : v < n.lo ? "below" : "";
+    return !side2 ? "In range" : state(l, i) ? "Far " + side2 + " range" : cap(side2) + " range";
+  }
+  function side(l, i) {
+    var v = l.per[i], n = normAt(l, i);
+    return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level";
   }
   function labItem(l, i) {
     var n = normAt(l, i);
-    return '<li class="lab-item ' + TIERS.filter(function(t) {
+    return '<li class="lab-item ' + side(l, i) + " " + TIERS.filter(function(t) {
       return t.key === tier(l, i);
     })[0].cls + '"><div><b>' + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + "</b><small>" + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></li>";
   }
@@ -34192,13 +34213,23 @@
     var s = score(i);
     return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
   }
+  var CAT_MARK = {
+    cycle: calendarSvg,
+    weather: weatherSvg,
+    mood: moodSvg,
+    circulation: circulationSvg,
+    energy: boltSvg
+  };
   function labSec(k, ls, i) {
+    var ok = ls.filter(function(l) {
+      return tier(l, i) === "optimal";
+    }).length;
     return catHeadCard("lab-sec", k, {
-      tag: "h2",
-      cls: "",
-      attrs: "",
-      name: catTitle(k) + " <small>(" + ls.length + ")</small>",
-      aside: "<span>Normal range</span>"
+      tag: "button",
+      cls: "lab-head ",
+      attrs: ' type="button" aria-expanded="true"',
+      name: '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + catTitle(k) + " <small>(" + ls.length + ")</small>",
+      aside: '<span class="lab-tally">' + ok + "/" + ls.length + " in range</span>" + CHEV
     }, "<ul>" + ls.map(function(l) {
       return labItem(l, i);
     }).join("") + "</ul>");
@@ -34284,7 +34315,7 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the health chart reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range or Below range says where it sits, and Far above or Far below marks Risk.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How the health chart reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range or Below range says where it sits, and Far above or Far below marks Risk; the triangle by the figure points the same way. Each category heading counts its results in range.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   var CHART_ID = "sheet-cycle-chart";
   var CHART_NAME = "Health chart";
@@ -34299,6 +34330,10 @@
     var i = marketCycles.indexOf(c), j = judged(i);
     sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) + '<div class="labs">' + bySystem(i, j) + moreRow(chartDetail()) + "</div>";
   }
+  function fold(t) {
+    var head = t.closest && t.closest(".lab-head");
+    if (head) head.setAttribute("aria-expanded", String(head.getAttribute("aria-expanded") !== "true"));
+  }
   function buildCycleChart(home) {
     page.mode[CHART_ID] = "cycles";
     page.cycles[CHART_ID] = null;
@@ -34306,7 +34341,7 @@
     home.appendChild(sheet);
     sheet.addEventListener("click", function(e) {
       var seg = e.target.closest && e.target.closest("[data-lab-tier]");
-      if (seg) pickTier(sheet, seg);
+      if (seg) pickTier(sheet, seg); else fold(e.target);
     });
     home.addEventListener("click", function(e) {
       if (e.target.closest && e.target.closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
@@ -36226,34 +36261,34 @@
     var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
       return d.v >= s.mid;
     }).length;
-    var side = function(d) {
+    var side2 = function(d) {
       return d.v >= s.mid;
     }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-    return [ lede("How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " + (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " + confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.") ];
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    return [ lede("How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " + (side2(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " + confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.") ];
   }
   function desireInsight(s) {
     var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
       return d.v >= s.mid;
     }).length;
-    var side = function(d) {
+    var side2 = function(d) {
       return d.v >= s.mid;
     }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
   }
   function premiumInsight(s) {
     var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
       return d.v >= s.mid;
     }).length;
-    var side = function(d) {
+    var side2 = function(d) {
       return d.v >= s.mid;
     }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
     var thinner = h.filter(function(d) {
       return d.v < last.v;
     }).length;
-    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
+    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The latest month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
   }
   var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
   function marketInsight(s) {

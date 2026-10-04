@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f5d012d` on 2026-10-04. **86 components**, **38 shared patterns**.
+Generated from commit `c9f0c6b` on 2026-10-04. **87 components**, **38 shared patterns**.
 
 ## analysis.ts
 
@@ -52,6 +52,7 @@ Generated from commit `f5d012d` on 2026-10-04. **86 components**, **38 shared pa
 |---|---|---|
 | **`drawChart`** | `.labs` | — |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-where` | `cycle-analysis.ts:labSec` |
+| **`labSec`** | `.lab-mark` `.lab-tally` | `cycle-analysis.ts:bySystem` |
 | **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
 | **`scoreBox`** | `.lab-score` `.lab-score-v` | `cycle-analysis.ts:chartDoor` |
 
@@ -240,6 +241,7 @@ renderer speaks. Listed most-used first.
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`side`** | cycle-analysis.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
@@ -256,6 +258,7 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`tabBar`** | history.ts | 4 places |
+| **`tier`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`auxStat`** | format.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -287,7 +290,6 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
-| **`tier`** | cycle-analysis.ts | 3 places |
 | **`trendDoor`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
