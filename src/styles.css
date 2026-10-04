@@ -232,11 +232,6 @@
 
   /* ---- calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) ---- */
 
-  .soon{ min-height:46vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px; }
-  .soon-mark{ width:96px; height:96px; margin-bottom:8px; color:var(--text-muted); opacity:0.75; }
-  .soon-ring{ fill:none; stroke:var(--border); stroke-width:1.5; }
-  .soon-word{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:var(--type-page-title); color:var(--text-primary); }
-  .soon p{ margin:0; font-size:var(--type-interface); color:var(--text-muted); }
 
   .era-head{ display:flex; align-items:baseline; gap:8px; }
   .era-name{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600; font-size:var(--type-section);
@@ -642,6 +637,19 @@
   .trend-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .trend-head{ display:flex; align-items:center; gap:7px; font-size:var(--type-reading); font-weight:700; color:var(--cat); }
   .trend-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
+  .trend-card.is-soon{ cursor:default; }
+  .trend-card.is-soon:hover{ border-color:var(--border); }
+  .soon-pill{ margin-left:auto; font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
+  .clock{ display:block; width:100%; max-width:340px; margin:14px auto 6px; }
+  .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
+  .clock-q.now{ fill:color-mix(in srgb, var(--cat) 30%, var(--surface)); }
+  .clock-name{ font-size:var(--type-meta); font-weight:700; fill:var(--text-primary); }
+  .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
+  .clock-asset.now{ fill:var(--text-primary); }
+  .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
+  .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
+  .aux-stat + .ca-say{ margin-top:24px; }
+  .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }

@@ -234,12 +234,6 @@
   .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size:var(--type-reading); line-height: 1.65; margin: 0 0 22px; }
   .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
-  .soon{ min-height:46vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px; }
-  .soon-mark{ width:96px; height:96px; margin-bottom:8px; color:var(--text-muted); opacity:0.75; }
-  .soon-ring{ fill:none; stroke:var(--border); stroke-width:1.5; }
-  .soon-word{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600; font-size:var(--type-page-title); color:var(--text-primary); }
-  .soon p{ margin:0; font-size:var(--type-interface); color:var(--text-muted); }
-
   .era-head{ display:flex; align-items:baseline; gap:8px; }
   .era-name{ font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-weight:600; font-size:var(--type-section);
     line-height:1.15; color:var(--text-primary); }
@@ -637,6 +631,19 @@
   .trend-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .trend-head{ display:flex; align-items:center; gap:7px; font-size:var(--type-reading); font-weight:700; color:var(--cat); }
   .trend-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
+  .trend-card.is-soon{ cursor:default; }
+  .trend-card.is-soon:hover{ border-color:var(--border); }
+  .soon-pill{ margin-left:auto; font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
+  .clock{ display:block; width:100%; max-width:340px; margin:14px auto 6px; }
+  .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
+  .clock-q.now{ fill:color-mix(in srgb, var(--cat) 30%, var(--surface)); }
+  .clock-name{ font-size:var(--type-meta); font-weight:700; fill:var(--text-primary); }
+  .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
+  .clock-asset.now{ fill:var(--text-primary); }
+  .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
+  .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
+  .aux-stat + .ca-say{ margin-top:24px; }
+  .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
@@ -1485,21 +1492,7 @@
     <div id="calendar-cycle" hidden></div>
   </div>
 
-  <div class="tab-panel" data-tab="portfolio" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden>
-    <div class="soon">
-      <svg class="soon-mark" viewBox="0 0 96 96" aria-hidden="true">
-        <circle class="soon-ring" cx="48" cy="48" r="38"/>
-        <g class="soon-icon" transform="translate(24 24) scale(2)" fill="none" stroke="currentColor"
-           stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="7.5" width="18" height="13" rx="2.5"/>
-          <path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/>
-          <path d="M3 12.5h18"/>
-        </g>
-      </svg>
-      <div class="soon-word">Coming soon</div>
-      <p>Her portfolio will live here.</p>
-    </div>
-  </div>
+  <div class="tab-panel" data-tab="portfolio" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden></div>
 
   <div class="tab-panel" data-tab="search" id="panel-search" role="tabpanel" aria-labelledby="tab-search" hidden>
     <div id="search-home">
@@ -1538,7 +1531,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.4.0 (732)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.5.0 (733)</span></p>
     </div>
   </div>
 
@@ -1945,8 +1938,17 @@
   function trendText(t) {
     return '<span class="trend-text">' + t + "</span>";
   }
+  function trendHead(mark, head, end) {
+    return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + end + "</span>";
+  }
+  function trendCard(tag, cls, attrs, mark, head, end, body) {
+    return "<" + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + ">" + trendHead(mark, head, end) + body + "</" + tag + ">";
+  }
   function trendDoor(open, title, mark, head, body) {
-    return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + CHEV + "</span>" + body + "</button>";
+    return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, CHEV, body);
+  }
+  function trendSoon(mark, head, body) {
+    return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
   }
   function moreRow(fullHtml, label) {
     if (!fullHtml) return "";
@@ -31401,6 +31403,12 @@
   function bookSvg() {
     return markSvg('<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/><path d="M12 6.6v13.6" stroke-width="1.7"/>');
   }
+  function umbrellaSvg() {
+    return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17 0z" stroke-width="1.8"/><path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>');
+  }
+  function slidersSvg() {
+    return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
+  }
   function chartSvg() {
     return markSvg('<rect x="5" y="4.5" width="14" height="16.5" rx="2" stroke-width="1.8"/><path d="M9 3.5h6v3H9zM8.5 11h7M8.5 14.5h7M8.5 18h4" stroke-width="1.8"/>');
   }
@@ -35606,6 +35614,174 @@
     renderCycleList();
     renderCycleView(nowModel);
   }
+  var WEATHER_ID = "sheet-all-weather";
+  var CLOCK_ID = "sheet-investment-clock";
+  var WEATHER_NAME = "All Weather";
+  var CLOCK_NAME = "Investment Clock";
+  var WEATHER_SRC = [ {
+    t: "Bridgewater Associates — The All Weather Story (2012)",
+    u: "https://www.bridgewater.com/resources/all-weather-story.pdf"
+  }, {
+    t: "Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals",
+    u: "https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"
+  } ];
+  var CLOCK_SRC = [ {
+    t: "Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public",
+    u: "https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"
+  } ];
+  var ALL_WEATHER = [ {
+    what: "Stocks",
+    w: 30,
+    ink: "--ovulate"
+  }, {
+    what: "Long-term Treasuries",
+    w: 40,
+    ink: "--ff-deep"
+  }, {
+    what: "Intermediate Treasuries",
+    w: 15,
+    ink: "--ff-blue"
+  }, {
+    what: "Gold",
+    w: 7.5,
+    ink: "--season-autumn"
+  }, {
+    what: "Commodities",
+    w: 7.5,
+    ink: "--season-summer"
+  } ];
+  var WEATHER = [ {
+    when: "Growth picking up",
+    holds: "Stocks, commodities",
+    test: function(r) {
+      return r.regime === "expansion";
+    }
+  }, {
+    when: "Growth slowing",
+    holds: "Treasuries",
+    test: function(r) {
+      return r.regime !== "expansion";
+    }
+  }, {
+    when: "Prices heating",
+    holds: "Gold, commodities",
+    test: function(r) {
+      return r.cpiDirection === "rising";
+    }
+  }, {
+    when: "Prices cooling",
+    holds: "Stocks, Treasuries",
+    test: function(r) {
+      return r.cpiDirection === "falling";
+    }
+  } ];
+  var PHASES = [ {
+    key: "reflation",
+    name: "Reflation",
+    growth: "slowing",
+    prices: "falling",
+    holds: "Bonds",
+    at: [ 1, 1.5 ]
+  }, {
+    key: "recovery",
+    name: "Recovery",
+    growth: "picking up",
+    prices: "falling",
+    holds: "Stocks",
+    at: [ .5, 1 ]
+  }, {
+    key: "overheat",
+    name: "Overheat",
+    growth: "picking up",
+    prices: "rising",
+    holds: "Commodities",
+    at: [ 0, .5 ]
+  }, {
+    key: "stagflation",
+    name: "Stagflation",
+    growth: "slowing",
+    prices: "rising",
+    holds: "Cash",
+    at: [ 1.5, 2 ]
+  } ];
+  function weatherStrip() {
+    return '<div class="strip" role="img" aria-label="' + ALL_WEATHER.map(function(a) {
+      return a.what + " " + a.w + "%";
+    }).join(", ") + '">' + ALL_WEATHER.map(function(a) {
+      return '<span class="strip-run" style="flex:' + a.w + " 1 0;--season:var(" + a.ink + ')"></span>';
+    }).join("") + "</div>";
+  }
+  function weatherDetail() {
+    return "<h4>How All Weather reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: every asset does well in some economic weather and badly in another, so a portfolio that balances its risk across all four, growth picking up or slowing, prices heating or cooling, needs no one to call the next season.", "These weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights. The mix is held all the time and brought back to its weights from time to time; it is never timed.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady mark neither.", "This is a published allocation, not advice." ]) + srcBlock(WEATHER_SRC);
+  }
+  function drawWeather() {
+    var r = nowModel.reading;
+    var weights = ALL_WEATHER.map(function(a) {
+      return auxStat({
+        label: '<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what,
+        value: a.w + "%"
+      });
+    }).join("");
+    var weather = WEATHER.map(function(w) {
+      return auxStat({
+        label: w.when + (w.test(r) ? " · today" : ""),
+        value: w.holds,
+        wordy: true
+      });
+    }).join("");
+    need(WEATHER_ID).innerHTML = '<div class="cat-analysis cat-mood"><p class="ca-say">Something for every kind of economic weather, held all the time, so no season has to be called. The mix Ray Dalio gave individual investors:</p>' + weatherStrip() + weights + '<p class="ca-say">What each kind of weather has favoured:</p>' + weather + moreRow(weatherDetail()) + "</div>";
+  }
+  function phaseOf(r) {
+    var up = r.regime === "expansion", cooling = r.cpiDirection === "falling";
+    return PHASES[up ? cooling ? 1 : 2 : cooling ? 0 : 3];
+  }
+  function arc(a0, a1) {
+    var p = function(a) {
+      return (150 + 96 * Math.cos(a * Math.PI)).toFixed(1) + "," + (130 - 96 * Math.sin(a * Math.PI)).toFixed(1);
+    };
+    return "M150,130L" + p(a1) + "A96,96 0 0 1 " + p(a0) + "Z";
+  }
+  function clockFace(now2) {
+    var parts = PHASES.map(function(p) {
+      var m = (p.at[0] + p.at[1]) / 2 * Math.PI, x = 150 + 56 * Math.cos(m), y = 130 - 56 * Math.sin(m), cur = p === now2 ? " now" : "";
+      return '<path class="clock-q' + cur + '" d="' + arc(p.at[0], p.at[1]) + '"/><text class="clock-name' + cur + '" x="' + x.toFixed(1) + '" y="' + (y - 3).toFixed(1) + '" text-anchor="middle">' + p.name + '</text><text class="clock-asset' + cur + '" x="' + x.toFixed(1) + '" y="' + (y + 13).toFixed(1) + '" text-anchor="middle">' + p.holds + "</text>";
+    });
+    var axes = '<text class="clock-axis" x="150" y="22" text-anchor="middle">Growth picking up</text><text class="clock-axis" x="150" y="248" text-anchor="middle">Growth slowing</text><text class="clock-axis" x="27" y="128" text-anchor="middle">Prices<tspan x="27" dy="13">falling</tspan></text><text class="clock-axis" x="273" y="128" text-anchor="middle">Prices<tspan x="273" dy="13">rising</tspan></text>';
+    return '<svg class="clock" viewBox="0 0 300 260" role="img" aria-label="The Investment Clock, at ' + now2.name + '">' + parts.join("") + axes + "</svg>";
+  }
+  function clockDetail() {
+    return "<h4>How the clock reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.", "Today’s phase is read from the Season Model, over the same windows: growth by its regime, expanding or contracting, and prices by the direction of inflation. Prices holding steady count with rising, since the clock has no steady phase; that is Claude’s call.", "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice." ]) + srcBlock(CLOCK_SRC);
+  }
+  function drawClock() {
+    var now2 = phaseOf(nowModel.reading);
+    var rows = PHASES.map(function(p) {
+      return auxStat({
+        label: p.name + (p === now2 ? " · today" : "") + "<small>Growth " + p.growth + ", prices " + p.prices + "</small>",
+        value: p.holds,
+        wordy: true
+      });
+    }).join("");
+    need(CLOCK_ID).innerHTML = '<div class="cat-analysis cat-mood"><p class="ca-say">Today reads ' + now2.name + ": growth " + now2.growth + " and prices " + (now2.prices === "rising" && nowModel.reading.cpiDirection === "steady" ? "holding steady" : now2.prices) + ". In this phase the clock holds " + now2.holds.toLowerCase() + ".</p>" + clockFace(now2) + rows + moreRow(clockDetail()) + "</div>";
+  }
+  function homeHtml() {
+    var now2 = phaseOf(nowModel.reading);
+    return trendDoor(WEATHER_ID, WEATHER_NAME, umbrellaSvg(), WEATHER_NAME, trendText("Something for every kind of weather, held all the time, never timed.") + weatherStrip()) + trendDoor(CLOCK_ID, CLOCK_NAME, clockSvg(), CLOCK_NAME, trendText("Today reads " + now2.name + ", when the clock holds " + now2.holds.toLowerCase() + ".")) + trendSoon(slidersSvg(), "Custom", trendText("Her own mix, set by her own rules."));
+  }
+  function portfolioSheets(panel) {
+    [ WEATHER_ID, CLOCK_ID ].forEach(function(id) {
+      panel.appendChild(metricSheet(id));
+    });
+    sheetRenderers[WEATHER_ID] = drawWeather;
+    sheetRenderers[CLOCK_ID] = drawClock;
+  }
+  function buildPortfolio() {
+    var panel = need("panel-portfolio");
+    panel.innerHTML = '<div class="dx" id="portfolio-home">' + homeHtml() + "</div>";
+    portfolioSheets(panel);
+  }
+  function bootPortfolio() {
+    buildPortfolio();
+  }
   var BUFFETT_2001 = [ {
     t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
     u: "https://fortune.com/2001/12/10/warren-buffett-stock-market/"
@@ -36815,6 +36991,17 @@
     BACK.depth--;
     return true;
   }
+  function plainHome(tab, title) {
+    return {
+      panel: tabPanel(tab),
+      bar: function() {
+        return [ title, null ];
+      },
+      hide: function() {
+        return [ byId(tab + "-home") ];
+      }
+    };
+  }
   function buildNav() {
     var cyclePanel = tabPanel("cycle");
     var analysisPanel = tabPanel("analysis");
@@ -36841,15 +37028,8 @@
           return [ byId(ui.eraOpen ? "calendar-cycle" : "calendar-list") ];
         }
       },
-      search: {
-        panel: tabPanel("search"),
-        bar: function() {
-          return [ "Search", null ];
-        },
-        hide: function() {
-          return [ byId("search-home") ];
-        }
-      }
+      search: plainHome("search", "Search"),
+      portfolio: plainHome("portfolio", "Portfolio")
     };
     var homeCtx = PAGE_HOME.cycle;
     var openSheet = null, openHome = null, returnScroll = 0;
@@ -36946,7 +37126,7 @@
         openMetricPage(openTarget(btn), btn.getAttribute("data-title"), false, tab);
       });
     });
-    [ "analysis", "search" ].forEach(function(key) {
+    [ "analysis", "search", "portfolio" ].forEach(function(key) {
       var panel = PAGE_HOME[key].panel, go = function(el) {
         openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key);
       };
@@ -37485,6 +37665,7 @@
     bootPagesNav();
     bootDiagnosis();
     bootAnalysis();
+    bootPortfolio();
     bootTabsMenu();
     bootRepaint();
     bootDone();

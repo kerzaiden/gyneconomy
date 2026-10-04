@@ -166,8 +166,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)
-- **Portfolio is empty and says "Coming soon"; no placeholder figures.** A fake number in a financial app is
-  not a neutral placeholder. (V259)
+- **Portfolio offers three containers: All Weather, the Investment Clock, and Custom (coming soon).** Keren: "a
+  user can choose how she wants to invest her money and what is like a popular investing method that can help her
+  invest wisely. And then if she wants something custom, then we'll do it later." Each method shows its authors'
+  own mix, gold and commodities included, with its source cited: Keren chose "As published" (her stocks, bonds and
+  cash rule is for Custom). Still no placeholder figures: a fake number in a financial app is not a neutral
+  placeholder. (V259, 0.5.0, Oct 4, 2026)
 - **An installed app checks for a new version whenever it returns to the foreground, at most once a minute,
   and reloads onto it.** Keren: "I don't want to delete the app every time I make an update". (undated, Sep
   27, 2026)
@@ -496,8 +500,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   contraction. (undated, Sep 18, 2026)
 - **The model's own values stay "expansion" and "contraction"; only the on-screen label changes.** Renaming a
   value to change a label turns a display tweak into a data bug. (V304)
-- **No season points to an asset class; the Investment Clock tilt is gone and stays gone.** Dropped at Keren's
-  instruction. (undated, Sep 17, 2026)
+- **The Investment Clock lives on the Portfolio tab only, read from the Season Model's regime and the direction of
+  inflation; no season page points to an asset class.** The tilt on the season pages was dropped at Keren's
+  instruction (Sep 17, 2026); she brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices
+  count with rising, since the clock has no steady phase (Claude's call).
 - **Before quarterly GDP (1947), a season is read from annual real GDP growth: the trend across the last two
   years, ±0.1 pp a year counting as flat (the quarterly ±0.025 pp a quarter, at a year's scale), with prices
   read monthly as always (CPIAUCNS before 1948).** Keren chose annual seasons for the older cycles (V690). Two

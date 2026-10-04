@@ -407,6 +407,24 @@ async function openPage(p, url, sheet) {
 
   {
     await p.goto('file://' + url); await ready(p);
+    await p.click('.tab-btn[data-tab="portfolio"]'); await settle(p);
+    const home = await p.evaluate(() => [...document.querySelectorAll('#portfolio-home .trend-head')].map(h => h.textContent.trim()).join(' | '));
+    await p.click('#portfolio-home [data-open="sheet-investment-clock"]'); await settle(p);
+    const clock = await p.evaluate(() => {
+      const s = document.querySelector('#metric-page #sheet-investment-clock');
+      return s && !s.hidden ? { title: document.getElementById('topbar-title').textContent, now: s.querySelectorAll('.clock-q.now').length,
+        today: [...s.querySelectorAll('.aux-stat')].filter(r => /today/.test(r.textContent)).length } : null;
+    });
+    await p.click('#topbar-back'); await settle(p);
+    await p.click('#portfolio-home [data-open="sheet-all-weather"]'); await settle(p);
+    const weights = await p.evaluate(() => [...document.querySelectorAll('#metric-page #sheet-all-weather .aux-stat b')].slice(0, 5).map(b => parseFloat(b.textContent)).reduce((a, b) => a + b, 0));
+    (home === 'All Weather | Investment Clock | CustomComing soon' && clock && clock.title === 'Investment Clock' && clock.now === 1 && clock.today === 1 && weights === 100)
+      ? ok('the Portfolio tab offers All Weather, the Investment Clock and Custom', 'the clock marks one phase, the weights sum to 100%')
+      : bad('the Portfolio tab offers All Weather, the Investment Clock and Custom', JSON.stringify({ home, clock, weights }));
+  }
+
+  {
+    await p.goto('file://' + url); await ready(p);
     const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row') && !document.getElementById('sheet-indicators'));
     (tabs === 'cycle search analysis portfolio' && gone)
