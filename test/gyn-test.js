@@ -280,7 +280,7 @@ async function openPage(p, url, sheet) {
                      const b = document.getElementById('detail-modal-body'), t = b.querySelectorAll('.hi-card').length + ':' +
                        (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1];
                      document.getElementById('detail-modal-close').click(); return t; })(),
-                   doors: d.querySelectorAll('[data-open]:not([data-open="sheet-cat-mood"])').length,
+                   doors: d.querySelectorAll('[data-open]:not([data-open="sheet-cat-mood"]), [data-chart-cycle]').length,
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-detail-idx]').length : 0,
@@ -374,26 +374,26 @@ async function openPage(p, url, sheet) {
   {
     await p.evaluate(() => [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click());
     await settle(p);
-    await p.evaluate(() => document.querySelector('#calendar-cycle [data-open="sheet-cycle-chart"]').click());
+    await p.evaluate(() => document.querySelector('#calendar-cycle [data-chart-cycle]').click());
     await settle(p);
     const chartOf = () => p.evaluate(() => {
-      const s = document.querySelector('#metric-page #sheet-cycle-chart'), c = s && s.querySelector('.labs');
-      return c ? { open: !s.hidden, picked: s.querySelector('.lab-menu [data-lab-sub="cycle"] small').textContent,
+      const s = document.getElementById('chart-home'), c = s && s.querySelector('.labs');
+      return c ? { open: !document.getElementById('panel-chart').hidden, picked: s.querySelector('.lab-menu [data-lab-sub="cycle"] small').textContent,
         items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length,
         seen: [...c.querySelectorAll('.lab-item')].filter(e => e.offsetParent).length } : null;
     });
     const chart = await chartOf();
-    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="abnormal"]').click());
+    await p.evaluate(() => document.querySelector('#chart-home [data-lab-tier="abnormal"]').click());
     const risky = await chartOf();
-    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="all"]').click());
-    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-sub="cycle"]').click());
-    await p.evaluate(() => [...document.querySelectorAll('#sheet-cycle-chart [data-lab-cycle]')].find(o => /Nifty Fifty/.test(o.textContent)).click());
+    await p.evaluate(() => document.querySelector('#chart-home [data-lab-tier="all"]').click());
+    await p.evaluate(() => document.querySelector('#chart-home [data-lab-sub="cycle"]').click());
+    await p.evaluate(() => [...document.querySelectorAll('#chart-home [data-lab-cycle]')].find(o => /Nifty Fifty/.test(o.textContent)).click());
     await settle(p);
     const picked = await chartOf();
     (chart && chart.open && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
      risky.seen === chart.risk && picked && picked.picked === 'Nifty Fifty')
-      ? ok('a past cycle opens its own blood test', chart.items + ' readings, ' + chart.risk + ' at risk')
-      : bad('a past cycle opens its own blood test', JSON.stringify(chart));
+      ? ok('Cycle analysis on a past cycle opens the Analysis tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
+      : bad('Cycle analysis on a past cycle opens the Analysis tab on that cycle', JSON.stringify(chart));
   }
 
   {
@@ -473,8 +473,8 @@ async function openPage(p, url, sheet) {
     });
     (tab.title === 'Analysis' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
      tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
-      ? ok('the Health chart tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
-      : bad('the Health chart tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
+      ? ok('Cycle analysis tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
+      : bad('Cycle analysis tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
       await p.fill('#chart-home .lab-q', q); await settle(p);
       return p.evaluate(() => ({
@@ -525,8 +525,8 @@ async function openPage(p, url, sheet) {
       return { bar: document.getElementById('topbar-title').textContent, on: box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none' };
     });
     (fromChart && fromChart.bar === 'Confidence' && fromChart.on)
-      ? ok('a reading in the Health chart opens its page, and its trend button works', fromChart.bar)
-      : bad('a reading in the Health chart opens its page, and its trend button works', JSON.stringify(fromChart));
+      ? ok('a reading in Cycle analysis opens its page, and its trend button works', fromChart.bar)
+      : bad('a reading in Cycle analysis opens its page, and its trend button works', JSON.stringify(fromChart));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
     for (const cat of ['circulation', 'mood', 'energy']) {

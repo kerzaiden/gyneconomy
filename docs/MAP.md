@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,909 lines** in 34 files, about 586 KB, roughly **166 thousand tokens**. No session can
+The source is **8,911 lines** in 34 files, about 586 KB, roughly **166 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `834c0b6` on 2026-10-04.
+Generated from commit `ae2eeea` on 2026-10-04.
 
 ## The page
 
@@ -23,13 +23,13 @@ Generated from commit `834c0b6` on 2026-10-04.
 | `js/main.ts` | 30 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **30** modules, **605** top-level functions, **104** top-level vars, **356** exported names, **19** boots.
+Counts: **30** modules, **606** top-level functions, **103** top-level vars, **357** exported names, **19** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
-| `js/dom.ts` | 156 | 23 | `format` |
+| `js/dom.ts` | 159 | 24 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 38 | 4 | `format`, `history-fred` |
 | `js/data.ts` | 555 | 74 | `format`, `history-fred`, `live` |
@@ -47,7 +47,7 @@ Counts: **30** modules, **605** top-level functions, **104** top-level vars, **3
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 274 | 59 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 273 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
 | `js/format.ts` | 77 | 35 | — |
@@ -68,7 +68,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 
 | Order | Boot | Lines |
 |---|---|---|
-| 1 | `bootDom` | `js/dom.ts:146`–155 |
+| 1 | `bootDom` | `js/dom.ts:149`–158 |
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–37 |
@@ -114,14 +114,15 @@ falls in. **export** marks a name other modules import.
 | 73 | `trendHead` | `function trendHead(` |
 | 74 | `trendCard` | `function trendCard(` |
 | 77 | `trendDoor` · export | `function trendDoor(` |
-| 80 | `trendSoon` · export | `function trendSoon(` |
-| 83 | `moreRow` · export | `function moreRow(` |
-| 89 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
-| 111 | `addSources` · export | `function addSources(` |
-| 122 | `SVG_NS` | `var SVG_NS =` |
-| 123 | `svgEl` · export | `function svgEl(` |
-| 129 | `detailSlot` · export | `function detailSlot(` |
-| 139 | `expandBtn` · export | `function expandBtn(` |
+| 80 | `trendJump` · export | `function trendJump(` |
+| 83 | `trendSoon` · export | `function trendSoon(` |
+| 86 | `moreRow` · export | `function moreRow(` |
+| 92 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
+| 114 | `addSources` · export | `function addSources(` |
+| 125 | `SVG_NS` | `var SVG_NS =` |
+| 126 | `svgEl` · export | `function svgEl(` |
+| 132 | `detailSlot` · export | `function detailSlot(` |
+| 142 | `expandBtn` · export | `function expandBtn(` |
 
 ### `js/live.ts`
 
@@ -942,15 +943,14 @@ falls in. **export** marks a name other modules import.
 | 204 | `cap` | `function cap(` |
 | 206 | `visitNote` | `function visitNote(` |
 | 215 | `chartDetail` | `function chartDetail(` |
-| 224 | `CHART_ID` | `var CHART_ID =` |
-| 225 | `chartDoor` · export | `function chartDoor(` |
-| 229 | `HOME_ID` | `var HOME_ID =` |
-| 230 | `drawChart` | `function drawChart(` |
-| 238 | `fold` | `function fold(` |
-| 242 | `wireFinder` | `function wireFinder(` |
-| 259 | `openMenus` | `function openMenus(` |
-| 260 | `shutMenus` | `function shutMenus(` |
-| 261 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 224 | `chartDoor` · export | `function chartDoor(` |
+| 228 | `HOME_ID` | `var HOME_ID =` |
+| 229 | `drawChart` | `function drawChart(` |
+| 237 | `fold` | `function fold(` |
+| 241 | `wireFinder` | `function wireFinder(` |
+| 258 | `openMenus` | `function openMenus(` |
+| 259 | `shutMenus` | `function shutMenus(` |
+| 260 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 

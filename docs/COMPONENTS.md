@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4fe84e4` on 2026-10-04. **88 components**, **35 shared patterns**.
+Generated from commit `ae2eeea` on 2026-10-04. **88 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -78,7 +78,7 @@ Generated from commit `4fe84e4` on 2026-10-04. **88 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`moreRow`** | `.more-row` | `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
-| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendSoon` |
+| **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
 | **`trendText`** | `.trend-text` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:diagnosisHtml`, `portfolio.ts:homeHtml` |
@@ -170,7 +170,7 @@ Generated from commit `4fe84e4` on 2026-10-04. **88 components**, **35 shared pa
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:labSec` |
 | **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
-| **`metricSheet`** | `.metric-sheet` | `cycle-analysis.ts:buildCycleChart`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
+| **`metricSheet`** | `.metric-sheet` | `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `pages-nav.ts:renderSignsList` |
@@ -282,7 +282,6 @@ renderer speaks. Listed most-used first.
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
-| **`trendDoor`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |

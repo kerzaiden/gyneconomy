@@ -1,8 +1,8 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
-import { byId, layer, moreRow, need, trendDoor, trendText, ui } from "./dom.ts";
+import { byId, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle } from "./history.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
-import { catHeadCard, metricSheet, sheetRenderers } from "./render-core.ts";
+import { catHeadCard, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycLabel, cycleModel, openCycle } from "./model.ts";
 import { categoriesShown, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
@@ -213,18 +213,17 @@ function visitNote(i: number){
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
 }
 function chartDetail(){
-  return '<h4>How the health chart reads</h4>' + facts([
+  return '<h4>How cycle analysis reads</h4>' + facts([
     "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
     "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.",
     "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
-    "Her health chart describes her history, not what comes next."
+    "Her cycle analysis describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
-var CHART_ID = "sheet-cycle-chart", CHART_NAME = "Health chart";
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i));
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle analysis", trendText(visitNote(i)) + scoreBox(i));
 }
 var HOME_ID = "chart-home";
 function drawChart(id: string){
@@ -258,15 +257,15 @@ function wireFinder(host: HTMLElement, id: string){
 }
 function openMenus(){ return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m: HTMLElement){ return !m.hidden; }) as HTMLElement[]; }
 function shutMenus(){ openMenus().forEach(function(m){ var host = m.closest(".lab-find"); if (host) showMenu(host, false); }); }
-export function buildCycleChart(home: HTMLElement){
-  var sheet = metricSheet(CHART_ID);
-  home.appendChild(sheet);
-  wireFinder(sheet, CHART_ID);
+export function buildCycleChart(){
   wireFinder(need(HOME_ID), HOME_ID);
   layer(0, { open:function(){ return openMenus().length > 0; }, close:shutMenus });
   document.addEventListener("click", function(e){ var t = e.target as Element; if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus(); });
-  home.addEventListener("click", function(e){
-    if ((e.target as Element).closest && (e.target as Element).closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
+  document.addEventListener("click", function(e){
+    var door = (e.target as Element).closest && (e.target as Element).closest("[data-chart-cycle]"); if (!door) return;
+    need("tab-chart").click();
+    page.cycles[HOME_ID] = door.getAttribute("data-chart-cycle");
+    drawChart(HOME_ID);
   });
   need("tab-chart").addEventListener("click", function(){ drawChart(HOME_ID); });
   drawChart(HOME_ID);
