@@ -6,11 +6,10 @@ import { categoriesShown, keyed, ROSTER } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
-type Norm = { lo: number; hi: number; fence: number; floor: number };
+type Norm = { lo: number; hi: number; fence: number; floor: number; n: number };
 type Lab = { id: string; name: string; cat: string; unit: string; per: (number | null)[]; norm: Norm | null };
 type Visit = { years: number; bull: number; bleed: number };
 
-var JUDGED_FROM = 8;
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
 
@@ -19,9 +18,9 @@ function quartile(vs: number[], p: number){
   return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
 }
 function normOf(vs: number[]): Norm | null {
-  if (vs.length < JUDGED_FROM) return null;
+  if (vs.length < 2) return null;
   var lo = quartile(vs, 0.25), hi = quartile(vs, 0.75);
-  return { lo:lo, hi:hi, fence:hi + 1.5 * (hi - lo), floor:lo - 1.5 * (hi - lo) };
+  return { lo:lo, hi:hi, fence:hi + 1.5 * (hi - lo), floor:lo - 1.5 * (hi - lo), n:vs.length };
 }
 function closedCount(){ return marketCycles.filter(function(c){ return !c.ongoing; }).length; }
 function visitOf(m: CycleModel): Visit {
@@ -69,7 +68,7 @@ function flagWord(st: string){ return st === "high" ? " High" : st === "low" ? "
 function labRows(i: number, cat: string){
   return labs().filter(function(l){ return l.cat === cat && l.per[i] != null; }).map(function(l){
     var st = state(l, i), n = l.norm, v = l.per[i] as number;
-    var range = !n ? '<small>record too short</small>' : '<small>normal ' + fmt(l, n.lo) + (fmt(l, n.hi) === fmt(l, n.lo) ? "" : '–' + fmt(l, n.hi)) + '</small>';
+    var range = !n ? '<small>no closed cycle yet</small>' : '<small>normal ' + fmt(l, n.lo) + (fmt(l, n.hi) === fmt(l, n.lo) ? "" : '–' + fmt(l, n.hi)) + ' · ' + n.n + ' cycles</small>';
     return auxStat({ label:l.name, value:'<span class="lab-v' + (st === "high" || st === "low" ? " flag" : "") + '">' + fmt(l, v) + flagWord(st) + '</span> ' + range });
   }).join("");
 }
@@ -89,7 +88,7 @@ function visitNote(i: number){
   var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm as Norm;
   var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") +
     (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
-  var named = function(st: string){ return outside(i).filter(function(l){ return state(l, i) === st; }).map(function(l){ return l.name.toLowerCase(); }); };
+  var named = function(st: string){ return outside(i).filter(function(l){ return state(l, i) === st; }).map(function(l){ return l.name; }); };
   var high = named("high"), low = named("low");
   var parts = (high.length ? [listWords(high) + " ran far above her normal"] : []).concat(low.length ? [listWords(low) + " far below it"] : []);
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
@@ -104,11 +103,10 @@ function historyTable(viewed: number){
     }).join("") + '</tbody></table>';
 }
 function chartDetail(){
-  var judged = labs().filter(function(l){ return l.norm; }).length;
   return '<h4>How the chart reads</h4>' + facts([
     "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
     "Her normal range for a reading is the middle half of her closed cycles. An arrow marks a cycle outside that middle half; High or Low marks one past Tukey’s fence, one and a half times the middle span beyond it, the standard rule for an outlier.",
-    "A reading is judged only when its record covers at least " + JUDGED_FROM + " closed cycles, every cycle since 1970 (Claude’s call); " + judged + " of " + labs().length + " do. The others show their value with no range.",
+    "Each range says how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range and flags weigh less for it.",
     "The table counts, for every cycle, the readings in each category that ran past the fence. The chart describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }

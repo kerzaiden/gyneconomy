@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,310 lines** in 35 files, about 611 KB, roughly **174 thousand tokens**. No session can
+The source is **9,308 lines** in 35 files, about 611 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `4d536e1` on 2026-10-04.
+Generated from commit `4aaa3de` on 2026-10-04.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `4d536e1` on 2026-10-04.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **609** top-level functions, **104** top-level vars, **344** exported names, **19** boots.
+Counts: **31** modules, **609** top-level functions, **103** top-level vars, **344** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **609** top-level functions, **104** top-level vars, **3
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 121 | 24 | `data`, `dom`, `format`, `model`, `roster` |
+| `js/cycle-analysis.ts` | 119 | 23 | `data`, `dom`, `format`, `model`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 79 | 37 | — |
@@ -945,30 +945,29 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 13 | `JUDGED_FROM` | `var JUDGED_FROM =` |
-| 14 | `NUM` | `var NUM =` |
-| 17 | `quartile` | `function quartile(` |
-| 21 | `normOf` | `function normOf(` |
-| 26 | `closedCount` | `function closedCount(` |
-| 27 | `visitOf` | `function visitOf(` |
-| 34 | `visits` | `function visits(` |
-| 35 | `cycleLab` | `function cycleLab(` |
-| 39 | `readingLab` | `function readingLab(` |
-| 50 | `labs` | `function labs(` |
-| 57 | `state` | `function state(` |
-| 62 | `yearsWord` | `function yearsWord(` |
-| 63 | `fmt` | `function fmt(` |
-| 67 | `flagWord` | `function flagWord(` |
-| 69 | `labRows` | `function labRows(` |
-| 76 | `report` | `function report(` |
-| 83 | `outside` | `function outside(` |
-| 84 | `listWords` | `function listWords(` |
-| 85 | `word` | `function word(` |
-| 86 | `cap` | `function cap(` |
-| 88 | `visitNote` | `function visitNote(` |
-| 97 | `historyTable` | `function historyTable(` |
-| 106 | `chartDetail` | `function chartDetail(` |
-| 115 | `cycleAnalysisHtml` · export | `function cycleAnalysisHtml(` |
+| 13 | `NUM` | `var NUM =` |
+| 16 | `quartile` | `function quartile(` |
+| 20 | `normOf` | `function normOf(` |
+| 25 | `closedCount` | `function closedCount(` |
+| 26 | `visitOf` | `function visitOf(` |
+| 33 | `visits` | `function visits(` |
+| 34 | `cycleLab` | `function cycleLab(` |
+| 38 | `readingLab` | `function readingLab(` |
+| 49 | `labs` | `function labs(` |
+| 56 | `state` | `function state(` |
+| 61 | `yearsWord` | `function yearsWord(` |
+| 62 | `fmt` | `function fmt(` |
+| 66 | `flagWord` | `function flagWord(` |
+| 68 | `labRows` | `function labRows(` |
+| 75 | `report` | `function report(` |
+| 82 | `outside` | `function outside(` |
+| 83 | `listWords` | `function listWords(` |
+| 84 | `word` | `function word(` |
+| 85 | `cap` | `function cap(` |
+| 87 | `visitNote` | `function visitNote(` |
+| 96 | `historyTable` | `function historyTable(` |
+| 105 | `chartDetail` | `function chartDetail(` |
+| 113 | `cycleAnalysisHtml` · export | `function cycleAnalysisHtml(` |
 
 ### `js/cycle-tab.ts`
 
