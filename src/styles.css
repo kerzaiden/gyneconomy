@@ -1085,7 +1085,8 @@
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
-  .plain .cat-head{ padding:12px 16px; background:var(--surface-2); border-bottom-color:var(--border); }
+  .plain .cat-head{ padding:12px 16px; background:var(--surface); border-bottom-color:var(--border); }
+  .plain ul{ background:var(--surface-2); }
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-interface); color:var(--text-primary); }
   .plain .ind-cat-name small{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
   .plain .lab-mark{ vertical-align:-5px; }
