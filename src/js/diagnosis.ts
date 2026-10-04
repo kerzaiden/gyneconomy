@@ -1,5 +1,5 @@
 import { CHEV, fmtSigned, seasonName } from "./format.ts";
-import { addSources, byId, detailSlot } from "./dom.ts";
+import { addSources, byId, detailSlot, trendDoor } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { bookSvg, calendarSvg } from "./marks.ts";
 import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
@@ -7,7 +7,7 @@ import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, moodToday, moodTrack, nowModel, seasonGroup, yearAfter } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { cycleAnalysisHtml } from "./cycle-analysis.ts";
+import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import type { CycleModel } from "./model.ts";
 
 type DxView = { stage?: string; season?: Season; after?: number | null };
@@ -20,7 +20,7 @@ function diagnosisHtml(m: CycleModel){
   var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(m.endYear) };
   if (!d) return "";
   return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
-    cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    chartDoor() + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
@@ -55,19 +55,22 @@ function marketIn(y: number, ytd: boolean){
 }
 function moodDoor(head: string, body: string){
   var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
-  return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '">' +
-    '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + '</span>' + (head || mood.title) + CHEV + '</span>' + body + '</button>';
+  return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
 }
 function trendText(t: string){ return '<span class="trend-text">' + t + '</span>'; }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
   if (host && m) host.innerHTML = diagnosisHtml(m);
 }
+function diagnosisHost(home: HTMLElement){
+  var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
+  home.insertBefore(host, home.firstChild);
+  buildCycleChart(home);
+}
 function buildDiagnosis(){
   var home = byId("today-analysis");
   if (!home || document.getElementById("diagnosis")) return;
-  var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
-  home.insertBefore(host, home.firstChild);
+  diagnosisHost(home);
   renderDiagnosis(nowModel);
   addSources(DIAG_SRC);
 }

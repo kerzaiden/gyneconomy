@@ -1545,7 +1545,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.2.0 (730)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.3.0 (731)</span></p>
     </div>
   </div>
 
@@ -1948,6 +1948,9 @@
     });
     box.addEventListener("click", sync);
     sync();
+  }
+  function trendDoor(open, title, mark, head, body) {
+    return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + CHEV + "</span>" + body + "</button>";
   }
   function moreRow(fullHtml, label) {
     if (!fullHtml) return "";
@@ -30115,11 +30118,17 @@
     var mode = page.mode[id], on = mode === "cycles";
     if (minYear == null) minYear = page.y0[id];
     var known = mode === "cycles" || mode === "calendar";
-    return '<div class="hist-controls">' + modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
+    return controlsBox(modeBar(id, mode, extra) + (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear) : rangeBar(id, timelineFor({
       series: tl.series,
       depth: tl.depth,
       stops: page.stops[id]
-    }), page.range[id])) + "</div>";
+    }), page.range[id])));
+  }
+  function controlsBox(inner) {
+    return '<div class="hist-controls">' + inner + "</div>";
+  }
+  function cycleControls(id) {
+    return controlsBox(cyclePicker(id, page.cycles[id]));
   }
   function pageCycle(id, y0) {
     var c = page.mode[id] === "cycles" ? cycleByName(page.cycles[id]) || openCycle() : null;
@@ -31392,6 +31401,9 @@
   }
   function bookSvg() {
     return markSvg('<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/><path d="M12 6.6v13.6" stroke-width="1.7"/>');
+  }
+  function chartSvg() {
+    return markSvg('<rect x="5" y="4.5" width="14" height="16.5" rx="2" stroke-width="1.8"/><path d="M9 3.5h6v3H9zM8.5 11h7M8.5 14.5h7M8.5 18h4" stroke-width="1.8"/>');
   }
   function ecgSvg() {
     return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
@@ -34081,7 +34093,7 @@
     var chip = function(key, title, n) {
       return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
     };
-    return '<div class="labs"><div class="lab-score"><div><small>' + marketCycles[i].name + "</small><b>Health score</b><small>" + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
+    return '<div class="labs"><div class="lab-score"><div><b>Health score</b><small>' + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
       return chip(t.key, t.title, by[t.key].length);
     }).join("") + "</div>" + TIERS.filter(function(t) {
       return by[t.key].length;
@@ -34141,7 +34153,24 @@
   function cycleAnalysisHtml(m) {
     var i = marketCycles.indexOf(m.era);
     if (i < 0) return "";
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
+  }
+  var CHART_ID = "sheet-cycle-chart";
+  function chartDoor() {
+    return trendDoor(CHART_ID, "Her chart", chartSvg(), "Her chart", "");
+  }
+  function drawChart() {
+    var sheet = byId(CHART_ID), c = pageCycle(CHART_ID);
+    if (sheet && c) sheet.innerHTML = cycleControls(CHART_ID) + cycleAnalysisHtml(cycleModel(c));
+  }
+  function buildCycleChart(home) {
+    page.mode[CHART_ID] = "cycles";
+    page.cycles[CHART_ID] = null;
+    home.appendChild(metricSheet(CHART_ID));
+    home.addEventListener("click", function(e) {
+      if (e.target.closest && e.target.closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
+    });
+    sheetRenderers[CHART_ID] = drawChart;
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -34155,7 +34184,7 @@
       after: yearAfter(m.endYear)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + chartDoor() + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -34201,7 +34230,7 @@
     var mood = CATEGORIES.filter(function(c) {
       return c.key === "mood";
     })[0];
-    return '<button type="button" class="trend-card cat-mood" data-open="sheet-cat-mood" data-title="' + mood.title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + bookSvg() + "</span>" + (head || mood.title) + CHEV + "</span>" + body + "</button>";
+    return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
   }
   function trendText(t) {
     return '<span class="trend-text">' + t + "</span>";
@@ -34210,13 +34239,17 @@
     var host = document.getElementById("diagnosis");
     if (host && m) host.innerHTML = diagnosisHtml(m);
   }
-  function buildDiagnosis() {
-    var home = byId("today-analysis");
-    if (!home || document.getElementById("diagnosis")) return;
+  function diagnosisHost(home) {
     var host = document.createElement("article");
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
+    buildCycleChart(home);
+  }
+  function buildDiagnosis() {
+    var home = byId("today-analysis");
+    if (!home || document.getElementById("diagnosis")) return;
+    diagnosisHost(home);
     renderDiagnosis(nowModel);
     addSources(DIAG_SRC);
   }

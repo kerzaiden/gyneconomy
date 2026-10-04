@@ -508,8 +508,11 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
-- **Her chart is a blood test of each cycle** (`cycle-analysis`, under the cycle story in the Diagnosis, so
-  the current cycle and every past one opened from Analysis carry it). Every roster reading is averaged over
+- **Her chart is a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries only its door, a
+  trend card under the cycle story, so the current cycle and every past one opened from Analysis carry it. The
+  page (`sheet-cycle-chart`) is a metric sheet outside the roster: `buildCycleChart` gives it a `page.cycles`
+  key, so the shared cycle picker, its keys and `eraShow` drive it like a history page, and the door sets the
+  picked cycle to the one on screen. Every roster reading is averaged over
   the cycle's years; its range is the middle half of the closed cycles that reading covers (Normal), Tukey's
   fences beyond it mark Risk, and between is Attention. The cycle's length, bull years and bleed are judged
   only once it has closed. The health score is the share of judged readings that are Normal. The tier filter

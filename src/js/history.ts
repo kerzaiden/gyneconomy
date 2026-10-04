@@ -393,12 +393,12 @@ export function histControls(id: string, tl: TimelineSource, minYear?: number | 
   var mode = page.mode[id], on = mode === "cycles";
   if (minYear == null) minYear = page.y0[id];
   var known = mode === "cycles" || mode === "calendar";
-  return '<div class="hist-controls">' +
-    modeBar(id, mode, extra) +
+  return controlsBox(modeBar(id, mode, extra) +
     (!known ? "" : on ? cyclePicker(id, page.cycles[id], minYear)
-                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:page.stops[id] }), page.range[id])) +
-  '</div>';
+                      : rangeBar(id, timelineFor({ series:tl.series, depth:tl.depth, stops:page.stops[id] }), page.range[id])));
 }
+function controlsBox(inner: string){ return '<div class="hist-controls">' + inner + '</div>'; }
+export function cycleControls(id: string){ return controlsBox(cyclePicker(id, page.cycles[id])); }
 export function pageCycle(id: string, y0?: number | null){
   var c = page.mode[id] === "cycles" ? (cycleByName(page.cycles[id]) || openCycle()) : null;
   if (y0 == null) y0 = page.y0[id];

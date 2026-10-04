@@ -69,6 +69,10 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   box.addEventListener("click", sync);
   sync();
 }
+export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
+  return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '">' +
+    '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + CHEV + '</span>' + body + '</button>';
+}
 export function moreRow(fullHtml: string | null | undefined, label?: string){
   if (!fullHtml) return "";
   var idx = detailSlot(fullHtml);

@@ -39,6 +39,8 @@ export function calendarSvg(){ return markSvg('<rect x="4" y="5.5" width="16" he
 export function bookSvg(){ return markSvg(
   '<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/>' +
   '<path d="M12 6.6v13.6" stroke-width="1.7"/>'); }
+export function chartSvg(){ return markSvg('<rect x="5" y="4.5" width="14" height="16.5" rx="2" stroke-width="1.8"/>' +
+  '<path d="M9 3.5h6v3H9zM8.5 11h7M8.5 14.5h7M8.5 18h4" stroke-width="1.8"/>'); }
 export function ecgSvg(){ return markSvg(
   '<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>'); }
 export function circulationSvg(){ return dropSvg(1.9); }
