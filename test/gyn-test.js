@@ -294,13 +294,13 @@ async function openPage(p, url, sheet) {
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-detail-idx]').length : 0,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
     const FEEL = /^(Optimism|Excitement|Thrill|Euphoria|Anxiety|Denial|Fear|Desperation|Panic|Despair|Depression|Hope) in (Spring|Summer|Autumn|Winter)$/;
     (today && today.visible && FEEL.test(today.title) && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
-     today.boxes === 'trend,sys' && today.doors === 0 && !today.after)
+     today.boxes === 'trend,chart,sys' && today.doors === 0 && !today.after)
       ? ok('the Diagnosis sits under the dial: the story, then the cycle year by year', today.title)
       : bad('the Diagnosis sits under the dial: the story, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
@@ -313,7 +313,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] + 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'trend,sys' && past.doors === 0 && past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'trend,chart,sys' && past.doors === 0 && past.after &&
      yearRun(past.years) && past.opens >= past.years.length - 1)
       ? ok('the cycle reads year by year, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, each year opening its quarter, today and at a close', JSON.stringify([today, past]));
@@ -382,58 +382,16 @@ async function openPage(p, url, sheet) {
   spans.some(s => /–Today/.test(s)) ? ok('cycle span says Today') : bad('cycle span says Today', spans.join(' | '));
 
   {
-    const off = await p.evaluate(() => ({
-      checked: document.getElementById('cycle-data').getAttribute('aria-checked'),
-      tracks: document.querySelectorAll('.cyc-track').length,
-      doors: document.querySelectorAll('.era-row[role="button"]').length,
-      legend: document.getElementById('cycle-legend').hidden
-    }));
-    const nCycles = off.doors;
-    (off.checked === 'false' && !off.tracks && nCycles > 1 && off.legend)
-      ? ok('cycle data starts hidden', off.doors + ' cycles, no grid')
-      : bad('cycle data starts hidden', JSON.stringify(off));
-    await p.click('#cycle-data'); await settle(p); await sweep(p);
-    const on = await p.evaluate(() => {
-      const dot = [...document.querySelectorAll('.era-row.data')].find(r => /Dot-Com/.test(r.textContent));
-      const scale = dot.querySelector('.cyc-scale > div').getBoundingClientRect();
-      const yrs = [...dot.querySelectorAll('.sx-yrs span')].filter(x => x.textContent);
-      const first = yrs[0].getBoundingClientRect(), last = yrs[yrs.length - 1].getBoundingClientRect();
-      const val = [...dot.querySelectorAll('.sx-row')].find(r => /Shiller CAPE/.test(r.textContent));
-      const cells = val ? [...val.querySelectorAll('i')] : [];
-      return {
-        tracks: document.querySelectorAll('.era-row.data .cyc-track').length,
-        legend: !document.getElementById('cycle-legend').hidden,
-        span: Math.round(scale.width), cols: Math.round(last.right - first.left), left: Math.round(scale.left - first.left),
-        label: val && val.getAttribute('aria-label'),
-        colored: cells.filter(i => i.classList.contains('on') && getComputedStyle(i).backgroundColor !== getComputedStyle(cells.find(c => c.classList.contains('off'))).backgroundColor).length
-      };
-    });
-    (on.tracks === nCycles && on.legend && on.span === on.cols && Math.abs(on.left) <= 1)
-      ? ok('show data draws every cycle on one year scale', on.span + 'px strip = ' + on.cols + 'px of years')
-      : bad('show data draws every cycle on one year scale', JSON.stringify(on));
-    const alike = ((/^Shiller CAPE: alike in (.+)$/.exec(on.label || '') || [])[1] || '').split(', ').filter(Boolean);
-    (alike.length && alike.length === on.colored && alike.every(y => /^(199\d|200\d)$/.test(y)))
-      ? ok('the CAPE marks the years of the Dot-Com cycle it resembles', on.label)
-      : bad('the CAPE marks the years of the Dot-Com cycle it resembles', JSON.stringify(on));
-    await p.evaluate(() => [...document.querySelectorAll('.era-row.data')].find(r => /Dot-Com/.test(r.textContent))
-      .querySelector('.sx-row[aria-label^="Shiller CAPE"]').click());
+    await p.evaluate(() => [...document.querySelectorAll('#cycle-list .era-row')].find(r => /Dot-Com/.test(r.textContent)).click());
     await settle(p);
-    const note = await p.evaluate(() => ({
-      text: document.getElementById('detail-modal-body').innerText,
-      opened: !document.getElementById('calendar-cycle').hidden
-    }));
-    await p.evaluate(() => document.getElementById('detail-modal-close').click());
-    (alike.length && alike.every(y => new RegExp('Jan ' + y + ': \\d').test(note.text)) && /^Now /m.test(note.text) && !note.opened)
-      ? ok('a row shows both numbers behind every dot', alike.map(y => 'Jan ' + y).join(', ') + ' and now')
-      : bad('a row shows both numbers behind every dot', JSON.stringify(note));
-    await p.reload(); await ready(p);
-    await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
-    const kept = nCycles === await p.evaluate(() => document.getElementById('cycle-data').getAttribute('aria-checked') === 'true' &&
-      document.querySelectorAll('.cyc-track').length);
-    await p.click('#cycle-data'); await settle(p);
-    const back = nCycles === await p.evaluate(() => !document.querySelectorAll('.cyc-track').length &&
-      document.querySelectorAll('.era-row[role="button"]').length);
-    (kept && back) ? ok('show data is remembered and turns off cleanly') : bad('show data is remembered and turns off cleanly', JSON.stringify({ kept, back }));
+    const chart = await p.evaluate(() => {
+      const c = document.querySelector('#calendar-cycle .labs');
+      return c ? { open: !document.getElementById('calendar-cycle').hidden, name: c.querySelector('.lab-score small').textContent,
+        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.t-abnormal .lab-item').length } : null;
+    });
+    (chart && chart.open && chart.name === 'Dot-Com Cycle' && chart.items > 10 && chart.risk > 0)
+      ? ok('a past cycle opens its own blood test', chart.items + ' readings, ' + chart.risk + ' at risk')
+      : bad('a past cycle opens its own blood test', JSON.stringify(chart));
   }
 
   {

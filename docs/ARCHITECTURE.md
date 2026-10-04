@@ -389,7 +389,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (a cycle's length, bull years and bleed, seasons and temperature, against the closed cycles), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Investment Clock and the All Seasons portfolio), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (her chart: every reading of a cycle against her closed cycles, as a blood test), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Investment Clock and the All Seasons portfolio), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -479,7 +479,7 @@ Rules that shape the pages:
   reading's page, and back returns to Search. The timing filter (All · Structural · Leading · Coincident ·
   Lagging, default All) and the search box combine; the box matches a reading's name, its economic term,
   its source line, or a category name. A reading's timing chip opens Search on its timing. **Icons wear
-  their category's colour** (`--cat`, from `.cat-weather` etc., the same colours as the Show data grid):
+  their category's colour** (`--cat`, from `.cat-weather` etc.):
   V509's single purple wash is revised for this list (Keren, V657), because here the colour says the
   category and nothing else.
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
@@ -505,23 +505,14 @@ Rules that shape the pages:
   range; a surplus year says surplus), and the mini is today's kind drawn with the cycle's data (`colPeek`
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
-  bands a past value can be read against. **Every other past figure takes the same format** (V670, Keren: one
-  format per reading): Show data's notes print through `pastFigure`, which applies
-  `eraFig` to today's card (`readDoor`, which reads the card as it stood today even while a cycle is shown) and
-  adds the card's unit where the figure carries no % or ×. The Federal budget is the
-  one reading printed with a word (deficit or surplus), and its rank in the notes is read the same way.
-- **Cycle history's "Show data" (V656) marks the years a reading sat where it sits today.** Off, the cycles
-  read as before. On, each cycle becomes a track scrolled sideways, where the season strip, the S&P strip,
-  the years and one row per reading share one width per year (`YEAR_W`), the same in every cycle, so a dot
-  sits under its year. The strips are drawn to scale there (`.cyc-scale` is exempt from `settleStrips`,
-  which turns one-quarter runs into dots). The track scrolls from its right end (`direction:rtl`) so the
-  latest years and the pinned labels show first. **The mark is V610's rule, per reading and never
-  averaged**: a year is marked when any reading taken in it sits within `ALIKE` (5) points of today's place
-  in the same record (Keren, V656: an average would hide the CAPE's January 2000). **Every dot can be
-  checked** (the V611 Echoes lesson): a row opens the matching reading of each marked year beside today's,
-  with both places. No count and no score. Rows without a mark fold into one line; a reading not yet
-  measured is named, never drawn. The current year is a ring, not a dot, and years after a cycle's end are
-  empty. The choice is remembered per reader (`gyn.cycleData`). This replaced the Rhymes card (V610–V655).
+  bands a past value can be read against.
+- **Her chart is a blood test of each cycle** (`cycle-analysis`, under the cycle story in the Diagnosis, so
+  the current cycle and every past one opened from Analysis carry it). Every roster reading is averaged over
+  the cycle's years; its range is the middle half of the closed cycles that reading covers (Normal), Tukey's
+  fences beyond it mark Risk, and between is Attention. The cycle's length, bull years and bleed are judged
+  only once it has closed. The health score is the share of judged readings that are Normal. The tier filter
+  is radio inputs and CSS `:has`, so it needs no script. Show data (V656) and its Alike-today and health dots
+  were dropped at Keren's word.
 - **Portfolio is empty and says so.** No placeholder figures.
 - **Copy density**: fold into what exists; a new section is one kicker, one short visual, detail behind (i).
   No information twice per screen; no card in a card; borders, no shadows; a collapsible row is icon ·

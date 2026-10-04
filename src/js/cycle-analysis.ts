@@ -124,20 +124,3 @@ export function cycleAnalysisHtml(m: CycleModel){
   return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div>' +
     '<p class="ca-say">' + visitNote(i) + '</p>' + report(i) + moreRow(chartDetail()) + '</div>';
 }
-// ---- Her chart by year: each reading's year against the years of her closed cycles ----
-type YearLab = { at: Record<number, number>; norm: Norm | null };
-var yearCache: Record<string, YearLab> = {};
-function yearLab(id: string): YearLab {
-  if (yearCache[id]) return yearCache[id];
-  var R = ROSTER.filter(function(x){ return x.id === id; })[0], sum: Record<number, number> = {}, n: Record<number, number> = {}, at: Record<number, number> = {};
-  keyed(R.hist).forEach(function(d){ if (d.v == null) return; var y = +d.k.slice(0, 4); sum[y] = (sum[y] || 0) + (d.v as number); n[y] = (n[y] || 0) + 1; });
-  Object.keys(sum).forEach(function(y){ at[+y] = sum[+y] / n[+y]; });
-  var last = Math.max.apply(null, marketCycles.filter(function(c){ return !c.ongoing; }).map(function(c){ return c.to as number; }));
-  return (yearCache[id] = { at:at, norm:normOf(Object.keys(at).map(Number).filter(function(y){ return y <= last; }).map(function(y){ return at[y]; })) });
-}
-export function yearTier(id: string, y: number){
-  var L = yearLab(id), v = L.at[y], n = L.norm;
-  if (v == null || !n) return null;
-  return { v:v, n:n, tier:v > n.fence || v < n.floor ? "risk" : v > n.hi || v < n.lo ? "attention" : "normal" };
-}
-export function cycleScore(c: Cycle){ var i = marketCycles.indexOf(c); return i < 0 ? null : score(i).v; }

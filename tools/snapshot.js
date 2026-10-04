@@ -71,13 +71,6 @@ async function capture(file, out) {
       const g = await grab(p, w + '/tab:' + t);
       g.notes = await notes(p, '.tab-panel:not([hidden])');
       snaps.push(g);
-      if (t === 'analysis' && await click(p, '#cycle-data')) {
-        await p.waitForTimeout(400);
-        const d = await grab(p, w + '/tab:analysis+data');
-        d.notes = await notes(p, '.tab-panel:not([hidden])');
-        snaps.push(d);
-        await click(p, '#cycle-data'); await p.waitForTimeout(200);
-      }
     }
     for (const sheet of sheets) {
       await p.goto('file://' + file); await p.waitForTimeout(1100);

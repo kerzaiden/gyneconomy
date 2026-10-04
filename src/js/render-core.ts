@@ -59,7 +59,7 @@ function wireDetailModal(){
   layer(1, { open:function(){ return backdrop.classList.contains('show'); }, close:close,
              box:function(){ return backdrop.querySelector('.detail-modal'); } });
   document.addEventListener('click', function(e){
-    var btn = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>('.expand-btn, .details-link, .more-row, .bh-opt, .sx-row');
+    var btn = (e.target as Element).closest && (e.target as Element).closest<HTMLElement>('.expand-btn, .details-link, .more-row, .bh-opt');
     if (btn){ if (btn.closest('summary')) e.preventDefault();
       openFrom(btn.getAttribute('data-detail-idx'), btn); e.stopPropagation(); return; }
     if (e.target === backdrop) close();
