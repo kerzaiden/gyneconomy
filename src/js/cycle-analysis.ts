@@ -1,9 +1,9 @@
-import { facts, srcBlock } from "./format.ts";
+import { CHEV, facts, srcBlock } from "./format.ts";
 import { byId, moreRow, trendDoor, trendText, ui } from "./dom.ts";
 import { cycleControls, page, pageCycle, tabBar } from "./history.ts";
-import { chartSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, weatherSvg } from "./marks.ts";
 import { histBar } from "./charts.ts";
-import { metricSheet, sheetRenderers } from "./render-core.ts";
+import { catHeadCard, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycleModel } from "./model.ts";
 import { categoriesShown, keyed, ROSTER } from "./roster.ts";
@@ -80,10 +80,15 @@ function tier(l: Lab, i: number){
   return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
 }
 function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
+function where(l: Lab, i: number){
+  var v = l.per[i] as number, n = normAt(l, i) as Norm, side = v > n.hi ? "above" : v < n.lo ? "below" : "";
+  return !side ? "In range" : state(l, i) ? "Outlier, " + side + " range" : cap(side) + " range";
+}
+function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function labItem(l: Lab, i: number){
-  var st = state(l, i), n = normAt(l, i) as Norm;
-  return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
+  var n = normAt(l, i) as Norm;
+  return '<li class="lab-item ' + side(l, i) + ' ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div>' +
+    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + '</small></div></li>';
 }
 function ring(v: number){
@@ -95,11 +100,18 @@ function scoreBox(i: number){
   return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span>' +
     '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
 }
+var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
+function labSec(k: string, ls: Lab[], i: number){
+  var ok = ls.filter(function(l){ return tier(l, i) === "optimal"; }).length;
+  return catHeadCard("lab-sec plain", k, { tag:"button", cls:"lab-head ", attrs:' type="button" aria-expanded="true"', name:'<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + ls.length + ')</small>',
+    aside:'<span class="lab-tally">' + ok + "/" + ls.length + " in range</span>" + CHEV },
+    '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
+}
 function bySystem(i: number, j: Lab[]){
   var rank = TIERS.map(function(t){ return t.key; });
   return ["cycle"].concat(categoriesShown().map(function(c){ return c.key; })).map(function(k){
     var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
-    return ls.length ? '<section class="lab-sec"><h2>' + catTitle(k) + '<span>Normal range</span></h2><ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul></section>' : "";
+    return ls.length ? labSec(k, ls, i) : "";
   }).join("");
 }
 var shown = { tier:"all" };
@@ -134,7 +146,7 @@ function visitNote(i: number){
 function chartDetail(){
   return '<h4>How the health chart reads</h4>' + facts([
     "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
-    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.",
+    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. Each category heading counts its results in range.",
     "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
     "Her health chart describes her history, not what comes next."
@@ -151,7 +163,11 @@ function drawChart(){
   sheet.setAttribute("data-show", shown.tier);
   var i = marketCycles.indexOf(c), j = judged(i);
   sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) +
-    '<div class="cat-analysis cat-mood labs">' + bySystem(i, j) + moreRow(chartDetail()) + '</div>';
+    '<div class="labs">' + bySystem(i, j) + moreRow(chartDetail()) + '</div>';
+}
+function fold(t: Element){
+  var head = t.closest && t.closest(".lab-head");
+  if (head) head.setAttribute("aria-expanded", String(head.getAttribute("aria-expanded") !== "true"));
 }
 export function buildCycleChart(home: HTMLElement){
   page.mode[CHART_ID] = "cycles";
@@ -160,7 +176,7 @@ export function buildCycleChart(home: HTMLElement){
   home.appendChild(sheet);
   sheet.addEventListener("click", function(e){
     var seg = (e.target as Element).closest && (e.target as Element).closest("[data-lab-tier]");
-    if (seg) pickTier(sheet, seg);
+    if (seg) pickTier(sheet, seg); else fold(e.target as Element);
   });
   home.addEventListener("click", function(e){
     if ((e.target as Element).closest && (e.target as Element).closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;

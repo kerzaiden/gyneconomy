@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9ccf242` on 2026-10-04. **86 components**, **39 shared patterns**.
+Generated from commit `a8a28d8` on 2026-10-04. **87 components**, **38 shared patterns**.
 
 ## analysis.ts
 
@@ -50,9 +50,9 @@ Generated from commit `9ccf242` on 2026-10-04. **86 components**, **39 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`bySystem`** | `.lab-sec` | `cycle-analysis.ts:drawChart` |
 | **`drawChart`** | `.labs` | — |
-| **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:bySystem` |
+| **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:labSec` |
+| **`labSec`** | `.lab-mark` `.lab-tally` | `cycle-analysis.ts:bySystem` |
 | **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
 | **`scoreBox`** | `.lab-score` `.lab-score-v` | `cycle-analysis.ts:chartDoor` |
 
@@ -142,7 +142,6 @@ Generated from commit `9ccf242` on 2026-10-04. **86 components**, **39 shared pa
 |---|---|---|
 | **`buildSearch`** | `.ind-hint` `.search-none` | `pages-nav.ts:renderPagesAndNav` |
 | **`convertLeadingSigns`** | `.sign-row` | `pages-nav.ts:renderSignsList` |
-| **`indCategoryHtml`** | `.ind-card` `.ind-cat` `.ind-cat-head` `.ind-cat-name` | `pages-nav.ts:buildSearch` |
 | **`indRow`** | `.ind-fig` `.ind-line` `.ind-name` | `pages-nav.ts:indRows` |
 | **`renderSignsList`** | `.sign-detail` `.subject-label` `.subject-verdict` | `pages-nav.ts:bootPagesNav` |
 
@@ -151,6 +150,7 @@ Generated from commit `9ccf242` on 2026-10-04. **86 components**, **39 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`clockFace`** | `.clock` `.clock-axis` | `portfolio.ts:drawClock` |
+| **`methodPage`** | `.cat-mood` | `portfolio.ts:drawClock`, `portfolio.ts:drawWeather` |
 
 ## quarter-sheet.ts
 
@@ -171,6 +171,7 @@ Generated from commit `9ccf242` on 2026-10-04. **86 components**, **39 shared pa
 |---|---|---|
 | **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.ts:renderSignsList` |
 | **`catCard`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `quarter-sheet.ts:quarterCards`, `render-core.ts:catItem` |
+| **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:labSec`, `pages-nav.ts:indCategoryHtml` |
 | **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `cycle-analysis.ts:buildCycleChart`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
@@ -240,6 +241,7 @@ renderer speaks. Listed most-used first.
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`side`** | cycle-analysis.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
@@ -250,11 +252,13 @@ renderer speaks. Listed most-used first.
 | **`keyed`** | roster.ts | 4 places |
 | **`moodToday`** | model.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
+| **`normAt`** | cycle-analysis.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`tabBar`** | history.ts | 4 places |
+| **`tier`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`auxStat`** | format.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -271,7 +275,6 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | readings.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
-| **`normAt`** | cycle-analysis.ts | 3 places |
 | **`normOf`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
@@ -287,7 +290,6 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
-| **`tier`** | cycle-analysis.ts | 3 places |
 | **`trendDoor`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
@@ -314,16 +316,15 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
-| `.cat-analysis` | 3 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:drawChart`, `portfolio.ts:methodPage` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
+| `.cat-analysis` | 2 | `category-analysis.ts:analysisHtml`, `portfolio.ts:methodPage` |
 | `.ca-say` | 2 | `category-analysis.ts:analysisHtml`, `portfolio.ts:say` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
-| `.cat-mood` | 2 | `cycle-analysis.ts:drawChart`, `portfolio.ts:methodPage` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:yearByYear`, `dom.ts:trendHead` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |

@@ -5,7 +5,7 @@ import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
 import { coincident, lagging, rowReadings } from "./readings.ts";
 import { categoriesShown, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import { tabBar } from "./history.ts";
-import { cardDetailHtml, catSnap, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.ts";
+import { cardDetailHtml, catHeadCard, catSnap, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.ts";
 import { cycleViewEl, setTopbar } from "./render-pages.ts";
 import { cycleView } from "./dial-cycle.ts";
 import { groupId } from "./indicators.ts";
@@ -169,8 +169,7 @@ function indCategoryHtml(c: ReturnType<typeof categoriesShown>[number], find: Re
   var key = c.key, sheet = byId("sheet-cat-" + key);
   if (!sheet) return "";
   var rows = indRows(sheet, find);
-  return '<section class="ind-cat ind-card cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key +
-    '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + '</span>' + CHEV + '</button>' + rows.join("") + '</section>';
+  return catHeadCard("ind-cat", key, { tag:"button", cls:"ind-cat-head ", attrs:' type="button" data-open="sheet-cat-' + key + '" data-title="' + c.title + '"', name:c.title, aside:CHEV }, rows.join(""));
 }
 // ---- THE NAVIGATION CONTROLLER ----
 var NAV: { open: OpenPage | null; panel: HTMLElement | null } = { open: null, panel: null };
