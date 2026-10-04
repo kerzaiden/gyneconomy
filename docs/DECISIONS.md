@@ -140,8 +140,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
   goes up. This goes the same for the health chart." (0.6.3)
-- **The health score sits on an apricot box (`--normal` at 34% on white, brightened from 22%) and its line names the cycles its ranges
-  come from: "Against 18 closed cycles".** Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
+- **The health score sits on `--surface-2`, the pale apricot of the Analysis page's result rows, and its line names
+  the cycles its ranges come from: "Against 18 closed cycles".** Keren chose the apricot over the dial's light grey
+  from two previews (0.6.4; a stronger apricot, `--normal` at 34%, before). Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
   of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
 - **Cycle analysis picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
   picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
