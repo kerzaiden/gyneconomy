@@ -514,7 +514,7 @@ Rules that shape the pages:
   key, so the shared cycle picker, its keys and `eraShow` drive it like a history page, and the door sets the
   picked cycle to the one on screen. Every roster reading is averaged over
   the cycle's years; its range is the middle half of the closed cycles that reading covers (Normal), Tukey's
-  fences beyond it mark Outlier, and between is Risk. The cycle's length, bull years and bleed are judged
+  fences beyond it mark Risk, and between is Attention. The cycle's length, bull years and bleed are judged
   only once it has closed. The health score is the share of judged readings that are Normal. The tier filter
   is the app's tab bar in the same `hist-bar` as the cycle picker; a tap sets the sheet's `data-show` and CSS
   hides the other tiers and any category left empty, so a cycle change keeps the filter. Show data (V656) and its Alike-today and health dots
