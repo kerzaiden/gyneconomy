@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `c9f0c6b` on 2026-10-04. **87 components**, **38 shared patterns**.
+Generated from commit `a8a28d8` on 2026-10-04. **87 components**, **38 shared patterns**.
 
 ## analysis.ts
 
@@ -51,7 +51,7 @@ Generated from commit `c9f0c6b` on 2026-10-04. **87 components**, **38 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`drawChart`** | `.labs` | — |
-| **`labItem`** | `.lab-item` `.lab-res` `.lab-where` | `cycle-analysis.ts:labSec` |
+| **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:labSec` |
 | **`labSec`** | `.lab-mark` `.lab-tally` | `cycle-analysis.ts:bySystem` |
 | **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
 | **`scoreBox`** | `.lab-score` `.lab-score-v` | `cycle-analysis.ts:chartDoor` |

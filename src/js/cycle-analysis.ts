@@ -74,7 +74,7 @@ function fmt(l: Lab, v: number){
   var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
   return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
 }
-var TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
+var TIERS = [{ key:"abnormal", title:"Outlier", cls:"t-abnormal" }, { key:"borderline", title:"Risk", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
 function tier(l: Lab, i: number){
   var v = l.per[i] as number, n = normAt(l, i) as Norm;
   return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
@@ -82,13 +82,13 @@ function tier(l: Lab, i: number){
 function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
 function where(l: Lab, i: number){
   var v = l.per[i] as number, n = normAt(l, i) as Norm, side = v > n.hi ? "above" : v < n.lo ? "below" : "";
-  return !side ? "In range" : state(l, i) ? "Far " + side + " range" : cap(side) + " range";
+  return !side ? "In range" : state(l, i) ? "Outlier, " + side + " range" : cap(side) + " range";
 }
 function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function labItem(l: Lab, i: number){
   var n = normAt(l, i) as Norm;
   return '<li class="lab-item ' + side(l, i) + ' ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '</b>' +
+    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + '</small></div></li>';
 }
 function ring(v: number){
@@ -103,7 +103,7 @@ function scoreBox(i: number){
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
 function labSec(k: string, ls: Lab[], i: number){
   var ok = ls.filter(function(l){ return tier(l, i) === "optimal"; }).length;
-  return catHeadCard("lab-sec", k, { tag:"button", cls:"lab-head ", attrs:' type="button" aria-expanded="true"', name:'<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + ls.length + ')</small>',
+  return catHeadCard("lab-sec plain", k, { tag:"button", cls:"lab-head ", attrs:' type="button" aria-expanded="true"', name:'<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + catTitle(k) + ' <small>(' + ls.length + ')</small>',
     aside:'<span class="lab-tally">' + ok + "/" + ls.length + " in range</span>" + CHEV },
     '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
 }
@@ -146,7 +146,7 @@ function visitNote(i: number){
 function chartDetail(){
   return '<h4>How the health chart reads</h4>' + facts([
     "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
-    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range or Below range says where it sits, and Far above or Far below marks Risk; the triangle by the figure points the same way. Each category heading counts its results in range.",
+    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Risk (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Outlier (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. Each category heading counts its results in range.",
     "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
     "Her health chart describes her history, not what comes next."
