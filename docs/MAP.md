@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,917 lines** in 34 files, about 582 KB, roughly **165 thousand tokens**. No session can
+The source is **8,927 lines** in 34 files, about 583 KB, roughly **166 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `73f8c36` on 2026-10-04.
+Generated from commit `615bf3c` on 2026-10-04.
 
 ## The page
 
@@ -23,13 +23,13 @@ Generated from commit `73f8c36` on 2026-10-04.
 | `js/main.ts` | 30 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **30** modules, **577** top-level functions, **101** top-level vars, **341** exported names, **18** boots.
+Counts: **30** modules, **579** top-level functions, **101** top-level vars, **342** exported names, **18** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
-| `js/dom.ts` | 149 | 19 | `format` |
+| `js/dom.ts` | 150 | 20 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 38 | 4 | `format`, `history-fred` |
 | `js/data.ts` | 555 | 74 | `format`, `history-fred`, `live` |
@@ -39,7 +39,7 @@ Counts: **30** modules, **577** top-level functions, **101** top-level vars, **3
 | `js/roster.ts` | 148 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 563 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
-| `js/diagnosis.ts` | 82 | 12 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
+| `js/diagnosis.ts` | 81 | 11 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
 | `js/analysis.ts` | 161 | 15 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
@@ -47,7 +47,7 @@ Counts: **30** modules, **577** top-level functions, **101** top-level vars, **3
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 147 | 31 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 157 | 33 | `charts`, `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
 | `js/format.ts` | 78 | 36 | — |
@@ -68,7 +68,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 
 | Order | Boot | Lines |
 |---|---|---|
-| 1 | `bootDom` | `js/dom.ts:139`–148 |
+| 1 | `bootDom` | `js/dom.ts:140`–149 |
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–37 |
@@ -80,7 +80,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 10 | `bootRoster` | `js/roster.ts:135`–147 |
 | 11 | `bootRenderCore` | `js/render-core.ts:552`–562 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
-| 13 | `bootDiagnosis` | `js/diagnosis.ts:78`–81 |
+| 13 | `bootDiagnosis` | `js/diagnosis.ts:77`–80 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
 | 15 | `bootAnalysis` | `js/analysis.ts:156`–160 |
 | 16 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
@@ -109,14 +109,15 @@ falls in. **export** marks a name other modules import.
 | 47 | `tabStops` | `function tabStops(` |
 | 51 | `keepTab` | `function keepTab(` |
 | 57 | `rovingKeys` · export | `function rovingKeys(` |
-| 72 | `trendDoor` · export | `function trendDoor(` |
-| 76 | `moreRow` · export | `function moreRow(` |
-| 82 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
-| 104 | `addSources` · export | `function addSources(` |
-| 115 | `SVG_NS` | `var SVG_NS =` |
-| 116 | `svgEl` · export | `function svgEl(` |
-| 122 | `detailSlot` · export | `function detailSlot(` |
-| 132 | `expandBtn` · export | `function expandBtn(` |
+| 72 | `trendText` · export | `function trendText(` |
+| 73 | `trendDoor` · export | `function trendDoor(` |
+| 77 | `moreRow` · export | `function moreRow(` |
+| 83 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
+| 105 | `addSources` · export | `function addSources(` |
+| 116 | `SVG_NS` | `var SVG_NS =` |
+| 117 | `svgEl` · export | `function svgEl(` |
+| 123 | `detailSlot` · export | `function detailSlot(` |
+| 133 | `expandBtn` · export | `function expandBtn(` |
 
 ### `js/live.ts`
 
@@ -624,10 +625,9 @@ falls in. **export** marks a name other modules import.
 | 46 | `moodIn` | `function moodIn(` |
 | 52 | `marketIn` | `function marketIn(` |
 | 56 | `moodDoor` | `function moodDoor(` |
-| 60 | `trendText` | `function trendText(` |
-| 61 | `renderDiagnosis` · export | `function renderDiagnosis(` |
-| 65 | `diagnosisHost` | `function diagnosisHost(` |
-| 70 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 60 | `renderDiagnosis` · export | `function renderDiagnosis(` |
+| 64 | `diagnosisHost` | `function diagnosisHost(` |
+| 69 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### `js/dial-cycle.ts`
 
@@ -893,37 +893,39 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 16 | `NUM` | `var NUM =` |
-| 19 | `quartile` | `function quartile(` |
-| 23 | `normOf` | `function normOf(` |
-| 28 | `closedCount` | `function closedCount(` |
-| 29 | `visitOf` | `function visitOf(` |
-| 36 | `visits` | `function visits(` |
-| 37 | `cycleLab` | `function cycleLab(` |
-| 41 | `readingLab` | `function readingLab(` |
-| 52 | `labs` | `function labs(` |
-| 59 | `state` | `function state(` |
-| 64 | `yearsWord` | `function yearsWord(` |
-| 65 | `fmt` | `function fmt(` |
-| 69 | `TIERS` | `var TIERS =` |
-| 70 | `tier` | `function tier(` |
-| 74 | `catTitle` | `function catTitle(` |
-| 75 | `labItem` | `function labItem(` |
-| 81 | `ring` | `function ring(` |
-| 85 | `report` | `function report(` |
-| 99 | `judged` | `function judged(` |
-| 100 | `score` | `function score(` |
-| 101 | `outside` | `function outside(` |
-| 102 | `listWords` | `function listWords(` |
-| 103 | `word` | `function word(` |
-| 104 | `cap` | `function cap(` |
-| 106 | `visitNote` | `function visitNote(` |
-| 115 | `chartDetail` | `function chartDetail(` |
-| 124 | `cycleAnalysisHtml` | `function cycleAnalysisHtml(` |
-| 130 | `CHART_ID` | `var CHART_ID =` |
-| 131 | `chartDoor` · export | `function chartDoor(` |
-| 134 | `drawChart` | `function drawChart(` |
-| 138 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 17 | `NUM` | `var NUM =` |
+| 20 | `quartile` | `function quartile(` |
+| 24 | `normOf` | `function normOf(` |
+| 29 | `closedCount` | `function closedCount(` |
+| 30 | `visitOf` | `function visitOf(` |
+| 37 | `visits` | `function visits(` |
+| 38 | `cycleLab` | `function cycleLab(` |
+| 42 | `readingLab` | `function readingLab(` |
+| 53 | `labs` | `function labs(` |
+| 60 | `state` | `function state(` |
+| 65 | `yearsWord` | `function yearsWord(` |
+| 66 | `fmt` | `function fmt(` |
+| 70 | `TIERS` | `var TIERS =` |
+| 71 | `tier` | `function tier(` |
+| 75 | `catTitle` | `function catTitle(` |
+| 76 | `labItem` | `function labItem(` |
+| 82 | `ring` | `function ring(` |
+| 86 | `scoreBox` | `function scoreBox(` |
+| 91 | `bySystem` | `function bySystem(` |
+| 98 | `report` | `function report(` |
+| 109 | `judged` | `function judged(` |
+| 110 | `score` | `function score(` |
+| 111 | `outside` | `function outside(` |
+| 112 | `listWords` | `function listWords(` |
+| 113 | `word` | `function word(` |
+| 114 | `cap` | `function cap(` |
+| 116 | `visitNote` | `function visitNote(` |
+| 125 | `chartDetail` | `function chartDetail(` |
+| 134 | `cycleAnalysisHtml` | `function cycleAnalysisHtml(` |
+| 139 | `CHART_ID` | `var CHART_ID =` |
+| 140 | `chartDoor` · export | `function chartDoor(` |
+| 144 | `drawChart` | `function drawChart(` |
+| 148 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 

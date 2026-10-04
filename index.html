@@ -1044,6 +1044,7 @@
   .cat-analysis .more-row{ margin-top:20px; }
   .labs{ margin-top:12px; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
+  .lab-score.flat{ padding:4px 0 0; border:0; }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -1058,20 +1059,19 @@
   .lab-f:checked + label{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
   .lab-f:checked + label span{ color:inherit; }
   .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
-  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
-  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
-  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
+  .labs:has(.lab-f[value="abnormal"]:checked) :is(.lab-item:not(.t-abnormal), .lab-sec:not(:has(.t-abnormal))),
+  .labs:has(.lab-f[value="borderline"]:checked) :is(.lab-item:not(.t-borderline), .lab-sec:not(:has(.t-borderline))),
+  .labs:has(.lab-f[value="optimal"]:checked) :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
   .lab-sec h2{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
-  .lab-sec h2::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
-  .lab-sec{ --tier:var(--good); }
-  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
-  .lab-sec.t-abnormal{ --tier:var(--critical); }
-  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
+  .lab-item{ --tier:var(--good); position:relative; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0 11px 13px; border-bottom:1px solid var(--border); }
+  .lab-item.t-borderline{ --tier:var(--season-autumn); }
+  .lab-item.t-abnormal{ --tier:var(--critical); }
+  .lab-item::before{ content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:2px; background:var(--tier); }
   .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
   .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .t-abnormal .lab-res b{ color:var(--critical-ink); }
+  .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -1545,7 +1545,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.3.0 (731)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.4.0 (732)</span></p>
     </div>
   </div>
 
@@ -1948,6 +1948,9 @@
     });
     box.addEventListener("click", sync);
     sync();
+  }
+  function trendText(t) {
+    return '<span class="trend-text">' + t + "</span>";
   }
   function trendDoor(open, title, mark, head, body) {
     return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '"><span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + CHEV + "</span>" + body + "</button>";
@@ -34077,14 +34080,37 @@
   }
   function labItem(l, i) {
     var st = state(l, i), n = l.norm;
-    return '<li class="lab-item"><div><b>' + l.name + "</b><small>" + catTitle(l.cat) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
+    return '<li class="lab-item ' + TIERS.filter(function(t) {
+      return t.key === tier(l, i);
+    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
     return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
+  function scoreBox(i, cls) {
+    var s = score(i);
+    return '<span class="lab-score' + cls + '"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
+  }
+  function bySystem(i, j) {
+    var rank = TIERS.map(function(t) {
+      return t.key;
+    });
+    return [ "cycle" ].concat(categoriesShown().map(function(c) {
+      return c.key;
+    })).map(function(k) {
+      var ls = j.filter(function(l) {
+        return l.cat === k;
+      }).sort(function(a, b) {
+        return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
+      });
+      return ls.length ? '<section class="lab-sec"><h2>' + catTitle(k) + "</h2><ul>" + ls.map(function(l) {
+        return labItem(l, i);
+      }).join("") + "</ul></section>" : "";
+    }).join("");
+  }
   function report(i) {
-    var j = judged(i), by = {}, s = score(i), id = "labf-" + marketCycles[i].from;
+    var j = judged(i), by = {}, id = "labf-" + marketCycles[i].from;
     TIERS.forEach(function(t) {
       by[t.key] = j.filter(function(l) {
         return tier(l, i) === t.key;
@@ -34093,15 +34119,9 @@
     var chip = function(key, title, n) {
       return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
     };
-    return '<div class="labs"><div class="lab-score"><div><b>Health score</b><small>' + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
+    return '<div class="labs">' + scoreBox(i, "") + '<div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
       return chip(t.key, t.title, by[t.key].length);
-    }).join("") + "</div>" + TIERS.filter(function(t) {
-      return by[t.key].length;
-    }).map(function(t) {
-      return '<section class="lab-sec ' + t.cls + '"><h2>' + t.title + " <span>" + by[t.key].length + "</span></h2><ul>" + by[t.key].map(function(l) {
-        return labItem(l, i);
-      }).join("") + "</ul></section>";
-    }).join("") + "</div>";
+    }).join("") + "</div>" + bySystem(i, j) + "</div>";
   }
   function judged(i) {
     return labs().filter(function(l) {
@@ -34148,20 +34168,21 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How the checkup reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The checkup describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function cycleAnalysisHtml(m) {
     var i = marketCycles.indexOf(m.era);
-    if (i < 0) return "";
     return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
   }
   var CHART_ID = "sheet-cycle-chart";
-  function chartDoor() {
-    return trendDoor(CHART_ID, "Her chart", chartSvg(), "Her chart", "");
+  var CHART_NAME = "Checkup";
+  function chartDoor(m) {
+    var i = marketCycles.indexOf(m.era);
+    return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i, " flat"));
   }
   function drawChart() {
     var sheet = byId(CHART_ID), c = pageCycle(CHART_ID);
-    if (sheet && c) sheet.innerHTML = cycleControls(CHART_ID) + cycleAnalysisHtml(cycleModel(c));
+    if (sheet && c) sheet.innerHTML = histBar(cycleControls(CHART_ID)) + cycleAnalysisHtml(cycleModel(c));
   }
   function buildCycleChart(home) {
     page.mode[CHART_ID] = "cycles";
@@ -34184,7 +34205,7 @@
       after: yearAfter(m.endYear)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + chartDoor() + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + chartDoor(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -34231,9 +34252,6 @@
       return c.key === "mood";
     })[0];
     return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
-  }
-  function trendText(t) {
-    return '<span class="trend-text">' + t + "</span>";
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `73f8c36` on 2026-10-04. **80 components**, **40 shared patterns**.
+Generated from commit `615bf3c` on 2026-10-04. **82 components**, **40 shared patterns**.
 
 ## analysis.ts
 
@@ -33,7 +33,7 @@ Generated from commit `73f8c36` on 2026-10-04. **80 components**, **40 shared pa
 | **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart`, `render-core.ts:renderPressurePage` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `render-pages.ts:renderVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `render-core.ts:ylmFitLine` |
-| **`histBar`** | `.hist-bar` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
+| **`histBar`** | `.hist-bar` | `cycle-analysis.ts:drawChart`, `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`histTip`** | `.gdp-tooltip` `.hist-tip` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock`, `render-pages.ts:renderHormones`, `render-pages.ts:renderVolatility` |
 | **`meterPeek`** | `.meterpeek` `.mp-band` `.mp-core` `.mp-here` `.mp-track` | `charts.ts:peekCard` |
 | **`peekCard`** | `.peek` `.peek-kicker` `.peek-text` `.peek-unit` `.peek-value` `.peek-word` | `roster.ts:peekOf` |
@@ -49,9 +49,11 @@ Generated from commit `73f8c36` on 2026-10-04. **80 components**, **40 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:report` |
-| **`report`** | `.lab-chips` `.lab-f` `.lab-score` `.lab-score-v` `.lab-sec` `.labs` | `cycle-analysis.ts:cycleAnalysisHtml` |
-| **`ring`** | `.lab-ring` | `cycle-analysis.ts:report` |
+| **`bySystem`** | `.lab-sec` | `cycle-analysis.ts:report` |
+| **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:bySystem` |
+| **`report`** | `.lab-chips` `.lab-f` `.labs` | `cycle-analysis.ts:cycleAnalysisHtml` |
+| **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
+| **`scoreBox`** | `.lab-score-v` | `cycle-analysis.ts:chartDoor`, `cycle-analysis.ts:report` |
 
 ## cycle-tab.ts
 
@@ -64,7 +66,6 @@ Generated from commit `73f8c36` on 2026-10-04. **80 components**, **40 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`diagnosisHost`** | `.dx` | `diagnosis.ts:buildDiagnosis` |
-| **`trendText`** | `.trend-text` | `diagnosis.ts:diagnosisHtml` |
 | **`yearByYear`** | `.dx-sys` `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
 | **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 
@@ -83,6 +84,7 @@ Generated from commit `73f8c36` on 2026-10-04. **80 components**, **40 shared pa
 |---|---|---|
 | **`moreRow`** | `.more-row` | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:cycleAnalysisHtml`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
 | **`trendDoor`** | `.trend-card` `.trend-head` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:moodDoor` |
+| **`trendText`** | `.trend-text` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:diagnosisHtml` |
 
 ## format.ts
 
@@ -271,6 +273,7 @@ renderer speaks. Listed most-used first.
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabSegs`** | history.ts | 3 places |
+| **`tier`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |

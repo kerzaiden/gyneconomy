@@ -69,6 +69,7 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   box.addEventListener("click", sync);
   sync();
 }
+export function trendText(t: string){ return '<span class="trend-text">' + t + '</span>'; }
 export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
   return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '">' +
     '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + CHEV + '</span>' + body + '</button>';

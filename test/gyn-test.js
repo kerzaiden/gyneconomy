@@ -283,8 +283,8 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('.trend-text').length,
-                   story: [...d.querySelectorAll('.trend-card .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
+      return d ? { visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-open="sheet-cat-mood"] .trend-text').length,
+                   story: [...d.querySelectorAll('[data-open="sheet-cat-mood"] .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
                    told: (() => { document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
                      const b = document.getElementById('detail-modal-body'), t = b.querySelectorAll('.hi-card').length + ':' +
                        (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1];
@@ -389,7 +389,7 @@ async function openPage(p, url, sheet) {
     const chartOf = () => p.evaluate(() => {
       const s = document.querySelector('#metric-page #sheet-cycle-chart'), c = s && s.querySelector('.labs');
       return c ? { open: !s.hidden, name: s.querySelector('.ca-name').textContent, picked: s.querySelector('.cycsel-btn .cycsel-nm').textContent,
-        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.t-abnormal .lab-item').length } : null;
+        items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length } : null;
     });
     const chart = await chartOf();
     await p.evaluate(() => [...document.querySelectorAll('#sheet-cycle-chart .cycsel-opt')].find(o => /Nifty Fifty/.test(o.textContent)).click());

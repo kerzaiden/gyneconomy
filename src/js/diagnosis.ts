@@ -1,5 +1,5 @@
 import { CHEV, fmtSigned, seasonName } from "./format.ts";
-import { addSources, byId, detailSlot, trendDoor } from "./dom.ts";
+import { addSources, byId, detailSlot, trendDoor, trendText } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { bookSvg, calendarSvg } from "./marks.ts";
 import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
@@ -20,7 +20,7 @@ function diagnosisHtml(m: CycleModel){
   var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(m.endYear) };
   if (!d) return "";
   return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
-    chartDoor() + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    chartDoor(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
@@ -57,7 +57,6 @@ function moodDoor(head: string, body: string){
   var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
   return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
 }
-function trendText(t: string){ return '<span class="trend-text">' + t + '</span>'; }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
   if (host && m) host.innerHTML = diagnosisHtml(m);

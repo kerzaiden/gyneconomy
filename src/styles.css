@@ -1050,6 +1050,7 @@
   .cat-analysis .more-row{ margin-top:20px; }
   .labs{ margin-top:12px; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
+  .lab-score.flat{ padding:4px 0 0; border:0; }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -1064,20 +1065,19 @@
   .lab-f:checked + label{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
   .lab-f:checked + label span{ color:inherit; }
   .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
-  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
-  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
-  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
+  .labs:has(.lab-f[value="abnormal"]:checked) :is(.lab-item:not(.t-abnormal), .lab-sec:not(:has(.t-abnormal))),
+  .labs:has(.lab-f[value="borderline"]:checked) :is(.lab-item:not(.t-borderline), .lab-sec:not(:has(.t-borderline))),
+  .labs:has(.lab-f[value="optimal"]:checked) :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
   .lab-sec h2{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
-  .lab-sec h2::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
-  .lab-sec{ --tier:var(--good); }
-  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
-  .lab-sec.t-abnormal{ --tier:var(--critical); }
-  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
+  .lab-item{ --tier:var(--good); position:relative; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0 11px 13px; border-bottom:1px solid var(--border); }
+  .lab-item.t-borderline{ --tier:var(--season-autumn); }
+  .lab-item.t-abnormal{ --tier:var(--critical); }
+  .lab-item::before{ content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:2px; background:var(--tier); }
   .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
   .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .t-abnormal .lab-res b{ color:var(--critical-ink); }
+  .lab-item.t-abnormal .lab-res b{ color:var(--critical-ink); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
