@@ -9,6 +9,7 @@ import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFa
 import { econChips, marketPills, strip, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
+import { aiInsights } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -18,7 +19,7 @@ var DIAG_SRC = [
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return moodDoor(m.era.name, trendText(m.era.story)) +
+  return moodDoor(m.era.name, trendText(m.era.story)) + (m.ongoing ? aiInsights() : "") +
     chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){

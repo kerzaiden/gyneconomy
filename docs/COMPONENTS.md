@@ -8,7 +8,14 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `ae2eeea` on 2026-10-04. **88 components**, **35 shared patterns**.
+Generated from commit `e43f00a` on 2026-10-04. **90 components**, **35 shared patterns**.
+
+## ai-insights.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`aiInsights`** | `.ai-by` `.ai-echoes` `.ai-h` `.ai-lede` `.ai-p` `.ai-sec` | `diagnosis.ts:diagnosisHtml` |
+| **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
 
 ## analysis.ts
 
@@ -77,7 +84,7 @@ Generated from commit `ae2eeea` on 2026-10-04. **88 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `ai-insights.ts:aiInsights`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
@@ -146,7 +153,7 @@ Generated from commit `ae2eeea` on 2026-10-04. **88 components**, **35 shared pa
 |---|---|---|
 | **`clockFace`** | `.clock` `.clock-axis` | `portfolio.ts:drawClock` |
 | **`methodPage`** | `.cat-mood` `.method-card` | `portfolio.ts:drawClock`, `portfolio.ts:drawWeather` |
-| **`say`** | `.method-say` | `portfolio.ts:drawClock`, `portfolio.ts:drawWeather`, `render-pages.ts:renderSubjectRows` |
+| **`say`** | `.method-say` | `ai-insights.ts:echoLine`, `portfolio.ts:drawClock`, `portfolio.ts:drawWeather`, `render-pages.ts:renderSubjectRows` |
 
 ## quarter-sheet.ts
 
@@ -235,6 +242,7 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
+| **`keyed`** | roster.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
@@ -248,8 +256,10 @@ renderer speaks. Listed most-used first.
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
+| **`fmt`** | cycle-analysis.ts | 4 places |
 | **`isoDay`** | format.ts | 4 places |
-| **`keyed`** | roster.ts | 4 places |
+| **`labOf`** | ai-insights.ts | 4 places |
+| **`moodTrack`** | model.ts | 4 places |
 | **`normAt`** | cycle-analysis.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
@@ -257,33 +267,36 @@ renderer speaks. Listed most-used first.
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
+| **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
-| **`fmt`** | cycle-analysis.ts | 3 places |
 | **`growthWord`** | model.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
+| **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`menuOf`** | cycle-analysis.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
-| **`moodTrack`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`normOf`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
+| **`panel`** | ai-insights.ts | 3 places |
 | **`popHead`** | format.ts | 3 places |
 | **`qPretty`** | format.ts | 3 places |
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`seasonGroup`** | model.ts | 3 places |
+| **`seasonTitle`** | model.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
+| **`yearsWord`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
 ## Shared patterns

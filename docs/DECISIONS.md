@@ -72,6 +72,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   each period ("maybe will give us better cycle names"): Postwar became Baby Boom (1947–53), Go-Go became Great
   Society (1963–66), Go-Go moved to 1967–69 where the go-go funds and conglomerates peaked (was Conglomerate),
   Rebound became Bicentennial (1975–77) and Inflation became Volcker (1978–81). (V690)
+- **The Current Cycle page carries AI Insights, between the cycle's story and Cycle analysis, on the open cycle only.**
+  Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
+  sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
+  Claude writes it (Keren chose "Claude, dated" over a live Generate button, which would change the artifact's grant,
+  and over rule-built sentences, which the name would oversell): a lede, The cycle, The economy, The market, dated
+  "Written by Claude from the app's data of …", its figures read live and its words rewritten each release. Its
+  Closest moments are computed: today's eight market and economy readings matched against every quarter since 1970
+  (nearest-neighbour analog matching; the readings and the equal weights are Claude's), each cycle's closest quarter,
+  with its season and mood then, what is alike and what is apart. Resemblance only, never what followed. (0.6.5)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)

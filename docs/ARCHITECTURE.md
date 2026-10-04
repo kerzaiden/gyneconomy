@@ -393,7 +393,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -639,6 +639,14 @@ left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
+- **AI Insights** (0.6.5, `ai-insights`): the open cycle's third card, a `trendBox` (the trend card that is not a
+  door). Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
+  them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
+  `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
+  to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
+  quarters, annual ones held across their year), z-scores each over 1970 to today, and ranks every quarter before the
+  open cycle by root-mean-square gap to today's lab values; each cycle keeps its closest quarter. The card shows the top
+  three; More details holds the method and the top eight.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their
