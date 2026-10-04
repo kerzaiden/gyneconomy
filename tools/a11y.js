@@ -52,7 +52,7 @@ const tap = async (p, sel, until) => {
     const at = w + '/' + scheme;
     await open(p, FILE);
     await audit(p, at + ' home');
-    for (const t of ['analysis', 'search', 'portfolio']) {
+    for (const t of ['analysis', 'chart', 'portfolio']) {
       if (await tap(p, '.tab-btn[data-tab="' + t + '"]')) await audit(p, at + ' tab:' + t);
       else skipped.push(at + ' tab:' + t);
     }

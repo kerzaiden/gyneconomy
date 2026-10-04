@@ -10,7 +10,6 @@ import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWo
 import { heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
-export var catSnap: Record<string, Node> = {};
 export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
@@ -65,12 +64,6 @@ function wireDetailModal(){
     if (e.target === backdrop) close();
   });
   need('detail-modal-close').addEventListener('click', close);
-  document.addEventListener('click', function(e){
-    var chip = (e.target as Element).closest && (e.target as Element).closest('.timing[data-ind-tab]'); if (!chip) return;
-    e.preventDefault(); e.stopPropagation();
-    close();
-    GYN.fire("openIndicatorsPage", chip.getAttribute('data-ind-tab'));
-  });
 }
 export var detailClose: (() => void) | null = null;
 // ---- A season strip and the economy's chips, shared by the cycle list and the Diagnosis's years ----
@@ -142,10 +135,7 @@ function timingMark(kind: string){
 export function timingPill(kind: string){
   var t = TIMING[kind as keyof typeof TIMING]; if (!t) return "";
   return '<div class="timing-row">' +
-    '<button type="button" class="timing ' + kind + '" data-ind-tab="' + kind + '" ' +
-      'aria-label="Show the ' + t.label.toLowerCase() + ' readings">' +
-      timingMark(kind) + '<b>' + t.label + '</b>' + CHEV +
-    '</button></div>';
+    '<span class="timing ' + kind + '">' + timingMark(kind) + '<b>' + t.label + '</b></span></div>';
 }
 export function collapseEmptyBlocks(sheet: HTMLElement | null){
   if (!sheet || sheet.hidden || !sheet.offsetHeight) return;
@@ -166,8 +156,6 @@ export function seatPageFoot(sheet: HTMLElement | null){
   if (more && more.parentNode !== home) home.appendChild(more);
   if (sheet.lastElementChild !== foot) sheet.appendChild(foot);
 }
-export var timingMembers: Record<string, TimingEntry[]> = {};
-export function registerTiming(kind: string, entry: TimingEntry){ if (timingMembers[kind]) timingMembers[kind].push(entry); }
 function headHtml(ind: Indicator, noMark?: boolean){
   var mk = noMark ? "" : '<span class="head-mark" aria-hidden="true"><span class="head-mark-disc">' +
     rosterFor(ind).mark() + '</span></span>';
@@ -536,7 +524,6 @@ function peekArt(src: Element){ return src.querySelector(".peek-chart"); }
 export function catItem(src: Element, key: string){
   var open = openOf(src);
   var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
-  catSnap[open] = src.cloneNode(true);
   var item = catCard(src, cardDate(ROSTER_BY[open]));
   if (src.parentNode) src.parentNode.removeChild(src);
   return item;
@@ -600,7 +587,6 @@ export function bootRenderCore(){
   wireDetailModal();
   // ---- RENDER: compile date — the header pill, from DATA_COMPILED (visible on every tab) ----
   need("asof-text").textContent = "Data compiled " + dataCompiledLabel;
-  Object.keys(TIMING).forEach(function(k){ timingMembers[k] = []; });
   GYN.step("renderPressurePage", renderPressurePage, "mixed");
   renderPressurePage();
   GYN.step("renderPressureInsights", renderPressureInsights, "render");

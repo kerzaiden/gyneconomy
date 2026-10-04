@@ -37,8 +37,8 @@ var PHASES: Phase[] = [
   { key:"stagflation", name:"Stagflation", growth:"slowing", prices:"rising", holds:"Cash", at:[1.5, 2] }
 ];
 
-function say(t: string){ return '<p class="ca-say">' + t + '</p>'; }
-function methodPage(id: string, body: string, detail: string){ need(id).innerHTML = '<div class="cat-analysis cat-mood">' + body + moreRow(detail) + '</div>'; }
+function say(t: string){ return '<p class="method-say">' + t + '</p>'; }
+function methodPage(id: string, body: string, detail: string){ need(id).innerHTML = '<div class="method-card cat-mood">' + body + moreRow(detail) + '</div>'; }
 function weatherStrip(){
   return strip("", ALL_WEATHER.map(function(a){ return a.what + " " + a.w + "%"; }).join(", "),
     ALL_WEATHER.map(function(a){ return '<span class="strip-run" style="flex:' + a.w + ' 1 0;--season:var(' + a.ink + ')"></span>'; }).join(""));

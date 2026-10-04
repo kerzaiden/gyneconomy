@@ -138,8 +138,9 @@ through `sheetRenderers`. A figure only needs a repaint if it is visible WITHOUT
 
 ```text
 A reading is printed on every list that offers a door to its page — the category item in Weather or Mood
-(.ci-value, its verdict lifted out into a sibling .ci-word) and the row in Search (.subject-value,
-the figure alone) — and `[data-open="<sheet>"]` is what those have in common. Walking the doors is the
+(.ci-value, its verdict lifted out into a sibling .ci-word) and a subject row (.subject-value, the figure
+alone) — and `[data-open="<sheet>"]` is what those have in common. A Health chart row (.lab-row) is a door
+too but prints the cycle's own figure, not today's, so it holds no .ci-value and painting passes it by. Walking the doors is the
 only honest way to repaint a reading, and this is the only function that does it. Never paint a reading by
 element id: an id reaches exactly one copy and leaves the others stale, and a stale figure looks exactly
 like a fresh one, so nothing would show it.
@@ -153,15 +154,16 @@ stays empty.
 Keren, V670: "make the app as consolidated as possible so we won't have to write the same code twice, meaning
 dry code and as efficient components as possible." **A reading is declared once, in `ROSTER`** (`js/roster.ts`,
 one row per reading in card order), and everything that used to name it again reads the row: the category pages
-and their groups (`catPicks`), Search's heads and groups, the timing chips
-and Search's timing rows, the split pages (`splitPages` holds only what a split page adds to its row), the card
+and their groups (`catPicks`), the Health chart's rows and each reading's good side, the timing chips, the split pages (`splitPages` holds only what a split page adds to its row), the card
 dates (`when`), the history heads (`HIST_HEAD`), every page's window, mode and cycle state and its range stops
 (`pageState`), the past cycles' series (`hist`, read through `keyed`), and the marks on every door and head.
-`CATEGORIES` beside it holds the four categories in source order with `shown`, their place in Search and the
+`CATEGORIES` beside it holds the four categories in source order with `shown`, their place in the Health chart and the
 Diagnosis (two orders, both Keren's). A row's fields:
 
 ```text
 id, name, cat, timing, mark   the page, the name on every door, the category, the timing chip, the glyph
+good                          the side that is good for it ("up" or "down"; none where neither is), which colours
+                              a Health chart result outside its range
 group                         consecutive rows with one group are one group (Valuations, Stress)
 door                          how the card is built: peek (a peek card), pair (Pulse and Volume's peek pair),
                               split (a split peek), subject (an authored subject row), row (a sign row)
@@ -391,7 +393,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights`, `category-analysis` (each category's composite against past cycles), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (her chart: every reading of a cycle against her closed cycles, as a blood test), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (the Health chart: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -405,7 +407,7 @@ The conversion was proved by the snapshot (every state identical) and the browse
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Search · Analysis · Portfolio (Search before Analysis since V665; V657: the Content tab's models moved into
+to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. The Health chart took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
 Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
@@ -419,7 +421,7 @@ Rules that shape the pages:
 - **Navigation is `NAV` and nothing else** (`NAV.open`, `NAV.panel`, or emit `data-open`). Inner pages are
   pages, not popups; the host moves as live DOM. **Don't invent a second navigation idea.**
 - **Home is `grid-area`, never DOM reorder**: the taxonomy is the roster's order (`ROSTER`, see "The roster"),
-  read by the category sheets, the past cycles, the Diagnosis and Search.
+  read by the category sheets, the past cycles, the Diagnosis and the Health chart.
 - **One indicator, one card, one page (V658).** A reading that bundles several indicators shows each as its own
   card (Valuations: Shiller CAPE · Buffett indicator; Stress: Federal debt · Interest payments · Federal
   budget · Households). The split pages are
@@ -427,8 +429,8 @@ Rules that shape the pages:
   `splitSpec` → `mountSplit` → `drawSplit`), on the history component (`divergeChart` hung from the reading's
   sourced line, `histControls`, `histHead`, `histNote`), so a new split is a row and an entry, not a page. The parent keeps its breakdown panel, each part a door to its page.
   **Since V660 a category page carries no group headings** (Keren: "i don't need valuations in the mood page"):
-  the cards run as one list. **The group lives in Search instead**: one row named for the group (no figure),
-  opening a group page (`#sheet-grp-valuations`, `#sheet-grp-economic-power`) built by the same
+  the cards run as one list. **The group is one card on its category page**, its first member's figure as the
+  preview, opening a group page (`#sheet-grp-valuations`, `#sheet-grp-economic-power`) built by the same
   `catSheet` as the category pages. Its cards are the category's own, never copies: the group's
   `.cat-group` element moves into the group page when that page opens (its `sheetRenderers` entry) and back
   to its seat (`.cat-seat`) when the category page opens, so the live repaint, the era mode and the one-card
@@ -461,29 +463,17 @@ Rules that shape the pages:
   is good, so its bars read green).
 - **Every reading keeps its own icon, in its category's colour (V661).** Keren first asked for the category's
   icon and then corrected it: "I don't want the individual icons to disappear. I just want them to inherit
-  the color." The card and the Search row were already `--cat`; `catItem` also marks the reading's page with
+  the color." The card was already `--cat`; `catItem` also marks the reading's page with
   its category class, so the page head disc and the history head take `--cat` too. Group rows keep a mark
   of their own (`GROUP_MARK`: Stress the bolt; Valuations its first member's).
   **A group is one card on its category page (V688).** `groupSheet` builds it with `groupCard`: a clone of the
   first member's card renamed to the group, `data-open` the group's page and `data-preview` the member it
   previews, so `paintReading` repaints both doors and `eraCards` reads the past cycle's figure through it. The
-  members move onto the group's page (`catSheet`); `catMembers` expands a group card back into its members for
-  Search, and the tests enumerate readings as `.cat-item[data-open]:not([data-preview])`. Every card on a
+  members move onto the group's page (`catSheet`), and the tests enumerate readings as `.cat-item[data-open]:not([data-preview])`. Every card on a
   category page stands the same height: the value never wraps and a long unit ellipses.
   The two Treasury spreads (one view of Pressure) and Households' bill and cushion stay one page each (Keren, V658: they read as one).
   Category cards (`.cat-sheet`) follow Apple Health's spacing: the title in the category colour, the date on the
   right, one large figure with the verdict as a quiet label above it.
-- **Search (V657) is every reading, grouped by category** in Keren's order, Weather · Mood · Circulation ·
-  Energy, one inset card per category with hairlines between rows. A row is icon · name · today's figure ·
-  chevron; the verdict and the date stay on the reading's page. **Membership is read from the category
-  pages** (`#sheet-cat-*` items, built from the roster), never listed twice; the heads come from `CATEGORIES`
-  in `shown` order. Each heading opens its category page; each row its
-  reading's page, and back returns to Search. The timing filter (All · Structural · Leading · Coincident ·
-  Lagging, default All) and the search box combine; the box matches a reading's name, its economic term,
-  its source line, or a category name. A reading's timing chip opens Search on its timing. **Icons wear
-  their category's colour** (`--cat`, from `.cat-weather` etc.):
-  V509's single purple wash is revised for this list (Keren, V657), because here the colour says the
-  category and nothing else.
 - **Analysis shows every cycle as one `subjectRow`** (V631, the one door component), expanding in place.
   Don't split it into list + overview.
 - **A closed cycle is the Cycle page, not a copy of it (V659).** Opening one from Analysis moves the Cycle
@@ -508,17 +498,24 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
-- **The Health chart is a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries its door, a
-  trend card under the cycle story that previews the visit note and score (`scoreBox`, flat in the door), so the current cycle and every past one opened from Analysis carry it. The
-  page (`sheet-cycle-chart`) is a metric sheet outside the roster: `buildCycleChart` gives it a `page.cycles`
-  key, so the shared cycle picker, its keys and `eraShow` drive it like a history page, and the door sets the
-  picked cycle to the one on screen. Every roster reading is averaged over
-  the cycle's years; its range is the middle half of the closed cycles that reading covers (Normal), Tukey's
-  fences beyond it mark Risk, and between is Attention. The cycle's length, bull years and bleed are judged
-  only once it has closed. The health score is the share of judged readings that are Normal. The tier filter
-  is the app's tab bar in the same `hist-bar` as the cycle picker; a tap sets the sheet's `data-show` and CSS
-  hides the other tiers and any category left empty, so a cycle change keeps the filter. Show data (V656) and its Alike-today and health dots
-  were dropped at Keren's word.
+- **The Health chart is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
+  reading is found (Search's job before it). One renderer, `drawChart(id)`, draws it in two hosts: `#chart-home`, the
+  tab's home, and `sheet-cycle-chart`, the metric sheet behind the Diagnosis's door (a trend card under the cycle story
+  that previews the visit note and score), so the current cycle and every past one opened from Analysis carry it.
+  `wireFinder` gives each host a `page.cycles` key, so the shared cycle picker, its keys and `eraShow` drive it like a
+  history page, and its own search state (`finds`), so typing in one never moves the other. Every roster reading is
+  averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's
+  fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
+  The cycle's length, bull years and bleed are judged only once it has closed. The health score is the share of judged
+  readings that are Normal. On top sits the search box, the filter button inside it opening a small menu of tiers
+  (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
+  category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the
+  box keeps its focus. A reading's row is a button that opens its page and a category's name opens its category page,
+  through the panels' one `[data-open]` handler; the heading's count and chevron are a separate button that folds it.
+- **A category page is its cards, then `.cat-more`** (`insightRow` in `insights.ts`): the category's insights behind
+  one More details, untitled, or nothing for Energy. `eraShow` and `repaintDiagnosis` call `replaceInsight`, so a past
+  cycle's Mood story and a live VIX reach the sheet. The composite analysis that sat first on the page (1.5.0) is gone;
+  `git show v0.6.0:src/js/category-analysis.ts` is its last copy.
 - **Portfolio is three containers** (`portfolio`): doors to All Weather and the Investment Clock, each its own page drawn on open (so today's weather and phase follow live data), and a Custom card that says "Coming soon". No placeholder figures.
 - **Copy density**: fold into what exists; a new section is one kicker, one short visual, detail behind (i).
   No information twice per screen; no card in a card; borders, no shadows; a collapsible row is icon ·
@@ -615,37 +612,12 @@ V660 they were also summed into Power (100 − their stress composite); Keren re
 Desire) and slow members (Valuations) are two panels; don't merge them.** Margin debt returns only with the
 FINRA monthly series.
 
-## The category analysis (1.5.0)
-
-Each category page opens on one card, `.cat-analysis`, the first child of its `.cat-list`, built by `analysisHtml`
-in `src/js/category-analysis.ts`. The card is not a door (no `data-open`), so the one-card rule, the card-height test
-and the past-cycle cards (`eraCards`) never see it.
-
-- **The composite** (`composite`): the readings of the category that have an entry in `MEMBERS` (keyed by roster id,
-  so membership comes from the roster's `cat`), each ranked against its own record to date (`rankToDate`, the mood
-  score's ranker, at least twelve points before it), turned by `up`, kept per quarter (the last rank in it) and
-  averaged over the quarters every member has. Mood takes `SCORES.mood`, her mood score from `moodTrack`, as it is.
-  Cached per category: every input is a history that only the Backfill changes.
-- **The match** (`analyse`): the cycle on screen (`ui.eraOpen`, else `currentEra`) from its first quarter, against every
-  closed cycle that ran at least as long, each cut to the same number of quarters. `corrOfMoves` correlates the
-  quarter-on-quarter changes; `criticalR` turns the two-tailed 5% t table into the correlation a match must pass.
-- **The words** (`sayMove`, `sayMatch`) read the line's first and last quarter, the nearest cycle, and say when the
-  cycle sits above or below every other at the same point. The chart is drawn in `histFrame` with `chartAxes`. It has
-  no readout: it draws several cycles at once, so the readout test leaves `.cat-analysis` out by name.
-  A cycle too short for a composite leaves the card as an empty hidden `.cat-analysis`, so `replaceCategory` finds it
-  again when Back returns to a cycle that has one.
-- **The insights** (`INSIGHT` in `insights.ts`) are no longer a box on the page: they return their cards bare, and
-  `detail` puts them first in the card's More details sheet, untitled, with the method after them. Mood's composite
-  ends on `moodToday`, so the card and the sheet read the same mood.
-- **Repainting**: `eraShow` and `repaintDiagnosis` call `replaceCategory`, which rebuilds the card (and so its sheet),
-  so a past cycle reads across its whole length and a live VIX moves Mood's line and story together.
-
 ## The Diagnosis (V664, under the dial since V665)
 
 Keren: "What I want is a diagnosis. Like a doctor would analyze a patient … based on the app's parameters …
 Also, I want to have emotional intelligence in this analysis." Since V665 it is the Cycle page itself: the dial,
 then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
-cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
+cycle page because we already have it in search and in the diagnosis"; Search is now the Health chart), as Clue sets its cycle-phase insights
 under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card (the emotion in its
 season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year, newest
 first since 0.4.1 (Keren: "I want to see 2026 at the top, and then go backwards"), from the cycle's last year to its
@@ -800,7 +772,7 @@ with no reading, by Keren's decision.**
 - **Window on the ground, series in the menu.** The bar holds one ruler (which window); a series choice
   lives in the `⋯` menu as radio rows. Which menu is open lives in `headMenuFor`, not the DOM.
 - **The trend pill is one handler and one line** (V671). Its click is caught on `#metric-page`, which
-  travels to whichever tab opened it, so a page opened from Search or a past cycle toggles exactly like one
+  travels to whichever tab opened it, so a page opened from the Health chart or a past cycle toggles exactly like one
   opened from the Cycle tab (until V671 the handler sat on the Cycle panel, and every pill opened from Search
   was dead). Every chart behind a button draws its `<g class="fit">` through `fitLine` (`charts.js`),
   over the same window its pill measures; the suite presses every pill and fails on one that draws nothing.
@@ -863,8 +835,7 @@ badge there too. The hub is one button (`#season-wheel-hub-open`): date, season 
 year's S&P 500 return from `sp500AnnualReturns`, the band's own number. `hubOpen` points it at Weather (today),
 at a quarter's sheet (a detail slot), or at nothing (a year). **The quarter sheet** (V693, `quarterSheet`) is
 the Weather page's own cards at that quarter, built by the same `tempPeek`, `gdpPeek` and `marketPeek` the
-pages use and turned into category cards by `catCard` (the half of `catItem` with no side effects, so a sheet
-never overwrites the Search snapshot); its "About" row opens the season's prose (`quarterPopup`). The cards sit
+pages use and turned into category cards by `catCard` (the half of `catItem` with no side effects); its "About" row opens the season's prose (`quarterPopup`). The cards sit
 in a `.cat-sheet` without `.metric-sheet`, which is why the category gradient is drawn only for
 `.metric-sheet.cat-sheet`. A card in the sheet opens its page from whichever tab holds the dial (the
 `detail-modal-body` handler in `buildNav`). Sheets are cached per quarter in `dialState.sheets`.
@@ -957,7 +928,7 @@ had no listener for two hundred versions (V623) and the listener itself was miss
 the Diagnosis, `settle` for two frames and every running animation; there is no `waitForTimeout` (fixed
 sleeps were four fifths of a 265-second run; the suite now takes about 40). A check pins a rule, not a
 count: the page loop walks every reading the category pages list (`NO_HISTORY` names any exception; it is empty
-since Industrial output went in V688), cycle counts come from the cycle list, Search's counts from its own rows, and a date or
+since Industrial output went in V688), cycle counts come from the cycle list, the Health chart's counts from its own rows, and a date or
 figure that moves with the data is compared, never written in. What is Keren's decision stays pinned exactly
 (the tab order, the categories, the card order, the tokens, the verdict words). Static facts belong in the
 static gates, not the browser: a removed class or id is hygiene's `GONE`, the chart geometry pins are

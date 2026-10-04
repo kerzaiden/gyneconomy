@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const CHROME = process.env.GYN_CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 
-const TABS = ['cycle','analysis','search','portfolio'];
+const TABS = ['cycle','analysis','chart','portfolio'];
 
 const NORMALISERS = [
   [/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+/g, ''],

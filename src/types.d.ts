@@ -96,18 +96,6 @@ type Indicator = {
   src?: Src[];
   key?: string;
 };
-type TimingEntry = {
-  title: string;
-  target: string;
-  icon: string;
-  metric: string;
-  sub?: string;
-  metricSub?: string;
-  unit?: string;
-  word?: string;
-  state?: string;
-  tag?: Tag | null;
-};
 type LiveDoc = { kind?: unknown; asOf?: string; value?: unknown; rows?: unknown; [k: string]: unknown };
 type LiveReadingCommon = { onOpen?: boolean; fileAsOf?: () => string };
 type LiveReading =
@@ -123,6 +111,7 @@ type RosterRow = {
   id: string;
   name: string;
   cat: string;
+  good?: "up" | "down";
   timing: RosterTiming;
   mark: () => string;
   door: "peek" | "row" | "subject" | "pair" | "split";

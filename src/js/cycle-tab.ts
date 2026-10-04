@@ -8,7 +8,7 @@ import { m2Step } from "./history-charts.ts";
 import { CATEGORIES, peekOf, ROSTER } from "./roster.ts";
 import { gdpPeek, needInd, tempPeek } from "./render-core.ts";
 import { appendPicks, catPicks, catSheet, indicatorPeeks } from "./indicators.ts";
-import { analysisHtml } from "./category-analysis.ts";
+import { insightRow } from "./insights.ts";
 // ---- THE CYCLE TAB: cards and categories ----
 var PAIR_ART: Record<string, (ind: Indicator) => PeekCardOpts> = {
   "sheet-sign-pulse": function(ind){ return { pulse:{ rate:ind.meter.value, ref:PULSE_PRE2008 } }; },
@@ -59,8 +59,8 @@ function buildCategories(){
   var host = need("today-analysis");
   CATEGORIES.forEach(function(c){
     var sheet = catSheet("sheet-cat-" + c.key, c.key);
-    var items = document.createElement("div"); items.className = "cat-list"; items.innerHTML = analysisHtml(c.key);
-    appendPicks(items, catPicks(c), c.key);
+    var items = document.createElement("div"); items.className = "cat-list";
+    appendPicks(items, catPicks(c), c.key); items.insertAdjacentHTML("beforeend", insightRow(c.key));
     sheet.appendChild(items);
     host.appendChild(sheet);
   });
