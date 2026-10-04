@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,085 lines** in 35 files, about 595 KB, roughly **169 thousand tokens**. No session can
+The source is **9,080 lines** in 35 files, about 595 KB, roughly **169 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `5fcc730` on 2026-10-04.
+Generated from commit `9ccf242` on 2026-10-04.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `5fcc730` on 2026-10-04.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **611** top-level functions, **105** top-level vars, **356** exported names, **19** boots.
+Counts: **31** modules, **610** top-level functions, **105** top-level vars, **356** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -48,7 +48,7 @@ Counts: **31** modules, **611** top-level functions, **105** top-level vars, **3
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 177 | 38 | `charts`, `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 172 | 37 | `charts`, `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
 | `js/format.ts` | 77 | 35 | — |
@@ -947,34 +947,33 @@ falls in. **export** marks a name other modules import.
 | 42 | `cycleReadings` | `function cycleReadings(` |
 | 48 | `readingsNorm` | `function readingsNorm(` |
 | 53 | `readingLab` | `function readingLab(` |
-| 62 | `labs` | `function labs(` |
-| 69 | `normAt` | `function normAt(` |
-| 70 | `state` | `function state(` |
-| 75 | `yearsWord` | `function yearsWord(` |
-| 76 | `fmt` | `function fmt(` |
-| 80 | `TIERS` | `var TIERS =` |
-| 81 | `tier` | `function tier(` |
-| 85 | `catTitle` | `function catTitle(` |
-| 86 | `labName` | `function labName(` |
-| 90 | `labItem` | `function labItem(` |
-| 96 | `ring` | `function ring(` |
-| 100 | `scoreBox` | `function scoreBox(` |
-| 105 | `bySystem` | `function bySystem(` |
-| 112 | `shown` | `var shown =` |
-| 113 | `tierTabs` | `function tierTabs(` |
-| 117 | `pickTier` | `function pickTier(` |
-| 125 | `judged` | `function judged(` |
-| 126 | `score` | `function score(` |
-| 127 | `outside` | `function outside(` |
-| 128 | `listWords` | `function listWords(` |
-| 129 | `word` | `function word(` |
-| 130 | `cap` | `function cap(` |
-| 132 | `visitNote` | `function visitNote(` |
-| 141 | `chartDetail` | `function chartDetail(` |
-| 150 | `CHART_ID` | `var CHART_ID =` |
-| 151 | `chartDoor` · export | `function chartDoor(` |
-| 155 | `drawChart` | `function drawChart(` |
-| 163 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 61 | `labs` | `function labs(` |
+| 68 | `normAt` | `function normAt(` |
+| 69 | `state` | `function state(` |
+| 74 | `yearsWord` | `function yearsWord(` |
+| 75 | `fmt` | `function fmt(` |
+| 79 | `TIERS` | `var TIERS =` |
+| 80 | `tier` | `function tier(` |
+| 84 | `catTitle` | `function catTitle(` |
+| 85 | `labItem` | `function labItem(` |
+| 91 | `ring` | `function ring(` |
+| 95 | `scoreBox` | `function scoreBox(` |
+| 100 | `bySystem` | `function bySystem(` |
+| 107 | `shown` | `var shown =` |
+| 108 | `tierTabs` | `function tierTabs(` |
+| 112 | `pickTier` | `function pickTier(` |
+| 120 | `judged` | `function judged(` |
+| 121 | `score` | `function score(` |
+| 122 | `outside` | `function outside(` |
+| 123 | `listWords` | `function listWords(` |
+| 124 | `word` | `function word(` |
+| 125 | `cap` | `function cap(` |
+| 127 | `visitNote` | `function visitNote(` |
+| 136 | `chartDetail` | `function chartDetail(` |
+| 145 | `CHART_ID` | `var CHART_ID =` |
+| 146 | `chartDoor` · export | `function chartDoor(` |
+| 150 | `drawChart` | `function drawChart(` |
+| 158 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 
