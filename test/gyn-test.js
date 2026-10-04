@@ -43,7 +43,7 @@ const watch = (pg, tag) => {
   return mine;
 };
 const settle = pg => pg.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
-  Promise.all(document.getAnimations().map(a => a.finished.catch(() => null))).then(() => done())))));
+  Promise.all(document.getAnimations().filter(a => a.effect && isFinite(a.effect.getComputedTiming().endTime)).map(a => a.finished.catch(() => null))).then(() => done())))));
 const ready = pg => pg.waitForFunction(() => window.__GYN && document.getElementById('diagnosis')).then(() => settle(pg));
 
 async function goHome(p, url) {

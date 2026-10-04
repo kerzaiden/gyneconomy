@@ -133,6 +133,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   in different views … the search moved to the health chart page." Then Keren renamed both: "Instead of health
   chart, call the tab analysis. And instead of analysis, call the tab history. Or better yet, herstory." The Health
   chart keeps its name where it opens from a cycle's story. (0.6.1)
+- **Herstory's tab icon is the history clock (an arrow turning back round a clock face), and the page has no
+  "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
+  want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
+  containers for different cycles with the agreed upon margin". (0.6.3)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
@@ -413,7 +417,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   colour.** A cycle that ended is not being judged. (V615)
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
   a frozen copy.** Keren: "the cycle is not ended yet"; a frozen view would say the AI Cycle is over. (V616)
-- **Each cycle's strips in cycle history are drawn against the typical cycle length: a shorter cycle shows
+- **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
   grey dots for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** Keren: "The dots can represent the average that is left, not compared to the longest
   cycle." (V517)
@@ -1099,11 +1103,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use white"). (0.6.2,
   replacing V579)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
-  page with apricot and blush splashes behind white containers (`--splash`), Summer salmon-orange and Autumn
+  page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange and Autumn
   marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference
   and the light pink background with orange shades to yellow … really appropriate for a cycle tracking app";
   "let's use white and let's use splashes of apricot". Text and greys are tinted toward plum. Every text pair
   holds 4.5:1 in both themes except `--text-muted` on `--track` (4.4:1 in light). (0.6.2)
+- **The splash covers the whole screen and stays there as the page scrolls: two fixed layers of soft blobs, apricot
+  and blush, that breathe slowly and flow apart as the page scrolls, never with the content.** Keren: "make the
+  apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
+  scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
+  animation keeps the slow breathing only. (0.6.3)
 - **The Health chart's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
   red (`--critical`).** Keren chose apricot over teal: "the apricot looks much more, much better". Apricot and
   marigold are close in lightness, so the mark's shape ("=" or a triangle) carries the difference. (0.6.2)

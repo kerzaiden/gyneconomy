@@ -42,7 +42,8 @@
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
     --seg-track: #efecec; --seg-on: #ffffff;
-    --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.30), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(246,196,190,0.35), transparent 70%), radial-gradient(70% 30% at 20% 100%, rgba(248,179,121,0.16), transparent 70%);
+    --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.62), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.50), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.55), transparent 70%);
+    --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(246,196,190,0.70), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(246,196,190,0.62), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(246,196,190,0.60), transparent 70%);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -86,7 +87,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
-      --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.14), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(235,163,185,0.12), transparent 70%);
+      --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
+      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
     }
   }
   :root[data-theme="dark"]{
@@ -132,16 +134,33 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
-      --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.14), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(235,163,185,0.12), transparent 70%);
+      --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
+      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
       --ff-blue: #86a3e0;
   }
 
   *{box-sizing:border-box;}
   body{
-    background: var(--splash), var(--page); background-attachment: fixed;
+    background: var(--page);
     color: var(--text-primary);
     font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+  body::before, body::after{ content:""; position:fixed; inset:-24vh -16vw; z-index:-1; pointer-events:none;
+    background:var(--splash-a); }
+  body::after{ background:var(--splash-b); }
+  @keyframes splash-breathe{ to{ scale:1.1; } }
+  @keyframes splash-flow-a{ to{ translate:6vw -20vh; rotate:7deg; } }
+  @keyframes splash-flow-b{ to{ translate:-6vw 16vh; rotate:-6deg; } }
+  @media (prefers-reduced-motion: no-preference){
+    body::before{ animation:splash-breathe 34s ease-in-out infinite alternate; }
+    body::after{ animation:splash-breathe 42s ease-in-out infinite alternate-reverse; }
+    @supports (animation-timeline: scroll()){
+      body::before{ animation:splash-breathe 34s ease-in-out infinite alternate, splash-flow-a linear both;
+        animation-timeline:auto, scroll(root); }
+      body::after{ animation:splash-breathe 42s ease-in-out infinite alternate-reverse, splash-flow-b linear both;
+        animation-timeline:auto, scroll(root); }
+    }
   }
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 64px; }
   .mono{ font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
@@ -1015,12 +1034,6 @@
   }
 
   /* ---- Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary ---- */
-  .cyc-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); overflow:hidden; }
-  .cyc-head{ padding:14px 14px 13px; border-bottom:1px solid var(--border); }
-  .cyc-title{ display:inline-flex; align-items:center; gap:4px; font-family:"Public Sans",sans-serif;
-    font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
-  .cyc-title .peek-mark{ color:var(--text-secondary); }
   .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     border:0; border-top:1px solid var(--border); background:transparent; padding:13px 14px 12px;
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600;
@@ -1119,7 +1132,8 @@
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
-  .era-row + .era-row{ border-top:1px solid var(--border); }
+  .era-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+  .era-row + .era-row{ margin-top:var(--gap); }
 
   /* ---- hero: yield curve ---- */
   .hero{ background: var(--surface); border: 1px solid var(--border); border-radius:var(--radius); padding: 26px 26px 22px; box-shadow: var(--shadow); }

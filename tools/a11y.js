@@ -24,7 +24,7 @@ const run = async (p, label, out) => {
 };
 
 const settle = p => p.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
-  Promise.all(document.getAnimations().map(a => a.finished.catch(() => null))).then(() => done())))));
+  Promise.all(document.getAnimations().filter(a => a.effect && isFinite(a.effect.getComputedTiming().endTime)).map(a => a.finished.catch(() => null))).then(() => done())))));
 const open = async (p, file) => {
   await p.goto('file://' + file);
   await p.waitForFunction(() => window.__GYN && document.getElementById('diagnosis'));
