@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4aaa3de` on 2026-10-04. **82 components**, **44 shared patterns**.
+Generated from commit `e3799e7` on 2026-10-04. **85 components**, **46 shared patterns**.
 
 ## analysis.ts
 
@@ -52,7 +52,10 @@ Generated from commit `4aaa3de` on 2026-10-04. **82 components**, **44 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`report`** | `.lab-group` | `cycle-analysis.ts:cycleAnalysisHtml` |
+| **`cycleMatrixHtml`** | `.cyc-card` `.cyc-head` `.cyc-title` `.lab-dot` `.lab-matrix` `.lab-name` `.lab-num` `.lab-pts` `.lab-wrap` | `analysis.ts:renderCycleList` |
+| **`labItem`** | `.lab-item` `.lab-res` | `cycle-analysis.ts:report` |
+| **`report`** | `.lab-chips` `.lab-f` `.lab-score` `.lab-score-v` `.lab-sec` `.labs` | `cycle-analysis.ts:cycleAnalysisHtml` |
+| **`ring`** | `.lab-ring` | `cycle-analysis.ts:report` |
 
 ## cycle-tab.ts
 
@@ -131,7 +134,7 @@ Generated from commit `4aaa3de` on 2026-10-04. **82 components**, **44 shared pa
 |---|---|---|
 | **`insightMood`** | `.mood-fig` | — |
 | **`moodCallout`** | `.mood-arrow` `.mood-call` | `insights.ts:moodCycleSvg` |
-| **`moodCycleSvg`** | `.mood-curve` `.mood-dot` `.mood-line` `.on` | `insights.ts:insightMood` |
+| **`moodCycleSvg`** | `.mood-curve` `.mood-dot` `.mood-line` | `insights.ts:insightMood` |
 
 ## pages-nav.ts
 
@@ -147,7 +150,7 @@ Generated from commit `4aaa3de` on 2026-10-04. **82 components**, **44 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`heat`** | `.sc-cell` `.thin` | `portfolio.ts:gridHtml` |
+| **`heat`** | `.thin` | `portfolio.ts:gridHtml` |
 | **`seasonClock`** | `.clock` `.clock-asset` `.clock-axis` `.clock-hand` `.clock-pin` `.clock-q` | `portfolio.ts:clockHtml` |
 
 ## quarter-sheet.ts
@@ -199,7 +202,7 @@ renderer speaks. Listed most-used first.
 
 | Function | Lives in | Called from |
 |---|---|---|
-| **`byId`** | dom.ts | 34 places |
+| **`byId`** | dom.ts | 35 places |
 | **`need`** | dom.ts | 27 places |
 | **`fmtSigned`** | format.ts | 25 places |
 | **`put`** | dom.ts | 24 places |
@@ -241,7 +244,6 @@ renderer speaks. Listed most-used first.
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`seasonGroup`** | model.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
-| **`auxStat`** | format.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
@@ -253,8 +255,8 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
+| **`auxStat`** | format.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
-| **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
@@ -281,6 +283,7 @@ renderer speaks. Listed most-used first.
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`seasonRecord`** | portfolio.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
+| **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabSegs`** | history.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
@@ -308,22 +311,24 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cat-mood` | 5 | `cycle-analysis.ts:cycleAnalysisHtml`, `diagnosis.ts:moodDoor`, `portfolio.ts:clockHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.highlights` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
-| `.now` | 4 | `category-analysis.ts:chartHtml`, `cycle-analysis.ts:historyTable`, `portfolio.ts:gridHtml`, `portfolio.ts:seasonClock` |
 | `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
+| `.ca-note` | 4 | `cycle-analysis.ts:cycleMatrixHtml`, `portfolio.ts:clockHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.strip-run` | 4 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.strip` | 4 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
+| `.now` | 3 | `category-analysis.ts:chartHtml`, `portfolio.ts:gridHtml`, `portfolio.ts:seasonClock` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
 | `.season-sw` | 3 | `dial-cycle.ts:renderCycleKicker`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.rangebar` | 3 | `history.ts:modeBar`, `history.ts:rangeBar`, `pages-nav.ts:buildSearch` |
-| `.ca-note` | 3 | `portfolio.ts:clockHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
-| `.sc-grid` | 2 | `cycle-analysis.ts:historyTable`, `portfolio.ts:gridHtml` |
+| `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
+| `.sc-grid` | 2 | `cycle-analysis.ts:cycleMatrixHtml`, `portfolio.ts:gridHtml` |
+| `.sc-cell` | 2 | `cycle-analysis.ts:cycleMatrixHtml`, `portfolio.ts:heat` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:moodDoor`, `diagnosis.ts:yearByYear` |
 | `.dx` | 2 | `diagnosis.ts:buildDiagnosis`, `portfolio.ts:buildPortfolio` |

@@ -1107,9 +1107,47 @@
   .sc-cell{ text-align:center; padding:7px 0; border-radius:6px; color:var(--text-primary); }
   .sc-cell.thin{ background:var(--surface-2); color:var(--text-muted); }
   .sc-cell.flag{ background:var(--serious-wash); color:var(--serious-ink); font-weight:600; }
-  .lab-group{ margin:14px 0 2px; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
-  .lab-v.flag{ color:var(--serious-ink); }
-  .cat-analysis .aux-stat b small{ display:block; font-weight:400; color:var(--text-muted); font-size:var(--type-meta); }
+  .lab-wrap{ padding:10px 14px 14px; }
+  .labs{ margin-top:12px; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
+  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
+  .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
+  .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
+  .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
+  .lab-ring circle.on{ stroke:var(--good); stroke-linecap:round; }
+  .lab-chips{ display:flex; gap:5px; margin:12px 0 4px; overflow-x:auto; }
+  .lab-f{ position:absolute; opacity:0; pointer-events:none; }
+  .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
+  .lab-chips label span{ color:var(--text-muted); }
+  .lab-f:checked + label{ background:var(--good); border-color:var(--good); color:var(--surface); }
+  .lab-f:checked + label span{ color:inherit; }
+  .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
+  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
+  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
+  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
+  .lab-sec h5{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-sec h5::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
+  .lab-sec ul{ list-style:none; margin:0; padding:0; }
+  .lab-sec{ --tier:var(--good); }
+  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
+  .lab-sec.t-abnormal{ --tier:var(--critical); }
+  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
+  .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
+  .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .t-abnormal .lab-res b{ color:var(--critical-ink); }
+  .lab-matrix .lab-pts{ font-weight:600; }
+  .lab-wrap .ca-note{ margin:0 0 4px; }
+  .lab-matrix{ table-layout:fixed; }
+  .lab-matrix thead th{ font-size:var(--type-label); writing-mode:vertical-rl; transform:rotate(180deg); text-align:left; vertical-align:bottom; height:84px; padding:0 0 4px; }
+  .lab-matrix thead th:first-child{ writing-mode:horizontal-tb; transform:none; }
+  .lab-matrix tbody th{ font-size:var(--type-meta); line-height:1.2; }
+  .lab-matrix col.lab-name{ width:30%; }
+  .lab-matrix col.lab-num{ width:12%; }
+  .lab-matrix .sc-cell{ padding:9px 0; }
+  .lab-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--critical); vertical-align:middle; }
   .sc-grid tr.now .sc-cell{ box-shadow:inset 0 0 0 2px var(--accent); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
@@ -36292,7 +36330,9 @@
       hi: hi,
       fence: hi + 1.5 * (hi - lo),
       floor: lo - 1.5 * (hi - lo),
-      n: vs.length
+      n: vs.length,
+      min: Math.min.apply(null, vs),
+      max: Math.max.apply(null, vs)
     };
   }
   function closedCount() {
@@ -36368,7 +36408,7 @@
   function state(l, i) {
     var v = l.per[i], n = l.norm;
     if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
-    return v > n.fence ? "high" : v < n.floor ? "low" : v > n.hi ? "up" : v < n.lo ? "down" : "";
+    return v > n.fence ? "high" : v < n.floor ? "low" : "";
   }
   function yearsWord(v) {
     var q = Math.round(v * 4);
@@ -36378,30 +36418,70 @@
     var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
     return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
   }
-  function flagWord(st) {
-    return st === "high" ? " High" : st === "low" ? " Low" : st === "up" ? " ↑" : st === "down" ? " ↓" : "";
+  var TIERS = [ {
+    key: "abnormal",
+    title: "Risk",
+    cls: "t-abnormal"
+  }, {
+    key: "borderline",
+    title: "Attention",
+    cls: "t-borderline"
+  }, {
+    key: "optimal",
+    title: "Normal",
+    cls: "t-optimal"
+  } ];
+  function tier(l, i) {
+    var v = l.per[i], n = l.norm;
+    return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
   }
-  function labRows(i, cat) {
-    return labs().filter(function(l) {
-      return l.cat === cat && l.per[i] != null;
-    }).map(function(l) {
-      var st = state(l, i), n = l.norm, v = l.per[i];
-      var range = !n ? "<small>no closed cycle yet</small>" : "<small>normal " + fmt(l, n.lo) + (fmt(l, n.hi) === fmt(l, n.lo) ? "" : "–" + fmt(l, n.hi)) + " · " + n.n + " cycles</small>";
-      return auxStat({
-        label: l.name,
-        value: '<span class="lab-v' + (st === "high" || st === "low" ? " flag" : "") + '">' + fmt(l, v) + flagWord(st) + "</span> " + range
-      });
-    }).join("");
+  function catTitle(key) {
+    return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c) {
+      return c.key === key;
+    })[0].title;
+  }
+  function labItem(l, i) {
+    var st = state(l, i), n = l.norm;
+    return '<li class="lab-item"><div><b>' + l.name + "</b><small>" + catTitle(l.cat) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
+  }
+  function ring(v) {
+    var r = 21, c = 2 * Math.PI * r;
+    return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
   function report(i) {
-    var groups = [ {
-      key: "cycle",
-      title: "Cycle"
-    } ].concat(categoriesShown());
-    return groups.map(function(g) {
-      var rows = labRows(i, g.key);
-      return rows ? '<div class="lab-group">' + g.title + "</div>" + rows : "";
-    }).join("");
+    var j = judged(i), by = {}, s = score(i), id = "labf-" + marketCycles[i].from;
+    TIERS.forEach(function(t) {
+      by[t.key] = j.filter(function(l) {
+        return tier(l, i) === t.key;
+      });
+    });
+    var chip = function(key, title, n) {
+      return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
+    };
+    return '<div class="labs"><div class="lab-score"><div><small>' + marketCycles[i].name + "</small><b>Health score</b><small>" + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
+      return chip(t.key, t.title, by[t.key].length);
+    }).join("") + "</div>" + TIERS.filter(function(t) {
+      return by[t.key].length;
+    }).map(function(t) {
+      return '<section class="lab-sec ' + t.cls + '"><h5>' + t.title + " <span>" + by[t.key].length + "</span></h5><ul>" + by[t.key].map(function(l) {
+        return labItem(l, i);
+      }).join("") + "</ul></section>";
+    }).join("") + "</div>";
+  }
+  function judged(i) {
+    return labs().filter(function(l) {
+      return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing);
+    });
+  }
+  function score(i) {
+    var j = judged(i), ok = j.filter(function(l) {
+      return tier(l, i) === "optimal";
+    }).length;
+    return {
+      v: Math.round(100 * ok / j.length),
+      ok: ok,
+      of: j.length
+    };
   }
   function outside(i) {
     return labs().filter(function(l) {
@@ -36432,30 +36512,37 @@
     var parts = (high.length ? [ listWords(high) + " ran far above her normal" ] : []).concat(low.length ? [ listWords(low) + " far below it" ] : []);
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
-  function historyTable(viewed) {
+  function cycleMatrixHtml() {
     var cats = [ {
       key: "cycle",
       title: "Cycle"
     } ].concat(categoriesShown());
-    return '<table class="sc-grid"><thead><tr><th></th>' + cats.map(function(c) {
+    return '<div class="cyc-card" id="her-chart"><div class="cyc-head"><div class="cyc-title">Her chart</div></div><div class="lab-wrap"><p class="ca-note">Her health score in each cycle is the share of her readings in their normal range; a red dot marks a category with a reading at risk.</p><table class="sc-grid lab-matrix"><colgroup><col class="lab-name"><col class="lab-num"></colgroup><thead><tr><th></th><th>Score</th>' + cats.map(function(c) {
       return "<th>" + c.title + "</th>";
     }).join("") + "</tr></thead><tbody>" + marketCycles.map(function(c, i) {
-      var flagged = outside(i);
-      return "<tr" + (i === viewed ? ' class="now"' : "") + "><th>" + c.name.replace(/ Cycle$/, "") + " <small>" + c.from + "</small></th>" + cats.map(function(k) {
-        var n = flagged.filter(function(l) {
+      return {
+        c: c,
+        i: i
+      };
+    }).reverse().map(function(x) {
+      var flagged = outside(x.i);
+      return "<tr><th>" + x.c.name.replace(/ Cycle$/, "") + " <small>" + x.c.from + '</small></th><td class="sc-cell lab-pts">' + score(x.i).v + "</td>" + cats.map(function(k) {
+        var names = flagged.filter(function(l) {
           return l.cat === k.key;
-        }).length;
-        return '<td class="sc-cell' + (n ? " flag" : "") + '">' + (n || "·") + "</td>";
+        }).map(function(l) {
+          return l.name;
+        });
+        return '<td class="sc-cell">' + (names.length ? '<i class="lab-dot" title="' + names.join(", ") + '" aria-label="' + names.join(", ") + '"></i>' : "") + "</td>";
       }).join("") + "</tr>";
-    }).join("") + "</tbody></table>";
+    }).join("") + "</tbody></table></div></div>";
   }
   function chartDetail() {
-    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Her normal range for a reading is the middle half of her closed cycles. An arrow marks a cycle outside that middle half; High or Low marks one past Tukey’s fence, one and a half times the middle span beyond it, the standard rule for an outlier.", "Each range says how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range and flags weigh less for it.", "The table counts, for every cycle, the readings in each category that ran past the fence. The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function cycleAnalysisHtml(m) {
     var i = marketCycles.indexOf(m.era);
     if (i < 0) return "";
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + historyTable(i) + moreRow(chartDetail()) + "</div>";
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -37702,6 +37789,8 @@
   }
   function renderCycleList() {
     var list = need("cycle-list");
+    var chart = byId("her-chart");
+    if (chart) chart.outerHTML = cycleMatrixHtml(); else need("calendar-list").insertAdjacentHTML("afterbegin", cycleMatrixHtml());
     wireCycleData(list);
     var PREVIEW_CYCLES = 99;
     (function() {

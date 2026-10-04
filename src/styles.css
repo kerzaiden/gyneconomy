@@ -1113,9 +1113,47 @@
   .sc-cell{ text-align:center; padding:7px 0; border-radius:6px; color:var(--text-primary); }
   .sc-cell.thin{ background:var(--surface-2); color:var(--text-muted); }
   .sc-cell.flag{ background:var(--serious-wash); color:var(--serious-ink); font-weight:600; }
-  .lab-group{ margin:14px 0 2px; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
-  .lab-v.flag{ color:var(--serious-ink); }
-  .cat-analysis .aux-stat b small{ display:block; font-weight:400; color:var(--text-muted); font-size:var(--type-meta); }
+  .lab-wrap{ padding:10px 14px 14px; }
+  .labs{ margin-top:12px; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
+  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
+  .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
+  .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
+  .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
+  .lab-ring circle.on{ stroke:var(--good); stroke-linecap:round; }
+  .lab-chips{ display:flex; gap:5px; margin:12px 0 4px; overflow-x:auto; }
+  .lab-f{ position:absolute; opacity:0; pointer-events:none; }
+  .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
+  .lab-chips label span{ color:var(--text-muted); }
+  .lab-f:checked + label{ background:var(--good); border-color:var(--good); color:var(--surface); }
+  .lab-f:checked + label span{ color:inherit; }
+  .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
+  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
+  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
+  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
+  .lab-sec h5{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-sec h5::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
+  .lab-sec ul{ list-style:none; margin:0; padding:0; }
+  .lab-sec{ --tier:var(--good); }
+  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
+  .lab-sec.t-abnormal{ --tier:var(--critical); }
+  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
+  .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
+  .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .t-abnormal .lab-res b{ color:var(--critical-ink); }
+  .lab-matrix .lab-pts{ font-weight:600; }
+  .lab-wrap .ca-note{ margin:0 0 4px; }
+  .lab-matrix{ table-layout:fixed; }
+  .lab-matrix thead th{ font-size:var(--type-label); writing-mode:vertical-rl; transform:rotate(180deg); text-align:left; vertical-align:bottom; height:84px; padding:0 0 4px; }
+  .lab-matrix thead th:first-child{ writing-mode:horizontal-tb; transform:none; }
+  .lab-matrix tbody th{ font-size:var(--type-meta); line-height:1.2; }
+  .lab-matrix col.lab-name{ width:30%; }
+  .lab-matrix col.lab-num{ width:12%; }
+  .lab-matrix .sc-cell{ padding:9px 0; }
+  .lab-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--critical); vertical-align:middle; }
   .sc-grid tr.now .sc-cell{ box-shadow:inset 0 0 0 2px var(--accent); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }

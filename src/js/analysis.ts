@@ -10,6 +10,7 @@ import { CATEGORIES } from "./roster.ts";
 import { setTopbar } from "./render-pages.ts";
 import { eraFig, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, upTo } from "./era.ts";
 import { replaceCategory } from "./category-analysis.ts";
+import { cycleMatrixHtml } from "./cycle-analysis.ts";
 import { cycleView, marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.ts";
 
 type Strip = ReturnType<typeof seasonStripHtml>;
@@ -61,6 +62,8 @@ function wireCycleData(list: HTMLElement){
 }
 function renderCycleList(){
   var list = need("cycle-list");
+  var chart = byId("her-chart");
+  if (chart) chart.outerHTML = cycleMatrixHtml(); else need("calendar-list").insertAdjacentHTML("afterbegin", cycleMatrixHtml());
   wireCycleData(list);
   var PREVIEW_CYCLES = 99;
   (function(){
