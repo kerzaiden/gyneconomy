@@ -431,6 +431,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Risk (red, past a fence), with a health score, the share that is Normal.** Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
   cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
+- **Her chart sits behind one row with a chevron, under the cycle story, and opens its own page with a cycle
+  picker.** The page carries the visit note, the health score and the results; the picker moves between cycles, and
+  the row opens on the cycle its page shows. Keren: "make it shorter in the current cycle … we'll only see the text
+  and the health score once we click on the chevron", with "a selection bar according to cycles". (0.3.0)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped.**
   Keren: "I can't understand anything from it. Let's just drop it." (0.2.0; it was V612, V656)
 - **Rhymes is retired, and the proposed weather analysis was declined; don't bring either back.** Keren on the

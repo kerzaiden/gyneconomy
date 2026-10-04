@@ -1,5 +1,8 @@
 import { facts, srcBlock } from "./format.ts";
-import { moreRow } from "./dom.ts";
+import { byId, moreRow, trendDoor, ui } from "./dom.ts";
+import { cycleControls, page, pageCycle } from "./history.ts";
+import { chartSvg } from "./marks.ts";
+import { metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycleModel } from "./model.ts";
 import { categoriesShown, keyed, ROSTER } from "./roster.ts";
@@ -86,7 +89,7 @@ function report(i: number){
     return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + '-' + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '>' +
       '<label for="' + id + '-' + key + '">' + title + ' <span>' + n + '</span></label>';
   };
-  return '<div class="labs"><div class="lab-score"><div><small>' + marketCycles[i].name + '</small><b>Health score</b><small>' + j.length + ' readings</small></div>' +
+  return '<div class="labs"><div class="lab-score"><div><b>Health score</b><small>' + j.length + ' readings</small></div>' +
     '<div class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></div></div>' +
     '<div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t){ return chip(t.key, t.title, by[t.key].length); }).join("") + '</div>' +
     TIERS.filter(function(t){ return by[t.key].length; }).map(function(t){
@@ -118,9 +121,26 @@ function chartDetail(){
     "The chart describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
-export function cycleAnalysisHtml(m: CycleModel){
+function cycleAnalysisHtml(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
   if (i < 0) return "";
-  return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div>' +
+  return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div>' +
     '<p class="ca-say">' + visitNote(i) + '</p>' + report(i) + moreRow(chartDetail()) + '</div>';
+}
+var CHART_ID = "sheet-cycle-chart";
+export function chartDoor(){
+  return trendDoor(CHART_ID, "Her chart", chartSvg(), "Her chart", "");
+}
+function drawChart(){
+  var sheet = byId(CHART_ID), c = pageCycle(CHART_ID);
+  if (sheet && c) sheet.innerHTML = cycleControls(CHART_ID) + cycleAnalysisHtml(cycleModel(c));
+}
+export function buildCycleChart(home: HTMLElement){
+  page.mode[CHART_ID] = "cycles";
+  page.cycles[CHART_ID] = null;
+  home.appendChild(metricSheet(CHART_ID));
+  home.addEventListener("click", function(e){
+    if ((e.target as Element).closest && (e.target as Element).closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
+  });
+  sheetRenderers[CHART_ID] = drawChart;
 }
