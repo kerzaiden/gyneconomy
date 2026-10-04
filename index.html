@@ -319,7 +319,6 @@
 
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
-    --dial-grey:color-mix(in srgb, var(--border) 60%, transparent);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
     --season-winter:#6a74c2; --season-spring:#aab0d8; --season-summer:#d96d3e; --season-autumn:#f0b04a;
 
@@ -362,7 +361,7 @@
   .hub-line b{ font-weight:700; color:var(--text-primary); }
   .hub-stage{ font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500; font-size:calc(var(--dial) * 0.058); line-height:1.1; color:var(--text-secondary); }
   .cycle-dial{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
-  .cycle-dial .dial-track{ fill:none; stroke:var(--dial-grey); stroke-width:var(--track-w, 16); stroke-linecap:round; }
+  .cycle-dial .dial-track{ fill:none; stroke:var(--border); stroke-width:var(--track-w, 16); opacity:0.6; stroke-linecap:round; }
   .cycle-dial .dial-dot{ fill:var(--text-muted); opacity:0.45; }
   .page-chart svg, .spread-history svg, .chart-shell svg,
   .page-chart svg *, .spread-history svg *, .chart-shell svg *{ touch-action:pan-y; }
@@ -1052,7 +1051,7 @@
   .method-card .more-row, .labs .more-row{ margin-top:20px; }
   .cat-more:empty{ display:none; }
   .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:var(--dial-grey); border-radius:var(--radius-inner); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:var(--surface-2); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
