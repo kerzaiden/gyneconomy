@@ -1,11 +1,14 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
 import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
-import { metricSheet, sheetRenderers } from "./render-core.ts";
+import { marketPills, metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
+import type { MarketRun } from "./render-core.ts";
 import { calendarSvg, clockSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
-import { marketCycles } from "./data.ts";
-import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, QUARTER_END_MONTH, seasonTitle } from "./model.ts";
-import { wheelMeta } from "./refresh-season.ts";
-import { keyed, ROSTER_BY } from "./roster.ts";
+import { marketCycles, sp500AnnualReturns } from "./data.ts";
+import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
+import type { TrackSeg } from "./model.ts";
+import { colPeek } from "./charts.ts";
+import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
+import { keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import { fmt, labs, listWords, yearsWord } from "./cycle-analysis.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
@@ -41,6 +44,9 @@ function quarterly(id: string){
   for (var q in sum) out[q] = sum[q] / n[q];
   return out;
 }
+function lastQuarter(id: string){
+  return Math.max.apply(null, keyed(ROSTER_BY[id].hist).filter(function(d){ return d.v != null; }).map(function(d){ return d.k.length === 4 ? +d.k * 4 : qIdx(quartersOf(d.k)[0]); }));
+}
 function cycleOfYear(y: number){ return marketCycles.filter(function(c){ return y >= c.from && y <= (c.to || y); })[0]; }
 function qIdx(q: string){ return +q.slice(0, 4) * 4 + +q.slice(6) - 1; }
 function qName(i: number){ return Math.floor(i / 4) + " Q" + (i % 4 + 1); }
@@ -53,7 +59,7 @@ function carried(s: Record<string, number>, to: number){
 var panelCache: ReturnType<typeof buildPanel> | null = null;
 function panel(){ return panelCache || (panelCache = buildPanel()); }
 function buildPanel(){
-  var ids = AI.echo, raw = ids.map(quarterly), nowI = Math.max.apply(null, raw.map(function(s){ return Math.max.apply(null, Object.keys(s).map(qIdx)); }));
+  var ids = AI.echo, raw = ids.map(quarterly), nowI = Math.max.apply(null, ids.map(lastQuarter));
   var series = raw.map(function(s){ return carried(s, nowI); }), now = ids.map(function(id){ return labOf(id).per[openIdx()] as number; });
   var rows: Record<number, number[]> = {};
   for (var i = ECHO_FROM * 4; i <= nowI; i++){
@@ -102,7 +108,7 @@ function echoLine(e: Echo){
   var say = function(i: number){ return pairWords(labOf(AI.echo[i]), e.then[i], p.now[i]); };
   var then = thenWords(e);
   return '<li class="ai-echo"><span class="ai-echo-when"><b>' + e.q + '</b> · ' + e.cycle.name + '</span>' +
-    (then ? '<small>Then: ' + then + '.</small>' : "") +
+    (then ? '<small>Then: ' + then + '.</small>' : "") + pathStrip("Then", e.i) + pathStrip("Now", p.nowI) +
     '<small>Alike: ' + listWords(order.slice(0, 2).map(say)) + '. Apart: ' + say(order[order.length - 1]) + '.</small></li>';
 }
 function asOfWords(){
@@ -117,10 +123,57 @@ function aiDetail(){
 }
 var AI_PAGE = "sheet-ai-insights";
 var CHAPTER_MARKS = [calendarSvg, weatherSvg, marketSvg];
+var EXTREMES = 3;
+function rankNow(R: RosterRow){
+  var h = keyed(R.hist).filter(function(d){ return d.v != null; }).map(function(d){ return d.v as number; });
+  return { R:R, pct:rankToDate(h.slice(0, -1), h[h.length - 1]) };
+}
+function pic(inner: string, cap: string){ return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + '</small></div>'; }
+function extremesPic(){
+  var all = ROSTER.map(rankNow).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
+  var rows = all.slice(0, EXTREMES).concat(all.slice(-EXTREMES));
+  return pic(rows.map(function(x){
+    return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + '%</b></div>';
+  }).join(""), "Today against each reading’s whole record: the share of past readings below it. The three highest and the three lowest.");
+}
+function cycleSegs(){ return nowModel.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }); }
+function cyclePic(){
+  var segs = cycleSegs(), runs = seasonRuns(segs), from = nowModel.era.from, mkt: MarketRun[] = [];
+  for (var y = from; y <= calendarTodayY; y++) if (sp500AnnualReturns[y] != null){
+    var ytd = y === calendarTodayY, q = ytd ? Math.max(1, segs.filter(function(s){ return parseInt(s.q, 10) === y; }).length) : 4;
+    mkt.push({ dir:sp500AnnualReturns[y] >= 0 ? "up" : "down", ytd:ytd, q:q, from:y, to:y });
+  }
+  return pic(strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + strip(" mkt-strip", "S&P 500 by year", marketPills(mkt)),
+    "Her seasons, quarter by quarter, and the S&amp;P&nbsp;500 year by year, " + from + " to today.");
+}
+function tilesPic(ids: string[]){
+  var p = panel();
+  return pic('<div class="ai-tiles">' + ids.map(function(id){
+    var s = carried(quarterly(id), p.nowI), vals: number[] = [];
+    for (var i = p.nowI - 11; i <= p.nowI; i++) if (s[i] != null) vals.push(s[i]);
+    return '<div class="ai-tile"><small>' + ROSTER_BY[id].name + '</small><b>' + figure(id) + '</b>' + colPeek(vals, function(){ return "ai-col"; }) + '</div>';
+  }).join("") + '</div>', "The last three years, quarter by quarter.");
+}
+var trackCache: Record<string, TrackSeg> | null = null;
+function segAt(q: string){
+  if (!trackCache){
+    var all: Record<string, TrackSeg> = {};
+    marketCycles.forEach(function(c){ cycleModel(c).track.forEach(function(seg){ if (!seg.isNow) all[seg.q] = seg; }); });
+    trackCache = all;
+  }
+  return trackCache[q];
+}
+function pathStrip(label: string, end: number){
+  var segs: TrackSeg[] = [];
+  for (var i = end - GROWTH_WINDOW + 1; i <= end; i++){ var seg = segAt(qName(i)); if (seg) segs.push(seg); }
+  var runs = seasonRuns(segs);
+  return '<span class="ai-path"><small>' + label + '</small>' + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + '</span>';
+}
+var CHAPTER_PICS = [cyclePic, function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function aiPage(){
   return '<div class="ai-page">' +
-    trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(AI.lede) + '</p>') +
-    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>'); }).join("") +
+    trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(AI.lede) + '</p>' + extremesPic()) +
+    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>' + CHAPTER_PICS[i]()); }).join("") +
     trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
 }

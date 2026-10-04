@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5964914` on 2026-10-04. **89 components**, **35 shared patterns**.
+Generated from commit `28a4807` on 2026-10-04. **93 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -16,6 +16,10 @@ Generated from commit `5964914` on 2026-10-04. **89 components**, **35 shared pa
 |---|---|---|
 | **`aiPage`** | `.ai-by` `.ai-echoes` `.ai-p` `.ai-page` | `ai-insights.ts:buildAiPage` |
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
+| **`extremesPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:aiPage` |
+| **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
+| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:cyclePic`, `ai-insights.ts:extremesPic`, `ai-insights.ts:tilesPic` |
+| **`tilesPic`** | `.ai-tile` `.ai-tiles` | `ai-insights.ts:pathStrip` |
 
 ## analysis.ts
 
@@ -30,7 +34,7 @@ Generated from commit `5964914` on 2026-10-04. **89 components**, **35 shared pa
 |---|---|---|
 | **`avgRule`** | `.temp-avg` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
 | **`chartAxes`** | `.bt-axis` `.bt-frame` `.bt-grid` `.bt-yl` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart`, `render-core.ts:renderPressurePage`, `render-pages.ts:renderSpreadHistory` |
-| **`colPeek`** | `.heat` `.peek-base` | `analysis.ts:eraMini`, `charts.ts:peekCard`, `readings.ts:bootReadings`, `readings.ts:deriveFeelingReadings`, `readings.ts:derivePulseTag`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones` |
+| **`colPeek`** | `.heat` `.peek-base` | `ai-insights.ts:tilesPic`, `analysis.ts:eraMini`, `charts.ts:peekCard`, `readings.ts:bootReadings`, `readings.ts:deriveFeelingReadings`, `readings.ts:derivePulseTag`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones` |
 | **`crossLine`** | `.hist-cross` | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart`, `render-core.ts:renderPressurePage` |
 | **`divergeChart`** | `.dchart` `.dv-bar` `.dv-mid` | `indicators.ts:drawSplit`, `inner-pages.ts:registerHouseholdsValuationPages`, `render-pages.ts:renderVolatility` |
 | **`fitGroup`** | `.chart-label-plate` `.fit` `.fit-lab` `.fit-line` | `charts.ts:divergeChart`, `charts.ts:fitLine`, `history-charts.ts:deficitChart`, `render-core.ts:ylmFitLine` |
@@ -232,6 +236,8 @@ renderer speaks. Listed most-used first.
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
+| **`keyed`** | roster.ts | 7 places |
+| **`strip`** | render-core.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`fileRow`** | data.ts | 6 places |
@@ -241,17 +247,16 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
-| **`keyed`** | roster.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`side`** | cycle-analysis.ts | 5 places |
-| **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`closedCount`** | cycle-analysis.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`cycLabel`** | model.ts | 4 places |
+| **`cycleModel`** | model.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
@@ -261,13 +266,16 @@ renderer speaks. Listed most-used first.
 | **`moodTrack`** | model.ts | 4 places |
 | **`normAt`** | cycle-analysis.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
+| **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
+| **`seasonPills`** | render-core.ts | 4 places |
+| **`seasonRuns`** | render-core.ts | 4 places |
+| **`seasonRunsLabel`** | render-core.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
-| **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
@@ -277,16 +285,17 @@ renderer speaks. Listed most-used first.
 | **`indOf`** | readings.ts | 3 places |
 | **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
+| **`marketPills`** | render-core.ts | 3 places |
 | **`menuOf`** | cycle-analysis.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`normOf`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
-| **`panel`** | ai-insights.ts | 3 places |
 | **`popHead`** | format.ts | 3 places |
 | **`qPretty`** | format.ts | 3 places |
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
+| **`rankToDate`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`seasonGroup`** | model.ts | 3 places |
 | **`seasonTitle`** | model.ts | 3 places |

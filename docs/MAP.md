@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,062 lines** in 35 files, about 596 KB, roughly **169 thousand tokens**. No session can
+The source is **9,131 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `5964914` on 2026-10-04.
+Generated from commit `28a4807` on 2026-10-04.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `5964914` on 2026-10-04.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,384 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,400 | the whole stylesheet, every token and rule |
 | `page-body.html` | 356 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **631** top-level functions, **107** top-level vars, **367** exported names, **19** boots.
+Counts: **31** modules, **640** top-level functions, **109** top-level vars, **367** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -46,7 +46,7 @@ Counts: **31** modules, **631** top-level functions, **107** top-level vars, **3
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
-| `js/ai-insights.ts` | 135 | 26 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 188 | 37 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
 | `js/cycle-analysis.ts` | 273 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -835,32 +835,43 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 15 | `MONTH_NAMES` | `var MONTH_NAMES =` |
-| 16 | `ECHO_FROM` | `var ECHO_FROM =` |
-| 18 | `openIdx` | `function openIdx(` |
-| 19 | `labOf` | `function labOf(` |
-| 20 | `figure` | `function figure(` |
-| 24 | `fill` | `function fill(` |
-| 28 | `quartersOf` | `function quartersOf(` |
-| 34 | `quarterly` | `function quarterly(` |
-| 44 | `cycleOfYear` | `function cycleOfYear(` |
-| 45 | `qIdx` | `function qIdx(` |
-| 46 | `qName` | `function qName(` |
-| 47 | `carried` | `function carried(` |
-| 54 | `panel` | `function panel(` |
-| 55 | `buildPanel` | `function buildPanel(` |
-| 70 | `pathGap` | `function pathGap(` |
-| 80 | `echoes` · export | `function echoes(` |
-| 92 | `thenWords` | `function thenWords(` |
-| 99 | `pairWords` | `function pairWords(` |
-| 100 | `echoLine` | `function echoLine(` |
-| 108 | `asOfWords` | `function asOfWords(` |
-| 112 | `aiDetail` | `function aiDetail(` |
-| 118 | `AI_PAGE` | `var AI_PAGE =` |
-| 119 | `CHAPTER_MARKS` | `var CHAPTER_MARKS =` |
-| 120 | `aiPage` | `function aiPage(` |
-| 127 | `buildAiPage` · export | `function buildAiPage(` |
-| 132 | `aiInsights` · export | `function aiInsights(` |
+| 18 | `MONTH_NAMES` | `var MONTH_NAMES =` |
+| 19 | `ECHO_FROM` | `var ECHO_FROM =` |
+| 21 | `openIdx` | `function openIdx(` |
+| 22 | `labOf` | `function labOf(` |
+| 23 | `figure` | `function figure(` |
+| 27 | `fill` | `function fill(` |
+| 31 | `quartersOf` | `function quartersOf(` |
+| 37 | `quarterly` | `function quarterly(` |
+| 47 | `lastQuarter` | `function lastQuarter(` |
+| 50 | `cycleOfYear` | `function cycleOfYear(` |
+| 51 | `qIdx` | `function qIdx(` |
+| 52 | `qName` | `function qName(` |
+| 53 | `carried` | `function carried(` |
+| 60 | `panel` | `function panel(` |
+| 61 | `buildPanel` | `function buildPanel(` |
+| 76 | `pathGap` | `function pathGap(` |
+| 86 | `echoes` · export | `function echoes(` |
+| 98 | `thenWords` | `function thenWords(` |
+| 105 | `pairWords` | `function pairWords(` |
+| 106 | `echoLine` | `function echoLine(` |
+| 114 | `asOfWords` | `function asOfWords(` |
+| 118 | `aiDetail` | `function aiDetail(` |
+| 124 | `AI_PAGE` | `var AI_PAGE =` |
+| 125 | `CHAPTER_MARKS` | `var CHAPTER_MARKS =` |
+| 126 | `EXTREMES` | `var EXTREMES =` |
+| 127 | `rankNow` | `function rankNow(` |
+| 131 | `pic` | `function pic(` |
+| 132 | `extremesPic` | `function extremesPic(` |
+| 139 | `cycleSegs` | `function cycleSegs(` |
+| 140 | `cyclePic` | `function cyclePic(` |
+| 149 | `tilesPic` | `function tilesPic(` |
+| 158 | `segAt` | `function segAt(` |
+| 166 | `pathStrip` | `function pathStrip(` |
+| 172 | `CHAPTER_PICS` | `var CHAPTER_PICS =` |
+| 173 | `aiPage` | `function aiPage(` |
+| 180 | `buildAiPage` · export | `function buildAiPage(` |
+| 185 | `aiInsights` · export | `function aiInsights(` |
 
 ### `js/charts.ts`
 
@@ -1271,20 +1282,20 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 490 | journal (editorial content tab) |
 | 496 | content tab: reading companion |
 | 548 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 762 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 806 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 878 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,048 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,057 | The symptoms: a cycle's years against today |
-| 1,156 | hero: yield curve |
-| 1,186 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,205 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,233 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,241 | long cycle (structural layer) |
-| 1,248 | indicator grid |
-| 1,274 | info icon + popover (progressive disclosure for longer notes) |
-| 1,288 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,374 | footer |
+| 778 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 822 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 894 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,064 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,073 | The symptoms: a cycle's years against today |
+| 1,172 | hero: yield curve |
+| 1,202 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,221 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,249 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,257 | long cycle (structural layer) |
+| 1,264 | indicator grid |
+| 1,290 | info icon + popover (progressive disclosure for longer notes) |
+| 1,304 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,390 | footer |
 
 ## Markup landmarks
 

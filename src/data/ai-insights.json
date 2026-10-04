@@ -29,5 +29,9 @@
     "premium": "sheet-sign-premium",
     "vix": "sheet-sign-sentiment"
   },
+  "tiles": {
+    "economy": ["sheet-metric-temp", "sheet-sign-activity", "sheet-sign-hormones"],
+    "market": ["sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-sentiment"]
+  },
   "echo": ["sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp"]
 }

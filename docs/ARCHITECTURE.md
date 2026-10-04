@@ -641,7 +641,11 @@ emotion at the closing month, its years, and what followed a year later. Every l
 
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's second door, its lede clamped to three lines, opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (In short, The cycle,
-  The economy, The market, Closest moments), then the byline and More details. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
+  The economy, The market, Closest moments), then the byline and More details. Each chapter carries a picture
+  drawn from the readings: In short ranks every reading's latest value against its own record (`rankToDate`) and shows
+  the three highest and three lowest; The cycle draws its season and S&P 500 strips; The economy and The market draw
+  `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season
+  strip then and now. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
   them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
   `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
   to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
