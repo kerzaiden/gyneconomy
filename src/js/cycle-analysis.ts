@@ -76,7 +76,7 @@ function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesSho
 function labItem(l: Lab, i: number){
   var st = state(l, i), n = l.norm as Norm;
   return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
+    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : tier(l, i) === "borderline" ? (l.per[i] as number > n.hi ? " ↑" : " ↓") : "") + '</b>' +
     '<small>normal ' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " to " + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
 }
 function ring(v: number){
@@ -127,7 +127,7 @@ function visitNote(i: number){
 function chartDetail(){
   return '<h4>How the health chart reads</h4>' + facts([
     "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
-    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.",
+    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L; Attention is marked ↑ or ↓ for the side it is on.",
     "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
     "Her health chart describes her history, not what comes next."
