@@ -10,7 +10,7 @@ import { CATEGORIES } from "./roster.ts";
 import { setTopbar } from "./render-pages.ts";
 import { eraFig, kT, pairAt, pastFigure, prettyK, readingRoster, rosterRows, upTo } from "./era.ts";
 import { replaceCategory } from "./category-analysis.ts";
-import { cycleMatrixHtml } from "./cycle-analysis.ts";
+import { cycleScore, yearTier } from "./cycle-analysis.ts";
 import { cycleView, marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.ts";
 
 type Strip = ReturnType<typeof seasonStripHtml>;
@@ -23,7 +23,8 @@ type SymptomHit = SymptomCell & { best: EraPoint };
 type SymptomRow = { r: EraRow; cells: SymptomCell[]; hits: SymptomHit[] };
 
 // ---- RENDER: Calendar tab — the list of cycles; tapping one opens the cycle view for it ----
-var CYCLE_DATA_KEY = "gyn.cycleData", YEAR_W = 36, ALIKE = 5;
+var CYCLE_DATA_KEY = "gyn.cycleData", DOTS_KEY = "gyn.cycleDots", YEAR_W = 36, ALIKE = 5;
+function dotsMode(){ try { return localStorage.getItem(DOTS_KEY) === "alike" ? "alike" : "health"; } catch (e) { return "health"; } }
 function cycleDataOn(){ try { return localStorage.getItem(CYCLE_DATA_KEY) === "1"; } catch (e) { return false; } }
 function cycleRowsHtml(on: boolean){
   var strips: Record<number, Strip> = {};
@@ -37,6 +38,7 @@ function cycleRowsHtml(on: boolean){
       '<span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span>' +
       '<span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + '%</span>' +
       (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + '%' + (cyc.ongoing ? '<span class="unit"> so far</span>' : '') + '</span>' : '') +
+      (on && dotsMode() === "health" ? '<span class="chip"><i>Health</i>' + cycleScore(cyc) + '</span>' : '') +
       '</span></div>';
     return on
       ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' +
@@ -51,6 +53,9 @@ function wireCycleData(list: HTMLElement){
     if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
     list.innerHTML = cycleRowsHtml(on);
     if (legend){ legend.hidden = !on; legend.innerHTML = on ? symptomLegend() : ""; }
+    if (legend) Array.prototype.forEach.call(legend.querySelectorAll("[data-dots]"), function(b: HTMLElement){
+      b.addEventListener("click", function(){ try { localStorage.setItem(DOTS_KEY, b.getAttribute("data-dots") || "health"); } catch (e) {} apply(true); });
+    });
     settleStrips();
   }
   if (btn) btn.addEventListener("click", function(){
@@ -62,8 +67,6 @@ function wireCycleData(list: HTMLElement){
 }
 function renderCycleList(){
   var list = need("cycle-list");
-  var chart = byId("her-chart");
-  if (chart) chart.outerHTML = cycleMatrixHtml(); else need("calendar-list").insertAdjacentHTML("afterbegin", cycleMatrixHtml());
   wireCycleData(list);
   var PREVIEW_CYCLES = 99;
   (function(){
@@ -227,19 +230,44 @@ function cycleTrack(cyc: Cycle, strip: Strip, bands: string){
   var years: number[] = [];
   for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
   var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
-  var cols = 'grid-template-columns:repeat(' + years.length + ',' + YEAR_W + 'px) minmax(96px,1fr)';
+  var cols = 'grid-template-columns:repeat(' + years.length + ',' + YEAR_W + 'px) minmax(150px,1fr)';
   var yrs = years.map(function(y){
     var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
     return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + '</span>';
   }).join("");
-  return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)">' +
+  return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(150px,1fr)">' +
     '<div style="width:' + (strip.span * YEAR_W / 4) + 'px">' + bands + '</div><span></span></div>' +
     '<div class="sx-yrs" style="' + cols + '">' + yrs + '<span></span></div>' +
-    sx.rows.map(function(row){ return symptomRow(cyc, row, cols); }).join("") + '</div>' +
-    (sx.foot ? '<p class="sx-foot">' + sx.foot + '</p>' : "");
+    (dotsMode() === "health" ? healthRows(cyc, years, cols) : sx.rows.map(function(row){ return symptomRow(cyc, row, cols); }).join("")) + '</div>' +
+    (sx.foot && dotsMode() !== "health" ? '<p class="sx-foot">' + sx.foot + '</p>' : "");
+}
+var TIER_WORD: Record<string, string> = { normal:"normal", attention:"attention", risk:"risk" };
+var TIER_CLS: Record<string, string> = { normal:"h-normal", attention:"h-attention", risk:"h-risk" };
+function healthNote(cyc: Cycle, r: EraRow, years: number[]){
+  var rows = years.map(function(y){ var t = yearTier(r.id, y); return t ? y + ": " + pastFigure(r, t.v, null) + ", " + TIER_WORD[t.tier] : ""; }).filter(Boolean);
+  var n = (yearTier(r.id, years.filter(function(y){ return yearTier(r.id, y); })[0]) || { n:null }).n;
+  return '<h4>' + r.name + ' \u00b7 ' + cyc.name + '</h4>' +
+    (n ? '<p>Each year is the reading’s average that year. Her normal is ' + pastFigure(r, n.lo, null) + ' to ' + pastFigure(r, n.hi, null) + ', the middle half of the years of her closed cycles; risk is past Tukey’s fences, ' + pastFigure(r, n.floor, null) + ' and ' + pastFigure(r, n.fence, null) + '.</p>' : '') + facts(rows);
+}
+function healthRows(cyc: Cycle, years: number[], cols: string){
+  return readingRoster().map(function(r){
+    var cells = years.map(function(y){
+      if (y > (cyc.to || calendarTodayY)) return '<i class="ahead"></i>';
+      var t = yearTier(r.id, y);
+      return '<i class="' + (t ? TIER_CLS[t.tier] : "na") + (y === calendarTodayY && cyc.ongoing ? " cur" : "") + '"></i>';
+    });
+    if (!years.some(function(y){ return yearTier(r.id, y) && y <= (cyc.to || calendarTodayY); })) return "";
+    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(healthNote(cyc, r, years)) + '" aria-label="' + r.name + '">' + cells.join("") + '<b>' + r.name + '</b></button>';
+  }).join("");
 }
 function symptomLegend(){
-  return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>' +
+  var mode = dotsMode(), seg = '<div class="sx-mode" role="group" aria-label="Dots">' +
+    '<button type="button" data-dots="health" aria-pressed="' + (mode === "health") + '">Health</button>' +
+    '<button type="button" data-dots="alike" aria-pressed="' + (mode === "alike") + '">Alike today</button></div>';
+  if (mode === "health") return seg + '<p>Each dot is a year of a reading against her normal. Tap a row for the numbers.</p>' +
+    '<div class="sx-keys"><span><i class="h-normal"></i>Normal</span><span><i class="h-attention"></i>Attention</span><span><i class="h-risk"></i>Risk</span>' +
+    '<span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
+  return seg + '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p>' +
     '<div class="sx-keys">' + CATEGORIES.map(function(c){
       return '<span><i class="cat-' + c.key + '"></i>' + c.title + '</span>';
     }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span>' +

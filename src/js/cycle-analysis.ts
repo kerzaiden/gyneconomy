@@ -109,20 +109,6 @@ function visitNote(i: number){
   var parts = (high.length ? [listWords(high) + " ran far above her normal"] : []).concat(low.length ? [listWords(low) + " far below it"] : []);
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
 }
-export function cycleMatrixHtml(){
-  var cats = [{ key:"cycle", title:"Cycle" }].concat(categoriesShown());
-  return '<div class="cyc-card" id="her-chart"><div class="cyc-head"><div class="cyc-title">Her chart</div></div><div class="lab-wrap">' +
-    '<p class="ca-note">Her health score in each cycle is the share of her readings in their normal range; a red dot marks a category with a reading at risk.</p>' +
-    '<table class="sc-grid lab-matrix"><colgroup><col class="lab-name"><col class="lab-num"></colgroup><thead><tr><th></th><th>Score</th>' + cats.map(function(c){ return '<th>' + c.title + '</th>'; }).join("") + '</tr></thead><tbody>' +
-    marketCycles.map(function(c, i){ return { c:c, i:i }; }).reverse().map(function(x){
-      var flagged = outside(x.i);
-      return '<tr><th>' + x.c.name.replace(/ Cycle$/, "") + ' <small>' + x.c.from + '</small></th><td class="sc-cell lab-pts">' + score(x.i).v + '</td>' +
-        cats.map(function(k){
-          var names = flagged.filter(function(l){ return l.cat === k.key; }).map(function(l){ return l.name; });
-          return '<td class="sc-cell">' + (names.length ? '<i class="lab-dot" title="' + names.join(", ") + '" aria-label="' + names.join(", ") + '"></i>' : "") + '</td>';
-        }).join("") + '</tr>';
-    }).join("") + '</tbody></table></div></div>';
-}
 function chartDetail(){
   return '<h4>How the chart reads</h4>' + facts([
     "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
@@ -138,3 +124,20 @@ export function cycleAnalysisHtml(m: CycleModel){
   return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div>' +
     '<p class="ca-say">' + visitNote(i) + '</p>' + report(i) + moreRow(chartDetail()) + '</div>';
 }
+// ---- Her chart by year: each reading's year against the years of her closed cycles ----
+type YearLab = { at: Record<number, number>; norm: Norm | null };
+var yearCache: Record<string, YearLab> = {};
+function yearLab(id: string): YearLab {
+  if (yearCache[id]) return yearCache[id];
+  var R = ROSTER.filter(function(x){ return x.id === id; })[0], sum: Record<number, number> = {}, n: Record<number, number> = {}, at: Record<number, number> = {};
+  keyed(R.hist).forEach(function(d){ if (d.v == null) return; var y = +d.k.slice(0, 4); sum[y] = (sum[y] || 0) + (d.v as number); n[y] = (n[y] || 0) + 1; });
+  Object.keys(sum).forEach(function(y){ at[+y] = sum[+y] / n[+y]; });
+  var last = Math.max.apply(null, marketCycles.filter(function(c){ return !c.ongoing; }).map(function(c){ return c.to as number; }));
+  return (yearCache[id] = { at:at, norm:normOf(Object.keys(at).map(Number).filter(function(y){ return y <= last; }).map(function(y){ return at[y]; })) });
+}
+export function yearTier(id: string, y: number){
+  var L = yearLab(id), v = L.at[y], n = L.norm;
+  if (v == null || !n) return null;
+  return { v:v, n:n, tier:v > n.fence || v < n.floor ? "risk" : v > n.hi || v < n.lo ? "attention" : "normal" };
+}
+export function cycleScore(c: Cycle){ var i = marketCycles.indexOf(c); return i < 0 ? null : score(i).v; }
