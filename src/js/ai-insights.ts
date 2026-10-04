@@ -1,6 +1,7 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
-import { moreRow, trendBox } from "./dom.ts";
-import { sparkleSvg } from "./marks.ts";
+import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
+import { metricSheet, sheetRenderers } from "./render-core.ts";
+import { calendarSvg, clockSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
 import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, QUARTER_END_MONTH, seasonTitle } from "./model.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -114,9 +115,20 @@ function aiDetail(){
     '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + growthWindowWord() + ' quarters of ' + names + ', the same two years the season model reads growth over, against every run of ' + growthWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open; }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + growthWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
+var AI_PAGE = "sheet-ai-insights";
+var CHAPTER_MARKS = [calendarSvg, weatherSvg, marketSvg];
+function aiPage(){
+  return '<div class="ai-page">' +
+    trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(AI.lede) + '</p>') +
+    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>'); }).join("") +
+    trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
+    '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
+}
+export function buildAiPage(home: HTMLElement){
+  var sheet = metricSheet(AI_PAGE);
+  home.appendChild(sheet);
+  sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(); };
+}
 export function aiInsights(){
-  return trendBox(sparkleSvg(), "AI Insights", '<p class="ai-lede">' + fill(AI.lede) + '</p>' +
-    AI.sections.map(function(s){ return '<div class="ai-sec"><div class="ai-h">' + s.title + '</div><p class="ai-p">' + fill(s.text) + '</p></div>'; }).join("") +
-    '<div class="ai-sec"><div class="ai-h">Closest moments</div><p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul></div>' +
-    '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()));
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp"));
 }

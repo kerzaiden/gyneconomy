@@ -639,8 +639,9 @@ left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **AI Insights** (0.6.5, `ai-insights`): the open cycle's third card, a `trendBox` (the trend card that is not a
-  door). Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
+- **AI Insights** (0.6.5, `ai-insights`): the open cycle's second door, its lede clamped to three lines, opening the
+  page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (In short, The cycle,
+  The economy, The market, Closest moments), then the byline and More details. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
   them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
   `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
   to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into

@@ -8,13 +8,13 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `e43f00a` on 2026-10-04. **90 components**, **35 shared patterns**.
+Generated from commit `5964914` on 2026-10-04. **89 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`aiInsights`** | `.ai-by` `.ai-echoes` `.ai-h` `.ai-lede` `.ai-p` `.ai-sec` | `diagnosis.ts:diagnosisHtml` |
+| **`aiPage`** | `.ai-by` `.ai-echoes` `.ai-p` `.ai-page` | `ai-insights.ts:buildAiPage` |
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
 
 ## analysis.ts
@@ -84,11 +84,10 @@ Generated from commit `e43f00a` on 2026-10-04. **90 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`moreRow`** | `.more-row` | `ai-insights.ts:aiInsights`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
+| **`moreRow`** | `.more-row` | `ai-insights.ts:aiPage`, `cycle-analysis.ts:drawChart`, `inner-pages.ts:gdpHighlights`, `inner-pages.ts:tempHighlights`, `inner-pages.ts:valuationHighlights`, `quarter-sheet.ts:quarterSheet`, `render-core.ts:cardDetailHtml` |
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
-| **`trendText`** | `.trend-text` | `cycle-analysis.ts:chartDoor`, `diagnosis.ts:diagnosisHtml`, `portfolio.ts:homeHtml` |
 
 ## format.ts
 
@@ -177,7 +176,7 @@ Generated from commit `e43f00a` on 2026-10-04. **90 components**, **35 shared pa
 | **`catHeadCard`** | `.ind-card` `.ind-cat-name` | `cycle-analysis.ts:labSec` |
 | **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
-| **`metricSheet`** | `.metric-sheet` | `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
+| **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
 | **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `pages-nav.ts:renderSignsList` |
@@ -264,6 +263,7 @@ renderer speaks. Listed most-used first.
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
+| **`trendText`** | dom.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
@@ -294,6 +294,7 @@ renderer speaks. Listed most-used first.
 | **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
+| **`trendDoor`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
 | **`yearsWord`** | cycle-analysis.ts | 3 places |

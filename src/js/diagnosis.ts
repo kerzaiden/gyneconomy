@@ -9,7 +9,7 @@ import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFa
 import { econChips, marketPills, strip, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
-import { aiInsights } from "./ai-insights.ts";
+import { aiInsights, buildAiPage } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -61,6 +61,10 @@ export function renderDiagnosis(m: CycleModel){
 function diagnosisHost(home: HTMLElement){
   var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
   home.insertBefore(host, home.firstChild);
+  buildDoors(home);
+}
+function buildDoors(home: HTMLElement){
+  buildAiPage(home);
   buildCycleChart();
 }
 function buildDiagnosis(){

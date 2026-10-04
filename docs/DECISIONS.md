@@ -75,7 +75,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Current Cycle page carries AI Insights, between the cycle's story and Cycle analysis, on the open cycle only.**
   Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
   sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
-  Claude writes it (Keren chose "Claude, dated" over a live Generate button, which would change the artifact's grant,
+  It is a door like the story (Keren: "three lines, maybe three dots and then a chevron") opening an AI Insights page
+  with one container per chapter. Claude writes it (Keren chose "Claude, dated" over a live Generate button, which would change the artifact's grant,
   and over rule-built sentences, which the name would oversell): a lede, The cycle, The economy, The market, dated
   "Written by Claude from the app's data of …", its figures read live and its words rewritten each release. Its
   Closest moments are computed: the last two years of today's eight market and economy readings matched against every

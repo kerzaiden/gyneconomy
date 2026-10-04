@@ -285,12 +285,12 @@ async function openPage(p, url, sheet) {
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-detail-idx]').length : 0,
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
-                   boxes: [...d.children].map(c => c.classList.contains('is-box') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
+                   boxes: [...d.children].map(c => c.matches('[data-open="sheet-ai-insights"]') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'AI Cycle' && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
-     today.boxes === 'trend,ai,trend,sys' && today.doors === 1 && !today.after)
+     today.boxes === 'trend,ai,trend,sys' && today.doors === 2 && !today.after)
       ? ok('the Diagnosis sits under the dial: the story, AI Insights, then the cycle year by year', today.title)
       : bad('the Diagnosis sits under the dial: the story, AI Insights, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);

@@ -655,15 +655,14 @@
   .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
-  .ai-lede{ margin:10px 0 14px; font-size:var(--type-row); line-height:1.5; color:var(--text-primary); }
-  .ai-sec{ padding:12px 0 0; border-top:1px solid var(--border); margin-top:12px; }
-  .ai-h{ font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary); }
-  .ai-p{ margin:6px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
+  .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .ai-page{ display:flex; flex-direction:column; gap:var(--gap); }
+  .ai-p{ margin:8px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .ai-echoes{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
   .ai-echo{ padding:10px 12px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
   .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
   .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
-  .ai-by{ margin:14px 0 12px; font-size:var(--type-meta); color:var(--text-muted); }
+  .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
@@ -1972,8 +1971,8 @@
     box.addEventListener("click", sync);
     sync();
   }
-  function trendText(t) {
-    return '<span class="trend-text">' + t + "</span>";
+  function trendText(t, cls) {
+    return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + "</span>";
   }
   function trendHead(mark, head, end) {
     return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + end + "</span>";
@@ -34716,10 +34715,22 @@
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
   }
+  var AI_PAGE = "sheet-ai-insights";
+  var CHAPTER_MARKS = [ calendarSvg, weatherSvg, marketSvg ];
+  function aiPage() {
+    return '<div class="ai-page">' + trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(ai_insights_default.lede) + "</p>") + ai_insights_default.sections.map(function(s, i) {
+      return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + "</p>");
+    }).join("") + trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + ai_insights_default.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail()) + "</div>";
+  }
+  function buildAiPage(home) {
+    var sheet = metricSheet(AI_PAGE);
+    home.appendChild(sheet);
+    sheetRenderers[AI_PAGE] = function() {
+      sheet.innerHTML = aiPage();
+    };
+  }
   function aiInsights() {
-    return trendBox(sparkleSvg(), "AI Insights", '<p class="ai-lede">' + fill(ai_insights_default.lede) + "</p>" + ai_insights_default.sections.map(function(s) {
-      return '<div class="ai-sec"><div class="ai-h">' + s.title + '</div><p class="ai-p">' + fill(s.text) + "</p></div>";
-    }).join("") + '<div class="ai-sec"><div class="ai-h">Closest moments</div><p class="ai-p">' + ai_insights_default.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul></div><p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail()));
+    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -34782,6 +34793,10 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
+    buildDoors(home);
+  }
+  function buildDoors(home) {
+    buildAiPage(home);
     buildCycleChart();
   }
   function buildDiagnosis() {
