@@ -111,9 +111,9 @@ function buildNav(){
   var PAGE_HOME: Record<string, PageHome> = {
     cycle:    { panel:cyclePanel,    bar:function(){ return ["Current Cycle", null]; },
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
-    analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Analysis", null]; },
+    analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Herstory", null]; },
                 hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    chart:    plainHome("chart", "Health chart"), portfolio:plainHome("portfolio", "Portfolio")
+    chart:    plainHome("chart", "Analysis"), portfolio:plainHome("portfolio", "Portfolio")
   };
   var homeCtx = PAGE_HOME.cycle;
   var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;

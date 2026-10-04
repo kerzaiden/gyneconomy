@@ -8,7 +8,7 @@ read it whole, so this file exists to get you to the right two hundred lines.
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `f56cc0e` on 2026-10-04.
+Generated from commit `ef8df76` on 2026-10-04.
 
 ## The page
 
@@ -796,7 +796,7 @@ falls in. **export** marks a name other modules import.
 | 13 | `seasonModelNote` | `function seasonModelNote(` |
 | 25 | `renderSeasonRows` | `function renderSeasonRows(` |
 
-#### TAB NAVIGATION (Cycle / Health chart / Analysis / Portfolio)
+#### TAB NAVIGATION (Cycle / Analysis / Herstory / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|

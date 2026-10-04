@@ -456,11 +456,11 @@ async function openPage(p, url, sheet) {
 
   {
     await p.goto('file://' + url); await ready(p);
-    const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab).join(' '));
+    const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab + ':' + b.textContent.trim()).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row, #search-list, .cat-analysis, .timing[data-ind-tab]') && !document.getElementById('sheet-indicators'));
-    (tabs === 'cycle chart analysis portfolio' && gone)
-      ? ok('the tab bar reads Cycle, Health chart, Analysis, Portfolio', 'no Search page, timing filter or category analysis')
-      : bad('the tab bar reads Cycle, Health chart, Analysis, Portfolio', JSON.stringify({ tabs, gone }));
+    (tabs === 'cycle:Cycle chart:Analysis analysis:Herstory portfolio:Portfolio' && gone)
+      ? ok('the tab bar reads Cycle, Analysis, Herstory, Portfolio', 'no Search page, timing filter or category analysis')
+      : bad('the tab bar reads Cycle, Analysis, Herstory, Portfolio', JSON.stringify({ tabs, gone }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const tab = await p.evaluate(() => {
       const h = document.getElementById('chart-home'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
@@ -470,7 +470,7 @@ async function openPage(p, url, sheet) {
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.open).join() };
     });
-    (tab.title === 'Health chart' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
+    (tab.title === 'Analysis' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
      tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
       ? ok('the Health chart tab opens on its search box, then the cycle, every reading and category a door', tab.rows + ' readings')
       : bad('the Health chart tab opens on its search box, then the cycle, every reading and category a door', JSON.stringify(tab));
@@ -506,9 +506,9 @@ async function openPage(p, url, sheet) {
     await p.click('#topbar-back'); await settle(p);
     const after = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       list: !document.getElementById('chart-home').hidden }));
-    (folded.title === 'Health chart' && folded.hid && head.title === 'Mood' && head.open && head.home && after.title === 'Health chart' && after.list)
-      ? ok('a category name opens its page and back returns to the Health chart; its chevron only folds it')
-      : bad('a category name opens its page and back returns to the Health chart; its chevron only folds it', JSON.stringify({ folded, head, after }));
+    (folded.title === 'Analysis' && folded.hid && head.title === 'Mood' && head.open && head.home && after.title === 'Analysis' && after.list)
+      ? ok('a category name opens its page and back returns to Analysis; its chevron only folds it')
+      : bad('a category name opens its page and back returns to Analysis; its chevron only folds it', JSON.stringify({ folded, head, after }));
     await p.click('#chart-home .lab-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromChart = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
@@ -706,7 +706,7 @@ async function openPage(p, url, sheet) {
     const bar = () => p.evaluate(() => (document.getElementById('topbar-back').hidden ? '' : '← ') + document.getElementById('topbar-title').textContent);
     const trail = [];
     for (let i = 0; i < 4; i++) { await p.evaluate(() => document.getElementById('topbar-back').click()); await settle(p); trail.push(await bar()); }
-    (trail.join(' | ') === '← Valuations | ← Mood | ← Housing Cycle | Analysis')
+    (trail.join(' | ') === '← Valuations | ← Mood | ← Housing Cycle | Herstory')
       ? ok('back walks out of a past cycle one page at a time', trail.join(' | '))
       : bad('back walks out of a past cycle one page at a time', trail.join(' | '));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click());

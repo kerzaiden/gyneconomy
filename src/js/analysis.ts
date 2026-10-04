@@ -66,7 +66,7 @@ function renderCycleList(){
   }
   function back(){
     leaveEra(); detail.hidden = true; listWrap.hidden = false;
-    setTopbar("Analysis", null);
+    setTopbar("Herstory", null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
   list.addEventListener("click", function(e){ var row = (e.target as Element).closest && (e.target as Element).closest(".era-row"); if (row) open(parseInt(row.getAttribute("data-era") || "", 10)); });

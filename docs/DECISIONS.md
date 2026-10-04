@@ -128,9 +128,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Tabs, bars and menu
 
-- **The tab bar is Cycle · Health chart · Analysis · Portfolio.** Search replaced the Content tab (V657), Keren
+- **The tab bar is Cycle · Analysis · Herstory · Portfolio.** Search replaced the Content tab (V657), Keren
   swapped Analysis and Search (V665), and the Health chart took Search's place: "I'm basically seeing the same thing
-  in different views … the search moved to the health chart page." (0.6.1)
+  in different views … the search moved to the health chart page." Then Keren renamed both: "Instead of health
+  chart, call the tab analysis. And instead of analysis, call the tab history. Or better yet, herstory." The Health
+  chart keeps its name where it opens from a cycle's story. (0.6.1)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
@@ -142,7 +144,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   purple mark alone, with no ring and no background.** Keren: "the title of the page should be in feminine
   letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
   stroke". (V272, V275)
-- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Health chart", "Analysis", "Portfolio".**
+- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
   (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** Keren: "there is a title inside the
