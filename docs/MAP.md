@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,846 lines** in 34 files, about 582 KB, roughly **165 thousand tokens**. No session can
+The source is **8,845 lines** in 34 files, about 582 KB, roughly **165 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `cc7de54` on 2026-10-04.
+Generated from commit `f56cc0e` on 2026-10-04.
 
 ## The page
 
@@ -18,7 +18,7 @@ Generated from commit `cc7de54` on 2026-10-04.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,346 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,345 | the whole stylesheet, every token and rule |
 | `page-body.html` | 363 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 30 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
@@ -1232,15 +1232,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 837 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 1,007 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 1,022 | The symptoms: a cycle's years against today |
-| 1,118 | hero: yield curve |
-| 1,148 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,167 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,195 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,203 | long cycle (structural layer) |
-| 1,210 | indicator grid |
-| 1,236 | info icon + popover (progressive disclosure for longer notes) |
-| 1,250 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,336 | footer |
+| 1,117 | hero: yield curve |
+| 1,147 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,166 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,194 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,202 | long cycle (structural layer) |
+| 1,209 | indicator grid |
+| 1,235 | info icon + popover (progressive disclosure for longer notes) |
+| 1,249 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,335 | footer |
 
 ## Markup landmarks
 

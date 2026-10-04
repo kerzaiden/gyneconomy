@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `cc7de54` on 2026-10-04. **87 components**, **35 shared patterns**.
+Generated from commit `f56cc0e` on 2026-10-04. **87 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -46,7 +46,7 @@ Generated from commit `cc7de54` on 2026-10-04. **87 components**, **35 shared pa
 | **`drawChart`** | `.labs` `.search-none` | `cycle-analysis.ts:buildCycleChart`, `cycle-analysis.ts:wireFinder` |
 | **`finder`** | `.lab-filter` `.lab-find` `.lab-menu` `.search-field` | `cycle-analysis.ts:drawChart` |
 | **`labItem`** | `.lab-item` `.lab-res` `.lab-to` | `cycle-analysis.ts:labSec` |
-| **`labSec`** | `.lab-cat` `.lab-fold` `.lab-mark` `.lab-tally` | `cycle-analysis.ts:bySystem` |
+| **`labSec`** | `.lab-cat` `.lab-fold` `.lab-mark` | `cycle-analysis.ts:bySystem` |
 | **`ring`** | `.lab-ring` | `cycle-analysis.ts:scoreBox` |
 | **`rowTag`** | `.lab-row` | `cycle-analysis.ts:labItem` |
 | **`scoreBox`** | `.lab-score` `.lab-score-v` | `cycle-analysis.ts:chartDoor` |
@@ -231,12 +231,12 @@ renderer speaks. Listed most-used first.
 | **`mean`** | format.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
-| **`side`** | cycle-analysis.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`side`** | cycle-analysis.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
