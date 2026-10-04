@@ -34278,7 +34278,7 @@
       }), ytd = m.ongoing && y === calendarTodayY;
       rows.push(yearRow(String(y), yearStrip(inYear), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(yearGrowth(y), yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, ytd, " dx-year-foot")));
     }
-    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + rows.join("") + after + "</section>";
+    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join("") + "</section>";
   }
   function yearRow(year, lead2, line, sheet, foot) {
     var tag = sheet != null ? "button" : "div";

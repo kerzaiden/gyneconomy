@@ -31,7 +31,7 @@ function yearByYear(m: CycleModel, after: string){
       econChips(yearGrowth(y), yearInflation(y), sp500AnnualReturns[y] ?? null, 0, ytd, " dx-year-foot")));
   }
   return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
-    rows.join("") + after + '</section>';
+    after + rows.reverse().join("") + '</section>';
 }
 function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
