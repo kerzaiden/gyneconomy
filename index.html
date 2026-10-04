@@ -1535,7 +1535,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.5.0 (734)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.5.2 (735)</span></p>
     </div>
   </div>
 
@@ -34149,7 +34149,7 @@
     var st = state(l, i), n = l.norm;
     return '<li class="lab-item ' + TIERS.filter(function(t) {
       return t.key === tier(l, i);
-    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
+    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " to " + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
