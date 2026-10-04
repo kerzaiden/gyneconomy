@@ -10,7 +10,7 @@ import { categoriesShown, keyed, ROSTER } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
-type Norm = { lo: number; hi: number; fence: number; floor: number; n: number; min: number; max: number };
+type Norm = { lo: number; hi: number; fence: number; floor: number };
 type Lab = { id: string; name: string; cat: string; unit: string; per: (number | null)[]; norm: Norm | null; now: Norm | null };
 type Visit = { years: number; bull: number; bleed: number };
 
@@ -24,7 +24,7 @@ function quartile(vs: number[], p: number){
 function normOf(vs: number[]): Norm | null {
   if (vs.length < 2) return null;
   var lo = quartile(vs, 0.25), hi = quartile(vs, 0.75);
-  return { lo:lo, hi:hi, fence:hi + 1.5 * (hi - lo), floor:lo - 1.5 * (hi - lo), n:vs.length, min:Math.min.apply(null, vs), max:Math.max.apply(null, vs) };
+  return { lo:lo, hi:hi, fence:hi + 1.5 * (hi - lo), floor:lo - 1.5 * (hi - lo) };
 }
 function closedCount(){ return marketCycles.filter(function(c){ return !c.ongoing; }).length; }
 function visitOf(m: CycleModel): Visit {
@@ -46,9 +46,7 @@ function cycleReadings(R: RosterRow){
   });
 }
 function readingsNorm(seen: number[][]){
-  var closed = seen.slice(0, closedCount()).filter(function(vs){ return vs.length; }), now = normOf(([] as number[]).concat.apply([], closed));
-  if (now) now.n = closed.length;
-  return now;
+  return normOf(([] as number[]).concat.apply([], seen.slice(0, closedCount())));
 }
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; };
@@ -86,7 +84,7 @@ function labItem(l: Lab, i: number){
   var st = state(l, i), n = normAt(l, i) as Norm;
   return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
     '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
-    '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
+    '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + '</small></div></li>';
 }
 function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
@@ -137,7 +135,7 @@ function chartDetail(){
   return '<h4>How the health chart reads</h4>' + facts([
     "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
     "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.",
-    "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
+    "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
     "Her health chart describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
