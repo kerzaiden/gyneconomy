@@ -140,10 +140,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The top bar sticks to the top of the page: the open tab's title in the middle, a round menu button on the
   right, and the "Gyneconomy" title in the menu.** Keren's call, made with Clue's screens. (undated, Sep 19,
   2026)
-- **The top bar sets the page name in Cormorant, has a hairline on its bottom edge, and its buttons are the
-  purple mark alone, with no ring and no background.** Keren: "the title of the page should be in feminine
-  letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
-  stroke". (V272, V275)
+- **The top bar sets the page name in Cormorant, in the plum ink, has a hairline on its bottom edge, and its
+  buttons are the plum mark alone, with no ring and no background.** Keren: "the title of the page should be in
+  feminine letters"; "all buttons in the top bar should not have a round border around it"; "it should be only
+  purple stroke"; the reference she chose sets its page title in plum (0.6.2). (V272, V275, 0.6.2)
 - **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
   (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
@@ -204,8 +204,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The federal side and the household balance sheet are one group, Stress (Federal debt, Interest payments,
   Federal budget, Households); the name Economic power is retired.** Keren: "households should be inside
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
-- **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
-  "each category page should have the shade of the color of the category". (V660)
+- **A category page has no group headings, and its ground is the same apricot-blush splash as every page; it is
+  no longer washed in its category's colour.** Keren: "make all backgrounds with peach apricot blush, beautiful
+  like mosaic behind the screens of white containers" (0.6.2, replacing V660's category wash).
 - **A category page is its reading cards, then one More details holding the category's insights, with no section
   titles and no analysis card.** Keren: "the category analysis that we made, is not that good. It's not very
   informative … we have a lot of text inside the more details, which can remain below the subcategories". The
@@ -422,14 +423,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren: "this is so interesting — put it in the analysis tab per cycle". (V276)
 - **Each cycle carries her chart, read like a blood test: every reading averaged over the cycle and sorted into
-  Normal (green, the middle half of her closed cycles), Attention (yellow, outside it but within Tukey's fences) and
+  Normal (apricot, the middle half of her closed cycles), Attention (yellow, outside it but within Tukey's fences) and
   Risk (red, past a fence), with a health score, the share that is Normal.** Keren tried Risk and Outlier for the two, then kept these: "let's keep the current categories. Normal, attention, and risk" (0.6.0). A Risk result reads "Outlier, above range" (or below), since past a fence is the standard rule for an outlier. Every result outside its normal range is flagged, as a lab flags any result outside its reference range: under its name it reads In range, Above range, Below range, or Outlier, above range (or below), in grey like the range ("I would not color it"); a small triangle after the figure, in the tier's colour, points up when it is above its range, down when below, and reads "=" when in range, as in Keren's reference (0.6.0, bringing back 0.5.2's up and down as marks beside the number, not arrows in it); there are no H/L marks. Keren: "If it's above or below the norm, then it should be flagged", when Shiller CAPE at 40.6 against 13.9 – 27.2 read only as a yellow bar (0.6.0, undoing 0.5.3's "only numbers"; the arrows of 0.5.2 stay gone). Each category is a drawer with a plain white heading over beige results (Keren: "I want the categories to be white and the subcategories to be in … beige"), its heading in the reading type, small enough that its count sits beside it (Keren: "I really don't like the coloring of the categories … it should be much smaller so it fits the number right next to it"): its mark (Weather a sun behind a cloud, Mood three waves, Circulation a drop, Energy a bolt, Cycle a calendar; the readings carry no marks here), its name and count, "Mood (6)"; every drawer starts open and the chevron on its right folds it. The heading stands half as tall again as a result row's heading did (Keren: "make the category containers like 150% higher"), and it carries no in-range count (Keren: "I don't need the two out of six in range", 0.6.1). The search box is as round as the cycle picker (Keren: "round corners on the search and like the current cycle", 0.6.1). Keren: "weather has a weather icon, mood has like a wave icon … circulation has a blood icon. Energy has a lightning bolt icon", "four slash six in range", and "the default is everything is open. But if I click on it, I can close something"; Keren: the reference's test results design "is more suitable to the health chart than the search page" (0.6.0). Each range reads "−3.2% – −0.9%": a dash, as Keren asked, with a space either side so it never touches a minus sign (0.5.2, 0.5.3), with no cycle count beside it (Keren: "remove it"; the (i) says how many cycles a range rests on), and the in-range count replaced the heading's "Normal range" (0.6.0). A closed cycle shows each reading's average, one number, with no low or high (Keren: "very confusing"); the cycle in progress shows the latest reading, judged against the middle half of every reading in her closed cycles, since a single reading swings wider than an average (Keren, 0.5.3). Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
   cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
 - **A Health chart result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
   unemployment rate goes down, it's a good thing. So the bottom facing triangle should be green … We need to judge if
   it's good or bad, not only by direction, but also by parameter." A result outside its range on its good side is
-  Normal (green) and counts toward the health score; on the other side it is Attention or Risk as before; the words
+  Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before; the words
   under it stay literal. Each reading's good side is declared once, as `good` in the
   roster. Claude's calls, by economic convention, for Keren to overturn: higher is good for Growth, the S&P 500,
   Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
@@ -1093,16 +1094,29 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   for the insights across the inner pages." (V379)
 - **A mark's badge uses its own wash, `--mark-wash`, one step deeper than `--track`.** Keren: "I want this
   background to be a little less pale"; a badge has to read as a shape. (V503)
-- **A segmented control is a card on the page (surface and border), and its chosen segment wears the accent's
-  wash.** Keren: "the background should be white"; white on the accent wash says which segment is chosen
-  without adding a colour. (V579)
+- **A segmented control is a light grey track (`--seg-track`) with no border, and its chosen segment is a white
+  pill (`--seg-on`).** Keren, from Clair: "I like the way they did the selection bar in gray and white". It is the
+  one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use white"). (0.6.2,
+  replacing V579)
+- **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
+  page with apricot and blush splashes behind white containers (`--splash`), Summer salmon-orange and Autumn
+  marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference
+  and the light pink background with orange shades to yellow … really appropriate for a cycle tracking app";
+  "let's use white and let's use splashes of apricot". Text and greys are tinted toward plum. Every text pair
+  holds 4.5:1 in both themes except `--text-muted` on `--track` (4.4:1 in light). (0.6.2)
+- **The Health chart's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
+  red (`--critical`).** Keren chose apricot over teal: "the apricot looks much more, much better". Apricot and
+  marigold are close in lightness, so the mark's shape ("=" or a triangle) carries the difference. (0.6.2)
+- **The app icon's lotus sits on the plum, not the old purple.** Keren: "make sure the icon is not purple anymore,
+  but dark purple". (0.6.2)
 
 ### Type
 
 - **Every font size is a `--type-*` token from the Lovable DSM scale.** Keren: "for the font sizes you can use
   our lovable dsm we built." (V662)
-- **Cormorant Garamond italic is the app's feminine voice for titles, never below 20px and never upright for a
-  title.** Keren: "the titles should be in a feminine font." (V272, V506)
+- **Cormorant Garamond 500, upright, is the app's feminine voice for titles; a quotation from the book stays
+  italic.** Keren: "the titles should be in a feminine font" (V272); then, from Clair's reference, "I think
+  Cormorant Garamond 500 is the closest … let's go with this font" (0.6.2, replacing V506's italic 600).
 - **In a figure row the number is bold, not its name.** Keren's call. (V428)
 
 ### Space
