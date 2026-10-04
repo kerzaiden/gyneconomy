@@ -244,7 +244,7 @@
   .era-row:hover .era-head .peek-chev{ color:var(--accent-ink); opacity:1; }
   .era-bands{ margin:9px 0 0; }
   .era-bands .strip{ margin:0; }
-  .era-bands .strip + .strip{ margin-top:5px; }
+  .era-bands .strip + .strip, .dx-year-lead .strip + .strip{ margin-top:5px; }
   .era-foot{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
     margin-top:8px; font-size:var(--type-meta); color:var(--text-secondary); }
   .era-years b{ font-weight:700; color:inherit; }
@@ -1535,7 +1535,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.5.2 (735)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.5.2 (736)</span></p>
     </div>
   </div>
 
@@ -32758,6 +32758,9 @@
     summer: "Summer",
     autumn: "Autumn"
   };
+  function strip(cls, label, inner) {
+    return '<span class="strip' + cls + '" role="img" aria-label="' + label + '">' + inner + "</span>";
+  }
   function stripDots(n, title) {
     return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + "</span>" : "";
   }
@@ -32784,6 +32787,12 @@
         return seasonTitle(wheelMeta[k]);
       }).join(" · ");
       return '<span class="strip-run ' + r.g + (r.n === 1 && !whole ? " one" : "") + '" style="flex:' + r.n + ' 1 0" title="' + stripGroupName[r.g] + " · " + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + " – " + qLabel(r.to)) + " · " + names + '"></span>';
+    }).join("");
+  }
+  function marketPills(runs) {
+    return runs.map(function(r) {
+      var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
+      return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="flex:' + Math.max(r.q, 1) + ' 1 0" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
     }).join("");
   }
   function seasonRunsLabel(runs) {
@@ -34292,7 +34301,7 @@
       var inYear = segs.filter(function(seg) {
         return parseInt(seg.q, 10) === y;
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
-      rows.push(yearRow(String(y), yearStrip(inYear), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
+      rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
     return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join("") + "</section>";
   }
@@ -34300,10 +34309,22 @@
     var tag = sheet != null ? "button" : "div";
     return "<" + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead2 ? '<span class="dx-year-lead">' + lead2 + "</span>" : "") + (line ? '<span class="dx-year-line">' + line + "</span>" : "") + "</span>" + (sheet != null ? CHEV : "") + (foot || "") + "</" + tag + ">";
   }
-  function yearStrip(inYear) {
+  function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
-    var rest = 4 - inYear.length;
-    return '<span class="strip" role="img" aria-label="' + seasonRunsLabel(runs) + '">' + seasonPills(runs, true) + (rest ? '<span style="flex:' + rest + ' 1 0"></span>' : "") + "</span>";
+    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+  }
+  function stripGap(n) {
+    return n > 0 ? '<span style="flex:' + n + ' 1 0"></span>' : "";
+  }
+  function yearMarket(y, ytd, q) {
+    var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
+    return ret == null ? "" : strip(" mkt-strip", "S&P 500 " + dir + (ytd ? " so far" : ""), marketPills([ {
+      dir: dir,
+      ytd: ytd,
+      q: q,
+      from: y,
+      to: y
+    } ]) + stripGap(4 - q));
   }
   function moodDoor(head, body) {
     var mood = CATEGORIES.filter(function(c) {
@@ -34723,7 +34744,7 @@
         span: span,
         done: done,
         years: cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears),
-        strip: '<div class="strip" role="img" aria-label="' + (lead2 ? "No season " + lead2 + " quarters, " : "") + seasonRunsLabel(runs) + '">' + pills + "</div>",
+        strip: strip("", (lead2 ? "No season " + lead2 + " quarters, " : "") + seasonRunsLabel(runs), pills),
         foot: foot
       };
     }();
@@ -34759,20 +34780,17 @@
     }, 0);
     var span = Math.max(spanQ || 0, done);
     var ahead = Math.max(0, span - done);
-    var pills = runs.map(function(r) {
-      var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
-      return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="flex:' + Math.max(r.q, 1) + ' 1 0" title="' + when + " · S&P 500 " + (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
-    }).join("");
+    var pills = marketPills(runs);
     pills += stripDots(ahead, aheadWord(cyc));
-    return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' + runs.map(function(r) {
+    return strip(" mkt-strip", "S&P 500 by year: " + runs.map(function(r) {
       return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir;
-    }).join(", ") + '">' + pills + "</div>";
+    }).join(", "), pills);
   }
   var STRIP_MIN_RATIO = 1.5;
   function settleStrips() {
-    Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip) {
-      if (!strip.clientWidth || strip.closest(".cyc-scale")) return;
-      var runs = Array.prototype.slice.call(strip.querySelectorAll(".strip-run"));
+    Array.prototype.forEach.call(document.querySelectorAll(".strip"), function(strip2) {
+      if (!strip2.clientWidth || strip2.closest(".cyc-scale")) return;
+      var runs = Array.prototype.slice.call(strip2.querySelectorAll(".strip-run"));
       runs.forEach(function(r2) {
         r2.classList.remove("settled");
         r2.style.flex = r2.getAttribute("data-flex") || r2.style.flex;
@@ -35387,9 +35405,9 @@
       strips[c.from] = seasonStripHtml(c);
     });
     return marketCycles.slice().reverse().map(function(cyc) {
-      var total = eraMarketTotal(cyc), strip = strips[cyc.from];
-      var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
-      var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
+      var total = eraMarketTotal(cyc), strip2 = strips[cyc.from];
+      var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip2.years + "Y)</b></span>" + CHEV;
+      var bands = strip2.strip + marketStripHtml(cyc, strip2.span, strip2.done);
       var foot = econChips(eraGrowth(cyc).total, eraInflation(cyc).total, total, 0, !!cyc.ongoing, "");
       return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
     }).join("");
@@ -35723,11 +35741,11 @@
     need(id).innerHTML = '<div class="cat-analysis cat-mood">' + body + moreRow(detail2) + "</div>";
   }
   function weatherStrip() {
-    return '<div class="strip" role="img" aria-label="' + ALL_WEATHER.map(function(a) {
+    return strip("", ALL_WEATHER.map(function(a) {
       return a.what + " " + a.w + "%";
-    }).join(", ") + '">' + ALL_WEATHER.map(function(a) {
+    }).join(", "), ALL_WEATHER.map(function(a) {
       return '<span class="strip-run" style="flex:' + a.w + " 1 0;--season:var(" + a.ink + ')"></span>';
-    }).join("") + "</div>";
+    }).join(""));
   }
   function weatherDetail() {
     return "<h4>How All Weather reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: every asset does well in some economic weather and badly in another, so a portfolio that balances its risk across all four, growth picking up or slowing, prices heating or cooling, needs no one to call the next season.", "These weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights. The mix is held all the time and brought back to its weights from time to time; it is never timed.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the mix holds. Today’s weather is marked from the Season Model: growth by its regime, prices by the direction of inflation. Prices holding steady mark neither.", "This is a published allocation, not advice." ]) + srcBlock(WEATHER_SRC);

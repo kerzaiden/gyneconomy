@@ -6,7 +6,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { econChips, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { econChips, marketPills, strip, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import type { CycleModel } from "./model.ts";
@@ -25,7 +25,7 @@ function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
-    rows.push(yearRow(String(y), yearStrip(inYear), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
+    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
   return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
@@ -37,10 +37,17 @@ function yearRow(year: string, lead: string, line: string, sheet?: string, foot?
     '<span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + '</span>' : "") +
     (line ? '<span class="dx-year-line">' + line + '</span>' : "") + '</span>' + (sheet != null ? CHEV : "") + (foot || "") + '</' + tag + '>';
 }
-function yearStrip(inYear: CycleModel["track"]){
+function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);
-  var rest = 4 - inYear.length;
-  return '<span class="strip" role="img" aria-label="' + seasonRunsLabel(runs) + '">' + seasonPills(runs, true) + (rest ? '<span style="flex:' + rest + ' 1 0"></span>' : "") + '</span>';
+  return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length)) +
+    yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+}
+function stripGap(n: number){
+  return n > 0 ? '<span style="flex:' + n + ' 1 0"></span>' : "";
+}
+function yearMarket(y: number, ytd: boolean, q: number){
+  var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
+  return ret == null ? "" : strip(" mkt-strip", "S&P 500 " + dir + (ytd ? " so far" : ""), marketPills([{ dir: dir, ytd: ytd, q: q, from: y, to: y }]) + stripGap(4 - q));
 }
 function moodDoor(head: string, body: string){
   var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
