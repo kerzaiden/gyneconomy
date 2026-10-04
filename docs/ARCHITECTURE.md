@@ -508,7 +508,7 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
-- **The Checkup is a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries its door, a
+- **Health results are a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries its door, a
   trend card under the cycle story that previews the visit note and score (`scoreBox`, flat in the door), so the current cycle and every past one opened from Analysis carry it. The
   page (`sheet-cycle-chart`) is a metric sheet outside the roster: `buildCycleChart` gives it a `page.cycles`
   key, so the shared cycle picker, its keys and `eraShow` drive it like a history page, and the door sets the

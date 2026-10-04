@@ -34168,14 +34168,14 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the checkup reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The checkup describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How the health results read</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health results describe her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function cycleAnalysisHtml(m) {
     var i = marketCycles.indexOf(m.era);
     return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
   }
   var CHART_ID = "sheet-cycle-chart";
-  var CHART_NAME = "Checkup";
+  var CHART_NAME = "Health results";
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
     return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i, " flat"));
