@@ -3,7 +3,7 @@ import { moreRow, need, trendDoor, trendSoon, trendText } from "./dom.ts";
 import { clockSvg, slidersSvg, umbrellaSvg } from "./marks.ts";
 import { nowModel } from "./model.ts";
 import type { ModelReading } from "./model.ts";
-import { metricSheet, sheetRenderers } from "./render-core.ts";
+import { metricSheet, sheetRenderers, strip } from "./render-core.ts";
 
 // ---- PORTFOLIO: All Weather, the Investment Clock and Custom ----
 type Phase = { key: string; name: string; growth: string; prices: string; holds: string; at: [number, number] };
@@ -40,8 +40,8 @@ var PHASES: Phase[] = [
 function say(t: string){ return '<p class="ca-say">' + t + '</p>'; }
 function methodPage(id: string, body: string, detail: string){ need(id).innerHTML = '<div class="cat-analysis cat-mood">' + body + moreRow(detail) + '</div>'; }
 function weatherStrip(){
-  return '<div class="strip" role="img" aria-label="' + ALL_WEATHER.map(function(a){ return a.what + " " + a.w + "%"; }).join(", ") + '">' +
-    ALL_WEATHER.map(function(a){ return '<span class="strip-run" style="flex:' + a.w + ' 1 0;--season:var(' + a.ink + ')"></span>'; }).join("") + '</div>';
+  return strip("", ALL_WEATHER.map(function(a){ return a.what + " " + a.w + "%"; }).join(", "),
+    ALL_WEATHER.map(function(a){ return '<span class="strip-run" style="flex:' + a.w + ' 1 0;--season:var(' + a.ink + ')"></span>'; }).join(""));
 }
 function weatherDetail(){
   return '<h4>How All Weather reads</h4>' + facts([

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,058 lines** in 35 files, about 593 KB, roughly **168 thousand tokens**. No session can
+The source is **9,071 lines** in 35 files, about 594 KB, roughly **169 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `0be82ac` on 2026-10-04.
+Generated from commit `4c0e99f` on 2026-10-04.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `0be82ac` on 2026-10-04.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **603** top-level functions, **105** top-level vars, **354** exported names, **19** boots.
+Counts: **31** modules, **607** top-level functions, **105** top-level vars, **356** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -37,10 +37,10 @@ Counts: **31** modules, **603** top-level functions, **105** top-level vars, **3
 | `js/history.ts` | 471 | 41 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 809 | 70 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 148 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
-| `js/render-core.ts` | 593 | 42 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
+| `js/render-core.ts` | 605 | 44 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
-| `js/diagnosis.ts` | 70 | 9 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `roster` |
-| `js/dial-cycle.ts` | 388 | 20 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/diagnosis.ts` | 77 | 11 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `roster` |
+| `js/dial-cycle.ts` | 382 | 20 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 158 | 15 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/portfolio.ts` | 110 | 17 | `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 342 | 27 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
@@ -79,10 +79,10 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 8 | `bootReadings` | `js/readings.ts:632`–700 |
 | 9 | `bootReadingRegistry` | `js/readings.ts:743`–808 |
 | 10 | `bootRoster` | `js/roster.ts:135`–147 |
-| 11 | `bootRenderCore` | `js/render-core.ts:582`–592 |
+| 11 | `bootRenderCore` | `js/render-core.ts:594`–604 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
-| 13 | `bootDiagnosis` | `js/diagnosis.ts:66`–69 |
-| 14 | `bootDialCycle` | `js/dial-cycle.ts:364`–387 |
+| 13 | `bootDiagnosis` | `js/diagnosis.ts:73`–76 |
+| 14 | `bootDialCycle` | `js/dial-cycle.ts:358`–381 |
 | 15 | `bootAnalysis` | `js/analysis.ts:153`–157 |
 | 16 | `bootPortfolio` | `js/portfolio.ts:109`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:334`–341 |
@@ -525,57 +525,59 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 79 | `stripDots` · export | `function stripDots(` |
-| 82 | `seasonRuns` · export | `function seasonRuns(` |
-| 91 | `seasonPills` · export | `function seasonPills(` |
-| 98 | `seasonRunsLabel` · export | `function seasonRunsLabel(` |
-| 101 | `econChips` · export | `function econChips(` |
+| 79 | `strip` · export | `function strip(` |
+| 82 | `stripDots` · export | `function stripDots(` |
+| 85 | `seasonRuns` · export | `function seasonRuns(` |
+| 94 | `seasonPills` · export | `function seasonPills(` |
+| 102 | `marketPills` · export | `function marketPills(` |
+| 110 | `seasonRunsLabel` · export | `function seasonRunsLabel(` |
+| 113 | `econChips` · export | `function econChips(` |
 
 #### THE SUBJECT ROW
 
 | Line | Name | Anchor |
 |---|---|---|
-| 107 | `subjectRow` · export | `function subjectRow(` |
-| 117 | `subjectIcon` · export | `function subjectIcon(` |
-| 118 | `timingMark` | `function timingMark(` |
-| 126 | `timingPill` · export | `function timingPill(` |
-| 134 | `collapseEmptyBlocks` · export | `function collapseEmptyBlocks(` |
-| 142 | `seatPageFoot` · export | `function seatPageFoot(` |
-| 154 | `registerTiming` · export | `function registerTiming(` |
-| 155 | `headHtml` | `function headHtml(` |
-| 160 | `cardDetailHtml` · export | `function cardDetailHtml(` |
+| 119 | `subjectRow` · export | `function subjectRow(` |
+| 129 | `subjectIcon` · export | `function subjectIcon(` |
+| 130 | `timingMark` | `function timingMark(` |
+| 138 | `timingPill` · export | `function timingPill(` |
+| 146 | `collapseEmptyBlocks` · export | `function collapseEmptyBlocks(` |
+| 154 | `seatPageFoot` · export | `function seatPageFoot(` |
+| 166 | `registerTiming` · export | `function registerTiming(` |
+| 167 | `headHtml` | `function headHtml(` |
+| 172 | `cardDetailHtml` · export | `function cardDetailHtml(` |
 
 #### RENDER: Pressure — U.S. Treasury yields, one maturity at a time
 
 | Line | Name | Anchor |
 |---|---|---|
-| 186 | `latestYieldPoint` | `function latestYieldPoint(` |
-| 193 | `withLatestPoint` | `function withLatestPoint(` |
-| 198 | `pressureMaturities` | `function pressureMaturities(` |
-| 222 | `registerFlowPages` | `function registerFlowPages(` |
-| 261 | `renderPressureRow` | `function renderPressureRow(` |
-| 269 | `ylmYearMarks` | `function ylmYearMarks(` |
-| 288 | `ylmColumns` | `function ylmColumns(` |
-| 308 | `ylmFitLine` | `function ylmFitLine(` |
-| 320 | `pressureHead` | `function pressureHead(` |
-| 338 | `showPressureView` | `function showPressureView(` |
-| 343 | `renderPressurePage` | `function renderPressurePage(` |
+| 198 | `latestYieldPoint` | `function latestYieldPoint(` |
+| 205 | `withLatestPoint` | `function withLatestPoint(` |
+| 210 | `pressureMaturities` | `function pressureMaturities(` |
+| 234 | `registerFlowPages` | `function registerFlowPages(` |
+| 273 | `renderPressureRow` | `function renderPressureRow(` |
+| 281 | `ylmYearMarks` | `function ylmYearMarks(` |
+| 300 | `ylmColumns` | `function ylmColumns(` |
+| 320 | `ylmFitLine` | `function ylmFitLine(` |
+| 332 | `pressureHead` | `function pressureHead(` |
+| 350 | `showPressureView` | `function showPressureView(` |
+| 355 | `renderPressurePage` | `function renderPressurePage(` |
 
 #### Pressure's Insights
 
 | Line | Name | Anchor |
 |---|---|---|
-| 472 | `renderPressureInsights` | `function renderPressureInsights(` |
-| 507 | `catList` · export | `function catList(` |
-| 508 | `marketPeek` · export | `function marketPeek(` |
-| 513 | `spreadPick` · export | `var spreadPick =` |
-| 514 | `HZN_SPREADS` | `var HZN_SPREADS =` |
-| 515 | `spreadLabel` | `function spreadLabel(` |
-| 519 | `peekArt` | `function peekArt(` |
-| 520 | `catItem` · export | `function catItem(` |
-| 528 | `catCard` · export | `function catCard(` |
-| 570 | `tempPeek` · export | `function tempPeek(` |
-| 576 | `gdpPeek` · export | `function gdpPeek(` |
+| 484 | `renderPressureInsights` | `function renderPressureInsights(` |
+| 519 | `catList` · export | `function catList(` |
+| 520 | `marketPeek` · export | `function marketPeek(` |
+| 525 | `spreadPick` · export | `var spreadPick =` |
+| 526 | `HZN_SPREADS` | `var HZN_SPREADS =` |
+| 527 | `spreadLabel` | `function spreadLabel(` |
+| 531 | `peekArt` | `function peekArt(` |
+| 532 | `catItem` · export | `function catItem(` |
+| 540 | `catCard` · export | `function catCard(` |
+| 582 | `tempPeek` · export | `function tempPeek(` |
+| 588 | `gdpPeek` · export | `function gdpPeek(` |
 
 ### `js/render-pages.ts`
 
@@ -641,10 +643,12 @@ falls in. **export** marks a name other modules import.
 | 24 | `yearByYear` | `function yearByYear(` |
 | 34 | `yearRow` | `function yearRow(` |
 | 40 | `yearStrip` | `function yearStrip(` |
-| 45 | `moodDoor` | `function moodDoor(` |
-| 49 | `renderDiagnosis` · export | `function renderDiagnosis(` |
-| 53 | `diagnosisHost` | `function diagnosisHost(` |
-| 58 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 45 | `stripGap` | `function stripGap(` |
+| 48 | `yearMarket` | `function yearMarket(` |
+| 52 | `moodDoor` | `function moodDoor(` |
+| 56 | `renderDiagnosis` · export | `function renderDiagnosis(` |
+| 60 | `diagnosisHost` | `function diagnosisHost(` |
+| 65 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### `js/dial-cycle.ts`
 
@@ -695,8 +699,8 @@ falls in. **export** marks a name other modules import.
 | 285 | `aheadWord` | `function aheadWord(` |
 | 286 | `seasonStripHtml` · export | `function seasonStripHtml(` |
 | 303 | `marketStripHtml` · export | `function marketStripHtml(` |
-| 335 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
-| 336 | `settleStrips` · export | `function settleStrips(` |
+| 329 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
+| 330 | `settleStrips` · export | `function settleStrips(` |
 
 ### `js/analysis.ts`
 

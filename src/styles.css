@@ -243,7 +243,7 @@
   .era-row:hover .era-head .peek-chev{ color:var(--accent-ink); opacity:1; }
   .era-bands{ margin:9px 0 0; }
   .era-bands .strip{ margin:0; }
-  .era-bands .strip + .strip{ margin-top:5px; }
+  .era-bands .strip + .strip, .dx-year-lead .strip + .strip{ margin-top:5px; }
   .era-foot{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
     margin-top:8px; font-size:var(--type-meta); color:var(--text-secondary); }
   .era-years b{ font-weight:700; color:inherit; }
