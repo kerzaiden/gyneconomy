@@ -140,6 +140,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Analysis's tab icon and the Health chart's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
   goes up. This goes the same for the health chart." (0.6.3)
+- **The health score sits on an apricot box (`--normal` at 22% on white) and its line names the cycles its ranges
+  come from: "Against 18 closed cycles".** Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
+  of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,

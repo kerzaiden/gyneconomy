@@ -1055,8 +1055,8 @@
   .method-card .more-row, .labs .more-row{ margin-top:20px; }
   .cat-more:empty{ display:none; }
   .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; border:1px solid var(--border-strong); border-radius:var(--radius-inner); }
-  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:color-mix(in srgb, var(--normal) 22%, var(--surface)); border-radius:var(--radius-inner); }
+  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-secondary); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
   .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }

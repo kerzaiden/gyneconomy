@@ -102,7 +102,7 @@ function ring(v: number){
 }
 function scoreBox(i: number){
   var s = score(i);
-  return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span>' +
+  return '<span class="lab-score"><span><b>Health score</b><small>Against ' + word(closedCount()) + ' closed cycles</small></span>' +
     '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
 }
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f56cc0e` on 2026-10-04. **87 components**, **35 shared patterns**.
+Generated from commit `7cc438a` on 2026-10-04. **87 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -239,6 +239,7 @@ renderer speaks. Listed most-used first.
 | **`side`** | cycle-analysis.ts | 5 places |
 | **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
+| **`closedCount`** | cycle-analysis.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
@@ -253,7 +254,6 @@ renderer speaks. Listed most-used first.
 | **`refitHistory`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
-| **`closedCount`** | cycle-analysis.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
