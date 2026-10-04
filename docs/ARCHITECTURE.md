@@ -407,7 +407,7 @@ The conversion was proved by the snapshot (every state identical) and the browse
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Health chart · Analysis · Portfolio (the Health chart in Search's place since 0.7.0; V657: the Content tab's models moved into
+to the manuscript, not part of it. Tabs: Cycle · Health chart · Analysis · Portfolio (the Health chart in Search's place since 0.6.1; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
 Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
@@ -498,7 +498,7 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
-- **The Health chart is a blood test of each cycle** (`cycle-analysis`), and since 0.7.0 the tab where every
+- **The Health chart is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws it in two hosts: `#chart-home`, the
   tab's home, and `sheet-cycle-chart`, the metric sheet behind the Diagnosis's door (a trend card under the cycle story
   that previews the visit note and score), so the current cycle and every past one opened from Analysis carry it.

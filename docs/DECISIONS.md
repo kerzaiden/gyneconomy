@@ -130,7 +130,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The tab bar is Cycle · Health chart · Analysis · Portfolio.** Search replaced the Content tab (V657), Keren
   swapped Analysis and Search (V665), and the Health chart took Search's place: "I'm basically seeing the same thing
-  in different views … the search moved to the health chart page." (0.7.0)
+  in different views … the search moved to the health chart page." (0.6.1)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
@@ -143,7 +143,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
   stroke". (V272, V275)
 - **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Health chart", "Analysis", "Portfolio".**
-  (undated, 0.7.0)
+  (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** Keren: "there is a title inside the
   page which is redundant — you already have the page title at the top." The bar names the page and the card
@@ -194,7 +194,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   screen." The filter offers All, Risk, Attention and Normal with their counts; the chevron beside a category's count
   still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
   "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
-  lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.7.0)
+  lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1)
 - **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
   as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
   cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
@@ -209,7 +209,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   informative … we have a lot of text inside the more details, which can remain below the subcategories". The
   insights carry no title, and Mood's own figures follow her story in the same sheet; Energy has none, so it ends on
   its cards. The composite analysis of 1.5.0 (each category as one rank-averaged reading matched against past cycles)
-  is retired. (1.5.0, 0.7.0)
+  is retired. (1.5.0, 0.6.1)
 - **Weather's insights carry no "What usually comes next" card.** It read as a forecast; Keren: "drop the forecast".
   The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
@@ -227,7 +227,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A reading's timing (leading, coincident, lagging, structural) goes with the reading, never as a heading:
   it is hidden on the page and shown in the reading's (i) note, as a label that opens nothing.** Keren: "get rid of the Leading, Coincident and Lagging titles on the main page"; "it's a
   minor detail that if people want to expand on their understanding, they can go to the info page." (V271,
-  V377, V657, undated, Sep 20, 2026; it stopped filtering anything in 0.7.0)
+  V377, V657, undated, Sep 20, 2026; it stopped filtering anything in 0.6.1)
 - **Every (i) and every More details opens the one shared sheet, never a floating popover; on a phone it rises
   from the bottom as a near-full-screen sheet with rounded top corners, a strip of dimmed page above, a big
   round X and larger type.** Keren: "make the info icons open in the new popup format as well"; the phone
@@ -435,7 +435,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Buffett's own reading of a rich market), Volatility (the VIX is the market's fear gauge), Federal debt, Interest
   payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
   (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
-  those are flagged either way. (0.7.0)
+  those are flagged either way. (0.6.1)
 - **Each cycle's Health chart is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
@@ -1257,8 +1257,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   finished.** Keren, at 1.8.0: "I feel like we haven't finished the first draft of the app", then "name it
   0.0.9 … by the time we get to 1.0.0, the app would be in a completely different state." So the next release
   is **0.0.9, build 727**, and the build number carries on. The releases named 1.0.0 to 1.8.0 keep their names
-  in git and in this register; the build number orders them with the 0.x releases. Before 1.0.0, anything new
-  moves the middle number (0.1.0, 0.2.0 …), a redesign included, and a fix or wording change moves the last.
+  in git and in this register; the build number orders them with the 0.x releases. **Since 0.6.1 every release
+  moves the last number, and the middle number moves only when Keren says so.** Keren, when a feature came up as
+  0.7.0: "You're moving the versions too fast. We're still in, I think, 0.6." (0.6.1)
   `npm run bump major` refuses on 0.x; 1.0.0 is given exactly, `npm run bump 1.0.0`. (0.0.9)
 - **A version is recorded as a git tag and a GitHub Release, not a changelog file.** Keren asked for the GitHub
   convention; Claude recommended, and she accepted: Semantic Versioning, an annotated `vX.Y.Z` tag on each
