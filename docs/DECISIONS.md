@@ -143,6 +143,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score sits on an apricot box (`--normal` at 22% on white) and its line names the cycles its ranges
   come from: "Against 18 closed cycles".** Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
   of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
+- **The Health chart picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
+  picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
+  current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,

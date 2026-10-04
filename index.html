@@ -1073,13 +1073,19 @@
     font:inherit; font-size:var(--type-meta); font-weight:600; color:var(--accent); cursor:pointer; }
   .lab-filter:hover, .lab-filter[aria-expanded="true"]{ background:var(--surface-2); }
   .lab-menu{ position:absolute; right:0; top:48px; z-index:5; min-width:200px; padding:6px; border:1px solid var(--border); border-radius:var(--radius-inner);
-    background:var(--surface); box-shadow:0 8px 24px rgba(0,0,0,.12); }
+    background:var(--surface); box-shadow:0 8px 24px rgba(0,0,0,.12); max-height:min(62vh, 440px); overflow-y:auto; }
   .lab-menu[hidden]{ display:none; }
   .lab-menu button{ display:flex; justify-content:space-between; gap:16px; width:100%; padding:10px 12px; border:0; border-radius:var(--radius-inner);
     background:none; font:inherit; font-size:var(--type-interface); color:var(--text-primary); cursor:pointer; }
   .lab-menu button:hover, .lab-menu [aria-checked="true"]{ background:var(--surface-2); }
   .lab-menu [aria-checked="true"]{ font-weight:600; }
   .lab-menu small{ color:var(--text-muted); font-variant-numeric:tabular-nums; }
+  .lab-menu .lab-sub, .lab-menu .lab-back{ align-items:center; }
+  .lab-menu .lab-sub small{ margin-left:auto; }
+  .lab-menu .lab-sub .peek-chev, .lab-menu .lab-back .peek-chev{ display:inline-flex; color:var(--text-muted); }
+  .lab-menu .lab-back{ justify-content:flex-start; gap:10px; font-weight:600; }
+  .lab-menu .lab-back .peek-chev{ transform:rotate(180deg); }
+  .lab-sep{ height:1px; margin:6px 4px; background:var(--border); }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
@@ -30164,9 +30170,6 @@
   function controlsBox(inner) {
     return '<div class="hist-controls">' + inner + "</div>";
   }
-  function cycleControls(id) {
-    return controlsBox(cyclePicker(id, page.cycles[id]));
-  }
   function pageCycle(id, y0) {
     var c = page.mode[id] === "cycles" ? cycleByName(page.cycles[id]) || openCycle() : null;
     if (y0 == null) y0 = page.y0[id];
@@ -34256,22 +34259,38 @@
     return finds[id] || (finds[id] = {
       tier: "all",
       q: "",
-      raw: ""
+      raw: "",
+      sub: ""
     });
   }
   var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg>';
-  function finder(id, i, j) {
-    var f = findOf(id), opts = [ [ "all", "All", j.length ] ].concat(TIERS.map(function(t) {
+  function tierOpts(i, j) {
+    return [ [ "all", "All", j.length ] ].concat(TIERS.map(function(t) {
       return [ t.key, t.title, j.filter(function(l) {
         return tier(l, i) === t.key;
       }).length ];
     }));
-    var on = opts.filter(function(o) {
+  }
+  function menuRows(id, i, j) {
+    var f = findOf(id), cur = marketCycles[i];
+    if (f.sub === "cycle") return '<button type="button" class="lab-back" data-lab-sub="">' + CHEV + '<span>Cycle</span></button><div class="lab-sep"></div>' + marketCycles.slice().reverse().map(function(c) {
+      var L = cycLabel(c);
+      return '<button type="button" role="menuitemradio" aria-checked="' + (c === cur) + '" data-lab-cycle="' + c.name + '"><span>' + L.name + "</span><small>" + L.years + "</small></button>";
+    }).join("");
+    return tierOpts(i, j).map(function(o) {
+      return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + "</span><small>" + o[2] + "</small></button>";
+    }).join("") + '<div class="lab-sep"></div><button type="button" class="lab-sub" data-lab-sub="cycle"><span>Cycle</span><small>' + cycLabel(cur).name + "</small>" + CHEV + "</button>";
+  }
+  function filterTags(id, i, j) {
+    var f = findOf(id), c = marketCycles[i], on = tierOpts(i, j).filter(function(o) {
       return o[0] === f.tier;
     })[0];
-    return '<div class="lab-find"><div class="search-field">' + LENS + '<input type="search" class="lab-q" placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '"><button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + (f.tier === "all" ? "" : "<span>" + on[1] + "</span>") + '</button></div><div class="lab-menu" role="menu" hidden>' + opts.map(function(o) {
-      return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + "</span><small>" + o[2] + "</small></button>";
-    }).join("") + "</div></div>";
+    var tags = (c === openCycle() ? [] : [ cycLabel(c).name ]).concat(f.tier === "all" ? [] : [ String(on[1]) ]);
+    return tags.length ? "<span>" + tags.join(" · ") + "</span>" : "";
+  }
+  function finder(id, i, j) {
+    var f = findOf(id);
+    return '<div class="lab-find"><div class="search-field">' + LENS + '<input type="search" class="lab-q" placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '"><button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button></div><div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + "</div></div>";
   }
   function narrow(host, id) {
     var f = findOf(id), any = false;
@@ -34297,12 +34316,39 @@
     menu.hidden = !open;
     btn.setAttribute("aria-expanded", String(open));
   }
-  function pickTier(host, id, seg) {
-    findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+  function redraw(host, id) {
+    findOf(id).sub = "";
     var draw = sheetRenderers[id];
     if (draw) draw();
     var btn = host.querySelector(".lab-filter");
     if (btn) btn.focus();
+  }
+  function pickTier(host, id, seg) {
+    findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+    redraw(host, id);
+  }
+  function pickCycle(host, id, seg) {
+    page.cycles[id] = seg.getAttribute("data-lab-cycle");
+    redraw(host, id);
+  }
+  function fillMenu(host, id, sub) {
+    var c = pageCycle(id), menu = menuOf(host);
+    if (!c || !menu) return null;
+    var i = marketCycles.indexOf(c);
+    findOf(id).sub = sub;
+    menu.innerHTML = menuRows(id, i, judged(i));
+    return menu;
+  }
+  function openSub(host, id, seg) {
+    var menu = fillMenu(host, id, seg.getAttribute("data-lab-sub") || "");
+    var first = menu && menu.querySelector('[aria-checked="true"], button');
+    if (first) first.focus();
+  }
+  function toggleMenu(host, id) {
+    var menu = menuOf(host);
+    if (!menu) return;
+    if (menu.hidden) fillMenu(host, id, "");
+    showMenu(host, menu.hidden);
   }
   function judged(i) {
     return labs().filter(function(l) {
@@ -34362,7 +34408,7 @@
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
     var i = marketCycles.indexOf(c), j = judged(i);
-    host.innerHTML = finder(id, i, j) + histBar(cycleControls(id)) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
     narrow(host, id);
   }
   function fold(t) {
@@ -34376,8 +34422,8 @@
       drawChart(id);
     };
     host.addEventListener("click", function(e) {
-      var t = e.target, seg = t.closest && t.closest("[data-lab-tier]");
-      if (seg) pickTier(host, id, seg); else if (t.closest && t.closest(".lab-filter")) showMenu(host, !!menuOf(host).hidden); else fold(t);
+      var t = e.target, seg = t.closest && t.closest("[data-lab-tier]"), cyc = t.closest && t.closest("[data-lab-cycle]"), sub = t.closest && t.closest("[data-lab-sub]");
+      if (seg) pickTier(host, id, seg); else if (cyc) pickCycle(host, id, cyc); else if (sub) openSub(host, id, sub); else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id); else fold(t);
     });
     host.addEventListener("input", function(e) {
       var q = e.target;
@@ -34412,7 +34458,7 @@
     });
     document.addEventListener("click", function(e) {
       var t = e.target;
-      if (!(t.closest && t.closest(".lab-find"))) shutMenus();
+      if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus();
     });
     home.addEventListener("click", function(e) {
       if (e.target.closest && e.target.closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;

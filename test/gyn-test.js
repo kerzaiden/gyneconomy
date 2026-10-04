@@ -378,7 +378,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const chartOf = () => p.evaluate(() => {
       const s = document.querySelector('#metric-page #sheet-cycle-chart'), c = s && s.querySelector('.labs');
-      return c ? { open: !s.hidden, picked: s.querySelector('.cycsel-btn .cycsel-nm').textContent,
+      return c ? { open: !s.hidden, picked: s.querySelector('.lab-menu [data-lab-sub="cycle"] small').textContent,
         items: c.querySelectorAll('.lab-item').length, risk: c.querySelectorAll('.lab-item.t-abnormal').length,
         seen: [...c.querySelectorAll('.lab-item')].filter(e => e.offsetParent).length } : null;
     });
@@ -386,7 +386,8 @@ async function openPage(p, url, sheet) {
     await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="abnormal"]').click());
     const risky = await chartOf();
     await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-tier="all"]').click());
-    await p.evaluate(() => [...document.querySelectorAll('#sheet-cycle-chart .cycsel-opt')].find(o => /Nifty Fifty/.test(o.textContent)).click());
+    await p.evaluate(() => document.querySelector('#sheet-cycle-chart [data-lab-sub="cycle"]').click());
+    await p.evaluate(() => [...document.querySelectorAll('#sheet-cycle-chart [data-lab-cycle]')].find(o => /Nifty Fifty/.test(o.textContent)).click());
     await settle(p);
     const picked = await chartOf();
     (chart && chart.open && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
@@ -465,15 +466,15 @@ async function openPage(p, url, sheet) {
     const tab = await p.evaluate(() => {
       const h = document.getElementById('chart-home'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
       return { title: document.getElementById('topbar-title').textContent, first: h.firstElementChild.className,
-        under: !!(h.querySelector('.lab-find').compareDocumentPosition(h.querySelector('.cycsel')) & 4),
+        under: !h.querySelector('.cycsel') && !!h.querySelector('.lab-menu [data-lab-sub="cycle"]'),
         chips: h.querySelectorAll('.rangebar').length, menu: h.querySelector('.lab-menu').hidden,
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.open).join() };
     });
     (tab.title === 'Analysis' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
      tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
-      ? ok('the Health chart tab opens on its search box, then the cycle, every reading and category a door', tab.rows + ' readings')
-      : bad('the Health chart tab opens on its search box, then the cycle, every reading and category a door', JSON.stringify(tab));
+      ? ok('the Health chart tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
+      : bad('the Health chart tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
       await p.fill('#chart-home .lab-q', q); await settle(p);
       return p.evaluate(() => ({
@@ -495,6 +496,14 @@ async function openPage(p, url, sheet) {
     (menuOpen && risk.menu && risk.label === 'Risk' && risk.rows.length > 0 && risk.rows.every(Boolean))
       ? ok('the filter inside the search box narrows the results to a tier', risk.rows.length + ' at risk')
       : bad('the filter inside the search box narrows the results to a tier', JSON.stringify({ menuOpen, risk }));
+    await p.click('#chart-home .lab-filter'); await p.click('#chart-home [data-lab-sub="cycle"]');
+    const sub = await p.evaluate(() => ({ open: !document.querySelector('#chart-home .lab-menu').hidden, cycles: document.querySelectorAll('#chart-home [data-lab-cycle]').length }));
+    await p.click('#chart-home [data-lab-cycle="Dot-Com Cycle"]'); await settle(p);
+    const dot = await p.evaluate(() => ({ label: document.querySelector('#chart-home .lab-filter').textContent, cycle: !!document.querySelector('#chart-home .lab-item') }));
+    await p.click('#chart-home .lab-filter'); await p.click('#chart-home [data-lab-sub="cycle"]'); await p.click('#chart-home [data-lab-cycle="AI Cycle"]'); await settle(p);
+    (sub.open && sub.cycles > 15 && dot.label === 'Dot-Com' && dot.cycle)
+      ? ok('the filter picks the cycle from its Cycle menu', sub.cycles + ' cycles')
+      : bad('the filter picks the cycle from its Cycle menu', JSON.stringify({ sub, dot }));
     await p.click('#chart-home .cat-mood .lab-fold'); await settle(p);
     const folded = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       hid: !document.querySelector('#chart-home .cat-mood .lab-item').offsetParent }));

@@ -1,11 +1,10 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
 import { byId, layer, moreRow, need, trendDoor, trendText, ui } from "./dom.ts";
-import { cycleControls, page, pageCycle } from "./history.ts";
+import { page, pageCycle } from "./history.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
-import { histBar } from "./charts.ts";
 import { catHeadCard, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
-import { cycleModel } from "./model.ts";
+import { cycLabel, cycleModel, openCycle } from "./model.ts";
 import { categoriesShown, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -121,19 +120,35 @@ function bySystem(i: number, j: Lab[]){
     return ls.length ? labSec(k, ls, i) : "";
   }).join("");
 }
-type Find = { tier: string; q: string; raw: string };
+type Find = { tier: string; q: string; raw: string; sub: string };
 var finds: Record<string, Find> = {};
-function findOf(id: string){ return finds[id] || (finds[id] = { tier:"all", q:"", raw:"" }); }
+function findOf(id: string){ return finds[id] || (finds[id] = { tier:"all", q:"", raw:"", sub:"" }); }
 var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg>';
+function tierOpts(i: number, j: Lab[]){
+  return [["all", "All", j.length]].concat(TIERS.map(function(t){ return [t.key, t.title, j.filter(function(l){ return tier(l, i) === t.key; }).length]; }));
+}
+function menuRows(id: string, i: number, j: Lab[]){
+  var f = findOf(id), cur = marketCycles[i];
+  if (f.sub === "cycle") return '<button type="button" class="lab-back" data-lab-sub="">' + CHEV + '<span>Cycle</span></button><div class="lab-sep"></div>' +
+    marketCycles.slice().reverse().map(function(c){
+      var L = cycLabel(c);
+      return '<button type="button" role="menuitemradio" aria-checked="' + (c === cur) + '" data-lab-cycle="' + c.name + '"><span>' + L.name + '</span><small>' + L.years + '</small></button>';
+    }).join("");
+  return tierOpts(i, j).map(function(o){
+    return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + '</span><small>' + o[2] + '</small></button>';
+  }).join("") + '<div class="lab-sep"></div><button type="button" class="lab-sub" data-lab-sub="cycle"><span>Cycle</span><small>' + cycLabel(cur).name + '</small>' + CHEV + '</button>';
+}
+function filterTags(id: string, i: number, j: Lab[]){
+  var f = findOf(id), c = marketCycles[i], on = tierOpts(i, j).filter(function(o){ return o[0] === f.tier; })[0];
+  var tags = (c === openCycle() ? [] : [cycLabel(c).name]).concat(f.tier === "all" ? [] : [String(on[1])]);
+  return tags.length ? '<span>' + tags.join(" · ") + '</span>' : "";
+}
 function finder(id: string, i: number, j: Lab[]){
-  var f = findOf(id), opts = [["all", "All", j.length]].concat(TIERS.map(function(t){ return [t.key, t.title, j.filter(function(l){ return tier(l, i) === t.key; }).length]; }));
-  var on = opts.filter(function(o){ return o[0] === f.tier; })[0];
+  var f = findOf(id);
   return '<div class="lab-find"><div class="search-field">' + LENS +
     '<input type="search" class="lab-q" placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
-    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + (f.tier === "all" ? "" : '<span>' + on[1] + '</span>') + '</button></div>' +
-    '<div class="lab-menu" role="menu" hidden>' + opts.map(function(o){
-      return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + '</span><small>' + o[2] + '</small></button>';
-    }).join("") + '</div></div>';
+    '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button></div>' +
+    '<div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + '</div></div>';
 }
 function narrow(host: HTMLElement, id: string){
   var f = findOf(id), any = false;
@@ -152,10 +167,34 @@ function showMenu(host: Element, open: boolean){
   var menu = menuOf(host), btn = host.querySelector<HTMLElement>(".lab-filter"); if (!menu || !btn) return;
   menu.hidden = !open; btn.setAttribute("aria-expanded", String(open));
 }
-function pickTier(host: HTMLElement, id: string, seg: Element){
-  findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+function redraw(host: HTMLElement, id: string){
+  findOf(id).sub = "";
   var draw = sheetRenderers[id]; if (draw) draw();
   var btn = host.querySelector<HTMLElement>(".lab-filter"); if (btn) btn.focus();
+}
+function pickTier(host: HTMLElement, id: string, seg: Element){
+  findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+  redraw(host, id);
+}
+function pickCycle(host: HTMLElement, id: string, seg: Element){
+  page.cycles[id] = seg.getAttribute("data-lab-cycle");
+  redraw(host, id);
+}
+function fillMenu(host: HTMLElement, id: string, sub: string){
+  var c = pageCycle(id), menu = menuOf(host); if (!c || !menu) return null;
+  var i = marketCycles.indexOf(c);
+  findOf(id).sub = sub;
+  menu.innerHTML = menuRows(id, i, judged(i));
+  return menu;
+}
+function openSub(host: HTMLElement, id: string, seg: Element){
+  var menu = fillMenu(host, id, seg.getAttribute("data-lab-sub") || "");
+  var first = menu && menu.querySelector<HTMLElement>('[aria-checked="true"], button'); if (first) first.focus();
+}
+function toggleMenu(host: HTMLElement, id: string){
+  var menu = menuOf(host); if (!menu) return;
+  if (menu.hidden) fillMenu(host, id, "");
+  showMenu(host, menu.hidden);
 }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
@@ -192,7 +231,7 @@ function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i);
-  host.innerHTML = finder(id, i, j) + histBar(cycleControls(id)) +
+  host.innerHTML = finder(id, i, j) +
     '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }
@@ -205,9 +244,11 @@ function wireFinder(host: HTMLElement, id: string){
   page.cycles[id] = null;
   sheetRenderers[id] = function(){ drawChart(id); };
   host.addEventListener("click", function(e){
-    var t = e.target as Element, seg = t.closest && t.closest("[data-lab-tier]");
+    var t = e.target as Element, seg = t.closest && t.closest("[data-lab-tier]"), cyc = t.closest && t.closest("[data-lab-cycle]"), sub = t.closest && t.closest("[data-lab-sub]");
     if (seg) pickTier(host, id, seg);
-    else if (t.closest && t.closest(".lab-filter")) showMenu(host, !!(menuOf(host) as HTMLElement).hidden);
+    else if (cyc) pickCycle(host, id, cyc);
+    else if (sub) openSub(host, id, sub);
+    else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id);
     else fold(t);
   });
   host.addEventListener("input", function(e){
@@ -223,7 +264,7 @@ export function buildCycleChart(home: HTMLElement){
   wireFinder(sheet, CHART_ID);
   wireFinder(need(HOME_ID), HOME_ID);
   layer(0, { open:function(){ return openMenus().length > 0; }, close:shutMenus });
-  document.addEventListener("click", function(e){ var t = e.target as Element; if (!(t.closest && t.closest(".lab-find"))) shutMenus(); });
+  document.addEventListener("click", function(e){ var t = e.target as Element; if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus(); });
   home.addEventListener("click", function(e){
     if ((e.target as Element).closest && (e.target as Element).closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
   });
