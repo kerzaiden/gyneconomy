@@ -90,7 +90,7 @@ function report(i: number){
     '<div class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></div></div>' +
     '<div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t){ return chip(t.key, t.title, by[t.key].length); }).join("") + '</div>' +
     TIERS.filter(function(t){ return by[t.key].length; }).map(function(t){
-      return '<section class="lab-sec ' + t.cls + '"><h5>' + t.title + ' <span>' + by[t.key].length + '</span></h5><ul>' + by[t.key].map(function(l){ return labItem(l, i); }).join("") + '</ul></section>';
+      return '<section class="lab-sec ' + t.cls + '"><h2>' + t.title + ' <span>' + by[t.key].length + '</span></h2><ul>' + by[t.key].map(function(l){ return labItem(l, i); }).join("") + '</ul></section>';
     }).join("") + '</div>';
 }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }

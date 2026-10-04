@@ -1055,14 +1055,14 @@
   .lab-f{ position:absolute; opacity:0; pointer-events:none; }
   .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
   .lab-chips label span{ color:var(--text-muted); }
-  .lab-f:checked + label{ background:var(--good); border-color:var(--good); color:var(--surface); }
+  .lab-f:checked + label{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
   .lab-f:checked + label span{ color:inherit; }
   .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
   .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
   .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
   .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
-  .lab-sec h5{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
-  .lab-sec h5::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
+  .lab-sec h2{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-sec h2::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-sec{ --tier:var(--good); }
   .lab-sec.t-borderline{ --tier:var(--season-autumn); }
@@ -34086,7 +34086,7 @@
     }).join("") + "</div>" + TIERS.filter(function(t) {
       return by[t.key].length;
     }).map(function(t) {
-      return '<section class="lab-sec ' + t.cls + '"><h5>' + t.title + " <span>" + by[t.key].length + "</span></h5><ul>" + by[t.key].map(function(l) {
+      return '<section class="lab-sec ' + t.cls + '"><h2>' + t.title + " <span>" + by[t.key].length + "</span></h2><ul>" + by[t.key].map(function(l) {
         return labItem(l, i);
       }).join("") + "</ul></section>";
     }).join("") + "</div>";
