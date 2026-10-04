@@ -28,7 +28,7 @@ function compare(a, b) {
 function next(version, kind) {
   if (SEMVER.test(kind)) return kind;
   const [M, m, p] = parts(version);
-  if (kind === 'major') return (M + 1) + '.0.0';
+  if (kind === 'major') return M === 0 ? null : (M + 1) + '.0.0';
   if (kind === 'minor') return M + '.' + (m + 1) + '.0';
   if (kind === 'patch') return M + '.' + m + '.' + (p + 1);
   return null;
@@ -47,6 +47,13 @@ function fromTags(lines) {
     if (semver && (version === null || compare(semver[1], version) > 0)) version = semver[1];
   }
   return { build, version };
+}
+
+function tagged(version) {
+  try {
+    execSync('git rev-parse -q --verify refs/tags/v' + version, { cwd: ROOT, stdio: 'ignore' });
+    return true;
+  } catch (e) { return false; }
 }
 
 function newestTags() {
@@ -90,4 +97,4 @@ function setPackage(v) {
   return true;
 }
 
-module.exports = { read, next, compare, label, fromTags, newestTags, swBuild, bodyLabel, stamp, setPackage };
+module.exports = { read, next, compare, label, fromTags, newestTags, tagged, swBuild, bodyLabel, stamp, setPackage };

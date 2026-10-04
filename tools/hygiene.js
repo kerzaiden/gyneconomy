@@ -41,6 +41,13 @@ function pageScoped(css, pages) {
   return out;
 }
 
+function inlineType(file, src) {
+  const out = [], re = /style=\\?["'][^"']*?(?<![\w-])(font(?:-[a-z]+)?|line-height|letter-spacing|color)\s*:|\.style\.(font\w*|lineHeight|letterSpacing|color)\s*=/g;
+  let m;
+  while ((m = re.exec(src))) out.push(file + ':' + lineOf(src, m.index) + ' sets ' + (m[1] || m[2]) + ' inline; type belongs to a class');
+  return out;
+}
+
 function nameBranches(file, src) {
   const out = [];
   const re = /\bind\.bodyTerm\s*[!=]==|\b\w+\.(?:bodyTerm|econTerm|name|marker)\s*[!=]==\s*["']/g;
@@ -149,8 +156,8 @@ function pageWords(roster) {
 }
 
 function audit(files, html, css, order) {
-  let out = fontSizes(css).concat(pageScoped(css, pageWords(files['roster.ts'] || '')));
-  Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f])); });
+  let out = fontSizes(css).concat(pageScoped(css, pageWords(files['roster.ts'] || '')), inlineType('page-body.html', html));
+  Object.keys(files).forEach(f => { out = out.concat(nameBranches(f, files[f]), chartFrames(f, files[f]), inlineType(f, files[f])); });
   const js = Object.values(files).join('\n');
   return out.concat(cycles(files), order ? layers(files, order) : [], twice(js), unused(js, html, css, files), unusedTokens(css, js + html), gone(js + html + css), pinned(js));
 }
@@ -169,5 +176,5 @@ if (require.main === module) {
   }
   console.log('ok: hygiene — one frame, one type scale, no page-scoped styles, no name branches, modules in layers, nothing unused, nothing removed come back, pins held');
 } else {
-  module.exports = { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
+  module.exports = { fontSizes, pageScoped, inlineType, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing, audit, DYNAMIC_CLASS };
 }

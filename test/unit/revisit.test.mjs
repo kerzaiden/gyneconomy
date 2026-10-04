@@ -39,6 +39,19 @@ test('a CAPE figure from a new year adds that year instead of overwriting the la
   assert.deepEqual(errors, []);
 });
 
+test('a Fed document with no date at all cannot open the door to an older one', async () => {
+  const deliver = async docs => {
+    window.claude = { use: () => Promise.resolve({ doc: p => ({ get: () => docs[p.slice(5)] ? Promise.resolve({ data: docs[p.slice(5)] }) : Promise.reject(new Error('none')) }) }) };
+    refreshLiveData();
+    for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 0));
+    delete window.claude;
+  };
+  await deliver({ fedFunds: { kind: 'object', lo: 3, hi: 3.25 } });
+  assert.deepEqual([now.fedFunds.lo, now.fedFunds.hi], [3, 3.25]);
+  await deliver({ fedFunds: { kind: 'object', lo: 5.25, hi: 5.5, asOf: 'Jul 26, 2023' } });
+  assert.deepEqual([now.fedFunds.lo, now.fedFunds.hi], [3, 3.25]);
+});
+
 test('a Fed move without its own decision keeps its date, so an older move cannot follow it', async () => {
   const deliver = async docs => {
     window.claude = { use: () => Promise.resolve({ doc: p => ({ get: () => docs[p.slice(5)] ? Promise.resolve({ data: docs[p.slice(5)] }) : Promise.reject(new Error('none')) }) }) };

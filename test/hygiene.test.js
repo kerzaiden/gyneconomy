@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { fontSizes, pageScoped, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
+const { fontSizes, pageScoped, inlineType, nameBranches, chartFrames, unused, twice, cycles, layers, layerOrder, unusedTokens, gone, pinned, enclosing } = require('../tools/hygiene.js');
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -19,6 +19,9 @@ ok('a component class passes', pageScoped('  .dv-bar.good-above{ stroke:red; }')
 ok('a style keyed on a page attribute is caught', pageScoped('  .metric-page[data-page="pulse"] .x{ top:0; }').length, 1);
 ok('an id that belongs to one page is caught', pageScoped('  #pulse-record{ margin:0; }', ['pulse', 'volume']).length, 1);
 ok('a shared id passes', pageScoped('  #metric-page .x{ margin:0; }', ['pulse']), []);
+ok('type set in an inline style is caught', inlineType('a.ts', "'<p style=\"font-style:italic;line-height:1.4\">'").length, 1);
+ok('a colour set from a script is caught', inlineType('a.ts', 'el.style.color = "red";').length, 1);
+ok('geometry and a background in an inline style pass', inlineType('a.ts', "'<i style=\"flex:2 1 0;background-color:var(--ovulate)\">'"), []);
 ok('a branch on a reading’s name is caught', nameBranches('a.js', 'if (ind.bodyTerm === "Desire") x();').length, 1);
 ok('a lookup by name passes', nameBranches('a.js', 'list.filter(function(c){ return c.bodyTerm === "Desire"; })'), []);
 ok('a branch on any row’s name is caught', nameBranches('a.js', '  if (R.name === "Growth") x();').length, 1);

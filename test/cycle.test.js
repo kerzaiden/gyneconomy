@@ -35,17 +35,16 @@ ok('the share of earlier months below the value', rankToDate(twelve, 7), 50);
 ok('above every earlier month is 100', rankToDate(twelve, 99), 100);
 ok('fewer than twelve earlier months is no rank yet', rankToDate([1, 2, 3], 2), null);
 
-console.log('\nyearAfter, cycleStory \u2014 the record\n');
+console.log('\ncycleStory \u2014 the record\n');
 {
   const months = ['2001-06', '2001-07', '2001-08', '2001-09', '2001-10', '2001-11', '2001-12'];
   const words = ['Hope', 'Hope', 'Optimism', 'Hope', 'Hope', 'Hope', 'Fear'];
   const sp = Array.from({ length: 30 }, (_, i) => ({ m: (2001 + Math.floor((i + 5) / 12)) + '-' + String((i + 5) % 12 + 1).padStart(2, '0'), v: 100 + (i % 3 ? i : -i) }));
   const env = { QUARTER_END_MONTH: { Q1: '03', Q2: '06', Q3: '09', Q4: '12' }, sp500MonthlyHistory: sp,
     seasonTrackAll: [{ y: 2001, qn: 'Q2', reading: { season: 'summer' } }, { y: 2001, qn: 'Q4', reading: { season: 'lateautumn' } }],
-    moodTrack: () => months.map((m, i) => ({ m, word: words[i], pct: [40, 45, 90, 30, 35, 50, 10][i] })), moodToday: () => ({ m: '2001-12', word: 'Hope', pct: 60 }), marketCache: null, trackCache: null,
+    moodTrack: () => months.map((m, i) => ({ m, word: words[i], pct: [40, 45, 90, 30, 35, 50, 10][i] })), moodToday: () => ({ m: '2001-12', word: 'Hope', pct: 60 }), trackCache: null,
     seasonGroup: k => k === 'springdeflation' ? 'spring' : k === 'lateautumn' ? 'autumn' : k };
-  const M = lift(['marketMonths', 'yearAfter', 'cycleStory'], env);
-  ok('a year later is the S&P 500 twelve months on', +M.yearAfter(M.marketMonths(), sp[0].m).toFixed(4), +(sp[12].v / sp[0].v - 1).toFixed(4));
+  const M = lift(['cycleStory'], env);
   const st = M.cycleStory({ from: 2001, to: 2001 });
   ok('a cycle\u2019s story: where she opened, her high, her low, where she closed', [st.first.m, st.hi.m, st.lo.m, st.last.m], ['2001-06', '2001-08', '2001-12', '2001-12']);
   ok('the two emotions she spent most months in', st.most, [{ word: 'Hope', n: 5 }, { word: 'Optimism', n: 1 }]);

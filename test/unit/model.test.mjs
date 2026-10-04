@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
-import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday } from '../../src/js/model.ts';
+import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, yearAfter } from '../../src/js/model.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
@@ -10,6 +10,16 @@ const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
 
 test('the app boots with no error', () => assert.deepEqual(errors, []));
+
+test('the year after a close is the next calendar year of the record, from 1928, or nothing', () => {
+  assert.equal(yearAfter(1932), 49.98);
+  assert.equal(yearAfter(1946), 5.2);
+  assert.equal(yearAfter(2026), null);
+});
+
+test('every closed cycle ends on what the market did the year after', () => {
+  for (const c of marketCycles.filter(c => !c.ongoing)) assert.notEqual(yearAfter(c.to), null, c.name);
+});
 
 test('every cycle reads a season, and its track runs without a gap', () => {
   for (const c of marketCycles) {

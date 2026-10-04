@@ -7,7 +7,7 @@ import { curveVerdict, valuationVerdict } from '../../src/js/readings.ts';
 import { ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, isoDay, prettyKey, monthLabel } from '../../src/js/format.ts';
 import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.ts';
 import { merge, plainText } from '../../src/js/live.ts';
-import { seasonGroup, seasonTitle, yearAfter } from '../../src/js/model.ts';
+import { seasonGroup, seasonTitle } from '../../src/js/model.ts';
 import * as fred from '../../src/js/history-fred.ts';
 
 const require = createRequire(import.meta.url);
@@ -80,14 +80,6 @@ test('seasons group into four, and a theme is lower-cased after the name', () =>
     ['summer', 'spring', 'autumn', 'winter', 'spring', 'autumn']);
   assert.equal(seasonTitle({ name: 'Autumn', theme: 'Stagflation' }), 'Autumn · stagflation');
   assert.equal(seasonTitle({ name: 'Winter' }), 'Winter');
-});
-
-test('a year later is twelve months on, or nothing', () => {
-  const sp = Array.from({ length: 14 }, (_, i) => ({ m: 'm' + i, v: 100 + i }));
-  const S = { sp, spAt: Object.fromEntries(sp.map((d, i) => [d.m, i])) };
-  assert.equal(yearAfter(S, 'm0'), 112 / 100 - 1);
-  assert.equal(yearAfter(S, 'm2'), null);
-  assert.equal(yearAfter(S, 'nope'), null);
 });
 
 test('merge lays a live document over the literal, one level deep', () => {

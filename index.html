@@ -140,7 +140,6 @@
   }
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 64px; }
   .mono{ font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
-  .serif{ font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; }
 
   .topbar{
     position:sticky; top:0; z-index:30; margin:0 -20px var(--topbar-gap); padding:10px 20px;
@@ -232,7 +231,6 @@
   .menu-prose{ padding:6px 20px 8px; }
   .menu-prose p{ font-size:var(--type-reading); line-height:1.6; color:var(--text-primary); margin:12px 0; }
   .menu-prose b{ font-weight:600; }
-  .menu-lede .serif{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; }
   .tabnav .lede{ max-width: 64ch; color: var(--text-secondary); font-size:var(--type-reading); line-height: 1.65; margin: 0 0 22px; }
   .tabnav .lede b{ color:var(--text-primary); font-weight:600; }
 
@@ -278,8 +276,8 @@
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
   .detail-modal .legend-rows, .metric-sheet .legend-rows, .sign-detail .legend-rows, .hero .legend-rows, .journal-about .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child{ border-bottom:none; }
+  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
@@ -288,7 +286,7 @@
   .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
   .detail-modal .legend-row .bar, .metric-sheet .legend-row .bar, .sign-detail .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
   .detail-modal .legend-row .bar.ytd, .metric-sheet .legend-row .bar.ytd, .sign-detail .legend-row .bar.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .journal-about .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
+  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .journal-about .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
   .detail-modal .legend-head, .metric-sheet .legend-head, .sign-detail .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
   :root{
@@ -495,7 +493,10 @@
   .reading-book{ grid-column:1 / -1; border-top:1px dashed var(--border-strong); padding-top:14px; }
   .reading-book blockquote{ margin:8px 0 0; padding-left:14px; border-left:3px solid var(--border-strong); font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .framework-rows{ margin-top:12px; }
-  .seasons-rows{ margin-top:12px; }
+  .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
+  .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
+  .model-card .legend-rows{ margin:0; }
+  .model-card .legend-row{ padding:10px 12px; }
   .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:var(--type-interface); padding:10px 12px; }
   .seasons-rows .lag-row.lag-row-head{ font-size:var(--type-label); }
   .seasons-rows .meta{ display:none; }
@@ -1026,8 +1027,54 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
+  .sx-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .sx-switch{ display:inline-flex; align-items:center; gap:8px; font-family:"Public Sans",sans-serif; font-size:var(--type-meta);
+    font-weight:600; color:var(--text-secondary); cursor:pointer; }
+  .sx-toggle{ position:relative; flex:none; width:40px; height:24px; padding:0; border:0; border-radius:12px;
+    background:var(--border-strong); cursor:pointer; transition:background 0.15s ease; }
+  .sx-toggle i{ position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:var(--surface);
+    box-shadow:0 1px 2px rgba(0,0,0,0.25); transition:transform 0.15s ease; }
+  .sx-toggle[aria-checked="true"]{ background:var(--accent); }
+  .sx-toggle[aria-checked="true"] i{ transform:translateX(16px); }
+  .sx-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .sx-legend{ padding:11px 14px 12px; border-bottom:1px solid var(--border); }
+  .sx-legend p{ margin:0 0 8px; font-size:var(--type-meta); line-height:1.5; color:var(--text-secondary); }
+  .sx-keys{ display:flex; flex-wrap:wrap; gap:6px 14px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .sx-keys span{ display:inline-flex; align-items:center; gap:6px; }
+  .sx-keys i{ width:10px; height:10px; border-radius:50%; }
+  .sx-keys i.sx-off{ width:5px; height:5px; background:var(--text-muted); opacity:0.5; }
+  .sx-keys i.sx-now{ border:1.5px solid var(--accent); box-sizing:border-box; }
+  .sx-keys b.sx-down{ font-weight:700; color:var(--bear-ink); }
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
+  .sx-keys i[class^="cat-"], .sx-row i.on{ background:var(--cat); }
+  .era-row.data{ cursor:default; }
+  .era-row.data:hover{ background:none; }
+  .era-open{ display:flex; width:100%; padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
+  .era-open:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
+  .era-open:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  .cyc-track{ overflow-x:auto; margin:9px 0 0; padding:0 0 2px; -webkit-overflow-scrolling:touch; direction:rtl; }
+  .cyc-track > *{ direction:ltr; }
+  .cyc-scale .strip{ margin:0; }
+  .cyc-scale .strip + .strip{ margin-top:5px; }
+  .cyc-scale, .sx-yrs, .sx-row{ display:grid; align-items:center; width:max-content; min-width:100%; }
+  .sx-yrs{ height:22px; margin-top:6px; }
+  .sx-yrs span{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; text-align:center; color:var(--text-muted); }
+  .sx-yrs span.down{ color:var(--bear-ink); }
+  .sx-yrs span.now{ color:var(--accent-ink); }
+  .sx-yrs span.ahead{ opacity:0.45; }
+  .sx-row{ height:26px; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer; }
+  .sx-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px; }
+  .sx-row i{ justify-self:center; width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
+  .sx-row i.on{ width:13px; height:13px; opacity:1; }
+  .sx-row i.na, .sx-row i.ahead{ opacity:0; }
+  .sx-row i.now{ width:11px; height:11px; background:none; border:1.5px solid var(--accent); box-sizing:border-box; opacity:1; }
+  .sx-row b{ position:sticky; right:0; justify-self:end; padding:3px 0 3px 8px; font-family:"Public Sans",sans-serif;
+    font-size:var(--type-meta); font-weight:600; white-space:nowrap; color:var(--text-primary); background:var(--surface); }
+  .sx-row b::before{ content:""; position:absolute; top:0; bottom:0; left:-10px; width:10px;
+    background:linear-gradient(90deg, transparent, var(--surface)); }
+  .sx-row:hover b{ color:var(--accent-ink); }
+  .sx-foot{ margin:8px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .metric-sheet.cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
@@ -1041,57 +1088,6 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
-  .ca-note{ margin:16px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
-  .cat-analysis .aux-stat .season-sw{ margin-right:8px; vertical-align:middle; }
-  .clock{ display:block; width:100%; max-width:380px; margin:12px auto 0; }
-  .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
-  .clock-name{ font-size:var(--type-meta); font-weight:700; fill:var(--text-primary); }
-  .clock-name.now{ fill:var(--accent-ink); }
-  .clock-asset{ font-size:var(--type-meta); fill:var(--text-muted); }
-  .clock-hand{ stroke:var(--accent); stroke-width:3; stroke-linecap:round; }
-  .clock-pin{ fill:var(--accent); }
-  .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
-  .clock-q.winter, .clock-q.spring, .clock-q.summer, .clock-q.autumn{ fill:color-mix(in srgb, var(--season) 22%, var(--surface)); }
-  .clock-q.now{ fill:color-mix(in srgb, var(--season) 55%, var(--surface)); }
-  .sc-grid{ width:100%; margin-top:10px; border-collapse:separate; border-spacing:2px; font-size:var(--type-meta); font-variant-numeric:tabular-nums; }
-  .sc-grid th{ font-weight:600; color:var(--text-muted); text-align:center; padding:2px 0; }
-  .sc-grid tbody th{ text-align:left; color:var(--text-primary); line-height:1.15; padding-right:4px; }
-  .sc-grid th small{ font-weight:400; color:var(--text-muted); }
-  .sc-grid tr.now th{ color:var(--accent-ink); }
-  .sc-cell{ text-align:center; padding:7px 0; border-radius:6px; color:var(--text-primary); }
-  .sc-cell.thin{ background:var(--surface-2); color:var(--text-muted); }
-  .sc-cell.flag{ background:var(--serious-wash); color:var(--serious-ink); font-weight:600; }
-  .labs{ margin-top:12px; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
-  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
-  .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
-  .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
-  .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
-  .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
-  .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
-  .lab-ring circle.on{ stroke:var(--good); stroke-linecap:round; }
-  .lab-chips{ display:flex; gap:5px; margin:12px 0 4px; overflow-x:auto; }
-  .lab-f{ position:absolute; opacity:0; pointer-events:none; }
-  .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
-  .lab-chips label span{ color:var(--text-muted); }
-  .lab-f:checked + label{ background:var(--good); border-color:var(--good); color:var(--surface); }
-  .lab-f:checked + label span{ color:inherit; }
-  .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
-  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
-  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
-  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
-  .lab-sec h5{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
-  .lab-sec h5::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
-  .lab-sec ul{ list-style:none; margin:0; padding:0; }
-  .lab-sec{ --tier:var(--good); }
-  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
-  .lab-sec.t-abnormal{ --tier:var(--critical); }
-  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
-  .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
-  .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
-  .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .t-abnormal .lab-res b{ color:var(--critical-ink); }
-  .sc-grid tr.now .sc-cell{ box-shadow:inset 0 0 0 2px var(--accent); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -1287,11 +1283,11 @@
   .detail-modal .facts li::before, .metric-sheet .facts li::before, .sign-detail .facts li::before{ content:""; position:absolute; left:2px; top:9px; width:5px; height:5px; border-radius:50%; background:var(--text-muted); }
   .detail-modal .facts li b, .metric-sheet .facts li b, .sign-detail .facts li b{ color:var(--text-primary); font-weight:600; }
   .detail-modal .lede, .metric-sheet .lede, .sign-detail .lede{ font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); margin:0; }
-  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat, .cat-analysis .aux-stat{
+  .detail-modal .aux-stat, .metric-sheet .aux-stat, .sign-detail .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:14px;
   }
-  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b, .cat-analysis .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
+  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
   .aux-stat.wordy b{ font-family:"Public Sans",sans-serif !important; font-weight:600; }
   .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
   .detail-modal .src a, .metric-sheet .src a, .sign-detail .src a{ color:var(--text-muted); }
@@ -1315,6 +1311,7 @@
   .card .details-link:hover{ text-decoration:underline; }
 
   .card .caption{ font-size:var(--type-interface); color:var(--text-secondary); line-height:1.55; margin: 6px 0 10px; flex:1; }
+  .caption.era-blurb{ font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
   .card .aux-stat{
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:auto;
@@ -1496,11 +1493,14 @@
   <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
       <div class="cyc-card">
-        <div class="cyc-head">
+        <div class="cyc-head sx-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
+          <label class="sx-switch"><span>Show data</span><button type="button" role="switch" aria-checked="false"
+            class="sx-toggle" id="cycle-data"><i></i></button></label>
         </div>
+        <div class="sx-legend" id="cycle-legend" hidden></div>
         <div id="cycle-list"></div>
         <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
           <span id="cycle-more-label">View more</span>
@@ -1564,7 +1564,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 1.8.0 (726)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.1.1 (729)</span></p>
     </div>
   </div>
 
@@ -1619,33 +1619,27 @@
         </button>
         <h2 class="topbar-title sources-title">About Gyneconomy</h2>
       </div>
-      <p class="menu-lede"><i class="serif">Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
-
       <h3 class="menu-section">The idea</h3>
       <div class="menu-card menu-prose">
+        <p><i>Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
         <p>The body is the economy. Markets are its nervous system; hormones and prices are its signals; growth and inflation are its energy budget; interest rates are the lever that cools it after it has already run hot. Read this way, the phases of an economic cycle stop being abstractions and become seasons — Spring, Summer, Autumn and Winter — each with its own temperature, its own mood, and its own right action.</p>
         <p>The framework, which the book calls Gyneconomy™, borrows its discipline from two places: Howard Marks's <i>Mastering the Market Cycle</i> for the economics, and Alexandra Pope and Sjanie Hugo Wurlitzer's <i>Wild Power</i> for the cycle. Every economic claim in it is grounded in verified biological research before it is allowed on the page.</p>
+        <p>The app is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1928, and keeps the vital signs the book teaches you to watch. Every figure comes from primary sources.</p>
       </div>
 
-      <h3 class="menu-section">This board</h3>
-      <div class="menu-card menu-prose">
-        <p>The board is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1991 the same way, and keeps the vital signs the book teaches you to watch. Every figure is compiled by hand from primary sources and fixed at publish time — nothing on it updates on its own.</p>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Cycle Model</h3>
+        <p>A cycle runs from its first rising year to the bear market that ends it.</p>
+        <div class="legend-rows">
+          <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
+          <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
+        </div>
       </div>
 
-      <h3 class="menu-section">The Cycle Model</h3>
-      <div class="menu-card journal-about">
-      <p>A cycle runs from its first rising year to the bear market that ends it. Everything between belongs to
-        it: the recovery, the boom, and the bleed the boom pays for.</p>
-      <div class="legend-rows">
-        <div class="legend-row"><span class="season-sw" style="--season:var(--bleed-mid)"></span>Bear year<small>the market closed down</small></div>
-        <div class="legend-row"><span class="season-sw" style="--season:var(--ovulate)"></span>Bull year<small>the market closed up</small></div>
+      <div class="menu-card model-card seasons-rows">
+        <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
+        <div id="seasons-rows"></div>
       </div>
-    </div>
-
-      <h3 class="menu-section" id="seasons-kicker">The Season Model</h3>
-      <div class="menu-card journal-about">
-      <div class="lag-rows seasons-rows" id="seasons-rows"></div>
-    </div>
 
       <h3 class="menu-section" id="framework-kicker">The framework</h3>
       <div class="menu-card journal-about">
@@ -1787,8 +1781,8 @@
     var t = n % 100, o = [ "th", "st", "nd", "rd" ][(t - 20) % 10] || [ "th", "st", "nd", "rd" ][t] || "th";
     return n + o;
   }
-  function hiCard(name, state2, text, body) {
-    return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
+  function hiCard(name, state, text, body) {
+    return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
   function dropWhatIsShown(full, shown) {
     if (!full || !shown) return full || "";
@@ -1872,6 +1866,9 @@
   }
   function capeFmt1(v) {
     return v.toFixed(1) + "×";
+  }
+  function withUnit(fig, unit) {
+    return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : "");
   }
   var ui = {
     eraOpen: null,
@@ -2131,8 +2128,8 @@
     return true;
   }
   function olderThanFile(name, d) {
-    var got = isoDay(d && d.asOf);
-    return !!got && got < newestDay(name);
+    var floor = newestDay(name), got = isoDay(d && d.asOf);
+    return !!got && got < floor;
   }
   function liveInto(name) {
     var d = LIVE_CACHE[name];
@@ -24869,2277 +24866,6 @@
       m: "2026-09",
       v: 1.01
     } ],
-    assetReturns: {
-      stocks: [ {
-        y: 1928,
-        v: 43.81
-      }, {
-        y: 1929,
-        v: -8.3
-      }, {
-        y: 1930,
-        v: -25.12
-      }, {
-        y: 1931,
-        v: -43.84
-      }, {
-        y: 1932,
-        v: -8.64
-      }, {
-        y: 1933,
-        v: 49.98
-      }, {
-        y: 1934,
-        v: -1.19
-      }, {
-        y: 1935,
-        v: 46.74
-      }, {
-        y: 1936,
-        v: 31.94
-      }, {
-        y: 1937,
-        v: -35.34
-      }, {
-        y: 1938,
-        v: 29.28
-      }, {
-        y: 1939,
-        v: -1.1
-      }, {
-        y: 1940,
-        v: -10.67
-      }, {
-        y: 1941,
-        v: -12.77
-      }, {
-        y: 1942,
-        v: 19.17
-      }, {
-        y: 1943,
-        v: 25.06
-      }, {
-        y: 1944,
-        v: 19.03
-      }, {
-        y: 1945,
-        v: 35.82
-      }, {
-        y: 1946,
-        v: -8.43
-      }, {
-        y: 1947,
-        v: 5.2
-      }, {
-        y: 1948,
-        v: 5.7
-      }, {
-        y: 1949,
-        v: 18.3
-      }, {
-        y: 1950,
-        v: 30.81
-      }, {
-        y: 1951,
-        v: 23.68
-      }, {
-        y: 1952,
-        v: 18.15
-      }, {
-        y: 1953,
-        v: -1.21
-      }, {
-        y: 1954,
-        v: 52.56
-      }, {
-        y: 1955,
-        v: 32.6
-      }, {
-        y: 1956,
-        v: 7.44
-      }, {
-        y: 1957,
-        v: -10.46
-      }, {
-        y: 1958,
-        v: 43.72
-      }, {
-        y: 1959,
-        v: 12.06
-      }, {
-        y: 1960,
-        v: .34
-      }, {
-        y: 1961,
-        v: 26.64
-      }, {
-        y: 1962,
-        v: -8.81
-      }, {
-        y: 1963,
-        v: 22.61
-      }, {
-        y: 1964,
-        v: 16.42
-      }, {
-        y: 1965,
-        v: 12.4
-      }, {
-        y: 1966,
-        v: -9.97
-      }, {
-        y: 1967,
-        v: 23.8
-      }, {
-        y: 1968,
-        v: 10.81
-      }, {
-        y: 1969,
-        v: -8.24
-      }, {
-        y: 1970,
-        v: 3.56
-      }, {
-        y: 1971,
-        v: 14.22
-      }, {
-        y: 1972,
-        v: 18.76
-      }, {
-        y: 1973,
-        v: -14.31
-      }, {
-        y: 1974,
-        v: -25.9
-      }, {
-        y: 1975,
-        v: 37
-      }, {
-        y: 1976,
-        v: 23.83
-      }, {
-        y: 1977,
-        v: -6.98
-      }, {
-        y: 1978,
-        v: 6.51
-      }, {
-        y: 1979,
-        v: 18.52
-      }, {
-        y: 1980,
-        v: 31.74
-      }, {
-        y: 1981,
-        v: -4.7
-      }, {
-        y: 1982,
-        v: 20.42
-      }, {
-        y: 1983,
-        v: 22.34
-      }, {
-        y: 1984,
-        v: 6.15
-      }, {
-        y: 1985,
-        v: 31.24
-      }, {
-        y: 1986,
-        v: 18.49
-      }, {
-        y: 1987,
-        v: 5.81
-      }, {
-        y: 1988,
-        v: 16.54
-      }, {
-        y: 1989,
-        v: 31.48
-      }, {
-        y: 1990,
-        v: -3.06
-      }, {
-        y: 1991,
-        v: 30.23
-      }, {
-        y: 1992,
-        v: 7.49
-      }, {
-        y: 1993,
-        v: 9.97
-      }, {
-        y: 1994,
-        v: 1.33
-      }, {
-        y: 1995,
-        v: 37.2
-      }, {
-        y: 1996,
-        v: 22.68
-      }, {
-        y: 1997,
-        v: 33.1
-      }, {
-        y: 1998,
-        v: 28.34
-      }, {
-        y: 1999,
-        v: 20.89
-      }, {
-        y: 2e3,
-        v: -9.03
-      }, {
-        y: 2001,
-        v: -11.85
-      }, {
-        y: 2002,
-        v: -21.97
-      }, {
-        y: 2003,
-        v: 28.36
-      }, {
-        y: 2004,
-        v: 10.74
-      }, {
-        y: 2005,
-        v: 4.83
-      }, {
-        y: 2006,
-        v: 15.61
-      }, {
-        y: 2007,
-        v: 5.48
-      }, {
-        y: 2008,
-        v: -36.55
-      }, {
-        y: 2009,
-        v: 25.94
-      }, {
-        y: 2010,
-        v: 14.82
-      }, {
-        y: 2011,
-        v: 2.1
-      }, {
-        y: 2012,
-        v: 15.89
-      }, {
-        y: 2013,
-        v: 32.15
-      }, {
-        y: 2014,
-        v: 13.52
-      }, {
-        y: 2015,
-        v: 1.38
-      }, {
-        y: 2016,
-        v: 11.77
-      }, {
-        y: 2017,
-        v: 21.61
-      }, {
-        y: 2018,
-        v: -4.23
-      }, {
-        y: 2019,
-        v: 31.21
-      }, {
-        y: 2020,
-        v: 18.02
-      }, {
-        y: 2021,
-        v: 28.47
-      }, {
-        y: 2022,
-        v: -18.04
-      }, {
-        y: 2023,
-        v: 26.06
-      }, {
-        y: 2024,
-        v: 24.88
-      }, {
-        y: 2025,
-        v: 17.78
-      } ],
-      bills: [ {
-        y: 1928,
-        v: 3.08
-      }, {
-        y: 1929,
-        v: 3.16
-      }, {
-        y: 1930,
-        v: 4.55
-      }, {
-        y: 1931,
-        v: 2.31
-      }, {
-        y: 1932,
-        v: 1.07
-      }, {
-        y: 1933,
-        v: .96
-      }, {
-        y: 1934,
-        v: .28
-      }, {
-        y: 1935,
-        v: .17
-      }, {
-        y: 1936,
-        v: .17
-      }, {
-        y: 1937,
-        v: .28
-      }, {
-        y: 1938,
-        v: .07
-      }, {
-        y: 1939,
-        v: .05
-      }, {
-        y: 1940,
-        v: .04
-      }, {
-        y: 1941,
-        v: .13
-      }, {
-        y: 1942,
-        v: .34
-      }, {
-        y: 1943,
-        v: .38
-      }, {
-        y: 1944,
-        v: .38
-      }, {
-        y: 1945,
-        v: .38
-      }, {
-        y: 1946,
-        v: .38
-      }, {
-        y: 1947,
-        v: .6
-      }, {
-        y: 1948,
-        v: 1.05
-      }, {
-        y: 1949,
-        v: 1.12
-      }, {
-        y: 1950,
-        v: 1.2
-      }, {
-        y: 1951,
-        v: 1.52
-      }, {
-        y: 1952,
-        v: 1.72
-      }, {
-        y: 1953,
-        v: 1.89
-      }, {
-        y: 1954,
-        v: .94
-      }, {
-        y: 1955,
-        v: 1.72
-      }, {
-        y: 1956,
-        v: 2.62
-      }, {
-        y: 1957,
-        v: 3.22
-      }, {
-        y: 1958,
-        v: 1.77
-      }, {
-        y: 1959,
-        v: 3.39
-      }, {
-        y: 1960,
-        v: 2.87
-      }, {
-        y: 1961,
-        v: 2.35
-      }, {
-        y: 1962,
-        v: 2.77
-      }, {
-        y: 1963,
-        v: 3.16
-      }, {
-        y: 1964,
-        v: 3.55
-      }, {
-        y: 1965,
-        v: 3.95
-      }, {
-        y: 1966,
-        v: 4.86
-      }, {
-        y: 1967,
-        v: 4.29
-      }, {
-        y: 1968,
-        v: 5.34
-      }, {
-        y: 1969,
-        v: 6.67
-      }, {
-        y: 1970,
-        v: 6.39
-      }, {
-        y: 1971,
-        v: 4.33
-      }, {
-        y: 1972,
-        v: 4.06
-      }, {
-        y: 1973,
-        v: 7.04
-      }, {
-        y: 1974,
-        v: 7.85
-      }, {
-        y: 1975,
-        v: 5.79
-      }, {
-        y: 1976,
-        v: 4.98
-      }, {
-        y: 1977,
-        v: 5.26
-      }, {
-        y: 1978,
-        v: 7.18
-      }, {
-        y: 1979,
-        v: 10.05
-      }, {
-        y: 1980,
-        v: 11.39
-      }, {
-        y: 1981,
-        v: 14.04
-      }, {
-        y: 1982,
-        v: 11.09
-      }, {
-        y: 1983,
-        v: 8.95
-      }, {
-        y: 1984,
-        v: 9.92
-      }, {
-        y: 1985,
-        v: 7.72
-      }, {
-        y: 1986,
-        v: 6.15
-      }, {
-        y: 1987,
-        v: 5.96
-      }, {
-        y: 1988,
-        v: 6.89
-      }, {
-        y: 1989,
-        v: 8.39
-      }, {
-        y: 1990,
-        v: 7.75
-      }, {
-        y: 1991,
-        v: 5.54
-      }, {
-        y: 1992,
-        v: 3.51
-      }, {
-        y: 1993,
-        v: 3.07
-      }, {
-        y: 1994,
-        v: 4.37
-      }, {
-        y: 1995,
-        v: 5.66
-      }, {
-        y: 1996,
-        v: 5.15
-      }, {
-        y: 1997,
-        v: 5.2
-      }, {
-        y: 1998,
-        v: 4.91
-      }, {
-        y: 1999,
-        v: 4.78
-      }, {
-        y: 2e3,
-        v: 6
-      }, {
-        y: 2001,
-        v: 3.48
-      }, {
-        y: 2002,
-        v: 1.64
-      }, {
-        y: 2003,
-        v: 1.03
-      }, {
-        y: 2004,
-        v: 1.4
-      }, {
-        y: 2005,
-        v: 3.22
-      }, {
-        y: 2006,
-        v: 4.85
-      }, {
-        y: 2007,
-        v: 4.48
-      }, {
-        y: 2008,
-        v: 1.4
-      }, {
-        y: 2009,
-        v: .15
-      }, {
-        y: 2010,
-        v: .14
-      }, {
-        y: 2011,
-        v: .05
-      }, {
-        y: 2012,
-        v: .09
-      }, {
-        y: 2013,
-        v: .06
-      }, {
-        y: 2014,
-        v: .03
-      }, {
-        y: 2015,
-        v: .05
-      }, {
-        y: 2016,
-        v: .32
-      }, {
-        y: 2017,
-        v: .95
-      }, {
-        y: 2018,
-        v: 1.97
-      }, {
-        y: 2019,
-        v: 2.11
-      }, {
-        y: 2020,
-        v: .36
-      }, {
-        y: 2021,
-        v: .04
-      }, {
-        y: 2022,
-        v: 2.09
-      }, {
-        y: 2023,
-        v: 5.28
-      }, {
-        y: 2024,
-        v: 5.18
-      }, {
-        y: 2025,
-        v: 4.21
-      } ],
-      bonds: [ {
-        y: 1928,
-        v: .84
-      }, {
-        y: 1929,
-        v: 4.2
-      }, {
-        y: 1930,
-        v: 4.54
-      }, {
-        y: 1931,
-        v: -2.56
-      }, {
-        y: 1932,
-        v: 8.79
-      }, {
-        y: 1933,
-        v: 1.86
-      }, {
-        y: 1934,
-        v: 7.96
-      }, {
-        y: 1935,
-        v: 4.47
-      }, {
-        y: 1936,
-        v: 5.02
-      }, {
-        y: 1937,
-        v: 1.38
-      }, {
-        y: 1938,
-        v: 4.21
-      }, {
-        y: 1939,
-        v: 4.41
-      }, {
-        y: 1940,
-        v: 5.4
-      }, {
-        y: 1941,
-        v: -2.02
-      }, {
-        y: 1942,
-        v: 2.29
-      }, {
-        y: 1943,
-        v: 2.49
-      }, {
-        y: 1944,
-        v: 2.58
-      }, {
-        y: 1945,
-        v: 3.8
-      }, {
-        y: 1946,
-        v: 3.13
-      }, {
-        y: 1947,
-        v: .92
-      }, {
-        y: 1948,
-        v: 1.95
-      }, {
-        y: 1949,
-        v: 4.66
-      }, {
-        y: 1950,
-        v: .43
-      }, {
-        y: 1951,
-        v: -.3
-      }, {
-        y: 1952,
-        v: 2.27
-      }, {
-        y: 1953,
-        v: 4.14
-      }, {
-        y: 1954,
-        v: 3.29
-      }, {
-        y: 1955,
-        v: -1.34
-      }, {
-        y: 1956,
-        v: -2.26
-      }, {
-        y: 1957,
-        v: 6.8
-      }, {
-        y: 1958,
-        v: -2.1
-      }, {
-        y: 1959,
-        v: -2.65
-      }, {
-        y: 1960,
-        v: 11.64
-      }, {
-        y: 1961,
-        v: 2.06
-      }, {
-        y: 1962,
-        v: 5.69
-      }, {
-        y: 1963,
-        v: 1.68
-      }, {
-        y: 1964,
-        v: 3.73
-      }, {
-        y: 1965,
-        v: .72
-      }, {
-        y: 1966,
-        v: 2.91
-      }, {
-        y: 1967,
-        v: -1.58
-      }, {
-        y: 1968,
-        v: 3.27
-      }, {
-        y: 1969,
-        v: -5.01
-      }, {
-        y: 1970,
-        v: 16.75
-      }, {
-        y: 1971,
-        v: 9.79
-      }, {
-        y: 1972,
-        v: 2.82
-      }, {
-        y: 1973,
-        v: 3.66
-      }, {
-        y: 1974,
-        v: 1.99
-      }, {
-        y: 1975,
-        v: 3.61
-      }, {
-        y: 1976,
-        v: 15.98
-      }, {
-        y: 1977,
-        v: 1.29
-      }, {
-        y: 1978,
-        v: -.78
-      }, {
-        y: 1979,
-        v: .67
-      }, {
-        y: 1980,
-        v: -2.99
-      }, {
-        y: 1981,
-        v: 8.2
-      }, {
-        y: 1982,
-        v: 32.81
-      }, {
-        y: 1983,
-        v: 3.2
-      }, {
-        y: 1984,
-        v: 13.73
-      }, {
-        y: 1985,
-        v: 25.71
-      }, {
-        y: 1986,
-        v: 24.28
-      }, {
-        y: 1987,
-        v: -4.96
-      }, {
-        y: 1988,
-        v: 8.22
-      }, {
-        y: 1989,
-        v: 17.69
-      }, {
-        y: 1990,
-        v: 6.24
-      }, {
-        y: 1991,
-        v: 15
-      }, {
-        y: 1992,
-        v: 9.36
-      }, {
-        y: 1993,
-        v: 14.21
-      }, {
-        y: 1994,
-        v: -8.04
-      }, {
-        y: 1995,
-        v: 23.48
-      }, {
-        y: 1996,
-        v: 1.43
-      }, {
-        y: 1997,
-        v: 9.94
-      }, {
-        y: 1998,
-        v: 14.92
-      }, {
-        y: 1999,
-        v: -8.25
-      }, {
-        y: 2e3,
-        v: 16.66
-      }, {
-        y: 2001,
-        v: 5.57
-      }, {
-        y: 2002,
-        v: 15.12
-      }, {
-        y: 2003,
-        v: .38
-      }, {
-        y: 2004,
-        v: 4.49
-      }, {
-        y: 2005,
-        v: 2.87
-      }, {
-        y: 2006,
-        v: 1.96
-      }, {
-        y: 2007,
-        v: 10.21
-      }, {
-        y: 2008,
-        v: 20.1
-      }, {
-        y: 2009,
-        v: -11.12
-      }, {
-        y: 2010,
-        v: 8.46
-      }, {
-        y: 2011,
-        v: 16.04
-      }, {
-        y: 2012,
-        v: 2.97
-      }, {
-        y: 2013,
-        v: -9.1
-      }, {
-        y: 2014,
-        v: 10.75
-      }, {
-        y: 2015,
-        v: 1.28
-      }, {
-        y: 2016,
-        v: .69
-      }, {
-        y: 2017,
-        v: 2.8
-      }, {
-        y: 2018,
-        v: -.02
-      }, {
-        y: 2019,
-        v: 9.64
-      }, {
-        y: 2020,
-        v: 11.33
-      }, {
-        y: 2021,
-        v: -4.42
-      }, {
-        y: 2022,
-        v: -17.83
-      }, {
-        y: 2023,
-        v: 3.88
-      }, {
-        y: 2024,
-        v: -1.64
-      }, {
-        y: 2025,
-        v: 7.8
-      } ],
-      baa: [ {
-        y: 1928,
-        v: 3.22
-      }, {
-        y: 1929,
-        v: 3.02
-      }, {
-        y: 1930,
-        v: .54
-      }, {
-        y: 1931,
-        v: -15.68
-      }, {
-        y: 1932,
-        v: 23.59
-      }, {
-        y: 1933,
-        v: 12.97
-      }, {
-        y: 1934,
-        v: 18.82
-      }, {
-        y: 1935,
-        v: 13.31
-      }, {
-        y: 1936,
-        v: 11.38
-      }, {
-        y: 1937,
-        v: -4.42
-      }, {
-        y: 1938,
-        v: 9.24
-      }, {
-        y: 1939,
-        v: 7.98
-      }, {
-        y: 1940,
-        v: 8.65
-      }, {
-        y: 1941,
-        v: 5.01
-      }, {
-        y: 1942,
-        v: 5.18
-      }, {
-        y: 1943,
-        v: 8.04
-      }, {
-        y: 1944,
-        v: 6.57
-      }, {
-        y: 1945,
-        v: 6.8
-      }, {
-        y: 1946,
-        v: 2.51
-      }, {
-        y: 1947,
-        v: .26
-      }, {
-        y: 1948,
-        v: 3.44
-      }, {
-        y: 1949,
-        v: 5.38
-      }, {
-        y: 1950,
-        v: 4.24
-      }, {
-        y: 1951,
-        v: -.19
-      }, {
-        y: 1952,
-        v: 4.44
-      }, {
-        y: 1953,
-        v: 1.62
-      }, {
-        y: 1954,
-        v: 6.16
-      }, {
-        y: 1955,
-        v: 2.04
-      }, {
-        y: 1956,
-        v: -2.35
-      }, {
-        y: 1957,
-        v: -.72
-      }, {
-        y: 1958,
-        v: 6.43
-      }, {
-        y: 1959,
-        v: 1.57
-      }, {
-        y: 1960,
-        v: 6.66
-      }, {
-        y: 1961,
-        v: 5.1
-      }, {
-        y: 1962,
-        v: 6.5
-      }, {
-        y: 1963,
-        v: 5.46
-      }, {
-        y: 1964,
-        v: 5.16
-      }, {
-        y: 1965,
-        v: 3.19
-      }, {
-        y: 1966,
-        v: -3.45
-      }, {
-        y: 1967,
-        v: .9
-      }, {
-        y: 1968,
-        v: 4.85
-      }, {
-        y: 1969,
-        v: -2.03
-      }, {
-        y: 1970,
-        v: 5.65
-      }, {
-        y: 1971,
-        v: 14
-      }, {
-        y: 1972,
-        v: 11.41
-      }, {
-        y: 1973,
-        v: 4.32
-      }, {
-        y: 1974,
-        v: -4.38
-      }, {
-        y: 1975,
-        v: 11.05
-      }, {
-        y: 1976,
-        v: 19.75
-      }, {
-        y: 1977,
-        v: 9.95
-      }, {
-        y: 1978,
-        v: 3.14
-      }, {
-        y: 1979,
-        v: -2.01
-      }, {
-        y: 1980,
-        v: -3.32
-      }, {
-        y: 1981,
-        v: 8.46
-      }, {
-        y: 1982,
-        v: 29.05
-      }, {
-        y: 1983,
-        v: 16.19
-      }, {
-        y: 1984,
-        v: 15.62
-      }, {
-        y: 1985,
-        v: 23.86
-      }, {
-        y: 1986,
-        v: 22.15
-      }, {
-        y: 1987,
-        v: 1.12
-      }, {
-        y: 1988,
-        v: 15.68
-      }, {
-        y: 1989,
-        v: 16.31
-      }, {
-        y: 1990,
-        v: 5.65
-      }, {
-        y: 1991,
-        v: 16.4
-      }, {
-        y: 1992,
-        v: 13.68
-      }, {
-        y: 1993,
-        v: 16.44
-      }, {
-        y: 1994,
-        v: -1.23
-      }, {
-        y: 1995,
-        v: 20.09
-      }, {
-        y: 1996,
-        v: 5.28
-      }, {
-        y: 1997,
-        v: 11.3
-      }, {
-        y: 1998,
-        v: 8.1
-      }, {
-        y: 1999,
-        v: .97
-      }, {
-        y: 2e3,
-        v: 9.38
-      }, {
-        y: 2001,
-        v: 8.6
-      }, {
-        y: 2002,
-        v: 12.06
-      }, {
-        y: 2003,
-        v: 12.38
-      }, {
-        y: 2004,
-        v: 10.33
-      }, {
-        y: 2005,
-        v: 5.13
-      }, {
-        y: 2006,
-        v: 5.27
-      }, {
-        y: 2007,
-        v: 4.9
-      }, {
-        y: 2008,
-        v: -3.44
-      }, {
-        y: 2009,
-        v: 19.96
-      }, {
-        y: 2010,
-        v: 9.4
-      }, {
-        y: 2011,
-        v: 12.26
-      }, {
-        y: 2012,
-        v: 9.4
-      }, {
-        y: 2013,
-        v: -1.13
-      }, {
-        y: 2014,
-        v: 10.75
-      }, {
-        y: 2015,
-        v: -1.5
-      }, {
-        y: 2016,
-        v: 11.52
-      }, {
-        y: 2017,
-        v: 9.15
-      }, {
-        y: 2018,
-        v: -3.18
-      }, {
-        y: 2019,
-        v: 15.25
-      }, {
-        y: 2020,
-        v: 10.6
-      }, {
-        y: 2021,
-        v: 1.02
-      }, {
-        y: 2022,
-        v: -15.23
-      }, {
-        y: 2023,
-        v: 8.74
-      }, {
-        y: 2024,
-        v: 1.74
-      }, {
-        y: 2025,
-        v: 6.96
-      } ],
-      estate: [ {
-        y: 1928,
-        v: 1.49
-      }, {
-        y: 1929,
-        v: -2.06
-      }, {
-        y: 1930,
-        v: -4.3
-      }, {
-        y: 1931,
-        v: -8.15
-      }, {
-        y: 1932,
-        v: -10.47
-      }, {
-        y: 1933,
-        v: -3.81
-      }, {
-        y: 1934,
-        v: 2.91
-      }, {
-        y: 1935,
-        v: 9.77
-      }, {
-        y: 1936,
-        v: 3.22
-      }, {
-        y: 1937,
-        v: 2.56
-      }, {
-        y: 1938,
-        v: -.87
-      }, {
-        y: 1939,
-        v: -1.3
-      }, {
-        y: 1940,
-        v: 3.31
-      }, {
-        y: 1941,
-        v: -8.38
-      }, {
-        y: 1942,
-        v: 3.33
-      }, {
-        y: 1943,
-        v: 11.45
-      }, {
-        y: 1944,
-        v: 16.58
-      }, {
-        y: 1945,
-        v: 11.78
-      }, {
-        y: 1946,
-        v: 24.1
-      }, {
-        y: 1947,
-        v: 21.26
-      }, {
-        y: 1948,
-        v: 2.06
-      }, {
-        y: 1949,
-        v: .09
-      }, {
-        y: 1950,
-        v: 3.64
-      }, {
-        y: 1951,
-        v: 6.05
-      }, {
-        y: 1952,
-        v: 4.41
-      }, {
-        y: 1953,
-        v: 11.52
-      }, {
-        y: 1954,
-        v: .92
-      }, {
-        y: 1955,
-        v: 0
-      }, {
-        y: 1956,
-        v: .91
-      }, {
-        y: 1957,
-        v: 2.72
-      }, {
-        y: 1958,
-        v: .66
-      }, {
-        y: 1959,
-        v: .11
-      }, {
-        y: 1960,
-        v: .77
-      }, {
-        y: 1961,
-        v: .98
-      }, {
-        y: 1962,
-        v: .32
-      }, {
-        y: 1963,
-        v: 2.14
-      }, {
-        y: 1964,
-        v: 1.26
-      }, {
-        y: 1965,
-        v: 1.66
-      }, {
-        y: 1966,
-        v: 1.22
-      }, {
-        y: 1967,
-        v: 2.32
-      }, {
-        y: 1968,
-        v: 4.13
-      }, {
-        y: 1969,
-        v: 6.99
-      }, {
-        y: 1970,
-        v: 8.22
-      }, {
-        y: 1971,
-        v: 4.24
-      }, {
-        y: 1972,
-        v: 2.98
-      }, {
-        y: 1973,
-        v: 3.42
-      }, {
-        y: 1974,
-        v: 10.07
-      }, {
-        y: 1975,
-        v: 6.77
-      }, {
-        y: 1976,
-        v: 8.18
-      }, {
-        y: 1977,
-        v: 14.65
-      }, {
-        y: 1978,
-        v: 15.72
-      }, {
-        y: 1979,
-        v: 13.74
-      }, {
-        y: 1980,
-        v: 7.4
-      }, {
-        y: 1981,
-        v: 5.1
-      }, {
-        y: 1982,
-        v: .56
-      }, {
-        y: 1983,
-        v: 4.75
-      }, {
-        y: 1984,
-        v: 4.68
-      }, {
-        y: 1985,
-        v: 7.47
-      }, {
-        y: 1986,
-        v: 9.61
-      }, {
-        y: 1987,
-        v: 7.85
-      }, {
-        y: 1988,
-        v: 7.22
-      }, {
-        y: 1989,
-        v: 4.39
-      }, {
-        y: 1990,
-        v: -.69
-      }, {
-        y: 1991,
-        v: -.17
-      }, {
-        y: 1992,
-        v: .82
-      }, {
-        y: 1993,
-        v: 2.16
-      }, {
-        y: 1994,
-        v: 2.52
-      }, {
-        y: 1995,
-        v: 1.79
-      }, {
-        y: 1996,
-        v: 2.43
-      }, {
-        y: 1997,
-        v: 4.02
-      }, {
-        y: 1998,
-        v: 6.44
-      }, {
-        y: 1999,
-        v: 7.68
-      }, {
-        y: 2e3,
-        v: 9.29
-      }, {
-        y: 2001,
-        v: 6.68
-      }, {
-        y: 2002,
-        v: 9.56
-      }, {
-        y: 2003,
-        v: 9.81
-      }, {
-        y: 2004,
-        v: 13.64
-      }, {
-        y: 2005,
-        v: 13.51
-      }, {
-        y: 2006,
-        v: 1.73
-      }, {
-        y: 2007,
-        v: -5.4
-      }, {
-        y: 2008,
-        v: -12
-      }, {
-        y: 2009,
-        v: -3.85
-      }, {
-        y: 2010,
-        v: -4.12
-      }, {
-        y: 2011,
-        v: -3.89
-      }, {
-        y: 2012,
-        v: 6.44
-      }, {
-        y: 2013,
-        v: 10.72
-      }, {
-        y: 2014,
-        v: 4.5
-      }, {
-        y: 2015,
-        v: 5.19
-      }, {
-        y: 2016,
-        v: 5.31
-      }, {
-        y: 2017,
-        v: 6.21
-      }, {
-        y: 2018,
-        v: 4.52
-      }, {
-        y: 2019,
-        v: 3.69
-      }, {
-        y: 2020,
-        v: 10.43
-      }, {
-        y: 2021,
-        v: 18.86
-      }, {
-        y: 2022,
-        v: 5.65
-      }, {
-        y: 2023,
-        v: 5.68
-      }, {
-        y: 2024,
-        v: 3.96
-      }, {
-        y: 2025,
-        v: 1.58
-      } ],
-      gold: [ {
-        y: 1928,
-        v: .1
-      }, {
-        y: 1929,
-        v: -.15
-      }, {
-        y: 1930,
-        v: .1
-      }, {
-        y: 1931,
-        v: -17.38
-      }, {
-        y: 1932,
-        v: 21.28
-      }, {
-        y: 1933,
-        v: 27.26
-      }, {
-        y: 1934,
-        v: 31.75
-      }, {
-        y: 1935,
-        v: .43
-      }, {
-        y: 1936,
-        v: .09
-      }, {
-        y: 1937,
-        v: -.23
-      }, {
-        y: 1938,
-        v: .17
-      }, {
-        y: 1939,
-        v: -1.23
-      }, {
-        y: 1940,
-        v: -1.66
-      }, {
-        y: 1941,
-        v: 0
-      }, {
-        y: 1942,
-        v: 0
-      }, {
-        y: 1943,
-        v: 0
-      }, {
-        y: 1944,
-        v: 0
-      }, {
-        y: 1945,
-        v: 2.54
-      }, {
-        y: 1946,
-        v: 0
-      }, {
-        y: 1947,
-        v: 0
-      }, {
-        y: 1948,
-        v: 0
-      }, {
-        y: 1949,
-        v: -8.7
-      }, {
-        y: 1950,
-        v: 9.56
-      }, {
-        y: 1951,
-        v: 0
-      }, {
-        y: 1952,
-        v: -.35
-      }, {
-        y: 1953,
-        v: .69
-      }, {
-        y: 1954,
-        v: .57
-      }, {
-        y: 1955,
-        v: -.03
-      }, {
-        y: 1956,
-        v: -.11
-      }, {
-        y: 1957,
-        v: -.11
-      }, {
-        y: 1958,
-        v: .43
-      }, {
-        y: 1959,
-        v: 0
-      }, {
-        y: 1960,
-        v: .48
-      }, {
-        y: 1961,
-        v: -.06
-      }, {
-        y: 1962,
-        v: -.06
-      }, {
-        y: 1963,
-        v: -.4
-      }, {
-        y: 1964,
-        v: .03
-      }, {
-        y: 1965,
-        v: .06
-      }, {
-        y: 1966,
-        v: .03
-      }, {
-        y: 1967,
-        v: -.51
-      }, {
-        y: 1968,
-        v: 12.47
-      }, {
-        y: 1969,
-        v: 5.01
-      }, {
-        y: 1970,
-        v: -9.45
-      }, {
-        y: 1971,
-        v: 16.69
-      }, {
-        y: 1972,
-        v: 48.78
-      }, {
-        y: 1973,
-        v: 72.96
-      }, {
-        y: 1974,
-        v: 66.15
-      }, {
-        y: 1975,
-        v: -24.8
-      }, {
-        y: 1976,
-        v: -4.1
-      }, {
-        y: 1977,
-        v: 22.64
-      }, {
-        y: 1978,
-        v: 37.01
-      }, {
-        y: 1979,
-        v: 126.55
-      }, {
-        y: 1980,
-        v: 15.19
-      }, {
-        y: 1981,
-        v: -32.6
-      }, {
-        y: 1982,
-        v: 15.62
-      }, {
-        y: 1983,
-        v: -16.8
-      }, {
-        y: 1984,
-        v: -19.38
-      }, {
-        y: 1985,
-        v: 6
-      }, {
-        y: 1986,
-        v: 18.96
-      }, {
-        y: 1987,
-        v: 24.53
-      }, {
-        y: 1988,
-        v: -15.26
-      }, {
-        y: 1989,
-        v: -2.84
-      }, {
-        y: 1990,
-        v: -3.11
-      }, {
-        y: 1991,
-        v: -8.56
-      }, {
-        y: 1992,
-        v: -5.73
-      }, {
-        y: 1993,
-        v: 17.68
-      }, {
-        y: 1994,
-        v: -2.17
-      }, {
-        y: 1995,
-        v: .98
-      }, {
-        y: 1996,
-        v: -4.59
-      }, {
-        y: 1997,
-        v: -21.41
-      }, {
-        y: 1998,
-        v: -.83
-      }, {
-        y: 1999,
-        v: .85
-      }, {
-        y: 2e3,
-        v: -5.44
-      }, {
-        y: 2001,
-        v: .75
-      }, {
-        y: 2002,
-        v: 25.57
-      }, {
-        y: 2003,
-        v: 19.89
-      }, {
-        y: 2004,
-        v: 4.65
-      }, {
-        y: 2005,
-        v: 17.77
-      }, {
-        y: 2006,
-        v: 23.2
-      }, {
-        y: 2007,
-        v: 31.92
-      }, {
-        y: 2008,
-        v: 4.32
-      }, {
-        y: 2009,
-        v: 25.04
-      }, {
-        y: 2010,
-        v: 29.24
-      }, {
-        y: 2011,
-        v: 12.02
-      }, {
-        y: 2012,
-        v: 5.68
-      }, {
-        y: 2013,
-        v: -27.61
-      }, {
-        y: 2014,
-        v: .12
-      }, {
-        y: 2015,
-        v: -12.11
-      }, {
-        y: 2016,
-        v: 8.1
-      }, {
-        y: 2017,
-        v: 12.66
-      }, {
-        y: 2018,
-        v: -.93
-      }, {
-        y: 2019,
-        v: 19.08
-      }, {
-        y: 2020,
-        v: 24.17
-      }, {
-        y: 2021,
-        v: -3.75
-      }, {
-        y: 2022,
-        v: .55
-      }, {
-        y: 2023,
-        v: 13.26
-      }, {
-        y: 2024,
-        v: 25.96
-      }, {
-        y: 2025,
-        v: 66.22
-      } ]
-    },
-    yieldsDecember: {
-      y10: [ {
-        y: 1953,
-        v: 2.59
-      }, {
-        y: 1954,
-        v: 2.51
-      }, {
-        y: 1955,
-        v: 2.96
-      }, {
-        y: 1956,
-        v: 3.59
-      }, {
-        y: 1957,
-        v: 3.21
-      }, {
-        y: 1958,
-        v: 3.86
-      }, {
-        y: 1959,
-        v: 4.69
-      }, {
-        y: 1960,
-        v: 3.84
-      }, {
-        y: 1961,
-        v: 4.06
-      }, {
-        y: 1962,
-        v: 3.86
-      }, {
-        y: 1963,
-        v: 4.13
-      }, {
-        y: 1964,
-        v: 4.18
-      }, {
-        y: 1965,
-        v: 4.62
-      }, {
-        y: 1966,
-        v: 4.84
-      }, {
-        y: 1967,
-        v: 5.7
-      }, {
-        y: 1968,
-        v: 6.03
-      }, {
-        y: 1969,
-        v: 7.65
-      }, {
-        y: 1970,
-        v: 6.39
-      }, {
-        y: 1971,
-        v: 5.93
-      }, {
-        y: 1972,
-        v: 6.36
-      }, {
-        y: 1973,
-        v: 6.74
-      }, {
-        y: 1974,
-        v: 7.43
-      }, {
-        y: 1975,
-        v: 8
-      }, {
-        y: 1976,
-        v: 6.87
-      }, {
-        y: 1977,
-        v: 7.69
-      }, {
-        y: 1978,
-        v: 9.01
-      }, {
-        y: 1979,
-        v: 10.39
-      }, {
-        y: 1980,
-        v: 12.84
-      }, {
-        y: 1981,
-        v: 13.72
-      }, {
-        y: 1982,
-        v: 10.54
-      }, {
-        y: 1983,
-        v: 11.83
-      }, {
-        y: 1984,
-        v: 11.5
-      }, {
-        y: 1985,
-        v: 9.26
-      }, {
-        y: 1986,
-        v: 7.11
-      }, {
-        y: 1987,
-        v: 8.99
-      }, {
-        y: 1988,
-        v: 9.11
-      }, {
-        y: 1989,
-        v: 7.84
-      }, {
-        y: 1990,
-        v: 8.08
-      }, {
-        y: 1991,
-        v: 7.09
-      }, {
-        y: 1992,
-        v: 6.77
-      }, {
-        y: 1993,
-        v: 5.77
-      }, {
-        y: 1994,
-        v: 7.81
-      }, {
-        y: 1995,
-        v: 5.71
-      }, {
-        y: 1996,
-        v: 6.3
-      }, {
-        y: 1997,
-        v: 5.81
-      }, {
-        y: 1998,
-        v: 4.65
-      }, {
-        y: 1999,
-        v: 6.28
-      }, {
-        y: 2e3,
-        v: 5.24
-      }, {
-        y: 2001,
-        v: 5.09
-      }, {
-        y: 2002,
-        v: 4.03
-      }, {
-        y: 2003,
-        v: 4.27
-      }, {
-        y: 2004,
-        v: 4.23
-      }, {
-        y: 2005,
-        v: 4.47
-      }, {
-        y: 2006,
-        v: 4.56
-      }, {
-        y: 2007,
-        v: 4.1
-      }, {
-        y: 2008,
-        v: 2.42
-      }, {
-        y: 2009,
-        v: 3.59
-      }, {
-        y: 2010,
-        v: 3.29
-      }, {
-        y: 2011,
-        v: 1.98
-      }, {
-        y: 2012,
-        v: 1.72
-      }, {
-        y: 2013,
-        v: 2.9
-      }, {
-        y: 2014,
-        v: 2.21
-      }, {
-        y: 2015,
-        v: 2.24
-      }, {
-        y: 2016,
-        v: 2.49
-      }, {
-        y: 2017,
-        v: 2.4
-      }, {
-        y: 2018,
-        v: 2.83
-      }, {
-        y: 2019,
-        v: 1.86
-      }, {
-        y: 2020,
-        v: .93
-      }, {
-        y: 2021,
-        v: 1.47
-      }, {
-        y: 2022,
-        v: 3.62
-      }, {
-        y: 2023,
-        v: 4.02
-      }, {
-        y: 2024,
-        v: 4.39
-      }, {
-        y: 2025,
-        v: 4.14
-      } ],
-      m3: [ {
-        y: 1934,
-        v: .23
-      }, {
-        y: 1935,
-        v: .15
-      }, {
-        y: 1936,
-        v: .12
-      }, {
-        y: 1937,
-        v: .11
-      }, {
-        y: 1938,
-        v: .03
-      }, {
-        y: 1939,
-        v: .04
-      }, {
-        y: 1940,
-        v: .02
-      }, {
-        y: 1941,
-        v: .33
-      }, {
-        y: 1942,
-        v: .38
-      }, {
-        y: 1943,
-        v: .38
-      }, {
-        y: 1944,
-        v: .38
-      }, {
-        y: 1945,
-        v: .38
-      }, {
-        y: 1946,
-        v: .38
-      }, {
-        y: 1947,
-        v: .95
-      }, {
-        y: 1948,
-        v: 1.16
-      }, {
-        y: 1949,
-        v: 1.1
-      }, {
-        y: 1950,
-        v: 1.34
-      }, {
-        y: 1951,
-        v: 1.73
-      }, {
-        y: 1952,
-        v: 2.09
-      }, {
-        y: 1953,
-        v: 1.6
-      }, {
-        y: 1954,
-        v: 1.15
-      }, {
-        y: 1955,
-        v: 2.54
-      }, {
-        y: 1956,
-        v: 3.21
-      }, {
-        y: 1957,
-        v: 3.04
-      }, {
-        y: 1958,
-        v: 2.77
-      }, {
-        y: 1959,
-        v: 4.49
-      }, {
-        y: 1960,
-        v: 2.25
-      }, {
-        y: 1961,
-        v: 2.6
-      }, {
-        y: 1962,
-        v: 2.87
-      }, {
-        y: 1963,
-        v: 3.52
-      }, {
-        y: 1964,
-        v: 3.84
-      }, {
-        y: 1965,
-        v: 4.38
-      }, {
-        y: 1966,
-        v: 4.96
-      }, {
-        y: 1967,
-        v: 4.97
-      }, {
-        y: 1968,
-        v: 5.96
-      }, {
-        y: 1969,
-        v: 7.82
-      }, {
-        y: 1970,
-        v: 4.87
-      }, {
-        y: 1971,
-        v: 4.01
-      }, {
-        y: 1972,
-        v: 5.07
-      }, {
-        y: 1973,
-        v: 7.45
-      }, {
-        y: 1974,
-        v: 7.15
-      }, {
-        y: 1975,
-        v: 5.44
-      }, {
-        y: 1976,
-        v: 4.35
-      }, {
-        y: 1977,
-        v: 6.07
-      }, {
-        y: 1978,
-        v: 9.08
-      }, {
-        y: 1979,
-        v: 12.04
-      }, {
-        y: 1980,
-        v: 15.49
-      }, {
-        y: 1981,
-        v: 10.85
-      }, {
-        y: 1982,
-        v: 7.94
-      }, {
-        y: 1983,
-        v: 9
-      }, {
-        y: 1984,
-        v: 8.06
-      }, {
-        y: 1985,
-        v: 7.1
-      }, {
-        y: 1986,
-        v: 5.53
-      }, {
-        y: 1987,
-        v: 5.77
-      }, {
-        y: 1988,
-        v: 8.07
-      }, {
-        y: 1989,
-        v: 7.63
-      }, {
-        y: 1990,
-        v: 6.74
-      }, {
-        y: 1991,
-        v: 4.07
-      }, {
-        y: 1992,
-        v: 3.22
-      }, {
-        y: 1993,
-        v: 3.06
-      }, {
-        y: 1994,
-        v: 5.6
-      }, {
-        y: 1995,
-        v: 5.14
-      }, {
-        y: 1996,
-        v: 4.91
-      }, {
-        y: 1997,
-        v: 5.16
-      }, {
-        y: 1998,
-        v: 4.39
-      }, {
-        y: 1999,
-        v: 5.2
-      }, {
-        y: 2e3,
-        v: 5.77
-      }, {
-        y: 2001,
-        v: 1.69
-      }, {
-        y: 2002,
-        v: 1.19
-      }, {
-        y: 2003,
-        v: .9
-      }, {
-        y: 2004,
-        v: 2.19
-      }, {
-        y: 2005,
-        v: 3.89
-      }, {
-        y: 2006,
-        v: 4.85
-      }, {
-        y: 2007,
-        v: 3
-      }, {
-        y: 2008,
-        v: .03
-      }, {
-        y: 2009,
-        v: .05
-      }, {
-        y: 2010,
-        v: .14
-      }, {
-        y: 2011,
-        v: .01
-      }, {
-        y: 2012,
-        v: .07
-      }, {
-        y: 2013,
-        v: .07
-      }, {
-        y: 2014,
-        v: .03
-      }, {
-        y: 2015,
-        v: .23
-      }, {
-        y: 2016,
-        v: .51
-      }, {
-        y: 2017,
-        v: 1.32
-      }, {
-        y: 2018,
-        v: 2.37
-      }, {
-        y: 2019,
-        v: 1.54
-      }, {
-        y: 2020,
-        v: .09
-      }, {
-        y: 2021,
-        v: .06
-      }, {
-        y: 2022,
-        v: 4.25
-      }, {
-        y: 2023,
-        v: 5.24
-      }, {
-        y: 2024,
-        v: 4.27
-      }, {
-        y: 2025,
-        v: 3.59
-      } ]
-    },
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -29958,8 +27684,6 @@
   var confidenceHistory = fred_default.confidenceHistory;
   var durablesHistory = fred_default.durablesHistory;
   var premiumHistory = fred_default.premiumHistory;
-  var yieldsDecember = fred_default.yieldsDecember;
-  var assetReturns = fred_default.assetReturns;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
@@ -30464,12 +28188,12 @@
       return d.v > a.v ? d : a;
     });
     if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-    var sum = 0, n = 0, cap2 = bandEnds(row.meter.optimal, NaN, NaN)[1];
+    var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1];
     for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
       sum += g[y];
       n++;
     }
-    if (n !== 50 || Math.round(sum / n) !== cap2) bad.push("band " + cap2 + " vs " + (sum / n).toFixed(2) + " over " + n);
+    if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   function curveAt(m) {
@@ -31038,9 +28762,6 @@
     });
   }
   var GROWTH_WINDOW = 8;
-  function growthWindowYears() {
-    return GROWTH_WINDOW / 4;
-  }
   function growthWindowWord() {
     return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW);
   }
@@ -31210,22 +28931,9 @@
       return x != null && x < v;
     }).length / prior.length;
   }
-  var marketCache = null;
-  function marketMonths() {
-    if (marketCache) return marketCache;
-    var spAt = {};
-    sp500MonthlyHistory.forEach(function(d, i) {
-      spAt[d.m] = i;
-    });
-    marketCache = {
-      sp: sp500MonthlyHistory,
-      spAt: spAt
-    };
-    return marketCache;
-  }
-  function yearAfter(S, m) {
-    var i = S.spAt[m];
-    return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
+  function yearAfter(endYear) {
+    var v = sp500AnnualReturns[endYear + 1];
+    return v != null ? v : null;
   }
   function diagnoseToday() {
     var x = moodToday();
@@ -31289,10 +28997,10 @@
   var MOOD_TURN = 3;
   var MOOD_RISING = [ [ "Despair", 0 ], [ "Depression", 5 ], [ "Hope", 24 ], [ "Optimism", 51 ], [ "Excitement", 75 ], [ "Thrill", 92 ], [ "Euphoria", 100 ] ];
   var MOOD_FALLING = [ [ "Despair", 0 ], [ "Panic", 9 ], [ "Desperation", 30 ], [ "Fear", 52 ], [ "Denial", 74 ], [ "Anxiety", 91 ], [ "Euphoria", 100 ] ];
-  function moodWord(pct2, change) {
-    if (pct2 == null || change == null) return null;
+  function moodWord(pct, change) {
+    if (pct == null || change == null) return null;
     return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s) {
-      return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
+      return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a;
     })[0];
   }
   function moodRead(x, before) {
@@ -31618,8 +29326,8 @@
     falling: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5L7 9l3-3 3.2 4.2"/><path d="M13.2 7v3.2H10"/></svg>'
   };
   function trendPill(t, key, toggles, words) {
-    var word2 = words && words[t.word] || t.word;
-    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word2 + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
+    var word = words && words[t.word] || t.word;
+    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
     var none = t.word === "unavailable";
     if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + "</div>";
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" aria-label="Show the trend on the chart">' + inner + "</button>";
@@ -31638,11 +29346,11 @@
     }
     return d.y % 10 ? "" : "’" + String(d.y).slice(2);
   }
-  function fitLine(vals, per, fmt2, x0, x1, y, W, padL, padR) {
+  function fitLine(vals, per, fmt, x0, x1, y, W, padL, padR) {
     var fit = trendOf(vals, "points", per).fit;
     return fit && fit.n > 1 ? fitGroup({
       fit: fit,
-      fmt: fmt2
+      fmt: fmt
     }, x0, x1, y, W, padL, padR) : "";
   }
   function fitGroup(o, x0, x1, y, W, padL, padR) {
@@ -31665,8 +29373,8 @@
   function colPath(cx, y0, y1, sw) {
     var lo = Math.min(y0, y1), hi = Math.max(y0, y1), r = sw / 2, x = (+cx).toFixed(1);
     if (hi - lo <= sw) {
-      var mid2 = ((lo + hi) / 2).toFixed(1);
-      return "M" + x + "," + mid2 + "L" + x + "," + mid2;
+      var mid = ((lo + hi) / 2).toFixed(1);
+      return "M" + x + "," + mid + "L" + x + "," + mid;
     }
     return "M" + x + "," + (hi - r).toFixed(1) + "L" + x + "," + (lo + r).toFixed(1);
   }
@@ -31857,7 +29565,7 @@
     });
     return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
   }
-  function meterPeek(m, state2) {
+  function meterPeek(m, state) {
     var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
     function at(v) {
       return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / (m.max - m.min || 1)));
@@ -31866,7 +29574,7 @@
     var a = at(ends[0]), c = at(ends[1]);
     if (c - a < sw) c = a + sw;
     var hx = at(m.value);
-    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
+    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
   }
   function windowYears(fromYear, toYear, want) {
     if (toYear <= fromYear) return [ fromYear ];
@@ -31933,10 +29641,10 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct2, state2, label, cls) {
+  function vitalRingSvg(pct, state, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
-    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
+    var offset = c * (1 - clampPct(pct, 0, 100) / 100);
+    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
     mode: void 0,
@@ -32125,7 +29833,7 @@
   function histReadFill(host, d, i) {
     var g = host.__geom, el = host.__readEl;
     if (!g || !el) return;
-    var fmt2 = geomFmt(g);
+    var fmt = geomFmt(g);
     var atRest = !d || d.v == null;
     if (atRest) {
       var vv = g.vals || [];
@@ -32144,7 +29852,7 @@
       return;
     }
     host.classList.toggle("resting", atRest);
-    var lab = g.at(d, i), val = fmt2(d.v);
+    var lab = g.at(d, i), val = fmt(d.v);
     var plate = el.firstElementChild;
     if (!plate) return;
     plate.children[0].textContent = lab;
@@ -32223,7 +29931,7 @@
       return r && (r.v == null || isFinite(r.v));
     });
     if (!refs.length) return;
-    var fmt2 = geomFmt(g);
+    var fmt = geomFmt(g);
     var NS = "http://www.w3.org/2000/svg";
     var grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "hist-legend");
@@ -32243,7 +29951,7 @@
       var t = document.createElementNS(NS, "text");
       t.setAttribute("class", "hl-lab");
       t.setAttribute("y", (y + 3.2).toFixed(1));
-      t.textContent = r.v == null ? r.label : r.label + " " + fmt2(r.v);
+      t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
       grp.appendChild(t);
       var m = document.createElementNS(NS, r.swatch ? "rect" : "line");
       if (r.swatch) {
@@ -33174,7 +30882,7 @@
       };
     }();
     confidenceReading = function(R) {
-      var word2 = confidenceWord(R.now.v), at = monthLabel(R.now.m);
+      var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
       var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Confidence",
@@ -33191,10 +30899,10 @@
         metricSub: "OECD index, United States, " + at,
         metric: R.now.v.toFixed(1),
         tag: {
-          state: word2.state,
-          text: word2.text
+          state: word.state,
+          text: word.text
         },
-        wordSays: word2.says,
+        wordSays: word.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -33216,7 +30924,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word2.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
+        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
       };
     }(confidenceRecord);
     desireRecord = function() {
@@ -33232,7 +30940,7 @@
       };
     }();
     desireReading = function(R) {
-      var word2 = desireWord(R.now.v), at = monthLabel(R.now.m);
+      var word = desireWord(R.now.v), at = monthLabel(R.now.m);
       var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Desire",
@@ -33249,10 +30957,10 @@
         metricSub: "consumer demand, YoY, " + at,
         metric: fmtSigned(R.now.v, 1) + "%",
         tag: {
-          state: word2.state,
-          text: word2.text
+          state: word.state,
+          text: word.text
         },
-        wordSays: word2.says,
+        wordSays: word.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -33274,7 +30982,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word2.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
     premiumRecord = function() {
@@ -33348,7 +31056,7 @@
       };
     }();
     productivityReading = function(R) {
-      var word2 = productivityWord(R.now.v);
+      var word = productivityWord(R.now.v);
       var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
       return {
         bodyTerm: "Productivity growth",
@@ -33365,10 +31073,10 @@
         metricSub: "nonfarm business output per hour, YoY, " + at,
         metric: R.now.v.toFixed(1) + "%",
         tag: {
-          state: word2.state,
-          text: word2.text
+          state: word.state,
+          text: word.text
         },
-        wordWhy: word2.why,
+        wordWhy: word.why,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -33383,7 +31091,7 @@
         },
         span: span,
         lead: "",
-        caption: at + ", BLS output per hour vs. a year earlier, " + word2.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+        caption: at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
       };
     }(productivityRecord);
     deriveFeelingReadings();
@@ -33413,7 +31121,7 @@
     };
     householdsNow = householdsWord(dsrNow, savNow);
     marketReading = function(h) {
-      var now2 = h[h.length - 1], word2 = marketWord(now2.v), open = now2.y === calendarTodayY;
+      var now2 = h[h.length - 1], word = marketWord(now2.v), open = now2.y === calendarTodayY;
       var lo = h.reduce(function(a, d) {
         return d.v < a.v ? d : a;
       }), hi = h.reduce(function(a, d) {
@@ -33439,10 +31147,10 @@
         open: open,
         metric: fmtSigned(now2.v, 1) + "%",
         tag: {
-          state: word2.state,
-          text: word2.text
+          state: word.state,
+          text: word.text
         },
-        wordSays: word2.says,
+        wordSays: word.says,
         meter: {
           min: lo.v,
           max: hi.v,
@@ -33462,7 +31170,7 @@
           }), marketCol, 0, true);
         },
         lead: "",
-        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word2.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
+        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
       };
     }(sp500Years);
   }
@@ -35009,7 +32717,7 @@
       }
     });
     document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt");
+      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt, .sx-row");
       if (btn) {
         if (btn.closest("summary")) e.preventDefault();
         openFrom(btn.getAttribute("data-detail-idx"), btn);
@@ -35032,8 +32740,8 @@
   function subjectRow(o) {
     return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
   }
-  function subjectIcon(state2, svg) {
-    return '<div class="subject-icon"><span class="' + state2 + '">' + svg + "</span></div>";
+  function subjectIcon(state, svg) {
+    return '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
   }
   function timingMark(kind) {
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
@@ -35558,13 +33266,13 @@
     var cycAvg = inCycle.length ? mean(inCycle.map(function(d) {
       return d.v;
     })) : null;
-    var pct2 = function(v) {
+    var pct = function(v) {
       return v.toFixed(2) + "%";
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -35649,10 +33357,10 @@
       if (unit) unit.className = "ci-unit";
       read.appendChild(val);
     }
-    var word2 = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-    if (!word2 || !word2.textContent.trim()) word2 = val && val.querySelector(".tag") || document.createElement("span");
-    word2.classList.add("ci-word");
-    read.appendChild(word2);
+    var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+    if (!word || !word.textContent.trim()) word = val && val.querySelector(".tag") || document.createElement("span");
+    word.classList.add("ci-word");
+    read.appendChild(word);
     body.appendChild(read);
     var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
     if (mini) {
@@ -35674,10 +33382,10 @@
     return item;
   }
   function tempPeek(r, value, cpi) {
-    var word2 = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+    var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
     return peekOf("sheet-metric-temp", {
       value: value,
-      word: word2,
+      word: word,
       state: heatStep(r.cpiNow),
       cols: cpi.map(function(d) {
         return d.v;
@@ -36237,7 +33945,7 @@
     var when = isPresent ? m.ongoing ? asOfLabel() : "The cycle's close, " + monthLabel(m.endMonth) : qLabel(seg.q);
     var head = popHead(when + " · " + (meta.theme || meta.name), meta.name + (meta.altName ? " · " + meta.altName : "") + " · year " + yearN + " of the " + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
     var reading = seasonReading[seg.season] || {};
-    return head + (isPresent ? `<p class="caption" style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">` + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
+    return head + (isPresent ? '<p class="caption era-blurb">' + era.blurb + "</p>" : "") + (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + "</p></div>" : "") + (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + "</p></div>" : "") + (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + "</p></div>" : "") + (reading.watch && reading.watch.length ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' + reading.watch.map(function(w) {
       return "<li>" + w + "</li>";
     }).join("") + "</ul></div>" : "") + (reading.fromTheBook && reading.fromTheBook.length ? '<div class="reading-book"><h5>From the book</h5>' + reading.fromTheBook.map(function(x) {
       return "<blockquote>" + x.text + (x.title ? '<br><span class="marker-sub">— ' + x.title + "</span>" : "") + "</blockquote>";
@@ -36248,215 +33956,6 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
-  var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
-  var FENCE_SRC = {
-    t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
-    u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
-  };
-  function quartile(vs, p) {
-    var s = vs.slice().sort(function(a, b) {
-      return a - b;
-    }), i = (s.length - 1) * p, lo = Math.floor(i);
-    return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
-  }
-  function normOf(vs) {
-    if (vs.length < 2) return null;
-    var lo = quartile(vs, .25), hi = quartile(vs, .75);
-    return {
-      lo: lo,
-      hi: hi,
-      fence: hi + 1.5 * (hi - lo),
-      floor: lo - 1.5 * (hi - lo),
-      n: vs.length,
-      min: Math.min.apply(null, vs),
-      max: Math.max.apply(null, vs)
-    };
-  }
-  function closedCount() {
-    return marketCycles.filter(function(c) {
-      return !c.ongoing;
-    }).length;
-  }
-  function visitOf(m) {
-    var c = m.era, signs = [], bleed = 0;
-    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
-    while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
-    return {
-      years: m.elapsedYears,
-      bull: signs.filter(Boolean).length,
-      bleed: bleed
-    };
-  }
-  var visitCache = null;
-  function visits() {
-    return visitCache || (visitCache = marketCycles.map(function(c) {
-      return visitOf(cycleModel(c));
-    }));
-  }
-  function cycleLab(id, name, f) {
-    var per = visits().map(f);
-    return {
-      id: id,
-      name: name,
-      cat: "cycle",
-      unit: " yr",
-      per: per,
-      norm: normOf(per.slice(0, closedCount()))
-    };
-  }
-  function readingLab(R) {
-    var h = keyed(R.hist).filter(function(d) {
-      return d.v != null;
-    }), first = +h[0].k.slice(0, 4);
-    var per = marketCycles.map(function(c) {
-      if (first > c.from) return null;
-      var vs = h.filter(function(d) {
-        var y = +d.k.slice(0, 4);
-        return y >= c.from && (c.ongoing || y <= c.to);
-      }).map(function(d) {
-        return d.v;
-      });
-      return vs.length ? vs.reduce(function(a, b) {
-        return a + b;
-      }, 0) / vs.length : null;
-    });
-    var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
-    return {
-      id: R.id,
-      name: R.name,
-      cat: R.cat,
-      unit: unit,
-      per: per,
-      norm: normOf(per.slice(0, closedCount()).filter(function(v) {
-        return v != null;
-      }))
-    };
-  }
-  var labCache = null;
-  function labs() {
-    return labCache || (labCache = [ cycleLab("length", "Length", function(v) {
-      return v.years;
-    }), cycleLab("bull", "Bull years", function(v) {
-      return v.bull;
-    }), cycleLab("bleed", "Bleed", function(v) {
-      return v.bleed;
-    }) ].concat(ROSTER.map(readingLab)));
-  }
-  function state(l, i) {
-    var v = l.per[i], n = l.norm;
-    if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
-    return v > n.fence ? "high" : v < n.floor ? "low" : "";
-  }
-  function yearsWord(v) {
-    var q = Math.round(v * 4);
-    return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + [ "", "¼", "½", "¾" ][q % 4];
-  }
-  function fmt(l, v) {
-    var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
-    return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
-  }
-  var TIERS = [ {
-    key: "abnormal",
-    title: "Risk",
-    cls: "t-abnormal"
-  }, {
-    key: "borderline",
-    title: "Attention",
-    cls: "t-borderline"
-  }, {
-    key: "optimal",
-    title: "Normal",
-    cls: "t-optimal"
-  } ];
-  function tier(l, i) {
-    var v = l.per[i], n = l.norm;
-    return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
-  }
-  function catTitle(key) {
-    return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c) {
-      return c.key === key;
-    })[0].title;
-  }
-  function labItem(l, i) {
-    var st = state(l, i), n = l.norm;
-    return '<li class="lab-item"><div><b>' + l.name + "</b><small>" + catTitle(l.cat) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
-  }
-  function ring(v) {
-    var r = 21, c = 2 * Math.PI * r;
-    return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
-  }
-  function report(i) {
-    var j = judged(i), by = {}, s = score(i), id = "labf-" + marketCycles[i].from;
-    TIERS.forEach(function(t) {
-      by[t.key] = j.filter(function(l) {
-        return tier(l, i) === t.key;
-      });
-    });
-    var chip = function(key, title, n) {
-      return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
-    };
-    return '<div class="labs"><div class="lab-score"><div><small>' + marketCycles[i].name + "</small><b>Health score</b><small>" + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
-      return chip(t.key, t.title, by[t.key].length);
-    }).join("") + "</div>" + TIERS.filter(function(t) {
-      return by[t.key].length;
-    }).map(function(t) {
-      return '<section class="lab-sec ' + t.cls + '"><h5>' + t.title + " <span>" + by[t.key].length + "</span></h5><ul>" + by[t.key].map(function(l) {
-        return labItem(l, i);
-      }).join("") + "</ul></section>";
-    }).join("") + "</div>";
-  }
-  function judged(i) {
-    return labs().filter(function(l) {
-      return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing);
-    });
-  }
-  function score(i) {
-    var j = judged(i), ok = j.filter(function(l) {
-      return tier(l, i) === "optimal";
-    }).length;
-    return {
-      v: Math.round(100 * ok / j.length),
-      ok: ok,
-      of: j.length
-    };
-  }
-  function outside(i) {
-    return labs().filter(function(l) {
-      var st = state(l, i);
-      return st === "high" || st === "low";
-    });
-  }
-  function listWords(xs) {
-    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
-  }
-  function word(n) {
-    return NUM[n] || String(n);
-  }
-  function cap(t) {
-    return t.charAt(0).toUpperCase() + t.slice(1);
-  }
-  function visitNote(i) {
-    var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm;
-    var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") + (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
-    var named = function(st) {
-      return outside(i).filter(function(l) {
-        return state(l, i) === st;
-      }).map(function(l) {
-        return l.name;
-      });
-    };
-    var high = named("high"), low = named("low");
-    var parts = (high.length ? [ listWords(high) + " ran far above her normal" ] : []).concat(low.length ? [ listWords(low) + " far below it" ] : []);
-    return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
-  }
-  function chartDetail() {
-    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
-  }
-  function cycleAnalysisHtml(m) {
-    var i = marketCycles.indexOf(m.era);
-    if (i < 0) return "";
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
-  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
@@ -36464,15 +33963,12 @@
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
   } ];
-  function pct(v) {
-    return (v >= 0 ? "+" : "−") + Math.abs(v * 100).toFixed(0) + "%";
-  }
   function diagnosisHtml(m) {
     var open = m.ongoing, d = open ? diagnoseToday() : {
-      after: yearAfter(marketMonths(), m.endMonth)
+      after: yearAfter(m.endYear)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 a year after the close", "<b>" + pct(d.after) + "</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -36580,9 +34076,9 @@
       var r0 = run[0].a0, r1 = run[run.length - 1].a1;
       var v0 = r0 + insetDeg, v1 = r1 - insetDeg;
       if (v1 - v0 < MIN_CORE) {
-        var mid2 = (r0 + r1) / 2;
-        v0 = mid2 - MIN_CORE / 2;
-        v1 = mid2 + MIN_CORE / 2;
+        var mid = (r0 + r1) / 2;
+        v0 = mid - MIN_CORE / 2;
+        v1 = mid + MIN_CORE / 2;
       }
       run.forEach(function(q2, k) {
         var s0 = v0 + (v1 - v0) * k / run.length, s1 = v0 + (v1 - v0) * (k + 1) / run.length;
@@ -37059,6 +34555,33 @@
       };
     }());
   }
+  function todayFace(item) {
+    var t = item.__today, box = document.createElement("div");
+    if (!t) return {
+      val: item.querySelector(".ci-value"),
+      word: item.querySelector(".ci-word")
+    };
+    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
+    return {
+      val: box.firstChild,
+      word: t.word == null ? null : box.lastChild
+    };
+  }
+  function readDoor(open) {
+    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
+    if (!item) return null;
+    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
+    var figure = val ? val.cloneNode(true) : null;
+    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
+      n.remove();
+    });
+    return {
+      name: item.getAttribute("data-title"),
+      figure: figure ? figure.textContent.trim() : "",
+      unit: unit ? unit.textContent.trim() : "",
+      word: word ? word.textContent.trim() : ""
+    };
+  }
   function rosterRows() {
     return readingRoster().byId;
   }
@@ -37071,6 +34594,10 @@
     return list.filter(function(d) {
       return d.v != null && kT(d.k) <= t;
     });
+  }
+  function pairAt(r, k) {
+    var p = r.pair ? upTo(r.pair, k).pop() : null;
+    return p ? p.v : null;
   }
   function eraFig(today) {
     var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
@@ -37096,8 +34623,8 @@
     r.place = function(v) {
       var lo = 0, hi = sorted.length;
       while (lo < hi) {
-        var mid2 = lo + hi >> 1;
-        if (sorted[mid2] < v) lo = mid2 + 1; else hi = mid2;
+        var mid = lo + hi >> 1;
+        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
       }
       return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
     };
@@ -37119,6 +34646,12 @@
       all.byId[r.id] = r;
     });
     return __roster = all;
+  }
+  function pastFigure(r, v, second) {
+    var card = readDoor(r.id);
+    if (!card) throw new Error("the reading " + r.id + " has no card");
+    var fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
+    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
   }
   function prettyK(r, k) {
     return r.pre ? r.pre + k : prettyKey(k);
@@ -37188,9 +34721,9 @@
       if (rows[i].gap > GAP_BAND) run++; else break;
     }
     var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var NUM = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
     var spell = function(n) {
-      return NUM2[n] || String(n);
+      return NUM[n] || String(n);
     };
     var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
     var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
@@ -37460,12 +34993,12 @@
   function composite(key) {
     if (trackCache[key]) return trackCache[key];
     if (SCORES[key]) return plainTrack(SCORES[key].points());
-    var tracks2 = membersOf(key).map(function(m) {
+    var tracks = membersOf(key).map(function(m) {
       return rankTrack(m.points(), m.up);
     }), out = {};
-    if (!tracks2.length) return trackCache[key] = out;
-    Object.keys(tracks2[0]).forEach(function(q) {
-      var vs = tracks2.map(function(t) {
+    if (!tracks.length) return trackCache[key] = out;
+    Object.keys(tracks[0]).forEach(function(q) {
+      var vs = tracks.map(function(t) {
         return t[+q];
       });
       if (vs.every(function(v) {
@@ -37620,7 +35153,17 @@
     var box = document.querySelector("#sheet-cat-" + c.key + " .cat-analysis");
     if (box) box.outerHTML = analysisHtml(c.key);
   }
-  function cycleRowsHtml() {
+  var CYCLE_DATA_KEY = "gyn.cycleData";
+  var YEAR_W = 36;
+  var ALIKE = 5;
+  function cycleDataOn() {
+    try {
+      return localStorage.getItem(CYCLE_DATA_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function cycleRowsHtml(on) {
     var strips = {};
     marketCycles.forEach(function(c) {
       strips[c.from] = seasonStripHtml(c);
@@ -37630,13 +35173,32 @@
       var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
       var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
       var foot = '<div class="era-foot"><span class="era-econ"><span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span><span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span></div>";
-      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
+      return on ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' + cyc.from + '">' + head + "</button>" + cycleTrack(cyc, strip, bands) + foot + "</div>" : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
     }).join("");
+  }
+  function wireCycleData(list) {
+    var btn = need("cycle-data"), legend = byId("cycle-legend");
+    function apply(on) {
+      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
+      list.innerHTML = cycleRowsHtml(on);
+      if (legend) {
+        legend.hidden = !on;
+        legend.innerHTML = on ? symptomLegend() : "";
+      }
+      settleStrips();
+    }
+    if (btn) btn.addEventListener("click", function() {
+      var on = btn.getAttribute("aria-checked") !== "true";
+      try {
+        localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0");
+      } catch (e) {}
+      apply(on);
+    });
+    apply(!!btn && cycleDataOn());
   }
   function renderCycleList() {
     var list = need("cycle-list");
-    list.innerHTML = cycleRowsHtml();
-    settleStrips();
+    wireCycleData(list);
     var PREVIEW_CYCLES = 99;
     (function() {
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -37696,7 +35258,7 @@
       });
     }
     list.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".era-row");
+      var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open");
       if (row) open(parseInt(row.getAttribute("data-era") || "", 10));
     });
     list.addEventListener("keydown", function(e) {
@@ -37783,11 +35345,11 @@
   }
   function eraCard(item, r, era) {
     var val = part(item, ".ci-value"), when = part(item, ".ci-when"), mini = item.querySelector(".ci-mini");
-    var word2 = item.querySelector(".ci-word");
+    var word = item.querySelector(".ci-word");
     var t = item.__today || (item.__today = {
       value: val.innerHTML,
       text: lead(val).nodeValue,
-      word: word2 ? word2.innerHTML : null,
+      word: word ? word.innerHTML : null,
       when: when.textContent,
       mini: mini ? mini.innerHTML : ""
     });
@@ -37796,27 +35358,27 @@
       when.textContent = t.when;
       item.__today = null;
       if (mini) mini.innerHTML = t.mini;
-      if (word2 && t.word == null) word2.remove(); else if (word2 && t.word != null) word2.innerHTML = t.word;
+      if (word && t.word == null) word.remove(); else if (word && t.word != null) word.innerHTML = t.word;
       return;
     }
     var e = r ? eraReading(r, era) : {
       none: true,
       word: "No history in the app"
     };
-    if (!word2) {
-      word2 = document.createElement("span");
-      word2.className = "ci-word";
-      parentOf(val).appendChild(word2);
+    if (!word) {
+      word = document.createElement("span");
+      word.className = "ci-word";
+      parentOf(val).appendChild(word);
     }
     when.textContent = e.none ? "" : e.when;
     if (mini) mini.innerHTML = e.none ? "" : eraMini(t, e.row, e);
     if (e.none) {
       val.innerHTML = "—";
-      word2.textContent = e.word;
+      word.textContent = e.word;
       return;
     }
     eraValue(val, t, e.row, e);
-    word2.textContent = eraRange(t, e.row, e);
+    word.textContent = eraRange(t, e.row, e);
   }
   function eraCards(era) {
     var rows = rosterRows();
@@ -37860,452 +35422,90 @@
     showCycle(currentEra);
     repaintLive();
   }
+  function cycleSymptoms(cyc, years) {
+    var rows = [], quiet = [], absent = [];
+    readingRoster().forEach(function(r) {
+      var now2 = r.place(r.now.v), measured = false;
+      var cells = years.map(function(y) {
+        if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return {
+          y: y,
+          state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
+        };
+        var best = null;
+        for (var d of r.seen) {
+          if (+d.k.slice(0, 4) !== y) continue;
+          var gap = Math.abs(r.place(d.v) - now2);
+          if (!best || gap < best.gap) best = {
+            d: d,
+            gap: gap
+          };
+        }
+        if (!best) return {
+          y: y,
+          state: "na"
+        };
+        measured = true;
+        return {
+          y: y,
+          state: best.gap <= ALIKE ? "on" : "off",
+          best: best.d
+        };
+      });
+      var hits = cells.filter(function(c) {
+        return c.state === "on" && !!c.best;
+      });
+      if (hits.length) rows.push({
+        r: r,
+        cells: cells,
+        hits: hits
+      }); else (measured ? quiet : absent).push(r.name);
+    });
+    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") + (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
+    return {
+      rows: rows,
+      foot: foot.trim()
+    };
+  }
+  function placeWords(r, v) {
+    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
+    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
+  }
+  function symptomNote(cyc, row) {
+    var r = row.r;
+    return "<h4>" + r.name + " · " + cyc.name + "</h4><p>Now " + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
+      return prettyK(r, c.best.k) + ": " + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ", " + placeWords(r, c.best.v);
+    }));
+  }
+  function symptomRow(cyc, row, cols) {
+    var r = row.r;
+    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
+      return c.y;
+    }).join(", ") + '">' + row.cells.map(function(c) {
+      return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>';
+    }).join("") + "<b>" + r.name + "</b></button>";
+  }
+  function cycleTrack(cyc, strip, bands) {
+    var years = [];
+    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
+    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
+    var cols = "grid-template-columns:repeat(" + years.length + "," + YEAR_W + "px) minmax(96px,1fr)";
+    var yrs = years.map(function(y) {
+      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
+      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + "</span>";
+    }).join("");
+    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)"><div style="width:' + strip.span * YEAR_W / 4 + 'px">' + bands + '</div><span></span></div><div class="sx-yrs" style="' + cols + '">' + yrs + "<span></span></div>" + sx.rows.map(function(row) {
+      return symptomRow(cyc, row, cols);
+    }).join("") + "</div>" + (sx.foot ? '<p class="sx-foot">' + sx.foot + "</p>" : "");
+  }
+  function symptomLegend() {
+    return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p><div class="sx-keys">' + CATEGORIES.map(function(c) {
+      return '<span><i class="cat-' + c.key + '"></i>' + c.title + "</span>";
+    }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span><span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
+  }
   function bootAnalysis() {
     GYN.step("renderCycleList", renderCycleList, "wire");
     renderCycleList();
     renderCycleView(nowModel);
-  }
-  var ASSETS = [ {
-    key: "stocks",
-    name: "Stocks",
-    from: 0
-  }, {
-    key: "bonds",
-    name: "Bonds",
-    from: 0
-  }, {
-    key: "baa",
-    name: "Corp.",
-    from: 0
-  }, {
-    key: "bills",
-    name: "Cash",
-    from: 0
-  }, {
-    key: "gold",
-    name: "Gold",
-    from: 1972
-  }, {
-    key: "estate",
-    name: "Homes",
-    from: 0
-  } ];
-  var ASSET_INK = {
-    stocks: "--ovulate",
-    bonds: "--ff-deep",
-    baa: "--ff-blue",
-    bills: "--ylm-3m",
-    gold: "--season-autumn",
-    estate: "--season-spring"
-  };
-  var ASSET_FULL = {
-    stocks: "Stocks",
-    bonds: "Treasury bonds",
-    baa: "Corporate bonds",
-    bills: "Cash",
-    gold: "Gold",
-    estate: "Homes"
-  };
-  var MIX_FROM = 1950;
-  var ASSET_LONG = {
-    stocks: "stocks have",
-    bonds: "Treasury bonds have",
-    baa: "corporate bonds have",
-    bills: "cash has",
-    gold: "gold has",
-    estate: "homes have"
-  };
-  var CLOCK_SEASONS = [ "winter", "spring", "springdeflation", "summer", "autumn", "lateautumn" ];
-  var CLOCK_SRC = [ {
-    t: "Aswath Damodaran, NYU Stern — Historical Returns on Stocks, Bonds, Bills, Real Estate and Gold, annual since 1928",
-    u: "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html"
-  }, {
-    t: "Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public",
-    u: "https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"
-  } ];
-  var SEASONS_SRC = [ {
-    t: "Bridgewater Associates — The All Weather Story (2012)",
-    u: "https://www.bridgewater.com/resources/all-weather-story.pdf"
-  }, {
-    t: "Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals",
-    u: "https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"
-  } ];
-  var ALL_SEASONS = [ {
-    what: "Stocks",
-    w: 30,
-    ink: "--ovulate"
-  }, {
-    what: "Long-term Treasuries",
-    w: 40,
-    ink: "--ff-deep"
-  }, {
-    what: "Intermediate Treasuries",
-    w: 15,
-    ink: "--ff-blue"
-  }, {
-    what: "Gold",
-    w: 7.5,
-    ink: "--season-autumn"
-  }, {
-    what: "Commodities",
-    w: 7.5,
-    ink: "--season-summer"
-  } ];
-  var WEATHER = [ {
-    when: "Growth picking up",
-    holds: "Stocks, commodities",
-    test: function(r) {
-      return r.regime === "expansion";
-    }
-  }, {
-    when: "Growth slowing",
-    holds: "Treasuries",
-    test: function(r) {
-      return r.regime !== "expansion";
-    }
-  }, {
-    when: "Prices heating",
-    holds: "Commodities, gold",
-    test: function(r) {
-      return r.cpiDirection !== "falling";
-    }
-  }, {
-    when: "Prices cooling",
-    holds: "Stocks, Treasuries",
-    test: function(r) {
-      return r.cpiDirection === "falling";
-    }
-  } ];
-  function mid(vs) {
-    var s = vs.slice().sort(function(a, b) {
-      return a - b;
-    }), n = s.length;
-    return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
-  }
-  var closeOf = {};
-  function seasonOfYears() {
-    var weight = {}, out = {};
-    marketCycles.forEach(function(c) {
-      cycleModel(c).track.forEach(function(seg) {
-        if (seg.isNow) return;
-        var y = +seg.q.slice(0, 4), w = weight[y] = weight[y] || {};
-        w[seg.season] = (w[seg.season] || 0) + seg.to - seg.from;
-        closeOf[y] = seg.season;
-      });
-    });
-    Object.keys(weight).forEach(function(y) {
-      var w = weight[+y], full = Object.keys(w).reduce(function(a, k) {
-        return a + w[k];
-      }, 0);
-      if (full >= .999) out[+y] = Object.keys(w).sort(function(a, b) {
-        return w[b] - w[a];
-      })[0];
-    });
-    return out;
-  }
-  var gridCache = null;
-  function realOf() {
-    var infl = {}, out = {};
-    cpiYoYHistory.forEach(function(d) {
-      if (d.m.slice(5) === "12") infl[+d.m.slice(0, 4)] = d.v;
-    });
-    ASSETS.forEach(function(a) {
-      out[a.key] = {};
-      (assetReturns[a.key] || []).forEach(function(d) {
-        if (d.y >= a.from && infl[d.y] != null) out[a.key][d.y] = ((1 + d.v / 100) / (1 + infl[d.y] / 100) - 1) * 100;
-      });
-    });
-    return out;
-  }
-  function grid() {
-    if (gridCache) return gridCache;
-    var real = realOf(), season = seasonOfYears(), out = {};
-    CLOCK_SEASONS.forEach(function(s) {
-      var years = Object.keys(season).map(Number).filter(function(y) {
-        return season[y] === s && real.stocks[y] != null;
-      });
-      out[s] = {};
-      ASSETS.forEach(function(a) {
-        var ys = years.filter(function(y) {
-          return real[a.key][y] != null;
-        }), vs = ys.map(function(y) {
-          return real[a.key][y];
-        });
-        var top = ys.filter(function(y) {
-          return ASSETS.every(function(b) {
-            return real[b.key][y] == null || real[b.key][y] <= real[a.key][y];
-          });
-        }).length;
-        out[s][a.key] = {
-          median: vs.length ? mid(vs) : NaN,
-          mean: vs.length ? vs.reduce(function(p, q) {
-            return p + q;
-          }, 0) / vs.length : NaN,
-          up: vs.filter(function(v) {
-            return v > 0;
-          }).length,
-          top: top,
-          n: vs.length
-        };
-      });
-    });
-    return gridCache = out;
-  }
-  var yearsCache = null;
-  function seasonRecord() {
-    return yearsCache || (yearsCache = {
-      real: realOf(),
-      season: seasonOfYears()
-    });
-  }
-  function mixFor(s, before) {
-    var rec = seasonRecord(), years = Object.keys(rec.season).map(Number).filter(function(y) {
-      return y < before && rec.season[y] === s && rec.real.stocks[y] != null;
-    });
-    var held = ASSETS.filter(function(a) {
-      if (a.from > before - 1) return false;
-      var vs = years.filter(function(y) {
-        return rec.real[a.key][y] != null;
-      }).map(function(y) {
-        return rec.real[a.key][y];
-      });
-      return vs.length * 2 < years.length || !years.length || mid(vs) > 0;
-    });
-    var w = {};
-    held.forEach(function(a) {
-      w[a.key] = 1 / held.length;
-    });
-    return w;
-  }
-  function planStep(p, s, y) {
-    var w = mixFor(s, y), k = Object.keys(w).sort().join();
-    return !p || k !== p.key && y - p.since >= growthWindowYears() ? {
-      w: w,
-      since: y,
-      key: k,
-      s: s
-    } : p;
-  }
-  var planCache = null;
-  function mixPlan() {
-    if (planCache) return planCache;
-    var rec = seasonRecord(), out = {}, p = null;
-    for (var y = MIX_FROM; rec.real.stocks[y - 1] != null; y++) out[y] = p = planStep(p, closeOf[y - 1], y);
-    return planCache = out;
-  }
-  function planNow() {
-    var plan = mixPlan(), y = Math.max.apply(null, Object.keys(plan).map(Number));
-    return {
-      p: plan[y],
-      open: Math.max(y + 1, plan[y].since + growthWindowYears())
-    };
-  }
-  function walk(name, weights) {
-    var rec = seasonRecord(), g = 1, peak = 1, fall = 0, worst = Infinity, n = 0, changes = -1, h = {};
-    for (var y = MIX_FROM; rec.real.stocks[y] != null; y++) {
-      var w = weights(y), was = 0, r = 0;
-      if (w) {
-        h = Object.assign({}, w);
-        changes++;
-      }
-      Object.keys(h).forEach(function(k) {
-        was += h[k];
-        h[k] *= 1 + (rec.real[k][y] || 0) / 100;
-        r += h[k];
-      });
-      r = was ? (r / was - 1) * 100 : 0;
-      g *= 1 + r / 100;
-      peak = Math.max(peak, g);
-      fall = Math.min(fall, g / peak - 1);
-      worst = Math.min(worst, r);
-      n++;
-    }
-    return {
-      name: name,
-      cagr: (Math.pow(g, 1 / n) - 1) * 100,
-      worst: worst,
-      fall: fall * 100,
-      changes: changes
-    };
-  }
-  var tracksCache = null;
-  function tracks() {
-    return tracksCache || (tracksCache = [ walk("Season Mix", function(y) {
-      var p = mixPlan()[y];
-      return p.since === y ? p.w : null;
-    }), walk("Equal parts, no season", function(y) {
-      var w = {}, on = ASSETS.filter(function(x) {
-        return x.from < y;
-      });
-      on.forEach(function(x) {
-        w[x.key] = 1 / on.length;
-      });
-      return w;
-    }), walk("All Seasons", function(y) {
-      return y >= 1973 ? {
-        stocks: .3,
-        bonds: .55,
-        gold: .15
-      } : {
-        stocks: .3,
-        bonds: .55,
-        bills: .15
-      };
-    }), walk("Stocks only", function() {
-      return {
-        stocks: 1
-      };
-    }) ]);
-  }
-  var YIELD_SRC = {
-    t: "Federal Reserve via FRED — 10-year Treasury constant-maturity yield, monthly (GS10)",
-    u: "https://fred.stlouisfed.org/series/GS10"
-  };
-  function yieldFact() {
-    var ys = yieldsDecember.y10 || [], last = ys[ys.length - 1];
-    if (!last) return [];
-    var below = ys.filter(function(d) {
-      return d.v < last.v;
-    }).length;
-    return [ "The 10-year Treasury yield closed " + last.y + " at " + last.v.toFixed(2) + "%, above " + Math.round(100 * below / ys.length) + "% of Decembers since " + ys[0].y + "." ];
-  }
-  function mixDetail() {
-    return "<h4>How the mix reads</h4>" + facts([ "The Season Mix holds, in equal parts, every asset that has beaten inflation in the current season on the record: the median of its returns after inflation, in the years that season held, is above zero. An asset with too little record in a season, fewer than half its years, is kept rather than dropped.", "Equal parts is the plainest diversification there is, and the season only decides who is in the room. Ray Dalio’s point stands behind it: assets that do not move together cut the depth of a fall more than any one choice can lift the return.", "The Season Model reads growth over " + holdWord() + " years, so the mix is held at least that long: each January from " + MIX_FROM + ", it changes only if the season at the close of the year before calls for a different set of assets and the last change is " + holdWord() + " years old. Between changes the parts drift with their returns. The track record is walked forward with no hindsight, from the record up to each January only. The All Seasons line uses 30% stocks, 55% Treasury bonds and 15% gold (cash before 1973), the nearest the record allows.", "Homes are home prices, without rent; gold counts from 1972. Rebalancing costs and taxes are left out. This is the record and a rule, not a forecast or advice." ].concat(yieldFact())) + srcBlock(CLOCK_SRC.slice(0, 1).concat(yieldFact().length ? [ YIELD_SRC ] : []));
-  }
-  function holdWord() {
-    return [ "no", "one", "two", "three", "four" ][growthWindowYears()] || String(growthWindowYears());
-  }
-  function nextTurn(pn) {
-    var s = nowModel.season, k = Object.keys(mixFor(s, 9999)).sort().join();
-    return k === pn.p.key ? "" : "; the season now reads " + seasonTitle(wheelMeta[s]) + ", so the mix turns in January " + pn.open + " if that holds";
-  }
-  function mixHtml() {
-    var pn = planNow(), now2 = pn.p.s, w = pn.p.w, keys = ASSETS.filter(function(a) {
-      return w[a.key];
-    });
-    var bar = '<div class="strip" role="img" aria-label="' + keys.map(function(a) {
-      return ASSET_FULL[a.key] + " " + Math.round(w[a.key] * 100) + "%";
-    }).join(", ") + '">' + keys.map(function(a) {
-      return '<span class="strip-run" style="flex:' + w[a.key] + " 1 0;--season:var(" + ASSET_INK[a.key] + ')"></span>';
-    }).join("") + "</div>";
-    var rows = ASSETS.map(function(a) {
-      return auxStat({
-        label: '<span class="season-sw" style="--season:var(' + (w[a.key] ? ASSET_INK[a.key] : "--border") + ')"></span>' + ASSET_FULL[a.key],
-        value: w[a.key] ? Math.round(w[a.key] * 100) + "%" : "out"
-      });
-    }).join("");
-    var t = tracks();
-    var track = t.map(function(x) {
-      return auxStat({
-        label: x.name,
-        value: fmtSigned(x.cagr, 1) + "% · fall " + fmtSigned(Math.round(x.fall), 0) + "%"
-      });
-    }).join("");
-    var names = keys.map(function(a) {
-      return ASSET_FULL[a.key].toLowerCase();
-    });
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Season Mix</div><p class="ca-say">In ' + seasonTitle(wheelMeta[now2]) + ", " + names.slice(0, -1).join(", ") + (names.length > 1 ? " and " : "") + names[names.length - 1] + " have beaten inflation on the record. The mix holds them in equal parts from January " + pn.p.since + " and keeps them at least " + holdWord() + " years, the span the season is read over" + nextTurn(pn) + ".</p>" + bar + rows + '<p class="ca-note">Changed only when the season turns and ' + holdWord() + " years have passed, " + t[0].changes + " times since " + MIX_FROM + ", with no hindsight: a year after inflation, and the deepest fall:</p>" + track + moreRow(mixDetail()) + "</div>";
-  }
-  function counts(s, a) {
-    var g = grid()[s];
-    return g[a.key].n * 2 >= g.stocks.n;
-  }
-  function leader(s) {
-    var g = grid()[s];
-    return ASSETS.filter(function(a) {
-      return counts(s, a);
-    }).sort(function(a, b) {
-      return g[b.key].median - g[a.key].median;
-    })[0];
-  }
-  function wedge(cx, cy, r, a0, a1) {
-    var p = function(a) {
-      return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1);
-    };
-    return "M" + cx + "," + cy + "L" + p(a0) + "A" + r + "," + r + " 0 0 1 " + p(a1) + "Z";
-  }
-  function seasonClock(now2) {
-    var S = 320, cx = 160, cy = 160, r = 112, out = [], Q = Math.PI / 2;
-    var span = {
-      winter: [ -2 * Q, -Q ],
-      spring: [ -Q, -Q / 2 ],
-      springdeflation: [ -Q / 2, 0 ],
-      summer: [ 0, Q ],
-      autumn: [ Q, 1.5 * Q ],
-      lateautumn: [ 1.5 * Q, 2 * Q ]
-    };
-    CLOCK_SEASONS.forEach(function(s) {
-      var a = span[s], m = (a[0] + a[1]) / 2, k = a[1] - a[0] > Q * .9 ? .55 : .68;
-      var lx = cx + r * k * Math.cos(m), ly = cy + r * k * Math.sin(m), meta = wheelMeta[s];
-      out.push('<path class="clock-q ' + seasonGroup(s) + (s === now2 ? " now" : "") + '" d="' + wedge(cx, cy, r, a[0], a[1]) + '"/>');
-      out.push('<text class="clock-name' + (s === now2 ? " now" : "") + '" x="' + lx.toFixed(1) + '" y="' + (ly - 3).toFixed(1) + '" text-anchor="middle">' + leader(s).name + "</text>");
-      if (meta.theme && s !== "summer" && s !== "winter") out.push('<text class="clock-asset" x="' + lx.toFixed(1) + '" y="' + (ly + 13).toFixed(1) + '" text-anchor="middle">' + meta.theme + "</text>");
-    });
-    [ [ "Winter", -1.5 * Q ], [ "Spring", -.5 * Q ], [ "Summer", .5 * Q ], [ "Autumn", 1.5 * Q ] ].forEach(function(l) {
-      var a = l[1], x = cx + (r + 22) * Math.cos(a), y = cy + (r + 22) * Math.sin(a) + 4;
-      out.push('<text class="clock-axis" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="middle">' + l[0] + "</text>");
-    });
-    var hand = (span[now2][0] + span[now2][1]) / 2;
-    out.push('<line class="clock-hand" x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * .3 * Math.cos(hand)).toFixed(1) + '" y2="' + (cy + r * .3 * Math.sin(hand)).toFixed(1) + '"/>');
-    out.push('<circle class="clock-pin" cx="' + cx + '" cy="' + cy + '" r="5"/>');
-    return '<svg class="clock" viewBox="0 20 ' + S + " " + (S - 40) + '" role="img" aria-label="The Season Clock, pointing at ' + seasonTitle(wheelMeta[now2]) + '">' + out.join("") + "</svg>";
-  }
-  function heat(v, thin) {
-    if (isNaN(v) || thin) return '<td class="sc-cell thin">' + (isNaN(v) ? "—" : fmtSigned(v, 0)) + "</td>";
-    var p = Math.min(60, Math.round(Math.abs(v) * 3));
-    return '<td class="sc-cell" style="background:color-mix(in srgb, var(' + (v >= 0 ? "--ovulate" : "--bleed-mid") + ") " + p + '%, var(--surface))">' + fmtSigned(v, 0) + "</td>";
-  }
-  function gridHtml(now2) {
-    var g = grid();
-    return '<table class="sc-grid"><thead><tr><th></th>' + ASSETS.map(function(a) {
-      return "<th>" + a.name + "</th>";
-    }).join("") + "</tr></thead><tbody>" + CLOCK_SEASONS.map(function(s) {
-      return "<tr" + (s === now2 ? ' class="now"' : "") + "><th>" + seasonTitle(wheelMeta[s]).replace(" · ", "<br><small>") + (wheelMeta[s].theme ? "</small>" : "") + " <small>" + g[s].stocks.n + "y</small></th>" + ASSETS.map(function(a) {
-        return heat(g[s][a.key].median, !counts(s, a));
-      }).join("") + "</tr>";
-    }).join("") + "</tbody></table>";
-  }
-  function clockDetail() {
-    var g = grid();
-    return "<h4>How the clock reads</h4>" + facts([ "The Season Clock is the Investment Clock’s idea, an asset for each phase of the economy, read through her six seasons instead of Merrill Lynch’s four phases, and measured on her own record.", "Each calendar year since 1928 is given the season that held most of it, by quarter (by year before 1949). Each cell is the median return of that asset in those years, after that year’s inflation (December CPI); green above zero, red below, deeper the larger.", "The returns are Aswath Damodaran’s annual series: the S&amp;P&nbsp;500 with dividends, the 10-year Treasury bond, Baa corporate bonds, the 3-month Treasury bill for cash, home prices, and gold. Gold counts from 1972: before August 1971 its price was fixed by law. A cell measured in fewer than half of its season’s years is left grey and cannot lead.", "The clock names the asset with the highest median in each season. " + CLOCK_SEASONS.map(function(s) {
-      var l = leader(s), c = g[s][l.key];
-      return seasonTitle(wheelMeta[s]) + ": " + ASSET_LONG[l.key].replace(/ ha(ve|s)$/, "") + ", best of the six in " + c.top + " of " + c.n + " years";
-    }).join("; ") + ".", "It describes what each asset did while a season lasted, not what came next: the season at a year’s close says much less about the following year. A season with few years, Winter above all, rests on few episodes. This is the record, not a forecast or advice." ]) + srcBlock(CLOCK_SRC);
-  }
-  function clockHtml() {
-    var now2 = nowModel.season, l = leader(now2), c = grid()[now2][l.key];
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Season Clock</div><p class="ca-say">In ' + seasonTitle(wheelMeta[now2]) + ", " + ASSET_LONG[l.key] + " led: a median " + fmtSigned(c.median, 1) + "% a year after inflation, best of the six in " + c.top + " of " + c.n + " years.</p>" + seasonClock(now2) + '<p class="ca-note">Median return after inflation, by the season that held the year, since 1928:</p>' + gridHtml(now2) + moreRow(clockDetail()) + "</div>";
-  }
-  function seasonsDetail() {
-    return "<h4>How the portfolio reads</h4>" + facts([ "Bridgewater built All Weather in 1996 on one idea: each asset does well in some economic weather and badly in other, so a portfolio that balances its risk across all four, growth picking up or slowing, inflation rising or falling, needs no one to call the next season.", "The All Seasons weights are the version Ray Dalio gave individual investors in Tony Robbins’s Money: Master the Game (2014). Bridgewater’s own fund uses leverage and different weights.", "Which assets each weather favours is Bridgewater’s grid, cut to the five assets the portfolio holds. Today’s two are marked from the Season Model’s readings.", "Its record needs bond, gold and commodity histories the app does not carry yet. This is a published allocation, not advice." ]) + srcBlock(SEASONS_SRC);
-  }
-  function seasonsHtml(r) {
-    var bar = '<div class="strip" role="img" aria-label="' + ALL_SEASONS.map(function(a) {
-      return a.what + " " + a.w + "%";
-    }).join(", ") + '">' + ALL_SEASONS.map(function(a) {
-      return '<span class="strip-run" style="flex:' + a.w + " 1 0;--season:var(" + a.ink + ')" title="' + a.what + " " + a.w + '%"></span>';
-    }).join("") + "</div>";
-    var weights = ALL_SEASONS.map(function(a) {
-      return auxStat({
-        label: '<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what,
-        value: a.w + "%"
-      });
-    }).join("");
-    var weather = WEATHER.map(function(w) {
-      return auxStat({
-        label: w.when + (w.test(r) ? " · today" : ""),
-        value: w.holds,
-        wordy: true
-      });
-    }).join("");
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">All Seasons portfolio</div><p class="ca-say">Bridgewater’s All Weather holds something for every season, so no season has to be called. Its version for individuals:</p>' + bar + weights + '<p class="ca-note">What each kind of weather has favoured:</p>' + weather + moreRow(seasonsDetail()) + "</div>";
-  }
-  function buildPortfolio() {
-    var host = need("panel-portfolio"), r = nowModel.reading;
-    host.innerHTML = '<div class="dx" id="portfolio">' + mixHtml() + clockHtml() + seasonsHtml(r) + "</div>";
-  }
-  function bootPortfolio() {
-    buildPortfolio();
   }
   var BUFFETT_2001 = [ {
     t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
@@ -38387,13 +35587,13 @@
     };
   }
   function desirePage() {
-    var r = desireReading, pct2 = function(v) {
+    var r = desireReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -38410,13 +35610,13 @@
     };
   }
   function premiumPage() {
-    var r = premiumReading, pct2 = function(v) {
+    var r = premiumReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No premium",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -38433,13 +35633,13 @@
     };
   }
   function marketPage() {
-    var r = marketReading, pct2 = function(v) {
+    var r = marketReading, pct = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct2,
+      fmt: pct,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -38979,10 +36179,10 @@
     document.addEventListener("click", function(e) {
       var seg = e.target.closest && e.target.closest(".range-seg");
       if (!seg) return;
-      var mid2 = seg.parentNode.getAttribute("data-mode-for"), md = seg.getAttribute("data-mode");
-      if (mid2 && md != null && mid2 in page.mode) {
-        page.mode[mid2] = md;
-        redrawSheet(mid2);
+      var mid = seg.parentNode.getAttribute("data-mode-for"), md = seg.getAttribute("data-mode");
+      if (mid && md != null && mid in page.mode) {
+        page.mode[mid] = md;
+        redrawSheet(mid);
         return;
       }
       var id = seg.parentNode.getAttribute("data-range-for"), rg = seg.getAttribute("data-range");
@@ -39376,14 +36576,14 @@
       s: ""
     };
     var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-    var unit = u ? u.textContent.trim() : "", word2 = t ? t.textContent.trim() : "";
+    var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
     var st = t ? (t.className.match(/good|warning|serious|critical/) || [ "" ])[0] : "";
     if (u) u.remove();
     if (t) t.remove();
     return {
       v: c.textContent.trim(),
       u: unit,
-      w: word2,
+      w: word,
       s: st
     };
   }
@@ -39695,7 +36895,7 @@
         label: TIMING[k].label
       };
     }));
-    var find = {}, state2 = {
+    var find = {}, state = {
       kind: "all",
       q: ""
     };
@@ -39710,7 +36910,7 @@
       return indCategoryHtml(c, find);
     }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
-      var kind = state2.kind, q = state2.q, hint = host.querySelector(".ind-hint");
+      var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
       Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b) {
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
@@ -39731,19 +36931,19 @@
     host.addEventListener("click", function(e) {
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"), k = b && b.getAttribute("data-ind-tab");
       if (!k) return;
-      state2.kind = k;
+      state.kind = k;
       apply();
     });
     input.addEventListener("input", function() {
-      state2.q = field.value.trim().toLowerCase();
+      state.q = field.value.trim().toLowerCase();
       apply();
     });
     GYN.on("openIndicatorsPage", function(tab) {
       var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
       field.value = "";
-      state2.q = "";
-      state2.kind = tab || "all";
+      state.q = "";
+      state.kind = tab || "all";
       apply();
     });
     apply();
@@ -40186,7 +37386,6 @@
     bootPagesNav();
     bootDiagnosis();
     bootAnalysis();
-    bootPortfolio();
     bootTabsMenu();
     bootRepaint();
     bootDone();

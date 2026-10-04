@@ -5,7 +5,6 @@ import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOv
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; growthSlopeQ: number; growthTrend: string; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
-export type MarketMonths = { sp: typeof sp500MonthlyHistory; spAt: Record<string, number> };
 type MoodPoint = { k: string; v: number | null };
 export type Mood = { m: string; valuations: number; calm: number; confidence: number; market: number; score: number; pct?: number | null; change?: number | null; ago?: Mood | null; word?: string | null };
 import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
@@ -130,17 +129,9 @@ export function rankToDate(prior: (number | null)[], v: number | null | undefine
   if (v == null || prior.length < 12) return null;
   return 100 * prior.filter(function(x){ return x != null && x < v; }).length / prior.length;
 }
-var marketCache: MarketMonths | null = null;
-export function marketMonths(){
-  if (marketCache) return marketCache;
-  var spAt: Record<string, number> = {};
-  sp500MonthlyHistory.forEach(function(d, i){ spAt[d.m] = i; });
-  marketCache = { sp:sp500MonthlyHistory, spAt:spAt };
-  return marketCache;
-}
-export function yearAfter(S: MarketMonths, m: string){
-  var i = S.spAt[m];
-  return i != null && i + 12 < S.sp.length ? S.sp[i + 12].v / S.sp[i].v - 1 : null;
+export function yearAfter(endYear: number){
+  var v = sp500AnnualReturns[endYear + 1];
+  return v != null ? v : null;
 }
 export function diagnoseToday(){
   var x = moodToday();

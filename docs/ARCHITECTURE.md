@@ -84,7 +84,9 @@ blank the app on every later visit):
   that is not on the calendar (month 13, February 30). `Date.parse` read a display date as local midnight and
   an ISO date as UTC midnight, so a same-day VIX close was refused west of Greenwich. The guard also never
   goes backwards: `liveFloor` keeps the newest day the file or any applied document has shown, so an undated
-  Fed range (which blanks the decision date on purpose) cannot open the door to an older decision.
+  Fed range (which blanks the decision date on purpose) cannot open the door to an older decision. The floor is
+  read from the file in `olderThanFile`, before any document lands, dated or not (0.1.1): read lazily, an undated
+  range arriving first blanked the file's date before the floor had seen it, and a 2023 decision was accepted.
 - **An object document keeps each field's type (1.6.1).** `fieldsKept`: a field the file has must arrive as
   the same type and never as an object; a field the file lacks must be a string; `rows` go through `overRows`.
 - **A stale feed turns the Data run red (1.6.1).** `staleDocs` in `fetch-live` flags a daily figure (curve,
@@ -275,7 +277,7 @@ not hooks.
 | **Scheduled task** (`docs/task.md`) | nothing of its own — copies that file into the artifact's database, and checks the artifact is on main's version (V654) | weekdays 23:07 UTC, after the Data workflow (V645) | the artifact |
 | **A session** | the source | when something changes | both, by building and publishing |
 | **Backfill workflow** (`backfill.yml`) | the FRED histories in `src/data/fred.json`, including the quarterly Treasury histories behind Pressure and Horizon (V648) | the 3rd of each month, 23:40 UTC, and on demand | the site, through the deploy it starts; the artifact only when a session republishes it (the run warns) |
-| **Tag workflow** (`tag.yml`, V647) | a `v1.4.0` tag (build and name in its message) for each version commit on `main` that has none | every push to `main` | the repo's history |
+| **Tag workflow** (`tag.yml`, V647) | a `v0.1.0` tag (build and name in its message) for each version commit on `main` that has none, pushed one at a time, and a GitHub Release for each tag on the current line that has none (0.1.0). GitHub refuses the token some old V-tags, on commits whose workflow files differ from today's; those are listed and left untagged, and only a refused semantic tag turns the run red. The current line is read newest first, each number below the one after it, so the abandoned 1.0.0–1.8.0 are never released and never outrank 0.x. A version on the current line whose tag already names a commit of the abandoned line (`taken`, 0.1.1) is neither tagged nor released over it: the run names it and turns red | every push to `main` | the repo's history and its Releases page |
 
 **The task is a courier and nothing else (V542).** Each figure is fetched once and validated once, so the
 two surfaces cannot disagree about a number. A document missing from the file is the pipeline failing;
@@ -645,8 +647,10 @@ season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card
 the cycle's first year to its last (`yearByYear`). A row reads the year's seasons from `m.track`, the first and last
 `moodTrack` words in its months (today's `moodToday` for the year in progress) and `sp500AnnualReturns`, and is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
-sits below both so neither imports the other. A closed cycle's card ends on **After**, the S&P 500 a year after
-the close. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
+sits below both so neither imports the other. A closed cycle's card ends on **After**, the S&P 500's return in
+the calendar year after the close (`yearAfter`, from the same `sp500AnnualReturns` as the rows, so it reaches back to
+1928; before 0.1.1 it read the monthly average twelve months on, which opens in 1948, and the five cycles before
+1947 had no After). The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
 left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`): the
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
@@ -822,7 +826,9 @@ invite the prune that took the bull and bear colours in V662. A function that no
 is dead even when another module has a namesake (1.2.1: hygiene counts a module's private functions inside
 that module). A branch on any row's name against a literal (`R.name === "Growth"`) is caught as well as
 `ind.bodyTerm`; a lookup that finds a row by name (`filter`, `find`) is not a branch. A style keyed on a page
-attribute or on an id that belongs to one reading's page (`#pulse-record`) counts as page-scoped. **A maintained figure that nothing reads is a
+attribute or on an id that belongs to one reading's page (`#pulse-record`) counts as page-scoped. Type set in an inline style (a font, line height, letter spacing or
+colour in a `style` string or through `el.style`) fails too: an inline style carries only geometry or state worked
+out at run time, and type belongs to a class (0.1.1). **A maintained figure that nothing reads is a
 lost feature, not dead code** — check the refresh contract before deleting data.
 
 **Gone on purpose, don't re-add** (the class and id names among them are in hygiene's `GONE` list, so they
