@@ -4,7 +4,7 @@ import { GYN } from "./live.ts";
 import { gdpSrc, sp500AnnualReturnSource } from "./data.ts";
 import { coincident, lagging, rowReadings } from "./readings.ts";
 import { categoriesShown, ROSTER, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
-import { tabSegs } from "./history.ts";
+import { tabBar } from "./history.ts";
 import { cardDetailHtml, catSnap, collapseEmptyBlocks, detailClose, metricSheet, registerTiming, seatPageFoot, sheetRenderers, subjectIcon, subjectRow, timingMembers, timingPill } from "./render-core.ts";
 import { cycleViewEl, setTopbar } from "./render-pages.ts";
 import { cycleView } from "./dial-cycle.ts";
@@ -282,9 +282,8 @@ function buildSearch(){
     find[e.title] = [e.title, e.sub, e.metricSub, ROSTER_BY[e.target].group].join(" ").toLowerCase();
   }); });
   host.innerHTML =
-    '<div class="rangebar ind-tabs" role="tablist" aria-label="Filter by timing">' +
-      tabSegs(IND_TABS.map(function(t){ return [t.key, t.label]; }), IND_TABS[0].key, "data-ind-tab") +
-    '</div><p class="ind-hint" hidden></p>' + categoriesShown().map(function(c){ return indCategoryHtml(c, find); }).join("") +
+    tabBar('aria-label="Filter by timing"', IND_TABS.map(function(t){ return [t.key, t.label]; }), IND_TABS[0].key, "data-ind-tab", "ind-tabs") +
+    '<p class="ind-hint" hidden></p>' + categoriesShown().map(function(c){ return indCategoryHtml(c, find); }).join("") +
     '<p class="search-none" hidden>No reading matches.</p>';
   function apply(){
     var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint") as HTMLElement;

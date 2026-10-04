@@ -431,10 +431,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Risk (red, past a fence), with a health score, the share that is Normal.** Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
   cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
-- **Her chart sits behind one row with a chevron, under the cycle story, and opens its own page with a cycle
-  picker.** The page carries the visit note, the health score and the results; the picker moves between cycles, and
-  the row opens on the cycle its page shows. Keren: "make it shorter in the current cycle … we'll only see the text
-  and the health score once we click on the chevron", with "a selection bar according to cycles". (0.3.0)
+- **Each cycle's Health chart is a row with a chevron under the cycle story that previews the visit note and the
+  health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
+  picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
+  four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. Keren: "make it shorter in the current
+  cycle … with a chevron", then "I want all of that to be in the preview", "it has to match the cycles/years
+  selection bar", "I would much rather see the results based on their categories", and "I'm not sure about the name
+  her chart", then "call the page and the entire computation health results", and "since we have the text and
+  health score in the preview, we don't need it in the health results page"; the name is hers: "not her chart and not
+  health results, but health chart". (0.3.0, 0.4.0)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped.**
   Keren: "I can't understand anything from it. Let's just drop it." (0.2.0; it was V612, V656)
 - **Rhymes is retired, and the proposed weather analysis was declined; don't bring either back.** Keren on the

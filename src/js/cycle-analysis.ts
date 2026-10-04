@@ -1,7 +1,8 @@
 import { facts, srcBlock } from "./format.ts";
-import { byId, moreRow, trendDoor, ui } from "./dom.ts";
-import { cycleControls, page, pageCycle } from "./history.ts";
+import { byId, moreRow, trendDoor, trendText, ui } from "./dom.ts";
+import { cycleControls, page, pageCycle, tabBar } from "./history.ts";
 import { chartSvg } from "./marks.ts";
+import { histBar } from "./charts.ts";
 import { metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycleModel } from "./model.ts";
@@ -74,7 +75,7 @@ function tier(l: Lab, i: number){
 function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
 function labItem(l: Lab, i: number){
   var st = state(l, i), n = l.norm as Norm;
-  return '<li class="lab-item"><div><b>' + l.name + '</b><small>' + catTitle(l.cat) + '</small></div>' +
+  return '<li class="lab-item ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '"><div><b>' + l.name + '</b></div>' +
     '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (st === "high" ? " H" : st === "low" ? " L" : "") + '</b>' +
     '<small>normal ' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + ' · ' + n.n + '</small></div></li>';
 }
@@ -82,19 +83,30 @@ function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
   return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + ' ' + c.toFixed(1) + '"/></svg>';
 }
-function report(i: number){
-  var j = judged(i), by: Record<string, Lab[]> = {}, s = score(i), id = "labf-" + marketCycles[i].from;
-  TIERS.forEach(function(t){ by[t.key] = j.filter(function(l){ return tier(l, i) === t.key; }); });
-  var chip = function(key: string, title: string, n: number){
-    return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + '-' + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '>' +
-      '<label for="' + id + '-' + key + '">' + title + ' <span>' + n + '</span></label>';
-  };
-  return '<div class="labs"><div class="lab-score"><div><b>Health score</b><small>' + j.length + ' readings</small></div>' +
-    '<div class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></div></div>' +
-    '<div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t){ return chip(t.key, t.title, by[t.key].length); }).join("") + '</div>' +
-    TIERS.filter(function(t){ return by[t.key].length; }).map(function(t){
-      return '<section class="lab-sec ' + t.cls + '"><h2>' + t.title + ' <span>' + by[t.key].length + '</span></h2><ul>' + by[t.key].map(function(l){ return labItem(l, i); }).join("") + '</ul></section>';
-    }).join("") + '</div>';
+function scoreBox(i: number){
+  var s = score(i);
+  return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span>' +
+    '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
+}
+function bySystem(i: number, j: Lab[]){
+  var rank = TIERS.map(function(t){ return t.key; });
+  return ["cycle"].concat(categoriesShown().map(function(c){ return c.key; })).map(function(k){
+    var ls = j.filter(function(l){ return l.cat === k; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
+    return ls.length ? '<section class="lab-sec"><h2>' + catTitle(k) + '</h2><ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul></section>' : "";
+  }).join("");
+}
+var shown = { tier:"all" };
+function tierTabs(i: number, j: Lab[]){
+  var segs = [["all", "All " + j.length]].concat(TIERS.map(function(t){ return [t.key, t.title + " " + j.filter(function(l){ return tier(l, i) === t.key; }).length]; }));
+  return tabBar('aria-label="Filter the results"', segs, shown.tier, "data-lab-tier");
+}
+function pickTier(sheet: HTMLElement, seg: Element){
+  shown.tier = seg.getAttribute("data-lab-tier") || "all";
+  sheet.setAttribute("data-show", shown.tier);
+  Array.prototype.forEach.call(sheet.querySelectorAll("[data-lab-tier]"), function(b: HTMLElement){
+    var on = b === seg;
+    b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1;
+  });
 }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
@@ -113,32 +125,36 @@ function visitNote(i: number){
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
 }
 function chartDetail(){
-  return '<h4>How the chart reads</h4>' + facts([
+  return '<h4>How the health chart reads</h4>' + facts([
     "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
     "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.",
     "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
     "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
-    "The chart describes her history, not what comes next."
+    "Her health chart describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
-function cycleAnalysisHtml(m: CycleModel){
+var CHART_ID = "sheet-cycle-chart", CHART_NAME = "Health chart";
+export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  if (i < 0) return "";
-  return '<div class="cat-analysis cat-mood"><div class="ca-name">' + m.era.name + '</div>' +
-    '<p class="ca-say">' + visitNote(i) + '</p>' + report(i) + moreRow(chartDetail()) + '</div>';
-}
-var CHART_ID = "sheet-cycle-chart";
-export function chartDoor(){
-  return trendDoor(CHART_ID, "Her chart", chartSvg(), "Her chart", "");
+  return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i));
 }
 function drawChart(){
   var sheet = byId(CHART_ID), c = pageCycle(CHART_ID);
-  if (sheet && c) sheet.innerHTML = cycleControls(CHART_ID) + cycleAnalysisHtml(cycleModel(c));
+  if (!sheet || !c) return;
+  sheet.setAttribute("data-show", shown.tier);
+  var i = marketCycles.indexOf(c), j = judged(i);
+  sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) +
+    '<div class="cat-analysis cat-mood labs">' + bySystem(i, j) + moreRow(chartDetail()) + '</div>';
 }
 export function buildCycleChart(home: HTMLElement){
   page.mode[CHART_ID] = "cycles";
   page.cycles[CHART_ID] = null;
-  home.appendChild(metricSheet(CHART_ID));
+  var sheet = metricSheet(CHART_ID);
+  home.appendChild(sheet);
+  sheet.addEventListener("click", function(e){
+    var seg = (e.target as Element).closest && (e.target as Element).closest("[data-lab-tier]");
+    if (seg) pickTier(sheet, seg);
+  });
   home.addEventListener("click", function(e){
     if ((e.target as Element).closest && (e.target as Element).closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
   });

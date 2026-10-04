@@ -508,15 +508,16 @@ Rules that shape the pages:
   with the row's `mid`/`rule`, the Volatility ring through `vixPct`, the Pulse trace through `pulsePeek`).
   The label is the range over the cycle, not a verdict: several verdicts are Keren's words for today, not
   bands a past value can be read against.
-- **Her chart is a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries only its door, a
-  trend card under the cycle story, so the current cycle and every past one opened from Analysis carry it. The
+- **The Health chart is a blood test of each cycle** (`cycle-analysis`). The Diagnosis carries its door, a
+  trend card under the cycle story that previews the visit note and score (`scoreBox`, flat in the door), so the current cycle and every past one opened from Analysis carry it. The
   page (`sheet-cycle-chart`) is a metric sheet outside the roster: `buildCycleChart` gives it a `page.cycles`
   key, so the shared cycle picker, its keys and `eraShow` drive it like a history page, and the door sets the
   picked cycle to the one on screen. Every roster reading is averaged over
   the cycle's years; its range is the middle half of the closed cycles that reading covers (Normal), Tukey's
   fences beyond it mark Risk, and between is Attention. The cycle's length, bull years and bleed are judged
   only once it has closed. The health score is the share of judged readings that are Normal. The tier filter
-  is radio inputs and CSS `:has`, so it needs no script. Show data (V656) and its Alike-today and health dots
+  is the app's tab bar in the same `hist-bar` as the cycle picker; a tap sets the sheet's `data-show` and CSS
+  hides the other tiers and any category left empty, so a cycle change keeps the filter. Show data (V656) and its Alike-today and health dots
   were dropped at Keren's word.
 - **Portfolio is empty and says so.** No placeholder figures.
 - **Copy density**: fold into what exists; a new section is one kicker, one short visual, detail behind (i).
