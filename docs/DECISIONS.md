@@ -426,18 +426,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **Each cycle in Analysis shows its growth and its prices, totalled the same way over the same closed years,
   side by side on one line.** Keren: "this is so interesting — put it in the analysis tab per cycle". (V276)
-- **Each past cycle marks the years when a reading sat where it sits today: within five points of today's
-  place in that reading's own record (its rank), each reading on its own and never averaged.** A rank carries
-  no units, so one rule fits every reading and survives an outlier like 1981's 19%; Keren: "i don't want the
-  average because i will miss important correlations for example the shiller cape in 2000 before the crash."
-  (V612, V656)
-- **A mark saying two readings are alike sits where both numbers can be seen, and the app never counts the
-  marks into a score or a forecast.** Keren could not check dots that hid both readings, and a number claiming
-  a bear market is coming would be invented. (V610, V612)
-- **The grid shows only when "Show data" is on: each cycle's strips and years scroll sideways together at one
-  width per year, a row opens both numbers behind every dot, and readings with no mark are named in one line
-  under the grid.** Keren: "the grid should be visible by choice"; "in order to sync the cycle years use
-  horizontal scroll". (V656)
+- **Each cycle carries her chart, read like a blood test: every reading averaged over the cycle and sorted into
+  Normal (green, the middle half of her closed cycles), Attention (yellow, outside it but within Tukey's fences) and
+  Risk (red, past a fence), with a health score, the share that is Normal.** Tapping a cycle in Analysis opens it.
+  Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
+  cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
+- **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped.**
+  Keren: "I can't understand anything from it. Let's just drop it." (0.2.0; it was V612, V656)
 - **Rhymes is retired, and the proposed weather analysis was declined; don't bring either back.** Keren on the
   weather analysis: "not very informative - remove it". (V656)
 
@@ -712,7 +707,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   carries no state colour.** "The body is how an insight is explained, never how it is derived"; whether the
   two moving together is good is a judgement the card does not make. (V452)
 - **A past cycle's figure is printed the way today's card prints the reading: the same decimals, sign, suffix
-  and unit, on the cycle's card, in its Diagnosis at the close and in Show data's notes (Federal debt to one
+  and unit, on the cycle's card, and in its Diagnosis at the close (Federal debt to one
   decimal, CAPE and Pulse with ×, Growth and Volume signed, Volatility and Horizon with their units); the Federal
   budget says deficit or surplus, and its rank reads the same way.** Keren: one format per reading, whether today's
   figure or a cycle's close. (V670)

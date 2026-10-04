@@ -7,6 +7,7 @@ import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, moodToday, moodTrack, nowModel, seasonGroup, yearAfter } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
+import { cycleAnalysisHtml } from "./cycle-analysis.ts";
 import type { CycleModel } from "./model.ts";
 
 type DxView = { stage?: string; season?: Season; after?: number | null };
@@ -19,7 +20,7 @@ function diagnosisHtml(m: CycleModel){
   var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(m.endYear) };
   if (!d) return "";
   return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
-    yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];

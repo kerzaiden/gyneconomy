@@ -75,4 +75,3 @@ export function hubLine(html: string){ return '<span class="hub-line">' + html +
 export function qPretty(q: unknown){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
 export function seasonName(s: string){ return s.charAt(0).toUpperCase() + s.slice(1); }
 export function capeFmt1(v: number){ return v.toFixed(1) + "\u00d7"; }
-export function withUnit(fig: string, unit?: string){ return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : ""); }
