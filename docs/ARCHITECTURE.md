@@ -647,11 +647,19 @@ Also, I want to have emotional intelligence in this analysis." Since V665 it is 
 then `#diagnosis` under it, in place of the four category cards (Keren: "I want the categories to go away from the
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
 under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card (the emotion in its
-season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year from
-the cycle's first year to its last (`yearByYear`). A row reads the year's seasons from `m.track`, the first and last
-`moodTrack` words in its months (today's `moodToday` for the year in progress) and `sp500AnnualReturns`, and is a
+season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year, newest
+first since 0.4.1 (Keren: "I want to see 2026 at the top, and then go backwards"), from the cycle's last year to its
+first (`yearByYear`). Since 0.4.1 a row is the Analysis page's cycle row at the scale of
+a year (Keren: "just put a bar, a colored bar, like in the analysis page"): the year's quarters from `m.track` as a
+season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar
+since four quarters fill the row; the quarters not yet run left blank, no dots, Keren), and under it the same Growth,
+Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and
+`eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year in progress reads
+`yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the Growth and Temperature
+cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
+fit on a phone. The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
-sits below both so neither imports the other. A closed cycle's card ends on **After**, the S&P 500's return in
+sits below both so neither imports the other. A closed cycle's card opens on **After** (it ended on it before 0.4.1), the S&P 500's return in
 the calendar year after the close (`yearAfter`, from the same `sp500AnnualReturns` as the rows, so it reaches back to
 1928; before 0.1.1 it read the monthly average twelve months on, which opens in 1948, and the five cycles before
 1947 had no After). The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
@@ -677,7 +685,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
-- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) names today's feeling in today's season
+- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) named today's feeling in today's season until 0.4.1
   (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
   market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
@@ -698,7 +706,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
 - **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
-  head is today's feeling in today's season, or "Cycle story" on a past cycle, beside a book mark (a cycle is told whole, never by its
+  head is the cycle's own name, "AI Cycle" today (0.4.1, Keren: "instead of hope in autumn, I would read AI cycle. And it
+  goes to all other cycle pages"; before it, today's card named today's feeling in today's season), beside a book mark (a cycle is told whole, never by its
   close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.

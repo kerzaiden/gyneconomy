@@ -60,8 +60,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
-  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Cycle story" (V691; "Her story" in V689),
-  never by the mood it closed on, and the card carries the story alone (no "came into" line, no note on when the
+  It sits on the cycle page's mood card, titled by the cycle's own name ("AI Cycle"), today's included (0.4.1; before it,
+  today's card was titled by today's mood and season, a past cycle's "Cycle story" since V691, "Her story" in V689),
+  never by a mood, and the card carries the story alone (no "came into" line, no note on when the
   mood is measured).** Keren: "a cycle is a story from the beginning to end, not just the end… we will always see
   the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
   has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The
@@ -288,6 +289,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   pages are built with the same structure and same spacing, so that we don't need to go over page by page." The
   bar owns the gap (`#metric-page .hist-bar`) and every wrapper that holds a bar sets no top margin
   (`#metric-page :has(.hist-bar)`); the suite fails any page whose bar sits at a different distance. (V674)
+- **The page owns the gap under the top bar, never its first element.** The Portfolio method pages opened flush
+  under the top bar: the gap was added back by each kind of first element (a window bar, a reading's detail), so a
+  page that opened on anything new had none, and the suite only measured pages that open on a window bar. Keren:
+  "make sure that every page padding matches the rule … check why you missed on the padding in the first place."
+  Now `#metric-page > .metric-sheet` carries `--gap-top` and its first child adds none, and the suite measures the
+  first drawn element of every tab and every page, whatever it is. (0.5.0, Oct 4, 2026)
 
 ## The dial and the cycles
 

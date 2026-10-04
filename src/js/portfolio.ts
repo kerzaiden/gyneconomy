@@ -37,6 +37,8 @@ var PHASES: Phase[] = [
   { key:"stagflation", name:"Stagflation", growth:"slowing", prices:"rising", holds:"Cash", at:[1.5, 2] }
 ];
 
+function say(t: string){ return '<p class="ca-say">' + t + '</p>'; }
+function methodPage(id: string, body: string, detail: string){ need(id).innerHTML = '<div class="cat-analysis cat-mood">' + body + moreRow(detail) + '</div>'; }
 function weatherStrip(){
   return '<div class="strip" role="img" aria-label="' + ALL_WEATHER.map(function(a){ return a.what + " " + a.w + "%"; }).join(", ") + '">' +
     ALL_WEATHER.map(function(a){ return '<span class="strip-run" style="flex:' + a.w + ' 1 0;--season:var(' + a.ink + ')"></span>'; }).join("") + '</div>';
@@ -53,9 +55,8 @@ function drawWeather(){
   var r = nowModel.reading;
   var weights = ALL_WEATHER.map(function(a){ return auxStat({ label:'<span class="season-sw" style="--season:var(' + a.ink + ')"></span>' + a.what, value:a.w + "%" }); }).join("");
   var weather = WEATHER.map(function(w){ return auxStat({ label:w.when + (w.test(r) ? " · today" : ""), value:w.holds, wordy:true }); }).join("");
-  need(WEATHER_ID).innerHTML = '<div class="cat-analysis cat-mood">' +
-    '<p class="ca-say">Something for every kind of economic weather, held all the time, so no season has to be called. The mix Ray Dalio gave individual investors:</p>' +
-    weatherStrip() + weights + '<p class="ca-say">What each kind of weather has favoured:</p>' + weather + moreRow(weatherDetail()) + '</div>';
+  methodPage(WEATHER_ID, say("Something for every kind of economic weather, held all the time, so no season has to be called. The mix Ray Dalio gave individual investors:") +
+    weatherStrip() + weights + say("What each kind of weather has favoured:") + weather, weatherDetail());
 }
 function phaseOf(r: ModelReading): Phase {
   var up = r.regime === "expansion", cooling = r.cpiDirection === "falling";
@@ -88,9 +89,8 @@ function clockDetail(){
 function drawClock(){
   var now = phaseOf(nowModel.reading);
   var rows = PHASES.map(function(p){ return auxStat({ label:p.name + (p === now ? " · today" : "") + '<small>Growth ' + p.growth + ', prices ' + p.prices + '</small>', value:p.holds, wordy:true }); }).join("");
-  need(CLOCK_ID).innerHTML = '<div class="cat-analysis cat-mood">' +
-    '<p class="ca-say">Today reads ' + now.name + ': growth ' + now.growth + ' and prices ' + (now.prices === "rising" && nowModel.reading.cpiDirection === "steady" ? "holding steady" : now.prices) + '. In this phase the clock holds ' + now.holds.toLowerCase() + '.</p>' +
-    clockFace(now) + rows + moreRow(clockDetail()) + '</div>';
+  methodPage(CLOCK_ID, say('Today reads ' + now.name + ': growth ' + now.growth + ' and prices ' + (now.prices === "rising" && nowModel.reading.cpiDirection === "steady" ? "holding steady" : now.prices) + '. In this phase the clock holds ' + now.holds.toLowerCase() + '.') +
+    clockFace(now) + rows, clockDetail());
 }
 function homeHtml(){
   var now = phaseOf(nowModel.reading);

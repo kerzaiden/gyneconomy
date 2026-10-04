@@ -3,8 +3,9 @@ import { byId, detailSlot, detailTexts, need, put, rovingKeys, ui } from "./dom.
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { gdpSrc, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
-import { cycleModel, cycleYtdFraction, seasonGroup, seasonTitle } from "./model.ts";
+import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
+import { seasonPills, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
@@ -14,7 +15,6 @@ type CycleModel = ReturnType<typeof cycleModel>;
 type DialQuarter = { seg: TrackSeg; a0: number; a1: number; mid: number };
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null; sheets: Record<number, string> };
 type HubOpen = { cat?: (typeof CATEGORIES)[number]; html?: string } | null;
-type StripRun = { g: string; n: number; from: string; to: string; seasons: Record<string, boolean> };
 type MarketRun = { dir: string; ytd: boolean | undefined; q: number; from: number; to: number };
 
 // ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
@@ -282,36 +282,21 @@ export function renderCycleView(m: CycleModel){
 }
 export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----
-var stripGroupName = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
 function aheadWord(cyc: Cycle){ return cyc.ongoing ? "not yet run" : "shorter than a typical cycle"; }
-function stripDots(n: number, title: string){
-  return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + '</span>' : "";
-}
 export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
-  var groupName: Record<string, string> = stripGroupName;
   return (function(){
-    var m = cycleModel(cyc), segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), runs: StripRun[] = [];
-    segs.forEach(function(seg){
-      var g = seasonGroup(seg.season), last = runs[runs.length - 1];
-      if (!last || last.g !== g) runs.push(last = { g:g, n:0, from:seg.q, to:seg.q, seasons:{} });
-      last.n++; last.to = seg.q; last.seasons[seg.season] = true;
-    });
+    var m = cycleModel(cyc), segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), runs = seasonRuns(segs);
     var lead = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead + segs.length;
     var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                         cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
     var ahead = Math.max(0, span - done);
-    var pills = runs.map(function(r){
-      var names = Object.keys(r.seasons).map(function(k){ return seasonTitle(wheelMeta[k as Season]); }).join(" · ");
-      return '<span class="strip-run ' + r.g + (r.n === 1 ? ' one' : '') + '" style="' +
-        'flex:' + r.n + ' 1 0' + '" title="' + groupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
-    }).join("");
-    pills = stripDots(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + pills + stripDots(ahead, aheadWord(cyc));
+    var pills = stripDots(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripDots(ahead, aheadWord(cyc));
     var lastSeg = segs[segs.length - 1];
     var foot = cyc.ongoing
       ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
       : '<b>' + Math.round(m.elapsedYears) + ' years</b> · ended in <b>' + wheelMeta[lastSeg.season].name + '</b>';
     return { span:span, done:done, years:(cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears)),
-             strip:'<div class="strip" role="img" aria-label="' + (lead ? 'No season ' + lead + ' quarters, ' : '') + runs.map(function(r){ return groupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ') + '">' + pills + '</div>',
+             strip:'<div class="strip" role="img" aria-label="' + (lead ? 'No season ' + lead + ' quarters, ' : '') + seasonRunsLabel(runs) + '">' + pills + '</div>',
              foot:foot };
   })();
 }
