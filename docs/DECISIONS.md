@@ -72,6 +72,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   each period ("maybe will give us better cycle names"): Postwar became Baby Boom (1947–53), Go-Go became Great
   Society (1963–66), Go-Go moved to 1967–69 where the go-go funds and conglomerates peaked (was Conglomerate),
   Rebound became Bicentennial (1975–77) and Inflation became Volcker (1978–81). (V690)
+- **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
+  Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
+  background." (0.6.5)
 - **The Current Cycle page carries AI Insights, between the cycle's story and Cycle analysis, on the open cycle only.**
   Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
   sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
