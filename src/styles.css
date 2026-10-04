@@ -996,7 +996,7 @@
   .sign-detail > .page-chart,
   .sign-detail > .highlights, .sign-detail > .aux-stat{ margin-top:var(--gap); }
   .sign-detail > *:first-child{ margin-top:0; }
-  .metric-sheet > .sign-detail:first-child{ margin-top:var(--gap-top); }
+  .metric-sheet > :is(.sign-detail, .cat-analysis):first-child{ margin-top:var(--gap-top); }
   .sign-detail .more-row{ margin-top:var(--gap); }
 
   .metric-sheet .temp-chart{ margin-left:0; margin-right:0; }
