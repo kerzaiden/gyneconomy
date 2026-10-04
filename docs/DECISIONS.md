@@ -146,6 +146,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Health chart picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
   picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
+- **The Health chart's search box reads "Search indicators", its placeholder in a light neutral grey
+  (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,

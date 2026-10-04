@@ -146,7 +146,7 @@ function filterTags(id: string, i: number, j: Lab[]){
 function finder(id: string, i: number, j: Lab[]){
   var f = findOf(id);
   return '<div class="lab-find"><div class="search-field">' + LENS +
-    '<input type="search" class="lab-q" placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
+    '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '">' +
     '<button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button></div>' +
     '<div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + '</div></div>';
 }
