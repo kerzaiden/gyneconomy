@@ -643,8 +643,8 @@
   .trend-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .trend-head{ display:flex; align-items:center; gap:7px; font-size:var(--type-reading); font-weight:700; color:var(--cat); }
   .trend-head .peek-chev{ margin-left:auto; color:var(--text-muted); }
-  .trend-card.is-soon{ cursor:default; }
-  .trend-card.is-soon:hover{ border-color:var(--border); }
+  .trend-card.is-soon, .trend-card.is-box{ cursor:default; }
+  .trend-card.is-soon:hover, .trend-card.is-box:hover{ border-color:var(--border); }
   .soon-pill{ margin-left:auto; font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
   .clock{ display:block; width:100%; max-width:340px; margin:14px auto 6px; }
   .clock-q{ fill:var(--surface-2); stroke:var(--surface); stroke-width:3; }
@@ -655,6 +655,30 @@
   .clock-axis{ font-size:var(--type-label); fill:var(--text-muted); }
   .aux-stat .season-sw{ margin-right:10px; vertical-align:middle; }
   .aux-stat span small{ display:block; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); }
+  .trend-text.ai-clamp{ display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .ai-page{ display:flex; flex-direction:column; gap:var(--gap); }
+  .ai-pic{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+  .ai-pic .strip{ margin:0; }
+  .ai-pic .strip + .strip{ margin-top:5px; }
+  .ai-cap{ display:block; margin-top:8px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .ai-rank{ display:grid; grid-template-columns:9.5em 1fr 2.8em; align-items:center; column-gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-primary); }
+  .ai-rank b{ text-align:right; font-variant-numeric:tabular-nums; }
+  .ai-track{ position:relative; height:6px; border-radius:3px; background:var(--surface-2); }
+  .ai-track i{ position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--cat); }
+  .ai-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .ai-tile{ display:flex; flex-direction:column; gap:2px; min-width:0; padding:9px 10px 8px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
+  .ai-tile small{ font-size:var(--type-label); line-height:1.3; color:var(--text-muted); }
+  .ai-tile b{ font-size:var(--type-reading); color:var(--text-primary); }
+  .ai-tile .peek-chart{ margin-top:6px; }
+  .peek-chart.heat .ai-col{ stroke:var(--cat); vector-effect:non-scaling-stroke; }
+  .ai-path{ display:grid; grid-template-columns:2.6em 1fr; align-items:center; column-gap:8px; margin-top:6px; }
+  .ai-path .strip{ margin:0; }
+  .ai-p{ margin:8px 0 0; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
+  .ai-echoes{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .ai-echo{ padding:10px 12px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
+  .ai-echo-when{ display:block; font-size:var(--type-reading); color:var(--text-primary); }
+  .ai-echo small{ display:block; margin-top:3px; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
+  .ai-by{ margin:0; font-size:var(--type-meta); color:var(--text-muted); }
   .trend-text{ display:block; margin:8px 0 6px; font-size:var(--type-reading); line-height:1.55; color:var(--text-primary); }
   .insights{ margin-top:var(--gap); padding-top:var(--gap); border-top:1px solid var(--border); }
   .insights .hi-head{ margin-bottom:10px; }
@@ -1057,7 +1081,7 @@
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
   .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
   .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
-  .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
+  .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }
   .lab-sec + .lab-sec{ margin-top:14px; }
@@ -1562,7 +1586,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.4 (742)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.5 (743)</span></p>
     </div>
   </div>
 
@@ -1963,8 +1987,8 @@
     box.addEventListener("click", sync);
     sync();
   }
-  function trendText(t) {
-    return '<span class="trend-text">' + t + "</span>";
+  function trendText(t, cls) {
+    return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + "</span>";
   }
   function trendHead(mark, head, end) {
     return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + head + end + "</span>";
@@ -1977,6 +2001,9 @@
   }
   function trendJump(attrs, mark, head, body) {
     return trendCard("button", "", ' type="button"' + attrs, mark, head, CHEV, body);
+  }
+  function trendBox(mark, head, body) {
+    return trendCard("section", " is-box", "", mark, head, "", body);
   }
   function trendSoon(mark, head, body) {
     return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
@@ -28161,18 +28188,18 @@
     var ww2 = fiscalHistory.gross.filter(function(d) {
       return d.y === 1946;
     })[0].v, v = Math.round(last.v * 10) / 10;
-    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill = {
+    var q = last.q.replace(/^(\d{4}) (Q[1-4])$/, "$2 $1"), fill2 = {
       q: q,
       v: v.toFixed(1),
       ww2: ww2.toFixed(1),
       x: (v / bandEnds(row.meter.optimal, NaN, NaN)[1]).toFixed(2)
     };
     row.meter.value = v;
-    row.flagValue = fill.v + "%";
-    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill.ww2 + "%.");
+    row.flagValue = fill2.v + "%";
+    row.shortNote = q + " — " + (v > ww2 ? "above the WWII peak, and within reach of the 2020 record." : "below the WWII peak of " + fill2.ww2 + "%.");
     row.noteTpl = row.noteTpl || row.note;
     row.note = row.noteTpl.replace(/\{(\w+)\}/g, function(m, k) {
-      return fill[k] != null ? fill[k] : m;
+      return fill2[k] != null ? fill2[k] : m;
     });
   }
   function stressOf(m) {
@@ -31445,6 +31472,9 @@
   function calendarSvg() {
     return markSvg('<rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke-width="1.8"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" stroke-width="1.8"/>');
   }
+  function sparkleSvg() {
+    return markSvg('<path d="M10 3.5l1.6 4.9 4.9 1.6-4.9 1.6L10 16.5l-1.6-4.9L3.5 10l4.9-1.6z" stroke-width="1.8"/><path d="M18 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" stroke-width="1.7"/>');
+  }
   function bookSvg() {
     return markSvg('<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/><path d="M12 6.6v13.6" stroke-width="1.7"/>');
   }
@@ -34473,6 +34503,344 @@
     });
     drawChart(HOME_ID);
   }
+  var ai_insights_default = {
+    by: "Claude",
+    asOf: "2026-10-02",
+    lede: "The AI Cycle is a market priced for a boom inside an economy that feels like a slowdown. Her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
+    sections: [ {
+      title: "The cycle",
+      text: "Born out of the 2022 correction, the cycle is {age} years old, with {bull} bull years and no bleed yet. It opened in Autumn, touched Summer at the start of 2024, cooled into Spring for the rest of that year, and has been in Autumn since 2025, stagflation since its third quarter: growth contracting while prices heat. Mrs. Market reached Optimism early in 2024, fell to Panic in the spring of 2025, and has climbed back to Hope."
+    }, {
+      title: "The economy",
+      text: "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed has eased to {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP, the budget runs at {deficit}, and interest payments, at {interest} of GDP, are level with their 1991 record."
+    }, {
+      title: "The market",
+      text: "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired."
+    } ],
+    echoIntro: "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
+    figures: {
+      age: "length",
+      bull: "bull",
+      cpi: "sheet-metric-temp",
+      growth: "sheet-metric-gdp",
+      unemployment: "sheet-sign-activity",
+      fed: "sheet-sign-hormones",
+      demand: "sheet-sign-desire",
+      confidence: "sheet-sign-confidence",
+      debt: "sheet-metric-debt",
+      deficit: "sheet-marker-deficit",
+      interest: "sheet-metric-interest",
+      sp: "sheet-sign-market",
+      cape: "sheet-metric-valuation",
+      buffett: "sheet-metric-buffett",
+      premium: "sheet-sign-premium",
+      vix: "sheet-sign-sentiment"
+    },
+    tiles: {
+      economy: [ "sheet-metric-temp", "sheet-sign-activity", "sheet-sign-hormones" ],
+      market: [ "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-sentiment" ]
+    },
+    echo: [ "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp" ]
+  };
+  var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+  var ECHO_FROM = 1970;
+  function openIdx() {
+    return marketCycles.findIndex(function(c) {
+      return !!c.ongoing;
+    });
+  }
+  function labOf(id) {
+    return labs().filter(function(l) {
+      return l.id === id;
+    })[0];
+  }
+  function figure(id) {
+    var l = labOf(id), v = l && l.per[openIdx()];
+    return v == null ? "—" : l.cat === "cycle" ? yearsWord(v) : fmt(l, v);
+  }
+  function fill(text) {
+    var figs = ai_insights_default.figures;
+    return text.replace(/\{(\w+)\}/g, function(_, k) {
+      return figs[k] ? figure(figs[k]) : "{" + k + "}";
+    });
+  }
+  function quartersOf(k) {
+    var y = k.slice(0, 4);
+    if (/ Q\d$/.test(k)) return [ k ];
+    if (k.length === 7) return [ y + " Q" + Math.ceil(+k.slice(5) / 3) ];
+    return [ "Q1", "Q2", "Q3", "Q4" ].map(function(q) {
+      return y + " " + q;
+    });
+  }
+  function quarterly(id) {
+    var sum = {}, n = {};
+    keyed(ROSTER_BY[id].hist).forEach(function(d) {
+      if (d.v == null) return;
+      quartersOf(d.k).forEach(function(q2) {
+        sum[q2] = (sum[q2] || 0) + d.v;
+        n[q2] = (n[q2] || 0) + 1;
+      });
+    });
+    var out = {};
+    for (var q in sum) out[q] = sum[q] / n[q];
+    return out;
+  }
+  function lastQuarter(id) {
+    return Math.max.apply(null, keyed(ROSTER_BY[id].hist).filter(function(d) {
+      return d.v != null;
+    }).map(function(d) {
+      return d.k.length === 4 ? +d.k * 4 : qIdx(quartersOf(d.k)[0]);
+    }));
+  }
+  function cycleOfYear(y) {
+    return marketCycles.filter(function(c) {
+      return y >= c.from && y <= (c.to || y);
+    })[0];
+  }
+  function qIdx(q) {
+    return +q.slice(0, 4) * 4 + +q.slice(6) - 1;
+  }
+  function qName(i) {
+    return Math.floor(i / 4) + " Q" + (i % 4 + 1);
+  }
+  function carried(s, to) {
+    var out = {}, last = -1;
+    Object.keys(s).forEach(function(q) {
+      out[qIdx(q)] = s[q];
+      last = Math.max(last, qIdx(q));
+    });
+    for (var i = last + 1; i <= to; i++) out[i] = out[last];
+    return out;
+  }
+  var panelCache = null;
+  function panel() {
+    return panelCache || (panelCache = buildPanel());
+  }
+  function buildPanel() {
+    var ids = ai_insights_default.echo, raw = ids.map(quarterly), nowI = Math.max.apply(null, ids.map(lastQuarter));
+    var series = raw.map(function(s) {
+      return carried(s, nowI);
+    }), now2 = ids.map(function(id) {
+      return labOf(id).per[openIdx()];
+    });
+    var rows = {};
+    for (var i = ECHO_FROM * 4; i <= nowI; i++) {
+      var v = i === nowI ? now2 : series.map(function(s) {
+        return s[i];
+      });
+      if (v.every(function(x) {
+        return x != null;
+      })) rows[i] = v;
+    }
+    var all = Object.keys(rows).map(function(k) {
+      return rows[+k];
+    });
+    var scale = ids.map(function(_, r) {
+      var vs = all.map(function(v2) {
+        return v2[r];
+      }), m = vs.reduce(function(a, b) {
+        return a + b;
+      }, 0) / vs.length;
+      return Math.sqrt(vs.reduce(function(a, b) {
+        return a + (b - m) * (b - m);
+      }, 0) / vs.length);
+    });
+    return {
+      rows: rows,
+      now: now2,
+      nowI: nowI,
+      scale: scale,
+      open: marketCycles[openIdx()].from * 4
+    };
+  }
+  function pathGap(p, k) {
+    var per = p.scale.map(function() {
+      return 0;
+    });
+    for (var j = 0; j < GROWTH_WINDOW; j++) {
+      var a = p.rows[k - j], b = p.rows[p.nowI - j];
+      if (!a || !b) return null;
+      a.forEach(function(x, r) {
+        var z = (x - b[r]) / p.scale[r];
+        per[r] += z * z / GROWTH_WINDOW;
+      });
+    }
+    return {
+      gap: Math.sqrt(per.reduce(function(x, y) {
+        return x + y;
+      }, 0) / per.length),
+      per: per.map(Math.sqrt)
+    };
+  }
+  var echoCache = null;
+  function echoes() {
+    if (echoCache) return echoCache;
+    var p = panel(), seen = [];
+    Object.keys(p.rows).map(Number).filter(function(k) {
+      return k < p.open;
+    }).map(function(k) {
+      var g = pathGap(p, k);
+      return g && {
+        q: qName(k),
+        i: k,
+        cycle: cycleOfYear(Math.floor(k / 4)),
+        gap: g.gap,
+        per: g.per,
+        then: p.rows[k]
+      };
+    }).filter(function(e) {
+      return !!e && !!e.cycle;
+    }).sort(function(a, b) {
+      return a.gap - b.gap;
+    }).forEach(function(e) {
+      if (seen.every(function(s) {
+        return Math.abs(s.i - e.i) >= GROWTH_WINDOW;
+      })) seen.push(e);
+    });
+    echoCache = seen;
+    return echoCache;
+  }
+  function thenWords(e) {
+    var seg = cycleModel(e.cycle).track.filter(function(s) {
+      return s.q === e.q;
+    })[0];
+    var month = e.q.slice(0, 4) + "-" + QUARTER_END_MONTH[e.q.slice(5)];
+    var mood = moodTrack().filter(function(x) {
+      return x.m === month;
+    })[0];
+    var season = seg ? seasonTitle(wheelMeta[seg.season]) : "";
+    return [ season, mood && mood.word ? "Mrs. Market in " + mood.word : "" ].filter(Boolean).join(", ");
+  }
+  function pairWords(l, then, now2) {
+    return l.name + " (" + fmt(l, then) + " then, " + fmt(l, now2) + " now)";
+  }
+  function echoLine(e) {
+    var p = panel(), order = e.per.map(function(x, i) {
+      return i;
+    }).sort(function(a, b) {
+      return e.per[a] - e.per[b];
+    });
+    var say2 = function(i) {
+      return pairWords(labOf(ai_insights_default.echo[i]), e.then[i], p.now[i]);
+    };
+    var then = thenWords(e);
+    return '<li class="ai-echo"><span class="ai-echo-when"><b>' + e.q + "</b> · " + e.cycle.name + "</span>" + (then ? "<small>Then: " + then + ".</small>" : "") + pathStrip("Then", e.i) + pathStrip("Now", p.nowI) + "<small>Alike: " + listWords(order.slice(0, 2).map(say2)) + ". Apart: " + say2(order[order.length - 1]) + ".</small></li>";
+  }
+  function asOfWords() {
+    var d = ai_insights_default.asOf.split("-").map(Number);
+    return d[2] + " " + MONTH_NAMES[d[1] - 1] + " " + d[0];
+  }
+  function aiDetail() {
+    var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
+      return labOf(id).name;
+    }));
+    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + growthWindowWord() + " quarters of " + names + ", the same two years the season model reads growth over, against every run of " + growthWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
+      return +k < p.open;
+    }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + growthWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
+      return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
+    }).join("<br>") + "</p>";
+  }
+  var AI_PAGE = "sheet-ai-insights";
+  var CHAPTER_MARKS = [ calendarSvg, weatherSvg, marketSvg ];
+  var EXTREMES = 3;
+  function rankNow(R) {
+    var h = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    }).map(function(d) {
+      return d.v;
+    });
+    return {
+      R: R,
+      pct: rankToDate(h.slice(0, -1), h[h.length - 1])
+    };
+  }
+  function pic(inner, cap2) {
+    return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap2 + "</small></div>";
+  }
+  function extremesPic() {
+    var all = ROSTER.map(rankNow).filter(function(x) {
+      return x.pct != null;
+    }).sort(function(a, b) {
+      return b.pct - a.pct;
+    });
+    var rows = all.slice(0, EXTREMES).concat(all.slice(-EXTREMES));
+    return pic(rows.map(function(x) {
+      return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + "%</b></div>";
+    }).join(""), "Today against each reading’s whole record: the share of past readings below it. The three highest and the three lowest.");
+  }
+  function cycleSegs() {
+    return nowModel.track.filter(function(seg) {
+      return !seg.isNow && seg.to > seg.from;
+    });
+  }
+  function cyclePic() {
+    var segs = cycleSegs(), runs = seasonRuns(segs), from = nowModel.era.from, mkt = [];
+    for (var y = from; y <= calendarTodayY; y++) if (sp500AnnualReturns[y] != null) {
+      var ytd = y === calendarTodayY, q = ytd ? Math.max(1, segs.filter(function(s) {
+        return parseInt(s.q, 10) === y;
+      }).length) : 4;
+      mkt.push({
+        dir: sp500AnnualReturns[y] >= 0 ? "up" : "down",
+        ytd: ytd,
+        q: q,
+        from: y,
+        to: y
+      });
+    }
+    return pic(strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + strip(" mkt-strip", "S&P 500 by year", marketPills(mkt)), "Her seasons, quarter by quarter, and the S&amp;P&nbsp;500 year by year, " + from + " to today.");
+  }
+  function tilesPic(ids) {
+    var p = panel();
+    return pic('<div class="ai-tiles">' + ids.map(function(id) {
+      var s = carried(quarterly(id), p.nowI), vals = [];
+      for (var i = p.nowI - 11; i <= p.nowI; i++) if (s[i] != null) vals.push(s[i]);
+      return '<div class="ai-tile"><small>' + ROSTER_BY[id].name + "</small><b>" + figure(id) + "</b>" + colPeek(vals, function() {
+        return "ai-col";
+      }) + "</div>";
+    }).join("") + "</div>", "The last three years, quarter by quarter.");
+  }
+  var trackCache = null;
+  function segAt(q) {
+    if (!trackCache) {
+      var all = {};
+      marketCycles.forEach(function(c) {
+        cycleModel(c).track.forEach(function(seg) {
+          if (!seg.isNow) all[seg.q] = seg;
+        });
+      });
+      trackCache = all;
+    }
+    return trackCache[q];
+  }
+  function pathStrip(label, end) {
+    var segs = [];
+    for (var i = end - GROWTH_WINDOW + 1; i <= end; i++) {
+      var seg = segAt(qName(i));
+      if (seg) segs.push(seg);
+    }
+    var runs = seasonRuns(segs);
+    return '<span class="ai-path"><small>' + label + "</small>" + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + "</span>";
+  }
+  var CHAPTER_PICS = [ cyclePic, function() {
+    return tilesPic(ai_insights_default.tiles.economy);
+  }, function() {
+    return tilesPic(ai_insights_default.tiles.market);
+  } ];
+  function aiPage() {
+    return '<div class="ai-page">' + trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(ai_insights_default.lede) + "</p>" + extremesPic()) + ai_insights_default.sections.map(function(s, i) {
+      return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + "</p>" + CHAPTER_PICS[i]());
+    }).join("") + trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + ai_insights_default.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail()) + "</div>";
+  }
+  function buildAiPage(home) {
+    var sheet = metricSheet(AI_PAGE);
+    home.appendChild(sheet);
+    sheetRenderers[AI_PAGE] = function() {
+      sheet.innerHTML = aiPage();
+    };
+  }
+  function aiInsights() {
+    return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
+  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
@@ -34483,7 +34851,7 @@
   function diagnosisHtml(m) {
     var after = m.ongoing ? null : yearAfter(m.endYear);
     if (m.ongoing && !diagnoseToday()) return "";
-    return moodDoor(m.era.name, trendText(m.era.story)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+    return moodDoor(m.era.name, trendText(m.era.story)) + (m.ongoing ? aiInsights() : "") + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var _a;
@@ -34534,6 +34902,10 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
+    buildDoors(home);
+  }
+  function buildDoors(home) {
+    buildAiPage(home);
     buildCycleChart();
   }
   function buildDiagnosis() {
@@ -35699,17 +36071,17 @@
     var now2 = phaseOf(nowModel.reading);
     return trendDoor(WEATHER_ID, WEATHER_NAME, umbrellaSvg(), WEATHER_NAME, trendText("Something for every kind of weather, held all the time, never timed.") + weatherStrip()) + trendDoor(CLOCK_ID, CLOCK_NAME, clockSvg(), CLOCK_NAME, trendText("Today reads " + now2.name + ", when the clock holds " + now2.holds.toLowerCase() + ".")) + trendSoon(slidersSvg(), "Custom", trendText("Her own mix, set by her own rules."));
   }
-  function portfolioSheets(panel) {
+  function portfolioSheets(panel2) {
     [ WEATHER_ID, CLOCK_ID ].forEach(function(id) {
-      panel.appendChild(metricSheet(id));
+      panel2.appendChild(metricSheet(id));
     });
     sheetRenderers[WEATHER_ID] = drawWeather;
     sheetRenderers[CLOCK_ID] = drawClock;
   }
   function buildPortfolio() {
-    var panel = need("panel-portfolio");
-    panel.innerHTML = '<div class="dx" id="portfolio-home">' + homeHtml() + "</div>";
-    portfolioSheets(panel);
+    var panel2 = need("panel-portfolio");
+    panel2.innerHTML = '<div class="dx" id="portfolio-home">' + homeHtml() + "</div>";
+    portfolioSheets(panel2);
   }
   function bootPortfolio() {
     buildPortfolio();
@@ -36923,14 +37295,14 @@
       });
     });
     [ "analysis", "chart", "portfolio" ].forEach(function(key) {
-      var panel = PAGE_HOME[key].panel, go = function(el) {
+      var panel2 = PAGE_HOME[key].panel, go = function(el) {
         openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key);
       };
-      panel.addEventListener("click", function(e) {
+      panel2.addEventListener("click", function(e) {
         var btn = e.target.closest && e.target.closest("[data-open]");
         if (btn) go(btn);
       });
-      panel.addEventListener("keydown", function(e) {
+      panel2.addEventListener("keydown", function(e) {
         var row = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-open]");
         if (row) {
           e.preventDefault();

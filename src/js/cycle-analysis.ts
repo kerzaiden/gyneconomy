@@ -10,7 +10,7 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-type Lab = { id: string; name: string; cat: string; unit: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; now: Norm | null };
+export type Lab = { id: string; name: string; cat: string; unit: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; now: Norm | null };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -55,7 +55,7 @@ function readingLab(R: RosterRow): Lab {
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
-function labs(){
+export function labs(){
   return labCache || (labCache = [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
     cycleLab("bull", "Bull years", "up", function(v){ return v.bull; }),
@@ -68,8 +68,8 @@ function state(l: Lab, i: number){
   if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
   return v > n.fence ? "high" : v < n.floor ? "low" : "";
 }
-function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
-function fmt(l: Lab, v: number){
+export function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
+export function fmt(l: Lab, v: number){
   var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
   return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
 }
@@ -199,7 +199,7 @@ function toggleMenu(host: HTMLElement, id: string){
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 function outside(i: number){ return labs().filter(function(l){ var st = state(l, i); return st === "high" || st === "low"; }); }
-function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
+export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 

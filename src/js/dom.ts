@@ -69,7 +69,7 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   box.addEventListener("click", sync);
   sync();
 }
-export function trendText(t: string){ return '<span class="trend-text">' + t + '</span>'; }
+export function trendText(t: string, cls?: string){ return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + '</span>'; }
 function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + end + '</span>'; }
 function trendCard(tag: string, cls: string, attrs: string, mark: string, head: string, end: string, body: string){
   return '<' + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + '>' + trendHead(mark, head, end) + body + '</' + tag + '>';
@@ -80,6 +80,7 @@ export function trendDoor(open: string, title: string, mark: string, head: strin
 export function trendJump(attrs: string, mark: string, head: string, body: string){
   return trendCard("button", "", ' type="button"' + attrs, mark, head, CHEV, body);
 }
+export function trendBox(mark: string, head: string, body: string){ return trendCard("section", " is-box", "", mark, head, "", body); }
 export function trendSoon(mark: string, head: string, body: string){
   return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
 }

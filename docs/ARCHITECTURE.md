@@ -393,7 +393,7 @@ the manifest's; now each module says what it imports.
   mechanism), `marks` (icons), `charts` (drawing primitives), `history-fred` (reads `fred.json`), `refresh-season`,
   `data` (the figures, their constants and sources), `model` (seasons, cycles, mood), `history` (the one history component),
   `readings` (verdicts, notes, reading blocks), `history-charts`, `roster`, `render-core` and `render-pages` (cards
-  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
+  and inner pages), `indicators`, `era`, `insights` (each category's insights, behind its page's More details), `quarter-sheet` (a quarter's sheet, opened from the dial and from the Diagnosis's years), `cycle-analysis` (Cycle analysis: every reading of a cycle against her closed cycles, as a blood test, and the tab where readings are found), `ai-insights` (AI Insights: Claude's dated reading of the open cycle and today's closest past moments), `diagnosis`, `dial-cycle`, `analysis`, `portfolio` (the Portfolio tab: All Weather, the Investment Clock and Custom), `inner-pages`, `cycle-tab`,
   `pages-nav` and `tabs-menu` (navigation), `repaint` (applying live data to what is drawn), `main`. A value set from a higher
   layer at boot (`page.head` from the roster) is still owned below, where it is read.
 - `src/js/package.json` (`"type": "module"`) lets Node import the modules directly, which is what the unit tests do.
@@ -639,6 +639,23 @@ left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
+- **AI Insights** (0.6.5, `ai-insights`): the open cycle's second door, its lede clamped to three lines, opening the
+  page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (In short, The cycle,
+  The economy, The market, Closest moments), then the byline and More details. Each chapter carries a picture
+  drawn from the readings: In short ranks every reading's latest value against its own record (`rankToDate`) and shows
+  the three highest and three lowest; The cycle draws its season and S&P 500 strips; The economy and The market draw
+  `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season
+  strip then and now. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
+  them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
+  `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
+  to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
+  quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
+  scales each by its spread since 1970, and matches a path, not a point: the last `GROWTH_WINDOW` quarters (the season
+  model's two years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
+  A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue; the path
+  separates them (Keren: "COVID-19 is not the same … 1999 and 2018 is good"). Matches closer together than the window
+  are one episode, shown once by its closest quarter. The card shows the top
+  three; More details holds the method and the top eight.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the
   `moodTrack` month at the close. The V664 seven price-and-VIX feelings (`readFeeling`, `marketFacts`, their

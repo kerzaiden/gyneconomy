@@ -124,3 +124,22 @@ test('every history chart is attached to its readout, so hover and keys reach it
   assert.ok(seen > 10, seen + ' charts');
   assert.deepEqual(loose, []);
 });
+
+test('AI Insights opens from the open cycle only, every figure filled, its moments from closed cycles', async () => {
+  const { echoes } = await import('../../src/js/ai-insights.ts');
+  const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
+  const { cycleModel, nowModel } = await import('../../src/js/model.ts');
+  assert.ok(document.querySelector('#diagnosis [data-open="sheet-ai-insights"] .ai-clamp'));
+  sheetRenderers['sheet-ai-insights']();
+  const page = document.getElementById('sheet-ai-insights');
+  assert.deepEqual(broken(page.innerHTML), []);
+  assert.ok(!/[{}]|—/.test([...page.querySelectorAll('.ai-p')].map(p => p.textContent).join('')));
+  assert.equal(page.querySelectorAll('.trend-card').length, 5);
+  assert.equal(page.querySelectorAll('.ai-echo').length, 3);
+  assert.equal(page.querySelectorAll('.ai-rank').length, 6);
+  assert.equal(page.querySelectorAll('.ai-tile').length, 6);
+  assert.ok(echoes().every(e => !e.cycle.ongoing));
+  renderDiagnosis(cycleModel(cycleByName('Dot-Com Cycle')));
+  assert.equal(document.querySelector('#diagnosis [data-open="sheet-ai-insights"]'), null);
+  renderDiagnosis(nowModel);
+});

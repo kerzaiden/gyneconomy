@@ -36,6 +36,8 @@ export function thermoSvg(){ return markSvg(
 export function personSvg(){ return markSvg(
   '<circle cx="12" cy="8" r="3.9" stroke-width="1.8"/><path d="M4.4 20.4c.6-4 3.7-6.5 7.6-6.5s7 2.5 7.6 6.5" stroke-width="1.8"/>'); }
 export function calendarSvg(){ return markSvg('<rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke-width="1.8"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" stroke-width="1.8"/>'); }
+export function sparkleSvg(){ return markSvg('<path d="M10 3.5l1.6 4.9 4.9 1.6-4.9 1.6L10 16.5l-1.6-4.9L3.5 10l4.9-1.6z" stroke-width="1.8"/>' +
+  '<path d="M18 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" stroke-width="1.7"/>'); }
 export function bookSvg(){ return markSvg(
   '<path d="M12 6.6C10.2 5.2 7.6 4.6 3.6 4.8v13.6c4-.2 6.6.4 8.4 1.8 1.8-1.4 4.4-2 8.4-1.8V4.8c-4-.2-6.6.4-8.4 1.8Z" stroke-width="1.7"/>' +
   '<path d="M12 6.6v13.6" stroke-width="1.7"/>'); }
