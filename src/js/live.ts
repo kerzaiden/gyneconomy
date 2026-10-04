@@ -58,8 +58,8 @@ function raiseFloor(name: string, d: LiveDoc | null | undefined){
   return true;
 }
 function olderThanFile(name: string, d: LiveDoc | null | undefined){
-  var got = isoDay(d && d.asOf);
-  return !!got && got < newestDay(name);
+  var floor = newestDay(name), got = isoDay(d && d.asOf);
+  return !!got && got < floor;
 }
 export function liveInto(name: string){
   var d = LIVE_CACHE[name];

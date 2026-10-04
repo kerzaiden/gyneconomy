@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { plan, line, notes, slug } = require('../tools/tag-versions.js');
+const { plan, line, taken, notes, slug } = require('../tools/tag-versions.js');
 const V = require('../tools/version.js');
 let pass = 0, fail = 0;
 function ok(label, got, want) {
@@ -33,6 +33,11 @@ ok('a line given up for a lower number is not tagged again',
    [{ tag: 'v0.0.9', sha: 'z', message: '0.0.9 (build 727) — Model Cards' }, { tag: 'v0.1.0', sha: 'n', message: '0.1.0 (build 728) — Tags And Releases' }]);
 ok('the current line runs newest first, each number below the one after it',
    line([c('n', '0.1.0 — B'), c('z', '0.0.9 — A'), c('t', '1.1.0 — Old')]).map(v => v.version), ['0.1.0', '0.0.9']);
+ok('a version whose tag already names a commit of the line given up is reported, not tagged or released',
+   [plan([c('n2', '1.0.0 — First Draft (#99)'), c('n', '0.1.0 — B'), c('s', '1.0.0 — Semantic Versions (#67)')], ['v1.0.0', 'v0.1.0'], at),
+    taken([c('n2', '1.0.0 — First Draft (#99)'), c('n', '0.1.0 — B'), c('s', '1.0.0 — Semantic Versions (#67)')], { 'v1.0.0': 's', 'v0.1.0': 'n' })],
+   [[], [{ tag: 'v1.0.0', sha: 'n2', held: 's' }]]);
+ok('a version tagged on its own commit is not reported', taken([c('n', '0.1.0 — B')], { 'v0.1.0': 'n' }), []);
 ok('release notes open with the build and drop the trailers',
    notes('* one change\n\nCo-Authored-By: someone\nClaude-Session: link', 728), 'Build 728.\n\n* one change\n');
 ok('minor resets patch', V.next('1.4.2', 'minor'), '1.5.0');

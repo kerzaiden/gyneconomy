@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared patterns**.
+Generated from commit `a094849` on 2026-10-04. **81 components**, **35 shared patterns**.
 
 ## analysis.ts
 
@@ -144,7 +144,7 @@ Generated from commit `7760335` on 2026-10-03. **81 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`quarterCards`** | `.cat-sheet` `.cat-weather` | `quarter-sheet.ts:quarterSheet` |
-| **`quarterPopup`** | `.reading-block` `.reading-book` `.reading-watch` | `quarter-sheet.ts:quarterSheet` |
+| **`quarterPopup`** | `.era-blurb` `.reading-block` `.reading-book` `.reading-watch` | `quarter-sheet.ts:quarterSheet` |
 
 ## readings.ts
 
@@ -191,7 +191,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 34 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 24 places |
-| **`fmtSigned`** | format.ts | 22 places |
+| **`fmtSigned`** | format.ts | 23 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`publishGeom`** | charts.ts | 11 places |

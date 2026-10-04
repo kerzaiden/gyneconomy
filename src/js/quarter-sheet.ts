@@ -34,7 +34,7 @@ function quarterPopup(m: CycleModel, seg: QuarterSeg, isPresent: boolean){
     ' · year ' + yearN + ' of the ' + era.name + (m.ongoing ? ", since " + era.from : ", " + era.from + "–" + era.to));
   var reading: Partial<SeasonReading> = seasonReading[seg.season] || {};
   return head +
-    (isPresent ? '<p class="caption" style="font-family:\'Cormorant Garamond\',Georgia,serif;font-style:italic;font-size:var(--type-section);line-height:1.4;color:var(--text-primary)">' + era.blurb + '</p>' : '') +
+    (isPresent ? '<p class="caption era-blurb">' + era.blurb + '</p>' : '') +
     (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
     (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
     (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
