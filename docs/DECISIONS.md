@@ -60,8 +60,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Era names are Keren's; the era blurbs are a first draft in an analytical register, waiting for her
   voice.** They are hers to write, not ours to finish. (V511)
 - **Every cycle has a story: two sentences, what happened and how Mrs. Market felt, in the mood chart's words.
-  It sits on the cycle page's mood card, under today's mood and season; a past cycle's card is titled "Cycle story" (V691; "Her story" in V689),
-  never by the mood it closed on, and the card carries the story alone (no "came into" line, no note on when the
+  It sits on the cycle page's mood card, titled "Cycle Story" for every cycle, today's included (0.4.1; before it,
+  today's card was titled by today's mood and season, a past cycle's "Cycle story" since V691, "Her story" in V689),
+  never by a mood, and the card carries the story alone (no "came into" line, no note on when the
   mood is measured).** Keren: "a cycle is a story from the beginning to end, not just the end… we will always see
   the bottom"; of the note and the lead line, "I don't need it". Keren: "each cycle
   has a story behind it that reflects the feelings… making it a story"; "under mood and season combination". The

@@ -1837,9 +1837,6 @@
     var p = String(q).split(" ");
     return p.length > 1 ? p[1] + " " + p[0] : String(q);
   }
-  function seasonName(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
   function capeFmt1(v) {
     return v.toFixed(1) + "×";
   }
@@ -34261,11 +34258,9 @@
     u: "https://shillerdata.com/"
   } ];
   function diagnosisHtml(m) {
-    var open = m.ongoing, d = open ? diagnoseToday() : {
-      after: yearAfter(m.endYear)
-    };
-    if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + chartDoor(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    var after = m.ongoing ? null : yearAfter(m.endYear);
+    if (m.ongoing && !diagnoseToday()) return "";
+    return moodDoor("Cycle Story", trendText(m.era.story)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var _a;

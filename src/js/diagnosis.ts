@@ -1,27 +1,25 @@
-import { CHEV, fmtSigned, seasonName } from "./format.ts";
+import { CHEV, fmtSigned } from "./format.ts";
 import { addSources, byId, detailSlot, trendDoor, trendText } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { bookSvg, calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
-import { diagnoseToday, nowModel, seasonGroup, yearAfter, yearGrowth, yearInflation } from "./model.ts";
+import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation } from "./model.ts";
 import { econChips, seasonPills, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
 import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import type { CycleModel } from "./model.ts";
-
-type DxView = { stage?: string; season?: Season; after?: number | null };
 
 var DIAG_SRC = [
   {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
   {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
 ];
 function diagnosisHtml(m: CycleModel){
-  var open = m.ongoing, d: DxView | null = open ? diagnoseToday() : { after:yearAfter(m.endYear) };
-  if (!d) return "";
-  return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) +
-    chartDoor(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+  var after = m.ongoing ? null : yearAfter(m.endYear);
+  if (m.ongoing && !diagnoseToday()) return "";
+  return moodDoor("Cycle Story", trendText(m.era.story)) +
+    chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];

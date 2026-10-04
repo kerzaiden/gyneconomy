@@ -683,7 +683,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.
 - **No score** (the composite failed out of sample), no forecast: the record is a count of what followed.
-- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) names today's feeling in today's season
+- **Mood and season** (V679, V686): The Diagnosis's mood card (`moodDoor`) named today's feeling in today's season until 0.4.1
   (its season-share bars went in V686); the Mood page's Insights (`insightMood`) draws the cycle of
   market emotions (V685) from `MOOD_CHART`, the reference chart's own coordinates and colours. `moodAt` in model
   ranks valuations (CAPE and Buffett), the VIX (upside down) and consumer confidence each against its own history to
@@ -704,7 +704,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
 - **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
-  head is today's feeling in today's season, or "Cycle story" on a past cycle, beside a book mark (a cycle is told whole, never by its
+  head is "Cycle Story" for every cycle (0.4.1, Keren: "Instead of Hope in Autumn, I want the title to be Cycle
+  Story"; before it, today's card named today's feeling in today's season), beside a book mark (a cycle is told whole, never by its
   close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.

@@ -9,8 +9,8 @@ import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, hor
 import { ROSTER } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
-import { nowModel, seasonGroup, growthWord, cycleNowNote } from '../../src/js/model.ts';
-import { fmtSigned, seasonName } from '../../src/js/format.ts';
+import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
+import { fmtSigned } from '../../src/js/format.ts';
 
 const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
 const value = sheet => card(sheet).querySelector('.ci-value').firstChild.nodeValue;
@@ -130,9 +130,8 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('the Diagnosis names the model’s season', () => {
-  const head = document.querySelector('#diagnosis .trend-head').textContent;
-  assert.match(head, new RegExp(' in ' + seasonName(seasonGroup(nowModel.season)) + '$'));
+test('today’s story card is titled Cycle Story', () => {
+  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Story');
 });
 
 test('a live Fed cut reaches every door, its tag and the policy facts', async () => {
@@ -274,7 +273,7 @@ test('a past cycle shows its own record on the cards and the Diagnosis, and Back
   const today = temp(), head = document.querySelector('#diagnosis .trend-head').textContent;
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle story');
+  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Story');
   assert.match(temp(), /Dec 2018/);
   ui.eraPageBack();
   assert.equal(ui.eraOpen, null);
