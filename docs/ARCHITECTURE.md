@@ -652,10 +652,12 @@ first since 0.4.1 (Keren: "I want to see 2026 at the top, and then go backwards"
 first (`yearByYear`). Since 0.4.1 a row is the Analysis page's cycle row at the scale of
 a year (Keren: "just put a bar, a colored bar, like in the analysis page"): the year's quarters from `m.track` as a
 season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar
-since four quarters fill the row; dots for the quarters not yet run), and under it the same Growth, Prices and
-S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and `eraInflation`
-compound) and `sp500AnnualReturns`, whole percents as on the Analysis page; the year in progress has no Growth or
-Prices yet, as in the cycle totals. The emotions and the season names left the row in 0.4.1. A row is a
+since four quarters fill the row; the quarters not yet run left blank, no dots, Keren), and under it the same Growth,
+Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and
+`eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year in progress reads
+`yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the Growth and Temperature
+cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
+fit on a phone. The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
 sits below both so neither imports the other. A closed cycle's card opens on **After** (it ended on it before 0.4.1), the S&P 500's return in
 the calendar year after the close (`yearAfter`, from the same `sp500AnnualReturns` as the rows, so it reaches back to
@@ -704,8 +706,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
 - **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
-  head is "Cycle Story" for every cycle (0.4.1, Keren: "Instead of Hope in Autumn, I want the title to be Cycle
-  Story"; before it, today's card named today's feeling in today's season), beside a book mark (a cycle is told whole, never by its
+  head is the cycle's own name, "AI Cycle" today (0.4.1, Keren: "instead of hope in autumn, I would read AI cycle. And it
+  goes to all other cycle pages"; before it, today's card named today's feeling in today's season), beside a book mark (a cycle is told whole, never by its
   close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.

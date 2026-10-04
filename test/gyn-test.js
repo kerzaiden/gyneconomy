@@ -298,7 +298,7 @@ async function openPage(p, url, sheet) {
     });
     const today = await read();
     await sweep(p);
-    (today && today.visible && today.title === 'Cycle Story' && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
+    (today && today.visible && today.title === 'AI Cycle' && today.lead === 1 && today.story && today.told === '1:AI Cycle' && today.cards === 0 &&
      today.boxes === 'trend,trend,sys' && today.doors === 1 && !today.after)
       ? ok('the Diagnosis sits under the dial: the story, then the cycle year by year', today.title)
       : bad('the Diagnosis sits under the dial: the story, then the cycle year by year', JSON.stringify(today));
@@ -335,7 +335,7 @@ async function openPage(p, url, sheet) {
     (!spill.length)
       ? ok('a closed cycle\u2019s preview columns stay inside their card', 'none past the frame')
       : bad('a closed cycle\u2019s preview columns stay inside their card', JSON.stringify(spill));
-    (past && past.visible && past.title === 'Cycle Story' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle')
+    (past && past.visible && past.title === 'Big Tech Cycle' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -514,7 +514,7 @@ async function openPage(p, url, sheet) {
     });
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (feel.head === 'Cycle Story' && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
+    (feel.head === 'AI Cycle' && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
      cyc.es === '0:1')

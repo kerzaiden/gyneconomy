@@ -255,6 +255,10 @@ export function yearInflation(y: number){
 export function yearGrowth(y: number){
   return y !== calendarTodayY && usRealGdpGrowth[y] !== undefined ? usRealGdpGrowth[y] : null;
 }
+export function yearSoFar(y: number){
+  var g = gdpQuarterlyYoY.filter(function(d){ return yearOf(d) === y; }), c = cpiYoYHistory.filter(function(d){ return +d.m.slice(0, 4) === y; });
+  return { growth:g.length ? g[g.length - 1].v : null, prices:c.length ? c[c.length - 1].v : null };
+}
 export function eraInflation(cyc: Cycle){
   var years: number[] = [], rates: number[] = [];
   for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){

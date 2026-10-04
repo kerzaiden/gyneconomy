@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `9e8a88f` on 2026-10-04. **84 components**, **37 shared patterns**.
+Generated from commit `bec0579` on 2026-10-04. **84 components**, **37 shared patterns**.
 
 ## analysis.ts
 
@@ -168,7 +168,7 @@ Generated from commit `9e8a88f` on 2026-10-04. **84 components**, **37 shared pa
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `cycle-analysis.ts:buildCycleChart`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
-| **`stripDots`** | `.strip-dots` | `diagnosis.ts:yearStrip`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
+| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `indicators.ts:splitPeek`, `pages-nav.ts:indGroupRow`, `pages-nav.ts:registerRoster`, `pages-nav.ts:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.ts:indRow`, `pages-nav.ts:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.ts:timingPill` |
@@ -217,12 +217,12 @@ renderer speaks. Listed most-used first.
 | **`focusQuiet`** | dom.ts | 8 places |
 | **`vhOpen`** | charts.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
+| **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
-| **`yearOf`** | format.ts | 7 places |
 | **`fileRow`** | data.ts | 6 places |
 | **`mean`** | format.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
