@@ -1107,6 +1107,9 @@
   .sc-cell{ text-align:center; padding:7px 0; border-radius:6px; color:var(--text-primary); }
   .sc-cell.thin{ background:var(--surface-2); color:var(--text-muted); }
   .sc-cell.flag{ background:var(--serious-wash); color:var(--serious-ink); font-weight:600; }
+  .lab-group{ margin:14px 0 2px; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+  .lab-v.flag{ color:var(--serious-ink); }
+  .cat-analysis .aux-stat b small{ display:block; font-weight:400; color:var(--text-muted); font-size:var(--type-meta); }
   .sc-grid tr.now .sc-cell{ box-shadow:inset 0 0 0 2px var(--accent); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
@@ -1806,8 +1809,8 @@
     var t = n % 100, o = [ "th", "st", "nd", "rd" ][(t - 20) % 10] || [ "th", "st", "nd", "rd" ][t] || "th";
     return n + o;
   }
-  function hiCard(name, state, text, body) {
-    return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
+  function hiCard(name, state2, text, body) {
+    return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
   function dropWhatIsShown(full, shown) {
     if (!full || !shown) return full || "";
@@ -30486,12 +30489,12 @@
       return d.v > a.v ? d : a;
     });
     if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-    var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1];
+    var sum = 0, n = 0, cap2 = bandEnds(row.meter.optimal, NaN, NaN)[1];
     for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
       sum += g[y];
       n++;
     }
-    if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
+    if (n !== 50 || Math.round(sum / n) !== cap2) bad.push("band " + cap2 + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   function curveAt(m) {
@@ -31660,11 +31663,11 @@
     }
     return d.y % 10 ? "" : "’" + String(d.y).slice(2);
   }
-  function fitLine(vals, per, fmt, x0, x1, y, W, padL, padR) {
+  function fitLine(vals, per, fmt2, x0, x1, y, W, padL, padR) {
     var fit = trendOf(vals, "points", per).fit;
     return fit && fit.n > 1 ? fitGroup({
       fit: fit,
-      fmt: fmt
+      fmt: fmt2
     }, x0, x1, y, W, padL, padR) : "";
   }
   function fitGroup(o, x0, x1, y, W, padL, padR) {
@@ -31879,7 +31882,7 @@
     });
     return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
   }
-  function meterPeek(m, state) {
+  function meterPeek(m, state2) {
     var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
     function at(v) {
       return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / (m.max - m.min || 1)));
@@ -31888,7 +31891,7 @@
     var a = at(ends[0]), c = at(ends[1]);
     if (c - a < sw) c = a + sw;
     var hx = at(m.value);
-    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
+    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
   }
   function windowYears(fromYear, toYear, want) {
     if (toYear <= fromYear) return [ fromYear ];
@@ -31955,10 +31958,10 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct2, state, label, cls) {
+  function vitalRingSvg(pct2, state2, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
     var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
-    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
+    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
     mode: void 0,
@@ -32147,7 +32150,7 @@
   function histReadFill(host, d, i) {
     var g = host.__geom, el = host.__readEl;
     if (!g || !el) return;
-    var fmt = geomFmt(g);
+    var fmt2 = geomFmt(g);
     var atRest = !d || d.v == null;
     if (atRest) {
       var vv = g.vals || [];
@@ -32166,7 +32169,7 @@
       return;
     }
     host.classList.toggle("resting", atRest);
-    var lab = g.at(d, i), val = fmt(d.v);
+    var lab = g.at(d, i), val = fmt2(d.v);
     var plate = el.firstElementChild;
     if (!plate) return;
     plate.children[0].textContent = lab;
@@ -32245,7 +32248,7 @@
       return r && (r.v == null || isFinite(r.v));
     });
     if (!refs.length) return;
-    var fmt = geomFmt(g);
+    var fmt2 = geomFmt(g);
     var NS = "http://www.w3.org/2000/svg";
     var grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "hist-legend");
@@ -32265,7 +32268,7 @@
       var t = document.createElementNS(NS, "text");
       t.setAttribute("class", "hl-lab");
       t.setAttribute("y", (y + 3.2).toFixed(1));
-      t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
+      t.textContent = r.v == null ? r.label : r.label + " " + fmt2(r.v);
       grp.appendChild(t);
       var m = document.createElementNS(NS, r.swatch ? "rect" : "line");
       if (r.swatch) {
@@ -35054,8 +35057,8 @@
   function subjectRow(o) {
     return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
   }
-  function subjectIcon(state, svg) {
-    return '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
+  function subjectIcon(state2, svg) {
+    return '<div class="subject-icon"><span class="' + state2 + '">' + svg + "</span></div>";
   }
   function timingMark(kind) {
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
@@ -36270,35 +36273,12 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
+  var JUDGED_FROM = 8;
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
     u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
   };
-  function chartOf(m) {
-    var c = m.era, signs = [], bleed = 0;
-    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
-    while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
-    var n = m.cpi.length || 1;
-    return {
-      c: c,
-      years: m.elapsedYears,
-      bull: signs.filter(Boolean).length,
-      bleed: bleed,
-      hot: m.cpi.filter(function(d) {
-        return d.v > TEMP_BAND_HI;
-      }).length / n,
-      cpi: m.cpi.reduce(function(a, d) {
-        return a + d.v;
-      }, 0) / n
-    };
-  }
-  var chartCache = null;
-  function charts() {
-    return chartCache || (chartCache = marketCycles.map(function(c) {
-      return chartOf(cycleModel(c));
-    }));
-  }
   function quartile(vs, p) {
     var s = vs.slice().sort(function(a, b) {
       return a - b;
@@ -36306,6 +36286,7 @@
     return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
   }
   function normOf(vs) {
+    if (vs.length < JUDGED_FROM) return null;
     var lo = quartile(vs, .25), hi = quartile(vs, .75);
     return {
       lo: lo,
@@ -36314,102 +36295,170 @@
       floor: lo - 1.5 * (hi - lo)
     };
   }
-  function norms() {
-    var closed = charts().filter(function(r) {
-      return !r.c.ongoing;
-    });
-    var of = function(f) {
-      return normOf(closed.map(f));
-    };
+  function closedCount() {
+    return marketCycles.filter(function(c) {
+      return !c.ongoing;
+    }).length;
+  }
+  function visitOf(m) {
+    var c = m.era, signs = [], bleed = 0;
+    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
+    while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
     return {
-      years: of(function(r) {
-        return r.years;
-      }),
-      bleed: of(function(r) {
-        return r.bleed;
-      }),
-      cpi: of(function(r) {
-        return r.cpi;
-      })
+      years: m.elapsedYears,
+      bull: signs.filter(Boolean).length,
+      bleed: bleed
     };
   }
-  function flags(r, n) {
-    var out = [];
-    if (r.years > n.years.fence) out.push("Long");
-    if (r.bleed > n.bleed.fence) out.push("Heavy bleed");
-    if (r.cpi > n.cpi.fence) out.push("Fever");
-    if (r.cpi < n.cpi.floor) out.push("Chill");
-    return out;
+  var visitCache = null;
+  function visits() {
+    return visitCache || (visitCache = marketCycles.map(function(c) {
+      return visitOf(cycleModel(c));
+    }));
   }
-  function fmtYears(v) {
-    var q = Math.round(v * 4), whole = Math.floor(q / 4), frac = [ "", "¼", "½", "¾" ][q % 4];
-    return q ? (whole || !frac ? String(whole) : "") + frac : "0";
+  function cycleLab(id, name, f) {
+    var per = visits().map(f);
+    return {
+      id: id,
+      name: name,
+      cat: "cycle",
+      unit: " yr",
+      per: per,
+      norm: normOf(per.slice(0, closedCount()))
+    };
   }
-  function pc(v) {
-    return Math.round(v * 100) + "%";
+  function readingLab(R) {
+    var h = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    }), first = +h[0].k.slice(0, 4);
+    var per = marketCycles.map(function(c) {
+      if (first > c.from) return null;
+      var vs = h.filter(function(d) {
+        var y = +d.k.slice(0, 4);
+        return y >= c.from && (c.ongoing || y <= c.to);
+      }).map(function(d) {
+        return d.v;
+      });
+      return vs.length ? vs.reduce(function(a, b) {
+        return a + b;
+      }, 0) / vs.length : null;
+    });
+    var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
+    return {
+      id: R.id,
+      name: R.name,
+      cat: R.cat,
+      unit: unit,
+      per: per,
+      norm: normOf(per.slice(0, closedCount()).filter(function(v) {
+        return v != null;
+      }))
+    };
+  }
+  var labCache = null;
+  function labs() {
+    return labCache || (labCache = [ cycleLab("length", "Length", function(v) {
+      return v.years;
+    }), cycleLab("bull", "Bull years", function(v) {
+      return v.bull;
+    }), cycleLab("bleed", "Bleed", function(v) {
+      return v.bleed;
+    }) ].concat(ROSTER.map(readingLab)));
+  }
+  function state(l, i) {
+    var v = l.per[i], n = l.norm;
+    if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
+    return v > n.fence ? "high" : v < n.floor ? "low" : v > n.hi ? "up" : v < n.lo ? "down" : "";
+  }
+  function yearsWord(v) {
+    var q = Math.round(v * 4);
+    return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + [ "", "¼", "½", "¾" ][q % 4];
+  }
+  function fmt(l, v) {
+    var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
+    return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
+  }
+  function flagWord(st) {
+    return st === "high" ? " High" : st === "low" ? " Low" : st === "up" ? " ↑" : st === "down" ? " ↓" : "";
+  }
+  function labRows(i, cat) {
+    return labs().filter(function(l) {
+      return l.cat === cat && l.per[i] != null;
+    }).map(function(l) {
+      var st = state(l, i), n = l.norm, v = l.per[i];
+      var range = !n ? "<small>record too short</small>" : "<small>normal " + fmt(l, n.lo) + (fmt(l, n.hi) === fmt(l, n.lo) ? "" : "–" + fmt(l, n.hi)) + "</small>";
+      return auxStat({
+        label: l.name,
+        value: '<span class="lab-v' + (st === "high" || st === "low" ? " flag" : "") + '">' + fmt(l, v) + flagWord(st) + "</span> " + range
+      });
+    }).join("");
+  }
+  function report(i) {
+    var groups = [ {
+      key: "cycle",
+      title: "Cycle"
+    } ].concat(categoriesShown());
+    return groups.map(function(g) {
+      var rows = labRows(i, g.key);
+      return rows ? '<div class="lab-group">' + g.title + "</div>" + rows : "";
+    }).join("");
+  }
+  function outside(i) {
+    return labs().filter(function(l) {
+      var st = state(l, i);
+      return st === "high" || st === "low";
+    });
+  }
+  function listWords(xs) {
+    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
   }
   function word(n) {
     return NUM[n] || String(n);
   }
-  function shortName(c) {
-    return c.name.replace(/ Cycle$/, "");
+  function cap(t) {
+    return t.charAt(0).toUpperCase() + t.slice(1);
   }
-  function visitNote(r, n) {
-    var f = flags(r, n), open = !!r.c.ongoing;
-    var age = open ? "The " + r.c.name + " is " + fmtYears(r.years) + " years old: " : "The " + r.c.name + " ran " + fmtYears(r.years) + " years: ";
-    var bleed = r.bleed ? (open ? "a bleed of " : "and a bleed of ") + word(r.bleed) + " year" + (r.bleed === 1 ? "" : "s") : open ? "no bleed yet" : "no bleed";
-    var body = age + word(r.bull) + " bull year" + (r.bull === 1 ? "" : "s") + (open && !r.bleed ? ", " : " ") + bleed + ", hot in " + pc(r.hot) + " of its months. ";
-    var normal = "Her normal cycle runs " + fmtYears(n.years.lo) + " to " + fmtYears(n.years.hi) + " years; past " + fmtYears(n.years.fence) + " is long for her. ";
-    var verdict = f.length ? "Outside her normal: " + f.join(", ").toLowerCase() + "." : open ? "Nothing outside her normal so far." : "Nothing outside her normal.";
-    return body + normal + verdict;
-  }
-  function chartTable(viewed, n) {
-    var cell = function(v, flag) {
-      return '<td class="sc-cell' + (flag ? " flag" : "") + '">' + v + "</td>";
+  function visitNote(i) {
+    var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm;
+    var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") + (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
+    var named = function(st) {
+      return outside(i).filter(function(l) {
+        return state(l, i) === st;
+      }).map(function(l) {
+        return l.name.toLowerCase();
+      });
     };
-    return '<table class="sc-grid"><thead><tr><th></th><th>Length</th><th>Bull</th><th>Bleed</th><th>CPI</th></tr></thead><tbody>' + charts().map(function(r) {
-      return "<tr" + (r.c === viewed ? ' class="now"' : "") + "><th>" + shortName(r.c) + " <small>" + r.c.from + "</small></th>" + cell(fmtYears(r.years) + (r.c.ongoing ? "+" : ""), r.years > n.years.fence) + cell(String(r.bull), false) + cell(r.c.ongoing && !r.bleed ? "–" : String(r.bleed), r.bleed > n.bleed.fence) + cell(r.cpi.toFixed(1).replace("-", "−") + "%", r.cpi > n.cpi.fence || r.cpi < n.cpi.floor) + "</tr>";
+    var high = named("high"), low = named("low");
+    var parts = (high.length ? [ listWords(high) + " ran far above her normal" ] : []).concat(low.length ? [ listWords(low) + " far below it" ] : []);
+    return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
+  }
+  function historyTable(viewed) {
+    var cats = [ {
+      key: "cycle",
+      title: "Cycle"
+    } ].concat(categoriesShown());
+    return '<table class="sc-grid"><thead><tr><th></th>' + cats.map(function(c) {
+      return "<th>" + c.title + "</th>";
+    }).join("") + "</tr></thead><tbody>" + marketCycles.map(function(c, i) {
+      var flagged = outside(i);
+      return "<tr" + (i === viewed ? ' class="now"' : "") + "><th>" + c.name.replace(/ Cycle$/, "") + " <small>" + c.from + "</small></th>" + cats.map(function(k) {
+        var n = flagged.filter(function(l) {
+          return l.cat === k.key;
+        }).length;
+        return '<td class="sc-cell' + (n ? " flag" : "") + '">' + (n || "·") + "</td>";
+      }).join("") + "</tr>";
     }).join("") + "</tbody></table>";
   }
-  function normRows(n) {
-    return [ auxStat({
-      label: "Normal length",
-      value: fmtYears(n.years.lo) + "–" + fmtYears(n.years.hi) + " years · long past " + fmtYears(n.years.fence)
-    }), auxStat({
-      label: "Normal bleed",
-      value: fmtYears(n.bleed.hi) + " year · heavy past " + fmtYears(n.bleed.fence)
-    }), auxStat({
-      label: "Normal inflation",
-      value: n.cpi.lo.toFixed(1) + "–" + n.cpi.hi.toFixed(1) + "% · fever past " + n.cpi.fence.toFixed(1) + "%"
-    }) ].join("");
-  }
-  function chartDetail(n) {
-    var closed = charts().filter(function(r) {
-      return !r.c.ongoing;
-    });
-    var era = function(f) {
-      var z = closed.filter(f).map(function(r) {
-        return r.years;
-      });
-      return {
-        n: z.length,
-        mean: z.reduce(function(a, b) {
-          return a + b;
-        }, 0) / z.length
-      };
-    };
-    var early = era(function(r) {
-      return r.c.from < 1982;
-    }), late = era(function(r) {
-      return r.c.from >= 1982;
-    });
-    return "<h4>How the chart reads</h4>" + facts([ "Each row is one cycle, from its first bull year to its last bear year. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle. CPI is her average inflation over the cycle’s months; hot in the visit note is the share of months above " + TEMP_BAND_HI + "%. The year in progress counts at its return so far.", "Her normal ranges are her own: the middle half of her " + closed.length + " closed cycles. A cycle is flagged when it falls past Tukey’s fence, one and a half times that middle span beyond it, the standard rule for an outlier: long, a heavy bleed, a fever above her normal inflation, or a chill below it.", "Her " + early.n + " cycles before 1982 averaged " + fmtYears(early.mean) + " years; her " + late.n + " since have averaged " + fmtYears(late.mean) + ".", "The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+  function chartDetail() {
+    var judged = labs().filter(function(l) {
+      return l.norm;
+    }).length;
+    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Her normal range for a reading is the middle half of her closed cycles. An arrow marks a cycle outside that middle half; High or Low marks one past Tukey’s fence, one and a half times the middle span beyond it, the standard rule for an outlier.", "A reading is judged only when its record covers at least " + JUDGED_FROM + " closed cycles, every cycle since 1970 (Claude’s call); " + judged + " of " + labs().length + " do. The others show their value with no range.", "The table counts, for every cycle, the readings in each category that ran past the fence. The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function cycleAnalysisHtml(m) {
-    var n = norms(), r = charts().filter(function(x) {
-      return x.c === m.era;
-    })[0] || chartOf(m);
-    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(r, n) + "</p>" + normRows(n) + chartTable(m.era, n) + moreRow(chartDetail(n)) + "</div>";
+    var i = marketCycles.indexOf(m.era);
+    if (i < 0) return "";
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + historyTable(i) + moreRow(chartDetail()) + "</div>";
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
@@ -37772,8 +37821,8 @@
   }
   function eraRange(t, r, e) {
     if (e.lo === e.hi) return "Flat all cycle";
-    var f = figOf(t), pc2 = r.pair ? "%" : "";
-    return (r.pair ? "Paid " : "") + f(e.lo) + pc2 + " to " + f(e.hi) + pc2 + " over the cycle";
+    var f = figOf(t), pc = r.pair ? "%" : "";
+    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
   }
   function eraMini(t, r, e) {
     if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
@@ -39795,7 +39844,7 @@
         label: TIMING[k].label
       };
     }));
-    var find = {}, state = {
+    var find = {}, state2 = {
       kind: "all",
       q: ""
     };
@@ -39810,7 +39859,7 @@
       return indCategoryHtml(c, find);
     }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
-      var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
+      var kind = state2.kind, q = state2.q, hint = host.querySelector(".ind-hint");
       Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b) {
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
@@ -39831,19 +39880,19 @@
     host.addEventListener("click", function(e) {
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"), k = b && b.getAttribute("data-ind-tab");
       if (!k) return;
-      state.kind = k;
+      state2.kind = k;
       apply();
     });
     input.addEventListener("input", function() {
-      state.q = field.value.trim().toLowerCase();
+      state2.q = field.value.trim().toLowerCase();
       apply();
     });
     GYN.on("openIndicatorsPage", function(tab) {
       var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
       field.value = "";
-      state.q = "";
-      state.kind = tab || "all";
+      state2.q = "";
+      state2.kind = tab || "all";
       apply();
     });
     apply();

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `64ac06c` on 2026-10-04. **81 components**, **44 shared patterns**.
+Generated from commit `4d536e1` on 2026-10-04. **82 components**, **44 shared patterns**.
 
 ## analysis.ts
 
@@ -47,6 +47,12 @@ Generated from commit `64ac06c` on 2026-10-04. **81 components**, **44 shared pa
 | **`vitalRingSvg`** | `.vital-ring-fill` `.vital-ring-track` | `analysis.ts:eraMini`, `charts.ts:peekCard`, `readings.ts:volatilityRing` |
 | **`xLabel`** | `.bt-xl` | `category-analysis.ts:chartHtml`, `charts.ts:divergeChart`, `history-charts.ts:deficitChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:velocityHistoryChart`, `history-charts.ts:yearTicks`, `render-pages.ts:renderSpreadHistory` |
 | **`zeroRule`** | `.m2-zero` | `history-charts.ts:cpiHistoryChart`, `history-charts.ts:deficitChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:gdpHistoryChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart` |
+
+## cycle-analysis.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`report`** | `.lab-group` | `cycle-analysis.ts:cycleAnalysisHtml` |
 
 ## cycle-tab.ts
 
@@ -236,30 +242,31 @@ renderer speaks. Listed most-used first.
 | **`seasonGroup`** | model.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`auxStat`** | format.ts | 4 places |
-| **`charts`** | cycle-analysis.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
-| **`fmtYears`** | cycle-analysis.ts | 4 places |
 | **`grid`** | portfolio.ts | 4 places |
 | **`isoDay`** | format.ts | 4 places |
+| **`keyed`** | roster.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
+| **`categoriesShown`** | roster.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleModel`** | model.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
+| **`fmt`** | cycle-analysis.ts | 3 places |
 | **`groupId`** | indicators.ts | 3 places |
 | **`growthWord`** | model.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
-| **`keyed`** | roster.ts | 3 places |
+| **`labs`** | cycle-analysis.ts | 3 places |
 | **`leader`** | portfolio.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
@@ -302,7 +309,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cat-mood` | 5 | `cycle-analysis.ts:cycleAnalysisHtml`, `diagnosis.ts:moodDoor`, `portfolio.ts:clockHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.highlights` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
-| `.now` | 4 | `category-analysis.ts:chartHtml`, `cycle-analysis.ts:chartTable`, `portfolio.ts:gridHtml`, `portfolio.ts:seasonClock` |
+| `.now` | 4 | `category-analysis.ts:chartHtml`, `cycle-analysis.ts:historyTable`, `portfolio.ts:gridHtml`, `portfolio.ts:seasonClock` |
 | `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
 | `.strip-run` | 4 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.strip` | 4 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
@@ -317,7 +324,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.ca-note` | 3 | `portfolio.ts:clockHtml`, `portfolio.ts:mixHtml`, `portfolio.ts:seasonsHtml` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
-| `.sc-grid` | 2 | `cycle-analysis.ts:chartTable`, `portfolio.ts:gridHtml` |
+| `.sc-grid` | 2 | `cycle-analysis.ts:historyTable`, `portfolio.ts:gridHtml` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:moodDoor`, `diagnosis.ts:yearByYear` |
 | `.dx` | 2 | `diagnosis.ts:buildDiagnosis`, `portfolio.ts:buildPortfolio` |
