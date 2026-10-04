@@ -60,7 +60,7 @@ export function renderDiagnosis(m: CycleModel){
 function diagnosisHost(home: HTMLElement){
   var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
   home.insertBefore(host, home.firstChild);
-  buildCycleChart(home);
+  buildCycleChart();
 }
 function buildDiagnosis(){
   var home = byId("today-analysis");

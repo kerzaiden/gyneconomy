@@ -16,6 +16,7 @@ rules below are the ones that matter most.
   Read the part that covers what you are touching.
 - `docs/MAP.md`, `docs/COMPONENTS.md` — generated navigation of the source (`npm run map`). Read them
   before grepping; the source is ~7,000 lines of TypeScript and ~1,400 of CSS.
+- `docs/DESIGN-SYSTEM.md` — where the design system lives (the design-system artifact) and how it stays in step.
 - `docs/task.md` — the daily courier task's only instructions. Edit that file to change the task.
 - `git log` — every version is a commit `1.4.0 — Short Name` and an annotated tag `v1.4.0` (before 1.0.0:
   `V6NN — Short Name`, tag `v6NN-short-name`). The history lives here, not in the code. The code has no

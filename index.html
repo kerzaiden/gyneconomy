@@ -14,9 +14,11 @@
     --text-primary: #2b1520;
     --text-secondary: #5e4450;
     --text-muted: #7a6370;
+    --placeholder: #b4aeb1;
     --accent: #7c2844;
     --accent-ink: #5c1530;
-    --accent-wash: color-mix(in srgb, var(--accent) 10%, var(--surface));
+    --blush: #f6c4be;
+    --accent-wash: color-mix(in srgb, var(--blush) 40%, var(--surface));
     --on-accent: #ffffff;
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
@@ -47,7 +49,8 @@
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
     --seg-track: #efecec; --seg-on: #ffffff;
-    --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.30), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(246,196,190,0.35), transparent 70%), radial-gradient(70% 30% at 20% 100%, rgba(248,179,121,0.16), transparent 70%);
+    --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.62), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.50), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.55), transparent 70%);
+    --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(246,196,190,0.70), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(246,196,190,0.62), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(246,196,190,0.60), transparent 70%);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -61,6 +64,7 @@
       --text-primary: #f8eef1;
       --text-secondary: #d4c2c9;
       --text-muted: #a48e98;
+      --placeholder: #6e6469;
       --accent: #eba3b9;
       --accent-ink: #f5c6d3;
       --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
@@ -91,7 +95,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
-      --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.14), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(235,163,185,0.12), transparent 70%);
+      --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
+      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
     }
   }
   :root[data-theme="dark"]{
@@ -105,6 +110,7 @@
     --text-primary: #f8eef1;
     --text-secondary: #d4c2c9;
     --text-muted: #a48e98;
+    --placeholder: #6e6469;
     --accent: #eba3b9;
     --accent-ink: #f5c6d3;
     --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
@@ -137,16 +143,33 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
-      --splash: radial-gradient(60% 38% at 100% 0%, rgba(248,179,121,0.14), transparent 70%), radial-gradient(55% 30% at 0% 8%, rgba(235,163,185,0.12), transparent 70%);
+      --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
+      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
       --ff-blue: #86a3e0;
   }
 
   *{box-sizing:border-box;}
   body{
-    background: var(--splash), var(--page); background-attachment: fixed;
+    background: var(--page);
     color: var(--text-primary);
     font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+  body::before, body::after{ content:""; position:fixed; inset:-24vh -16vw; z-index:-1; pointer-events:none;
+    background:var(--splash-a); }
+  body::after{ background:var(--splash-b); }
+  @keyframes splash-breathe{ to{ scale:1.1; } }
+  @keyframes splash-flow-a{ to{ translate:6vw -20vh; rotate:7deg; } }
+  @keyframes splash-flow-b{ to{ translate:-6vw 16vh; rotate:-6deg; } }
+  @media (prefers-reduced-motion: no-preference){
+    body::before{ animation:splash-breathe 34s ease-in-out infinite alternate; }
+    body::after{ animation:splash-breathe 42s ease-in-out infinite alternate-reverse; }
+    @supports (animation-timeline: scroll()){
+      body::before{ animation:splash-breathe 34s ease-in-out infinite alternate, splash-flow-a linear both;
+        animation-timeline:auto, scroll(root); }
+      body::after{ animation:splash-breathe 42s ease-in-out infinite alternate-reverse, splash-flow-b linear both;
+        animation-timeline:auto, scroll(root); }
+    }
   }
   .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 20px 64px; }
   .mono{ font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
@@ -418,7 +441,7 @@
   .search-field svg{ width:19px; height:19px; flex:none; }
   .search-field input{ flex:1; min-width:0; height:100%; border:0; background:none; font-family:"Public Sans",sans-serif; font-size:var(--type-row);
     color:var(--text-primary); outline:none; }
-  .search-field input::placeholder{ color:var(--text-muted); opacity:1; }
+  .search-field input::placeholder{ color:var(--placeholder); opacity:1; }
   .search-field:focus-within{ border-color:var(--accent); }
   .search-none{ margin:22px 4px; font-size:var(--type-reading); color:var(--text-muted); }
   .menu-section .expand-btn{ margin-left:4px; vertical-align:middle; }
@@ -965,13 +988,13 @@
 
   @media (max-width:400px){ .rangebar{ flex-wrap:wrap; } .rangebar .range-seg{ flex:1 1 auto; } }
   .more-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
-    border:0; background:var(--accent-wash); border-radius:var(--radius);
+    border:1px solid var(--border); background:var(--surface); border-radius:var(--radius);
     padding:12px 22px; min-height:var(--btn-h); box-sizing:border-box; margin-top:var(--gap);
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:700;
     color:var(--accent-ink); }
   .hi-card + .more-row, .aux-stat + .more-row{ margin-top:12px; }
   .metric-sheet .highlights .more-row{ margin-bottom:7px; }
-  .more-row:hover{ filter:brightness(0.97); }
+  .more-row:hover{ border-color:var(--border-strong); }
   .more-row:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--radius); }
   .more-row .peek-chev{ color:inherit; opacity:0.9; }
   .more-row .peek-chev svg{ width:8px; height:13px; stroke-width:1.9; }
@@ -1008,12 +1031,6 @@
     .subject-value{ font-size:var(--type-section); }
   }
 
-  .cyc-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); overflow:hidden; }
-  .cyc-head{ padding:14px 14px 13px; border-bottom:1px solid var(--border); }
-  .cyc-title{ display:inline-flex; align-items:center; gap:4px; font-family:"Public Sans",sans-serif;
-    font-size:var(--type-label); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
-  .cyc-title .peek-mark{ color:var(--text-secondary); }
   .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
     border:0; border-top:1px solid var(--border); background:transparent; padding:13px 14px 12px;
     cursor:pointer; text-align:left; font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600;
@@ -1034,8 +1051,8 @@
   .method-card .more-row, .labs .more-row{ margin-top:20px; }
   .cat-more:empty{ display:none; }
   .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; border:1px solid var(--border-strong); border-radius:var(--radius-inner); }
-  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:color-mix(in srgb, var(--normal) 34%, var(--surface)); border-radius:var(--radius-inner); }
+  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
   .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
@@ -1059,13 +1076,19 @@
     font:inherit; font-size:var(--type-meta); font-weight:600; color:var(--accent); cursor:pointer; }
   .lab-filter:hover, .lab-filter[aria-expanded="true"]{ background:var(--surface-2); }
   .lab-menu{ position:absolute; right:0; top:48px; z-index:5; min-width:200px; padding:6px; border:1px solid var(--border); border-radius:var(--radius-inner);
-    background:var(--surface); box-shadow:0 8px 24px rgba(0,0,0,.12); }
+    background:var(--surface); box-shadow:0 8px 24px rgba(0,0,0,.12); max-height:min(62vh, 440px); overflow-y:auto; }
   .lab-menu[hidden]{ display:none; }
   .lab-menu button{ display:flex; justify-content:space-between; gap:16px; width:100%; padding:10px 12px; border:0; border-radius:var(--radius-inner);
     background:none; font:inherit; font-size:var(--type-interface); color:var(--text-primary); cursor:pointer; }
   .lab-menu button:hover, .lab-menu [aria-checked="true"]{ background:var(--surface-2); }
   .lab-menu [aria-checked="true"]{ font-weight:600; }
   .lab-menu small{ color:var(--text-muted); font-variant-numeric:tabular-nums; }
+  .lab-menu .lab-sub, .lab-menu .lab-back{ align-items:center; }
+  .lab-menu .lab-sub small{ margin-left:auto; }
+  .lab-menu .lab-sub .peek-chev, .lab-menu .lab-back .peek-chev{ display:inline-flex; color:var(--text-muted); }
+  .lab-menu .lab-back{ justify-content:flex-start; gap:10px; font-weight:600; }
+  .lab-menu .lab-back .peek-chev{ transform:rotate(180deg); }
+  .lab-sep{ height:1px; margin:6px 4px; background:var(--border); }
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
@@ -1112,7 +1135,8 @@
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
-  .era-row + .era-row{ border-top:1px solid var(--border); }
+  .era-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+  .era-row + .era-row{ margin-top:var(--gap); }
 
   .hero{ background: var(--surface); border: 1px solid var(--border); border-radius:var(--radius); padding: 26px 26px 22px; box-shadow: var(--shadow); }
 
@@ -1349,8 +1373,8 @@
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" id="tab-cycle" aria-controls="panel-cycle" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
-      <button type="button" class="tab-btn" data-tab="chart" role="tab" id="tab-chart" aria-controls="panel-chart" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16.5" rx="2"/><path d="M9 3.5h6v3H9zM8.5 11h7M8.5 14.5h7M8.5 18h4"/></svg><span>Analysis</span></button>
-      <button type="button" class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Herstory</span></button>
+      <button type="button" class="tab-btn" data-tab="chart" role="tab" id="tab-chart" aria-controls="panel-chart" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
+      <button type="button" class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg><span>Herstory</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" id="tab-portfolio" aria-controls="panel-portfolio" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
   </nav>
@@ -1495,18 +1519,11 @@
 
   <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
-      <div class="cyc-card">
-        <div class="cyc-head">
-          <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
-            d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
-        </div>
-        <div id="cycle-list"></div>
-        <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
-          <span id="cycle-more-label">View more</span>
-          <span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>
-        </button>
-      </div>
+      <div id="cycle-list"></div>
+      <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
+        <span id="cycle-more-label">View more</span>
+        <span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>
+      </button>
     </div>
     <div id="calendar-cycle" hidden></div>
   </div>
@@ -1545,7 +1562,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.2 (740)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.3 (741)</span></p>
     </div>
   </div>
 
@@ -1957,6 +1974,9 @@
   }
   function trendDoor(open, title, mark, head, body) {
     return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, CHEV, body);
+  }
+  function trendJump(attrs, mark, head, body) {
+    return trendCard("button", "", ' type="button"' + attrs, mark, head, CHEV, body);
   }
   function trendSoon(mark, head, body) {
     return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
@@ -30156,9 +30176,6 @@
   function controlsBox(inner) {
     return '<div class="hist-controls">' + inner + "</div>";
   }
-  function cycleControls(id) {
-    return controlsBox(cyclePicker(id, page.cycles[id]));
-  }
   function pageCycle(id, y0) {
     var c = page.mode[id] === "cycles" ? cycleByName(page.cycles[id]) || openCycle() : null;
     if (y0 == null) y0 = page.y0[id];
@@ -31438,7 +31455,7 @@
     return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
   }
   function chartSvg() {
-    return markSvg('<rect x="5" y="4.5" width="14" height="16.5" rx="2" stroke-width="1.8"/><path d="M9 3.5h6v3H9zM8.5 11h7M8.5 14.5h7M8.5 18h4" stroke-width="1.8"/>');
+    return markSvg('<rect x="3.5" y="4" width="17" height="16" rx="2.5" stroke-width="1.8"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5M14.5 9H17v2.5" stroke-width="1.8"/>');
   }
   function ecgSvg() {
     return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
@@ -34206,7 +34223,7 @@
   }
   function scoreBox(i) {
     var s = score(i);
-    return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
+    return '<span class="lab-score"><span><b>Health score</b><small>Against ' + word(closedCount()) + ' closed cycles</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
   }
   var CAT_MARK = {
     cycle: calendarSvg,
@@ -34248,22 +34265,38 @@
     return finds[id] || (finds[id] = {
       tier: "all",
       q: "",
-      raw: ""
+      raw: "",
+      sub: ""
     });
   }
   var LENS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L20.5 20.5"/></svg>';
-  function finder(id, i, j) {
-    var f = findOf(id), opts = [ [ "all", "All", j.length ] ].concat(TIERS.map(function(t) {
+  function tierOpts(i, j) {
+    return [ [ "all", "All", j.length ] ].concat(TIERS.map(function(t) {
       return [ t.key, t.title, j.filter(function(l) {
         return tier(l, i) === t.key;
       }).length ];
     }));
-    var on = opts.filter(function(o) {
+  }
+  function menuRows(id, i, j) {
+    var f = findOf(id), cur = marketCycles[i];
+    if (f.sub === "cycle") return '<button type="button" class="lab-back" data-lab-sub="">' + CHEV + '<span>Cycle</span></button><div class="lab-sep"></div>' + marketCycles.slice().reverse().map(function(c) {
+      var L = cycLabel(c);
+      return '<button type="button" role="menuitemradio" aria-checked="' + (c === cur) + '" data-lab-cycle="' + c.name + '"><span>' + L.name + "</span><small>" + L.years + "</small></button>";
+    }).join("");
+    return tierOpts(i, j).map(function(o) {
+      return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + "</span><small>" + o[2] + "</small></button>";
+    }).join("") + '<div class="lab-sep"></div><button type="button" class="lab-sub" data-lab-sub="cycle"><span>Cycle</span><small>' + cycLabel(cur).name + "</small>" + CHEV + "</button>";
+  }
+  function filterTags(id, i, j) {
+    var f = findOf(id), c = marketCycles[i], on = tierOpts(i, j).filter(function(o) {
       return o[0] === f.tier;
     })[0];
-    return '<div class="lab-find"><div class="search-field">' + LENS + '<input type="search" class="lab-q" placeholder="Search readings" aria-label="Search readings" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '"><button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + (f.tier === "all" ? "" : "<span>" + on[1] + "</span>") + '</button></div><div class="lab-menu" role="menu" hidden>' + opts.map(function(o) {
-      return '<button type="button" role="menuitemradio" aria-checked="' + (o[0] === f.tier) + '" data-lab-tier="' + o[0] + '"><span>' + o[1] + "</span><small>" + o[2] + "</small></button>";
-    }).join("") + "</div></div>";
+    var tags = (c === openCycle() ? [] : [ cycLabel(c).name ]).concat(f.tier === "all" ? [] : [ String(on[1]) ]);
+    return tags.length ? "<span>" + tags.join(" · ") + "</span>" : "";
+  }
+  function finder(id, i, j) {
+    var f = findOf(id);
+    return '<div class="lab-find"><div class="search-field">' + LENS + '<input type="search" class="lab-q" placeholder="Search indicators" aria-label="Search indicators" autocomplete="off" spellcheck="false" value="' + f.raw.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") + '"><button type="button" class="lab-filter" aria-haspopup="true" aria-expanded="false" aria-label="Filter the results">' + slidersSvg() + filterTags(id, i, j) + '</button></div><div class="lab-menu" role="menu" hidden>' + menuRows(id, i, j) + "</div></div>";
   }
   function narrow(host, id) {
     var f = findOf(id), any = false;
@@ -34289,12 +34322,39 @@
     menu.hidden = !open;
     btn.setAttribute("aria-expanded", String(open));
   }
-  function pickTier(host, id, seg) {
-    findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+  function redraw(host, id) {
+    findOf(id).sub = "";
     var draw = sheetRenderers[id];
     if (draw) draw();
     var btn = host.querySelector(".lab-filter");
     if (btn) btn.focus();
+  }
+  function pickTier(host, id, seg) {
+    findOf(id).tier = seg.getAttribute("data-lab-tier") || "all";
+    redraw(host, id);
+  }
+  function pickCycle(host, id, seg) {
+    page.cycles[id] = seg.getAttribute("data-lab-cycle");
+    redraw(host, id);
+  }
+  function fillMenu(host, id, sub) {
+    var c = pageCycle(id), menu = menuOf(host);
+    if (!c || !menu) return null;
+    var i = marketCycles.indexOf(c);
+    findOf(id).sub = sub;
+    menu.innerHTML = menuRows(id, i, judged(i));
+    return menu;
+  }
+  function openSub(host, id, seg) {
+    var menu = fillMenu(host, id, seg.getAttribute("data-lab-sub") || "");
+    var first = menu && menu.querySelector('[aria-checked="true"], button');
+    if (first) first.focus();
+  }
+  function toggleMenu(host, id) {
+    var menu = menuOf(host);
+    if (!menu) return;
+    if (menu.hidden) fillMenu(host, id, "");
+    showMenu(host, menu.hidden);
   }
   function judged(i) {
     return labs().filter(function(l) {
@@ -34341,20 +34401,18 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the health chart reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How cycle analysis reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her cycle analysis describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
-  var CHART_ID = "sheet-cycle-chart";
-  var CHART_NAME = "Health chart";
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendDoor(CHART_ID, CHART_NAME, chartSvg(), CHART_NAME, trendText(visitNote(i)) + scoreBox(i));
+    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle analysis", trendText(visitNote(i)) + scoreBox(i));
   }
   var HOME_ID = "chart-home";
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
     var i = marketCycles.indexOf(c), j = judged(i);
-    host.innerHTML = finder(id, i, j) + histBar(cycleControls(id)) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + '<div class="labs">' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
     narrow(host, id);
   }
   function fold(t) {
@@ -34368,8 +34426,8 @@
       drawChart(id);
     };
     host.addEventListener("click", function(e) {
-      var t = e.target, seg = t.closest && t.closest("[data-lab-tier]");
-      if (seg) pickTier(host, id, seg); else if (t.closest && t.closest(".lab-filter")) showMenu(host, !!menuOf(host).hidden); else fold(t);
+      var t = e.target, seg = t.closest && t.closest("[data-lab-tier]"), cyc = t.closest && t.closest("[data-lab-cycle]"), sub = t.closest && t.closest("[data-lab-sub]");
+      if (seg) pickTier(host, id, seg); else if (cyc) pickCycle(host, id, cyc); else if (sub) openSub(host, id, sub); else if (t.closest && t.closest(".lab-filter")) toggleMenu(host, id); else fold(t);
     });
     host.addEventListener("input", function(e) {
       var q = e.target;
@@ -34391,10 +34449,7 @@
       if (host) showMenu(host, false);
     });
   }
-  function buildCycleChart(home) {
-    var sheet = metricSheet(CHART_ID);
-    home.appendChild(sheet);
-    wireFinder(sheet, CHART_ID);
+  function buildCycleChart() {
     wireFinder(need(HOME_ID), HOME_ID);
     layer(0, {
       open: function() {
@@ -34404,10 +34459,14 @@
     });
     document.addEventListener("click", function(e) {
       var t = e.target;
-      if (!(t.closest && t.closest(".lab-find"))) shutMenus();
+      if (t.isConnected && !(t.closest && t.closest(".lab-find"))) shutMenus();
     });
-    home.addEventListener("click", function(e) {
-      if (e.target.closest && e.target.closest('[data-open="' + CHART_ID + '"]')) page.cycles[CHART_ID] = ui.eraOpen ? ui.eraOpen.name : null;
+    document.addEventListener("click", function(e) {
+      var door = e.target.closest && e.target.closest("[data-chart-cycle]");
+      if (!door) return;
+      need("tab-chart").click();
+      page.cycles[HOME_ID] = door.getAttribute("data-chart-cycle");
+      drawChart(HOME_ID);
     });
     need("tab-chart").addEventListener("click", function() {
       drawChart(HOME_ID);
@@ -34475,7 +34534,7 @@
     host.className = "dx";
     host.id = "diagnosis";
     home.insertBefore(host, home.firstChild);
-    buildCycleChart(home);
+    buildCycleChart();
   }
   function buildDiagnosis() {
     var home = byId("today-analysis");

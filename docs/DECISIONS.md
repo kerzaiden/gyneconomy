@@ -129,10 +129,25 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 ### Tabs, bars and menu
 
 - **The tab bar is Cycle · Analysis · Herstory · Portfolio.** Search replaced the Content tab (V657), Keren
-  swapped Analysis and Search (V665), and the Health chart took Search's place: "I'm basically seeing the same thing
+  swapped Analysis and Search (V665), and Cycle analysis took Search's place: "I'm basically seeing the same thing
   in different views … the search moved to the health chart page." Then Keren renamed both: "Instead of health
   chart, call the tab analysis. And instead of analysis, call the tab history. Or better yet, herstory." The Health
   chart keeps its name where it opens from a cycle's story. (0.6.1)
+- **Herstory's tab icon is the history clock (an arrow turning back round a clock face), and the page has no
+  "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
+  want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
+  containers for different cycles with the agreed upon margin". (0.6.3)
+- **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
+  Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
+  goes up. This goes the same for the health chart." (0.6.3)
+- **The health score sits on an apricot box (`--normal` at 34% on white, brightened from 22%) and its line names the cycles its ranges
+  come from: "Against 18 closed cycles".** Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
+  of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
+- **Cycle analysis picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
+  picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
+  current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
+- **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
+  (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
@@ -189,7 +204,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
   stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
-- **The Health chart is where every reading is found: a search box at the top, above the cycle picker, with the
+- **Cycle analysis is where every reading is found: a search box at the top, above the cycle picker, with the
   filter inside it; each reading opens its page and each category name opens its category page.** Keren: "if I go to
   the health chart page and I click on, let's say, temperature, I would get to the temperature page"; "the filter
   should be inside the search … if I click filter, I see what I can filter by, but it doesn't take up space from the
@@ -217,7 +232,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
-  the source order and the category sheets and past cycles read it; the Health chart and the Diagnosis place the four by
+  the source order and the category sheets and past cycles read it; Cycle analysis and the Diagnosis place the four by
   each category's `shown`; the layout rearranges the picture and leaves the meaning where it is. (V502, V670)
 - **The Cycle page is the dial with the Diagnosis under it; it carries no category cards.** Keren: "I want the
   categories to go away from the cycle page because we already have it in search and in the diagnosis." (V665)
@@ -413,7 +428,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   colour.** A cycle that ended is not being judged. (V615)
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
   a frozen copy.** Keren: "the cycle is not ended yet"; a frozen view would say the AI Cycle is over. (V616)
-- **Each cycle's strips in cycle history are drawn against the typical cycle length: a shorter cycle shows
+- **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
   grey dots for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** Keren: "The dots can represent the average that is left, not compared to the longest
   cycle." (V517)
@@ -427,7 +442,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Risk (red, past a fence), with a health score, the share that is Normal.** Keren tried Risk and Outlier for the two, then kept these: "let's keep the current categories. Normal, attention, and risk" (0.6.0). A Risk result reads "Outlier, above range" (or below), since past a fence is the standard rule for an outlier. Every result outside its normal range is flagged, as a lab flags any result outside its reference range: under its name it reads In range, Above range, Below range, or Outlier, above range (or below), in grey like the range ("I would not color it"); a small triangle after the figure, in the tier's colour, points up when it is above its range, down when below, and reads "=" when in range, as in Keren's reference (0.6.0, bringing back 0.5.2's up and down as marks beside the number, not arrows in it); there are no H/L marks. Keren: "If it's above or below the norm, then it should be flagged", when Shiller CAPE at 40.6 against 13.9 – 27.2 read only as a yellow bar (0.6.0, undoing 0.5.3's "only numbers"; the arrows of 0.5.2 stay gone). Each category is a drawer with a plain white heading over beige results (Keren: "I want the categories to be white and the subcategories to be in … beige"), its heading in the reading type, small enough that its count sits beside it (Keren: "I really don't like the coloring of the categories … it should be much smaller so it fits the number right next to it"): its mark (Weather a sun behind a cloud, Mood three waves, Circulation a drop, Energy a bolt, Cycle a calendar; the readings carry no marks here), its name and count, "Mood (6)"; every drawer starts open and the chevron on its right folds it. The heading stands half as tall again as a result row's heading did (Keren: "make the category containers like 150% higher"), and it carries no in-range count (Keren: "I don't need the two out of six in range", 0.6.1). The search box is as round as the cycle picker (Keren: "round corners on the search and like the current cycle", 0.6.1). Keren: "weather has a weather icon, mood has like a wave icon … circulation has a blood icon. Energy has a lightning bolt icon", "four slash six in range", and "the default is everything is open. But if I click on it, I can close something"; Keren: the reference's test results design "is more suitable to the health chart than the search page" (0.6.0). Each range reads "−3.2% – −0.9%": a dash, as Keren asked, with a space either side so it never touches a minus sign (0.5.2, 0.5.3), with no cycle count beside it (Keren: "remove it"; the (i) says how many cycles a range rests on), and the in-range count replaced the heading's "Normal range" (0.6.0). A closed cycle shows each reading's average, one number, with no low or high (Keren: "very confusing"); the cycle in progress shows the latest reading, judged against the middle half of every reading in her closed cycles, since a single reading swings wider than an average (Keren, 0.5.3). Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
   cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
-- **A Health chart result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
+- **A Cycle analysis result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
   unemployment rate goes down, it's a good thing. So the bottom facing triangle should be green … We need to judge if
   it's good or bad, not only by direction, but also by parameter." A result outside its range on its good side is
   Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before; the words
@@ -439,7 +454,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
   (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
   those are flagged either way. (0.6.1)
-- **Each cycle's Health chart is a row with a chevron under the cycle story that previews the visit note and the
+- **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
   four), worst first; each result's colour bar stops short of the next. The row opens on the cycle on screen. Keren: "make it shorter in the current
@@ -1099,12 +1114,27 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   one grey in the app; containers stay white ("I don't like the gray. It's too gray. Let's use white"). (0.6.2,
   replacing V579)
 - **The palette is plum, from Keren's reference: a dark plum brand (`--accent` #7c2844, a rose in dark), a white
-  page with apricot and blush splashes behind white containers (`--splash`), Summer salmon-orange and Autumn
+  page with apricot and blush splashes behind white containers (`--splash-a`, `--splash-b`), Summer salmon-orange and Autumn
   marigold; Winter and Spring stay periwinkle (V180).** Keren: "I really like the dark purple in this reference
   and the light pink background with orange shades to yellow … really appropriate for a cycle tracking app";
   "let's use white and let's use splashes of apricot". Text and greys are tinted toward plum. Every text pair
   holds 4.5:1 in both themes except `--text-muted` on `--track` (4.4:1 in light). (0.6.2)
-- **The Health chart's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
+- **The splash covers the whole screen and stays there as the page scrolls: two fixed layers of soft blobs, apricot
+  and blush, that breathe slowly and flow apart as the page scrolls, never with the content.** Keren: "make the
+  apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
+  scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
+  animation keeps the slow breathing only. (0.6.3)
+- **The health chart is called Cycle analysis, and its card on the Current Cycle page (and on a past cycle's page)
+  goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
+  health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
+  automatically to analysis page." (0.6.3)
+- **More details is a white button with the containers' grey hairline (`--surface`, `--border`), like a category
+  card, not a filled wash.** Keren: "the more details button should be better off white with gray stroke like the
+  category containers." (0.6.3)
+- **Buttons' and highlights' wash (`--accent-wash`) is the reference's blush (`--blush` #f6c4be at 40% on
+  white), not a tint of the plum.** Keren: "the more details button is in the old purple"; plum at 10% on white
+  read as lilac. Dark keeps the rose tint. (0.6.3)
+- **Cycle analysis's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
   red (`--critical`).** Keren chose apricot over teal: "the apricot looks much more, much better". Apricot and
   marigold are close in lightness, so the mark's shape ("=" or a triangle) carries the difference. (0.6.2)
 - **The app icon's lotus sits on the plum, not the old purple.** Keren: "make sure the icon is not purple anymore,
