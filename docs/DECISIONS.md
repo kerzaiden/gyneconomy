@@ -1113,6 +1113,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
   scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3)
+- **Buttons' and highlights' wash (`--accent-wash`) is the reference's blush (`--blush` #f6c4be at 40% on
+  white), not a tint of the plum.** Keren: "the more details button is in the old purple"; plum at 10% on white
+  read as lilac. Dark keeps the rose tint. (0.6.3)
 - **The Health chart's tiers are Normal apricot (`--normal`), Attention marigold (`--season-autumn`) and Risk
   red (`--critical`).** Keren chose apricot over teal: "the apricot looks much more, much better". Apricot and
   marigold are close in lightness, so the mark's shape ("=" or a triangle) carries the difference. (0.6.2)
