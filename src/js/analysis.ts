@@ -10,7 +10,7 @@ import { CATEGORIES } from "./roster.ts";
 import { econChips } from "./render-core.ts";
 import { setTopbar } from "./render-pages.ts";
 import { eraFig, kT, prettyK, readingRoster, rosterRows, upTo } from "./era.ts";
-import { replaceCategory } from "./category-analysis.ts";
+import { replaceInsight } from "./insights.ts";
 import { cycleView, marketStripHtml, renderCycleView, seasonStripHtml, settleStrips, showCycle } from "./dial-cycle.ts";
 
 type Strip = ReturnType<typeof seasonStripHtml>;
@@ -135,7 +135,7 @@ function eraShow(era: Cycle | null){
   if (era && !modeHome){ modeHome = {}; for (var k in page.mode) modeHome[k] = page.mode![k]; }
   for (var id in page.cycles){ page.cycles![id] = era ? era.name : null; page.mode![id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode![id]; }
   if (!era) modeHome = null;
-  CATEGORIES.forEach(replaceCategory);
+  CATEGORIES.forEach(replaceInsight);
 }
 function enterEra(era: Cycle, page: HTMLElement){
   var ta = need("today-analysis");

@@ -1,5 +1,5 @@
 import { facts, fmtSigned, hiCard, lede, monthLabel, srcBlock } from "./format.ts";
-import { ui } from "./dom.ts";
+import { moreRow, ui } from "./dom.ts";
 import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.ts";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
 import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.ts";
@@ -177,4 +177,9 @@ function storyText(s: Story, open: boolean | undefined){
   return storyBeats(s, open) + " Most of it she spent in " +
     s.most.map(function(m){ return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)"); }).join(" and ") + ".";
 }
-export var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
+var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
+export function insightRow(key: string){ return '<div class="cat-more">' + moreRow(INSIGHT[key] ? INSIGHT[key]() : "") + '</div>'; }
+export function replaceInsight(c: { key: string }){
+  var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
+  if (box) box.outerHTML = insightRow(c.key);
+}

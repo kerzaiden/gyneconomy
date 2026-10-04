@@ -6,7 +6,7 @@ import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js
 import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
-import { ROSTER } from '../../src/js/roster.ts';
+import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
@@ -137,8 +137,8 @@ test('today’s story card is titled by its cycle', () => {
 test('a live Fed cut reaches every door, its tag and the policy facts', async () => {
   await deliver({ fedFunds: { ...FED, lo: 3.5, hi: 3.75, lastMove: '-0.25', lastMoveLabel: 'cut a quarter point' } });
   assert.equal(now.fedFunds.lo, 3.5);
-  const doors = [...document.querySelectorAll('[data-open="sheet-sign-hormones"]')];
-  assert.ok(doors.length >= 2);
+  const doors = [...document.querySelectorAll('[data-open="sheet-sign-hormones"]:not(.lab-row)')];
+  assert.ok(doors.length >= 1);
   doors.forEach(d => assert.match(d.textContent, /3\.50–3\.75%/));
   assert.equal(tag('sheet-sign-hormones'), 'Easing');
   assert.match(document.getElementById('policy-facts').textContent, /3\.50–3\.75%/);
@@ -223,7 +223,7 @@ test('a good boot clears the one-reload guard', () => {
 });
 
 test('a live CAPE reaches every Valuations door with its verdict word', async () => {
-  const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
+  const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]:not(.lab-row)')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
   await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
   assert.equal(word('sheet-metric-valuation'), 'Fairly valued');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
@@ -282,28 +282,17 @@ test('a past cycle shows its own record on the cards and the Diagnosis, and Back
   assert.deepEqual(errors, []);
 });
 
-test('each category page opens on its analysis, which follows the cycle on screen', async () => {
-  const { criticalR } = await import('../../src/js/category-analysis.ts');
-  assert.equal(criticalR(14).toFixed(3), '0.532');
-  assert.equal(criticalR(2), 2);
-  const say = key => document.querySelector('#sheet-cat-' + key + ' .cat-list > .cat-analysis .ca-say').textContent;
-  for (const key of ['weather', 'mood', 'circulation', 'energy']) {
-    const box = document.querySelector('#sheet-cat-' + key + ' .cat-list').firstElementChild;
-    assert.ok(box.classList.contains('cat-analysis'), key);
-    assert.match(box.querySelector('.ca-name').textContent, / analysis$/);
-    assert.ok(box.querySelector('svg .ca-line.now'), key);
-    assert.match(say(key), /^Since the AI Cycle opened, .+ out of 100\./);
-  }
-  assert.equal(document.querySelectorAll('.cat-sheet .insights, .cat-sheet .hi-head').length, 0);
-  document.querySelector('#sheet-cat-mood .cat-analysis .more-row').click();
-  const body = document.getElementById('detail-modal-body');
-  assert.match(body.textContent, /She\u2019s in /);
-  assert.match(body.textContent, /How the analysis reads/);
-  document.getElementById('detail-modal-close').click();
+test('each category page lists its readings, then its insights behind More details, for the cycle on screen', async () => {
+  const more = key => document.querySelector('#sheet-cat-' + key + ' .cat-list > .cat-more:last-child');
+  const mood = () => { more('mood').querySelector('.more-row').click(); const t = document.getElementById('detail-modal-body').textContent; document.getElementById('detail-modal-close').click(); return t; };
+  assert.equal(document.querySelectorAll('.cat-analysis').length, 0);
+  for (const key of ['weather', 'mood', 'circulation']) assert.ok(more(key).querySelector('.more-row'), key);
+  assert.equal(more('energy').children.length, 0);
+  assert.match(mood(), /She\u2019s in .+AI Cycle/);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
-  assert.match(say('energy'), /^Across the Big Tech Cycle, /);
+  assert.match(mood(), /She\u2019s in .+Big Tech Cycle/);
   ui.eraPageBack();
-  assert.match(say('energy'), /^Since the AI Cycle opened, /);
+  assert.match(mood(), /She\u2019s in .+AI Cycle/);
   assert.deepEqual(errors, []);
 });
 
@@ -330,4 +319,16 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.equal(horizonRead.word, 'Pessimistic');
   await at(0.01, '2026-12-31');
   assert.notEqual(horizonRead.word, 'Pessimistic');
+});
+
+test('a Health chart result outside its range is Normal on its good side and flagged on the other', () => {
+  const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
+  assert.equal(rows.length, ROSTER.length);
+  rows.forEach(({ R, li }) => {
+    const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
+    const normal = li.classList.contains('t-optimal');
+    assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
+  });
+  assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
+  assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });

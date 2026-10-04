@@ -128,8 +128,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Tabs, bars and menu
 
-- **The tab bar is Cycle · Search · Analysis · Portfolio.** Search replaced the Content tab, and Keren then
-  swapped Analysis and Search. (V657, V665)
+- **The tab bar is Cycle · Health chart · Analysis · Portfolio.** Search replaced the Content tab (V657), Keren
+  swapped Analysis and Search (V665), and the Health chart took Search's place: "I'm basically seeing the same thing
+  in different views … the search moved to the health chart page." (0.7.0)
 - **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
   colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
   hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
@@ -141,8 +142,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   purple mark alone, with no ring and no background.** Keren: "the title of the page should be in feminine
   letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
   stroke". (V272, V275)
-- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Search", "Analysis", "Portfolio".**
-  (undated)
+- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Health chart", "Analysis", "Portfolio".**
+  (undated, 0.7.0)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** Keren: "there is a title inside the
   page which is redundant — you already have the page title at the top." The bar names the page and the card
@@ -186,15 +187,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   indicator, Federal debt, Interest payments and Federal budget each have their own; the two Treasury spreads
   stay one view, Households' debt service and saving rate stay one page, and Pressure stays one card with its
   maturity picker. Keren: "no need to split 10Y − 2Y & 10Y − 3M". (V254, V658)
-- **Search lists every reading by category (Weather, Mood, Circulation, Energy), with a timing filter (All,
-  Structural, Leading, Coincident, Lagging; All by default) and a search box; each heading opens its category
-  page, and each row shows today's figure only and opens its reading's page.** Keren modelled it on Apple
-  Health's search page; the All indicators page and its row stay gone. (V657) Each category is one card: its
-  name, in the category's colour and without an icon, heads the card on a light wash of that colour, and its
-  readings are listed below it. Keren: "categories to not have icons… one container for weather and below its
-  subcategories… make it beautiful." (V692)
-- **In Search, readings that form a group are one row (Valuations, Desire, Stress) that opens a page holding
-  their cards.** Keren: "in the search page consolidate categories that are from the same category". (V660, 1.1.0)
+- **The Health chart is where every reading is found: a search box at the top, above the cycle picker, with the
+  filter inside it; each reading opens its page and each category name opens its category page.** Keren: "if I go to
+  the health chart page and I click on, let's say, temperature, I would get to the temperature page"; "the filter
+  should be inside the search … if I click filter, I see what I can filter by, but it doesn't take up space from the
+  screen." The filter offers All, Risk, Attention and Normal with their counts; the chevron beside a category's count
+  still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
+  "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
+  lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.7.0)
 - **On a category page a group is one card too: its mark, its name, and its first member's figure and verdict
   as the preview (Valuations shows the Shiller CAPE); the card opens the group's page, which holds the members'
   cards.** Keren: "I don't need to see them both… just put a preview KPI, like the cape… so that we'll have
@@ -204,34 +204,17 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   economic power… the terminology is stress because debts are stress", then chose Stress. (V688)
 - **A category page has no group headings and is washed in its category's colour.** Keren, from Apple Health:
   "each category page should have the shade of the color of the category". (V660)
-- **A category page opens on its analysis, one card named for it ("Weather analysis", "Mood analysis" …), with its
-  reading cards under it and no section titles.** Search already lists the readings, so a page that only repeated them
-  "doesn't really inform me all that much besides taking up space"; Keren asked for something that "take[s] all the
-  parameters inside that category" together, preferred trends to text ("text can only go so far", after Apple Health's
-  Trends), then the category's composite set against past cycles; "just say weather analysis … I don't need the titles,
-  trends, and readings. Just put the containers one on top of the other." (1.5.0)
-- **A category's insights open from its analysis card's More details, with no Insights title, and the page has no
-  Insights box; the method of the analysis follows them in the same sheet.** Keren: "insights is important and it
-  should be visible for some prominent place, but I hardly doubt it that someone will scroll all the way to see the
-  insights. So when you click on more details, we can just show the insights without even calling it insights." Mood's
-  own figures, which had a More details of their own, now follow her story in that sheet. The button sits as far
-  from the rows above it as from the card's foot ("the padding … is uneven"). (1.5.0)
-- **Weather's insights carry no "What usually comes next" card.** It read as a forecast once it sat under the analysis;
-  Keren: "drop the forecast". The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
-- **The analysis is the category as one reading through the cycle on screen, drawn over every other cycle from the
-  quarter each opened and matched on its quarter-by-quarter moves.** Keren: "the composite parameter comprised of all
-  the subcategories of that category can be more informative if it correlates with past cycles". The composite averages
-  each reading's rank against its own record to date, the method of her mood score; Mood's composite is that score.
-  The other cycles are drawn only as far as this one has run, so it describes and does not forecast. A match is close
-  when it passes the standard 5% significance test for that many quarters, loose below it. Dropped on the way, at
-  Keren's word: each reading against past cycles ("not very informative") and this cycle's average against the last.
-  Claude's calls, for Keren to overturn: the Fed funds rate, unemployment and federal debt count upside down; Stress
-  enters as Federal debt, the longest of its four; Pressure is left out, its record starting in 2005; the S&P 500 enters
-  as its twelve-month change, its only figure every quarter; cycles are matched on moves, because on levels every bull
-  run matched every other. (1.5.0)
+- **A category page is its reading cards, then one More details holding the category's insights, with no section
+  titles and no analysis card.** Keren: "the category analysis that we made, is not that good. It's not very
+  informative … we have a lot of text inside the more details, which can remain below the subcategories". The
+  insights carry no title, and Mood's own figures follow her story in the same sheet; Energy has none, so it ends on
+  its cards. The composite analysis of 1.5.0 (each category as one rank-averaged reading matched against past cycles)
+  is retired. (1.5.0, 0.7.0)
+- **Weather's insights carry no "What usually comes next" card.** It read as a forecast; Keren: "drop the forecast".
+  The season's prose behind a dial quarter keeps it, one tap further in. (1.5.0)
 - **The source keeps the taxonomy's order (Weather, Circulation, Mood, Energy); a display that wants Keren's
   order (Weather, Mood, Circulation, Energy) places the four without reordering the source.** The roster holds
-  the source order and the category sheets and past cycles read it; Search and the Diagnosis place the four by
+  the source order and the category sheets and past cycles read it; the Health chart and the Diagnosis place the four by
   each category's `shown`; the layout rearranges the picture and leaves the meaning where it is. (V502, V670)
 - **The Cycle page is the dial with the Diagnosis under it; it carries no category cards.** Keren: "I want the
   categories to go away from the cycle page because we already have it in search and in the diagnosis." (V665)
@@ -242,10 +225,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   never re-lists what is on screen below it.** Keren: "either put it in the inner page or if it already exists
   drop it". (V232, V277)
 - **A reading's timing (leading, coincident, lagging, structural) goes with the reading, never as a heading:
-  it is hidden on the page, shown in the reading's (i) note, and filters Search (the timing chip opens Search
-  on its timing).** Keren: "get rid of the Leading, Coincident and Lagging titles on the main page"; "it's a
+  it is hidden on the page and shown in the reading's (i) note, as a label that opens nothing.** Keren: "get rid of the Leading, Coincident and Lagging titles on the main page"; "it's a
   minor detail that if people want to expand on their understanding, they can go to the info page." (V271,
-  V377, V657, undated, Sep 20, 2026)
+  V377, V657, undated, Sep 20, 2026; it stopped filtering anything in 0.7.0)
 - **Every (i) and every More details opens the one shared sheet, never a floating popover; on a phone it rises
   from the bottom as a near-full-screen sheet with rounded top corners, a strip of dimmed page above, a big
   round X and larger type.** Keren: "make the info icons open in the new popup format as well"; the phone
@@ -442,6 +424,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Risk (red, past a fence), with a health score, the share that is Normal.** Keren tried Risk and Outlier for the two, then kept these: "let's keep the current categories. Normal, attention, and risk" (0.6.0). A Risk result reads "Outlier, above range" (or below), since past a fence is the standard rule for an outlier. Every result outside its normal range is flagged, as a lab flags any result outside its reference range: under its name it reads In range, Above range, Below range, or Outlier, above range (or below), in grey like the range ("I would not color it"); a small triangle after the figure, in the tier's colour, points up when it is above its range, down when below, and reads "=" when in range, as in Keren's reference (0.6.0, bringing back 0.5.2's up and down as marks beside the number, not arrows in it); there are no H/L marks. Keren: "If it's above or below the norm, then it should be flagged", when Shiller CAPE at 40.6 against 13.9 – 27.2 read only as a yellow bar (0.6.0, undoing 0.5.3's "only numbers"; the arrows of 0.5.2 stay gone). Each category is a drawer with a plain white heading over beige results (Keren: "I want the categories to be white and the subcategories to be in … beige"), its heading in the reading type, small enough that its count sits beside it (Keren: "I really don't like the coloring of the categories … it should be much smaller so it fits the number right next to it"): its mark (Weather a sun behind a cloud, Mood three waves, Circulation a drop, Energy a bolt, Cycle a calendar; the readings carry no marks here), its name and count, "Mood (6)", and how many are in range, "2/6 in range"; every drawer starts open and its heading folds it. Keren: "weather has a weather icon, mood has like a wave icon … circulation has a blood icon. Energy has a lightning bolt icon", "four slash six in range", and "the default is everything is open. But if I click on it, I can close something"; Keren: the reference's test results design "is more suitable to the health chart than the search page" (0.6.0). Each range reads "−3.2% – −0.9%": a dash, as Keren asked, with a space either side so it never touches a minus sign (0.5.2, 0.5.3), with no cycle count beside it (Keren: "remove it"; the (i) says how many cycles a range rests on), and the in-range count replaced the heading's "Normal range" (0.6.0). A closed cycle shows each reading's average, one number, with no low or high (Keren: "very confusing"); the cycle in progress shows the latest reading, judged against the middle half of every reading in her closed cycles, since a single reading swings wider than an average (Keren, 0.5.3). Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
   cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
+- **A Health chart result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
+  unemployment rate goes down, it's a good thing. So the bottom facing triangle should be green … We need to judge if
+  it's good or bad, not only by direction, but also by parameter." A result outside its range on its good side is
+  Normal (green) and counts toward the health score; on the other side it is Attention or Risk as before; the words
+  under it and the heading's "in range" count stay literal. Each reading's good side is declared once, as `good` in the
+  roster. Claude's calls, by economic convention, for Keren to overturn: higher is good for Growth, the S&P 500,
+  Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
+  deficit), Productivity growth and Bull years; lower is good for Shiller CAPE and the Buffett indicator (Shiller's and
+  Buffett's own reading of a rich market), Volatility (the VIX is the market's fear gauge), Federal debt, Interest
+  payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
+  (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
+  those are flagged either way. (0.7.0)
 - **Each cycle's Health chart is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the

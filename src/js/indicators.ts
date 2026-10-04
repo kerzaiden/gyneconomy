@@ -8,7 +8,7 @@ import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
 import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading } from "./readings.ts";
 import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.ts";
-import { catItem, catList, metricSheet, openOf, registerTiming, sheetRenderers, subjectIcon, timingPill } from "./render-core.ts";
+import { catItem, catList, metricSheet, openOf, sheetRenderers, timingPill } from "./render-core.ts";
 
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
@@ -120,9 +120,6 @@ function mountSplit(s: SplitSpec){
   addSources(s.src);
 }
 function splitPeek(R: RosterRow, row: SplitRow){
-  registerTiming(R.timing, { title:R.name, sub:R.group, metric:row.flagValue, unit:R.cardUnit,
-    word:meterWord(row.meter), state:row.flagState || "norm", icon:subjectIcon(row.flagState || "norm", R.mark()),
-    target:R.id });
   return peekOf(R.id, { value:row.flagValue, word:meterWord(row.meter), state:row.flagState || "norm", colBase:R.mid,
     cols:keyed(R.hist).map(function(d){ return R.flip ? -(d.v || 0) : d.v; }), colClass:function(v: number){ return "dv-bar " + (v > midOf(R) ? "over" : "under"); } });
 }

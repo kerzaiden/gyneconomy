@@ -68,17 +68,17 @@ function renderSeasonRows(){
       {t:"StatPearls — Fertility Awareness-Based Methods (NCBI)", u:"https://www.ncbi.nlm.nih.gov/books/NBK546666/"}
     ])));
 }
-// ---- TAB NAVIGATION (Cycle / Analysis / Search / Portfolio) ----
+// ---- TAB NAVIGATION (Cycle / Health chart / Analysis / Portfolio) ----
 function renderTopbar(){
   var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
   var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
-  var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", search:"Search", portfolio:"Portfolio" };
+  var tabTitles = { cycle:"Current Cycle", analysis:"Analysis", chart:"Health chart", portfolio:"Portfolio" };
   var topTitle = need("topbar-title");
   btns.forEach(function(btn){
     btn.addEventListener("click", function(){
       if (btn.classList.contains("active")){
         if (btn.getAttribute("data-tab") === "analysis"){ GYN.fire("metricPageReset"); GYN.fire("calendarReset"); }
-        if (btn.getAttribute("data-tab") === "cycle") GYN.fire("metricPageReset");
+        if (btn.getAttribute("data-tab") !== "analysis") GYN.fire("metricPageReset");
         return;
       }
       btns.forEach(function(b){ b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
