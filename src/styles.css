@@ -1060,7 +1060,7 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:4px 0 0; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; border:1px solid var(--border-strong); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
