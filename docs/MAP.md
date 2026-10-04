@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,027 lines** in 35 files, about 594 KB, roughly **169 thousand tokens**. No session can
+The source is **9,047 lines** in 35 files, about 596 KB, roughly **169 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `e43f00a` on 2026-10-04.
+Generated from commit `c9bc5c3` on 2026-10-04.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `e43f00a` on 2026-10-04.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **625** top-level functions, **105** top-level vars, **365** exported names, **19** boots.
+Counts: **31** modules, **628** top-level functions, **105** top-level vars, **366** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -46,7 +46,7 @@ Counts: **31** modules, **625** top-level functions, **105** top-level vars, **3
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
-| `js/ai-insights.ts` | 103 | 19 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `roster` |
+| `js/ai-insights.ts` | 123 | 22 | `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
 | `js/cycle-analysis.ts` | 273 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -297,7 +297,7 @@ falls in. **export** marks a name other modules import.
 | 18 | `monthIndex` | `function monthIndex(` |
 | 19 | `cpiTrend` | `function cpiTrend(` |
 | 26 | `cpiYear` | `function cpiYear(` |
-| 30 | `GROWTH_WINDOW` | `var GROWTH_WINDOW =` |
+| 30 | `GROWTH_WINDOW` · export | `var GROWTH_WINDOW =` |
 | 31 | `growthWindowWord` · export | `function growthWindowWord(` |
 | 32 | `readSeason` | `function readSeason(` |
 | 52 | `SEASON_YEARS` | `var SEASON_YEARS =` |
@@ -843,16 +843,19 @@ falls in. **export** marks a name other modules import.
 | 27 | `quartersOf` | `function quartersOf(` |
 | 33 | `quarterly` | `function quarterly(` |
 | 43 | `cycleOfYear` | `function cycleOfYear(` |
-| 45 | `panel` | `function panel(` |
-| 46 | `buildPanel` | `function buildPanel(` |
-| 59 | `zGaps` | `function zGaps(` |
-| 61 | `echoes` · export | `function echoes(` |
-| 71 | `thenWords` | `function thenWords(` |
-| 78 | `pairWords` | `function pairWords(` |
-| 79 | `echoLine` | `function echoLine(` |
-| 87 | `asOfWords` | `function asOfWords(` |
-| 91 | `aiDetail` | `function aiDetail(` |
-| 97 | `aiInsights` · export | `function aiInsights(` |
+| 44 | `qIdx` | `function qIdx(` |
+| 45 | `qName` | `function qName(` |
+| 46 | `carried` | `function carried(` |
+| 53 | `panel` | `function panel(` |
+| 54 | `buildPanel` | `function buildPanel(` |
+| 69 | `pathGap` | `function pathGap(` |
+| 79 | `echoes` · export | `function echoes(` |
+| 91 | `thenWords` | `function thenWords(` |
+| 98 | `pairWords` | `function pairWords(` |
+| 99 | `echoLine` | `function echoLine(` |
+| 107 | `asOfWords` | `function asOfWords(` |
+| 111 | `aiDetail` | `function aiDetail(` |
+| 117 | `aiInsights` · export | `function aiInsights(` |
 
 ### `js/charts.ts`
 

@@ -10,7 +10,7 @@
     { "title": "The market",
       "text": "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired." }
   ],
-  "echoIntro": "Matched on eight market and economy readings against every quarter since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
+  "echoIntro": "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
   "figures": {
     "age": "length",
     "bull": "bull",

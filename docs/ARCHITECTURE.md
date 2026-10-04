@@ -644,8 +644,12 @@ emotion at the closing month, its years, and what followed a year later. Every l
   them is a `{token}` that `figures` maps to a Cycle analysis lab, so the card prints the open cycle's figure from
   `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
   to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
-  quarters, annual ones held across their year), z-scores each over 1970 to today, and ranks every quarter before the
-  open cycle by root-mean-square gap to today's lab values; each cycle keeps its closest quarter. The card shows the top
+  quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
+  scales each by its spread since 1970, and matches a path, not a point: the last `GROWTH_WINDOW` quarters (the season
+  model's two years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
+  A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue; the path
+  separates them (Keren: "COVID-19 is not the same … 1999 and 2018 is good"). Matches closer together than the window
+  are one episode, shown once by its closest quarter. The card shows the top
   three; More details holds the method and the top eight.
 - **One vocabulary** (V686, Keren's "Switch"): the Diagnosis names the Mood page's emotion, the cycle of market
   emotions' stage (see Mood and season below). `diagnoseToday` reads `moodToday`; `diagnoseClose` reads the

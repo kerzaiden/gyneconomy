@@ -34502,7 +34502,7 @@
       title: "The market",
       text: "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired."
     } ],
-    echoIntro: "Matched on eight market and economy readings against every quarter since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
+    echoIntro: "Matched on how the last two years of eight market and economy readings unfolded, against every two-year run since 1970, these are the moments today most resembles. Resemblance only: what followed them is not part of the match.",
     figures: {
       age: "length",
       bull: "bull",
@@ -34571,72 +34571,109 @@
       return y >= c.from && y <= (c.to || y);
     })[0];
   }
+  function qIdx(q) {
+    return +q.slice(0, 4) * 4 + +q.slice(6) - 1;
+  }
+  function qName(i) {
+    return Math.floor(i / 4) + " Q" + (i % 4 + 1);
+  }
+  function carried(s, to) {
+    var out = {}, last = -1;
+    Object.keys(s).forEach(function(q) {
+      out[qIdx(q)] = s[q];
+      last = Math.max(last, qIdx(q));
+    });
+    for (var i = last + 1; i <= to; i++) out[i] = out[last];
+    return out;
+  }
   var panelCache = null;
   function panel() {
     return panelCache || (panelCache = buildPanel());
   }
   function buildPanel() {
-    var ids = ai_insights_default.echo, series = ids.map(quarterly), open = marketCycles[openIdx()], rows = [];
-    Object.keys(series[0]).sort().forEach(function(q) {
-      var v = series.map(function(s) {
-        return s[q];
-      });
-      if (+q.slice(0, 4) >= ECHO_FROM && v.every(function(x) {
-        return x != null;
-      })) rows.push({
-        q: q,
-        v: v
-      });
-    });
-    var now2 = ids.map(function(id) {
+    var ids = ai_insights_default.echo, raw = ids.map(quarterly), nowI = Math.max.apply(null, raw.map(function(s) {
+      return Math.max.apply(null, Object.keys(s).map(qIdx));
+    }));
+    var series = raw.map(function(s) {
+      return carried(s, nowI);
+    }), now2 = ids.map(function(id) {
       return labOf(id).per[openIdx()];
     });
-    var scale = ids.map(function(_, i) {
-      var vs = rows.map(function(r) {
-        return r.v[i];
+    var rows = {};
+    for (var i = ECHO_FROM * 4; i <= nowI; i++) {
+      var v = i === nowI ? now2 : series.map(function(s) {
+        return s[i];
+      });
+      if (v.every(function(x) {
+        return x != null;
+      })) rows[i] = v;
+    }
+    var all = Object.keys(rows).map(function(k) {
+      return rows[+k];
+    });
+    var scale = ids.map(function(_, r) {
+      var vs = all.map(function(v2) {
+        return v2[r];
       }), m = vs.reduce(function(a, b) {
         return a + b;
       }, 0) / vs.length;
-      return {
-        m: m,
-        s: Math.sqrt(vs.reduce(function(a, b) {
-          return a + (b - m) * (b - m);
-        }, 0) / vs.length)
-      };
+      return Math.sqrt(vs.reduce(function(a, b) {
+        return a + (b - m) * (b - m);
+      }, 0) / vs.length);
     });
     return {
-      rows: rows.filter(function(r) {
-        return +r.q.slice(0, 4) < open.from;
-      }),
+      rows: rows,
       now: now2,
-      scale: scale
+      nowI: nowI,
+      scale: scale,
+      open: marketCycles[openIdx()].from * 4
     };
   }
-  function zGaps(p, v) {
-    return v.map(function(x, i) {
-      return (x - p.now[i]) / p.scale[i].s;
+  function pathGap(p, k) {
+    var per = p.scale.map(function() {
+      return 0;
     });
+    for (var j = 0; j < GROWTH_WINDOW; j++) {
+      var a = p.rows[k - j], b = p.rows[p.nowI - j];
+      if (!a || !b) return null;
+      a.forEach(function(x, r) {
+        var z = (x - b[r]) / p.scale[r];
+        per[r] += z * z / GROWTH_WINDOW;
+      });
+    }
+    return {
+      gap: Math.sqrt(per.reduce(function(x, y) {
+        return x + y;
+      }, 0) / per.length),
+      per: per.map(Math.sqrt)
+    };
   }
   var echoCache = null;
   function echoes() {
     if (echoCache) return echoCache;
-    var p = panel(), best = {};
-    p.rows.forEach(function(r) {
-      var g = zGaps(p, r.v), gap = Math.sqrt(g.reduce(function(a, b) {
-        return a + b * b;
-      }, 0) / g.length), c = cycleOfYear(+r.q.slice(0, 4));
-      if (c && (!best[c.name] || gap < best[c.name].gap)) best[c.name] = {
-        q: r.q,
-        cycle: c,
-        gap: gap,
-        then: r.v
+    var p = panel(), seen = [];
+    Object.keys(p.rows).map(Number).filter(function(k) {
+      return k < p.open;
+    }).map(function(k) {
+      var g = pathGap(p, k);
+      return g && {
+        q: qName(k),
+        i: k,
+        cycle: cycleOfYear(Math.floor(k / 4)),
+        gap: g.gap,
+        per: g.per,
+        then: p.rows[k]
       };
-    });
-    echoCache = Object.keys(best).map(function(k) {
-      return best[k];
+    }).filter(function(e) {
+      return !!e && !!e.cycle;
     }).sort(function(a, b) {
       return a.gap - b.gap;
+    }).forEach(function(e) {
+      if (seen.every(function(s) {
+        return Math.abs(s.i - e.i) >= GROWTH_WINDOW;
+      })) seen.push(e);
     });
+    echoCache = seen;
     return echoCache;
   }
   function thenWords(e) {
@@ -34654,10 +34691,10 @@
     return l.name + " (" + fmt(l, then) + " then, " + fmt(l, now2) + " now)";
   }
   function echoLine(e) {
-    var p = panel(), g = zGaps(p, e.then), order = g.map(function(x, i) {
+    var p = panel(), order = e.per.map(function(x, i) {
       return i;
     }).sort(function(a, b) {
-      return Math.abs(g[a]) - Math.abs(g[b]);
+      return e.per[a] - e.per[b];
     });
     var say2 = function(i) {
       return pairWords(labOf(ai_insights_default.echo[i]), e.then[i], p.now[i]);
@@ -34670,10 +34707,12 @@
     return d[2] + " " + MONTH_NAMES[d[1] - 1] + " " + d[0];
   }
   function aiDetail() {
-    var p = panel(), list = echoes().slice(0, 8);
-    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>The closest moments are found by matching today’s readings of (" + listWords(ai_insights_default.echo.map(function(id) {
+    var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
       return labOf(id).name;
-    })) + ") against every quarter since " + ECHO_FROM + " before this cycle, " + p.rows.length + " in all. Each reading is scaled by its own spread over the record, each counts equally, and the quarter with the smallest average gap is the closest; each cycle shows its closest quarter. This is the nearest-neighbour method of analog matching; the choice of readings and the equal weights are Claude’s.</p><p>" + list.map(function(e) {
+    }));
+    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + growthWindowWord() + " quarters of " + names + ", the same two years the season model reads growth over, against every run of " + growthWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
+      return +k < p.open;
+    }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + growthWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
   }

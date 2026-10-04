@@ -78,9 +78,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Claude writes it (Keren chose "Claude, dated" over a live Generate button, which would change the artifact's grant,
   and over rule-built sentences, which the name would oversell): a lede, The cycle, The economy, The market, dated
   "Written by Claude from the app's data of …", its figures read live and its words rewritten each release. Its
-  Closest moments are computed: today's eight market and economy readings matched against every quarter since 1970
-  (nearest-neighbour analog matching; the readings and the equal weights are Claude's), each cycle's closest quarter,
-  with its season and mood then, what is alike and what is apart. Resemblance only, never what followed. (0.6.5)
+  Closest moments are computed: the last two years of today's eight market and economy readings matched against every
+  two-year run since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment
+  per episode, with its season and mood then, what is alike and what is apart. Resemblance only, never what followed.
+  Matching one quarter alone put COVID-19's 2021 Q1 first; Keren: "COVID-19 is not the same … your analysis about 1999
+  and 2018 is good … improve it", so the match reads the path that led there. (0.6.5)
 - **The Buffett indicator is "Buffett indicator" wherever it is named: its card, its Search row, its meter row and
   its page's (i).** One reading, one name. The chart head keeps the heads' title case ("Buffett Indicator, Market
   Value ÷ GDP"). (V670)
