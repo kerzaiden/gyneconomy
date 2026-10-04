@@ -126,6 +126,10 @@ export function subjectRow(o: SubjectRowOpts){
       '<div class="subject-more">' + CHEV + '</div>' +
     '</div></div>';
 }
+export function catHeadCard(cls: string, key: string, head: { tag: string; cls: string; attrs: string; name: string; aside: string }, body: string){
+  return '<section class="' + cls + ' ind-card cat-' + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + '</span>' +
+    head.aside + '</' + head.tag + '>' + body + '</section>';
+}
 export function subjectIcon(state: string, svg: string){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
 function timingMark(kind: string){
   var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;

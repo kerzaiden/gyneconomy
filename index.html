@@ -417,11 +417,13 @@
   .ind-tabs .range-seg{ flex:1 1 auto; padding:7px 4px; }
   .ind-cat{ margin-top:var(--gap-top); }
   .ind-cat[hidden], .ind-row[hidden]{ display:none; }
-  .ind-cat-head{ display:flex; align-items:center; gap:8px; width:100%; margin:0; padding:14px 16px 12px; border:0;
+  .cat-head{ display:flex; align-items:center; gap:8px; margin:0; padding:14px 16px 12px; border:0;
     border-bottom:1px solid color-mix(in srgb, var(--cat) 22%, var(--border));
-    background:color-mix(in srgb, var(--cat) 8%, var(--surface)); text-align:left; cursor:pointer; }
+    background:color-mix(in srgb, var(--cat) 8%, var(--surface)); }
+  .ind-cat-head{ width:100%; text-align:left; cursor:pointer; }
   .ind-cat-name{ flex:1; font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-weight:600;
-    font-size:var(--type-reading-head); line-height:1.1; color:color-mix(in srgb, var(--cat) 70%, var(--text-primary)); }
+    font-size:var(--type-reading-head); line-height:1.1; letter-spacing:0; text-transform:none; color:color-mix(in srgb, var(--cat) 70%, var(--text-primary)); }
+  .ind-cat-name small{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-label); color:var(--text-muted); }
   .ind-cat-head .peek-chev{ color:var(--cat); opacity:0.7; }
   .ind-cat-head:hover{ background:color-mix(in srgb, var(--cat) 13%, var(--surface)); }
   .ind-cat-head:hover .peek-chev{ opacity:1; }
@@ -1052,7 +1054,8 @@
   .ca-line.near{ stroke-opacity:.8; stroke-width:2.5; }
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
-  .cat-analysis .more-row{ margin-top:20px; }
+  .cat-analysis .more-row, .labs .more-row{ margin-top:20px; }
+  .labs{ font-family:"Public Sans",sans-serif; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; border:1px solid var(--border-strong); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
@@ -1064,13 +1067,16 @@
   [data-show="abnormal"] .labs :is(.lab-item:not(.t-abnormal), .lab-sec:not(:has(.t-abnormal))),
   [data-show="borderline"] .labs :is(.lab-item:not(.t-borderline), .lab-sec:not(:has(.t-borderline))),
   [data-show="optimal"] .labs :is(.lab-item:not(.t-optimal), .lab-sec:not(:has(.t-optimal))){ display:none; }
-  .lab-sec:first-child h2{ margin-top:0; }
-  .lab-sec h2{ display:flex; justify-content:space-between; gap:10px; margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  :where(.lab-sec){ --cat:var(--text-muted); }
+  .lab-sec + .lab-sec{ margin-top:14px; }
+  .lab-sec h2{ justify-content:space-between; align-items:baseline; gap:10px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
-  .lab-item{ --tier:var(--good); position:relative; display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0 11px 13px; border-bottom:1px solid var(--border); }
+  .lab-item{ --tier:var(--good); display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 16px; border-bottom:1px solid var(--border); }
+  .lab-item:last-child{ border-bottom:0; }
   .lab-item.t-borderline{ --tier:var(--season-autumn); }
   .lab-item.t-abnormal{ --tier:var(--critical); }
-  .lab-item::before{ content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:2px; background:var(--tier); }
+  .lab-res b::before{ content:""; display:inline-block; width:8px; height:8px; margin-right:8px; border-radius:50%; vertical-align:1px; background:var(--tier); }
+  .lab-item:not(.t-optimal) .lab-where{ font-weight:500; color:color-mix(in srgb, var(--tier) 75%, var(--text-primary)); }
   .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
   .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
   .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
@@ -1535,7 +1541,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.5.3 (737)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.0 (738)</span></p>
     </div>
   </div>
 
@@ -32809,6 +32815,9 @@
   function subjectRow(o) {
     return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
   }
+  function catHeadCard(cls, key, head, body) {
+    return '<section class="' + cls + " ind-card cat-" + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + "</span>" + head.aside + "</" + head.tag + ">" + body + "</section>";
+  }
   function subjectIcon(state2, svg) {
     return '<div class="subject-icon"><span class="' + state2 + '">' + svg + "</span></div>";
   }
@@ -34165,11 +34174,15 @@
       return c.key === key;
     })[0].title;
   }
+  function where(l, i) {
+    var v = l.per[i], n = normAt(l, i), side = v > n.hi ? "above" : v < n.lo ? "below" : "";
+    return !side ? "In range" : state(l, i) ? "Far " + side + " range" : cap(side) + " range";
+  }
   function labItem(l, i) {
-    var st = state(l, i), n = normAt(l, i);
+    var n = normAt(l, i);
     return '<li class="lab-item ' + TIERS.filter(function(t) {
       return t.key === tier(l, i);
-    })[0].cls + '"><div><b>' + l.name + '</b></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>" + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></li>";
+    })[0].cls + '"><div><b>' + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + "</b><small>" + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -34178,6 +34191,17 @@
   function scoreBox(i) {
     var s = score(i);
     return '<span class="lab-score"><span><b>Health score</b><small>' + s.of + ' readings</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
+  }
+  function labSec(k, ls, i) {
+    return catHeadCard("lab-sec", k, {
+      tag: "h2",
+      cls: "",
+      attrs: "",
+      name: catTitle(k) + " <small>(" + ls.length + ")</small>",
+      aside: "<span>Normal range</span>"
+    }, "<ul>" + ls.map(function(l) {
+      return labItem(l, i);
+    }).join("") + "</ul>");
   }
   function bySystem(i, j) {
     var rank = TIERS.map(function(t) {
@@ -34191,9 +34215,7 @@
       }).sort(function(a, b) {
         return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
       });
-      return ls.length ? '<section class="lab-sec"><h2>' + catTitle(k) + "<span>Normal range</span></h2><ul>" + ls.map(function(l) {
-        return labItem(l, i);
-      }).join("") + "</ul></section>" : "";
+      return ls.length ? labSec(k, ls, i) : "";
     }).join("");
   }
   var shown = {
@@ -34262,7 +34284,7 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How the health chart reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How the health chart reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range or Below range says where it sits, and Far above or Far below marks Risk.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her health chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   var CHART_ID = "sheet-cycle-chart";
   var CHART_NAME = "Health chart";
@@ -34275,7 +34297,7 @@
     if (!sheet || !c) return;
     sheet.setAttribute("data-show", shown.tier);
     var i = marketCycles.indexOf(c), j = judged(i);
-    sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) + '<div class="cat-analysis cat-mood labs">' + bySystem(i, j) + moreRow(chartDetail()) + "</div>";
+    sheet.innerHTML = histBar(cycleControls(CHART_ID) + tierTabs(i, j)) + '<div class="labs">' + bySystem(i, j) + moreRow(chartDetail()) + "</div>";
   }
   function buildCycleChart(home) {
     page.mode[CHART_ID] = "cycles";
@@ -37005,7 +37027,13 @@
     var key = c.key, sheet = byId("sheet-cat-" + key);
     if (!sheet) return "";
     var rows = indRows(sheet, find);
-    return '<section class="ind-cat ind-card cat-' + key + '"><button type="button" class="ind-cat-head" data-open="sheet-cat-' + key + '" data-title="' + c.title + '"><span class="ind-cat-name">' + c.title + "</span>" + CHEV + "</button>" + rows.join("") + "</section>";
+    return catHeadCard("ind-cat", key, {
+      tag: "button",
+      cls: "ind-cat-head ",
+      attrs: ' type="button" data-open="sheet-cat-' + key + '" data-title="' + c.title + '"',
+      name: c.title,
+      aside: CHEV
+    }, rows.join(""));
   }
   var NAV = {
     open: null,
