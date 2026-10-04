@@ -76,6 +76,9 @@ export var detailClose: (() => void) | null = null;
 // ---- A season strip and the economy's chips, shared by the cycle list and the Diagnosis's years ----
 export type StripRun = { g: string; n: number; from: string; to: string; seasons: Record<string, boolean> };
 var stripGroupName: Record<string, string> = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
+export function strip(cls: string, label: string, inner: string){
+  return '<span class="strip' + cls + '" role="img" aria-label="' + label + '">' + inner + '</span>';
+}
 export function stripDots(n: number, title: string){
   return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + '</span>' : "";
 }
@@ -93,6 +96,15 @@ export function seasonPills(runs: StripRun[], whole: boolean){
     var names = Object.keys(r.seasons).map(function(k){ return seasonTitle(wheelMeta[k as Season]); }).join(" · ");
     return '<span class="strip-run ' + r.g + (r.n === 1 && !whole ? ' one' : '') + '" style="' +
       'flex:' + r.n + ' 1 0' + '" title="' + stripGroupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
+  }).join("");
+}
+export type MarketRun = { dir: string; ytd: boolean | undefined; q: number; from: number; to: number };
+export function marketPills(runs: MarketRun[]){
+  return runs.map(function(r){
+    var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
+    return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' +
+      "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " +
+      (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
   }).join("");
 }
 export function seasonRunsLabel(runs: StripRun[]){

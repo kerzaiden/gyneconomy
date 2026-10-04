@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0be82ac` on 2026-10-04. **86 components**, **40 shared patterns**.
+Generated from commit `4c0e99f` on 2026-10-04. **86 components**, **39 shared patterns**.
 
 ## analysis.ts
 
@@ -240,6 +240,7 @@ renderer speaks. Listed most-used first.
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
+| **`strip`** | render-core.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`detailSlot`** | dom.ts | 4 places |
@@ -307,15 +308,14 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.unit` | 5 | `pages-nav.ts:renderSignsList`, `render-core.ts:econChips`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows` |
 | `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
-| `.strip` | 4 | `diagnosis.ts:yearStrip`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml`, `portfolio.ts:weatherStrip` |
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.cat-analysis` | 3 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:drawChart`, `portfolio.ts:methodPage` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
-| `.strip-run` | 3 | `dial-cycle.ts:marketStripHtml`, `portfolio.ts:weatherStrip`, `render-core.ts:seasonPills` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
+| `.strip-run` | 3 | `portfolio.ts:weatherStrip`, `render-core.ts:marketPills`, `render-core.ts:seasonPills` |
 | `.ca-say` | 2 | `category-analysis.ts:analysisHtml`, `portfolio.ts:say` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |

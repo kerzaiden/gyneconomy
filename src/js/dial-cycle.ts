@@ -5,7 +5,8 @@ import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-se
 import { gdpSrc, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { seasonPills, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
+import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
+import type { MarketRun } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
@@ -15,7 +16,6 @@ type CycleModel = ReturnType<typeof cycleModel>;
 type DialQuarter = { seg: TrackSeg; a0: number; a1: number; mid: number };
 type DialState = { m: CycleModel; quarters: DialQuarter[]; badgeDeg: number; badgeAt: number; polar: (r: number, deg: number) => string[]; parked: number | null; sheets: Record<number, string> };
 type HubOpen = { cat?: (typeof CATEGORIES)[number]; html?: string } | null;
-type MarketRun = { dir: string; ytd: boolean | undefined; q: number; from: number; to: number };
 
 // ---- the dial: one ring of moons, the market band inside, the year badge, the dots of a typical cycle ahead ----
 function drawDial(m: CycleModel){
@@ -296,7 +296,7 @@ export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
       ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
       : '<b>' + Math.round(m.elapsedYears) + ' years</b> · ended in <b>' + wheelMeta[lastSeg.season].name + '</b>';
     return { span:span, done:done, years:(cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears)),
-             strip:'<div class="strip" role="img" aria-label="' + (lead ? 'No season ' + lead + ' quarters, ' : '') + seasonRunsLabel(runs) + '">' + pills + '</div>',
+             strip:strip("", (lead ? 'No season ' + lead + ' quarters, ' : '') + seasonRunsLabel(runs), pills),
              foot:foot };
   })();
 }
@@ -321,16 +321,10 @@ export function marketStripHtml(cyc: Cycle, spanQ?: number, doneQ?: number){
   var done = runs.reduce(function(a, r){ return a + r.q; }, 0);
   var span = Math.max(spanQ || 0, done);
   var ahead = Math.max(0, span - done);
-  var pills = runs.map(function(r){
-    var when = r.from === r.to ? String(r.from) : r.from + "–" + r.to;
-    return '<span class="strip-run mkt-' + r.dir + (r.ytd ? " ytd" : "") + (r.q <= 1 ? " one" : "") + '" style="' +
-      "flex:" + Math.max(r.q, 1) + " 1 0" + '" title="' + when + " · S&P 500 " +
-      (r.dir === "up" ? "up" : "down") + (r.ytd ? " so far" : "") + '"></span>';
-  }).join("");
+  var pills = marketPills(runs);
   pills += stripDots(ahead, aheadWord(cyc));
-  return '<div class="strip mkt-strip" role="img" aria-label="S&P 500 by year: ' +
-    runs.map(function(r){ return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir; }).join(", ") +
-    '">' + pills + "</div>";
+  return strip(" mkt-strip", "S&P 500 by year: " +
+    runs.map(function(r){ return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir; }).join(", "), pills);
 }
 var STRIP_MIN_RATIO = 1.5;
 export function settleStrips(){
