@@ -1,15 +1,15 @@
-import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, srcBlock, tagFor } from "./format.ts";
+import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, tagFor } from "./format.ts";
 import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
-import { dataCompiledLabel } from "./refresh-season.ts";
+import { dataCompiledLabel, wheelMeta } from "./refresh-season.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
-import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime } from "./model.ts";
+import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime, seasonGroup, seasonTitle } from "./model.ts";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
 import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
 import { heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
 import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
-import type { ModelReading } from "./model.ts";
+import type { ModelReading, TrackSeg } from "./model.ts";
 export var catSnap: Record<string, Node> = {};
 export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
 type YieldPt = { q: string; v: number | null; latest?: boolean };
@@ -73,6 +73,36 @@ function wireDetailModal(){
   });
 }
 export var detailClose: (() => void) | null = null;
+// ---- A season strip and the economy's chips, shared by the cycle list and the Diagnosis's years ----
+export type StripRun = { g: string; n: number; from: string; to: string; seasons: Record<string, boolean> };
+var stripGroupName: Record<string, string> = { winter:"Winter", spring:"Spring", summer:"Summer", autumn:"Autumn" };
+export function stripDots(n: number, title: string){
+  return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + '</span>' : "";
+}
+export function seasonRuns(segs: TrackSeg[]){
+  var runs: StripRun[] = [];
+  segs.forEach(function(seg){
+    var g = seasonGroup(seg.season), last = runs[runs.length - 1];
+    if (!last || last.g !== g) runs.push(last = { g:g, n:0, from:seg.q, to:seg.q, seasons:{} });
+    last.n++; last.to = seg.q; last.seasons[seg.season] = true;
+  });
+  return runs;
+}
+export function seasonPills(runs: StripRun[], whole: boolean){
+  return runs.map(function(r){
+    var names = Object.keys(r.seasons).map(function(k){ return seasonTitle(wheelMeta[k as Season]); }).join(" · ");
+    return '<span class="strip-run ' + r.g + (r.n === 1 && !whole ? ' one' : '') + '" style="' +
+      'flex:' + r.n + ' 1 0' + '" title="' + stripGroupName[r.g] + ' · ' + (r.n === 1 ? qLabel(r.from) : qLabel(r.from) + ' – ' + qLabel(r.to)) + ' · ' + names + '"></span>';
+  }).join("");
+}
+export function seasonRunsLabel(runs: StripRun[]){
+  return runs.map(function(r){ return stripGroupName[r.g] + ' ' + r.n + (r.n === 1 ? ' quarter' : ' quarters'); }).join(', ');
+}
+export function econChips(growth: number | null, prices: number | null, market: number | null, digits: number, soFar: boolean, cls: string){
+  function chip(label: string, v: number | null, unit: string){ return v == null ? "" : '<span class="chip"><i>' + label + '</i>' + fmtSigned(v, digits) + '%' + unit + '</span>'; }
+  return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") +
+    chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + '</span></span>';
+}
 // ---- THE SUBJECT ROW ----
 export function subjectRow(o: SubjectRowOpts){
   return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +

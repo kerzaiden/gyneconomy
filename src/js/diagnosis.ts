@@ -2,10 +2,11 @@ import { CHEV, fmtSigned, seasonName } from "./format.ts";
 import { addSources, byId, detailSlot, trendDoor, trendText } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { bookSvg, calendarSvg } from "./marks.ts";
-import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
+import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
-import { diagnoseToday, moodToday, moodTrack, nowModel, seasonGroup, yearAfter } from "./model.ts";
+import { diagnoseToday, nowModel, seasonGroup, yearAfter, yearGrowth, yearInflation } from "./model.ts";
+import { econChips, seasonPills, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
 import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import type { CycleModel } from "./model.ts";
@@ -26,32 +27,21 @@ function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY;
-    rows.push(yearRow(String(y), seasonsIn(inYear), [moodIn(y, ytd), marketIn(y, ytd)].filter(function(p){ return p; }).join(" \u00b7 "),
-      inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined));
+    rows.push(yearRow(String(y), yearStrip(inYear), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
+      econChips(yearGrowth(y), yearInflation(y), sp500AnnualReturns[y] ?? null, 0, ytd, " dx-year-foot")));
   }
   return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
     rows.join("") + after + '</section>';
 }
-function yearRow(year: string, lead: string, line: string, sheet?: string){
+function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
   return '<' + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '">' +
     '<span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + '</span>' : "") +
-    (line ? '<span class="dx-year-line">' + line + '</span>' : "") + '</span>' + (sheet != null ? CHEV : "") + '</' + tag + '>';
+    (line ? '<span class="dx-year-line">' + line + '</span>' : "") + '</span>' + (sheet != null ? CHEV : "") + (foot || "") + '</' + tag + '>';
 }
-function seasonsIn(inYear: CycleModel["track"]){
-  var seasons: string[] = [];
-  inYear.forEach(function(seg){ var n = wheelMeta[seg.season].name; if (seasons[seasons.length - 1] !== n) seasons.push(n); });
-  return seasons.join(", then ");
-}
-function moodIn(y: number, ytd: boolean){
-  var moods = moodTrack().filter(function(x){ return !!x.word && +x.m.slice(0, 4) === y; }).map(function(x){ return x.word as string; });
-  var today = ytd ? moodToday() : null;
-  if (today && today.word) moods.push(today.word);
-  return moods.length ? (moods[0] === moods[moods.length - 1] ? moods[0] : moods[0] + " to " + moods[moods.length - 1]) : "";
-}
-function marketIn(y: number, ytd: boolean){
-  var ret = sp500AnnualReturns[y];
-  return ret != null ? "S&amp;P&nbsp;500 <b>" + fmtSigned(ret, 1) + "%</b>" + (ytd ? " so far" : "") : "";
+function yearStrip(inYear: CycleModel["track"]){
+  var runs = seasonRuns(inYear);
+  return '<span class="strip" role="img" aria-label="' + seasonRunsLabel(runs) + '">' + seasonPills(runs, true) + stripDots(4 - inYear.length, "not yet run") + '</span>';
 }
 function moodDoor(head: string, body: string){
   var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];

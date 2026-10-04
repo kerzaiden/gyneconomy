@@ -248,12 +248,18 @@ export function totalRiseIn(vals: MonthPoint[]){
   var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
   return { years:years, total:(factor - 1) * 100 };
 }
+export function yearInflation(y: number){
+  var dec = y === calendarTodayY ? null : cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
+  return dec ? dec.v : null;
+}
+export function yearGrowth(y: number){
+  return y !== calendarTodayY && usRealGdpGrowth[y] !== undefined ? usRealGdpGrowth[y] : null;
+}
 export function eraInflation(cyc: Cycle){
   var years: number[] = [], rates: number[] = [];
   for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
-    if (y === calendarTodayY) continue;
-    var dec = cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
-    if (dec){ years.push(y); rates.push(dec.v); }
+    var v = yearInflation(y);
+    if (v != null){ years.push(y); rates.push(v); }
   }
   var factor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
   return { years:years, rates:rates, total:(factor - 1) * 100 };
@@ -261,9 +267,9 @@ export function eraInflation(cyc: Cycle){
 export function eraGrowth(cyc: Cycle){
   var years: number[] = [];
   for (var y = cyc.from; y <= (cyc.to || calendarTodayY); y++){
-    if (y !== calendarTodayY && usRealGdpGrowth[y] !== undefined) years.push(y);
+    if (yearGrowth(y) != null) years.push(y);
   }
-  var rates = years.map(function(y){ return usRealGdpGrowth[y]; });
+  var rates = years.map(function(y){ return yearGrowth(y) as number; });
   var growthFactor = rates.reduce(function(f, g){ return f * (1 + g / 100); }, 1);
   var n = rates.length;
   var cagr = n ? (Math.pow(growthFactor, 1 / n) - 1) * 100 : 0;

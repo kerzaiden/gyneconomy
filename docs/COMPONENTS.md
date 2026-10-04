@@ -8,13 +8,13 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4a23aab` on 2026-10-04. **83 components**, **37 shared patterns**.
+Generated from commit `141c45a` on 2026-10-04. **84 components**, **37 shared patterns**.
 
 ## analysis.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`cycleRowsHtml`** | `.chip` `.era-bands` `.era-econ` `.era-foot` `.era-head` `.era-name` `.era-row` `.era-years` | `analysis.ts:renderCycleList` |
+| **`cycleRowsHtml`** | `.era-bands` `.era-head` `.era-name` `.era-row` `.era-years` | `analysis.ts:renderCycleList` |
 | **`eraCard`** | `.ci-word` | `analysis.ts:eraCards` |
 
 ## category-analysis.ts
@@ -77,7 +77,6 @@ Generated from commit `4a23aab` on 2026-10-04. **83 components**, **37 shared pa
 | **`drawDial`** | `.cap` `.dial-dot` `.dial-mkt` `.dial-moon` `.dial-peak` `.dial-today-badge` `.dial-track` `.disc` `.dot` `.lbl` `.num` | `dial-cycle.ts:renderCycleView` |
 | **`hubSet`** | `.hub-chev` `.hub-stage` | `dial-cycle.ts:hubShowDefault`, `dial-cycle.ts:hubShowQuarter` |
 | **`renderCycleKicker`** | `.bar` `.info-btn` `.legend-head` `.legend-row` `.legend-rows` `.season-sw` `.ytd` | `dial-cycle.ts:bootDialCycle` |
-| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 
 ## dom.ts
 
@@ -165,9 +164,11 @@ Generated from commit `4a23aab` on 2026-10-04. **83 components**, **37 shared pa
 |---|---|---|
 | **`cardDetailHtml`** | `.blood-card` `.metric` `.metric-row` `.metric-sub` | `pages-nav.ts:renderSignsList` |
 | **`catCard`** | `.cat-item` `.ci-body` `.ci-head` `.ci-mini` `.ci-name` `.ci-read` `.ci-unit` `.ci-value` `.ci-when` | `quarter-sheet.ts:quarterCards`, `render-core.ts:catItem` |
+| **`econChips`** | `.chip` `.era-econ` | `analysis.ts:cycleRowsHtml`, `diagnosis.ts:yearByYear` |
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `cycle-analysis.ts:buildCycleChart`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
+| **`stripDots`** | `.strip-dots` | `diagnosis.ts:yearStrip`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `indicators.ts:splitPeek`, `pages-nav.ts:indGroupRow`, `pages-nav.ts:registerRoster`, `pages-nav.ts:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.ts:indRow`, `pages-nav.ts:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.ts:timingPill` |
@@ -198,7 +199,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 34 places |
 | **`need`** | dom.ts | 25 places |
 | **`put`** | dom.ts | 24 places |
-| **`fmtSigned`** | format.ts | 23 places |
+| **`fmtSigned`** | format.ts | 22 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 12 places |
 | **`publishGeom`** | charts.ts | 11 places |
@@ -208,9 +209,9 @@ renderer speaks. Listed most-used first.
 | **`lede`** | format.ts | 10 places |
 | **`monthLabel`** | format.ts | 10 places |
 | **`pageCycle`** | history.ts | 10 places |
+| **`qLabel`** | format.ts | 10 places |
 | **`attachHistory`** | history.ts | 9 places |
 | **`histControls`** | history.ts | 9 places |
-| **`qLabel`** | format.ts | 9 places |
 | **`factsFrom`** | format.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`focusQuiet`** | dom.ts | 8 places |
@@ -231,8 +232,6 @@ renderer speaks. Listed most-used first.
 | **`labRow`** | data.ts | 5 places |
 | **`layer`** | dom.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
-| **`moodToday`** | model.ts | 5 places |
-| **`moodTrack`** | model.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`curveAt`** | data.ts | 4 places |
@@ -241,6 +240,8 @@ renderer speaks. Listed most-used first.
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`isoDay`** | format.ts | 4 places |
 | **`keyed`** | roster.ts | 4 places |
+| **`moodToday`** | model.ts | 4 places |
+| **`moodTrack`** | model.ts | 4 places |
 | **`openCycle`** | model.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
@@ -292,15 +293,16 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.hcol` | 7 | `charts.ts:divergeChart`, `history-charts.ts:cpiHistoryChart`, `history-charts.ts:fedFundsHistoryChart`, `history-charts.ts:householdsChart`, `history-charts.ts:m2GrowthChart`, `history-charts.ts:unempHistoryChart`, `history-charts.ts:velocityHistoryChart` |
 | `.marker-sub` | 6 | `format.ts:popHead`, `indicators.ts:splitInfo`, `quarter-sheet.ts:quarterPopup`, `readings.ts:volatilityDetailHtml`, `render-core.ts:cardDetailHtml`, `render-pages.ts:renderValuationTag` |
 | `.tag` | 6 | `pages-nav.ts:renderSignsList`, `readings.ts:pulseBlock`, `render-core.ts:headHtml`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows`, `repaint.ts:paintTag` |
-| `.unit` | 5 | `analysis.ts:cycleRowsHtml`, `pages-nav.ts:renderSignsList`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows` |
 | `.highlights` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.hi-head` | 5 | `format.ts:highlightsHtml`, `render-core.ts:cardDetailHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
+| `.unit` | 5 | `pages-nav.ts:renderSignsList`, `render-core.ts:econChips`, `render-core.ts:renderPressureRow`, `render-pages.ts:renderHormones`, `render-pages.ts:renderSubjectRows` |
 | `.mono` | 4 | `charts.ts:fitGroup`, `charts.ts:histTip`, `readings.ts:pulseBlock`, `render-core.ts:cardDetailHtml` |
 | `.insights` | 4 | `format.ts:highlightsHtml`, `render-core.ts:renderPressureInsights`, `render-pages.ts:renderHormones`, `render-pages.ts:spreadInsights` |
 | `.pulsebox` | 4 | `readings.ts:deficitBlock`, `readings.ts:pulseBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.vh-host` | 4 | `readings.ts:activityStackHtml`, `readings.ts:deficitBlock`, `readings.ts:velocityRecordBlock`, `readings.ts:volumeBlock` |
 | `.peek-chart` | 3 | `charts.ts:colPeek`, `charts.ts:meterPeek`, `charts.ts:pulsePeek` |
 | `.peek-mark` | 3 | `charts.ts:peekCard`, `pages-nav.ts:convertLeadingSigns`, `render-core.ts:catCard` |
+| `.strip` | 3 | `diagnosis.ts:yearStrip`, `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
 | `.cycsel-nm` | 3 | `history.ts:cyclePicker`, `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.cat-analysis` | 2 | `category-analysis.ts:analysisHtml`, `cycle-analysis.ts:drawChart` |
 | `.vh-mean` | 2 | `charts.ts:meanRule`, `history-charts.ts:velocityHistoryChart` |
@@ -310,8 +312,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
 | `.dx-mark` | 2 | `diagnosis.ts:yearByYear`, `dom.ts:trendDoor` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |
-| `.strip-run` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
-| `.strip` | 2 | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
+| `.strip-run` | 2 | `dial-cycle.ts:marketStripHtml`, `render-core.ts:seasonPills` |
 | `.hi-card` | 2 | `format.ts:hiCard`, `render-core.ts:cardDetailHtml` |
 | `.cycsel-opt` | 2 | `history.ts:headMenuHtml`, `history.ts:headPickRow` |
 | `.cycsel-tick` | 2 | `history.ts:cyclePicker`, `history.ts:headPickRow` |

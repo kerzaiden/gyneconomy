@@ -648,8 +648,13 @@ then `#diagnosis` under it, in place of the four category cards (Keren: "I want 
 cycle page because we already have it in search and in the diagnosis"), as Clue sets its cycle-phase insights
 under its cycle view. It is two sibling cards inside `#diagnosis` (a flex column with the page gap): the trend card (the emotion in its
 season and the cycle's story, since V681) and, since 1.8.0, the `.dx-years` card, one `.dx-year` row a year from
-the cycle's first year to its last (`yearByYear`). A row reads the year's seasons from `m.track`, the first and last
-`moodTrack` words in its months (today's `moodToday` for the year in progress) and `sp500AnnualReturns`, and is a
+the cycle's first year to its last (`yearByYear`). Since 0.4.1 a row is the Analysis page's cycle row at the scale of
+a year (Keren: "just put a bar, a colored bar, like in the analysis page"): the year's quarters from `m.track` as a
+season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar
+since four quarters fill the row; dots for the quarters not yet run), and under it the same Growth, Prices and
+S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and `eraInflation`
+compound) and `sp500AnnualReturns`, whole percents as on the Analysis page; the year in progress has no Growth or
+Prices yet, as in the cycle totals. The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
 sits below both so neither imports the other. A closed cycle's card ends on **After**, the S&P 500's return in
 the calendar year after the close (`yearAfter`, from the same `sp500AnnualReturns` as the rows, so it reaches back to
