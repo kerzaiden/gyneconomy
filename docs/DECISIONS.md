@@ -430,9 +430,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Normal (green, the middle half of her closed cycles), Attention (yellow, outside it but within Tukey's fences) and
   Risk (red, past a fence), with a health score, the share that is Normal.** Tapping a cycle in Analysis opens it.
   Keren: "it's exactly like blood tests"; "if I press a cycle, then I'll get the blood test results of that specific
-  cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (this release)
+  cycle." The ranges are her own record's, and each says how many closed cycles it rests on. (0.2.0)
 - **The Show data grid (the years a reading sat where it sits today, and the health dots after it) is dropped.**
-  Keren: "I can't understand anything from it. Let's just drop it." (this release; it was V612, V656)
+  Keren: "I can't understand anything from it. Let's just drop it." (0.2.0; it was V612, V656)
 - **Rhymes is retired, and the proposed weather analysis was declined; don't bring either back.** Keren on the
   weather analysis: "not very informative - remove it". (V656)
 
@@ -707,7 +707,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   carries no state colour.** "The body is how an insight is explained, never how it is derived"; whether the
   two moving together is good is a judgement the card does not make. (V452)
 - **A past cycle's figure is printed the way today's card prints the reading: the same decimals, sign, suffix
-  and unit, on the cycle's card, in its Diagnosis at the close and in Show data's notes (Federal debt to one
+  and unit, on the cycle's card, and in its Diagnosis at the close (Federal debt to one
   decimal, CAPE and Pulse with ×, Growth and Volume signed, Volatility and Horizon with their units); the Federal
   budget says deficit or surplus, and its rank reads the same way.** Keren: one format per reading, whether today's
   figure or a cycle's close. (V670)

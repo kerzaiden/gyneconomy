@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **8,891 lines** in 33 files, about 580 KB, roughly **165 thousand tokens**. No session can
+The source is **8,888 lines** in 34 files, about 581 KB, roughly **165 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `a094849` on 2026-10-04.
+Generated from commit `c2d4bfc` on 2026-10-04.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `a094849` on 2026-10-04.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,348 | the whole stylesheet, every token and rule |
-| `page-body.html` | 385 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
-| `js/main.ts` | 29 modules | the entry: imports every module and calls their boots in order |
+| `styles.css` | 1,332 | the whole stylesheet, every token and rule |
+| `page-body.html` | 382 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `js/main.ts` | 30 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **29** modules, **557** top-level functions, **99** top-level vars, **340** exported names, **18** boots.
+Counts: **30** modules, **569** top-level functions, **100** top-level vars, **337** exported names, **18** boots.
 
 ## Modules, in boot order
 
@@ -39,17 +39,18 @@ Counts: **29** modules, **557** top-level functions, **99** top-level vars, **34
 | `js/roster.ts` | 148 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 563 | 37 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
-| `js/diagnosis.ts` | 78 | 11 | `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
+| `js/diagnosis.ts` | 79 | 11 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
-| `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
+| `js/analysis.ts` | 161 | 15 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/category-analysis.ts` | 165 | 22 | `charts`, `data`, `dom`, `format`, `history-fred`, `insights`, `model`, `refresh-season`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
+| `js/cycle-analysis.ts` | 127 | 27 | `data`, `dom`, `format`, `model`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `category-analysis`, `data`, `dom`, `format`, `history-charts`, `indicators`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
-| `js/era.ts` | 63 | 10 | `format`, `roster` |
-| `js/format.ts` | 79 | 37 | — |
+| `js/era.ts` | 42 | 6 | `format`, `roster` |
+| `js/format.ts` | 78 | 36 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 17 | 14 | — |
 | `js/indicators.ts` | 283 | 34 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -79,9 +80,9 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 10 | `bootRoster` | `js/roster.ts:135`–147 |
 | 11 | `bootRenderCore` | `js/render-core.ts:552`–562 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
-| 13 | `bootDiagnosis` | `js/diagnosis.ts:74`–77 |
+| 13 | `bootDiagnosis` | `js/diagnosis.ts:75`–78 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
-| 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
+| 15 | `bootAnalysis` | `js/analysis.ts:156`–160 |
 | 16 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
 | 17 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 18 | `bootRepaint` | `js/repaint.ts:65`–81 |
@@ -612,17 +613,17 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 14 | `DIAG_SRC` | `var DIAG_SRC =` |
-| 18 | `diagnosisHtml` | `function diagnosisHtml(` |
-| 24 | `yearByYear` | `function yearByYear(` |
-| 34 | `yearRow` | `function yearRow(` |
-| 40 | `seasonsIn` | `function seasonsIn(` |
-| 45 | `moodIn` | `function moodIn(` |
-| 51 | `marketIn` | `function marketIn(` |
-| 55 | `moodDoor` | `function moodDoor(` |
-| 60 | `trendText` | `function trendText(` |
-| 61 | `renderDiagnosis` · export | `function renderDiagnosis(` |
-| 65 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 15 | `DIAG_SRC` | `var DIAG_SRC =` |
+| 19 | `diagnosisHtml` | `function diagnosisHtml(` |
+| 25 | `yearByYear` | `function yearByYear(` |
+| 35 | `yearRow` | `function yearRow(` |
+| 41 | `seasonsIn` | `function seasonsIn(` |
+| 46 | `moodIn` | `function moodIn(` |
+| 52 | `marketIn` | `function marketIn(` |
+| 56 | `moodDoor` | `function moodDoor(` |
+| 61 | `trendText` | `function trendText(` |
+| 62 | `renderDiagnosis` · export | `function renderDiagnosis(` |
+| 66 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### `js/dial-cycle.ts`
 
@@ -684,40 +685,26 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 25 | `CYCLE_DATA_KEY` | `var CYCLE_DATA_KEY =` |
-| 26 | `cycleDataOn` | `function cycleDataOn(` |
-| 27 | `cycleRowsHtml` | `function cycleRowsHtml(` |
-| 47 | `wireCycleData` | `function wireCycleData(` |
-| 62 | `renderCycleList` | `function renderCycleList(` |
+| 21 | `cycleRowsHtml` | `function cycleRowsHtml(` |
+| 38 | `renderCycleList` | `function renderCycleList(` |
 
 #### A closed cycle, shown on the Cycle tab's own page
 
 | Line | Name | Anchor |
 |---|---|---|
-| 105 | `eraReading` | `function eraReading(` |
-| 115 | `eraValue` | `function eraValue(` |
-| 121 | `eraRange` | `function eraRange(` |
-| 126 | `eraMini` | `function eraMini(` |
-| 131 | `lead` | `function lead(` |
-| 132 | `figOf` | `function figOf(` |
-| 133 | `part` | `function part(` |
-| 134 | `parentOf` | `function parentOf(` |
-| 135 | `eraCard` | `function eraCard(` |
-| 153 | `eraCards` | `function eraCards(` |
-| 159 | `eraShow` | `function eraShow(` |
-| 166 | `enterEra` | `function enterEra(` |
-| 173 | `leaveEra` | `function leaveEra(` |
-
-#### RENDER: the symptoms — the years of a cycle a reading sat where it sits today
-
-| Line | Name | Anchor |
-|---|---|---|
-| 181 | `cycleSymptoms` | `function cycleSymptoms(` |
-| 205 | `placeWords` | `function placeWords(` |
-| 209 | `symptomNote` | `function symptomNote(` |
-| 216 | `symptomRow` | `function symptomRow(` |
-| 223 | `cycleTrack` | `function cycleTrack(` |
-| 238 | `symptomLegend` | `function symptomLegend(` |
+| 82 | `eraReading` | `function eraReading(` |
+| 92 | `eraValue` | `function eraValue(` |
+| 98 | `eraRange` | `function eraRange(` |
+| 103 | `eraMini` | `function eraMini(` |
+| 108 | `lead` | `function lead(` |
+| 109 | `figOf` | `function figOf(` |
+| 110 | `part` | `function part(` |
+| 111 | `parentOf` | `function parentOf(` |
+| 112 | `eraCard` | `function eraCard(` |
+| 130 | `eraCards` | `function eraCards(` |
+| 136 | `eraShow` | `function eraShow(` |
+| 143 | `enterEra` | `function enterEra(` |
+| 150 | `leaveEra` | `function leaveEra(` |
 
 ### `js/pages-nav.ts`
 
@@ -896,6 +883,40 @@ falls in. **export** marks a name other modules import.
 | 272 | `peekCard` · export | `function peekCard(` |
 | 290 | `vitalRingSvg` · export | `function vitalRingSvg(` |
 
+### `js/cycle-analysis.ts`
+
+#### Her chart: every reading, cycle by cycle, against her own normal ranges
+
+| Line | Name | Anchor |
+|---|---|---|
+| 13 | `NUM` | `var NUM =` |
+| 16 | `quartile` | `function quartile(` |
+| 20 | `normOf` | `function normOf(` |
+| 25 | `closedCount` | `function closedCount(` |
+| 26 | `visitOf` | `function visitOf(` |
+| 33 | `visits` | `function visits(` |
+| 34 | `cycleLab` | `function cycleLab(` |
+| 38 | `readingLab` | `function readingLab(` |
+| 49 | `labs` | `function labs(` |
+| 56 | `state` | `function state(` |
+| 61 | `yearsWord` | `function yearsWord(` |
+| 62 | `fmt` | `function fmt(` |
+| 66 | `TIERS` | `var TIERS =` |
+| 67 | `tier` | `function tier(` |
+| 71 | `catTitle` | `function catTitle(` |
+| 72 | `labItem` | `function labItem(` |
+| 78 | `ring` | `function ring(` |
+| 82 | `report` | `function report(` |
+| 96 | `judged` | `function judged(` |
+| 97 | `score` | `function score(` |
+| 98 | `outside` | `function outside(` |
+| 99 | `listWords` | `function listWords(` |
+| 100 | `word` | `function word(` |
+| 101 | `cap` | `function cap(` |
+| 103 | `visitNote` | `function visitNote(` |
+| 112 | `chartDetail` | `function chartDetail(` |
+| 121 | `cycleAnalysisHtml` · export | `function cycleAnalysisHtml(` |
+
 ### `js/cycle-tab.ts`
 
 #### THE CYCLE TAB: cards and categories
@@ -913,16 +934,12 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 9 | `todayFace` | `function todayFace(` |
-| 15 | `readDoor` · export | `function readDoor(` |
-| 23 | `rosterRows` · export | `function rosterRows(` |
-| 24 | `kT` · export | `function kT(` |
-| 29 | `pairAt` · export | `function pairAt(` |
-| 30 | `eraFig` · export | `function eraFig(` |
-| 37 | `rosterRow` | `function rosterRow(` |
-| 51 | `readingRoster` · export | `function readingRoster(` |
-| 58 | `pastFigure` · export | `function pastFigure(` |
-| 62 | `prettyK` · export | `function prettyK(` |
+| 7 | `rosterRows` · export | `function rosterRows(` |
+| 8 | `kT` · export | `function kT(` |
+| 13 | `eraFig` · export | `function eraFig(` |
+| 20 | `rosterRow` | `function rosterRow(` |
+| 34 | `readingRoster` · export | `function readingRoster(` |
+| 41 | `prettyK` · export | `function prettyK(` |
 
 ### `js/format.ts`
 
@@ -966,7 +983,6 @@ falls in. **export** marks a name other modules import.
 | 75 | `qPretty` · export | `function qPretty(` |
 | 76 | `seasonName` · export | `function seasonName(` |
 | 77 | `capeFmt1` · export | `function capeFmt1(` |
-| 78 | `withUnit` · export | `function withUnit(` |
 
 ### `js/history-charts.ts`
 
@@ -1182,15 +1198,15 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 851 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
 | 1,020 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
 | 1,035 | The symptoms: a cycle's years against today |
-| 1,121 | hero: yield curve |
-| 1,151 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,170 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,197 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,205 | long cycle (structural layer) |
-| 1,212 | indicator grid |
-| 1,238 | info icon + popover (progressive disclosure for longer notes) |
-| 1,252 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,338 | footer |
+| 1,105 | hero: yield curve |
+| 1,135 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,154 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,181 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,189 | long cycle (structural layer) |
+| 1,196 | indicator grid |
+| 1,222 | info icon + popover (progressive disclosure for longer notes) |
+| 1,236 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,322 | footer |
 
 ## Markup landmarks
 
@@ -1199,7 +1215,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (110), which is what the renderers fill:
+Every `id` in the static DOM (108), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1276,43 +1292,41 @@ Every `id` in the static DOM (110), which is what the renderers fill:
 | 157 | `signs-list` |
 | 162 | `panel-analysis` |
 | 163 | `calendar-list` |
-| 170 | `cycle-data` |
-| 172 | `cycle-legend` |
-| 173 | `cycle-list` |
-| 174 | `cycle-more` |
-| 175 | `cycle-more-label` |
-| 180 | `calendar-cycle` |
-| 183 | `panel-portfolio` |
-| 199 | `panel-search` |
-| 200 | `search-home` |
-| 202 | `search-input` |
-| 204 | `search-list` |
-| 208 | `more-menu` |
-| 211 | `menu-back` |
-| 225 | `sources-open` |
-| 233 | `appearance-current` |
-| 236 | `app-version` |
-| 240 | `sheet-howto` |
-| 283 | `sheet-book` |
-| 309 | `seasons-kicker` |
-| 310 | `seasons-rows` |
-| 313 | `framework-kicker` |
-| 316 | `framework-rows` |
-| 326 | `sheet-appearance` |
-| 334 | `theme-toggle` |
-| 341 | `sheet-contact` |
-| 350 | `contact-form` |
-| 351 | `contact-title` |
-| 352 | `contact-message` |
-| 354 | `contact-hint` |
-| 355 | `contact-send` |
-| 361 | `sheet-sources` |
-| 364 | `sources-back` |
-| 369 | `asof-text` |
-| 370 | `sources-groups` |
-| 376 | `detail-backdrop` |
-| 378 | `detail-modal-close` |
-| 379 | `detail-modal-body` |
+| 170 | `cycle-list` |
+| 171 | `cycle-more` |
+| 172 | `cycle-more-label` |
+| 177 | `calendar-cycle` |
+| 180 | `panel-portfolio` |
+| 196 | `panel-search` |
+| 197 | `search-home` |
+| 199 | `search-input` |
+| 201 | `search-list` |
+| 205 | `more-menu` |
+| 208 | `menu-back` |
+| 222 | `sources-open` |
+| 230 | `appearance-current` |
+| 233 | `app-version` |
+| 237 | `sheet-howto` |
+| 280 | `sheet-book` |
+| 306 | `seasons-kicker` |
+| 307 | `seasons-rows` |
+| 310 | `framework-kicker` |
+| 313 | `framework-rows` |
+| 323 | `sheet-appearance` |
+| 331 | `theme-toggle` |
+| 338 | `sheet-contact` |
+| 347 | `contact-form` |
+| 348 | `contact-title` |
+| 349 | `contact-message` |
+| 351 | `contact-hint` |
+| 352 | `contact-send` |
+| 358 | `sheet-sources` |
+| 361 | `sources-back` |
+| 366 | `asof-text` |
+| 367 | `sources-groups` |
+| 373 | `detail-backdrop` |
+| 375 | `detail-modal-close` |
+| 376 | `detail-modal-body` |
 
 ## Finding things fast
 

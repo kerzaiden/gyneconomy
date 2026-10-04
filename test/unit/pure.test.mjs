@@ -100,10 +100,10 @@ test('dates and the Fed range are written once', () => {
 
 test('the Fred backfill writes the stored figures back byte for byte', () => {
   const { emit } = require('../../tools/fetch-fred-history.js');
-  const early = { gdp: fred.gdpYoYBefore, cpi: fred.cpiYoYBefore, returns: fred.sp500ReturnsBefore, growth: fred.gdpGrowthBefore, assets: fred.assetReturns };
+  const early = { gdp: fred.gdpYoYBefore, cpi: fred.cpiYoYBefore, returns: fred.sp500ReturnsBefore, growth: fred.gdpGrowthBefore };
   const fiscal = Object.assign({}, fred.fiscalHistory, { grossQ: fred.grossDebtQuarterly });
   const out = emit(fred.fedFundsHistory, fred.volatilityHistory, fiscal, fred.treasuryQuarterly, fred.productivityHistory,
-    fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory, fred.yieldsDecember);
+    fred.sp500MonthlyHistory, fred.confidenceHistory, early, fred.durablesHistory, fred.premiumHistory);
   assert.equal(out, fs.readFileSync(new URL('../../src/data/fred.json', import.meta.url), 'utf8'));
 });
 

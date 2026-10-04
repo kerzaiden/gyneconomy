@@ -28,7 +28,6 @@ function cpiYear(endMonth: string){
   return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
 }
 var GROWTH_WINDOW = 8;
-export function growthWindowYears(){ return GROWTH_WINDOW / 4; }
 export function growthWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW); }
 function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: string, quartersPerStep?: number): ModelReading {
   var cpiNow = cpi12[cpi12.length - 1].v;

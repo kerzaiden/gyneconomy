@@ -11,7 +11,6 @@ import { bootRenderPages } from "./render-pages.ts";
 import { bootDiagnosis } from "./diagnosis.ts";
 import { bootDialCycle } from "./dial-cycle.ts";
 import { bootAnalysis } from "./analysis.ts";
-import { bootPortfolio } from "./portfolio.ts";
 import { bootPagesNav } from "./pages-nav.ts";
 import { bootTabsMenu } from "./tabs-menu.ts";
 import { bootRepaint } from "./repaint.ts";
@@ -32,7 +31,6 @@ try {
   bootPagesNav();
   bootDiagnosis();
   bootAnalysis();
-  bootPortfolio();
   bootTabsMenu();
   bootRepaint();
   bootDone();

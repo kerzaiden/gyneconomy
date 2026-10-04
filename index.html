@@ -1027,54 +1027,8 @@
   .cyc-more .peek-chev{ color:inherit; opacity:0.9; display:inline-flex; transition:transform 0.16s ease; }
   .cyc-more[aria-expanded="true"] .peek-chev{ transform:rotate(90deg); }
 
-  .sx-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .sx-switch{ display:inline-flex; align-items:center; gap:8px; font-family:"Public Sans",sans-serif; font-size:var(--type-meta);
-    font-weight:600; color:var(--text-secondary); cursor:pointer; }
-  .sx-toggle{ position:relative; flex:none; width:40px; height:24px; padding:0; border:0; border-radius:12px;
-    background:var(--border-strong); cursor:pointer; transition:background 0.15s ease; }
-  .sx-toggle i{ position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:var(--surface);
-    box-shadow:0 1px 2px rgba(0,0,0,0.25); transition:transform 0.15s ease; }
-  .sx-toggle[aria-checked="true"]{ background:var(--accent); }
-  .sx-toggle[aria-checked="true"] i{ transform:translateX(16px); }
-  .sx-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .sx-legend{ padding:11px 14px 12px; border-bottom:1px solid var(--border); }
-  .sx-legend p{ margin:0 0 8px; font-size:var(--type-meta); line-height:1.5; color:var(--text-secondary); }
-  .sx-keys{ display:flex; flex-wrap:wrap; gap:6px 14px; font-size:var(--type-meta); color:var(--text-secondary); }
-  .sx-keys span{ display:inline-flex; align-items:center; gap:6px; }
-  .sx-keys i{ width:10px; height:10px; border-radius:50%; }
-  .sx-keys i.sx-off{ width:5px; height:5px; background:var(--text-muted); opacity:0.5; }
-  .sx-keys i.sx-now{ border:1.5px solid var(--accent); box-sizing:border-box; }
-  .sx-keys b.sx-down{ font-weight:700; color:var(--bear-ink); }
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
-  .sx-keys i[class^="cat-"], .sx-row i.on{ background:var(--cat); }
-  .era-row.data{ cursor:default; }
-  .era-row.data:hover{ background:none; }
-  .era-open{ display:flex; width:100%; padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer; }
-  .era-open:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
-  .era-open:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
-  .cyc-track{ overflow-x:auto; margin:9px 0 0; padding:0 0 2px; -webkit-overflow-scrolling:touch; direction:rtl; }
-  .cyc-track > *{ direction:ltr; }
-  .cyc-scale .strip{ margin:0; }
-  .cyc-scale .strip + .strip{ margin-top:5px; }
-  .cyc-scale, .sx-yrs, .sx-row{ display:grid; align-items:center; width:max-content; min-width:100%; }
-  .sx-yrs{ height:22px; margin-top:6px; }
-  .sx-yrs span{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; text-align:center; color:var(--text-muted); }
-  .sx-yrs span.down{ color:var(--bear-ink); }
-  .sx-yrs span.now{ color:var(--accent-ink); }
-  .sx-yrs span.ahead{ opacity:0.45; }
-  .sx-row{ height:26px; padding:0; border:0; background:none; font:inherit; color:inherit; cursor:pointer; }
-  .sx-row:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px; }
-  .sx-row i{ justify-self:center; width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
-  .sx-row i.on{ width:13px; height:13px; opacity:1; }
-  .sx-row i.na, .sx-row i.ahead{ opacity:0; }
-  .sx-row i.now{ width:11px; height:11px; background:none; border:1.5px solid var(--accent); box-sizing:border-box; opacity:1; }
-  .sx-row b{ position:sticky; right:0; justify-self:end; padding:3px 0 3px 8px; font-family:"Public Sans",sans-serif;
-    font-size:var(--type-meta); font-weight:600; white-space:nowrap; color:var(--text-primary); background:var(--surface); }
-  .sx-row b::before{ content:""; position:absolute; top:0; bottom:0; left:-10px; width:10px;
-    background:linear-gradient(90deg, transparent, var(--surface)); }
-  .sx-row:hover b{ color:var(--accent-ink); }
-  .sx-foot{ margin:8px 0 0; font-size:var(--type-meta); line-height:1.45; color:var(--text-muted); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .metric-sheet.cat-sheet::before{ content:""; position:fixed; left:0; right:0; top:0; height:min(460px, 70vh); z-index:-1; pointer-events:none;
@@ -1088,6 +1042,36 @@
   .ca-line.now{ stroke:var(--cat); stroke-opacity:1; stroke-width:3.5; stroke-linecap:round; }
   .ca-dot{ fill:var(--cat); }
   .cat-analysis .more-row{ margin-top:20px; }
+  .labs{ margin-top:12px; }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius); }
+  .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
+  .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
+  .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
+  .lab-ring circle{ fill:none; stroke:var(--surface-2); stroke-width:5; }
+  .lab-ring circle.on{ stroke:var(--good); stroke-linecap:round; }
+  .lab-chips{ display:flex; gap:5px; margin:12px 0 4px; overflow-x:auto; }
+  .lab-f{ position:absolute; opacity:0; pointer-events:none; }
+  .lab-chips label{ flex:none; padding:6px 10px; border-radius:999px; border:1px solid var(--border); font-size:var(--type-meta); color:var(--text-secondary); cursor:pointer; }
+  .lab-chips label span{ color:var(--text-muted); }
+  .lab-f:checked + label{ background:var(--good); border-color:var(--good); color:var(--surface); }
+  .lab-f:checked + label span{ color:inherit; }
+  .lab-f:focus-visible + label{ outline:2px solid var(--accent); outline-offset:2px; }
+  .labs:has(.lab-f[value="abnormal"]:checked) .lab-sec:not(.t-abnormal),
+  .labs:has(.lab-f[value="borderline"]:checked) .lab-sec:not(.t-borderline),
+  .labs:has(.lab-f[value="optimal"]:checked) .lab-sec:not(.t-optimal){ display:none; }
+  .lab-sec h5{ margin:14px 0 6px; font-size:var(--type-label); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+  .lab-sec h5::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:1px; background:var(--tier); }
+  .lab-sec ul{ list-style:none; margin:0; padding:0; }
+  .lab-sec{ --tier:var(--good); }
+  .lab-sec.t-borderline{ --tier:var(--season-autumn); }
+  .lab-sec.t-abnormal{ --tier:var(--critical); }
+  .lab-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0 9px 12px; border-left:3px solid var(--tier); border-bottom:1px solid var(--border); }
+  .lab-item b{ display:block; font-weight:600; font-size:var(--type-interface); color:var(--text-primary); }
+  .lab-item small{ display:block; font-size:var(--type-meta); color:var(--text-muted); }
+  .lab-res{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .t-abnormal .lab-res b{ color:var(--critical-ink); }
   .ca-key{ font-size:var(--type-meta); font-weight:600; fill:var(--text-muted); }
   .ca-key.now{ fill:var(--cat); }
   .cat-sheet .ci-head{ gap:7px; }
@@ -1287,7 +1271,7 @@
     display:flex; justify-content:space-between; align-items:center; font-size:var(--type-meta); color:var(--text-secondary);
     padding-top:10px; border-top:1px solid var(--border); margin-top:14px;
   }
-  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
+  .detail-modal .aux-stat b, .metric-sheet .aux-stat b, .sign-detail .aux-stat b b{ color:var(--text-primary); font-family:"IBM Plex Mono",monospace; font-weight:600; }
   .aux-stat.wordy b{ font-family:"Public Sans",sans-serif !important; font-weight:600; }
   .detail-modal .src, .metric-sheet .src, .sign-detail .src{ font-size:var(--type-label); color:var(--text-muted); margin-top:12px; }
   .detail-modal .src a, .metric-sheet .src a, .sign-detail .src a{ color:var(--text-muted); }
@@ -1493,14 +1477,11 @@
   <div class="tab-panel" data-tab="analysis" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis" hidden>
     <div id="calendar-list">
       <div class="cyc-card">
-        <div class="cyc-head sx-head">
+        <div class="cyc-head">
           <div class="cyc-title"><span class="peek-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path
             d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg></span>Cycle history</div>
-          <label class="sx-switch"><span>Show data</span><button type="button" role="switch" aria-checked="false"
-            class="sx-toggle" id="cycle-data"><i></i></button></label>
         </div>
-        <div class="sx-legend" id="cycle-legend" hidden></div>
         <div id="cycle-list"></div>
         <button type="button" class="cyc-more" id="cycle-more" aria-expanded="false" aria-controls="cycle-list">
           <span id="cycle-more-label">View more</span>
@@ -1564,7 +1545,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.1.1 (729)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.2.0 (730)</span></p>
     </div>
   </div>
 
@@ -1781,8 +1762,8 @@
     var t = n % 100, o = [ "th", "st", "nd", "rd" ][(t - 20) % 10] || [ "th", "st", "nd", "rd" ][t] || "th";
     return n + o;
   }
-  function hiCard(name, state, text, body) {
-    return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
+  function hiCard(name, state2, text, body) {
+    return '<div class="hi-card"><span class="hi-name ' + state2 + '">' + name + "</span>" + (text ? "<p>" + text + "</p>" : "") + (body || "") + "</div>";
   }
   function dropWhatIsShown(full, shown) {
     if (!full || !shown) return full || "";
@@ -1866,9 +1847,6 @@
   }
   function capeFmt1(v) {
     return v.toFixed(1) + "×";
-  }
-  function withUnit(fig, unit) {
-    return fig + (unit && !/[%\u00d7]/.test(fig) ? " " + unit : "");
   }
   var ui = {
     eraOpen: null,
@@ -28188,12 +28166,12 @@
       return d.v > a.v ? d : a;
     });
     if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-    var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1];
+    var sum = 0, n = 0, cap2 = bandEnds(row.meter.optimal, NaN, NaN)[1];
     for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
       sum += g[y];
       n++;
     }
-    if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
+    if (n !== 50 || Math.round(sum / n) !== cap2) bad.push("band " + cap2 + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   function curveAt(m) {
@@ -29326,8 +29304,8 @@
     falling: '<svg class="tp-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5L7 9l3-3 3.2 4.2"/><path d="M13.2 7v3.2H10"/></svg>'
   };
   function trendPill(t, key, toggles, words) {
-    var word = words && words[t.word] || t.word;
-    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
+    var word2 = words && words[t.word] || t.word;
+    var inner = '<span class="tp-k">' + (key || "Trend") + '</span><span class="tp-v' + (t.flat ? " quiet" : "") + '">' + (TREND_ARROW[t.word] || "") + word2 + (t.span ? " <em>" + t.span + "</em>" : "") + "</span>";
     var none = t.word === "unavailable";
     if (!toggles || !t.fit) return '<div class="trendpill' + (none ? " none" : "") + '">' + inner + "</div>";
     return '<button type="button" class="trendpill can-toggle" aria-pressed="false" aria-label="Show the trend on the chart">' + inner + "</button>";
@@ -29346,11 +29324,11 @@
     }
     return d.y % 10 ? "" : "’" + String(d.y).slice(2);
   }
-  function fitLine(vals, per, fmt, x0, x1, y, W, padL, padR) {
+  function fitLine(vals, per, fmt2, x0, x1, y, W, padL, padR) {
     var fit = trendOf(vals, "points", per).fit;
     return fit && fit.n > 1 ? fitGroup({
       fit: fit,
-      fmt: fmt
+      fmt: fmt2
     }, x0, x1, y, W, padL, padR) : "";
   }
   function fitGroup(o, x0, x1, y, W, padL, padR) {
@@ -29565,7 +29543,7 @@
     });
     return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
   }
-  function meterPeek(m, state) {
+  function meterPeek(m, state2) {
     var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
     function at(v) {
       return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / (m.max - m.min || 1)));
@@ -29574,7 +29552,7 @@
     var a = at(ends[0]), c = at(ends[1]);
     if (c - a < sw) c = a + sw;
     var hx = at(m.value);
-    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
+    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
   }
   function windowYears(fromYear, toYear, want) {
     if (toYear <= fromYear) return [ fromYear ];
@@ -29641,10 +29619,10 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct, state, label, cls) {
+  function vitalRingSvg(pct, state2, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
     var offset = c * (1 - clampPct(pct, 0, 100) / 100);
-    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
+    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
     mode: void 0,
@@ -29833,7 +29811,7 @@
   function histReadFill(host, d, i) {
     var g = host.__geom, el = host.__readEl;
     if (!g || !el) return;
-    var fmt = geomFmt(g);
+    var fmt2 = geomFmt(g);
     var atRest = !d || d.v == null;
     if (atRest) {
       var vv = g.vals || [];
@@ -29852,7 +29830,7 @@
       return;
     }
     host.classList.toggle("resting", atRest);
-    var lab = g.at(d, i), val = fmt(d.v);
+    var lab = g.at(d, i), val = fmt2(d.v);
     var plate = el.firstElementChild;
     if (!plate) return;
     plate.children[0].textContent = lab;
@@ -29931,7 +29909,7 @@
       return r && (r.v == null || isFinite(r.v));
     });
     if (!refs.length) return;
-    var fmt = geomFmt(g);
+    var fmt2 = geomFmt(g);
     var NS = "http://www.w3.org/2000/svg";
     var grp = document.createElementNS(NS, "g");
     grp.setAttribute("class", "hist-legend");
@@ -29951,7 +29929,7 @@
       var t = document.createElementNS(NS, "text");
       t.setAttribute("class", "hl-lab");
       t.setAttribute("y", (y + 3.2).toFixed(1));
-      t.textContent = r.v == null ? r.label : r.label + " " + fmt(r.v);
+      t.textContent = r.v == null ? r.label : r.label + " " + fmt2(r.v);
       grp.appendChild(t);
       var m = document.createElementNS(NS, r.swatch ? "rect" : "line");
       if (r.swatch) {
@@ -30882,7 +30860,7 @@
       };
     }();
     confidenceReading = function(R) {
-      var word = confidenceWord(R.now.v), at = monthLabel(R.now.m);
+      var word2 = confidenceWord(R.now.v), at = monthLabel(R.now.m);
       var span = R.lo.v.toFixed(1) + " (" + monthLabel(R.lo.m) + ") to " + R.hi.v.toFixed(1) + " (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Confidence",
@@ -30899,10 +30877,10 @@
         metricSub: "OECD index, United States, " + at,
         metric: R.now.v.toFixed(1),
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -30924,7 +30902,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
+        caption: at + ", the OECD’s consumer confidence index for the United States at " + R.now.v.toFixed(1) + ", " + word2.says + ". The track runs over the monthly record since " + monthLabel(confidenceHistory[0].m) + ": " + span + "."
       };
     }(confidenceRecord);
     desireRecord = function() {
@@ -30940,7 +30918,7 @@
       };
     }();
     desireReading = function(R) {
-      var word = desireWord(R.now.v), at = monthLabel(R.now.m);
+      var word2 = desireWord(R.now.v), at = monthLabel(R.now.m);
       var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
       return {
         bodyTerm: "Desire",
@@ -30957,10 +30935,10 @@
         metricSub: "consumer demand, YoY, " + at,
         metric: fmtSigned(R.now.v, 1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -30982,7 +30960,7 @@
           }, 0, true);
         },
         lead: "",
-        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
+        caption: at + ", consumer demand for durable goods " + fmtSigned(R.now.v, 1) + "% on a year earlier, " + word2.says + ". The track runs over the monthly record since " + monthLabel(durablesHistory[0].m) + ": " + span + "."
       };
     }(desireRecord);
     premiumRecord = function() {
@@ -31056,7 +31034,7 @@
       };
     }();
     productivityReading = function(R) {
-      var word = productivityWord(R.now.v);
+      var word2 = productivityWord(R.now.v);
       var at = qPretty(R.now.q), span = fmtSigned(R.lo.v, 1) + "% (" + qPretty(R.lo.q) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + qPretty(R.hi.q) + ")";
       return {
         bodyTerm: "Productivity growth",
@@ -31073,10 +31051,10 @@
         metricSub: "nonfarm business output per hour, YoY, " + at,
         metric: R.now.v.toFixed(1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordWhy: word.why,
+        wordWhy: word2.why,
         meter: {
           min: R.lo.v,
           max: R.hi.v,
@@ -31091,7 +31069,7 @@
         },
         span: span,
         lead: "",
-        caption: at + ", BLS output per hour vs. a year earlier, " + word.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
+        caption: at + ", BLS output per hour vs. a year earlier, " + word2.says + " — the reading that says whether capacity is being rebuilt rather than just borrowed against. The track runs over the quarterly record since 1948: " + span + "."
       };
     }(productivityRecord);
     deriveFeelingReadings();
@@ -31121,7 +31099,7 @@
     };
     householdsNow = householdsWord(dsrNow, savNow);
     marketReading = function(h) {
-      var now2 = h[h.length - 1], word = marketWord(now2.v), open = now2.y === calendarTodayY;
+      var now2 = h[h.length - 1], word2 = marketWord(now2.v), open = now2.y === calendarTodayY;
       var lo = h.reduce(function(a, d) {
         return d.v < a.v ? d : a;
       }), hi = h.reduce(function(a, d) {
@@ -31147,10 +31125,10 @@
         open: open,
         metric: fmtSigned(now2.v, 1) + "%",
         tag: {
-          state: word.state,
-          text: word.text
+          state: word2.state,
+          text: word2.text
         },
-        wordSays: word.says,
+        wordSays: word2.says,
         meter: {
           min: lo.v,
           max: hi.v,
@@ -31170,7 +31148,7 @@
           }), marketCol, 0, true);
         },
         lead: "",
-        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
+        caption: now2.y + (open ? " so far" : "") + ", the S&P 500 at " + fmtSigned(now2.v, 1) + "% with dividends, " + word2.says + ". The track runs over every year since " + h[0].y + ": " + span + "."
       };
     }(sp500Years);
   }
@@ -32717,7 +32695,7 @@
       }
     });
     document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt, .sx-row");
+      var btn = e.target.closest && e.target.closest(".expand-btn, .details-link, .more-row, .bh-opt");
       if (btn) {
         if (btn.closest("summary")) e.preventDefault();
         openFrom(btn.getAttribute("data-detail-idx"), btn);
@@ -32740,8 +32718,8 @@
   function subjectRow(o) {
     return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
   }
-  function subjectIcon(state, svg) {
-    return '<div class="subject-icon"><span class="' + state + '">' + svg + "</span></div>";
+  function subjectIcon(state2, svg) {
+    return '<div class="subject-icon"><span class="' + state2 + '">' + svg + "</span></div>";
   }
   function timingMark(kind) {
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
@@ -33357,10 +33335,10 @@
       if (unit) unit.className = "ci-unit";
       read.appendChild(val);
     }
-    var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
-    if (!word || !word.textContent.trim()) word = val && val.querySelector(".tag") || document.createElement("span");
-    word.classList.add("ci-word");
-    read.appendChild(word);
+    var word2 = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+    if (!word2 || !word2.textContent.trim()) word2 = val && val.querySelector(".tag") || document.createElement("span");
+    word2.classList.add("ci-word");
+    read.appendChild(word2);
     body.appendChild(read);
     var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
     if (mini) {
@@ -33382,10 +33360,10 @@
     return item;
   }
   function tempPeek(r, value, cpi) {
-    var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+    var word2 = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
     return peekOf("sheet-metric-temp", {
       value: value,
-      word: word,
+      word: word2,
       state: heatStep(r.cpiNow),
       cols: cpi.map(function(d) {
         return d.v;
@@ -33956,6 +33934,215 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
+  var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
+  var FENCE_SRC = {
+    t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
+    u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
+  };
+  function quartile(vs, p) {
+    var s = vs.slice().sort(function(a, b) {
+      return a - b;
+    }), i = (s.length - 1) * p, lo = Math.floor(i);
+    return s[lo] + (s[Math.ceil(i)] - s[lo]) * (i - lo);
+  }
+  function normOf(vs) {
+    if (vs.length < 2) return null;
+    var lo = quartile(vs, .25), hi = quartile(vs, .75);
+    return {
+      lo: lo,
+      hi: hi,
+      fence: hi + 1.5 * (hi - lo),
+      floor: lo - 1.5 * (hi - lo),
+      n: vs.length,
+      min: Math.min.apply(null, vs),
+      max: Math.max.apply(null, vs)
+    };
+  }
+  function closedCount() {
+    return marketCycles.filter(function(c) {
+      return !c.ongoing;
+    }).length;
+  }
+  function visitOf(m) {
+    var c = m.era, signs = [], bleed = 0;
+    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
+    while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
+    return {
+      years: m.elapsedYears,
+      bull: signs.filter(Boolean).length,
+      bleed: bleed
+    };
+  }
+  var visitCache = null;
+  function visits() {
+    return visitCache || (visitCache = marketCycles.map(function(c) {
+      return visitOf(cycleModel(c));
+    }));
+  }
+  function cycleLab(id, name, f) {
+    var per = visits().map(f);
+    return {
+      id: id,
+      name: name,
+      cat: "cycle",
+      unit: " yr",
+      per: per,
+      norm: normOf(per.slice(0, closedCount()))
+    };
+  }
+  function readingLab(R) {
+    var h = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    }), first = +h[0].k.slice(0, 4);
+    var per = marketCycles.map(function(c) {
+      if (first > c.from) return null;
+      var vs = h.filter(function(d) {
+        var y = +d.k.slice(0, 4);
+        return y >= c.from && (c.ongoing || y <= c.to);
+      }).map(function(d) {
+        return d.v;
+      });
+      return vs.length ? vs.reduce(function(a, b) {
+        return a + b;
+      }, 0) / vs.length : null;
+    });
+    var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
+    return {
+      id: R.id,
+      name: R.name,
+      cat: R.cat,
+      unit: unit,
+      per: per,
+      norm: normOf(per.slice(0, closedCount()).filter(function(v) {
+        return v != null;
+      }))
+    };
+  }
+  var labCache = null;
+  function labs() {
+    return labCache || (labCache = [ cycleLab("length", "Length", function(v) {
+      return v.years;
+    }), cycleLab("bull", "Bull years", function(v) {
+      return v.bull;
+    }), cycleLab("bleed", "Bleed", function(v) {
+      return v.bleed;
+    }) ].concat(ROSTER.map(readingLab)));
+  }
+  function state(l, i) {
+    var v = l.per[i], n = l.norm;
+    if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
+    return v > n.fence ? "high" : v < n.floor ? "low" : "";
+  }
+  function yearsWord(v) {
+    var q = Math.round(v * 4);
+    return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + [ "", "¼", "½", "¾" ][q % 4];
+  }
+  function fmt(l, v) {
+    var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
+    return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
+  }
+  var TIERS = [ {
+    key: "abnormal",
+    title: "Risk",
+    cls: "t-abnormal"
+  }, {
+    key: "borderline",
+    title: "Attention",
+    cls: "t-borderline"
+  }, {
+    key: "optimal",
+    title: "Normal",
+    cls: "t-optimal"
+  } ];
+  function tier(l, i) {
+    var v = l.per[i], n = l.norm;
+    return state(l, i) ? "abnormal" : v > n.hi || v < n.lo ? "borderline" : "optimal";
+  }
+  function catTitle(key) {
+    return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c) {
+      return c.key === key;
+    })[0].title;
+  }
+  function labItem(l, i) {
+    var st = state(l, i), n = l.norm;
+    return '<li class="lab-item"><div><b>' + l.name + "</b><small>" + catTitle(l.cat) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (st === "high" ? " H" : st === "low" ? " L" : "") + "</b><small>normal " + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + "–" + fmt(l, n.hi)) + " · " + n.n + "</small></div></li>";
+  }
+  function ring(v) {
+    var r = 21, c = 2 * Math.PI * r;
+    return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
+  }
+  function report(i) {
+    var j = judged(i), by = {}, s = score(i), id = "labf-" + marketCycles[i].from;
+    TIERS.forEach(function(t) {
+      by[t.key] = j.filter(function(l) {
+        return tier(l, i) === t.key;
+      });
+    });
+    var chip = function(key, title, n) {
+      return '<input type="radio" class="lab-f" name="' + id + '" id="' + id + "-" + key + '" value="' + key + '"' + (key === "all" ? " checked" : "") + '><label for="' + id + "-" + key + '">' + title + " <span>" + n + "</span></label>";
+    };
+    return '<div class="labs"><div class="lab-score"><div><small>' + marketCycles[i].name + "</small><b>Health score</b><small>" + j.length + ' readings</small></div><div class="lab-score-v">' + ring(s.v) + "<span>" + s.v + '</span></div></div><div class="lab-chips">' + chip("all", "All", j.length) + TIERS.map(function(t) {
+      return chip(t.key, t.title, by[t.key].length);
+    }).join("") + "</div>" + TIERS.filter(function(t) {
+      return by[t.key].length;
+    }).map(function(t) {
+      return '<section class="lab-sec ' + t.cls + '"><h5>' + t.title + " <span>" + by[t.key].length + "</span></h5><ul>" + by[t.key].map(function(l) {
+        return labItem(l, i);
+      }).join("") + "</ul></section>";
+    }).join("") + "</div>";
+  }
+  function judged(i) {
+    return labs().filter(function(l) {
+      return l.per[i] != null && l.norm && !(l.cat === "cycle" && marketCycles[i].ongoing);
+    });
+  }
+  function score(i) {
+    var j = judged(i), ok = j.filter(function(l) {
+      return tier(l, i) === "optimal";
+    }).length;
+    return {
+      v: Math.round(100 * ok / j.length),
+      ok: ok,
+      of: j.length
+    };
+  }
+  function outside(i) {
+    return labs().filter(function(l) {
+      var st = state(l, i);
+      return st === "high" || st === "low";
+    });
+  }
+  function listWords(xs) {
+    return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
+  }
+  function word(n) {
+    return NUM[n] || String(n);
+  }
+  function cap(t) {
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function visitNote(i) {
+    var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm;
+    var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") + (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
+    var named = function(st) {
+      return outside(i).filter(function(l) {
+        return state(l, i) === st;
+      }).map(function(l) {
+        return l.name;
+      });
+    };
+    var high = named("high"), low = named("low");
+    var parts = (high.length ? [ listWords(high) + " ran far above her normal" ] : []).concat(low.length ? [ listWords(low) + " far below it" ] : []);
+    return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
+  }
+  function chartDetail() {
+    return "<h4>How the chart reads</h4>" + facts([ "Each reading is averaged over the cycle’s years, from its first bull year to its last bear year, to date for the cycle in progress. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier, and marked H or L.", "The number after each normal range is how many closed cycles it rests on: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "The chart describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+  }
+  function cycleAnalysisHtml(m) {
+    var i = marketCycles.indexOf(m.era);
+    if (i < 0) return "";
+    return '<div class="cat-analysis cat-mood"><div class="ca-name">Her chart</div><p class="ca-say">' + visitNote(i) + "</p>" + report(i) + moreRow(chartDetail()) + "</div>";
+  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
@@ -33968,7 +34155,7 @@
       after: yearAfter(m.endYear)
     };
     if (!d) return "";
-    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
+    return moodDoor(open && d.season ? d.stage + " in " + seasonName(seasonGroup(d.season)) : "Cycle story", trendText(m.era.story)) + cycleAnalysisHtml(m) + yearByYear(m, d.after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(d.after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var segs = m.track.filter(function(seg) {
@@ -34555,33 +34742,6 @@
       };
     }());
   }
-  function todayFace(item) {
-    var t = item.__today, box = document.createElement("div");
-    if (!t) return {
-      val: item.querySelector(".ci-value"),
-      word: item.querySelector(".ci-word")
-    };
-    box.innerHTML = "<span>" + t.value + "</span><span>" + (t.word || "") + "</span>";
-    return {
-      val: box.firstChild,
-      word: t.word == null ? null : box.lastChild
-    };
-  }
-  function readDoor(open) {
-    var item = document.querySelector('.cat-item[data-open="' + open + '"]');
-    if (!item) return null;
-    var face = todayFace(item), val = face.val, unit = val && val.querySelector(".ci-unit"), word = face.word;
-    var figure = val ? val.cloneNode(true) : null;
-    if (figure) [].slice.call(figure.querySelectorAll(".ci-unit, .tag")).forEach(function(n) {
-      n.remove();
-    });
-    return {
-      name: item.getAttribute("data-title"),
-      figure: figure ? figure.textContent.trim() : "",
-      unit: unit ? unit.textContent.trim() : "",
-      word: word ? word.textContent.trim() : ""
-    };
-  }
   function rosterRows() {
     return readingRoster().byId;
   }
@@ -34594,10 +34754,6 @@
     return list.filter(function(d) {
       return d.v != null && kT(d.k) <= t;
     });
-  }
-  function pairAt(r, k) {
-    var p = r.pair ? upTo(r.pair, k).pop() : null;
-    return p ? p.v : null;
   }
   function eraFig(today) {
     var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
@@ -34646,12 +34802,6 @@
       all.byId[r.id] = r;
     });
     return __roster = all;
-  }
-  function pastFigure(r, v, second) {
-    var card = readDoor(r.id);
-    if (!card) throw new Error("the reading " + r.id + " has no card");
-    var fig = eraFig(card.figure)(r.flip ? Math.abs(v) : v, second);
-    return r.flip ? fig + (v > 0 ? " surplus" : " deficit") : withUnit(fig, card.unit);
   }
   function prettyK(r, k) {
     return r.pre ? r.pre + k : prettyKey(k);
@@ -34721,9 +34871,9 @@
       if (rows[i].gap > GAP_BAND) run++; else break;
     }
     var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
     var spell = function(n) {
-      return NUM[n] || String(n);
+      return NUM2[n] || String(n);
     };
     var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
     var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
@@ -35153,17 +35303,7 @@
     var box = document.querySelector("#sheet-cat-" + c.key + " .cat-analysis");
     if (box) box.outerHTML = analysisHtml(c.key);
   }
-  var CYCLE_DATA_KEY = "gyn.cycleData";
-  var YEAR_W = 36;
-  var ALIKE = 5;
-  function cycleDataOn() {
-    try {
-      return localStorage.getItem(CYCLE_DATA_KEY) === "1";
-    } catch (e) {
-      return false;
-    }
-  }
-  function cycleRowsHtml(on) {
+  function cycleRowsHtml() {
     var strips = {};
     marketCycles.forEach(function(c) {
       strips[c.from] = seasonStripHtml(c);
@@ -35173,32 +35313,13 @@
       var head = '<span class="era-name">' + cyc.name + '</span><span class="era-years">' + cycLabel(cyc).years + " <b>(" + strip.years + "Y)</b></span>" + CHEV;
       var bands = strip.strip + marketStripHtml(cyc, strip.span, strip.done);
       var foot = '<div class="era-foot"><span class="era-econ"><span class="chip"><i>Growth</i>' + fmtSigned(eraGrowth(cyc).total, 0) + '%</span><span class="chip"><i>Prices</i>' + fmtSigned(eraInflation(cyc).total, 0) + "%</span>" + (total != null ? '<span class="chip"><i>S&amp;P 500</i>' + fmtSigned(total, 0) + "%" + (cyc.ongoing ? '<span class="unit"> so far</span>' : "") + "</span>" : "") + "</span></div>";
-      return on ? '<div class="era-row data" data-era="' + cyc.from + '"><button type="button" class="era-head era-open" data-era="' + cyc.from + '">' + head + "</button>" + cycleTrack(cyc, strip, bands) + foot + "</div>" : '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
+      return '<div class="era-row" role="button" tabindex="0" data-era="' + cyc.from + '"><div class="era-head">' + head + '</div><div class="era-bands">' + bands + "</div>" + foot + "</div>";
     }).join("");
-  }
-  function wireCycleData(list) {
-    var btn = need("cycle-data"), legend = byId("cycle-legend");
-    function apply(on) {
-      if (btn) btn.setAttribute("aria-checked", on ? "true" : "false");
-      list.innerHTML = cycleRowsHtml(on);
-      if (legend) {
-        legend.hidden = !on;
-        legend.innerHTML = on ? symptomLegend() : "";
-      }
-      settleStrips();
-    }
-    if (btn) btn.addEventListener("click", function() {
-      var on = btn.getAttribute("aria-checked") !== "true";
-      try {
-        localStorage.setItem(CYCLE_DATA_KEY, on ? "1" : "0");
-      } catch (e) {}
-      apply(on);
-    });
-    apply(!!btn && cycleDataOn());
   }
   function renderCycleList() {
     var list = need("cycle-list");
-    wireCycleData(list);
+    list.innerHTML = cycleRowsHtml();
+    settleStrips();
     var PREVIEW_CYCLES = 99;
     (function() {
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
@@ -35258,7 +35379,7 @@
       });
     }
     list.addEventListener("click", function(e) {
-      var row = e.target.closest && e.target.closest(".era-row:not(.data), .era-open");
+      var row = e.target.closest && e.target.closest(".era-row");
       if (row) open(parseInt(row.getAttribute("data-era") || "", 10));
     });
     list.addEventListener("keydown", function(e) {
@@ -35345,11 +35466,11 @@
   }
   function eraCard(item, r, era) {
     var val = part(item, ".ci-value"), when = part(item, ".ci-when"), mini = item.querySelector(".ci-mini");
-    var word = item.querySelector(".ci-word");
+    var word2 = item.querySelector(".ci-word");
     var t = item.__today || (item.__today = {
       value: val.innerHTML,
       text: lead(val).nodeValue,
-      word: word ? word.innerHTML : null,
+      word: word2 ? word2.innerHTML : null,
       when: when.textContent,
       mini: mini ? mini.innerHTML : ""
     });
@@ -35358,27 +35479,27 @@
       when.textContent = t.when;
       item.__today = null;
       if (mini) mini.innerHTML = t.mini;
-      if (word && t.word == null) word.remove(); else if (word && t.word != null) word.innerHTML = t.word;
+      if (word2 && t.word == null) word2.remove(); else if (word2 && t.word != null) word2.innerHTML = t.word;
       return;
     }
     var e = r ? eraReading(r, era) : {
       none: true,
       word: "No history in the app"
     };
-    if (!word) {
-      word = document.createElement("span");
-      word.className = "ci-word";
-      parentOf(val).appendChild(word);
+    if (!word2) {
+      word2 = document.createElement("span");
+      word2.className = "ci-word";
+      parentOf(val).appendChild(word2);
     }
     when.textContent = e.none ? "" : e.when;
     if (mini) mini.innerHTML = e.none ? "" : eraMini(t, e.row, e);
     if (e.none) {
       val.innerHTML = "—";
-      word.textContent = e.word;
+      word2.textContent = e.word;
       return;
     }
     eraValue(val, t, e.row, e);
-    word.textContent = eraRange(t, e.row, e);
+    word2.textContent = eraRange(t, e.row, e);
   }
   function eraCards(era) {
     var rows = rosterRows();
@@ -35421,86 +35542,6 @@
     eraShow(null);
     showCycle(currentEra);
     repaintLive();
-  }
-  function cycleSymptoms(cyc, years) {
-    var rows = [], quiet = [], absent = [];
-    readingRoster().forEach(function(r) {
-      var now2 = r.place(r.now.v), measured = false;
-      var cells = years.map(function(y) {
-        if (y >= calendarTodayY || y > (cyc.to || calendarTodayY)) return {
-          y: y,
-          state: y === calendarTodayY && cyc.ongoing ? "now" : "ahead"
-        };
-        var best = null;
-        for (var d of r.seen) {
-          if (+d.k.slice(0, 4) !== y) continue;
-          var gap = Math.abs(r.place(d.v) - now2);
-          if (!best || gap < best.gap) best = {
-            d: d,
-            gap: gap
-          };
-        }
-        if (!best) return {
-          y: y,
-          state: "na"
-        };
-        measured = true;
-        return {
-          y: y,
-          state: best.gap <= ALIKE ? "on" : "off",
-          best: best.d
-        };
-      });
-      var hits = cells.filter(function(c) {
-        return c.state === "on" && !!c.best;
-      });
-      if (hits.length) rows.push({
-        r: r,
-        cells: cells,
-        hits: hits
-      }); else (measured ? quiet : absent).push(r.name);
-    });
-    var foot = (quiet.length ? "Not alike in any year: " + quiet.join(", ") + ". " : "") + (absent.length ? "Not measured then: " + absent.join(", ") + "." : "");
-    return {
-      rows: rows,
-      foot: foot.trim()
-    };
-  }
-  function placeWords(r, v) {
-    var p = Math.round(r.flip ? 100 - r.place(v) : r.place(v)), since = " since " + prettyK(r, r.first.k);
-    return p >= 100 ? "the highest reading" + since : p <= 0 ? "the lowest reading" + since : "higher than " + p + "% of readings" + since;
-  }
-  function symptomNote(cyc, row) {
-    var r = row.r;
-    return "<h4>" + r.name + " · " + cyc.name + "</h4><p>Now " + pastFigure(r, r.now.v, pairAt(r, r.now.k)) + " (" + (r.last || prettyK(r, r.now.k)) + "), " + placeWords(r, r.now.v) + ". A year is marked when a reading taken in it sat within " + ALIKE + " points of that place in the same record.</p>" + facts(row.hits.map(function(c) {
-      return prettyK(r, c.best.k) + ": " + pastFigure(r, c.best.v, pairAt(r, c.best.k)) + ", " + placeWords(r, c.best.v);
-    }));
-  }
-  function symptomRow(cyc, row, cols) {
-    var r = row.r;
-    return '<button type="button" class="sx-row" style="' + cols + '" data-detail-idx="' + detailSlot(symptomNote(cyc, row)) + '" aria-label="' + r.name + ": alike in " + row.hits.map(function(c) {
-      return c.y;
-    }).join(", ") + '">' + row.cells.map(function(c) {
-      return '<i class="' + c.state + (c.state === "on" ? " cat-" + r.cat : "") + '"></i>';
-    }).join("") + "<b>" + r.name + "</b></button>";
-  }
-  function cycleTrack(cyc, strip, bands) {
-    var years = [];
-    for (var i = 0; i < Math.ceil(strip.span / 4); i++) years.push(cyc.from + i);
-    var sx = cycleSymptoms(cyc, years), end = cyc.to || calendarTodayY;
-    var cols = "grid-template-columns:repeat(" + years.length + "," + YEAR_W + "px) minmax(96px,1fr)";
-    var yrs = years.map(function(y) {
-      var down = sp500AnnualReturns[y] != null && sp500AnnualReturns[y] < 0;
-      return '<span class="' + (y === calendarTodayY && cyc.ongoing ? "now" : y > end ? "ahead" : down ? "down" : "") + '">' + y + "</span>";
-    }).join("");
-    return '<div class="cyc-track"><div class="cyc-scale" style="grid-template-columns:' + years.length * YEAR_W + 'px minmax(96px,1fr)"><div style="width:' + strip.span * YEAR_W / 4 + 'px">' + bands + '</div><span></span></div><div class="sx-yrs" style="' + cols + '">' + yrs + "<span></span></div>" + sx.rows.map(function(row) {
-      return symptomRow(cyc, row, cols);
-    }).join("") + "</div>" + (sx.foot ? '<p class="sx-foot">' + sx.foot + "</p>" : "");
-  }
-  function symptomLegend() {
-    return '<p>A dot marks a year when a reading sat about where it sits today. Tap a row for the numbers.</p><div class="sx-keys">' + CATEGORIES.map(function(c) {
-      return '<span><i class="cat-' + c.key + '"></i>' + c.title + "</span>";
-    }).join("") + '<span><i class="sx-off"></i>Not alike</span><span><i class="sx-now"></i>This year</span><span><b class="sx-down">Red year</b>S&amp;P 500 fell</span></div>';
   }
   function bootAnalysis() {
     GYN.step("renderCycleList", renderCycleList, "wire");
@@ -36576,14 +36617,14 @@
       s: ""
     };
     var c = el.cloneNode(true), u = c.querySelector(unitSel), t = c.querySelector(".tag");
-    var unit = u ? u.textContent.trim() : "", word = t ? t.textContent.trim() : "";
+    var unit = u ? u.textContent.trim() : "", word2 = t ? t.textContent.trim() : "";
     var st = t ? (t.className.match(/good|warning|serious|critical/) || [ "" ])[0] : "";
     if (u) u.remove();
     if (t) t.remove();
     return {
       v: c.textContent.trim(),
       u: unit,
-      w: word,
+      w: word2,
       s: st
     };
   }
@@ -36895,7 +36936,7 @@
         label: TIMING[k].label
       };
     }));
-    var find = {}, state = {
+    var find = {}, state2 = {
       kind: "all",
       q: ""
     };
@@ -36910,7 +36951,7 @@
       return indCategoryHtml(c, find);
     }).join("") + '<p class="search-none" hidden>No reading matches.</p>';
     function apply() {
-      var kind = state.kind, q = state.q, hint = host.querySelector(".ind-hint");
+      var kind = state2.kind, q = state2.q, hint = host.querySelector(".ind-hint");
       Array.prototype.forEach.call(host.querySelectorAll(".ind-tabs .range-seg"), function(b) {
         var on = b.getAttribute("data-ind-tab") === kind;
         b.classList.toggle("on", on);
@@ -36931,19 +36972,19 @@
     host.addEventListener("click", function(e) {
       var b = e.target.closest && e.target.closest(".ind-tabs .range-seg"), k = b && b.getAttribute("data-ind-tab");
       if (!k) return;
-      state.kind = k;
+      state2.kind = k;
       apply();
     });
     input.addEventListener("input", function() {
-      state.q = field.value.trim().toLowerCase();
+      state2.q = field.value.trim().toLowerCase();
       apply();
     });
     GYN.on("openIndicatorsPage", function(tab) {
       var btn = document.querySelector('.tab-btn[data-tab="search"]');
       if (btn && !btn.classList.contains("active")) btn.click();
       field.value = "";
-      state.q = "";
-      state.kind = tab || "all";
+      state2.q = "";
+      state2.kind = tab || "all";
       apply();
     });
     apply();
