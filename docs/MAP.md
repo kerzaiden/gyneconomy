@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,272 lines** in 35 files, about 608 KB, roughly **173 thousand tokens**. No session can
+The source is **9,301 lines** in 35 files, about 611 KB, roughly **173 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `300470d` on 2026-10-03.
+Generated from commit `ebc80db` on 2026-10-04.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `300470d` on 2026-10-03.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **598** top-level functions, **104** top-level vars, **343** exported names, **19** boots.
+Counts: **31** modules, **605** top-level functions, **104** top-level vars, **344** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -33,7 +33,7 @@ Counts: **31** modules, **598** top-level functions, **104** top-level vars, **3
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 38 | 4 | `format`, `history-fred` |
 | `js/data.ts` | 555 | 74 | `format`, `history-fred`, `live` |
-| `js/model.ts` | 344 | 44 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
+| `js/model.ts` | 345 | 45 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 470 | 38 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 809 | 70 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
 | `js/roster.ts` | 148 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
@@ -42,7 +42,7 @@ Counts: **31** modules, **598** top-level functions, **104** top-level vars, **3
 | `js/diagnosis.ts` | 80 | 12 | `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `roster` |
 | `js/dial-cycle.ts` | 403 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-pages`, `roster` |
 | `js/analysis.ts` | 251 | 24 | `category-analysis`, `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `live`, `model`, `refresh-season`, `render-pages`, `roster` |
-| `js/portfolio.ts` | 227 | 24 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/portfolio.ts` | 254 | 30 | `data`, `dom`, `format`, `history-fred`, `model`, `refresh-season` |
 | `js/pages-nav.ts` | 341 | 26 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `format`, `history`, `indicators`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `category-analysis`, `data`, `diagnosis`, `dom`, `live`, `model`, `readings`, `render-core`, `roster` |
@@ -53,7 +53,7 @@ Counts: **31** modules, **598** top-level functions, **104** top-level vars, **3
 | `js/era.ts` | 63 | 10 | `format`, `roster` |
 | `js/format.ts` | 79 | 37 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
-| `js/history-fred.ts` | 18 | 14 | — |
+| `js/history-fred.ts` | 19 | 14 | — |
 | `js/indicators.ts` | 283 | 34 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 181 | 16 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
@@ -74,7 +74,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–37 |
 | 5 | `bootData` | `js/data.ts:503`–554 |
-| 6 | `bootModel` | `js/model.ts:297`–343 |
+| 6 | `bootModel` | `js/model.ts:298`–344 |
 | 7 | `bootHistory` | `js/history.ts:446`–469 |
 | 8 | `bootReadings` | `js/readings.ts:632`–700 |
 | 9 | `bootReadingRegistry` | `js/readings.ts:743`–808 |
@@ -84,7 +84,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:76`–79 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:379`–402 |
 | 15 | `bootAnalysis` | `js/analysis.ts:246`–250 |
-| 16 | `bootPortfolio` | `js/portfolio.ts:226`–? |
+| 16 | `bootPortfolio` | `js/portfolio.ts:253`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:333`–340 |
 | 18 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
 | 19 | `bootRepaint` | `js/repaint.ts:65`–81 |
@@ -291,60 +291,61 @@ falls in. **export** marks a name other modules import.
 | 20 | `cpiTrend` | `function cpiTrend(` |
 | 27 | `cpiYear` | `function cpiYear(` |
 | 31 | `GROWTH_WINDOW` | `var GROWTH_WINDOW =` |
-| 32 | `growthWindowWord` · export | `function growthWindowWord(` |
-| 33 | `readSeason` | `function readSeason(` |
-| 53 | `SEASON_YEARS` | `var SEASON_YEARS =` |
-| 54 | `closingReading` | `function closingReading(` |
-| 58 | `quarterRegime` · export | `function quarterRegime(` |
-| 59 | `seasonTitle` · export | `function seasonTitle(` |
-| 60 | `cycleReturns` · export | `function cycleReturns(` |
-| 70 | `cycleModel` · export | `function cycleModel(` |
-| 109 | `seasonWhyFor` | `function seasonWhyFor(` |
-| 115 | `growthWord` · export | `function growthWord(` |
-| 118 | `cycleNowNote` · export | `function cycleNowNote(` |
-| 126 | `seasonGroup` · export | `function seasonGroup(` |
+| 32 | `growthWindowYears` · export | `function growthWindowYears(` |
+| 33 | `growthWindowWord` · export | `function growthWindowWord(` |
+| 34 | `readSeason` | `function readSeason(` |
+| 54 | `SEASON_YEARS` | `var SEASON_YEARS =` |
+| 55 | `closingReading` | `function closingReading(` |
+| 59 | `quarterRegime` · export | `function quarterRegime(` |
+| 60 | `seasonTitle` · export | `function seasonTitle(` |
+| 61 | `cycleReturns` · export | `function cycleReturns(` |
+| 71 | `cycleModel` · export | `function cycleModel(` |
+| 110 | `seasonWhyFor` | `function seasonWhyFor(` |
+| 116 | `growthWord` · export | `function growthWord(` |
+| 119 | `cycleNowNote` · export | `function cycleNowNote(` |
+| 127 | `seasonGroup` · export | `function seasonGroup(` |
 
 #### The diagnosis: how she feels, and what has followed
 
 | Line | Name | Anchor |
 |---|---|---|
-| 128 | `rankToDate` · export | `function rankToDate(` |
-| 133 | `marketMonths` · export | `function marketMonths(` |
-| 140 | `yearAfter` · export | `function yearAfter(` |
-| 144 | `diagnoseToday` · export | `function diagnoseToday(` |
+| 129 | `rankToDate` · export | `function rankToDate(` |
+| 134 | `marketMonths` · export | `function marketMonths(` |
+| 141 | `yearAfter` · export | `function yearAfter(` |
+| 145 | `diagnoseToday` · export | `function diagnoseToday(` |
 
 #### Her mood: one range from Depression to Mania
 
 | Line | Name | Anchor |
 |---|---|---|
-| 149 | `rankIn` | `function rankIn(` |
-| 155 | `moodSeries` | `function moodSeries(` |
-| 163 | `moodAt` | `function moodAt(` |
-| 169 | `MOOD_TURN` · export | `var MOOD_TURN =` |
-| 172 | `moodWord` | `function moodWord(` |
-| 176 | `moodRead` | `function moodRead(` |
-| 184 | `moodTrack` · export | `function moodTrack(` |
-| 190 | `moodToday` · export | `function moodToday(` |
-| 194 | `moodSince` | `function moodSince(` |
-| 195 | `cycleStory` · export | `function cycleStory(` |
+| 150 | `rankIn` | `function rankIn(` |
+| 156 | `moodSeries` | `function moodSeries(` |
+| 164 | `moodAt` | `function moodAt(` |
+| 170 | `MOOD_TURN` · export | `var MOOD_TURN =` |
+| 173 | `moodWord` | `function moodWord(` |
+| 177 | `moodRead` | `function moodRead(` |
+| 185 | `moodTrack` · export | `function moodTrack(` |
+| 191 | `moodToday` · export | `function moodToday(` |
+| 195 | `moodSince` | `function moodSince(` |
+| 196 | `cycleStory` · export | `function cycleStory(` |
 
 #### Shared SVG chart helpers (used by the GDP, yield-by-maturity, and spread-history charts
 
 | Line | Name | Anchor |
 |---|---|---|
-| 206 | `cycleSpanYears` · export | `function cycleSpanYears(` |
-| 209 | `cycleByName` · export | `function cycleByName(` |
-| 213 | `openCycle` · export | `function openCycle(` |
-| 217 | `cycleSlice` · export | `function cycleSlice(` |
-| 225 | `totalGrowthYears` · export | `function totalGrowthYears(` |
-| 233 | `cycleMonths` · export | `function cycleMonths(` |
-| 241 | `cycLabel` · export | `function cycLabel(` |
-| 245 | `cycleQtrIdx` · export | `function cycleQtrIdx(` |
-| 250 | `totalRiseIn` · export | `function totalRiseIn(` |
-| 260 | `eraInflation` · export | `function eraInflation(` |
-| 270 | `eraGrowth` · export | `function eraGrowth(` |
-| 286 | `eraMarketTotal` · export | `function eraMarketTotal(` |
-| 291 | `forgetMood` · export | `function forgetMood(` |
+| 207 | `cycleSpanYears` · export | `function cycleSpanYears(` |
+| 210 | `cycleByName` · export | `function cycleByName(` |
+| 214 | `openCycle` · export | `function openCycle(` |
+| 218 | `cycleSlice` · export | `function cycleSlice(` |
+| 226 | `totalGrowthYears` · export | `function totalGrowthYears(` |
+| 234 | `cycleMonths` · export | `function cycleMonths(` |
+| 242 | `cycLabel` · export | `function cycLabel(` |
+| 246 | `cycleQtrIdx` · export | `function cycleQtrIdx(` |
+| 251 | `totalRiseIn` · export | `function totalRiseIn(` |
+| 261 | `eraInflation` · export | `function eraInflation(` |
+| 271 | `eraGrowth` · export | `function eraGrowth(` |
+| 287 | `eraMarketTotal` · export | `function eraMarketTotal(` |
+| 292 | `forgetMood` · export | `function forgetMood(` |
 
 ### `js/history.ts`
 
@@ -739,21 +740,27 @@ falls in. **export** marks a name other modules import.
 | 77 | `grid` | `function grid(` |
 | 93 | `seasonRecord` | `function seasonRecord(` |
 | 94 | `mixFor` | `function mixFor(` |
-| 106 | `walk` | `function walk(` |
-| 116 | `tracks` | `function tracks(` |
-| 124 | `mixDetail` | `function mixDetail(` |
-| 132 | `mixHtml` | `function mixHtml(` |
-| 147 | `counts` | `function counts(` |
-| 148 | `leader` | `function leader(` |
-| 152 | `wedge` | `function wedge(` |
-| 156 | `seasonClock` | `function seasonClock(` |
-| 175 | `heat` | `function heat(` |
-| 180 | `gridHtml` | `function gridHtml(` |
-| 188 | `clockDetail` | `function clockDetail(` |
-| 198 | `clockHtml` | `function clockHtml(` |
-| 205 | `seasonsDetail` | `function seasonsDetail(` |
-| 213 | `seasonsHtml` | `function seasonsHtml(` |
-| 222 | `buildPortfolio` | `function buildPortfolio(` |
+| 106 | `planStep` | `function planStep(` |
+| 111 | `mixPlan` | `function mixPlan(` |
+| 117 | `planNow` | `function planNow(` |
+| 119 | `walk` | `function walk(` |
+| 131 | `tracks` | `function tracks(` |
+| 140 | `yieldFact` | `function yieldFact(` |
+| 146 | `mixDetail` | `function mixDetail(` |
+| 154 | `holdWord` | `function holdWord(` |
+| 155 | `nextTurn` | `function nextTurn(` |
+| 159 | `mixHtml` | `function mixHtml(` |
+| 174 | `counts` | `function counts(` |
+| 175 | `leader` | `function leader(` |
+| 179 | `wedge` | `function wedge(` |
+| 183 | `seasonClock` | `function seasonClock(` |
+| 202 | `heat` | `function heat(` |
+| 207 | `gridHtml` | `function gridHtml(` |
+| 215 | `clockDetail` | `function clockDetail(` |
+| 225 | `clockHtml` | `function clockHtml(` |
+| 232 | `seasonsDetail` | `function seasonsDetail(` |
+| 240 | `seasonsHtml` | `function seasonsHtml(` |
+| 249 | `buildPortfolio` | `function buildPortfolio(` |
 
 ### `js/pages-nav.ts`
 
@@ -1067,10 +1074,10 @@ falls in. **export** marks a name other modules import.
 | 10 | `confidenceHistory` · export | `var confidenceHistory =` |
 | 11 | `durablesHistory` · export | `var durablesHistory =` |
 | 12 | `premiumHistory` · export | `var premiumHistory =` |
-| 14 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
-| 15 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
-| 16 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
-| 17 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
+| 15 | `gdpYoYBefore` · export | `var gdpYoYBefore =` |
+| 16 | `cpiYoYBefore` · export | `var cpiYoYBefore =` |
+| 17 | `sp500ReturnsBefore` · export | `var sp500ReturnsBefore =` |
+| 18 | `gdpGrowthBefore` · export | `var gdpGrowthBefore =` |
 
 ### `js/indicators.ts`
 

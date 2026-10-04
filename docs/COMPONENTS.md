@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `300470d` on 2026-10-03. **82 components**, **44 shared patterns**.
+Generated from commit `ebc80db` on 2026-10-04. **82 components**, **44 shared patterns**.
 
 ## analysis.ts
 
@@ -212,13 +212,13 @@ renderer speaks. Listed most-used first.
 | **`factsFrom`** | format.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`focusQuiet`** | dom.ts | 8 places |
+| **`seasonTitle`** | model.ts | 8 places |
 | **`vhOpen`** | charts.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
-| **`seasonTitle`** | model.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`yearOf`** | format.ts | 7 places |
 | **`fileRow`** | data.ts | 6 places |
@@ -274,6 +274,7 @@ renderer speaks. Listed most-used first.
 | **`rankToDate`** | model.ts | 3 places |
 | **`registerTiming`** | render-core.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
+| **`seasonRecord`** | portfolio.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tabSegs`** | history.ts | 3 places |

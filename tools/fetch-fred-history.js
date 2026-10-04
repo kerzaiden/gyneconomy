@@ -241,7 +241,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, yields) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -261,6 +261,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (durables) out.durablesHistory = m(durables);
   if (premium) out.premiumHistory = m(premium);
   if (e.assets) out.assetReturns = e.assets;
+  if (yields) out.yieldsDecember = yields;
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -314,6 +315,13 @@ async function main() {
   for (const k of Object.keys(full)) treasury[k] = full[k].map(d => ({ q: d.q, v: d.v, partial: d.partial }));
   if (treasury.y30.slice(0, 4).some(d => d.v != null)) throw new Error('GS30: 2005 should be the no-issuance gap');
 
+  const yields = {};
+  for (const [k, id, from] of [['y10', 'GS10', '1953-01-01'], ['m3', 'TB3MS', '1934-01-01']]) {
+    yields[k] = (await fredSeries(id, from)).filter(o => o.date.slice(5, 7) === '12' && band(o.v, 0, 25)).map(o => ({ y: Number(o.date.slice(0, 4)), v: o.v }));
+    if (yields[k].length < 70) throw new Error(id + ': expected December yields from ' + from.slice(0, 4));
+    say(id.padEnd(13) + ' ' + yields[k].length + ' Decembers, ' + yields[k][0].y + ' → ' + yields[k][yields[k].length - 1].y);
+  }
+
   const productivity = yoyQuarterly(quarterly(await fredSeries('OPHNFB', '1947-01-01'), 1, 1000), -20, 30);
   if (!productivity.length) throw new Error('OPHNFB: no year-over-year quarter');
   say('OPHNFB YoY    ' + productivity.length + ' quarters, ' + productivity[0].q + ' → ' + productivity[productivity.length - 1].q);
@@ -333,7 +341,7 @@ async function main() {
   const premium = await shillerSheet(rows => premiumFromRows(rows, PREMIUM_FROM));
   say('Excess CAPE Yield ' + premium.length + ' months, ' + premium[0].m + ' → ' + premium[premium.length - 1].m + ' (Shiller)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, yields));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

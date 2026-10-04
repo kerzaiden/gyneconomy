@@ -10,6 +10,7 @@ export var sp500MonthlyHistory = FRED.sp500MonthlyHistory;
 export var confidenceHistory = FRED.confidenceHistory;
 export var durablesHistory = FRED.durablesHistory;
 export var premiumHistory = FRED.premiumHistory;
+export var yieldsDecember: Record<string, { y: number; v: number }[]> = FRED.yieldsDecember;
 export var assetReturns: Record<string, { y: number; v: number }[]> = FRED.assetReturns;
 export var gdpYoYBefore = FRED.gdpYoYBefore;
 export var cpiYoYBefore = FRED.cpiYoYBefore;
