@@ -178,6 +178,9 @@ var BACK = { depth: 0, skip: false };
 function backPush(){ try { history.pushState({ gyn: BACK.depth + 1 }, ""); BACK.depth++; } catch (e) {} }
 function backClear(){ if (!BACK.depth) return; BACK.skip = true; history.go(-BACK.depth); BACK.depth = 0; }
 function backPopped(){ if (BACK.skip){ BACK.skip = false; return false; } if (!BACK.depth) return false; BACK.depth--; return true; }
+function plainHome(tab: string, title: string): PageHome {
+  return { panel:tabPanel(tab), bar:function(){ return [title, null]; }, hide:function(){ return [byId(tab + "-home")]; } };
+}
 function buildNav(){
   // ---- The metric page ----
   var cyclePanel = tabPanel("cycle");
@@ -190,8 +193,7 @@ function buildNav(){
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
     analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Analysis", null]; },
                 hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    search:   { panel:tabPanel("search"), bar:function(){ return ["Search", null]; },
-                hide:function(){ return [byId("search-home")]; } }
+    search:   plainHome("search", "Search"), portfolio:plainHome("portfolio", "Portfolio")
   };
   var homeCtx = PAGE_HOME.cycle;
   var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;
@@ -249,7 +251,7 @@ function buildNav(){
     var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"), tab = host === cyclePanel ? "cycle" : viewTab(); if (!btn) return;
     if (detailClose) detailClose(); openMetricPage(openTarget(btn), btn.getAttribute("data-title"), false, tab);
   }); });
-  ["analysis", "search"].forEach(function(key){
+  ["analysis", "search", "portfolio"].forEach(function(key){
     var panel = PAGE_HOME[key].panel, go = function(el: Element){ openMetricPage(openTarget(el), el.getAttribute("data-title"), false, key); };
     panel.addEventListener("click", function(e){ var btn = (e.target as Element).closest && (e.target as Element).closest("[data-open]"); if (btn) go(btn); });
     panel.addEventListener("keydown", function(e){

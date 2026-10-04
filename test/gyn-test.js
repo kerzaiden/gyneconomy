@@ -406,6 +406,65 @@ async function openPage(p, url, sheet) {
 
   {
     await p.goto('file://' + url); await ready(p);
+    const gaps = await p.evaluate(async () => {
+      const frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const gapNow = () => {
+        const bar = document.querySelector('.topbar').getBoundingClientRect().bottom, mp = document.getElementById('metric-page');
+        const root = mp && !mp.hidden ? mp : [...document.querySelectorAll('.tab-panel')].find(x => !x.hidden);
+        let top = Infinity;
+        root.querySelectorAll('*').forEach(e => {
+          const r = e.getBoundingClientRect(), cs = getComputedStyle(e); if (!r.height || !r.width || cs.visibility === 'hidden') return;
+          const ink = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) || /^(svg|img|canvas)$/i.test(e.tagName) ||
+            cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(cs.borderTopWidth) > 0;
+          if (ink) top = Math.min(top, r.top);
+        });
+        return Math.round(top - bar);
+      };
+      const tab = t => document.querySelector('.tab-btn[data-tab="' + t + '"]').click();
+      const out = {};
+      for (const t of ['cycle', 'search', 'analysis', 'portfolio']) { tab(t); window.scrollTo(0, 0); await frame(); out['tab ' + t] = gapNow(); }
+      tab('analysis'); await frame(); document.querySelector('#cycle-list .era-row').click(); await frame(); window.scrollTo(0, 0); await frame();
+      out['a past cycle'] = gapNow();
+      const opener = (id, shown) => [...document.querySelectorAll('[data-open="' + id + '"]')].find(x => x.closest('.tab-panel') && (!shown || x.offsetParent));
+      for (const id of [...new Set([...document.querySelectorAll('.metric-sheet')].map(s => s.id))]) {
+        window.__GYN.fire('metricPageReset');
+        const chain = []; let cur = id;
+        while (cur && chain.length < 5) { const o = opener(cur); if (!o) { chain.length = 0; break; } chain.unshift(cur); const host = o.closest('.metric-sheet'); cur = host ? host.id : null; }
+        if (!chain.length) { out[id] = 'no way in'; continue; }
+        tab(opener(chain[0]).closest('.tab-panel').dataset.tab); await frame();
+        for (const c of chain) { const o = opener(c, true); if (o) o.click(); await frame(); }
+        window.scrollTo(0, 0); await frame();
+        const on = document.querySelector('#metric-page > .metric-sheet');
+        out[id] = on && on.id === id ? gapNow() : 'not reached';
+      }
+      return out;
+    });
+    const off = Object.keys(gaps).filter(k => gaps[k] !== 20);
+    (Object.keys(gaps).length > 30 && !off.length)
+      ? ok('every tab and page opens 20px under the top bar', Object.keys(gaps).length + ' screens, whatever their first element (Keren, 0.5.0)')
+      : bad('every tab and page opens 20px under the top bar', JSON.stringify(off.reduce((o, k) => (o[k] = gaps[k], o), {})));
+  }
+
+  {
+    await p.goto('file://' + url); await ready(p);
+    await p.click('.tab-btn[data-tab="portfolio"]'); await settle(p);
+    const home = await p.evaluate(() => [...document.querySelectorAll('#portfolio-home .trend-head')].map(h => h.textContent.trim()).join(' | '));
+    await p.click('#portfolio-home [data-open="sheet-investment-clock"]'); await settle(p);
+    const clock = await p.evaluate(() => {
+      const s = document.querySelector('#metric-page #sheet-investment-clock');
+      return s && !s.hidden ? { title: document.getElementById('topbar-title').textContent, now: s.querySelectorAll('.clock-q.now').length,
+        today: [...s.querySelectorAll('.aux-stat')].filter(r => /today/.test(r.textContent)).length } : null;
+    });
+    await p.click('#topbar-back'); await settle(p);
+    await p.click('#portfolio-home [data-open="sheet-all-weather"]'); await settle(p);
+    const weights = await p.evaluate(() => [...document.querySelectorAll('#metric-page #sheet-all-weather .aux-stat b')].slice(0, 5).map(b => parseFloat(b.textContent)).reduce((a, b) => a + b, 0));
+    (home === 'All Weather | Investment Clock | CustomComing soon' && clock && clock.title === 'Investment Clock' && clock.now === 1 && clock.today === 1 && weights === 100)
+      ? ok('the Portfolio tab offers All Weather, the Investment Clock and Custom', 'the clock marks one phase, the weights sum to 100%')
+      : bad('the Portfolio tab offers All Weather, the Investment Clock and Custom', JSON.stringify({ home, clock, weights }));
+  }
+
+  {
+    await p.goto('file://' + url); await ready(p);
     const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row') && !document.getElementById('sheet-indicators'));
     (tabs === 'cycle search analysis portfolio' && gone)

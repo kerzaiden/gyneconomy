@@ -70,9 +70,15 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   sync();
 }
 export function trendText(t: string){ return '<span class="trend-text">' + t + '</span>'; }
+function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + end + '</span>'; }
+function trendCard(tag: string, cls: string, attrs: string, mark: string, head: string, end: string, body: string){
+  return '<' + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + '>' + trendHead(mark, head, end) + body + '</' + tag + '>';
+}
 export function trendDoor(open: string, title: string, mark: string, head: string, body: string){
-  return '<button type="button" class="trend-card cat-mood" data-open="' + open + '" data-title="' + title + '">' +
-    '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + CHEV + '</span>' + body + '</button>';
+  return trendCard("button", "", ' type="button" data-open="' + open + '" data-title="' + title + '"', mark, head, CHEV, body);
+}
+export function trendSoon(mark: string, head: string, body: string){
+  return trendCard("div", " is-soon", "", mark, head, '<span class="soon-pill">Coming soon</span>', body);
 }
 export function moreRow(fullHtml: string | null | undefined, label?: string){
   if (!fullHtml) return "";
