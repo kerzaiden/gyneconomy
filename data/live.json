@@ -5,35 +5,35 @@
   "rows": [
    {
     "m": "1M",
-    "y": 4.04
+    "y": 4.05
    },
    {
     "m": "2M",
-    "y": 4.11
+    "y": 4.13
    },
    {
     "m": "3M",
-    "y": 4.19
+    "y": 4.22
    },
    {
     "m": "4M",
-    "y": 4.26
-   },
-   {
-    "m": "6M",
     "y": 4.27
    },
    {
+    "m": "6M",
+    "y": 4.3
+   },
+   {
     "m": "1Y",
-    "y": 4.46
+    "y": 4.47
    },
    {
     "m": "2Y",
-    "y": 4.83
+    "y": 4.84
    },
    {
     "m": "3Y",
-    "y": 4.96
+    "y": 4.97
    },
    {
     "m": "5Y",
@@ -41,22 +41,22 @@
    },
    {
     "m": "7Y",
-    "y": 5.17
+    "y": 5.19
    },
    {
     "m": "10Y",
-    "y": 5.28
+    "y": 5.31
    },
    {
     "m": "20Y",
-    "y": 5.67
+    "y": 5.7
    },
    {
     "m": "30Y",
-    "y": 5.63
+    "y": 5.66
    }
   ],
-  "asOf": "2026-10-02"
+  "asOf": "2026-10-05"
  },
  "fedFunds": {
   "kind": "object",
@@ -65,17 +65,19 @@
   "lastMove": "+0.25",
   "lastMoveLabel": "raised a quarter point",
   "asOf": "Sep 16, 2026",
-  "next": "Oct 28, 2026"
+  "next": "Oct 28, 2026",
+  "turnLabel": "First hike since",
+  "turnValue": "2023"
  },
  "vixClose": {
   "kind": "scalar",
-  "value": 16.39,
-  "asOf": "2026-10-01"
+  "value": 15.31,
+  "asOf": "2026-10-02"
  },
  "vix3mClose": {
   "kind": "scalar",
-  "value": 18.58,
-  "asOf": "2026-10-01"
+  "value": 18.01,
+  "asOf": "2026-10-02"
  },
  "capeValue": {
   "kind": "scalar",
@@ -83,7 +85,7 @@
   "asOf": "2026-09-01"
  },
  "_meta": {
-  "fetchedAt": "2026-10-02T22:47:50Z",
+  "fetchedAt": "2026-10-05T22:47:24Z",
   "ok": [
    "yieldCurve",
    "fedFunds",
