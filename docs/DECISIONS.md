@@ -179,17 +179,26 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
   (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
-- **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
-  colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
-  hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
-  and the page gets bottom padding so nothing hides behind the bar. (V550)
-- **The top bar sticks to the top of the page: the open tab's title in the middle, a round menu button on the
-  right, and the "Gyneconomy" title in the menu.** Keren's call, made with Clue's screens. (undated, Sep 19,
-  2026)
-- **The top bar sets the page name in Cormorant, in the plum ink, has a hairline on its bottom edge, and its
-  buttons are the plum mark alone, with no ring and no background.** Keren: "the title of the page should be in
-  feminine letters"; "all buttons in the top bar should not have a round border around it"; "it should be only
-  purple stroke"; the reference she chose sets its page title in plum (0.6.2). (V272, V275, 0.6.2)
+- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and 10px above the bottom
+  edge (plus the safe-area inset), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
+  open tab sits in a pale pill (`--glass-on`), icon and label in the accent ink.** Keren, with a cycle app's screen:
+  "make the app bottom menu like the attached reference, meaning floating … when I scroll, it's liquid glass kind
+  of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
+  the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. (0.6.9)
+- **The page's top bar no longer sticks: the open tab's title sits at the top of the page and scrolls away with
+  it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
+  circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu.** Keren chose
+  this from the liquid-glass previews, after her reference: "Also option B, floating menu bar. So instead of A."
+  It overturns the sticky bar of Sep 19, 2026 (made with Clue's screens). The menu's own screens keep their
+  sticky bar. (0.6.9)
+- **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
+  menu's screens keep a hairline under their bar.** Keren: "the title of the page should be in feminine
+  letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
+  stroke"; the reference she chose sets its page title in plum (0.6.2). The page's own menu and back buttons
+  are the exception since 0.6.9: they float on glass, as above. (V272, V275, 0.6.2, 0.6.9)
+- **Detail sheets (the (i) notes, the legend, a quarter, More details) are frosted glass: the sheet at 72% of the
+  surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
+  Keren picked it from the liquid-glass previews: "and the details sheet, option C". (0.6.9)
 - **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
   (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
