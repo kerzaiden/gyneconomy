@@ -31,7 +31,7 @@ const open = async (p, file) => {
   await settle(p);
 };
 const tap = async (p, sel, until) => {
-  const hit = await p.evaluate(s => { const e = [...document.querySelectorAll(s)].find(x => x.offsetParent !== null);
+  const hit = await p.evaluate(s => { const e = [...document.querySelectorAll(s)].find(x => x.getClientRects().length > 0);
     if (!e) return false; e.click(); return true; }, sel);
   if (!hit) return false;
   if (until) await p.waitForFunction(until);

@@ -16,7 +16,7 @@ const NORMALISERS = [
 const norm = s => NORMALISERS.reduce((acc, [re, to]) => acc.replace(re, to), s || '').trim();
 
 const click = (p, sel) => p.evaluate(s => {
-  const e = [...document.querySelectorAll(s)].filter(x => x.offsetParent !== null)[0];
+  const e = [...document.querySelectorAll(s)].filter(x => x.getClientRects().length > 0)[0];
   if (!e) return false; e.scrollIntoView(); e.click(); return true;
 }, sel);
 
