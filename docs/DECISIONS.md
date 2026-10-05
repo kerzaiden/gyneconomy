@@ -179,14 +179,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
   (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
-- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and close to the bottom
-  edge, 12px inside the safe area (never under 10px), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
+- **On every screen the tab bar floats: a liquid-glass pill inset 16px from the sides (at most 480px wide,
+  centred) and close to the bottom edge, 12px inside the safe area (never under 10px), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
   open tab sits in a pale pill (`--glass-on`), icon and label in the accent ink.** Keren, with a cycle app's screen:
   "make the app bottom menu like the attached reference, meaning floating … when I scroll, it's liquid glass kind
   of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
   the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. Keren,
   on her iPhone: "the bottom menu is not close enough to the bottom of the screen" (10px plus the 34px inset left a
-  44px gap; now 22px). (0.6.9, 0.6.11) At the end of a page the last container stops one top gap (`--gap-top`, 20px)
+  44px gap; now 22px). Keren, on the design system: "It should be the same design, both for desktop and mobile" (0.6.15 retired the
+  wide-screen segmented track; the 480px cap is Claude's call). (0.6.9, 0.6.11) At the end of a page the last container stops one top gap (`--gap-top`, 20px)
   above the bar, whatever the safe area: the padding is the bar's height plus its lift (`--tabbar-lift`) plus that
   gap. Keren, on her iPhone: "there is a space in each page at the bottom that is too much … live within the range of
   our spacing" (it was 54px with the 34px inset). (0.6.13)
