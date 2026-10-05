@@ -329,6 +329,7 @@ async function main() {
   const potential = yoyQuarterly2(quarterly(await fredSeries('GDPPOT', '1949-01-01'), 1, 1e6), 0, 10).filter(d => d.q <= nowQ);
   if (!potential.length || potential[0].q !== '1950 Q1') throw new Error('GDPPOT: expected year-over-year quarters from 1950 Q1');
   say('GDPPOT YoY    ' + potential.length + ' quarters, ' + potential[0].q + ' → ' + potential[potential.length - 1].q + ' (CBO, estimates only, no projection)');
+  say('GDPPOT DATA ' + JSON.stringify(potential));
 
   fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
