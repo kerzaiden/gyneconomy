@@ -1,5 +1,5 @@
 import { CHEV } from "./format.ts";
-import { addSources, need, ui } from "./dom.ts";
+import { addSources, need, ui, viewMore } from "./dom.ts";
 import { GYN, repaintLive } from "./live.ts";
 import { colPeek, pulsePeek, vitalRingSvg } from "./charts.ts";
 import { calendarTodayY } from "./refresh-season.ts";
@@ -39,16 +39,9 @@ function renderCycleList(){
   var PREVIEW_CYCLES = 99;
   (function(){
     var rows: HTMLElement[] = [].slice.call(list.querySelectorAll(".era-row"));
-    var btn = need("cycle-more"), label = need("cycle-more-label");
+    var btn = need("cycle-more");
     if (!btn || rows.length <= PREVIEW_CYCLES){ if (btn) btn.hidden = true; return; }
-    var extra = rows.slice(PREVIEW_CYCLES), open = false;
-    function apply(){
-      extra.forEach(function(r){ r.hidden = !open; });
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      label.textContent = open ? "View less" : "View more";
-    }
-    apply();
-    btn.addEventListener("click", function(){ open = !open; apply(); });
+    viewMore(btn, rows.slice(PREVIEW_CYCLES));
   })();
 
   var listWrap = need("calendar-list"), detail = need("calendar-cycle");

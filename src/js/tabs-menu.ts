@@ -1,5 +1,5 @@
 import { facts, ledeHtml, srcBlock, titleCase } from "./format.ts";
-import { byId, expandBtn, layer, need, put, rovingKeys, ui } from "./dom.ts";
+import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { frameworkRows } from "./data.ts";
@@ -10,17 +10,28 @@ import { sourceIndex } from "./pages-nav.ts";
 type SourceGroup = [string, RegExp | null];
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
+function seasonGrid(){
+  var cell = function(group: string, span: number, name: string, kinds: string){
+    return '<div class="sg-cell ' + group + (span > 1 ? ' wide' : '') + '"><b>' + name + '</b><small>' + kinds + '</small></div>';
+  };
+  var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
+  return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
+    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", "reflation or deflation") + cell("summer", 1, "Summer", "inflation") +
+    head("Contraction", "below potential") + cell("winter", 1, "Winter", "deflation") + cell("autumn", 2, "Autumn", "stagflation or disinflation") +
+  '</div>';
+}
 function seasonModelNote(){
-  return '<h4>The Season Model</h4>' + ledeHtml("Two questions set the season: is the economy growing faster or slower than it can, and how warm are prices?") + facts([
-    "<b>Growth</b> is real GDP against a year earlier, set beside the economy\u2019s <b>potential</b>: how fast it can grow at full use without overheating. At or above potential is expansion; below it is contraction, even while output still grows.",
-    "<b>Potential</b> is the Congressional Budget Office\u2019s estimate from 1950. Before then it is the economy\u2019s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.",
-    "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the economy on the side it was on. That is how far a year\u2019s growth moves, on average, between its first estimate and its latest (BEA, 2018), so a smaller gap is not yet a turn.",
-    "<b>Temperature</b> is inflation against a 1\u20133% band, read on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since, hot above it and cold below it, and its trend over twelve months: heating, cooling or steady. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
-    "<b>In expansion</b>, hot is Summer \u2014 inflation; otherwise cooling is Spring \u2014 deflation, and heating or steady is Spring \u2014 reflation.",
-    "<b>In contraction</b>, cold is Winter \u2014 deflation; otherwise heating is Autumn \u2014 stagflation, and cooling or steady is Autumn \u2014 disinflation.",
+  return '<h4>The Season Model</h4>' + ledeHtml("Two questions set the season: is the economy growing as fast as it can, and how warm are prices?") + seasonGrid() + facts([
+    "<b>Price direction</b> over the last twelve months splits Spring and Autumn. Spring is reflation while prices heat or hold, deflation while they cool; Autumn is stagflation while prices heat, disinflation while they cool or hold.",
+    "<b>Growth</b> is real GDP against a year earlier. <b>Potential</b> is how fast the economy can grow without overheating: the Congressional Budget Office\u2019s estimate since 1950, and before then the economy\u2019s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.",
+    "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the season from flickering: a smaller gap is within what BEA later revises a year\u2019s growth by (BEA, 2018).",
+    "<b>Prices</b> are inflation, on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since. The 1\u20133% range is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target.",
     "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.",
     seasonWhy
   ]);
+}
+function wireIdea(){
+  viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
 }
 function renderSeasonRows(){
 
@@ -48,8 +59,7 @@ function renderSeasonRows(){
       (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : '') +
     '</span>';
   }
-  put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
-    seasonRules.map(function(r){
+  put("seasons-rows", seasonRules.map(function(r){
       var m = wheelMeta[r.key as Season], now = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
         '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
@@ -193,6 +203,8 @@ function wireMenu(){
 export function bootTabsMenu(){
   GYN.step("renderSeasonRows", renderSeasonRows, "render");
   renderSeasonRows();
+  GYN.step("wireIdea", wireIdea, "wire");
+  wireIdea();
   GYN.step("renderTopbar", renderTopbar, "wire");
   renderTopbar();
   GYN.step("wireTabKeys", wireTabKeys, "wire");

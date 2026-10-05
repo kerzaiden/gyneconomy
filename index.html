@@ -319,9 +319,9 @@
     position:relative;
   }
   .season-head{ flex:1 0 100%; order:-2; align-self:flex-start; margin-bottom:-6px; position:relative; z-index:2; }
-  .detail-modal .legend-rows, .metric-sheet .legend-rows, .sign-detail .legend-rows, .hero .legend-rows, .journal-about .legend-rows{ margin:12px 0 4px; }
-  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .journal-about .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
-  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .journal-about .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
+  .detail-modal .legend-rows, .metric-sheet .legend-rows, .sign-detail .legend-rows, .hero .legend-rows{ margin:12px 0 4px; }
+  .detail-modal .legend-row, .metric-sheet .legend-row, .sign-detail .legend-row, .hero .legend-row, .model-card .legend-row{ display:flex; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid var(--border); font-size:var(--type-interface); color:var(--text-primary); }
+  .detail-modal .legend-row:last-child, .metric-sheet .legend-row:last-child, .sign-detail .legend-row:last-child, .hero .legend-row:last-child, .model-card .legend-row:last-child{ border-bottom:none; }
   .detail-modal .legend-row svg, .metric-sheet .legend-row svg, .sign-detail .legend-row svg{ width:20px; height:20px; flex:none; }
   .winter{ --season:var(--season-winter); } .spring{ --season:var(--season-spring); } .autumn{ --season:var(--season-autumn); } .summer{ --season:var(--season-summer); }
   .mkt-up{ --season:var(--ovulate); } .mkt-down{ --season:var(--bleed-mid); }
@@ -330,7 +330,7 @@
   .season-sw{ display:inline-block; width:20px; height:6px; border-radius:3px; flex:none; background:var(--season); }
   .detail-modal .legend-row .bar, .metric-sheet .legend-row .bar, .sign-detail .legend-row .bar{ width:20px; height:6px; border-radius:3px; flex:none; }
   .detail-modal .legend-row .bar.ytd, .metric-sheet .legend-row .bar.ytd, .sign-detail .legend-row .bar.ytd{ opacity:0.55; }
-  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .journal-about .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
+  .detail-modal .legend-row small, .metric-sheet .legend-row small, .sign-detail .legend-row small, .hero .legend-row small, .model-card .legend-row small{ color:var(--text-muted); margin-left:auto; padding-left:12px; text-align:right; }
   .detail-modal .legend-head, .metric-sheet .legend-head, .sign-detail .legend-head{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:16px 0 4px; }
 
   :root{
@@ -488,14 +488,6 @@
   .chart-label-plate{ fill:var(--surface); }
   .hl-lab{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); fill:var(--text-muted); }
 
-  .journal-about{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px; box-shadow: var(--shadow); }
-  .journal-about h2, .journal-about h4{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin:0 0 8px; }
-  .journal-about p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0 0 12px; }
-  .journal-about p:last-child{ margin-bottom:0; }
-  .journal-about a{ color:var(--accent-ink); font-weight:600; }
-
-  .journal-about h2, .journal-about h4{ display:flex; align-items:center; gap:2px; }
-
   .reading-block h5{ font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500; font-size:var(--type-section); color:var(--text-primary); margin:0 0 6px; }
   .reading-block p{ margin:0; font-size:var(--type-reading); line-height:1.6; }
   .detail-modal .reading-block, .metric-sheet .reading-block, .sign-detail .reading-block{ margin-top:14px; } .detail-modal .reading-block p{ color:var(--text-secondary); }
@@ -504,18 +496,17 @@
   .reading-watch li::before{ content:""; position:absolute; left:0; top:11px; width:6px; height:6px; border-radius:50%; background:var(--text-muted); }
   .reading-book{ grid-column:1 / -1; border-top:1px dashed var(--border-strong); padding-top:14px; }
   .reading-book blockquote{ margin:8px 0 0; padding-left:14px; border-left:3px solid var(--border-strong); font-family:"Cormorant Garamond", Georgia, serif; font-style:italic; font-size:var(--type-section); line-height:1.4; color:var(--text-primary); }
-  .framework-rows{ margin-top:12px; }
   .model-card > .menu-section{ margin:0; padding:16px 12px 12px; border-bottom:1px solid var(--border); }
   .model-card > p{ font-size:var(--type-reading); color:var(--text-secondary); line-height:1.65; margin:0; padding:12px; border-bottom:1px solid var(--border); }
+  .model-card > p:last-child{ border-bottom:0; }
+  .model-card > .menu-prose{ padding:0 12px; }
+  .model-card .menu-prose p{ color:var(--text-secondary); line-height:1.65; }
   .model-card .legend-rows{ margin:0; }
   .model-card .legend-row{ padding:10px 12px; }
   .seasons-rows .lag-row{ grid-template-columns: 1.5fr 0.8fr 0.8fr 1.3fr; font-size:var(--type-interface); padding:10px 12px; }
-  .seasons-rows .lag-row.lag-row-head{ font-size:var(--type-label); }
   .seasons-rows .meta{ display:none; }
   @media (max-width:640px){
     .seasons-rows .lag-row{ grid-template-columns: 1fr; grid-template-areas: "name" "meta" "range"; gap:5px; padding:13px 12px; }
-    .seasons-rows .lag-row.lag-row-head{ padding:9px 12px; grid-template-areas: "name"; }
-    .seasons-rows .lag-row.lag-row-head span:last-child{ display:none; }
     .seasons-rows .lag-row span:first-child{ grid-area:name; font-size:var(--type-reading); }
     .seasons-rows .cell{ display:none; }
     .seasons-rows .meta{ display:block; grid-area:meta; font-size:var(--type-meta); color:var(--text-secondary); }
@@ -540,7 +531,14 @@
   .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
   .seasons-rows .lag-row.now{ background:var(--accent-wash); }
   .seasons-rows .lag-row em{ font-style:normal; font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
-  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; }
+  .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 12px; }
+  .season-grid{ display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:4px; margin:16px 0 18px; }
+  .season-grid small{ display:block; font-size:var(--type-label); color:var(--text-muted); line-height:1.3; margin-top:2px; }
+  .sg-head{ align-self:center; font-size:var(--type-meta); color:var(--text-primary); line-height:1.3; padding:2px; }
+  .sg-head b{ font-weight:600; }
+  .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:color-mix(in srgb, var(--season) 30%, var(--surface)); }
+  .sg-cell b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
+  .sg-cell.wide{ grid-column:span 2; }
   .framework-rows .lag-row span:last-child{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
   @media (max-width:520px){ .framework-rows .lag-row{ grid-template-columns: 1fr 1.6fr 0.9fr; } .framework-rows .lag-row span:nth-child(2){ display:none; } }
@@ -1612,7 +1610,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.0 (758)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.1 (759)</span></p>
     </div>
   </div>
 
@@ -1667,12 +1665,15 @@
         </button>
         <h2 class="topbar-title sources-title">About Gyneconomy</h2>
       </div>
-      <h3 class="menu-section">The Idea</h3>
-      <div class="menu-card menu-prose">
-        <p><i>Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
-        <p>The body is the economy. Markets are its nervous system; hormones and prices are its signals; growth and inflation are its energy budget; interest rates are the lever that cools it after it has already run hot. Read this way, the phases of an economic cycle stop being abstractions and become seasons — Spring, Summer, Autumn and Winter — each with its own temperature, its own mood, and its own right action.</p>
-        <p>The framework, which the book calls Gyneconomy™, borrows its discipline from two places: Howard Marks's <i>Mastering the Market Cycle</i> for the economics, and Alexandra Pope and Sjanie Hugo Wurlitzer's <i>Wild Power</i> for the cycle. Every economic claim in it is grounded in verified biological research before it is allowed on the page.</p>
-        <p>The app is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1928, and keeps the vital signs the book teaches you to watch. Every figure comes from primary sources.</p>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Idea</h3>
+        <div class="menu-prose" id="idea-prose">
+          <p><i>Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
+          <p hidden>The body is the economy. Markets are its nervous system; hormones and prices are its signals; growth and inflation are its energy budget; interest rates are the lever that cools it after it has already run hot. Read this way, the phases of an economic cycle stop being abstractions and become seasons — Spring, Summer, Autumn and Winter — each with its own temperature, its own mood, and its own right action.</p>
+          <p hidden>The framework, which the book calls Gyneconomy™, borrows its discipline from two places: Howard Marks's <i>Mastering the Market Cycle</i> for the economics, and Alexandra Pope and Sjanie Hugo Wurlitzer's <i>Wild Power</i> for the cycle. Every economic claim in it is grounded in verified biological research before it is allowed on the page.</p>
+          <p hidden>The app is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1928, and keeps the vital signs the book teaches you to watch. Every figure comes from primary sources.</p>
+        </div>
+        <button type="button" class="cyc-more" id="idea-more" aria-expanded="false" aria-controls="idea-prose"><span>View more</span><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></button>
       </div>
 
       <div class="menu-card model-card">
@@ -1689,14 +1690,14 @@
         <div id="seasons-rows"></div>
       </div>
 
-      <h3 class="menu-section" id="framework-kicker">The Framework</h3>
-      <div class="menu-card journal-about">
-      <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
-      <div class="lag-rows framework-rows" id="framework-rows"></div>
-    </div>
+      <div class="menu-card model-card framework-rows">
+        <h3 class="menu-section" id="framework-kicker">The Framework</h3>
+        <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
+        <div id="framework-rows"></div>
+      </div>
 
-      <h3 class="menu-section">The Author</h3>
-      <div class="menu-card menu-prose">
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Author</h3>
         <p>Keren is writing <i>Mrs. Market</i> for general readers. The book is in progress; this page will carry where to find it when it is out.</p>
       </div>
     </div>
@@ -2055,6 +2056,21 @@
     if (!fullHtml) return "";
     var idx = detailSlot(fullHtml);
     return '<button type="button" class="more-row" data-detail-idx="' + idx + '"><span>' + (label || "More details") + "</span>" + CHEV + "</button>";
+  }
+  function viewMore(btn, extra) {
+    var label = btn.querySelector("span"), open = false;
+    function apply() {
+      extra.forEach(function(r) {
+        r.hidden = !open;
+      });
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (label) label.textContent = open ? "View less" : "View more";
+    }
+    apply();
+    btn.addEventListener("click", function() {
+      open = !open;
+      apply();
+    });
   }
   function appendSvgMarkup(svg, markup) {
     if (!markup) return;
@@ -38803,24 +38819,12 @@
     var PREVIEW_CYCLES = 99;
     (function() {
       var rows = [].slice.call(list.querySelectorAll(".era-row"));
-      var btn = need("cycle-more"), label = need("cycle-more-label");
+      var btn = need("cycle-more");
       if (!btn || rows.length <= PREVIEW_CYCLES) {
         if (btn) btn.hidden = true;
         return;
       }
-      var extra = rows.slice(PREVIEW_CYCLES), open2 = false;
-      function apply() {
-        extra.forEach(function(r) {
-          r.hidden = !open2;
-        });
-        btn.setAttribute("aria-expanded", open2 ? "true" : "false");
-        label.textContent = open2 ? "View less" : "View more";
-      }
-      apply();
-      btn.addEventListener("click", function() {
-        open2 = !open2;
-        apply();
-      });
+      viewMore(btn, rows.slice(PREVIEW_CYCLES));
     })();
     var listWrap = need("calendar-list"), detail = need("calendar-cycle");
     function open(from) {
@@ -40468,8 +40472,20 @@
       gdp: gdpSrc
     };
   }
+  function seasonGrid() {
+    var cell = function(group, span, name, kinds) {
+      return '<div class="sg-cell ' + group + (span > 1 ? " wide" : "") + '"><b>' + name + "</b><small>" + kinds + "</small></div>";
+    };
+    var head = function(name, sub) {
+      return '<div class="sg-head"><b>' + name + "</b><small>" + sub + "</small></div>";
+    };
+    return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", "reflation or deflation") + cell("summer", 1, "Summer", "inflation") + head("Contraction", "below potential") + cell("winter", 1, "Winter", "deflation") + cell("autumn", 2, "Autumn", "stagflation or disinflation") + "</div>";
+  }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two questions set the season: is the economy growing faster or slower than it can, and how warm are prices?") + facts([ "<b>Growth</b> is real GDP against a year earlier, set beside the economy’s <b>potential</b>: how fast it can grow at full use without overheating. At or above potential is expansion; below it is contraction, even while output still grows.", "<b>Potential</b> is the Congressional Budget Office’s estimate from 1950. Before then it is the economy’s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.", "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the economy on the side it was on. That is how far a year’s growth moves, on average, between its first estimate and its latest (BEA, 2018), so a smaller gap is not yet a turn.", "<b>Temperature</b> is inflation against a 1–3% band, read on CPI before 2000 and on PCE, the Fed’s own gauge, since, hot above it and cold below it, and its trend over twelve months: heating, cooling or steady. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer — inflation; otherwise cooling is Spring — deflation, and heating or steady is Spring — reflation.", "<b>In contraction</b>, cold is Winter — deflation; otherwise heating is Autumn — stagflation, and cooling or steady is Autumn — disinflation.", "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.", seasonWhy ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two questions set the season: is the economy growing as fast as it can, and how warm are prices?") + seasonGrid() + facts([ "<b>Price direction</b> over the last twelve months splits Spring and Autumn. Spring is reflation while prices heat or hold, deflation while they cool; Autumn is stagflation while prices heat, disinflation while they cool or hold.", "<b>Growth</b> is real GDP against a year earlier. <b>Potential</b> is how fast the economy can grow without overheating: the Congressional Budget Office’s estimate since 1950, and before then the economy’s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.", "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the season from flickering: a smaller gap is within what BEA later revises a year’s growth by (BEA, 2018).", "<b>Prices</b> are inflation, on CPI before 2000 and on PCE, the Fed’s own gauge, since. The 1–3% range is part of the Season Model’s structure, a point either side of the Fed’s 2% target.", "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.", seasonWhy ]);
+  }
+  function wireIdea() {
+    viewMore(need("idea-more"), [].slice.call(need("idea-prose").querySelectorAll("p[hidden]")));
   }
   function renderSeasonRows() {
     var seasonRules = [ {
@@ -40538,7 +40554,7 @@
         return '<b class="' + z + (w ? " on" : "") + '"></b>';
       }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
     }
-    put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' + seasonRules.map(function(r) {
+    put("seasons-rows", seasonRules.map(function(r) {
       var m = wheelMeta[r.key], now2 = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · PCE " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
     }).join(""));
@@ -40777,6 +40793,8 @@
   function bootTabsMenu() {
     GYN.step("renderSeasonRows", renderSeasonRows, "render");
     renderSeasonRows();
+    GYN.step("wireIdea", wireIdea, "wire");
+    wireIdea();
     GYN.step("renderTopbar", renderTopbar, "wire");
     renderTopbar();
     GYN.step("wireTabKeys", wireTabKeys, "wire");

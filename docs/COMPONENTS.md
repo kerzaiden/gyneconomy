@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `4728620` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `7144964` on 2026-10-05. **101 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -213,6 +213,7 @@ Generated from commit `4728620` on 2026-10-05. **100 components**, **35 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`renderSeasonRows`** | `.cell` `.cold` `.hot` `.meta` `.range-bar` `.range-cell` | `tabs-menu.ts:bootTabsMenu` |
+| **`seasonGrid`** | `.season-grid` `.sg-cell` `.sg-head` | `tabs-menu.ts:seasonModelNote` |
 | **`wireMenu`** | `.menu-card` `.menu-label` `.menu-row` `.menu-section` | `tabs-menu.ts:bootTabsMenu` |
 
 ## Vocabulary
@@ -223,7 +224,7 @@ renderer speaks. Listed most-used first.
 | Function | Lives in | Called from |
 |---|---|---|
 | **`byId`** | dom.ts | 32 places |
-| **`need`** | dom.ts | 26 places |
+| **`need`** | dom.ts | 27 places |
 | **`put`** | dom.ts | 25 places |
 | **`fmtSigned`** | format.ts | 23 places |
 | **`titleCase`** | format.ts | 18 places |

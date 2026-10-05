@@ -90,6 +90,16 @@ export function moreRow(fullHtml: string | null | undefined, label?: string){
   return '<button type="button" class="more-row" data-detail-idx="' + idx + '">' +
     '<span>' + (label || "More details") + '</span>' + CHEV + '</button>';
 }
+export function viewMore(btn: HTMLElement, extra: HTMLElement[]){
+  var label = btn.querySelector("span"), open = false;
+  function apply(){
+    extra.forEach(function(r){ r.hidden = !open; });
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (label) label.textContent = open ? "View less" : "View more";
+  }
+  apply();
+  btn.addEventListener("click", function(){ open = !open; apply(); });
+}
 export function appendSvgMarkup(svg: Element, markup: string | null | undefined){
   if (!markup) return;
   var doc = new DOMParser().parseFromString(

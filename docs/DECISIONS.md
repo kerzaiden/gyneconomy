@@ -232,6 +232,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **About Gyneconomy (formerly "About the book") holds the book's introduction and the cycle model, season
   model and framework the Content tab used to carry; its text is a draft for Keren to edit.** Keren merged
   them and renamed the page. (V657)
+- **Every section of About Gyneconomy is one container with its title inside, as the Cycle Model is; The Idea
+  shows its first paragraph and a View more for the rest; the Season Model's rows carry no header row.** Keren: "I
+  want the idea title to be like the cycle model … it's all part of one container"; "the first paragraph to be
+  visible and then view more"; the "Season" header "is unnecessary". Its (i) opens on one plain line and a
+  two-by-three table (growth against potential by cold, in range and hot), so the model can be told word for word.
+  (0.8.1, Oct 5, 2026)
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)

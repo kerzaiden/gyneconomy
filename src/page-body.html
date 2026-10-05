@@ -204,7 +204,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.0 (758)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.1 (759)</span></p>
     </div>
   </div>
 
@@ -259,12 +259,15 @@
         </button>
         <h2 class="topbar-title sources-title">About Gyneconomy</h2>
       </div>
-      <h3 class="menu-section">The Idea</h3>
-      <div class="menu-card menu-prose">
-        <p><i>Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
-        <p>The body is the economy. Markets are its nervous system; hormones and prices are its signals; growth and inflation are its energy budget; interest rates are the lever that cools it after it has already run hot. Read this way, the phases of an economic cycle stop being abstractions and become seasons — Spring, Summer, Autumn and Winter — each with its own temperature, its own mood, and its own right action.</p>
-        <p>The framework, which the book calls Gyneconomy™, borrows its discipline from two places: Howard Marks's <i>Mastering the Market Cycle</i> for the economics, and Alexandra Pope and Sjanie Hugo Wurlitzer's <i>Wild Power</i> for the cycle. Every economic claim in it is grounded in verified biological research before it is allowed on the page.</p>
-        <p>The app is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1928, and keeps the vital signs the book teaches you to watch. Every figure comes from primary sources.</p>
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Idea</h3>
+        <div class="menu-prose" id="idea-prose">
+          <p><i>Mrs. Market</i> is a book about the economy for people who are neither economists nor doctors. It reads economic cycles through the one cycle most of us already understand from the inside: the menstrual cycle.</p>
+          <p hidden>The body is the economy. Markets are its nervous system; hormones and prices are its signals; growth and inflation are its energy budget; interest rates are the lever that cools it after it has already run hot. Read this way, the phases of an economic cycle stop being abstractions and become seasons — Spring, Summer, Autumn and Winter — each with its own temperature, its own mood, and its own right action.</p>
+          <p hidden>The framework, which the book calls Gyneconomy™, borrows its discipline from two places: Howard Marks's <i>Mastering the Market Cycle</i> for the economics, and Alexandra Pope and Sjanie Hugo Wurlitzer's <i>Wild Power</i> for the cycle. Every economic claim in it is grounded in verified biological research before it is allowed on the page.</p>
+          <p hidden>The app is the book's companion: the same framework, run on real data. It computes the current season from growth and inflation exactly as the book defines it, shows every past cycle since 1928, and keeps the vital signs the book teaches you to watch. Every figure comes from primary sources.</p>
+        </div>
+        <button type="button" class="cyc-more" id="idea-more" aria-expanded="false" aria-controls="idea-prose"><span>View more</span><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></button>
       </div>
 
       <div class="menu-card model-card">
@@ -281,14 +284,14 @@
         <div id="seasons-rows"></div>
       </div>
 
-      <h3 class="menu-section" id="framework-kicker">The Framework</h3>
-      <div class="menu-card journal-about">
-      <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
-      <div class="lag-rows framework-rows" id="framework-rows"></div>
-    </div>
+      <div class="menu-card model-card framework-rows">
+        <h3 class="menu-section" id="framework-kicker">The Framework</h3>
+        <p>Every reading on this board is one of seven signs, each paired with its bodily counterpart and sorted by when it speaks: the leading signs turn first, the coincident ones report the present, the lagging ones confirm what has already happened.</p>
+        <div id="framework-rows"></div>
+      </div>
 
-      <h3 class="menu-section">The Author</h3>
-      <div class="menu-card menu-prose">
+      <div class="menu-card model-card">
+        <h3 class="menu-section">The Author</h3>
         <p>Keren is writing <i>Mrs. Market</i> for general readers. The book is in progress; this page will carry where to find it when it is out.</p>
       </div>
     </div>

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,374 lines** in 36 files, about 620 KB, roughly **176 thousand tokens**. No session can
+The source is **9,392 lines** in 36 files, about 620 KB, roughly **176 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `4728620` on 2026-10-05.
+Generated from commit `7144964` on 2026-10-05.
 
 ## The page
 
@@ -19,17 +19,17 @@ Generated from commit `4728620` on 2026-10-05.
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
 | `styles.css` | 1,426 | the whole stylesheet, every token and rule |
-| `page-body.html` | 356 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
+| `page-body.html` | 359 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **687** top-level functions, **114** top-level vars, **385** exported names, **19** boots.
+Counts: **32** modules, **690** top-level functions, **114** top-level vars, **386** exported names, **19** boots.
 
 ## Modules, in boot order
 
 | Module | Lines | Declarations | Imports from |
 |---|---|---|---|
-| `js/dom.ts` | 160 | 25 | `format` |
+| `js/dom.ts` | 170 | 26 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 42 | 5 | `format`, `history-fred` |
 | `js/data.ts` | 561 | 77 | `format`, `history-fred`, `live` |
@@ -41,10 +41,10 @@ Counts: **32** modules, **687** top-level functions, **114** top-level vars, **3
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 92 | 15 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `fed-phases`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core` |
 | `js/dial-cycle.ts` | 389 | 22 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
-| `js/analysis.ts` | 158 | 15 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/analysis.ts` | 151 | 15 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/portfolio.ts` | 110 | 17 | `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
-| `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
+| `js/tabs-menu.ts` | 215 | 7 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 89 | 11 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/ai-insights.ts` | 182 | 39 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
@@ -70,7 +70,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 
 | Order | Boot | Lines |
 |---|---|---|
-| 1 | `bootDom` | `js/dom.ts:150`–159 |
+| 1 | `bootDom` | `js/dom.ts:160`–169 |
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:33`–41 |
@@ -84,10 +84,10 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:88`–91 |
 | 14 | `bootDialCycle` | `js/dial-cycle.ts:365`–388 |
-| 15 | `bootAnalysis` | `js/analysis.ts:153`–157 |
+| 15 | `bootAnalysis` | `js/analysis.ts:146`–150 |
 | 16 | `bootPortfolio` | `js/portfolio.ts:109`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:206`–212 |
-| 18 | `bootTabsMenu` | `js/tabs-menu.ts:193`–202 |
+| 18 | `bootTabsMenu` | `js/tabs-menu.ts:203`–214 |
 | 19 | `bootRepaint` | `js/repaint.ts:72`–88 |
 
 ## Script, module by module
@@ -120,12 +120,13 @@ falls in. **export** marks a name other modules import.
 | 83 | `trendBox` · export | `function trendBox(` |
 | 84 | `trendSoon` · export | `function trendSoon(` |
 | 87 | `moreRow` · export | `function moreRow(` |
-| 93 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
-| 115 | `addSources` · export | `function addSources(` |
-| 126 | `SVG_NS` | `var SVG_NS =` |
-| 127 | `svgEl` · export | `function svgEl(` |
-| 133 | `detailSlot` · export | `function detailSlot(` |
-| 143 | `expandBtn` · export | `function expandBtn(` |
+| 93 | `viewMore` · export | `function viewMore(` |
+| 103 | `appendSvgMarkup` · export | `function appendSvgMarkup(` |
+| 125 | `addSources` · export | `function addSources(` |
+| 136 | `SVG_NS` | `var SVG_NS =` |
+| 137 | `svgEl` · export | `function svgEl(` |
+| 143 | `detailSlot` · export | `function detailSlot(` |
+| 153 | `expandBtn` · export | `function expandBtn(` |
 
 ### `js/live.ts`
 
@@ -737,19 +738,19 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 79 | `eraReading` | `function eraReading(` |
-| 89 | `eraValue` | `function eraValue(` |
-| 95 | `eraRange` | `function eraRange(` |
-| 100 | `eraMini` | `function eraMini(` |
-| 105 | `lead` | `function lead(` |
-| 106 | `figOf` | `function figOf(` |
-| 107 | `part` | `function part(` |
-| 108 | `parentOf` | `function parentOf(` |
-| 109 | `eraCard` | `function eraCard(` |
-| 127 | `eraCards` | `function eraCards(` |
-| 133 | `eraShow` | `function eraShow(` |
-| 140 | `enterEra` | `function enterEra(` |
-| 147 | `leaveEra` | `function leaveEra(` |
+| 72 | `eraReading` | `function eraReading(` |
+| 82 | `eraValue` | `function eraValue(` |
+| 88 | `eraRange` | `function eraRange(` |
+| 93 | `eraMini` | `function eraMini(` |
+| 98 | `lead` | `function lead(` |
+| 99 | `figOf` | `function figOf(` |
+| 100 | `part` | `function part(` |
+| 101 | `parentOf` | `function parentOf(` |
+| 102 | `eraCard` | `function eraCard(` |
+| 120 | `eraCards` | `function eraCards(` |
+| 126 | `eraShow` | `function eraShow(` |
+| 133 | `enterEra` | `function enterEra(` |
+| 140 | `leaveEra` | `function leaveEra(` |
 
 ### `js/portfolio.ts`
 
@@ -816,21 +817,23 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 13 | `seasonModelNote` | `function seasonModelNote(` |
-| 25 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 13 | `seasonGrid` | `function seasonGrid(` |
+| 23 | `seasonModelNote` | `function seasonModelNote(` |
+| 33 | `wireIdea` | `function wireIdea(` |
+| 36 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### TAB NAVIGATION (Cycle / Analysis / Herstory / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 72 | `renderTopbar` | `function renderTopbar(` |
-| 101 | `wireTabKeys` | `function wireTabKeys(` |
+| 82 | `renderTopbar` | `function renderTopbar(` |
+| 111 | `wireTabKeys` | `function wireTabKeys(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 103 | `wireMenu` | `function wireMenu(` |
+| 113 | `wireMenu` | `function wireMenu(` |
 
 ### `js/repaint.ts`
 
@@ -1345,7 +1348,7 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 428 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
 | 443 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
 | 495 | journal (editorial content tab) |
-| 501 | content tab: reading companion |
+| 496 | content tab: reading companion |
 | 553 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
 | 804 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
 | 848 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
@@ -1369,7 +1372,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (106), which is what the renderers fill:
+Every `id` in the static DOM (108), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1460,25 +1463,27 @@ Every `id` in the static DOM (106), which is what the renderers fill:
 | 207 | `app-version` |
 | 211 | `sheet-howto` |
 | 254 | `sheet-book` |
-| 280 | `seasons-kicker` |
-| 281 | `seasons-rows` |
-| 284 | `framework-kicker` |
-| 287 | `framework-rows` |
-| 297 | `sheet-appearance` |
-| 305 | `theme-toggle` |
-| 312 | `sheet-contact` |
-| 321 | `contact-form` |
-| 322 | `contact-title` |
-| 323 | `contact-message` |
-| 325 | `contact-hint` |
-| 326 | `contact-send` |
-| 332 | `sheet-sources` |
-| 335 | `sources-back` |
-| 340 | `asof-text` |
-| 341 | `sources-groups` |
-| 347 | `detail-backdrop` |
-| 349 | `detail-modal-close` |
-| 350 | `detail-modal-body` |
+| 264 | `idea-prose` |
+| 270 | `idea-more` |
+| 283 | `seasons-kicker` |
+| 284 | `seasons-rows` |
+| 288 | `framework-kicker` |
+| 290 | `framework-rows` |
+| 300 | `sheet-appearance` |
+| 308 | `theme-toggle` |
+| 315 | `sheet-contact` |
+| 324 | `contact-form` |
+| 325 | `contact-title` |
+| 326 | `contact-message` |
+| 328 | `contact-hint` |
+| 329 | `contact-send` |
+| 335 | `sheet-sources` |
+| 338 | `sources-back` |
+| 343 | `asof-text` |
+| 344 | `sources-groups` |
+| 350 | `detail-backdrop` |
+| 352 | `detail-modal-close` |
+| 353 | `detail-modal-body` |
 
 ## Finding things fast
 
