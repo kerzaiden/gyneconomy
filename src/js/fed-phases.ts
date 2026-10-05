@@ -32,7 +32,7 @@ export function inflationPeak(from: string, to: string){
     var dir = cpiDirectionAt(c.m) || "";
     if (dir === "falling" && prev !== "falling" && run.length){
       var top = run.reduce(function(a, b){ return b.v > a.v ? b : a; });
-      if (top !== inWindow[0] && (!best || top.v > best.v)) best = top;
+      if (top !== run[0] && (!best || top.v > best.v)) best = top;
     }
     if (dir === "falling") run = []; else run.push(c);
     prev = dir;

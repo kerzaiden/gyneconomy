@@ -5,6 +5,7 @@ import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodTod
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
+import { fedPhases, inflationPeak } from '../../src/js/fed-phases.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
@@ -98,4 +99,15 @@ test('a cycle’s story opens before it closes, its high is above its low, and i
     if (s.most[1]) assert.ok(s.most[0].n >= s.most[1].n);
   }
   assert.ok(told >= 6, told + ' cycles have a story');
+});
+
+test('ovulation is the inflation peak, marked only once the price trend has turned to falling', () => {
+  assert.deepEqual(inflationPeak('2019-01', '2022-12'), { m: '2022-06', v: 8.98 });
+  assert.equal(inflationPeak('2023-01', '2026-09'), null);
+});
+
+test('the Fed\'s phases alternate, and today\'s move sets the open phase', () => {
+  const p = fedPhases();
+  p.slice(1).forEach((x, i) => assert.notEqual(x.s, p[i].s, x.m));
+  assert.deepEqual(p[p.length - 1], { m: '2026-09', s: 1 });
 });
