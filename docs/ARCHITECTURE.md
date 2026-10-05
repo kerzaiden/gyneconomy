@@ -630,10 +630,8 @@ Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` 
 cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
 fit on a phone. The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
-sits below both so neither imports the other. A closed cycle's card opens on **After** (it ended on it before 0.4.1), the S&P 500's return in
-the calendar year after the close (`yearAfter`, from the same `sp500AnnualReturns` as the rows, so it reaches back to
-1928; before 0.1.1 it read the monthly average twelve months on, which opens in 1948, and the five cycles before
-1947 had no After). The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
+sits below both so neither imports the other. A closed cycle's card opened on **After** (the S&P 500 the year after
+the close, `yearAfter`) from 1.8.0 until 0.6.17, when Keren dropped it for the next cycle's own page. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)
 left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 **A closed cycle reads its own diagnosis, at its close** (`renderCycleView` calls `renderDiagnosis(m)`): the
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
@@ -685,7 +683,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   entering and leaving a past cycle, so the card follows the cycle. `moodFigures` is the first fact of `moodInfo`.
   It replaced Emotion × Season (a twelve-by-four grid with a slid test), which Keren found uninformative.
 - **The record is computed at load, never written down** (`moodTrack`): every month her mood can be read, and the
-  S&P 500 twelve months on (`yearAfter`).
+  S&P 500 twelve months on.
 - **The S&P 500 a year later** is Shiller's monthly S&P 500 (`sp500MonthlyHistory`, from 1948, through the Backfill from the same
   workbook the CAPE fetcher reads). **Shiller's newest month can be a first-of-month close** ("Sept price is Sept 1st close") until
   his next update; it is what he publishes, so it is what the app reads.

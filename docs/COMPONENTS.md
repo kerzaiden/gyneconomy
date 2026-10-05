@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `0796e17` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `eab5856` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -75,7 +75,7 @@ Generated from commit `0796e17` on 2026-10-05. **100 components**, **35 shared p
 | Component | Owns | Used by |
 |---|---|---|
 | **`dxHead`** | `.dx-sys-head` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
-| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
+| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -225,7 +225,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 32 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 25 places |
-| **`fmtSigned`** | format.ts | 23 places |
+| **`fmtSigned`** | format.ts | 22 places |
 | **`titleCase`** | format.ts | 18 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |

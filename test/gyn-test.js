@@ -291,7 +291,7 @@ async function openPage(p, url, sheet) {
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 0 && today.told === '1:AI Cycle' && today.cards === 0 &&
-     today.boxes === 'fed,ai,sys' && today.doors === 1 && today.score && !today.after && today.kicker === 'AI Cycle')
+     today.boxes === 'fed,ai,sys' && today.doors === 1 && today.score && today.kicker === 'AI Cycle')
       ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', today.title)
       : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
@@ -304,7 +304,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 1 && past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 1 && !past.after &&
      yearRun(past.years) && past.opens >= past.years.length - 1)
       ? ok('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', JSON.stringify([today, past]));

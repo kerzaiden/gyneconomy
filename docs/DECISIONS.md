@@ -1391,11 +1391,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   stands in the serif on the left; beside it the year's seasons in order, and under them Mrs. Market's emotion at
   its first and last month (one word when they agree; none before her mood can be read) and the S&P 500's return
   for the year ("so far" for the year in progress), all from the app's own record, nothing written by hand. The
-  year opens the sheet of its last quarter, the one the dial's centre opens. A closed cycle ends on "After": the
-  S&P 500 a year after the close. That figure is the S&P 500's return in the calendar year after the close, from
-  the yearly record the rows above it print, so every cycle back to 1928 ends on one; Claude's call, replacing the
-  monthly average twelve months on, which opens in 1948 and left the five cycles before 1947 without it. (1.8.0,
-  0.1.1)
+  year opens the sheet of its last quarter, the one the dial's centre opens. (1.8.0)
+  A closed cycle no longer ends on "After" (the S&P 500 the year after the close, 1.8.0 to 0.6.16). Keren: "I don't
+  need the after in the year by year component. I would just look at the next cycle." (0.6.17)
 - **The Mood page has one Insights box (since 1.5.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers
