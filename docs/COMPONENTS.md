@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `5464c9e` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `0796e17` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -100,7 +100,7 @@ Generated from commit `5464c9e` on 2026-10-05. **100 components**, **35 shared p
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
 | **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `diagnosis.ts:diagnosisHtml` |
-| **`levelsHtml`** | `.fp-growth` `.fp-levels` `.fp-prices` `.fp-rate` `.fp-so-far` | `fed-phases.ts:fedPhasesCard` |
+| **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
@@ -226,6 +226,7 @@ renderer speaks. Listed most-used first.
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 25 places |
 | **`fmtSigned`** | format.ts | 23 places |
+| **`titleCase`** | format.ts | 18 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
@@ -284,7 +285,6 @@ renderer speaks. Listed most-used first.
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
-| **`trendText`** | dom.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
 | **`cpiYear`** | model.ts | 3 places |
@@ -295,7 +295,6 @@ renderer speaks. Listed most-used first.
 | **`expandBtn`** | dom.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
-| **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`menuOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
@@ -316,10 +315,9 @@ renderer speaks. Listed most-used first.
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
-| **`trendDoor`** | dom.ts | 3 places |
+| **`trendText`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
-| **`yearsWord`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
 ## Shared patterns

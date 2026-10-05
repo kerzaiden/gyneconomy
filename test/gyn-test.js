@@ -274,8 +274,8 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const read = () => p.evaluate(() => {
       const d = document.getElementById('diagnosis'), yrs = d && d.querySelector('.dx-years');
-      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-open="sheet-cat-mood"] .trend-text').length,
-                   story: [...d.querySelectorAll('[data-open="sheet-cat-mood"] .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
+      return d ? { kicker: (document.getElementById('cycle-kicker-name') || {}).textContent, visible: !!d.offsetParent, title: (d.querySelector('.trend-head') || {}).textContent.trim(), lead: d.querySelectorAll('[data-chart-cycle] .trend-text').length,
+                   story: [...d.querySelectorAll('[data-chart-cycle] .trend-text')].map(x => /^[A-Z][^.]+\. Mrs\. Market .+\.$/.test(x.textContent)).join() === 'true',
                    told: (() => { document.querySelector('#sheet-cat-mood .cat-more .more-row').click();
                      const b = document.getElementById('detail-modal-body'), t = b.querySelectorAll('.hi-card').length + ':' +
                        (/([A-Z][\w\-]*(?: [A-Z][\w\-]*)* Cycle), \d{4}\u2013/.exec((b.querySelector('.hi-card p') || {}).textContent || '') || [])[1];
@@ -304,7 +304,7 @@ async function openPage(p, url, sheet) {
     await settle(p);
     const past = await read();
     const yearRun = ys => ys.length > 1 && ys.every((y, i) => !i || y === ys[i - 1] - 1);
-    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,trend,sys' && past.doors === 1 && past.after &&
+    (yearRun(today.years) && today.opens === today.years.length && past.boxes === 'fed,trend,sys' && past.doors === 1 && past.after &&
      yearRun(past.years) && past.opens >= past.years.length - 1)
       ? ok('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', today.years.join() + ' · ' + past.years.join())
       : bad('the cycle reads year by year, newest first, each year opening its quarter, today and at a close', JSON.stringify([today, past]));
@@ -327,7 +327,7 @@ async function openPage(p, url, sheet) {
     (!spill.length)
       ? ok('a closed cycle\u2019s preview columns stay inside their card', 'none past the frame')
       : bad('a closed cycle\u2019s preview columns stay inside their card', JSON.stringify(spill));
-    (past && past.visible && past.title === 'Big Tech Cycle' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.kicker === 'Big Tech Cycle')
+    (past && past.visible && past.title === 'Cycle Statistics' && past.lead === 1 && past.story && past.told === '1:Big Tech Cycle' && past.kicker === 'Big Tech Cycle')
       ? ok('a closed cycle tells its whole story, not its close', past.title)
       : bad('a closed cycle tells its whole story, not its close', JSON.stringify(past));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="cycle"]').click()); await settle(p);
@@ -595,7 +595,7 @@ async function openPage(p, url, sheet) {
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     (wx && wx.bar === 'Weather' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
-     wx.cards.indexOf('In the body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The barometer') > 0)
+     wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The Market This Cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
     await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);
@@ -694,7 +694,7 @@ async function openPage(p, url, sheet) {
     (pastFrame && JSON.stringify(pastFrame) === JSON.stringify(nowFrame) && nowFrame.kids === 'cycle-view,today-analysis' && nowFrame.gap > 0)
       ? ok('a past cycle stacks like the current one', nowFrame.kids + ' · ' + nowFrame.flow + ' · dial to diagnosis ' + nowFrame.gap + 'px')
       : bad('a past cycle stacks like the current one', JSON.stringify({ nowFrame, pastFrame }));
-    await click(p, '#calendar-cycle [data-open="sheet-cat-mood"]');
+    await p.evaluate(() => { const d = document.createElement('button'); d.dataset.open = 'sheet-cat-mood'; d.dataset.title = 'Mood'; document.getElementById('today-analysis').appendChild(d); d.click(); d.remove(); });
     await settle(p);
     const got = view && await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => ({
       open: n.dataset.open, name: n.querySelector('.ci-name').textContent.trim(), val: n.querySelector('.ci-value').textContent.trim(),

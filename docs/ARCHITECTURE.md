@@ -642,10 +642,14 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **The Fed's phases** (0.6.7, `fed-phases`): the first card, for today and any closed cycle. `fedPhases` turns
   `fedMoves` (the Backfill's months with a Fed move, netted: the discount rate `INTDSRUSM193N` before 1982-09-27,
   `DFEDTAR` to 2008-12-15, `DFEDTARU` since, the join a real cut) into alternating phases, and today's live move
-  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `inflationPeak` walks the cycle's
-  CPI months with `cpiDirectionAt` (the season model's own 12-month trend, ±0.02): a run that rises and then turns
-  to falling gives a peak, and the cycle's highest is the one marked ("Peak", on the prices curve); a run whose first month is its highest is no peak.
-  An open cycle without one marks `peakSoFar`, the top of the run still going, hollow.
+  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `priceRuns` walks every CPI month
+  of the record once (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own
+  12-month trend, ±0.02): a run that rises and then turns to falling gives a peak; a run whose first month is its
+  highest is no peak. `inflationPeak` marks the highest peak whose month falls inside the cycle ("Peak", on the
+  prices curve). The walk is over the whole record, not the cycle's window, because a window cut the run at its
+  edges (0.6.17): a peak whose turn came after the close was lost, and a run entering the window looked like it began
+  there. An open cycle without one marks `peakSoFar`, the top of the run still going, hollow; a closed cycle without
+  one reads "After the close" with `nextPeak`, the first peak after its close.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
   so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
   the lines flow as in her tracker (Keren: "make the chart lines a bit more feminine"); the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
@@ -706,10 +710,11 @@ emotion at the closing month, its years, and what followed a year later. Every l
   (`premiumFromRows`) from the workbook `shillerSheet` already fetches for the S&P 500. Shiller publishes it as a
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
-- **One feeling, one story** (V681, V689): the Diagnosis is the mood card (`moodDoor`) and the Analysis. The card's
-  head is the cycle's own name, "AI Cycle" today (0.4.1, Keren: "instead of hope in autumn, I would read AI cycle. And it
-  goes to all other cycle pages"; before it, today's card named today's feeling in today's season), beside a book mark (a cycle is told whole, never by its
-  close); its body is the cycle's `story` from `marketCycles`, and nothing else (the spell line went in V689).
+- **One cycle, one card** (0.6.17): under the Fed's phases the Diagnosis has one card, then Year by Year. Today's is
+  AI Insights (`aiInsights`); a closed cycle's is Cycle Statistics (`chartDoor`): the cycle's `story` from
+  `marketCycles`, clamped to three lines like the AI Insights lede, and its health score, jumping to the Analysis tab
+  set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it, so a closed cycle's category pages,
+  still drawn for the cycle on screen, have no door of their own; the browser suite opens Mood there directly.
   Categories flagged `inTrend` (Mood) or `onDial` (Weather) are
   left out of the Analysis.
 - **Weather from the dial** (V680): the category flag `onDial` marks Weather as the category the dial already reads.

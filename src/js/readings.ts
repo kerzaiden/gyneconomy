@@ -1,4 +1,4 @@
-import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor } from "./format.ts";
+import { auxStat, bandEnds, facts, fmtSigned, ledeHtml, metered, monthLabel, MONTHS_SHORT, qAtIndex, qPretty, srcBlock, tagFor, titleCase } from "./format.ts";
 import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
@@ -49,7 +49,7 @@ export function deficitBlock(){
   var lastY = DEF_FROM_YEAR + deficitHistory.length - 1;
   var surCount = deficitHistory.filter(function(v){ return v > 0; }).length;
   var defRow = labRow("sheet-marker-deficit");
-  var note = '<h4>Federal budget deficit or surplus</h4>' +
+  var note = '<h4>Federal Budget Deficit or Surplus</h4>' +
     (defRow ? ledeHtml(defRow.note) : '') +
     facts([
       'Every fiscal year since ' + DEF_FROM_YEAR + ' as a share of GDP \u2014 <b>a surplus above the line, a ' +
@@ -115,7 +115,7 @@ export function meterFlagged(m: Meter){
   return m.value != null && (m.value < ends[0] || m.value > ends[1]);
 }
 function volumeInfoHtml(ind: Indicator){
-  return '<h4>' + ind.econTerm + '</h4>' +
+  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. M2 is the money stock \u2014 ' +
       'cash, chequing and savings deposits, and retail money-market funds \u2014 read as the year-over-year change ' +
       '(' + ind.metricSub + ').</p>' +
@@ -129,7 +129,7 @@ function volumeInfoHtml(ind: Indicator){
       'is the money stock times its velocity \u2014 so neither means much read alone.</p>';
 }
 function pulseInfoHtml(ind: Indicator){
-  return '<h4>' + ind.econTerm + '</h4>' +
+  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. Velocity is how many times ' +
       'the same dollar changes hands in a year, nominal GDP divided by M2 (' + ind.metricSub + '). The track\u2019s ' +
       'ends are the record: 1.126\u00d7 in 2020 Q2 and 2.192\u00d7 in 1997 Q3.</p>' +
@@ -142,7 +142,7 @@ function pulseInfoHtml(ind: Indicator){
       'is a busy economy and, past a point, an inflationary one.</p>';
 }
 function confidenceInfoHtml(f: ConfidenceReading){
-  return '<h4>' + f.econTerm + '</h4>' +
+  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
     '<p class="caption follow"><b>The 100 line is the OECD\u2019s own</b>: the index is amplitude adjusted so that ' +
@@ -154,7 +154,7 @@ function confidenceInfoHtml(f: ConfidenceReading){
     srcBlock(CONFIDENCE_SRC);
 }
 function desireInfoHtml(f: DesireReading){
-  return '<h4>' + f.econTerm + '</h4>' +
+  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ', ' + f.wordSays + ' (' + f.metricSub + '). ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
     '<p class="caption follow">Durable goods are the BEA\u2019s own category for goods that last three years or more: ' +
@@ -165,7 +165,7 @@ function desireInfoHtml(f: DesireReading){
     srcBlock(DESIRE_SRC);
 }
 function premiumInfoHtml(f: PremiumReading){
-  return '<h4>' + f.econTerm + '</h4>' +
+  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">' + f.metric + ' (' + f.metricSub + '): ' + f.side + '. ' +
       'The record, month by month, runs ' + f.span + '.</p>' +
     '<p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller\u2019s ' +
@@ -177,7 +177,7 @@ function premiumInfoHtml(f: PremiumReading){
     srcBlock(PREMIUM_SRC);
 }
 function productivityInfoHtml(f: ProductivityReading){
-  return '<h4>' + f.econTerm + '</h4>' +
+  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>. Output per hour worked in the nonfarm ' +
       'business sector, against the same quarter a year earlier (' + f.metricSub + '). The record for that ' +
       'series, quarter by quarter, runs ' + f.span + '.</p>' +
@@ -191,7 +191,7 @@ function productivityInfoHtml(f: ProductivityReading){
     srcBlock(PRODUCTIVITY_SRC);
 }
 function activityInfoHtml(ind: Indicator){
-  return '<h4>' + ind.econTerm + '</h4>' +
+  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is the ' +
       'headline unemployment rate (' + ind.metricSub + '). The ends of the track are the record: 2.5% in ' +
       'mid-1953 and, at the far end, the Census Bureau\u2019s 24.9% estimate for 1933.</p>' +
@@ -210,7 +210,7 @@ function activityInfoHtml(ind: Indicator){
     ]);
 }
 function temperatureInfoHtml(ind: Indicator){
-  return '<h4>' + ind.econTerm + '</h4>' +
+  return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
       'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
       'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
@@ -274,7 +274,7 @@ export function unempState(v: number, sahm: number | null){
 }
 export function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i]; return null; }
 export function growthInfoHtml(){
-  return '<h4>Real GDP growth</h4>' +
+  return '<h4>Real GDP Growth</h4>' +
     '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
       '(' + gdpNowQ.q + '), so it is already adjusted for inflation \u2014 this is output, not prices. The ends of ' +
       'the track are the record and they are the same event twice: \u22127.4% in 2020 Q2, the deepest quarter of ' +
@@ -425,7 +425,7 @@ export function horizonInfoHtml(pick: string){
 function pulseBlock(rate: number, ref: number, ind?: Indicator){
   var slower = Math.round((1 - rate / ref) * 100);
   var title = ind
-    ? '<div class="spread-history-head"><h4>' + ind.econTerm + '</h4>' +
+    ? '<div class="spread-history-head"><h4>' + titleCase(ind.econTerm) + '</h4>' +
       '<span class="tag ' + tagFor(ind).state + '">' + tagFor(ind).text + '</span></div>'
     : "";
   return velocityRecordBlock(ind) + '<div class="page-chart pulsebox"><div class="pulsetrace">' + title +
@@ -446,7 +446,7 @@ function householdsWord(bill: number, kept: number): { word: string; state: Stat
   return                 { word:heavy ? "Covered" : "Well covered",     state:"good" };
 }
 export function dsrInfoHtml(){
-  return '<h4>Debt service</h4>' +
+  return '<h4>Debt Service</h4>' +
     '<p class="caption">What households pay each quarter in required payments on mortgages and consumer debt, ' +
       'as a share of disposable income (' + qAtIndex(DSR_FROM_YEAR, dsrHistory.length - 1) + '). The ends of the ' +
       'track are the record: 15.8% in 2007 Q4, at the top of the housing boom, and 9.1% in 2020 Q2, when ' +
@@ -463,7 +463,7 @@ export function dsrInfoHtml(){
     ]);
 }
 export function savInfoHtml(){
-  return '<h4>Saving rate</h4>' +
+  return '<h4>Saving Rate</h4>' +
     '<p class="caption">What is left after households have spent and paid tax, as a share of disposable ' +
       'income. The ends of the track are the record: 1.8% and 24.4% \u2014 the second of those is 2020, when the ' +
       'stimulus payments arrived and there was nothing open to spend them in.</p>' +
@@ -508,7 +508,7 @@ export function marketWord(v: number): WordOf {
 }
 export function marketCol(v: number){ return "dv-bar " + (v >= 0 ? "over" : "under"); }
 function marketInfoHtml(f: MarketReading){
-  return '<h4>' + f.econTerm + '</h4>' +
+  return '<h4>' + titleCase(f.econTerm) + '</h4>' +
     '<p class="caption">The reading is <b>' + f.tag.text + '</b>: ' + f.metric + ' in ' + f.now.y + (f.open ? ' so far' : '') + ', ' + f.wordSays + '. ' +
       'The record, year by year, runs ' + f.span + '.</p>' +
     '<p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, ' +

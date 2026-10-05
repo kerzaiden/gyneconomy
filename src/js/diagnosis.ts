@@ -1,4 +1,4 @@
-import { CHEV, fmtSigned } from "./format.ts";
+import { CHEV, fmtSigned, titleCase } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg, hormoneSvg } from "./marks.ts";
@@ -8,7 +8,7 @@ import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
-import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
+import { aiInsights, buildAiPage } from "./ai-insights.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -20,8 +20,8 @@ var DIAG_SRC = [
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era) +
-    chartDoor(m)) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+  return dxSys(" fp", dxHead(hormoneSvg(), "Interest Environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : chartDoor(m)) +
+    yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
@@ -30,10 +30,10 @@ function yearByYear(m: CycleModel, after: string){
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
-  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by year") +
+  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") +
     after + rows.reverse().join(""));
 }
-function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
+function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title) + '</div>'; }
 function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";

@@ -1,4 +1,4 @@
-import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf } from "./format.ts";
+import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
 import { addSources, byId, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
@@ -80,7 +80,7 @@ function splitSpec(R: RosterRow, P: SplitPage): SplitSpec {
   return s;
 }
 function splitInfo(s: SplitSpec){
-  return s.info ? s.info() : '<h4>' + s.name + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
+  return s.info ? s.info() : '<h4>' + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + '</div>' + factsFrom(s.row.note) +
     (s.band ? '<p>' + s.band + '</p>' : "") + srcBlock(s.src);
 }
 function periodTicks(vals: SeriesPt[]){
@@ -184,12 +184,12 @@ function buffettInsight(s: SplitSpec){
   var above = buffettHistory.filter(function(d){ return d.v > s.mid; });
   return [lede('The price of the whole stock market set against the size of the economy that has to ' +
       'earn it. A reading far above the line is a body valued for more than it produces.'),
-    hiCard("Where it sits", s.row.flagState || "serious", richer === 0 && bPrev && bDot
+    hiCard("Where It Sits", s.row.flagState || "serious", richer === 0 && bPrev && bDot
       ? "At " + Math.round(now) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) +
         " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " +
         Math.round(bDot.v) + "% (" + bDot.q + ")."
       : "At " + Math.round(now) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."),
-    hiCard("Against Buffett’s line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length +
+    hiCard("Against Buffett’s Line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length +
       " quarters, the last time below it in " + (buffettHistory.filter(function(d){ return d.v <= s.mid; }).pop() || {}).q + ".")];
 }
 function debtInsight(s: SplitSpec){
@@ -198,12 +198,12 @@ function debtInsight(s: SplitSpec){
   var era = grossDebtQuarterly.filter(function(d){ return yearOf(d) === currentEra.from; })[0];
   var cards = [lede('What the government owes, measured against what the whole economy makes in a ' +
     'year. The larger the debt, the less room the body has to borrow when something goes wrong.'),
-    hiCard("Against the record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " +
+    hiCard("Against the Record", s.row.flagState || "serious", "At " + now.toFixed(1) + "% of GDP, " +
       (now >= rec.v ? "the highest reading since the quarterly series began in 1966." :
         (rec.v - now).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")),
-    hiCard("Against the 70% line", "warning", under
+    hiCard("Against the 70% Line", "warning", under
       ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.")];
-  if (era) cards.push(hiCard("Since this cycle opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) +
+  if (era) cards.push(hiCard("Since This Cycle Opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) +
     "% (" + era.q + "); the change since is " + fmtSigned(now - era.v, 1) + " points."));
   return cards;
 }
@@ -212,9 +212,9 @@ function productivityInsight(s: SplitSpec){
   var hi = h.reduce(function(a, d){ return d.v > a.v ? d : a; }), lo = h.reduce(function(a, d){ return d.v < a.v ? d : a; });
   return [lede('Output per hour worked, against the same quarter a year earlier. An economy can grow by working ' +
       'more hours or by getting more from each one, and only the second kind compounds.'),
-    hiCard("The latest quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " +
+    hiCard("The Latest Quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " +
       (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."),
-    hiCard("Against the record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
+    hiCard("Against the Record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " +
       fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.")];
 }
 function confidenceInsight(s: SplitSpec){
@@ -223,9 +223,9 @@ function confidenceInsight(s: SplitSpec){
   for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
   return [lede('How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 ' +
       'is the long-term average. Confident households spend; worried ones save.'),
-    hiCard("The latest month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + last.v.toFixed(1) + ", " +
+    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + last.v.toFixed(1) + ", " +
       (side(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
+    hiCard("Against the Record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " +
       confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.")];
 }
 function desireInsight(s: SplitSpec){
@@ -234,9 +234,9 @@ function desireInsight(s: SplitSpec){
   for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
   return [lede('What households spend on the things they could put off: cars, furniture, appliances, electronics. ' +
       'Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low.'),
-    hiCard("The latest month", s.row.flagState || "", atMonth(last as MonthPoint) + " ran at " + fmtSigned(last.v, 1) + "%, " +
+    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " ran at " + fmtSigned(last.v, 1) + "%, " +
       (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " +
+    hiCard("Against the Record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " +
       fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.")];
 }
 function premiumInsight(s: SplitSpec){
@@ -246,9 +246,9 @@ function premiumInsight(s: SplitSpec){
   var thinner = h.filter(function(d){ return d.v < last.v; }).length;
   return [lede('What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. ' +
       'The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it.'),
-    hiCard("The latest month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + fmtSigned(last.v, 1) + "%, " +
+    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + fmtSigned(last.v, 1) + "%, " +
       (side(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " +
+    hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " +
       fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " +
       above + " sat at or above zero.")];
 }
@@ -262,7 +262,7 @@ function marketInsight(s: SplitSpec){
     hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " +
       (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") +
       (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")),
-    hiCard("Against the record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " +
+    hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " +
       bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.")];
 }
 function interestInsight(s: SplitSpec){
@@ -271,9 +271,9 @@ function interestInsight(s: SplitSpec){
   var above = hist.filter(function(d){ return d.v > s.mid; }).length;
   return [lede('The yearly cost of carrying the debt. Money spent on interest is energy the body has ' +
       'already used, paid again every year.'),
-    hiCard("Against the record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " +
+    hiCard("Against the Record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " +
       now.toFixed(1) + "% " + (now > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " +
         rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")),
-    hiCard("The last actual year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " +
+    hiCard("The Last Actual Year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " +
       hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.")];
 }

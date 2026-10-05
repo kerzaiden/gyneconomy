@@ -35,14 +35,14 @@ function quarterPopup(m: CycleModel, seg: QuarterSeg, isPresent: boolean){
   var reading: Partial<SeasonReading> = seasonReading[seg.season] || {};
   return head +
     (isPresent ? '<p class="caption era-blurb">' + era.blurb + '</p>' : '') +
-    (reading.economy ? '<div class="reading-block"><h5>In the economy</h5><p>' + reading.economy + '</p></div>' : '') +
-    (reading.body ? '<div class="reading-block"><h5>In the body</h5><p>' + reading.body + '</p></div>' : '') +
-    (reading.next ? '<div class="reading-block"><h5>What usually comes next</h5><p>' + reading.next + '</p></div>' : '') +
+    (reading.economy ? '<div class="reading-block"><h5>In the Economy</h5><p>' + reading.economy + '</p></div>' : '') +
+    (reading.body ? '<div class="reading-block"><h5>In the Body</h5><p>' + reading.body + '</p></div>' : '') +
+    (reading.next ? '<div class="reading-block"><h5>What Usually Comes Next</h5><p>' + reading.next + '</p></div>' : '') +
     (reading.watch && reading.watch.length
-      ? '<div class="reading-block"><h5>What to watch for the turn</h5><ul class="reading-watch">' +
+      ? '<div class="reading-block"><h5>What to Watch for the Turn</h5><ul class="reading-watch">' +
           reading.watch.map(function(w){ return '<li>' + w + '</li>'; }).join("") + '</ul></div>' : '') +
     (reading.fromTheBook && reading.fromTheBook.length
-      ? '<div class="reading-book"><h5>From the book</h5>' +
+      ? '<div class="reading-book"><h5>From the Book</h5>' +
           reading.fromTheBook.map(function(x){
             return '<blockquote>' + x.text +
               (x.title ? '<br><span class="marker-sub">\u2014 ' + x.title + '</span>' : '') + '</blockquote>';

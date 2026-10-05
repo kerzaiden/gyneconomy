@@ -36,8 +36,8 @@ function householdsHighlights(){
   var keptTxt = "What is left over is " + savNow.toFixed(1) + "% of income — only " + lower.length +
     " quarters in the " + years + " years since " + SAV_FROM_YEAR + " have been lower, and " + run.length +
     " of them ran from 2005 to early 2008. The bill is not the strain here; the cushion is.";
-  return highlightsHtml([hhLede, hiCard("The bill", "", billTxt),
-                         hiCard("The cushion", householdsNow.state, keptTxt)]);
+  return highlightsHtml([hhLede, hiCard("The Bill", "", billTxt),
+                         hiCard("The Cushion", householdsNow.state, keptTxt)]);
 }
 function redrawSheet(id: string){
   var h = byId("metric-page"), d = sheetRenderers[id], keys = controlKeys(document.activeElement);
@@ -226,7 +226,7 @@ function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.readi
   cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
     " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
-  cards.push(hiCard("Where it sits now", tempInd ? stateOf(tagFor(tempInd)) : "warning",
+  cards.push(hiCard("Where It Sits Now", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +
     r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1\u20133% range."));
   put("temp-highlights", highlightsHtml(cards, "", moreRow(tempInfo + (function(){
@@ -243,7 +243,7 @@ function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
   cards.push(hiCard("Growth", phaseClass(r.regime),
     "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) +
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-  cards.push(hiCard("The latest quarter", phaseClass(r.regime),
+  cards.push(hiCard("The Latest Quarter", phaseClass(r.regime),
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
     (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the economy as " +
     growthWord(r) + "."));

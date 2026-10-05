@@ -1225,11 +1225,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
   the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
-  inside the page as well with some kind of explanation, very short one." A past cycle's page keeps the card. (0.6.13)
-- **Every container title on a cycle page reads like AI Insights: bold, deep purple, in sentence case.** Keren: "some
+  inside the page as well with some kind of explanation, very short one." (0.6.13)
+- **A past cycle's page is laid out like the current one: Interest Environment, one card, Year by Year. Its card is
+  Cycle Statistics, the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that
+  cycle; the separate story card is gone.** Keren: "looking at past cycles, I see that we still have cycle statistics
+  and cycle story, meaning it's not up to date with recent changes … you should have cycle statistics just as a
+  shortcut because the analysis tab shows the current cycle … there should be some kind of a gateway to the historic
+  cycle statistic." (0.6.17)
+- **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Keren: "some
   titles are in dark purple and some are in black. I think we need to be consistent and make all titles look like AI
   insights… it should be deep purple and bold." Interest environment and Year by year lost their small black capitals.
   (0.6.13)
+- **Every title is in title case: each word capitalised, short joining words (a, an, the, and, or, by, of, in, on,
+  to, for, at, as…) lower case unless first or last.** Keren: "every word in a title starts with a capital letter. So
+  interest environment should be with a capital E. And year by year … year capital Y, by it's fine to be lower caps,
+  and year another capital Y. I think that is the convention." It covers container and card titles and the section
+  headings; `titleCase` (format) applies it where the title is drawn, so a new title cannot miss it. Reading names
+  are names, not titles, and stay as written. (0.6.17)
 - **The health chart's card, Cycle Statistics, on a past cycle's page
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
@@ -1344,6 +1356,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   bit smaller, then do it"). An open cycle with no confirmed peak shows its peak so far, hollow, and names it
   on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
   Taylor-rule line waits for potential GDP. (0.6.7)
+- **A peak belongs to the cycle of the month it peaked, even when prices turn down only after that cycle closed; a
+  closed cycle with no peak says so, with the peak that came after.** Keren saw no peak on the Go-Go Cycle (1967–69):
+  prices rose through all three years and peaked in February 1970 (6.4%), so the card reads "Peak: After the close,
+  6.4% (Feb 1970)", one line like the others, rather than invent one. Reading the trend over the whole record
+  rather than inside each cycle also restored four peaks the cycle's edge had hidden: Second New Deal (May 1937),
+  Great Society (Oct 1966), Nifty Fifty (Nov 1974, 12.2%, not Feb 1970) and Bicentennial (Apr 1977); the Buyout
+  Cycle's moved from Mar 1984 to Oct 1990. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
   names how Mrs. Market feels now.** Keren: "Like a doctor would analyze a patient … I want to have emotional
   intelligence in this analysis … I want to understand how Mrs. Market is feeling at this present time."

@@ -1,13 +1,13 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
 import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
-import { bookSvg, clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
 import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
-import { CATEGORIES, keyed, ROSTER_BY } from "./roster.ts";
+import { keyed, ROSTER_BY } from "./roster.ts";
 import { cycleScore, fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
@@ -164,18 +164,14 @@ function leadBoxes(){
 }
 function aiPage(){
   return '<div class="ai-page">' + leadBoxes() +
-    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") + trendBox(umbrellaSvg(), "Risk factors", risksPic()) +
-    trendBox(clockSvg(), "Closest moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
+    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") + trendBox(umbrellaSvg(), "Risk Factors", risksPic()) +
+    trendBox(clockSvg(), "Closest Moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
 }
 export function buildAiPage(home: HTMLElement){
   var sheet = metricSheet(AI_PAGE);
   home.appendChild(sheet);
   sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(); };
-}
-export function moodDoor(era: Cycle){
-  var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
-  return trendDoor("sheet-cat-mood", mood.title, bookSvg(), era.name, trendText(era.story));
 }
 export function aiInsights(){
   return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp") + cycleScore(nowModel));

@@ -103,7 +103,7 @@ function scoreTier(v: number){
 }
 function scoreBox(i: number){
   var s = score(i);
-  return '<span class="lab-score"><span><b>Health score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' +
+  return '<span class="lab-score"><span><b>Health Score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' +
     '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
 }
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
@@ -201,33 +201,22 @@ function toggleMenu(host: HTMLElement, id: string){
 export function riskLabs(i: number){ return judged(i).filter(function(l){ return tier(l, i) === "abnormal"; }); }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
-function outside(i: number){ return labs().filter(function(l){ var st = state(l, i); return st === "high" || st === "low"; }); }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
-function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 
-function visitNote(i: number){
-  var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm as Norm;
-  var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") +
-    (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
-  var named = function(st: string){ return outside(i).filter(function(l){ return state(l, i) === st; }).map(function(l){ return l.name; }); };
-  var high = named("high"), low = named("low");
-  var parts = (high.length ? [listWords(high) + " ran far above her normal"] : []).concat(low.length ? [listWords(low) + " far below it"] : []);
-  return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
-}
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
     "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading.",
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
-    "<b>Health score</b> is the share of results that are Normal, out of 100.",
+    "<b>Health Score</b> is the share of results that are Normal, out of 100.",
     "<b>History, not forecast:</b> it describes her past, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
 export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(visitNote(i)) + scoreBox(i));
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(m.era.story, "ai-clamp") + scoreBox(i));
 }
 var HOME_ID = "chart-home";
 function drawChart(id: string){
