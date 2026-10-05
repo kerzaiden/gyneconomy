@@ -75,7 +75,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
-- **The Current Cycle page carries AI Insights, between the cycle's story and Cycle analysis, on the open cycle only.**
+- **Cycle Analysis is written with a capital A wherever it is named.** Keren: "cycle analysis should be with
+  capital letters at the beginning." (0.6.6)
+- **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
+  opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
+  closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
   Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
   sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
   It is a door like the story (Keren: "three lines, maybe three dots and then a chevron") opening an AI Insights page
@@ -155,9 +159,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
   goes up. This goes the same for the health chart." (0.6.3)
-- **The health score sits on `--surface-2`, the pale apricot of the Analysis page's result rows, and its line names
-  the cycles its ranges come from: "Against 18 closed cycles".** Keren chose the apricot over the dial's light grey
-  from two previews (0.6.4; a stronger apricot, `--normal` at 34%, before). Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
+- **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
+  against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
+  low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.
+  Keren: "When you give a health score and you say against 18 closed cycles, what does that mean? Is it high? Is it
+  low? Are we at risk?" and "the apricot background is too much apricot … Make it bright gray, like the gray we have
+  in the cycle dial" (0.6.6, overturning 0.6.4's apricot, chosen then over this grey; a stronger apricot before). Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
   of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
 - **Cycle analysis picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
   picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
@@ -322,6 +329,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The ring wears the temperature's own colours: periwinkle below the range (Winter deep, Spring a tint),
   orange above it (Summer deep, Autumn a yellow-orange tint).** Keren's choice, so a season's colour says
   where prices sat. (V180)
+- **The dial's legend states each range in plain mathematical signs: Winter CPI < 1%, Spring CPI ≤ 3%, Summer
+  CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
+  (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`). Keren: "all ranges should use some kind of mathematical signaling,
+  basic mathematical signaling." (0.6.6)
+- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, its
+  width this app's choice), and it carries no how-to paragraph.** Keren: "All I need is the one to three range
+  explained" and "The whole point of good UI is that you don't need to explain it." (0.6.6)
+- **The legend's last section is "The market cycle": a typical market cycle, a bull market and the bear market that
+  ends it, has run about 5 to 6½ years across the long record (First Trust about 5.2, Fisher about 6.4); a typical
+  length, not a forecast.** It replaced "The ring's span" and its notes on scaling. Keren: "call it the market
+  cycle … use numbers … It is a typical length, not a forecast. And that's it." (0.6.6)
+- **The legend opens on its sections with no introduction: "Seasons (Q)", drawn by quarter, and "S&P 500 (YoY)", each
+  year's calendar return.** Keren: "YOY for the S&P 500." Keren: "a paragraph that is unneeded. What we need basically is seasons by quarters and S&P 500 by years …
+  Like seasons, parentheses Q, and S&P 500, parentheses Y." (0.6.6)
 - **The ring closes on itself but for a small seam at 12 o'clock; don't re-add the coral drop in the seam
   (Clue's day-1 mark).** Keren: "close the cycle — a small gap between the start and the end"; with the drop,
   "a lot going on". (V199, V200)
@@ -391,9 +412,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   seasons have, and the YEAR badge sits just after the last quarter that has a season (on the seam when the
   cycle fills the ring).** A season that has not been computed has not happened yet; Keren saw the bull bar
   run past the season bar. (V552, V554)
-- **The cycle card's title is "Gyneconomy", with an (i) that opens the one legend: the seasons' colours and
-  the market band's colours; no cycle name, season line or note sits beside the wheel.** The centre already
-  says the season, and the cycle is named elsewhere. (V176, undated, Sep 19, 2026)
+- **The cycle card's title is the cycle's name (the AI Cycle today, the cycle shown on a Herstory page), with an (i)
+  that opens the one legend: the seasons' colours and the market band's colours; no season line or note sits beside
+  the wheel.** The centre already says the season. It was "Gyneconomy" until Keren: "instead of Gyneconomy in the top
+  left of the cycle dial, make it the cycle name." (V176, Sep 19, 2026; 0.6.6)
 
 ### The market band and the peak
 
@@ -445,9 +467,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
   a frozen copy.** Keren: "the cycle is not ended yet"; a frozen view would say the AI Cycle is over. (V616)
 - **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
-  grey dots for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
+  grey for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** Keren: "The dots can represent the average that is left, not compared to the longest
-  cycle." (V517)
+  cycle." (V517) What is not yet run, in Herstory and in Year by year, follows the dial: a grey line on the
+  season strip, like the dial's track, and grey dots on the bull/bear strip, like the dots inside the ring.
+  Keren: "make the season a gray line and the bull bear market with gray dots, like in the cycle dial. So it
+  would be the same logic." (0.6.6)
+- **On the open cycle, Year by year stops at the year in progress: its quarters already read are drawn, and each
+  quarter left is one grey dot under the grey line, spaced a quarter apart like the dial's dots.** No rows for
+  years still to come. Keren: "I didn't mean for you to put 2028 and 2027. It's just a waste of room … every dot
+  is a quarter, so we have two dots left." (0.6.6)
+- **The health score's title is set in Cormorant Garamond 500, the top bar's serif.** Keren: "Make the health score
+  in the same font as the top bar, the feminine font." (0.6.6)
+- **The AI Insights page opens its summary under "TL;DR", the usual spelling, not "In short".** Keren: "write TLDR
+  with the convention of how it's written." (0.6.6)
 
 ### Analysis
 
@@ -461,8 +494,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A Cycle analysis result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
   unemployment rate goes down, it's a good thing. So the bottom facing triangle should be green … We need to judge if
   it's good or bad, not only by direction, but also by parameter." A result outside its range on its good side is
-  Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before; the words
-  under it stay literal. Each reading's good side is declared once, as `good` in the
+  Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before. Under
+  each result its tier is named, Normal, Attention or Risk, the triangle carrying the side. Keren: "I would want the
+  same terminology being used under each category … if it's in range, it's normal. If it's an outlier, then we're at
+  risk. And if it's above or below, but not an outlier, then it would be attention." (0.6.6, replacing 0.6.0's In
+  range, Above range, Below range and Outlier.) Each reading's good side is declared once, as `good` in the
   roster. Claude's calls, by economic convention, for Keren to overturn: higher is good for Growth, the S&P 500,
   Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
   deficit), Productivity growth and Bull years; lower is good for Shiller CAPE and the Buffett indicator (Shiller's and

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
-import { ui } from '../../src/js/dom.ts';
+import { detailTexts, ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
@@ -9,6 +9,7 @@ import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, hor
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
+import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 
@@ -130,8 +131,21 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('today’s story card is titled by its cycle', () => {
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, nowModel.era.name);
+test('the open year fills its row, as the dial does: a grey line for its seasons, grey dots for its market', () => {
+  const open = document.querySelector('#diagnosis .dx-year .dx-year-lead');
+  const strips = [...open.querySelectorAll('.strip')];
+  assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
+});
+
+test('the dial is titled by its cycle, its legend speaks in signs, and today’s story opens AI Insights', () => {
+  assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
+  const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
+  ['CPI &lt; 1%', 'CPI \u2264 3%', 'CPI &gt; 3%', 'CPI \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
+  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
+  sheetRenderers['sheet-ai-insights']();
+  const story = document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]');
+  assert.equal(story.querySelector('.trend-head').textContent, nowModel.era.name);
+  assert.equal(story.querySelector('.trend-text').textContent, nowModel.era.story);
 });
 
 test('a live Fed cut reaches every door, its tag and the policy facts', async () => {
@@ -321,14 +335,17 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.notEqual(horizonRead.word, 'Pessimistic');
 });
 
-test('a Cycle analysis result outside its range is Normal on its good side and flagged on the other', () => {
+test('a Cycle Analysis result is named by its tier, Normal on its good side and flagged on the other', () => {
   const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
   rows.forEach(({ R, li }) => {
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
+    const word = { 't-optimal': 'Normal', 't-borderline': 'Attention', 't-abnormal': 'Risk' }[[...li.classList].find(c => c.startsWith('t-'))];
+    assert.equal(li.querySelector('.lab-where').textContent, word, R.name);
   });
+  assert.match(document.querySelector('#diagnosis .lab-score small').textContent, /^(Normal|Attention|Risk) against \d+ closed cycles$/);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });

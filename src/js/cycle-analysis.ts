@@ -79,10 +79,6 @@ function tier(l: Lab, i: number){
   return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
 }
 function catTitle(key: string){ return key === "cycle" ? "Cycle" : categoriesShown().filter(function(c){ return c.key === key; })[0].title; }
-function where(l: Lab, i: number){
-  var v = l.per[i] as number, n = normAt(l, i) as Norm, side = v > n.hi ? "above" : v < n.lo ? "below" : "";
-  return !side ? "In range" : state(l, i) ? "Outlier, " + side + " range" : cap(side) + " range";
-}
 function side(l: Lab, i: number){ var v = l.per[i] as number, n = normAt(l, i) as Norm; return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level"; }
 function findWords(l: Lab){
   var R = ROSTER_BY[l.id];
@@ -90,8 +86,8 @@ function findWords(l: Lab){
 }
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
 function labItem(l: Lab, i: number){
-  var n = normAt(l, i) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div";
-  return '<li class="lab-item ' + side(l, i) + ' ' + TIERS.filter(function(t){ return t.key === tier(l, i); })[0].cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div>' +
+  var n = normAt(l, i) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, i); })[0];
+  return '<li class="lab-item ' + side(l, i) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + t.title + '</small></div>' +
     '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
     '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + '</small></div></' + tag + '></li>';
 }
@@ -99,9 +95,15 @@ function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
   return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + ' ' + c.toFixed(1) + '"/></svg>';
 }
+function scoreTier(v: number){
+  var past: number[] = [];
+  for (var k = 0; k < closedCount(); k++) past.push(score(k).v);
+  var n = normOf(past) as Norm;
+  return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
+}
 function scoreBox(i: number){
   var s = score(i);
-  return '<span class="lab-score"><span><b>Health score</b><small>Against ' + word(closedCount()) + ' closed cycles</small></span>' +
+  return '<span class="lab-score"><span><b>Health score</b><small>' + scoreTier(s.v) + ' against ' + word(closedCount()) + ' closed cycles</small></span>' +
     '<span class="lab-score-v">' + ring(s.v) + '<span>' + s.v + '</span></span></span>';
 }
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
@@ -213,17 +215,17 @@ function visitNote(i: number){
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
 }
 function chartDetail(){
-  return '<h4>How cycle analysis reads</h4>' + facts([
+  return '<h4>How Cycle Analysis reads</h4>' + facts([
     "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.",
-    "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.",
+    "Each reading is sorted the way a blood test is. Normal (apricot) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result its tier is named, Normal, Attention or Risk, and the triangle by the figure points up when it is above its range, down when below. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.",
     "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.",
-    "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.",
-    "Her cycle analysis describes her history, not what comes next."
+    "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The score itself is judged the same way against the scores of her closed cycles: Normal from the lowest quarter of them up, Attention below that, Risk past the lower fence. The cycle’s own length, bull years and bleed are judged only once it has closed.",
+    "Her Cycle Analysis describes her history, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle analysis", trendText(visitNote(i)) + scoreBox(i));
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(visitNote(i)) + scoreBox(i));
 }
 var HOME_ID = "chart-home";
 function drawChart(id: string){

@@ -75,6 +75,9 @@ export function strip(cls: string, label: string, inner: string){
 export function stripDots(n: number, title: string){
   return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + '</span>' : "";
 }
+export function stripTrack(n: number, title: string){
+  return n ? '<span class="strip-track" style="flex:' + n + ' 1 0" title="' + title + '"></span>' : "";
+}
 export function seasonRuns(segs: TrackSeg[]){
   var runs: StripRun[] = [];
   segs.forEach(function(seg){

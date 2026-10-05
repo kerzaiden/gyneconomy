@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `28a4807` on 2026-10-04. **93 components**, **35 shared patterns**.
+Generated from commit `fbc3127` on 2026-10-05. **94 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -182,7 +182,8 @@ Generated from commit `28a4807` on 2026-10-04. **93 components**, **35 shared pa
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
-| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml`, `dial-cycle.ts:seasonStripHtml` |
+| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
+| **`stripTrack`** | `.strip-track` | `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `pages-nav.ts:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.ts:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.ts:timingPill` |
@@ -212,7 +213,7 @@ renderer speaks. Listed most-used first.
 |---|---|---|
 | **`byId`** | dom.ts | 32 places |
 | **`need`** | dom.ts | 26 places |
-| **`put`** | dom.ts | 24 places |
+| **`put`** | dom.ts | 25 places |
 | **`fmtSigned`** | format.ts | 22 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |
@@ -247,13 +248,13 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
+| **`closedCount`** | cycle-analysis.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`side`** | cycle-analysis.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
-| **`closedCount`** | cycle-analysis.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`cycLabel`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
@@ -264,7 +265,7 @@ renderer speaks. Listed most-used first.
 | **`isoDay`** | format.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
-| **`normAt`** | cycle-analysis.ts | 4 places |
+| **`normOf`** | cycle-analysis.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
@@ -280,6 +281,7 @@ renderer speaks. Listed most-used first.
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
+| **`fill`** | ai-insights.ts | 3 places |
 | **`growthWord`** | model.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
@@ -289,10 +291,9 @@ renderer speaks. Listed most-used first.
 | **`menuOf`** | cycle-analysis.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
-| **`normOf`** | cycle-analysis.ts | 3 places |
+| **`normAt`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
-| **`popHead`** | format.ts | 3 places |
 | **`qPretty`** | format.ts | 3 places |
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
@@ -300,7 +301,6 @@ renderer speaks. Listed most-used first.
 | **`seasonGroup`** | model.ts | 3 places |
 | **`seasonTitle`** | model.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
-| **`state`** | cycle-analysis.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
 | **`trendDoor`** | dom.ts | 3 places |
