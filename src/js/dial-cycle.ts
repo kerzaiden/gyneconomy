@@ -7,7 +7,7 @@ import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
 import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
-import { renderDiagnosis } from "./diagnosis.ts";
+import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
 import type { TrackSeg } from "./model.ts";
@@ -124,7 +124,7 @@ function renderCycleKicker(){
     [["winter","Winter","CPI &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","CPI \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","CPI &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","CPI \u2265 " + TEMP_BAND_LO + "%"]].map(function(r){
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
     }).join("") + '</div>' +
-    '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% CPI, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; its width is this app\u2019s choice.</p>' + srcBlock([FED_TARGET_SRC]) +
+    '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% CPI, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
     '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows">' +
     '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return \u2265 0%</small></div>' +
     '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div>' +
@@ -354,6 +354,10 @@ export function settleStrips(){
     }
   });
 }
+export function settleAll(){
+  settleStrips();
+  fitYearDots();
+}
 
 export var growthDetail: string;
 var dialState: DialState, hubDetailIdx: number;
@@ -379,6 +383,6 @@ export function bootDialCycle(){
     srcBlock(gdpSrc.concat([{t:"BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)", u:"https://fred.stlouisfed.org/series/GDPC1"}]));
   window.addEventListener("resize", (function(){
     var t: ReturnType<typeof setTimeout> | undefined;
-    return function(){ clearTimeout(t); t = setTimeout(settleStrips, 120); };
+    return function(){ clearTimeout(t); t = setTimeout(settleAll, 120); };
   })());
 }

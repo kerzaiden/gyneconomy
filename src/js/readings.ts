@@ -218,8 +218,8 @@ function temperatureInfoHtml(ind: Indicator){
       'band in this app that describes where prices <i>ought</i> to be rather than where they have been. The ' +
       'Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on ' +
       'Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the ' +
-      'Fed’s; the two edges are set a point either side of it for this page, and that width is a choice, ' +
-      'not a source. And the months inside it are not evidence that the band is normal — 258 of the 451 ' +
+      'Fed’s; the two edges are set a point either side of it as part of the Season Model’s ' +
+      'structure, not taken from a source. And the months inside it are not evidence that the band is normal — 258 of the 451 ' +
       'months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed ' +
       'has hit its target rather than about where prices naturally sit. Widen the window and the band stops ' +
       'describing anything: the ends of this same track are −15.8% and +23.7%.</p>' +
@@ -666,7 +666,7 @@ export function bootReadings(){
     ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") +
     facts([
       '<b>Hot above the band, warm inside it, cold below</b> \u2014 red, teal, blue.',
-      'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> is this board\u2019s own tolerance around it, drawn on CPI because that is the series most readers know.',
+      'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> around it is part of the Season Model\u2019s structure, drawn on CPI because that is the series most readers know.',
       'One of the two readings a season is computed from: the level, and the direction of the last twelve months.',
       'It confirms heat that has already built rather than predicting it.'
     ]);
