@@ -131,11 +131,11 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('the open year fills its row, the quarters not yet run as dots', () => {
+test('the open year fills its row, the quarters not yet run as a grey line', () => {
   const open = document.querySelector('#diagnosis .dx-year .dx-year-lead');
   const strips = [...open.querySelectorAll('.strip')];
   assert.equal(strips.length, 2);
-  strips.forEach(s => assert.ok(s.lastElementChild.classList.contains('strip-dots')));
+  strips.forEach(s => assert.ok(s.lastElementChild.classList.contains('strip-track')));
 });
 
 test('the dial is titled by its cycle, and today’s story opens AI Insights', () => {

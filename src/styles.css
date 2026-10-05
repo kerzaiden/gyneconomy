@@ -292,8 +292,7 @@
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
   .strip-run.settled{ flex:none; }
-  .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
-  .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
+  .strip-track{ height:12px; border-radius:var(--radius); background:color-mix(in srgb, var(--border) 60%, transparent); }
 
   /* ---- season strip ---- */
   .season-card{

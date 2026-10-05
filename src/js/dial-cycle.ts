@@ -5,7 +5,7 @@ import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-se
 import { gdpSrc, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots } from "./render-core.ts";
+import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -294,7 +294,7 @@ export function seasonStripHtml(cyc: Cycle, spanOverride?: number){
     var span = Math.max(spanOverride || 0, typicalCycleYears * 4,
                         cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
     var ahead = Math.max(0, span - done);
-    var pills = stripDots(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripDots(ahead, aheadWord(cyc));
+    var pills = stripTrack(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripTrack(ahead, aheadWord(cyc));
     var lastSeg = segs[segs.length - 1];
     var foot = cyc.ongoing
       ? 'Year <b>' + m.yearIndex + '</b> · now <b>' + wheelMeta[m.season].name + '</b>'
@@ -326,7 +326,7 @@ export function marketStripHtml(cyc: Cycle, spanQ?: number, doneQ?: number){
   var span = Math.max(spanQ || 0, done);
   var ahead = Math.max(0, span - done);
   var pills = marketPills(runs);
-  pills += stripDots(ahead, aheadWord(cyc));
+  pills += stripTrack(ahead, aheadWord(cyc));
   return strip(" mkt-strip", "S&P 500 by year: " +
     runs.map(function(r){ return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir; }).join(", "), pills);
 }

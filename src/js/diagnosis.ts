@@ -6,7 +6,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { econChips, marketPills, strip, stripDots, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { econChips, marketPills, strip, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
@@ -43,7 +43,7 @@ function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
     yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
 }
 function stripGap(n: number, ytd: boolean){
-  return n <= 0 ? "" : ytd ? stripDots(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
+  return n <= 0 ? "" : ytd ? stripTrack(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
 }
 function yearMarket(y: number, ytd: boolean, q: number){
   var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";

@@ -293,8 +293,7 @@
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
   .strip-run.settled{ flex:none; }
-  .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
-  .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
+  .strip-track{ height:12px; border-radius:var(--radius); background:color-mix(in srgb, var(--border) 60%, transparent); }
 
   .season-card{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
@@ -32825,8 +32824,8 @@
   function strip(cls, label, inner) {
     return '<span class="strip' + cls + '" role="img" aria-label="' + label + '">' + inner + "</span>";
   }
-  function stripDots(n, title) {
-    return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + "</span>" : "";
+  function stripTrack(n, title) {
+    return n ? '<span class="strip-track" style="flex:' + n + ' 1 0" title="' + title + '"></span>' : "";
   }
   function seasonRuns(segs) {
     var runs = [];
@@ -34881,7 +34880,7 @@
     return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
   }
   function stripGap(n, ytd) {
-    return n <= 0 ? "" : ytd ? stripDots(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
+    return n <= 0 ? "" : ytd ? stripTrack(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
   }
   function yearMarket(y, ytd, q) {
     var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
@@ -35306,7 +35305,7 @@
       var lead2 = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead2 + segs.length;
       var span = Math.max(spanOverride || 0, typicalCycleYears * 4, cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
       var ahead = Math.max(0, span - done);
-      var pills = stripDots(lead2, "no season read before " + (lead2 ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripDots(ahead, aheadWord(cyc));
+      var pills = stripTrack(lead2, "no season read before " + (lead2 ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripTrack(ahead, aheadWord(cyc));
       var lastSeg = segs[segs.length - 1];
       var foot = cyc.ongoing ? "Year <b>" + m.yearIndex + "</b> · now <b>" + wheelMeta[m.season].name + "</b>" : "<b>" + Math.round(m.elapsedYears) + " years</b> · ended in <b>" + wheelMeta[lastSeg.season].name + "</b>";
       return {
@@ -35350,7 +35349,7 @@
     var span = Math.max(spanQ || 0, done);
     var ahead = Math.max(0, span - done);
     var pills = marketPills(runs);
-    pills += stripDots(ahead, aheadWord(cyc));
+    pills += stripTrack(ahead, aheadWord(cyc));
     return strip(" mkt-strip", "S&P 500 by year: " + runs.map(function(r) {
       return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir;
     }).join(", "), pills);

@@ -450,9 +450,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
   a frozen copy.** Keren: "the cycle is not ended yet"; a frozen view would say the AI Cycle is over. (V616)
 - **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
-  grey dots for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
+  a grey line for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** Keren: "The dots can represent the average that is left, not compared to the longest
-  cycle." (V517)
+  cycle." (V517) What is not yet run, in Herstory and in Year by year, is a grey line like the dial's track,
+  not dots. Keren: "Instead of dots, gray dots, make it gray line. Like in the cycle dial." (0.6.6)
 
 ### Analysis
 
