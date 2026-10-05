@@ -9,8 +9,6 @@ jobs:
     steps:
       - run: sudo apt-get install -y -qq poppler-utils >/dev/null
       - run: |
-          curl -sSL -A "gyneconomy-probe" -o a.pdf "https://apps.bea.gov/scb/pdf/2011/07%20July/0711_revisions.pdf"
           curl -sSL -A "gyneconomy-probe" -o b.pdf "https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"
-          for f in a b; do echo "=== $f"; pdftotext -layout $f.pdf $f.txt; grep -n -i -E "annual estimates|Table [0-9]" $f.txt | head -40; done
-          echo "=== a table 4"; awk '/Table 4\. Mean Absolute Revisions/{c=45} c&&c--' a.txt
-          echo "=== b annual"; grep -n -i -B2 -A14 "Revisions to Annual Estimates" b.txt | head -120
+          pdftotext -layout b.pdf b.txt; sed -n '1085,1135p' b.txt | cut -c1-130
+          pdftotext -raw b.pdf r.txt; grep -n -A30 "Table 9. Mean Revisions" r.txt | head -45
