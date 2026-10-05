@@ -217,11 +217,11 @@ export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 
+function soFarWords(ytd: number | null | undefined){ return ytd != null ? ", with " + calendarTodayY + " " + (ytd >= 0 ? "up" : "down") + " so far" : ""; }
 function visitNote(i: number){
   var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm as Norm, ytd = open ? sp500AnnualReturns[calendarTodayY] : null;
   var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") +
-    (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + (ytd != null ? ", with " + calendarTodayY + " " + (ytd >= 0 ? "up" : "down") + " so far" : "") +
-    ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
+    (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + soFarWords(ytd) + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
   var named = function(st: string){ return outside(i).filter(function(l){ return state(l, i) === st; }).map(function(l){ return l.name; }); };
   var high = named("high"), low = named("low");
   var parts = (high.length ? [listWords(high) + " ran far above her normal"] : []).concat(low.length ? [listWords(low) + " far below it"] : []);
@@ -238,8 +238,7 @@ function depthWords(){
 }
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
-    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.",
-    depthWords(),
+    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
     "<b>Health score</b> is the share of results that are Normal, out of 100.",

@@ -59,13 +59,14 @@ function repaintPolicy(){
   put("policy-facts", policyFactRows());
   paintReading("sheet-sign-hormones", fedFundsRange(), { text:policyDirection() });
 }
-function repaintStatistics(){
-  forgetLabs(); forgetEchoes();
-  ["chart-home", "sheet-ai-insights"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
-}
 function repaintDiagnosis(){
   if (!ui.eraOpen) renderDiagnosis(nowModel);
   CATEGORIES.forEach(replaceInsight);
+}
+function repaintDerived(){
+  forgetLabs(); forgetEchoes();
+  repaintDiagnosis();
+  ["chart-home", "sheet-ai-insights"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
 }
 
 export function bootRepaint(){
@@ -76,8 +77,7 @@ export function bootRepaint(){
   onLive("vixClose", repaintVolatility);
   onLive("capeValue", repaintValuationRow);
   onLive("capeValue", syncCape);
-  onLive("*", repaintStatistics);
-  onLive("*", repaintDiagnosis);
+  onLive("*", repaintDerived);
   exposeLive();
   GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
   checkLiveCoverage();

@@ -402,32 +402,23 @@
   .cycle-dial .dial-peak.down .disc{ stroke:var(--bleed-mid); } .cycle-dial .dial-peak.down .dot{ fill:var(--bleed-mid); }
 
   .tabbar{
-    display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:4px; margin:22px 0 24px;
+    position:fixed; left:0; right:0; bottom:var(--tabbar-lift); z-index:40; margin:0 auto; width:min(calc(100% - 32px), 480px);
+    display:flex; border-radius:999px; padding:5px; gap:2px;
+    background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+    border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
   }
   .tab-btn{
-    flex:1; border:none; background:transparent; padding:9px 8px 8px; border-radius:var(--radius); cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:4px;
-    font-family:"Public Sans",sans-serif; font-size:var(--type-meta); font-weight:600; color:var(--text-secondary);
+    flex:1; border:none; background:transparent; padding:7px 0 6px; border-radius:999px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-secondary);
     transition:background 0.15s ease, color 0.15s ease;
   }
-  .tab-btn svg{ width:22px; height:22px; flex:none; opacity:0.85; }
-  .tab-btn.active{ background:var(--surface); color:var(--accent-ink); border:1px solid var(--border); margin:-1px; }
+  .tab-btn svg{ width:22px; height:22px; flex:none; opacity:0.9; }
+  .tab-btn.active{ background:var(--glass-on); color:var(--accent-ink); }
   .tab-btn.active svg{ opacity:1; }
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
-  @media (max-width:640px){
-    .tabbar{
-      position:fixed; left:16px; right:16px; bottom:var(--tabbar-lift); z-index:40; margin:0;
-      border-radius:999px; padding:5px; gap:2px;
-      background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
-      border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
-    }
-    .tab-btn{ padding:7px 0 6px; gap:3px; border-radius:999px; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
-    .tab-btn svg{ width:22px; height:22px; opacity:0.9; }
-    .tab-btn.active{ background:var(--glass-on); border:none; margin:0; color:var(--accent-ink); font-weight:600; }
-    .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(62px + var(--tabbar-lift) + var(--gap-top)); }
-    .tabnav{ margin-bottom:0; }
-  }
+  .wrap{ --tabbar-lift:max(10px, calc(env(safe-area-inset-bottom, 0px) - 12px)); padding-bottom:calc(62px + var(--tabbar-lift) + var(--gap-top)); }
+  .tabnav{ margin-bottom:0; }
   .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
   .tab-panel{ padding-top:2px; }
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
@@ -35458,9 +35449,12 @@
   function cap(t) {
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
+  function soFarWords(ytd) {
+    return ytd != null ? ", with " + calendarTodayY + " " + (ytd >= 0 ? "up" : "down") + " so far" : "";
+  }
   function visitNote(i) {
     var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm, ytd = open ? sp500AnnualReturns[calendarTodayY] : null;
-    var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") + (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + (ytd != null ? ", with " + calendarTodayY + " " + (ytd >= 0 ? "up" : "down") + " so far" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
+    var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") + (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + soFarWords(ytd) + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
     var named = function(st) {
       return outside(i).filter(function(l) {
         return state(l, i) === st;
@@ -38895,17 +38889,18 @@
       text: policyDirection()
     });
   }
-  function repaintStatistics() {
+  function repaintDiagnosis() {
+    if (!ui.eraOpen) renderDiagnosis(nowModel);
+    CATEGORIES.forEach(replaceInsight);
+  }
+  function repaintDerived() {
     forgetLabs();
     forgetEchoes();
+    repaintDiagnosis();
     [ "chart-home", "sheet-ai-insights" ].forEach(function(id) {
       var el = byIdMaybe(id);
       if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id]();
     });
-  }
-  function repaintDiagnosis() {
-    if (!ui.eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(replaceInsight);
   }
   function bootRepaint() {
     onLive("fedFunds", repaintPolicy);
@@ -38915,8 +38910,7 @@
     onLive("vixClose", repaintVolatility);
     onLive("capeValue", repaintValuationRow);
     onLive("capeValue", syncCape);
-    onLive("*", repaintStatistics);
-    onLive("*", repaintDiagnosis);
+    onLive("*", repaintDerived);
     exposeLive();
     GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
     checkLiveCoverage();
