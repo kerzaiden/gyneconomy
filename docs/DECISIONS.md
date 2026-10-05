@@ -232,6 +232,29 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **About Gyneconomy (formerly "About the book") holds the book's introduction and the cycle model, season
   model and framework the Content tab used to carry; its text is a draft for Keren to edit.** Keren merged
   them and renamed the page. (V657)
+- **Every section of About Gyneconomy is one container with its title inside, as the Cycle Model is; The Idea
+  shows its first paragraph and a View more for the rest; the Season Model's rows carry no header row.** Keren: "I
+  want the idea title to be like the cycle model … it's all part of one container"; "the first paragraph to be
+  visible and then view more"; the "Season" header "is unnecessary". Its (i) opens on one plain line and a
+  two-by-three table (growth against potential by cold, in range and hot), so the model can be told word for word.
+  (0.8.1, Oct 5, 2026)
+- **The Cycle Model speaks in bull and bear years, and says how many cycles the record holds and how long they
+  run on average, computed from the app's own closed cycles.** Keren: "A cycle runs from its first bull year to the
+  bear year that ends it … another sentence saying the average market cycle is …, so a user would have some kind
+  of notion of how we built this entire app." (0.8.1, Oct 5, 2026)
+- **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
+  line, with the leading, coincident and lagging examples as bullets.** Keren: "this paragraph should be in the
+  info … check that we're not repeating ourselves." The Season Model's (i) uses the precise terms, concisely:
+  growth gap, sensitivity, price level, direction (transition seasons only), and its table shows all 18
+  combinations. The growth gap is growth against potential growth (the Investment Clock's growth above or below
+  trend), not the output gap, which measures the level: tested on 1953–2026, the output gap put 31 of 39 recession
+  quarters in Autumn or Winter against the growth gap's 38 (season-model/output-gap-test.md), so the app does not
+  carry the output gap. Keren: "Let's call it growth gap." The (i) credits the Investment Clock (Merrill Lynch, 2004)
+  for the growth question; Keren: "for credibility's sake, we should say that this follows the investment clock
+  methodology." It closes on its record against NBER recessions since 1953, by season: the recession quarters
+  that fell in Autumn or Winter against those seasons' share of all quarters, computed by `recessionRecord` from the
+  app's own seasons. Contractions without a recession are not counted against it (Keren: "not every contraction is
+  a recession"); Keren: "it adds a lot of credibility to the model … it's important to specify it." Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)

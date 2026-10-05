@@ -7,7 +7,7 @@ type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: Model
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
 type MoodPoint = { k: string; v: number | null };
 export type Mood = { m: string; valuations: number; calm: number; confidence: number; market: number; score: number; pct?: number | null; change?: number | null; ago?: Mood | null; word?: string | null };
-import { buffettHistory, capeHistory, gdpSrc, marketCycles, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
+import { buffettHistory, capeHistory, gdpSrc, marketCycles, NBER_RECESSIONS, now, sp500AnnualReturns, typicalCycleYears, usRealGdpGrowth } from "./data.ts";
 
 // ---- The season, computed ----
 function slopeOf(vals: number[]){
@@ -66,6 +66,33 @@ function closingReading(endYear: number){
   if (!e) throw new Error("no season reading by " + endYear); return e.reading;
 }
 export function quarterRegime(d: QuarterPoint){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
+function qIndex(q: string){ return +q.slice(0, 4) * 4 + +q.slice(6) - 1; }
+export function recessionRecord(){
+  var inRec: Record<number, number> = {}, caught = 0, quarters = 0, total = 0;
+  NBER_RECESSIONS.forEach(function(r, n){
+    var hit = false;
+    for (var i = qIndex(r[0]) + 1; i <= qIndex(r[1]); i++){ inRec[i] = n + 1; total++; if (regimeAt(i) === "contraction"){ quarters++; hit = true; } }
+    if (hit) caught++;
+  });
+  var first = qIndex(NBER_RECESSIONS[0][0]) - 4, last = qIndex(seasonTrack[seasonTrack.length - 1].q), runs = 0, alarms = 0;
+  for (var i = first; i <= last; i++){
+    if (regimeAt(i) !== "contraction" || regimeAt(i - 1) === "contraction") continue;
+    var end = i; while (end < last && regimeAt(end + 1) === "contraction") end++;
+    runs++;
+    var near = false; for (var j = i; j <= end + 4; j++) if (inRec[j]) near = true;
+    if (!near) alarms++;
+  }
+  var group: Record<string, string> = {}, inAW = { autumn:0, winter:0 }, base = 0, n = 0;
+  seasonTrack.forEach(function(e){ if (e) group[e.q] = seasonGroup(e.reading.season); });
+  for (var k = first + 5; k <= last; k++){
+    var g = group[Math.floor(k / 4) + " Q" + (k % 4 + 1)];
+    if (!g) continue;
+    n++; if (g === "autumn" || g === "winter"){ base++; if (inRec[k]) inAW[g]++; }
+  }
+  return { from:+NBER_RECESSIONS[0][0].slice(0, 4), recessions:NBER_RECESSIONS.length, caught:caught, quarters:quarters, total:total, runs:runs, alarms:alarms,
+    autumn:inAW.autumn, winter:inAW.winter, share:Math.round(100 * base / n) };
+}
+function regimeAt(i: number){ return regimeByQ[Math.floor(i / 4) + " Q" + (i % 4 + 1)]; }
 export function seasonTitle(meta: { name: string; theme?: string | null }){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
 export function cycleReturns(from: number, to: number){
   var level = 1, peakRet = -Infinity, peakYear: number | null = null, cumByYear: Record<string, number> = {};

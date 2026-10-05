@@ -1,6 +1,7 @@
 import { auxStat, facts, srcBlock } from "./format.ts";
 import { moreRow, need, trendDoor, trendSoon, trendText } from "./dom.ts";
 import { clockSvg, slidersSvg, umbrellaSvg } from "./marks.ts";
+import { CLOCK_SRC } from "./data.ts";
 import { nowModel } from "./model.ts";
 import type { ModelReading } from "./model.ts";
 import { metricSheet, sheetRenderers, strip } from "./render-core.ts";
@@ -13,9 +14,6 @@ var WEATHER_NAME = "All Weather", CLOCK_NAME = "Investment Clock";
 var WEATHER_SRC: Src[] = [
   {t:"Bridgewater Associates — The All Weather Story (2012)", u:"https://www.bridgewater.com/resources/all-weather-story.pdf"},
   {t:"Tony Robbins — Money: Master the Game (Simon & Schuster, 2014), the All Seasons allocation Ray Dalio gave for individuals", u:"https://www.simonandschuster.com/books/MONEY-Master-the-Game/Tony-Robbins/9781476757803"}
-];
-var CLOCK_SRC: Src[] = [
-  {t:"Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public", u:"https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"}
 ];
 var ALL_WEATHER = [
   { what:"Stocks", w:30, ink:"--ovulate" },

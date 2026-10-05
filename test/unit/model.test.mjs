@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
-import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday } from '../../src/js/model.ts';
+import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, recessionRecord } from '../../src/js/model.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
@@ -11,6 +11,12 @@ const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
 
 test('the app boots with no error', () => assert.deepEqual(errors, []));
+
+test('the season model reads every NBER recession since 1953, as its (i) says', () => {
+  const r = recessionRecord();
+  assert.deepEqual([r.from, r.recessions, r.caught, r.total], [1953, 11, 11, 39]);
+  assert.ok(r.quarters >= 37 && r.autumn + r.winter >= 37 && r.share < 50, JSON.stringify(r));
+});
 
 test('every cycle reads a season, and its track runs without a gap', () => {
   for (const c of marketCycles) {

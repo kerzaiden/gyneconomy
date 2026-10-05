@@ -74,6 +74,10 @@ export function deriveUninvLag(){
   uninvLagToday.meter.value = m;
   uninvLagToday.meter.max = Math.max(26, m);
 }
+export var NBER_RECESSIONS: [string, string][] = [
+  ["1953 Q2", "1954 Q2"], ["1957 Q3", "1958 Q2"], ["1960 Q2", "1961 Q1"], ["1969 Q4", "1970 Q4"], ["1973 Q4", "1975 Q1"], ["1980 Q1", "1980 Q3"],
+  ["1981 Q3", "1982 Q4"], ["1990 Q3", "1991 Q1"], ["2001 Q1", "2001 Q4"], ["2007 Q4", "2009 Q2"], ["2019 Q4", "2020 Q2"]
+];
 export var t10y3mRecessions = [
   {from:"2007 Q4", to:"2009 Q2", label:"2007–09"},
   {from:"2020 Q1", to:"2020 Q2", label:"2020"}
@@ -280,6 +284,9 @@ function checkFedFundsHistory(){
 }
 export var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
 export var CPI_TARGET = 2;
+export var CLOCK_SRC: Src[] = [
+  {t:"Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public", u:"https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"}
+];
 export var FED_TARGET_SRC = {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"};
 export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
 export var PCE_SWITCH_SRC = {t:"Federal Reserve — Monetary Policy Report to the Congress, February 17, 2000: the FOMC frames its inflation projections on the PCE chain-type price index rather than the CPI", u:"https://www.federalreserve.gov/boarddocs/hh/2000/february/ReportSection1.htm"};
