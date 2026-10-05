@@ -7,6 +7,8 @@ import { CATEGORIES, paintWhen } from "./roster.ts";
 import { sheetRenderers } from "./render-core.ts";
 import { replaceInsight } from "./insights.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
+import { forgetLabs } from "./cycle-analysis.ts";
+import { forgetEchoes } from "./ai-insights.ts";
 
 function paintReading(sheet: string, value: string | number, tag: Tag | null){
   var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
@@ -61,6 +63,11 @@ function repaintDiagnosis(){
   if (!ui.eraOpen) renderDiagnosis(nowModel);
   CATEGORIES.forEach(replaceInsight);
 }
+function repaintDerived(){
+  forgetLabs(); forgetEchoes();
+  repaintDiagnosis();
+  ["chart-home", "sheet-ai-insights"].forEach(function(id){ var el = byIdMaybe(id); if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id](); });
+}
 
 export function bootRepaint(){
   onLive("fedFunds", repaintPolicy);
@@ -70,7 +77,7 @@ export function bootRepaint(){
   onLive("vixClose", repaintVolatility);
   onLive("capeValue", repaintValuationRow);
   onLive("capeValue", syncCape);
-  onLive("*", repaintDiagnosis);
+  onLive("*", repaintDerived);
   exposeLive();
   GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
   checkLiveCoverage();

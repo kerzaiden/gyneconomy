@@ -5,7 +5,7 @@ import { calendarSvg, hormoneSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
-import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
+import { cycleYtdFraction, diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
@@ -44,7 +44,7 @@ function yearRow(year: string, lead: string, line: string, sheet?: string, foot?
 function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);
   return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) +
-    yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+    yearMarket(y, ytd, ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4);
 }
 function stripGap(n: number, ytd: boolean, fill: (n: number, title: string) => string){
   return n <= 0 ? "" : ytd ? fill(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
