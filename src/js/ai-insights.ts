@@ -82,6 +82,7 @@ function pathGap(p: ReturnType<typeof buildPanel>, k: number){
   return { gap:Math.sqrt(per.reduce(function(x, y){ return x + y; }, 0) / per.length), per:per.map(Math.sqrt) };
 }
 var echoCache: Echo[] | null = null;
+export function forgetEchoes(){ panelCache = null; echoCache = null; }
 export function echoes(){
   if (echoCache) return echoCache;
   var p = panel(), seen: Echo[] = [];
@@ -117,7 +118,7 @@ function asOfWords(){
 function aiDetail(){
   var p = panel(), list = echoes().slice(0, 8), names = listWords(AI.echo.map(function(id){ return labOf(id).name; }));
   return '<p>' + AI.by + ' wrote this reading from the app’s own data of ' + asOfWords() + '. Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p>' +
-    '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + growthWindowWord() + ' quarters of ' + names + ', the same two years the season model reads growth over, against every run of ' + growthWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open; }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + growthWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
+    '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + growthWindowWord() + ' quarters of ' + names + ', the same two years the season model reads growth over, against every run of ' + growthWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + growthWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
 var AI_PAGE = "sheet-ai-insights";

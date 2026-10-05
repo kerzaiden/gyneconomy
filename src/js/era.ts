@@ -17,6 +17,19 @@ export function eraFig(today: string){
   function one(x: number){ var a = Math.abs(x).toFixed(dp); return (+a === 0 ? "" : x < 0 ? "\u2212" : signed ? "+" : "") + a; }
   return function(x: number, y?: number | null){ return pre + one(x) + (y != null ? "/" + one(y) : suf); };
 }
+export function cardFace(id: string){
+  var item = document.querySelector('#today-analysis .cat-item[data-open="' + id + '"]'), val = item && item.querySelector(".ci-value");
+  if (!item || !val) throw new Error("the reading " + id + " has no card");
+  var box = document.createElement("span"); box.innerHTML = item.__today ? item.__today.value : val.innerHTML;
+  var unit = box.querySelector(".ci-unit"), lead = box.firstChild;
+  return { text:lead && lead.nodeType === 3 ? (lead.nodeValue || "").trim() : "", unit:unit ? (unit.textContent || "").trim() : "" };
+}
+export function cardValue(R: RosterRow){
+  var face = cardFace(R.id), m = /[+\-\u2212]?\d[\d,]*(?:\.\d+)?/.exec(face.text);
+  if (!m) throw new Error("the card " + R.id + " shows no figure");
+  var v = +m[0].replace("\u2212", "-").replace(/,/g, "");
+  return R.flip ? (/surplus/.test(face.unit) ? Math.abs(v) : -Math.abs(v)) : v;
+}
 function rosterRow(R: RosterRow): EraRow {
   var r: EraRow = Object.create(R), seen = keyed(R.hist).filter(function(d): d is EraPoint { return d.v != null; });
   var sorted = seen.map(function(d){ return d.v; }).sort(function(a, b){ return a - b; });

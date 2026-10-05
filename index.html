@@ -1612,7 +1612,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.17 (753)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.17 (754)</span></p>
     </div>
   </div>
 
@@ -29131,12 +29131,12 @@
       return d.v > a.v ? d : a;
     });
     if (Math.abs(row.meter.max - top.v) > .05) bad.push("max " + row.meter.max + " vs FY" + top.y + " " + top.v);
-    var sum = 0, n = 0, cap = bandEnds(row.meter.optimal, NaN, NaN)[1];
+    var sum = 0, n = 0, cap2 = bandEnds(row.meter.optimal, NaN, NaN)[1];
     for (var y = 1976; y <= 2025; y++) if (g[y] != null) {
       sum += g[y];
       n++;
     }
-    if (n !== 50 || Math.round(sum / n) !== cap) bad.push("band " + cap + " vs " + (sum / n).toFixed(2) + " over " + n);
+    if (n !== 50 || Math.round(sum / n) !== cap2) bad.push("band " + cap2 + " vs " + (sum / n).toFixed(2) + " over " + n);
     if (bad.length) console.warn("checkGrossDebt: " + bad.join("; "));
   }
   function curveAt(m) {
@@ -32603,7 +32603,8 @@
       },
       mid: 0,
       when: lastDate,
-      cardUnit: "total return"
+      cardUnit: "total return",
+      soFar: true
     }, {
       id: "sheet-sign-hormones",
       name: "Interest rates",
@@ -34997,6 +34998,87 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
+  function rosterRows() {
+    return readingRoster().byId;
+  }
+  function kT(k) {
+    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
+    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
+  }
+  function upTo(list, k) {
+    var t = kT(k) + 1e-6;
+    return list.filter(function(d) {
+      return d.v != null && kT(d.k) <= t;
+    });
+  }
+  function eraFig(today) {
+    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
+    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
+    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
+    function one2(x) {
+      var a = Math.abs(x).toFixed(dp);
+      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
+    }
+    return function(x, y) {
+      return pre + one2(x) + (y != null ? "/" + one2(y) : suf);
+    };
+  }
+  function cardFace(id) {
+    var item = document.querySelector('#today-analysis .cat-item[data-open="' + id + '"]'), val = item && item.querySelector(".ci-value");
+    if (!item || !val) throw new Error("the reading " + id + " has no card");
+    var box = document.createElement("span");
+    box.innerHTML = item.__today ? item.__today.value : val.innerHTML;
+    var unit = box.querySelector(".ci-unit"), lead2 = box.firstChild;
+    return {
+      text: lead2 && lead2.nodeType === 3 ? (lead2.nodeValue || "").trim() : "",
+      unit: unit ? (unit.textContent || "").trim() : ""
+    };
+  }
+  function cardValue(R) {
+    var face = cardFace(R.id), m = /[+\-\u2212]?\d[\d,]*(?:\.\d+)?/.exec(face.text);
+    if (!m) throw new Error("the card " + R.id + " shows no figure");
+    var v = +m[0].replace("−", "-").replace(/,/g, "");
+    return R.flip ? /surplus/.test(face.unit) ? Math.abs(v) : -Math.abs(v) : v;
+  }
+  function rosterRow(R) {
+    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
+      return d.v != null;
+    });
+    var sorted = seen.map(function(d) {
+      return d.v;
+    }).sort(function(a, b) {
+      return a - b;
+    });
+    r.place = function(v) {
+      var lo = 0, hi = sorted.length;
+      while (lo < hi) {
+        var mid = lo + hi >> 1;
+        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
+      }
+      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
+    };
+    r.first = seen[0];
+    r.now = seen[seen.length - 1];
+    r.seen = seen;
+    if (R.pair) r.pair = keyed(R.pair);
+    if (R.peek) r.peek = r.pair;
+    return r;
+  }
+  var __roster = null;
+  function readingRoster() {
+    if (__roster) return __roster;
+    var all = ROSTER.filter(function(R) {
+      return R.hist;
+    }).map(rosterRow);
+    all.byId = {};
+    all.forEach(function(r) {
+      all.byId[r.id] = r;
+    });
+    return __roster = all;
+  }
+  function prettyK(r, k) {
+    return r.pre ? r.pre + k : prettyKey(k);
+  }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
@@ -35025,7 +35107,7 @@
   }
   function visitOf(m) {
     var c = m.era, signs = [], bleed = 0;
-    for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
+    for (var y = c.from; y <= (m.ongoing ? Math.min(m.endYear, calendarTodayY - 1) : m.endYear); y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
     while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
     return {
       years: m.elapsedYears,
@@ -35040,16 +35122,19 @@
     }));
   }
   function cycleLab(id, name, good, f) {
-    var per = visits().map(f);
+    var per = visits().map(f), print = function(v) {
+      return yearsWord(v) + " yr";
+    };
     return {
       id: id,
       name: name,
       cat: "cycle",
-      unit: " yr",
       good: good,
       per: per,
       norm: normOf(per.slice(0, closedCount())),
-      now: null
+      now: null,
+      print: print,
+      span: spanOf(print)
     };
   }
   function cycleReadings(R) {
@@ -35068,30 +35153,67 @@
   function readingsNorm(seen) {
     return normOf([].concat.apply([], seen.slice(0, closedCount())));
   }
+  function spanOf(print) {
+    return function(lo, hi) {
+      return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi);
+    };
+  }
+  function cardPrint(R) {
+    var g = eraFig(cardFace(R.id).text), pc = R.pair ? "%" : "", f = function(v) {
+      return g(v) + pc;
+    };
+    if (!R.flip) return {
+      print: function(v) {
+        return f(v);
+      },
+      span: spanOf(function(v) {
+        return f(v);
+      })
+    };
+    var word2 = function(v) {
+      return v > 0 ? " surplus" : " deficit";
+    }, print = function(v) {
+      return f(Math.abs(v)) + word2(v);
+    };
+    return {
+      print: print,
+      span: function(lo, hi) {
+        var a = [ Math.abs(lo), Math.abs(hi) ].sort(function(x, y) {
+          return x - y;
+        });
+        return lo > 0 !== hi > 0 ? print(lo) + " – " + print(hi) : f(a[0]) === f(a[1]) ? print(lo) : f(a[0]) + " – " + f(a[1]) + word2(hi);
+      }
+    };
+  }
   function readingLab(R) {
     var seen = cycleReadings(R), open = function(i) {
       return !!marketCycles[i].ongoing;
-    };
+    }, p = cardPrint(R);
     var per = seen.map(function(vs, i) {
-      return !vs.length ? null : open(i) ? vs[vs.length - 1] : vs.reduce(function(a, b) {
+      return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b) {
         return a + b;
       }, 0) / vs.length;
     });
-    var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
     return {
       id: R.id,
       name: R.name,
       cat: R.cat,
-      unit: unit,
       good: R.good,
+      soFar: R.soFar,
       per: per,
       now: readingsNorm(seen),
+      print: p.print,
+      span: p.span,
       norm: normOf(per.slice(0, closedCount()).filter(function(v) {
         return v != null;
       }))
     };
   }
   var labCache = null;
+  function forgetLabs() {
+    labCache = null;
+    visitCache = null;
+  }
   function labs() {
     return labCache || (labCache = [ cycleLab("length", "Length", void 0, function(v) {
       return v.years;
@@ -35114,8 +35236,7 @@
     return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + [ "", "¼", "½", "¾" ][q % 4];
   }
   function fmt(l, v) {
-    var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
-    return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
+    return l.print(v);
   }
   var TIERS = [ {
     key: "abnormal",
@@ -35154,7 +35275,7 @@
     var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
       return t2.key === tier(l, i);
     })[0];
-    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></" + tag + "></li>";
+    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -35327,8 +35448,26 @@
   function word(n) {
     return NUM[n] || String(n);
   }
+  function cap(t) {
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function depthWords() {
+    var all = closedCount(), by = {};
+    labs().forEach(function(l) {
+      var k = l.per.slice(0, all).filter(function(v) {
+        return v != null;
+      }).length;
+      if (k < all) (by[k] = by[k] || []).push(l.name);
+    });
+    var ks = Object.keys(by).map(Number).sort(function(a, b) {
+      return a - b;
+    });
+    return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k) {
+      return listWords(by[k]) + " on " + word(k);
+    }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
+  }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading.", "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100.", "<b>History, not forecast:</b> it describes her past, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100.", "<b>History, not forecast:</b> it describes her past, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
@@ -35571,6 +35710,10 @@
     };
   }
   var echoCache = null;
+  function forgetEchoes() {
+    panelCache = null;
+    echoCache = null;
+  }
   function echoes() {
     if (echoCache) return echoCache;
     var p = panel(), seen = [];
@@ -35633,7 +35776,7 @@
       return labOf(id).name;
     }));
     return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + growthWindowWord() + " quarters of " + names + ", the same two years the season model reads growth over, against every run of " + growthWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
-      return +k < p.open;
+      return +k < p.open && pathGap(p, +k);
     }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + growthWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
@@ -35651,8 +35794,8 @@
       pct: rankToDate(h.slice(0, -1), h[h.length - 1])
     };
   }
-  function pic(inner, cap) {
-    return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + "</small></div>";
+  function pic(inner, cap2) {
+    return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap2 + "</small></div>";
   }
   function risksPic() {
     var risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(function(l) {
@@ -35965,7 +36108,7 @@
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
-    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, Math.round(cycleYtdFraction * 4)) : 4);
   }
   function stripGap(n, ytd, fill2) {
     return n <= 0 ? "" : ytd ? fill2(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
@@ -36493,70 +36636,6 @@
         t = setTimeout(settleStrips, 120);
       };
     }());
-  }
-  function rosterRows() {
-    return readingRoster().byId;
-  }
-  function kT(k) {
-    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
-  }
-  function upTo(list, k) {
-    var t = kT(k) + 1e-6;
-    return list.filter(function(d) {
-      return d.v != null && kT(d.k) <= t;
-    });
-  }
-  function eraFig(today) {
-    var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
-    var dp = tok[1] ? tok[1].length : 0, pre = today.slice(0, today.indexOf(tok[0])).replace("≈", "");
-    var suf = (/[^\d]*$/.exec(today) || [ "" ])[0], signed = /^[+\-\u2212]/.test(tok[0]);
-    function one2(x) {
-      var a = Math.abs(x).toFixed(dp);
-      return (+a === 0 ? "" : x < 0 ? "−" : signed ? "+" : "") + a;
-    }
-    return function(x, y) {
-      return pre + one2(x) + (y != null ? "/" + one2(y) : suf);
-    };
-  }
-  function rosterRow(R) {
-    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
-      return d.v != null;
-    });
-    var sorted = seen.map(function(d) {
-      return d.v;
-    }).sort(function(a, b) {
-      return a - b;
-    });
-    r.place = function(v) {
-      var lo = 0, hi = sorted.length;
-      while (lo < hi) {
-        var mid = lo + hi >> 1;
-        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
-      }
-      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-    };
-    r.first = seen[0];
-    r.now = seen[seen.length - 1];
-    r.seen = seen;
-    if (R.pair) r.pair = keyed(R.pair);
-    if (R.peek) r.peek = r.pair;
-    return r;
-  }
-  var __roster = null;
-  function readingRoster() {
-    if (__roster) return __roster;
-    var all = ROSTER.filter(function(R) {
-      return R.hist;
-    }).map(rosterRow);
-    all.byId = {};
-    all.forEach(function(r) {
-      all.byId[r.id] = r;
-    });
-    return __roster = all;
-  }
-  function prettyK(r, k) {
-    return r.pre ? r.pre + k : prettyKey(k);
   }
   function insightCirculation() {
     var vel = m2vHistory, n = vel.length;
@@ -38821,6 +38900,15 @@
     if (!ui.eraOpen) renderDiagnosis(nowModel);
     CATEGORIES.forEach(replaceInsight);
   }
+  function repaintDerived() {
+    forgetLabs();
+    forgetEchoes();
+    repaintDiagnosis();
+    [ "chart-home", "sheet-ai-insights" ].forEach(function(id) {
+      var el = byIdMaybe(id);
+      if (el && !el.hidden && sheetRenderers[id]) sheetRenderers[id]();
+    });
+  }
   function bootRepaint() {
     onLive("fedFunds", repaintPolicy);
     onLive("yieldCurve", repaintPressureRow);
@@ -38829,7 +38917,7 @@
     onLive("vixClose", repaintVolatility);
     onLive("capeValue", repaintValuationRow);
     onLive("capeValue", syncCape);
-    onLive("*", repaintDiagnosis);
+    onLive("*", repaintDerived);
     exposeLive();
     GYN.step("checkLiveCoverage", checkLiveCoverage, "check");
     checkLiveCoverage();
