@@ -4,7 +4,7 @@ import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { frameworkRows } from "./data.ts";
 import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.ts";
-import { cycleView, one, settleStrips, showCycle } from "./dial-cycle.ts";
+import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
 
 type SourceGroup = [string, RegExp | null];
@@ -14,7 +14,7 @@ function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([
     "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.",
     "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.",
-    "<b>Temperature</b> is CPI against a 1\u20133% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is the board\u2019s own tolerance around the Fed\u2019s 2% target, which is a point, not a range.",
+    "<b>Temperature</b> is CPI against a 1\u20133% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
     "<b>In expansion</b>, hot is Summer; otherwise heating is Spring \u2014 reflation and cooling is Spring \u2014 deflation.",
     "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn \u2014 disinflation and heating or steady is Autumn \u2014 stagflation.",
     "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.",
@@ -93,7 +93,7 @@ function renderTopbar(){
       ui.topbarBack = null;
       need("topbar-back").hidden = true;
       if (tab === "cycle" && target){ target.insertBefore(cycleView(), byId("today-analysis")); showCycle(currentEra); }
-      if (tab === "analysis") settleStrips();
+      settleAll();
       window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     });
   });

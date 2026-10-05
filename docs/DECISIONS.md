@@ -360,8 +360,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
   (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`). Keren: "all ranges should use some kind of mathematical signaling,
   basic mathematical signaling." (0.6.6)
-- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, its
-  width this app's choice), and it carries no how-to paragraph.** Keren: "All I need is the one to three range
+- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, part
+  of the Season Model's structure), and it carries no how-to paragraph.** Keren: "All I need is the one to three range
   explained" and "The whole point of good UI is that you don't need to explain it." (0.6.6)
 - **The legend's last section is "The market cycle": a typical market cycle, a bull market and the bear market that
   ends it, has run about 5 to 6½ years across the long record (First Trust about 5.2, Fisher about 6.4); a typical
@@ -503,7 +503,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **On the open cycle, Year by year stops at the year in progress: its quarters already read are drawn, and each
   quarter left is one grey dot under the grey line, spaced a quarter apart like the dial's dots.** No rows for
   years still to come. Keren: "I didn't mean for you to put 2028 and 2027. It's just a waste of room … every dot
-  is a quarter, so we have two dots left." (0.6.6)
+  is a quarter, so we have two dots left." (0.6.6) **The year in progress's grey dots are spaced like Herstory's, one
+  quarter of the open cycle's Herstory row apart, so they fill what is left of the year; they are no longer one dot
+  per quarter.** Keren: "I want the year by year container in the current season 2026 to have gray dots in the
+  same spacing as the history or herstory page, just for aesthetics." (0.6.18)
 - **The health score's title is set in Cormorant Garamond 500, the top bar's serif.** Keren: "Make the health score
   in the same font as the top bar, the feminine font." (0.6.6)
 - **The AI Insights page opens on one container titled by the cycle's name ("AI Cycle"), the cycle's story merged
@@ -750,6 +753,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   CPI year over year, we don't need it — we are only looking at the formal inflation rate." (V378)
 - **Temperature's note keeps explaining that 1–3% is a target band, not a normal range, and that the Fed's 2%
   is PCE while this reading is CPI.** It is the only place the app says so. (V582)
+- **The 1–3% band stays, and the app names it part of the Season Model's structure, never Keren's call or
+  "this app's choice".** Keren: "Make the margin, the range, 1 to 3%. I wouldn't call it Keren's call. I would
+  say seasonal model structure or something." (0.6.18)
 - **The Temperature page answers how hot prices are; the Fed's policy-calendar facts live with the policy rate
   (in Hormones' Insights), while Temperature's prose keeps the relationship.** Keren reopened this: the facts
   were in the wrong drawer. (V240, V609)

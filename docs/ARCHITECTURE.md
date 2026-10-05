@@ -596,7 +596,7 @@ threshold, the bar takes that threshold); editorial and Keren's (Temperature). *
 provenance in the (i), or it does not ship.**
 
 **Temperature's band is the one target in the app.** The Fed publishes a point, 2% on PCE, no band; the
-1–3% edges are Keren's symmetric tolerance around it, the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
+1–3% edges are part of the Season Model's structure, a point either side of it (Keren, 0.6.18: name it the model's structure, never "Keren's call"), the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
 average since 2000. The (i) says both. **Never relabel this band "normal."** Nothing is fetched from the
 Fed; the courier checks monthly that the objective is still 2% and, if it changed, notifies rather than
 moving anything — only Keren moves the band.
@@ -623,12 +623,15 @@ first since 0.4.1 (Keren: "I want to see 2026 at the top, and then go backwards"
 first (`yearByYear`). Since 0.4.1 a row is the Analysis page's cycle row at the scale of
 a year (Keren: "just put a bar, a colored bar, like in the analysis page"): the year's quarters from `m.track` as a
 season strip (`seasonRuns` and `seasonPills` in render-core, the cycle list's own, a single quarter drawn as a bar
-since four quarters fill the row; the quarters not yet run left blank, no dots, Keren), and under it the same Growth,
+since four quarters fill the row; the quarters not yet run a grey line on the season strip and grey dots on the market
+strip, Keren), and under it the same Growth,
 Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` (the figures `eraGrowth` and
 `eraInflation` compound) and `sp500AnnualReturns`, whole percents as on the Analysis page. The year in progress reads
 `yearSoFar`: its latest quarter's real GDP on a year earlier and its latest month's CPI, the Growth and Temperature
 cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
-fit on a phone. The emotions and the season names left the row in 0.4.1. A row is a
+fit on a phone. Its grey dots are laid out after layout, not in the markup (`fitYearDots`, run by `renderDiagnosis` and
+`settleAll` on every tab switch and resize): their pitch is one quarter of the open cycle's Herstory row, a width
+only the page knows, so they sit exactly as far apart as Herstory's (Keren, 0.6.18). The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
 sits below both so neither imports the other. A closed cycle's card opened on **After** (the S&P 500 the year after
 the close, `yearAfter`) from 1.8.0 until 0.6.17, when Keren dropped it for the next cycle's own page. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)

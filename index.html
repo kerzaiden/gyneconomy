@@ -1612,7 +1612,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.17 (754)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.18 (755)</span></p>
     </div>
   </div>
 
@@ -31368,7 +31368,7 @@
     } ]);
   }
   function temperatureInfoHtml(ind) {
-    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is headline consumer prices, year over year (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it for this page, and that width is a choice, not a source. And the months inside it are not evidence that the band is normal — 258 of the 451 months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">And the needle is not measured on the same index as the target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on shelter, and reweights annually rather than monthly, so it catches less of the substitution people do when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: 3.4% here is nearer 3% on the Fed’s own gauge.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, {
+    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is headline consumer prices, year over year (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it as part of the Season Model’s structure, not taken from a source. And the months inside it are not evidence that the band is normal — 258 of the 451 months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">And the needle is not measured on the same index as the target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on shelter, and reweights annually rather than monthly, so it catches less of the substitution people do when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: 3.4% here is nearer 3% on the Fed’s own gauge.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, {
       t: "Cleveland Fed — The CPI versus the PCE price index",
       u: "https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"
     }, {
@@ -32075,7 +32075,7 @@
     derivePulseTag();
     GYN.step("deriveLaggingTags", deriveLaggingTags, "derive");
     deriveLaggingTags();
-    tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> is this board’s own tolerance around it, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
+    tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> around it is part of the Season Model’s structure, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
     liveInto("vix3mClose");
     GYN.step("deriveHorizon", deriveHorizon, "derive");
     deriveHorizon();
@@ -36118,7 +36118,24 @@
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");
-    if (host && m) host.innerHTML = diagnosisHtml(m);
+    if (host && m) {
+      host.innerHTML = diagnosisHtml(m);
+      fitYearDots();
+    }
+  }
+  function fitYearDots() {
+    var host = document.getElementById("diagnosis"), span = Math.max(typicalCycleYears * 4, Math.ceil(nowModel.elapsedYears * 4));
+    if (!host) return;
+    var row = document.querySelector(".era-row");
+    Array.prototype.forEach.call(host.querySelectorAll(".dx-year .strip-dots"), function(d) {
+      var box = d.closest(".dx-sys"), cs = getComputedStyle(row || box || d);
+      var pitch = box ? (box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / span : 0;
+      if (!d.clientWidth || !(pitch > 5)) return;
+      d.style.justifyContent = "flex-start";
+      d.style.gap = pitch - 5 + "px";
+      d.style.paddingLeft = (pitch - 5) / 2 + "px";
+      d.innerHTML = new Array(Math.max(1, Math.floor(d.clientWidth / pitch)) + 1).join("<i></i>");
+    });
   }
   function diagnosisHost(home) {
     var host = document.createElement("article");
@@ -36280,7 +36297,7 @@
   function renderCycleKicker() {
     var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div><div class="legend-rows">' + [ [ "winter", "Winter", "CPI &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "CPI ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "CPI &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "CPI ≥ " + TEMP_BAND_LO + "%" ] ].map(function(r) {
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
-    }).join("") + '</div><p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% CPI, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; its width is this app’s choice.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return ≥ 0%</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
+    }).join("") + '</div><p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% CPI, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return ≥ 0%</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
     var idx = detailSlot(html);
     put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
   }
@@ -36606,6 +36623,10 @@
       }
     });
   }
+  function settleAll() {
+    settleStrips();
+    fitYearDots();
+  }
   var growthDetail;
   var dialState;
   var hubDetailIdx;
@@ -36626,7 +36647,7 @@
       var t;
       return function() {
         clearTimeout(t);
-        t = setTimeout(settleStrips, 120);
+        t = setTimeout(settleAll, 120);
       };
     }());
   }
@@ -38516,7 +38537,7 @@
     };
   }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is CPI against a 1–3% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is the board’s own tolerance around the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is CPI against a 1–3% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
   }
   function renderSeasonRows() {
     var seasonRules = [ {
@@ -38644,7 +38665,7 @@
           target.insertBefore(cycleView(), byId("today-analysis"));
           showCycle(currentEra);
         }
-        if (tab === "analysis") settleStrips();
+        settleAll();
         window.scrollTo({
           top: 0,
           behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"

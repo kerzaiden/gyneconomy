@@ -3,7 +3,7 @@ import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg, hormoneSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { sp500AnnualReturns } from "./data.ts";
+import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
@@ -53,7 +53,21 @@ function yearMarket(y: number, ytd: boolean, q: number){
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");
-  if (host && m) host.innerHTML = diagnosisHtml(m);
+  if (host && m){ host.innerHTML = diagnosisHtml(m); fitYearDots(); }
+}
+export function fitYearDots(){
+  var host = document.getElementById("diagnosis"), span = Math.max(typicalCycleYears * 4, Math.ceil(nowModel.elapsedYears * 4));
+  if (!host) return;
+  var row = document.querySelector(".era-row");
+  Array.prototype.forEach.call(host.querySelectorAll(".dx-year .strip-dots"), function(d: HTMLElement){
+    var box = d.closest(".dx-sys"), cs = getComputedStyle(row || box || d);
+    var pitch = box ? (box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / span : 0;
+    if (!d.clientWidth || !(pitch > 5)) return;
+    d.style.justifyContent = "flex-start";
+    d.style.gap = (pitch - 5) + "px";
+    d.style.paddingLeft = (pitch - 5) / 2 + "px";
+    d.innerHTML = new Array(Math.max(1, Math.floor(d.clientWidth / pitch)) + 1).join("<i></i>");
+  });
 }
 function diagnosisHost(home: HTMLElement){
   var host = document.createElement("article"); host.className = "dx"; host.id = "diagnosis";
