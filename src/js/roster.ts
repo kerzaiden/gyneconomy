@@ -3,7 +3,7 @@ import { GYN, LIVE_NAMES, liveIsoOf } from "./live.ts";
 import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondSvg, ecgSvg, flameSvg, gaugeSvg, heartSvg, houseSvg, interestSvg, marketSvg, personSvg, sproutSvg, thermoSvg, volatilitySvg } from "./marks.ts";
 import { peekCard } from "./charts.ts";
 import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
-import { cpiYoYHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { inflationHistory, dataCompiledLabel, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, curveAsOf, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, labRow, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, PULSE_PRE2008, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
 import { page } from "./history.ts";
 import { indPeriod, vixPct } from "./readings.ts";
@@ -80,7 +80,7 @@ export var ROSTER: RosterRow[];
 function declareRoster(): RosterRow[] {
   return [
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",
-      head:"CPI", hist:{ s:cpiYoYHistory, k:"m" }, when:lastDate, cardUnit:"CPI, YoY" },
+      head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, when:lastDate, cardUnit:"PCE, YoY" },
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",

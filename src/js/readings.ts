@@ -3,8 +3,8 @@ import { need, ui } from "./dom.ts";
 import { defineReadings, GYN, liveAsOf, liveInto, merge } from "./live.ts";
 import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } from "./charts.ts";
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
-import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
+import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
 import { cpiNow, growthWord } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
@@ -209,9 +209,12 @@ function activityInfoHtml(ind: Indicator){
       {t:"BLS via FRED \u2014 Unemployment rate, monthly since 1948 (UNRATE)", u:"https://fred.stlouisfed.org/series/UNRATE"}
     ]);
 }
+function bandMonths(){
+  return inflationHistory.filter(function(d){ return d.v >= TEMP_BAND_LO && d.v <= TEMP_BAND_HI; }).length;
+}
 function temperatureInfoHtml(ind: Indicator){
   return '<h4>' + titleCase(ind.econTerm) + '</h4>' +
-    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is headline ' +
+    '<p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + '</b>. The figure is ' +
       'consumer prices, year over year (' + ind.metricSub + '). The ends of the track are the record, and they ' +
       'are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p>' +
     '<p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one ' +
@@ -219,24 +222,23 @@ function temperatureInfoHtml(ind: Indicator){
       'Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on ' +
       'Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the ' +
       'Fed’s; the two edges are set a point either side of it as part of the Season Model’s ' +
-      'structure, not taken from a source. And the months inside it are not evidence that the band is normal — 258 of the 451 ' +
-      'months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed ' +
+      'structure, not taken from a source. And the months inside it are not evidence that the band is normal — ' + bandMonths() + ' of the ' + inflationHistory.length + ' ' +
+      'months this page can draw, since ' + inflationHistory[0].m.slice(0, 4) + ', have sat inside 1–3%, which is a fact about how often the Fed ' +
       'has hit its target rather than about where prices naturally sit. Widen the window and the band stops ' +
       'describing anything: the ends of this same track are −15.8% and +23.7%.</p>' +
-    '<p class="caption follow">And the needle is not measured on the same index as the ' +
-      'target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 ' +
-      'has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on ' +
-      'shelter, and reweights annually rather than monthly, so it catches less of the substitution people do ' +
-      'when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: ' +
-      '3.4% here is nearer 3% on the Fed’s own gauge.</p>' +
+    '<p class="caption follow">The needle is read on the gauge the Fed used in each era. Since ' +
+      'January 2000 it is the <b>PCE</b> price index: the FOMC moved its inflation projections to it in its ' +
+      'February 2000 Monetary Policy Report, and its 2% target is written on it. Before 2000 it is the ' +
+      '<b>CPI</b>, the measure the Fed worked from then. The two are not the same index: the CPI covers only ' +
+      'urban out-of-pocket spending, leans harder on shelter and reweights less often, so it usually runs a ' +
+      'little higher.</p>' +
     '<p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what ' +
       'money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every ' +
       'debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero ' +
       'rather than at it.</p>' +
     srcBlock([
-      FED_TARGET_SRC,
+      FED_TARGET_SRC, PCE_SWITCH_SRC, PCE_SRC,
       {t:"Cleveland Fed — The CPI versus the PCE price index", u:"https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"},
-      {t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},
       {t:"BLS Monthly Labor Review — One hundred years of price change", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}
     ]);
 }
@@ -312,7 +314,7 @@ export function temperatureWord(v: number): Tag {
                           : { text:"Warm", state:"good" };
 }
 function deriveLaggingTags(){
-  var u = unempHistory.filter(function(d){ return d.v != null; }), c = cpiYoYHistory[cpiYoYHistory.length - 1];
+  var u = unempHistory.filter(function(d){ return d.v != null; }), c = inflationHistory[inflationHistory.length - 1];
   var act = lagging.filter(function(x){ return x.bodyTerm === "Activity"; })[0], temp = lagging.filter(function(x){ return x.bodyTerm === "Temperature"; })[0];
   if (act) act.tag = laborWord(u[u.length - 1].v!);
   if (temp) temp.tag = temperatureWord(c.v);
@@ -342,14 +344,14 @@ export var lagging: Indicator[] = [
     bodyTerm:"Temperature", econTerm:"Inflation",
     page:{ bare:true, seat:seatTemperature },
     tag:null,
-    get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"CPI, YoY, Aug 2026",
+    get metric(){ return cpiNow.toFixed(1) + "%"; }, metricSub:"PCE, YoY, Aug 2026",
     meter:{min:-15.8,max:23.7,value:3.4,optimal:{from:TEMP_BAND_LO,to:TEMP_BAND_HI, label:TEMP_BAND_LO + "\u2013" + TEMP_BAND_HI + "%"},
            ends:{ low:"Cold", high:"Hot" }},
     shortCaption:"",
-    caption:"Basal body temperature rises only after ovulation has already happened — CPI works the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
+    caption:"Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
     facts:[],
     aux:[],
-    src:[{t:"BLS — Consumer Price Index, August 2026", u:"https://www.bls.gov/news.release/PDF/cpi.PDF"},{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
+    src:[PCE_SRC,{t:"Federal Reserve — FOMC statement, Sep 16 2026", u:"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"},{t:"Federal Reserve — FOMC meeting calendars", u:"https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},{t:"BLS Monthly Labor Review — One hundred years of price change (CPI history since 1913)", u:"https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"}]
   }
 ];
 export function volatilityTag(): Tag {
@@ -663,10 +665,10 @@ export function bootReadings(){
   deriveLaggingTags();
   // ---- Vitals (Cycle tab): the temperature chart, the Growth ring, the Rates ring ----
   tempInfo = '<h4>Temperature</h4>' +
-    ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") +
+    ledeHtml("Her basal temperature: inflation against the 2% the Fed aims at, month by month through this cycle.") +
     facts([
       '<b>Hot above the band, warm inside it, cold below</b> \u2014 red, teal, blue.',
-      'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> around it is part of the Season Model\u2019s structure, drawn on CPI because that is the series most readers know.',
+      'The Fed\u2019s goal is a single point, 2% on the PCE index. The <b>1\u20133% band</b> around it is part of the Season Model\u2019s structure. It is read on PCE since 2000, the Fed\u2019s own gauge, and on CPI before it, the gauge the Fed watched then.',
       'One of the two readings a season is computed from: the level, and the direction of the last twelve months.',
       'It confirms heat that has already built rather than predicting it.'
     ]);

@@ -1,6 +1,6 @@
 import { facts, fmtSigned, hiCard, lede, monthLabel, srcBlock } from "./format.ts";
 import { moreRow, ui } from "./dom.ts";
-import { calendarTodayY, cpiYoYHistory, wheelMeta } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, wheelMeta } from "./refresh-season.ts";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
 import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { indOf } from "./readings.ts";
@@ -48,8 +48,8 @@ function insightWeather(){
   var rows = marketCycles.map(function(c){
     var to = c.to || calendarTodayY;
     var g = totalGrowthYears(c.from, to);
-    var sp = cycleSlice(cpiYoYHistory, c);
-    var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
+    var sp = cycleSlice(inflationHistory, c);
+    var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
     if (!g || !p) return null;
     return { name:c.name, from:c.from, closed:!c.ongoing, g:g.total, p:p.total, gap:p.total - g.total };
   }).filter(Boolean) as WeatherRow[];

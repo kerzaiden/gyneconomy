@@ -1,6 +1,6 @@
 import SERIES from "../data/series.json" with { type: "json" };
 import { MONTHS_SHORT } from "./format.ts";
-import { cpiYoYBefore, gdpYoYBefore } from "./history-fred.ts";
+import { cpiYoYBefore, gdpYoYBefore, pceYoYHistory } from "./history-fred.ts";
 
 // ---- Layers: Escape closes only the topmost open layer; Tab stays inside a dialog ----
 export function hubTodayHtml(){
@@ -21,16 +21,20 @@ export var wheelMeta: Record<Season, { name: string; theme: string; altName: str
   spring:{name:"Spring", theme:"Reflation", altName:null}
 };
 export var seasonOverride: Season | null = null;
-export var cpiYoYHistory = SERIES.cpiYoYHistory;
+export var PCE_FROM = "2000-01";
+export var inflationHistory: MonthPoint[] = SERIES.cpiYoYHistory;
 export var gdpQuarterlyYoY = SERIES.gdpQuarterlyYoY;
 
 export var DATA_COMPILED: Date, dataCompiledLabel: string, calendarTodayY: number;
 
+function fedGauge(cpi: MonthPoint[]){
+  return cpi.filter(function(d){ return d.m < PCE_FROM; }).concat(pceYoYHistory.filter(function(d){ return d.m >= PCE_FROM; }));
+}
 export function bootRefreshSeason(){
   // ---- REFRESH: the one date to edit ----
   DATA_COMPILED = new Date(2026, 8, 25);
   dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
-  cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
+  inflationHistory = fedGauge(cpiYoYBefore.concat(inflationHistory));
   gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
   // ---- Daily Feeling/Energy readout (Cycle tab) ----
   calendarTodayY = DATA_COMPILED.getFullYear();

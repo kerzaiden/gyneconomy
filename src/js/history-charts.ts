@@ -2,7 +2,7 @@ type HistOpts = { to?: number | null; cycle?: boolean };
 import { atMonth, atQuarter, fmtSigned, pctl, qAtIndex } from "./format.ts";
 import { type HistFrame, avgRule, AXIS, chartAxes, colPath, colWidth, crossLine, fitGroup, fitLine, histFrame, meanRule, publishGeom, trendOf, vGrid, vhOpen, windowYears, xLabel, zeroRule } from "./charts.ts";
 import { fedFundsHistory } from "./history-fred.ts";
-import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CPI_TARGET, DEF_1983, DEF_FROM_YEAR, DEF_RECESSION_FY, deficitHistory, DSR_FROM_YEAR, dsrHistory, GDP_NORM, M2_FLOOD, M2_FROM_YEAR, M2_NORM, M2_PACE_HI, M2_PACE_LO, M2V_FROM_YEAR, m2vHistory, m2Yoy, NROU_NOW, PULSE_PRE2008, SAV_OFFSET, savHistory, sahmOf, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory } from "./data.ts";
 import { quarterRegime } from "./model.ts";
 import { windowScale } from "./history.ts";
@@ -270,7 +270,7 @@ export function cpiHistoryChart(Wpx: number, from: number, o?: HistOpts){
   var F = histFrame(Wpx), W = F.W, narrow = F.narrow, H = F.H,
       L = F.L, R = F.R, T = F.T, B = F.B;
   from = from || 0;
-  var vals = cpiYoYHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
+  var vals = inflationHistory.slice(from, o.to == null ? undefined : o.to), n = vals.length;
   if (!n) return "";
   var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
   var sc = windowScale(vals.map(function(d){ return d.v; }), [0, CPI_TARGET]);
@@ -396,7 +396,7 @@ export function m2Step(v: number){
 }
 var heatTop: number[] = [];
 function heatEdges(){
-  if (!heatTop.length){ var all = cpiYoYHistory.map(function(d){ return d.v; }); heatTop = [pctl(all, 0.9), pctl(all, 0.95)]; }
+  if (!heatTop.length){ var all = inflationHistory.map(function(d){ return d.v; }); heatTop = [pctl(all, 0.9), pctl(all, 0.95)]; }
   return heatTop;
 }
 export function heatStep(v: number){

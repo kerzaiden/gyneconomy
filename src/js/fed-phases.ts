@@ -1,6 +1,6 @@
 import { fedFundsHistory, fedMoves } from "./history-fred.ts";
 import { now, usRealGdpGrowth } from "./data.ts";
-import { cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { cpiDirectionAt, growthWord } from "./model.ts";
 import { fmtSigned, isoDay, MONTHS_SHORT } from "./format.ts";
 import type { CycleModel } from "./model.ts";
@@ -28,19 +28,19 @@ function phaseAt(phases: Phase[], m: string){
 function topOf(run: MonthPoint[]){ return run.reduce(function(a, b){ return b.v > a.v ? b : a; }).m; }
 var runsCache: { key: string; tops: Record<string, string> } | null = null;
 function runTops(){
-  var last = cpiYoYHistory[cpiYoYHistory.length - 1], key = cpiYoYHistory.length + ":" + (last ? last.m + last.v : "");
+  var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m + last.v : "");
   if (!runsCache || runsCache.key !== key) runsCache = { key: key, tops: findRuns() };
   return runsCache.tops;
 }
 function findRuns(){
   var run: MonthPoint[] = [], tops: Record<string, string> = {};
   function close(){ if (run.length){ var top = topOf(run); run.forEach(function(c){ tops[c.m] = top; }); } run = []; }
-  cpiYoYHistory.forEach(function(c){ if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c); });
+  inflationHistory.forEach(function(c){ if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c); });
   close();
   return tops;
 }
 export function cyclePeak(from: string, to: string){
-  var tops = runTops(), months = cpiYoYHistory.filter(function(c){ return c.m >= from && c.m <= to; }), k = 0;
+  var tops = runTops(), months = inflationHistory.filter(function(c){ return c.m >= from && c.m <= to; }), k = 0;
   while (k < months.length - 1 && !(tops[months[k].m] >= from)) k++;
   return months.slice(k).reduce(function(a: MonthPoint | null, b){ return !a || b.v > a.v ? b : a; }, null);
 }
@@ -117,7 +117,7 @@ function endMonthOf(m: CycleModel){
 export function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
   var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
-  var lines = [growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to)];
+  var lines = [growthPoints(from, to), monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to)];
   var top = peak ? lines[1].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
   var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + '</span>' : "";
   return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +

@@ -1,7 +1,7 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
 import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
-import { calendarTodayY, cpiYoYHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; growthSlopeQ: number; growthTrend: string; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
@@ -25,7 +25,7 @@ function cpiTrend(points: MonthPoint[]){
 }
 function cpiYear(endMonth: string){
   var to = monthIndex(endMonth);
-  return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
+  return inflationHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
 }
 function cpiDirectionOf(slope: number){ return slope > 0.02 ? "rising" : slope < -0.02 ? "falling" : "steady"; }
 export function cpiDirectionAt(endMonth: string){
@@ -77,8 +77,8 @@ export function cycleModel(era: Cycle){
   var elapsedYears = era.ongoing ? (calendarTodayY - era.from) + cycleYtdFraction : (era.to - era.from + 1);
   var yearIndex = era.ongoing ? Math.floor(elapsedYears) + 1 : (era.to - era.from + 1);
   var dialYears = Math.max(typicalCycleYears, Math.ceil(elapsedYears));
-  var endMonth = ongoing ? cpiYoYHistory[cpiYoYHistory.length - 1].m : era.to + "-12";
-  var cpi = cpiYoYHistory.filter(function(c){ return c.m >= era.from + "-01" && c.m <= endMonth; });
+  var endMonth = ongoing ? inflationHistory[inflationHistory.length - 1].m : era.to + "-12";
+  var cpi = inflationHistory.filter(function(c){ return c.m >= era.from + "-01" && c.m <= endMonth; });
   var cpi12 = cpiYear(endMonth);
   var gdpEnd = -1;
   gdpQuarterlyYoY.forEach(function(d, i){ if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i; });
@@ -113,7 +113,7 @@ var seasonRuleSentence: Record<Season, string> = {
 function seasonWhyFor(m: CycleModel){
   var r = m.reading;
   return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " +
-    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (CPI " + r.cpiNow.toFixed(1) + "%). " +
+    (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " +
     seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
 }
 export function growthWord(r: ModelReading){
@@ -224,7 +224,7 @@ export function totalGrowthYears(y0: number, y1: number){
 }
 export function cycleMonths(c: Cycle){
   var to = c.to || calendarTodayY, a = -1, b = -1;
-  cpiYoYHistory.forEach(function(d, i){
+  inflationHistory.forEach(function(d, i){
     var y = parseInt(d.m.slice(0, 4), 10);
     if (y >= c.from && y <= to){ if (a === -1) a = i; b = i + 1; }
   });
@@ -250,14 +250,14 @@ export function totalRiseIn(vals: MonthPoint[]){
   return { years:years, total:(factor - 1) * 100 };
 }
 export function yearInflation(y: number){
-  var dec = y === calendarTodayY ? null : cpiYoYHistory.filter(function(d){ return d.m === y + "-12"; })[0];
+  var dec = y === calendarTodayY ? null : inflationHistory.filter(function(d){ return d.m === y + "-12"; })[0];
   return dec ? dec.v : null;
 }
 export function yearGrowth(y: number){
   return y !== calendarTodayY && usRealGdpGrowth[y] !== undefined ? usRealGdpGrowth[y] : null;
 }
 export function yearSoFar(y: number){
-  var g = gdpQuarterlyYoY.filter(function(d){ return yearOf(d) === y; }), c = cpiYoYHistory.filter(function(d){ return +d.m.slice(0, 4) === y; });
+  var g = gdpQuarterlyYoY.filter(function(d){ return yearOf(d) === y; }), c = inflationHistory.filter(function(d){ return +d.m.slice(0, 4) === y; });
   return { growth:g.length ? g[g.length - 1].v : null, prices:c.length ? c[c.length - 1].v : null };
 }
 export function eraInflation(cyc: Cycle){

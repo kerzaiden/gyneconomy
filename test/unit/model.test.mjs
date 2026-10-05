@@ -92,11 +92,11 @@ test('a cycle’s story opens before it closes, its high is above its low, and i
 });
 
 test('every cycle has a peak: its highest price reading once the decline it inherited has passed', () => {
-  assert.deepEqual(cyclePeak('2019-01', '2022-12'), { m: '2022-06', v: 8.98 });
-  assert.deepEqual(cyclePeak('2023-01', '2026-09'), { m: '2026-05', v: 4.17 });
+  assert.deepEqual(cyclePeak('2019-01', '2022-12'), { m: '2022-06', v: 7.22 });
+  assert.deepEqual(cyclePeak('2023-01', '2026-09'), { m: '2026-05', v: 3.82 });
   assert.deepEqual(cyclePeak('1970-01', '1974-12'), { m: '1974-11', v: 12.2 });
   assert.deepEqual(cyclePeak('1967-01', '1969-12'), { m: '1969-11', v: 5.93 });
-  assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '2000-03', v: 3.76 });
+  assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '1996-12', v: 3.38 });
 });
 
 test('the Fed\'s phases alternate, and today\'s move sets the open phase', () => {

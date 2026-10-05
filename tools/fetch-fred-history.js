@@ -223,7 +223,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -243,6 +243,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (durables) out.durablesHistory = m(durables);
   if (premium) out.premiumHistory = m(premium);
   if (moves) out.fedMoves = m(moves);
+  if (pce) out.pceYoYHistory = m(pce);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -319,7 +320,11 @@ async function main() {
   const premium = await shillerSheet(rows => premiumFromRows(rows, PREMIUM_FROM));
   say('Excess CAPE Yield ' + premium.length + ' months, ' + premium[0].m + ' → ' + premium[premium.length - 1].m + ' (Shiller)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves));
+  const pce = yoyMonthly(await fredSeries('PCEPI', '1999-01-01'), -5, 20);
+  if (!pce.length || pce[0].m !== '2000-01') throw new Error('PCEPI: expected year-over-year months from 2000-01');
+  say('PCEPI YoY     ' + pce.length + ' months, ' + pce[0].m + ' → ' + pce[pce.length - 1].m);
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
