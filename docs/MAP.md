@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,303 lines** in 36 files, about 613 KB, roughly **174 thousand tokens**. No session can
+The source is **9,306 lines** in 36 files, about 613 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `1c367fc` on 2026-10-05.
+Generated from commit `f58ba89` on 2026-10-05.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `1c367fc` on 2026-10-05.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,435 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,437 | the whole stylesheet, every token and rule |
 | `page-body.html` | 356 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **664** top-level functions, **111** top-level vars, **375** exported names, **19** boots.
+Counts: **32** modules, **665** top-level functions, **111** top-level vars, **376** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -58,7 +58,7 @@ Counts: **32** modules, **664** top-level functions, **111** top-level vars, **3
 | `js/indicators.ts` | 280 | 34 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/inner-pages.ts` | 287 | 13 | `charts`, `data`, `dial-cycle`, `dom`, `format`, `history`, `history-charts`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/insights.ts` | 186 | 18 | `data`, `dom`, `format`, `model`, `readings`, `refresh-season`, `roster` |
-| `js/marks.ts` | 71 | 28 | — |
+| `js/marks.ts` | 72 | 29 | — |
 | `js/quarter-sheet.ts` | 52 | 4 | `data`, `dom`, `format`, `model`, `refresh-season`, `render-core` |
 | `js/main.ts` | 42 | 0 | `analysis`, `data`, `diagnosis`, `dial-cycle`, `dom`, `history`, `live`, `model`, `pages-nav`, `portfolio`, `readings`, `refresh-season`, `render-core`, `render-pages`, `repaint`, `roster`, `tabs-menu` |
 
@@ -1250,26 +1250,27 @@ falls in. **export** marks a name other modules import.
 | 12 | `diamondSvg` · export | `function diamondSvg(` |
 | 16 | `sproutSvg` · export | `function sproutSvg(` |
 | 24 | `markSvg` | `function markSvg(` |
-| 27 | `heartSvg` · export | `function heartSvg(` |
-| 29 | `flameSvg` · export | `function flameSvg(` |
-| 32 | `clockSvg` · export | `function clockSvg(` |
-| 33 | `thermoSvg` · export | `function thermoSvg(` |
-| 36 | `personSvg` · export | `function personSvg(` |
-| 38 | `calendarSvg` · export | `function calendarSvg(` |
-| 39 | `sparkleSvg` · export | `function sparkleSvg(` |
-| 41 | `bookSvg` · export | `function bookSvg(` |
-| 44 | `umbrellaSvg` · export | `function umbrellaSvg(` |
-| 46 | `slidersSvg` · export | `function slidersSvg(` |
-| 48 | `chartSvg` · export | `function chartSvg(` |
-| 50 | `ecgSvg` · export | `function ecgSvg(` |
-| 52 | `weatherSvg` · export | `function weatherSvg(` |
-| 54 | `moodSvg` · export | `function moodSvg(` |
-| 55 | `circulationSvg` · export | `function circulationSvg(` |
-| 56 | `boltSvg` · export | `function boltSvg(` |
-| 57 | `houseSvg` · export | `function houseSvg(` |
-| 60 | `marketSvg` · export | `function marketSvg(` |
-| 63 | `bagSvg` · export | `function bagSvg(` |
-| 66 | `volatilitySvg` · export | `function volatilitySvg(` |
+| 27 | `hormoneSvg` · export | `function hormoneSvg(` |
+| 28 | `heartSvg` · export | `function heartSvg(` |
+| 30 | `flameSvg` · export | `function flameSvg(` |
+| 33 | `clockSvg` · export | `function clockSvg(` |
+| 34 | `thermoSvg` · export | `function thermoSvg(` |
+| 37 | `personSvg` · export | `function personSvg(` |
+| 39 | `calendarSvg` · export | `function calendarSvg(` |
+| 40 | `sparkleSvg` · export | `function sparkleSvg(` |
+| 42 | `bookSvg` · export | `function bookSvg(` |
+| 45 | `umbrellaSvg` · export | `function umbrellaSvg(` |
+| 47 | `slidersSvg` · export | `function slidersSvg(` |
+| 49 | `chartSvg` · export | `function chartSvg(` |
+| 51 | `ecgSvg` · export | `function ecgSvg(` |
+| 53 | `weatherSvg` · export | `function weatherSvg(` |
+| 55 | `moodSvg` · export | `function moodSvg(` |
+| 56 | `circulationSvg` · export | `function circulationSvg(` |
+| 57 | `boltSvg` · export | `function boltSvg(` |
+| 58 | `houseSvg` · export | `function houseSvg(` |
+| 61 | `marketSvg` · export | `function marketSvg(` |
+| 64 | `bagSvg` · export | `function bagSvg(` |
+| 67 | `volatilitySvg` · export | `function volatilitySvg(` |
 
 ### `js/quarter-sheet.ts`
 
@@ -1321,20 +1322,20 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 | 503 | journal (editorial content tab) |
 | 509 | content tab: reading companion |
 | 561 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 813 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 857 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 929 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,099 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,108 | The symptoms: a cycle's years against today |
-| 1,207 | hero: yield curve |
-| 1,237 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,256 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,284 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,292 | long cycle (structural layer) |
-| 1,299 | indicator grid |
-| 1,325 | info icon + popover (progressive disclosure for longer notes) |
-| 1,339 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,425 | footer |
+| 815 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 859 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 931 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,101 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,110 | The symptoms: a cycle's years against today |
+| 1,209 | hero: yield curve |
+| 1,239 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,258 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,286 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,294 | long cycle (structural layer) |
+| 1,301 | indicator grid |
+| 1,327 | info icon + popover (progressive disclosure for longer notes) |
+| 1,341 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,427 | footer |
 
 ## Markup landmarks
 

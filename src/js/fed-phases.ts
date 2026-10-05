@@ -99,7 +99,7 @@ function levelsHtml(m: CycleModel, at: Phase | null, soFar: MonthPoint | null){
   var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
   var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
   return '<ul class="fp-levels">' + (at ? '<li class="fp-rate"><b>Federal funds rate:</b> ' + (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m) + '</li>' : "") +
-    '<li class="fp-prices"><b>Prices:</b> ' + range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)' + (soFar ? ', peak so far ' + soFar.v.toFixed(1) + '% (' + monthName(soFar.m) + ')' : "") + '</li>' +
+    '<li class="fp-prices"><b>Prices:</b> ' + range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)</li>' + (soFar ? '<li class="fp-prices fp-so-far"><b>Peak so far:</b> ' + soFar.v.toFixed(1) + '% (' + monthName(soFar.m) + ')</li>' : "") +
     '<li class="fp-growth"><b>Growth:</b> ' + word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%)</li></ul>';
 }
 function endMonthOf(m: CycleModel){

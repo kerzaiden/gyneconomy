@@ -1306,9 +1306,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   before the season model's own price trend turns to falling, drawn only once it has turned, so it never forecasts.
   The curves stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title:
   "I'm already seeing it in the chart," then a head like the page's other cards, "Interest environment" ("environment
-  would be better"). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
-  line is named "Federal funds rate". An open cycle with no confirmed peak shows its peak so far, hollow, and names it
-  in the prices line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
+  would be better") with a hormone mark (a steroid ring, `hormoneSvg`). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
+  line is named "Federal funds rate"; every line fits on one line at the meta size ("if you need to make the text a
+  bit smaller, then do it"). An open cycle with no confirmed peak shows its peak so far, hollow, and names it
+  on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
   Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
   names how Mrs. Market feels now.** Keren: "Like a doctor would analyze a patient … I want to have emotional

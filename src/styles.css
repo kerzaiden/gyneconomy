@@ -656,7 +656,9 @@
   .fp-phases{ position:relative; height:18px; margin-top:2px; }
   .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
   .fp-ph.fp-tight{ color:var(--accent-ink); } .fp-ph.fp-ease{ color:var(--good-ink); }
-  .fp-levels{ margin:12px 0 0; padding:0; list-style:none; font-size:var(--type-reading); line-height:1.8; }
+  .fp-levels{ margin:12px 0 0; padding:0; list-style:none; font-size:var(--type-meta); line-height:1.9; }
+  .fp-levels li{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fp-levels li.fp-so-far::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }
   .fp-levels li::before{ content:""; display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; vertical-align:1px; background:var(--line); }
   .fp-levels b{ color:var(--line-ink); font-weight:600; }
   .dx-mark svg{ width:18px; height:18px; }
