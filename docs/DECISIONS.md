@@ -477,6 +477,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   quarter left is one grey dot under the grey line, spaced a quarter apart like the dial's dots.** No rows for
   years still to come. Keren: "I didn't mean for you to put 2028 and 2027. It's just a waste of room … every dot
   is a quarter, so we have two dots left." (0.6.6)
+- **The health score's title is set in Cormorant Garamond 500, the top bar's serif.** Keren: "Make the health score
+  in the same font as the top bar, the feminine font." (0.6.6)
 - **The AI Insights page opens its summary under "TL;DR", the usual spelling, not "In short".** Keren: "write TLDR
   with the convention of how it's written." (0.6.6)
 
