@@ -242,6 +242,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   run on average, computed from the app's own closed cycles.** Keren: "A cycle runs from its first bull year to the
   bear year that ends it … another sentence saying the average market cycle is …, so a user would have some kind
   of notion of how we built this entire app." (0.8.1, Oct 5, 2026)
+- **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
+  line, with the leading, coincident and lagging examples as bullets.** Keren: "this paragraph should be in the
+  info … check that we're not repeating ourselves." The Season Model's (i) uses the precise terms, concisely:
+  growth gap, sensitivity, price level, direction (transition seasons only), and its table shows all 18
+  combinations. Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)

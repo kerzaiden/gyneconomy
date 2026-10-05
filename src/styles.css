@@ -546,6 +546,7 @@
   .sg-cell{ display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; min-height:64px; padding:10px 6px; border-radius:10px; background:color-mix(in srgb, var(--season) 30%, var(--surface)); }
   .sg-cell b{ font-size:var(--type-interface); font-weight:600; color:var(--text-primary); }
   .sg-cell.wide{ grid-column:span 2; }
+  .sg-cell small{ color:var(--text-secondary); }
   .framework-rows .lag-row span:last-child{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); text-align:right; }
   .framework-rows .lag-row span:first-child{ font-weight:600; color:var(--text-primary); }
   @media (max-width:520px){ .framework-rows .lag-row{ grid-template-columns: 1fr 1.6fr 0.9fr; } .framework-rows .lag-row span:nth-child(2){ display:none; } }

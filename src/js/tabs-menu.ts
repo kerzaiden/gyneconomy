@@ -11,22 +11,22 @@ type SourceGroup = [string, RegExp | null];
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function seasonGrid(){
-  var cell = function(group: string, span: number, name: string, kinds: string){
-    return '<div class="sg-cell ' + group + (span > 1 ? ' wide' : '') + '"><b>' + name + '</b><small>' + kinds + '</small></div>';
+  var cell = function(group: string, span: number, name: string, kinds: string[]){
+    return '<div class="sg-cell ' + group + (span > 1 ? ' wide' : '') + '"><b>' + name + '</b>' + kinds.map(function(k){ return '<small>' + k + '</small>'; }).join("") + '</div>';
   };
   var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
   return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", "reflation or deflation") + cell("summer", 1, "Summer", "inflation") +
-    head("Contraction", "below potential") + cell("winter", 1, "Winter", "deflation") + cell("autumn", 2, "Autumn", "stagflation or disinflation") +
+    head("Expansion", "gap \u2265 0") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating, steady", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation \u00b7 any"]) +
+    head("Contraction", "gap < 0") + cell("winter", 1, "Winter", ["Deflation \u00b7 any"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
   '</div>';
 }
 function seasonModelNote(){
-  return '<h4>The Season Model</h4>' + ledeHtml("Two questions set the season: is the economy growing as fast as it can, and how warm are prices?") + seasonGrid() + facts([
-    "<b>Price direction</b> over the last twelve months splits Spring and Autumn. Spring is reflation while prices heat or hold, deflation while they cool; Autumn is stagflation while prices heat, disinflation while they cool or hold.",
-    "<b>Growth</b> is real GDP against a year earlier. <b>Potential</b> is how fast the economy can grow without overheating: the Congressional Budget Office\u2019s estimate since 1950, and before then the economy\u2019s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.",
-    "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the season from flickering: a smaller gap is within what BEA later revises a year\u2019s growth by (BEA, 2018).",
-    "<b>Prices</b> are inflation, on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since. The 1\u20133% range is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target.",
-    "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.",
+  return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
+    "<b>Growth gap</b>: real GDP growth over a year minus potential growth, the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it.",
+    "<b>Sensitivity</b>: a gap within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
+    "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
+    "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
+    "<b>Before 1948</b>: GDP is annual, so seasons are read a year at a time.",
     seasonWhy
   ]);
 }
@@ -76,7 +76,11 @@ function renderSeasonRows(){
     frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
   put("framework-kicker", "The framework" + expandBtn(
     '<h4>The Seasonal Behaviour Framework</h4>' +
-    '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' +
+    ledeHtml("Every reading in this app is one of the book\u2019s seven signs, each paired with its bodily counterpart and sorted by when it speaks.") + facts([
+      "<b>Leading</b> signs turn first: rising estrogen and the change in cervical fluid come days before ovulation, as credit growth and the yield curve move before the economy. The yield curve and consumer expectations are both components of the Conference Board\u2019s Leading Economic Index.",
+      "<b>Coincident</b> signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now.",
+      "<b>Lagging</b> signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway."
+    ]) +
     srcBlock([
       {t:"Conference Board — Leading Economic Index components", u:"https://www.conference-board.org/topics/us-leading-indicators"},
       {t:"Schularick & Taylor — Credit Booms Gone Bust (NBER w15512)", u:"https://www.nber.org/papers/w15512"},
