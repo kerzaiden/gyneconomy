@@ -3,7 +3,7 @@ import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./d
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { frameworkRows, marketCycles } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, HOLD_BAND, PEAK_TREND, PEAK_YEARS, seasonGroup, seasonWhy } from "./model.ts";
+import { cpiNow, currentEra, currentSeason, HOLD_BAND, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
 
@@ -20,13 +20,17 @@ function seasonGrid(){
     head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation \u00b7 any"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
   '</div>';
 }
+function recessionLine(){
+  var r = recessionRecord();
+  return "<b>Against the record</b>: since " + r.from + " the model read contraction in " + (r.caught === r.recessions ? "all " + r.recessions : r.caught + " of the " + r.recessions) + " NBER recessions, and in " + r.quarters + " of their " + r.total + " quarters. Of its " + r.runs + " contractions, " + r.alarms + " came with no recession within a year.";
+}
 function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
-    "<b>Growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it.",
+    "<b>Output growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
     "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
-    "<b>Before 1948</b>: GDP is annual, so seasons are read a year at a time.",
+    recessionLine(),
     seasonWhy
   ]);
 }

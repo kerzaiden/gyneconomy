@@ -30790,6 +30790,7 @@
     uninvLagToday.meter.value = m;
     uninvLagToday.meter.max = Math.max(26, m);
   }
+  var NBER_RECESSIONS = [ [ "1953 Q2", "1954 Q2" ], [ "1957 Q3", "1958 Q2" ], [ "1960 Q2", "1961 Q1" ], [ "1969 Q4", "1970 Q4" ], [ "1973 Q4", "1975 Q1" ], [ "1980 Q1", "1980 Q3" ], [ "1981 Q3", "1982 Q4" ], [ "1990 Q3", "1991 Q1" ], [ "2001 Q1", "2001 Q4" ], [ "2007 Q4", "2009 Q2" ], [ "2019 Q4", "2020 Q2" ] ];
   var t10y3mRecessions = [ {
     from: "2007 Q4",
     to: "2009 Q2",
@@ -31693,6 +31694,46 @@
   }
   function quarterRegime(d) {
     return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction");
+  }
+  function qIndex(q) {
+    return +q.slice(0, 4) * 4 + +q.slice(6) - 1;
+  }
+  function recessionRecord() {
+    var inRec = {}, caught = 0, quarters = 0, total = 0;
+    NBER_RECESSIONS.forEach(function(r, n) {
+      var hit = false;
+      for (var i2 = qIndex(r[0]) + 1; i2 <= qIndex(r[1]); i2++) {
+        inRec[i2] = n + 1;
+        total++;
+        if (regimeAt(i2) === "contraction") {
+          quarters++;
+          hit = true;
+        }
+      }
+      if (hit) caught++;
+    });
+    var first = qIndex(NBER_RECESSIONS[0][0]) - 4, last = qIndex(seasonTrack[seasonTrack.length - 1].q), runs = 0, alarms = 0;
+    for (var i = first; i <= last; i++) {
+      if (regimeAt(i) !== "contraction" || regimeAt(i - 1) === "contraction") continue;
+      var end = i;
+      while (end < last && regimeAt(end + 1) === "contraction") end++;
+      runs++;
+      var near = false;
+      for (var j = i; j <= end + 4; j++) if (inRec[j]) near = true;
+      if (!near) alarms++;
+    }
+    return {
+      from: +NBER_RECESSIONS[0][0].slice(0, 4),
+      recessions: NBER_RECESSIONS.length,
+      caught: caught,
+      quarters: quarters,
+      total: total,
+      runs: runs,
+      alarms: alarms
+    };
+  }
+  function regimeAt(i) {
+    return regimeByQ[Math.floor(i / 4) + " Q" + (i % 4 + 1)];
   }
   function seasonTitle(meta) {
     return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name;
@@ -36482,7 +36523,7 @@
     var series = spreadSeries();
     addSources(series["3m"].sources);
     addSources(series["2y"].sources);
-    function qIndex(data, q) {
+    function qIndex2(data, q) {
       for (var i = 0; i < data.length; i++) {
         if (data[i].q === q) return i;
       }
@@ -36512,7 +36553,7 @@
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       svg.innerHTML = "";
       t10y3mRecessions.forEach(function(r) {
-        var i0 = qIndex(data, r.from), i1 = qIndex(data, r.to);
+        var i0 = qIndex2(data, r.from), i1 = qIndex2(data, r.to);
         if (i0 < 0 || i1 < 0) return;
         svg.appendChild(el("rect", {
           x: x(i0, data.length),
@@ -40483,8 +40524,12 @@
     };
     return '<div class="season-grid"><span></span>' + head("Cold", "below 1%") + head("In range", "1–3%") + head("Hot", "above 3%") + head("Expansion", "at or above potential") + cell("spring", 2, "Spring", [ "Reflation · heating, steady", "Deflation · cooling" ]) + cell("summer", 1, "Summer", [ "Inflation · any" ]) + head("Contraction", "below potential") + cell("winter", 1, "Winter", [ "Deflation · any" ]) + cell("autumn", 2, "Autumn", [ "Stagflation · heating", "Disinflation · cooling, steady" ]) + "</div>";
   }
+  function recessionLine() {
+    var r = recessionRecord();
+    return "<b>Against the record</b>: since " + r.from + " the model read contraction in " + (r.caught === r.recessions ? "all " + r.recessions : r.caught + " of the " + r.recessions) + " NBER recessions, and in " + r.quarters + " of their " + r.total + " quarters. Of its " + r.runs + " contractions, " + r.alarms + " came with no recession within a year.";
+  }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", "<b>Before 1948</b>: GDP is annual, so seasons are read a year at a time.", seasonWhy ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Output growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", recessionLine(), seasonWhy ]);
   }
   function rangePos(v) {
     if (v < 1) return .28 * Math.max(0, Math.min(1, (v + 1) / 2));

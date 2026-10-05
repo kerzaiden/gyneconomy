@@ -245,9 +245,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
   line, with the leading, coincident and lagging examples as bullets.** Keren: "this paragraph should be in the
   info … check that we're not repeating ourselves." The Season Model's (i) uses the precise terms, concisely:
-  growth vs potential, sensitivity, price level, direction (transition seasons only), and its table shows all 18
+  output growth vs potential, sensitivity, price level, direction (transition seasons only), and its table shows all 18
   combinations. Not "output gap" (a gap in the level of output) nor "growth gap" (not a standard term); Keren
-  questioned both. Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)
+  questioned both. It closes on its record against NBER recessions since 1953 (contractions read, recession
+  quarters read, contractions with no recession within a year), computed by `recessionRecord` from the app's own
+  seasons; Keren: "it adds a lot of credibility to the model … it's important to specify it." Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)

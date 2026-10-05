@@ -74,6 +74,10 @@ export function deriveUninvLag(){
   uninvLagToday.meter.value = m;
   uninvLagToday.meter.max = Math.max(26, m);
 }
+export var NBER_RECESSIONS: [string, string][] = [
+  ["1953 Q2", "1954 Q2"], ["1957 Q3", "1958 Q2"], ["1960 Q2", "1961 Q1"], ["1969 Q4", "1970 Q4"], ["1973 Q4", "1975 Q1"], ["1980 Q1", "1980 Q3"],
+  ["1981 Q3", "1982 Q4"], ["1990 Q3", "1991 Q1"], ["2001 Q1", "2001 Q4"], ["2007 Q4", "2009 Q2"], ["2019 Q4", "2020 Q2"]
+];
 export var t10y3mRecessions = [
   {from:"2007 Q4", to:"2009 Q2", label:"2007–09"},
   {from:"2020 Q1", to:"2020 Q2", label:"2020"}
