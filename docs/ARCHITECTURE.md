@@ -710,7 +710,10 @@ emotion at the closing month, its years, and what followed a year later. Every l
   (`premiumFromRows`) from the workbook `shillerSheet` already fetches for the S&P 500. Shiller publishes it as a
   fraction; the reader refuses a figure that is not one rather than guess the scale. It has no word, so its tag is
   empty and the row draws no pill. Like the other Shiller and FRED histories it lands by running the Backfill.
-- **One cycle, one card** (0.6.17): under the Fed's phases the Diagnosis has one card, then Year by Year. Today's is
+- **One cycle, one card** (0.6.17): `diagnosisHtml` is one sequence for every cycle, open or closed, and the only
+  branch is inside `cycleCard`, which picks what the card opens; the unit test "every cycle page, open or closed, is
+  built in one shape" compares each closed cycle's containers and their children with today's (the peak mark and
+  the year rows, which vary with the data, aside). Under the Fed's phases the Diagnosis has one card, then Year by Year. Today's is
   AI Insights (`aiInsights`); a closed cycle's is Cycle Statistics (`chartDoor`): the cycle's `story` from
   `marketCycles`, clamped to three lines like the AI Insights lede, and its health score, jumping to the Analysis tab
   set to that cycle. The mood card (`moodDoor`, V681 to 0.6.16) went with it, so a closed cycle's category pages,

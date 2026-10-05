@@ -1232,6 +1232,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and cycle story, meaning it's not up to date with recent changes … you should have cycle statistics just as a
   shortcut because the analysis tab shows the current cycle … there should be some kind of a gateway to the historic
   cycle statistic." (0.6.17)
+- **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
+  Keren: "all current cycle pages are supposed to be updated just one time." 0.6.13 changed only today's: the
+  Diagnosis branched on whether the cycle is open, the change went into the open branch, and the browser suite had
+  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Environment, the
+  cycle's card, Year by Year) with a single slot, `cycleCard`, that differs only in what its card opens, and a unit
+  test fails if any closed cycle's page differs in shape from today's. (0.6.17)
 - **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Keren: "some
   titles are in dark purple and some are in black. I think we need to be consistent and make all titles look like AI
   insights… it should be deep purple and bold." Interest environment and Year by year lost their small black capitals.
