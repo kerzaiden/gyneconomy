@@ -662,6 +662,16 @@ async function openPage(p, url, sheet) {
     (about.title === 'About Gyneconomy' && about.seasons === 6 && about.framework > 1 && about.cycle && about.row && about.titles && about.line && about.idea === '1/4/1')
       ? ok('About Gyneconomy carries the models the Content tab held', about.seasons + ' seasons, ' + (about.framework - 1) + ' signs')
       : bad('About Gyneconomy carries the models the Content tab held', JSON.stringify(about));
+    const splash = await p.evaluate(() => {
+      const solid = c => { const m = c.match(/[\d.]+/g); return !!m && (m.length < 4 || +m[3] > 0.9); };
+      const body = /radial-gradient/.test(getComputedStyle(document.body, '::before').backgroundImage);
+      const covers = [...document.querySelectorAll('body *')].filter(el => { const cs = getComputedStyle(el);
+        return cs.position === 'fixed' && ['top', 'right', 'bottom', 'left'].every(k => cs[k] === '0px') && solid(cs.backgroundColor) && !/radial-gradient/.test(cs.backgroundImage); });
+      return { body, bare: covers.map(el => el.id || el.className) };
+    });
+    splash.body && !splash.bare.length
+      ? ok('the apricot splash shows behind every page and sheet')
+      : bad('the apricot splash shows behind every page and sheet', JSON.stringify(splash));
   }
 
   {
