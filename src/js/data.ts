@@ -434,7 +434,7 @@ export var marketCycles: Cycle[] = [
   },
   {
     from:1967, to:1969,
-    name:"Go-Go Cycle",
+    name:"Go-Stop Cycle",
     story:"Go-go fund managers traded growth stocks at speed, and conglomerates grew by buying everything in sight, their earnings flattered by the deals themselves. Mrs. Market was in Euphoria about them, and in Denial as inflation and the credit crunch of 1969 took them apart.",
     blurb:"The go-go funds and the conglomerates peak in 1968, with speculation running alongside. It ends in 1969 as inflation and rising rates catch up."
   },

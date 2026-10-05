@@ -81,12 +81,12 @@ function insightWeather(){
       " \u2014 the economy costing more faster than it is growing bigger.";
   else
     txt += " Today's " + absGap(now).toFixed(1) + " points sits inside that range.";
-  return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The barometer", "", txt);
+  return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
 }
 function seasonCards(m: CycleModel){
   var r = seasonReading[m.season] || {};
   return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") +
-    (r.body ? hiCard("In the body", "", r.body) : "");
+    (r.body ? hiCard("In the Body", "", r.body) : "");
 }
 function marketCycleCard(m: CycleModel){
   var years = sp500Years.filter(function(d: YearPoint){ return d.y >= m.era.from && d.y <= m.endYear; });
@@ -98,7 +98,7 @@ function marketCycleCard(m: CycleModel){
   var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
   return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
     ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
-    (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
+    (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
 }
 var MOOD_CHART = [
   ["Optimism", 168, 290, "cream", -23, 7, "end"], ["Excitement", 211, 221, "amber", -23, 0, "end"], ["Thrill", 279, 158, "orange", -21, 0, "end"],
@@ -138,7 +138,7 @@ function moodCycleSvg(now: string){
 }
 function isRead(d: Mood): d is MoodRead { return !!d.word && d.pct != null && d.change != null; }
 function moodInfo(d: MoodRead){
-  return '<h4>Her mood</h4>' + facts([moodFigures(d),
+  return '<h4>Her Mood</h4>' + facts([moodFigures(d),
     "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.",
     "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor\u2019s euphoria is not another\u2019s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.",
     "The chart, its stages and their heights are the cycle of market emotions\u2019, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren\u2019s call; the three months are Claude\u2019s default.",

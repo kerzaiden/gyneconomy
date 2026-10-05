@@ -1,4 +1,4 @@
-import { CHEV, yearOf } from "./format.ts";
+import { CHEV, yearOf, titleCase } from "./format.ts";
 import { byId, detailTexts, focusQuiet, layer, onScreen } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, pendingGeom } from "./charts.ts";
@@ -34,7 +34,7 @@ export function histHead(id: string){
   var t = typeof H.title === "function" ? H.title() : H.title;
   return '<div class="band-head">' +
     (H.mark ? '<span class="bh-mark" aria-hidden="true">' + H.mark() + '</span>' : "") +
-    '<h2 class="bh-title">' + t + '</h2>' +
+    '<h2 class="bh-title">' + titleCase(t) + '</h2>' +
     '<span class="bh-sigma" id="bh-sigma-' + id + '" hidden></span>' +
     '<div class="bh-more-wrap"><button type="button" class="bh-more" data-head-more="' + id + '" ' +
       'aria-expanded="' + (headMenuFor === id ? "true" : "false") +

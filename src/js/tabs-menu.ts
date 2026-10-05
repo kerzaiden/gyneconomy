@@ -1,4 +1,4 @@
-import { facts, ledeHtml, srcBlock } from "./format.ts";
+import { facts, ledeHtml, srcBlock, titleCase } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -60,7 +60,7 @@ function renderSeasonRows(){
   put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' +
     frameworkRows.map(function(r){ return '<div class="lag-row"><span>' + r.indicator + '</span><span>' + r.body + '</span><span>' + r.economy + '</span><span>' + r.category + '</span></div>'; }).join(""));
   put("framework-kicker", "The framework" + expandBtn(
-    '<h4>The Seasonal Behaviour framework</h4>' +
+    '<h4>The Seasonal Behaviour Framework</h4>' +
     '<p class="caption">The manuscript’s own indicator table: seven signs the body gives across a cycle, each paired with the economic reading that behaves the same way, and each sorted by timing. Leading signs move before the turn — rising estrogen and the change in cervical fluid come days before ovulation, just as credit growth and the yield curve move before the economy does (the yield curve and consumer expectations are both formal components of the Conference Board’s Leading Economic Index). Coincident signs report the present: desire peaks in the fertile window itself, as appetite shows in what households are buying now. Lagging signs confirm afterwards: basal temperature rises only after ovulation, as inflation and unemployment register a turn only once it is underway.</p>' +
     srcBlock([
       {t:"Conference Board — Leading Economic Index components", u:"https://www.conference-board.org/topics/us-leading-indicators"},
@@ -148,7 +148,7 @@ function wireMenu(){
     if (rest.length){ groups.push(["Other", null]); buckets.push(rest); }
     put("sources-groups", groups.map(function(g, i){
       if (!buckets[i].length) return "";
-      return '<h3 class="menu-section">' + g[0] + '</h3><div class="menu-card">' + buckets[i].map(function(x){
+      return '<h3 class="menu-section">' + titleCase(g[0]) + '</h3><div class="menu-card">' + buckets[i].map(function(x){
         return '<a class="menu-row" href="' + x.u + '" target="_blank" rel="noopener"><span class="menu-label">' + x.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</span>' +
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a>';
       }).join("") + '</div>';

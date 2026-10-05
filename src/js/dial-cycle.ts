@@ -371,7 +371,7 @@ export function bootDialCycle(){
   detailTexts.push("");
   GYN.step("renderCycleDial", renderCycleDial, "wire");
   renderCycleDial();
-  growthDetail = '<h4>Growth per cycle</h4>' +
+  growthDetail = '<h4>Growth per Cycle</h4>' +
     ledeHtml("Real GDP across this cycle, quarter by quarter.") +
     facts([
       'Each point is a quarter against <b>the same quarter a year earlier</b> \u2014 the reading the OECD, Eurostat and the World Bank headline.',

@@ -1,26 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors } from './dom.mjs';
-import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday, yearAfter } from '../../src/js/model.ts';
+import { cycleModel, cycleReturns, cycleStory, diagnoseToday, moodTrack, moodToday } from '../../src/js/model.ts';
 import { marketCycles } from '../../src/js/data.ts';
 import { sp500MonthlyHistory } from '../../src/js/history-fred.ts';
 import { seasonStripHtml } from '../../src/js/dial-cycle.ts';
-import { fedPhases, inflationPeak, peakSoFar } from '../../src/js/fed-phases.ts';
+import { cyclePeak, fedPhases } from '../../src/js/fed-phases.ts';
 
 const SEASONS = ['spring', 'springdeflation', 'summer', 'autumn', 'lateautumn', 'winter'];
 const STAGES = ['Despair', 'Depression', 'Hope', 'Optimism', 'Excitement', 'Thrill', 'Euphoria', 'Panic', 'Desperation', 'Fear', 'Denial', 'Anxiety'];
 
 test('the app boots with no error', () => assert.deepEqual(errors, []));
-
-test('the year after a close is the next calendar year of the record, from 1928, or nothing', () => {
-  assert.equal(yearAfter(1932), 49.98);
-  assert.equal(yearAfter(1946), 5.2);
-  assert.equal(yearAfter(2026), null);
-});
-
-test('every closed cycle ends on what the market did the year after', () => {
-  for (const c of marketCycles.filter(c => !c.ongoing)) assert.notEqual(yearAfter(c.to), null, c.name);
-});
 
 test('every cycle reads a season, and its track runs without a gap', () => {
   for (const c of marketCycles) {
@@ -101,10 +91,12 @@ test('a cycle’s story opens before it closes, its high is above its low, and i
   assert.ok(told >= 6, told + ' cycles have a story');
 });
 
-test('peak inflation is marked only once the price trend has turned to falling', () => {
-  assert.deepEqual(inflationPeak('2019-01', '2022-12'), { m: '2022-06', v: 8.98 });
-  assert.equal(inflationPeak('2023-01', '2026-09'), null);
-  assert.deepEqual(peakSoFar('2023-01', '2026-09'), { m: '2026-05', v: 4.17 });
+test('every cycle has a peak: its highest price reading once the decline it inherited has passed', () => {
+  assert.deepEqual(cyclePeak('2019-01', '2022-12'), { m: '2022-06', v: 8.98 });
+  assert.deepEqual(cyclePeak('2023-01', '2026-09'), { m: '2026-05', v: 4.17 });
+  assert.deepEqual(cyclePeak('1970-01', '1974-12'), { m: '1974-11', v: 12.2 });
+  assert.deepEqual(cyclePeak('1967-01', '1969-12'), { m: '1969-11', v: 5.93 });
+  assert.deepEqual(cyclePeak('1991-01', '2002-12'), { m: '2000-03', v: 3.76 });
 });
 
 test('the Fed\'s phases alternate, and today\'s move sets the open phase', () => {
