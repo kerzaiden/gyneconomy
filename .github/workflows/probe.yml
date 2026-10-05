@@ -9,7 +9,8 @@ jobs:
     steps:
       - run: sudo apt-get install -y -qq poppler-utils >/dev/null
       - run: |
-          for u in "https://apps.bea.gov/scb/pdf/2014/08%20August/0814_revisions_to_gdp_gdi_and_their_major_components.pdf" "https://apps.bea.gov/scb/pdf/2011/07%20July/0711_revisions.pdf" "https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"; do
-            echo "=== $u"
-            curl -sSL -A "gyneconomy-probe" -o d.pdf "$u" && pdftotext -layout d.pdf - | grep -n -i -E "four-quarter|annual|year-to-year|year over year|MAR|mean absolute" | head -80
-          done
+          curl -sSL -A "gyneconomy-probe" -o a.pdf "https://apps.bea.gov/scb/pdf/2011/07%20July/0711_revisions.pdf"
+          curl -sSL -A "gyneconomy-probe" -o b.pdf "https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"
+          for f in a b; do echo "=== $f"; pdftotext -layout $f.pdf $f.txt; grep -n -i -E "annual estimates|Table [0-9]" $f.txt | head -40; done
+          echo "=== a table 4"; awk '/Table 4\. Mean Absolute Revisions/{c=45} c&&c--' a.txt
+          echo "=== b annual"; grep -n -i -B2 -A14 "Revisions to Annual Estimates" b.txt | head -120
