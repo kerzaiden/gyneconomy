@@ -1,7 +1,7 @@
 import { CHEV, titleCase } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { calendarSvg, hormoneSvg } from "./marks.ts";
+import { calendarSvg, orbitSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -19,7 +19,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(hormoneSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
 }
 function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
 function yearByYear(m: CycleModel){
@@ -63,10 +63,9 @@ export function fitYearDots(){
     var box = d.closest(".dx-sys"), cs = getComputedStyle(row || box || d);
     var pitch = box ? (box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / span : 0;
     if (!d.clientWidth || !(pitch > 5)) return;
-    d.style.justifyContent = "flex-start";
+    d.style.justifyContent = "flex-end";
     d.style.gap = (pitch - 5) + "px";
-    d.style.paddingLeft = (pitch - 5) / 2 + "px";
-    d.innerHTML = new Array(Math.max(1, Math.floor(d.clientWidth / pitch)) + 1).join("<i></i>");
+    d.innerHTML = new Array(Math.max(1, Math.floor((d.clientWidth - 8) / pitch) + 1) + 1).join("<i></i>");
   });
 }
 function diagnosisHost(home: HTMLElement){
