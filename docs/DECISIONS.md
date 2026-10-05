@@ -159,7 +159,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
   goes up. This goes the same for the health chart." (0.6.3)
-- **The health score sits on the dial's light grey (its track's colour), and its line says how the score itself reads
+- **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
   against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
   low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.
   Keren: "When you give a health score and you say against 18 closed cycles, what does that mean? Is it high? Is it
