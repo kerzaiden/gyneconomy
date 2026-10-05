@@ -34878,10 +34878,10 @@
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
-    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
   }
-  function stripGap(n) {
-    return n > 0 ? '<span style="flex:' + n + ' 1 0"></span>' : "";
+  function stripGap(n, ytd) {
+    return n <= 0 ? "" : ytd ? stripDots(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
   }
   function yearMarket(y, ytd, q) {
     var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
@@ -34891,7 +34891,7 @@
       q: q,
       from: y,
       to: y
-    } ]) + stripGap(4 - q));
+    } ]) + stripGap(4 - q, ytd));
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");

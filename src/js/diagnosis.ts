@@ -6,7 +6,7 @@ import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
-import { econChips, marketPills, strip, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
+import { econChips, marketPills, strip, stripDots, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
@@ -39,15 +39,15 @@ function yearRow(year: string, lead: string, line: string, sheet?: string, foot?
 }
 function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);
-  return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length)) +
+  return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd)) +
     yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
 }
-function stripGap(n: number){
-  return n > 0 ? '<span style="flex:' + n + ' 1 0"></span>' : "";
+function stripGap(n: number, ytd: boolean){
+  return n <= 0 ? "" : ytd ? stripDots(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
 }
 function yearMarket(y: number, ytd: boolean, q: number){
   var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
-  return ret == null ? "" : strip(" mkt-strip", "S&P 500 " + dir + (ytd ? " so far" : ""), marketPills([{ dir: dir, ytd: ytd, q: q, from: y, to: y }]) + stripGap(4 - q));
+  return ret == null ? "" : strip(" mkt-strip", "S&P 500 " + dir + (ytd ? " so far" : ""), marketPills([{ dir: dir, ytd: ytd, q: q, from: y, to: y }]) + stripGap(4 - q, ytd));
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");

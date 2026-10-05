@@ -131,6 +131,13 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
+test('the open year fills its row, the quarters not yet run as dots', () => {
+  const open = document.querySelector('#diagnosis .dx-year .dx-year-lead');
+  const strips = [...open.querySelectorAll('.strip')];
+  assert.equal(strips.length, 2);
+  strips.forEach(s => assert.ok(s.lastElementChild.classList.contains('strip-dots')));
+});
+
 test('the dial is titled by its cycle, and today’s story opens AI Insights', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
