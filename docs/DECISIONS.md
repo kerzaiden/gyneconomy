@@ -75,9 +75,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
-- **The health chart is called Cycle Health, in Title Case wherever it is named.** Keren: "Instead of cycle
-  analysis in the current cycle page, I want it to be called cycle health" (0.6.8); "cycle analysis should be with
-  capital letters at the beginning" (0.6.6).
+- **The health chart's card is called Cycle Statistics, in Title Case wherever it is named; its tab stays
+  Analysis.** Keren: "I saw AI insights and [cycle analysis] being very closely related … instead of calling it
+  [cycle analysis], we can call it [cycle statistics]. And the analysis tab can stay the same with the page title
+  being analysis" (0.6.8); "cycle analysis should be with capital letters at the beginning" (0.6.6).
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
   opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
   closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
@@ -148,18 +149,18 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Tabs, bars and menu
 
-- **The tab bar is Cycle · Health · Herstory · Portfolio.** Search replaced the Content tab (V657), Keren
+- **The tab bar is Cycle · Analysis · Herstory · Portfolio.** Search replaced the Content tab (V657), Keren
   swapped Analysis and Search (V665), and Cycle analysis took Search's place: "I'm basically seeing the same thing
   in different views … the search moved to the health chart page." Then Keren renamed both: "Instead of health
-  chart, call the tab analysis. And instead of analysis, call the tab history. Or better yet, herstory." (0.6.1) Then
-  Analysis became Health: "the analysis tab in the bottom menu should be health". (0.6.8)
+  chart, call the tab analysis. And instead of analysis, call the tab history. Or better yet, herstory." The Health
+  chart keeps its name where it opens from a cycle's story. (0.6.1)
 - **Herstory's tab icon is the history clock (an arrow turning back round a clock face), and the page has no
   "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
   want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
   containers for different cycles with the agreed upon margin". (0.6.3)
-- **Health's tab icon and Cycle Health's mark are a heart with a pulse line through it, drawn in the tab icons'
-  line.** Keren first asked for a stethoscope, then sent a reference: "Can you manage a heart icon with a pulse in
-  it?" It replaced the rising graph of 0.6.3. (0.6.8)
+- **Analysis's tab icon and Cycle Statistics's mark are a bar chart (three bars rising on an axis), drawn in the
+  tab icons' line.** Keren: "the icon needs to fit the description" (0.6.8). It replaced the rising graph of 0.6.3,
+  after a stethoscope and a heart with a pulse were tried for a "Cycle Health" name she then dropped.
 - **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
   against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
   low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.
@@ -183,8 +184,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   buttons are the plum mark alone, with no ring and no background.** Keren: "the title of the page should be in
   feminine letters"; "all buttons in the top bar should not have a round border around it"; "it should be only
   purple stroke"; the reference she chose sets its page title in plum (0.6.2). (V272, V275, 0.6.2)
-- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Health", "Herstory", "Portfolio".**
-  (undated, 0.6.1, 0.6.8)
+- **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
+  (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
   head names the series (bar "Pulse", head "Velocity of Money (M2)").** Keren: "there is a title inside the
   page which is redundant — you already have the page title at the top." The bar names the page and the card
@@ -1177,8 +1178,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
   scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3)
-- **The health chart's card on the Current Cycle page (and on a past cycle's page)
-  goes straight to the Health tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
+- **The health chart's card, Cycle Statistics, on the Current Cycle page (and on a past cycle's page)
+  goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
   automatically to analysis page." (0.6.3)
 - **More details is a white button with the containers' grey hairline (`--surface`, `--border`), like a category

@@ -72,7 +72,7 @@ function renderSeasonRows(){
 function renderTopbar(){
   var btns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
   var panels = Array.prototype.slice.call(document.querySelectorAll(".tab-panel"));
-  var tabTitles = { cycle:"Current Cycle", analysis:"Herstory", chart:"Health", portfolio:"Portfolio" };
+  var tabTitles = { cycle:"Current Cycle", analysis:"Herstory", chart:"Analysis", portfolio:"Portfolio" };
   var topTitle = need("topbar-title");
   btns.forEach(function(btn){
     btn.addEventListener("click", function(){

@@ -407,7 +407,7 @@ The conversion was proved by the snapshot (every state identical) and the browse
 ## In one page
 
 *Mrs. Market*'s Seasonal Behaviour table as a data product; a Clue-style market-cycle tracker; a companion
-to the manuscript, not part of it. Tabs: Cycle · Health · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Health took Search's place in 0.6.1 and is labelled Health (Analysis until 0.6.8), and the cycle list is labelled Herstory; V657: the Content tab's models moved into
+to the manuscript, not part of it. Tabs: Cycle · Analysis · Herstory · Portfolio (labels; the panels keep their keys `chart` and `analysis`. Cycle Statistics (Cycle analysis until 0.6.8) took Search's place in 0.6.1 and is labelled Analysis, and the cycle list is labelled Herstory; V657: the Content tab's models moved into
 About Gyneconomy, the menu's page formerly "About the book"). Cycle = the dial, then
 Browse: Weather (Temperature · Growth · S&P 500) · Circulation (Interest rates · Pressure · Pulse · Volume) ·
 Mood (Valuations · Volatility · Desire · Confidence) · Energy (Stress · Unemployment rate · Productivity growth). Named Weather, never
@@ -501,7 +501,7 @@ Rules that shape the pages:
 - **Cycle analysis is a blood test of each cycle** (`cycle-analysis`), and since 0.6.1 the tab where every
   reading is found (Search's job before it). One renderer, `drawChart(id)`, draws it in one host, `#chart-home`, the
   tab's home. The Diagnosis's card (under the cycle story, previewing the visit note and score) is not a door to a
-  page: it carries `data-chart-cycle`, sets `page.cycles` for the tab and presses the Health tab (0.6.3).
+  page: it carries `data-chart-cycle`, sets `page.cycles` for the tab and presses the Analysis tab (0.6.3).
   `wireFinder` gives the host a `page.cycles` key and its own search state (`finds`). Every roster reading is
   averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.

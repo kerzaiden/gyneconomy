@@ -113,7 +113,7 @@ function buildNav(){
                 hide:function(){ return [cycleViewEl, byId("today-analysis")]; } },
     analysis: { panel:analysisPanel, bar:function(){ return ui.eraOpen ? [ui.eraOpen.name, ui.eraPageBack] : ["Herstory", null]; },
                 hide:function(){ return [byId(ui.eraOpen ? "calendar-cycle" : "calendar-list")]; } },
-    chart:    plainHome("chart", "Health"), portfolio:plainHome("portfolio", "Portfolio")
+    chart:    plainHome("chart", "Analysis"), portfolio:plainHome("portfolio", "Portfolio")
   };
   var homeCtx = PAGE_HOME.cycle;
   var openSheet: HTMLElement | null = null, openHome: ParentNode | null = null, returnScroll = 0;
