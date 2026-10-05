@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `1c75a69` on 2026-10-05. **101 components**, **35 shared patterns**.
+Generated from commit `a75a980` on 2026-10-05. **101 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -289,6 +289,7 @@ renderer speaks. Listed most-used first.
 | **`pctl`** | format.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
+| **`seasonGroup`** | model.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
@@ -311,7 +312,6 @@ renderer speaks. Listed most-used first.
 | **`rankToDate`** | model.ts | 3 places |
 | **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
-| **`seasonGroup`** | model.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |
 | **`seasonRuns`** | render-core.ts | 3 places |
 | **`seasonRunsLabel`** | render-core.ts | 3 places |

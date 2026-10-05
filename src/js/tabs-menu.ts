@@ -22,7 +22,7 @@ function seasonGrid(){
 }
 function recessionLine(){
   var r = recessionRecord();
-  return "<b>Against the record</b>: since " + r.from + " the model read contraction in " + (r.caught === r.recessions ? "all " + r.recessions : r.caught + " of the " + r.recessions) + " NBER recessions, and in " + r.quarters + " of their " + r.total + " quarters. Of its " + r.runs + " contractions, " + r.alarms + " came with no recession within a year.";
+  return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
 }
 function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([

@@ -31702,10 +31702,10 @@
   }
   function recessionRecord(byGap) {
     var inRec = {}, caught = 0, quarters = 0, total = 0;
-    NBER_RECESSIONS.forEach(function(r, n) {
+    NBER_RECESSIONS.forEach(function(r, n2) {
       var hit = false;
       for (var i2 = qIndex(r[0]) + 1; i2 <= qIndex(r[1]); i2++) {
-        inRec[i2] = n + 1;
+        inRec[i2] = n2 + 1;
         total++;
         if (regimeAt(i2, byGap) === "contraction") {
           quarters++;
@@ -31724,6 +31724,22 @@
       for (var j = i; j <= end + 4; j++) if (inRec[j]) near = true;
       if (!near) alarms++;
     }
+    var group = {}, inAW = {
+      autumn: 0,
+      winter: 0
+    }, base = 0, n = 0;
+    seasonTrack.forEach(function(e) {
+      if (e) group[e.q] = seasonGroup(e.reading.season);
+    });
+    for (var k = first + 5; k <= last; k++) {
+      var g = group[Math.floor(k / 4) + " Q" + (k % 4 + 1)];
+      if (!g) continue;
+      n++;
+      if (g === "autumn" || g === "winter") {
+        base++;
+        if (inRec[k]) inAW[g]++;
+      }
+    }
     return {
       from: +NBER_RECESSIONS[0][0].slice(0, 4),
       recessions: NBER_RECESSIONS.length,
@@ -31731,7 +31747,10 @@
       quarters: quarters,
       total: total,
       runs: runs,
-      alarms: alarms
+      alarms: alarms,
+      autumn: inAW.autumn,
+      winter: inAW.winter,
+      share: Math.round(100 * base / n)
     };
   }
   function regimeAt(i, byGap) {
@@ -40533,7 +40552,7 @@
   }
   function recessionLine() {
     var r = recessionRecord();
-    return "<b>Against the record</b>: since " + r.from + " the model read contraction in " + (r.caught === r.recessions ? "all " + r.recessions : r.caught + " of the " + r.recessions) + " NBER recessions, and in " + r.quarters + " of their " + r.total + " quarters. Of its " + r.runs + " contractions, " + r.alarms + " came with no recession within a year.";
+    return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
   }
   function seasonModelNote() {
     return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Output growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", recessionLine(), seasonWhy ]);

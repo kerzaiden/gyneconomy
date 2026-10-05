@@ -15,7 +15,7 @@ test('the app boots with no error', () => assert.deepEqual(errors, []));
 test('the season model reads every NBER recession since 1953, as its (i) says', () => {
   const r = recessionRecord();
   assert.deepEqual([r.from, r.recessions, r.caught, r.total], [1953, 11, 11, 39]);
-  assert.ok(r.quarters >= 37 && r.alarms < r.runs, JSON.stringify(r));
+  assert.ok(r.quarters >= 37 && r.autumn + r.winter >= 37 && r.share < 50, JSON.stringify(r));
 });
 
 test('every cycle reads a season, and its track runs without a gap', () => {

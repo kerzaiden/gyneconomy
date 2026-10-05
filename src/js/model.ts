@@ -82,7 +82,15 @@ export function recessionRecord(byGap?: boolean){
     var near = false; for (var j = i; j <= end + 4; j++) if (inRec[j]) near = true;
     if (!near) alarms++;
   }
-  return { from:+NBER_RECESSIONS[0][0].slice(0, 4), recessions:NBER_RECESSIONS.length, caught:caught, quarters:quarters, total:total, runs:runs, alarms:alarms };
+  var group: Record<string, string> = {}, inAW = { autumn:0, winter:0 }, base = 0, n = 0;
+  seasonTrack.forEach(function(e){ if (e) group[e.q] = seasonGroup(e.reading.season); });
+  for (var k = first + 5; k <= last; k++){
+    var g = group[Math.floor(k / 4) + " Q" + (k % 4 + 1)];
+    if (!g) continue;
+    n++; if (g === "autumn" || g === "winter"){ base++; if (inRec[k]) inAW[g]++; }
+  }
+  return { from:+NBER_RECESSIONS[0][0].slice(0, 4), recessions:NBER_RECESSIONS.length, caught:caught, quarters:quarters, total:total, runs:runs, alarms:alarms,
+    autumn:inAW.autumn, winter:inAW.winter, share:Math.round(100 * base / n) };
 }
 function regimeAt(i: number, byGap?: boolean){
   var q = Math.floor(i / 4) + " Q" + (i % 4 + 1);
