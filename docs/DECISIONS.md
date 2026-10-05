@@ -1218,8 +1218,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   their own, a few percent of the screen over 96 and 120 seconds, too slowly to watch. Keren: "make the apricot
   splashes in the background be much more delicate, feminine, and maybe kind of move in slow motion without the user
   even seeing it." Still too dominant, so the blobs became narrow petals at about half that strength again, with a
-  slow sway: "They need to feel like hormones, like feminine, flowing. Delicate, like a flower." (0.6.13) That was too faint, so the petals grew a little and came back to about two thirds of
-  0.6.12's strength, picked from three strengths side by side: "find the sweet spot between having an organic
+  slow sway: "They need to feel like hormones, like feminine, flowing. Delicate, like a flower." (0.6.13) That was too faint, so the petals grew a little and came back to about half of 0.6.12's
+  strength, Soft of three strengths shown side by side: "find the sweet spot between having an organic
   background and let it not compete with the foreground, but still remain prominent and feminine." (0.6.14)
 - **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
