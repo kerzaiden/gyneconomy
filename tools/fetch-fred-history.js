@@ -135,6 +135,11 @@ function quarterly(rows, lo, hi) {
   });
 }
 
+function outputGap(gdp, pot) {
+  const at = new Map(pot.map(d => [d.q, d.v]));
+  return gdp.filter(d => at.has(d.q)).map(d => ({ q: d.q, v: Math.round((d.v / at.get(d.q) - 1) * 10000) / 100 })).filter(d => band(d.v, -20, 20));
+}
+
 function yoyQuarterly(qs, lo, hi) {
   const at = new Map(qs.map(d => [d.q, d.v]));
   return qs.map(d => {
@@ -223,7 +228,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, gap) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -245,6 +250,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (moves) out.fedMoves = m(moves);
   if (pce) out.pceYoYHistory = m(pce);
   if (potential) out.potentialYoYHistory = q(potential);
+  if (gap) out.outputGapHistory = q(gap);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -326,11 +332,16 @@ async function main() {
   say('PCEPI YoY     ' + pce.length + ' months, ' + pce[0].m + ' → ' + pce[pce.length - 1].m);
 
   const today = new Date(), nowQ = today.getUTCFullYear() + ' Q' + (Math.floor(today.getUTCMonth() / 3) + 1);
-  const potential = yoyQuarterly2(quarterly(await fredSeries('GDPPOT', '1949-01-01'), 1, 1e6), 0, 10).filter(d => d.q < nowQ);
+  const potLevels = quarterly(await fredSeries('GDPPOT', '1949-01-01'), 1, 1e6);
+  const potential = yoyQuarterly2(potLevels, 0, 10).filter(d => d.q < nowQ);
   if (!potential.length || potential[0].q !== '1950 Q1') throw new Error('GDPPOT: expected year-over-year quarters from 1950 Q1');
   say('GDPPOT YoY    ' + potential.length + ' quarters, ' + potential[0].q + ' → ' + potential[potential.length - 1].q + ' (CBO, through the last full quarter)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential));
+  const gap = outputGap(quarterly(await fredSeries('GDPC1', '1949-01-01'), 1, 1e6), potLevels).filter(d => d.q < nowQ);
+  if (!gap.length || gap[0].q !== '1949 Q1') throw new Error('Output gap: expected quarters from 1949 Q1');
+  say('Output gap    ' + gap.length + ' quarters, ' + gap[0].q + ' → ' + gap[gap.length - 1].q + ' (GDPC1 against GDPPOT)');
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential, gap));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

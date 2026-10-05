@@ -17,3 +17,4 @@ export var pceYoYHistory: MonthPoint[] = FRED.pceYoYHistory;
 export var sp500ReturnsBefore = FRED.sp500ReturnsBefore;
 export var gdpGrowthBefore = FRED.gdpGrowthBefore;
 export var potentialYoYHistory: QuarterPoint[] = FRED.potentialYoYHistory;
+export var outputGapHistory: QuarterPoint[] = FRED.outputGapHistory;
