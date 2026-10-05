@@ -172,7 +172,7 @@ function pathStrip(label: string, end: number){
 var CHAPTER_PICS = [cyclePic, function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function aiPage(){
   return '<div class="ai-page">' + moodDoor(nowModel.era) +
-    trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(AI.lede) + '</p>' + extremesPic()) +
+    trendBox(sparkleSvg(), "TL;DR", '<p class="ai-p">' + fill(AI.lede) + '</p>' + extremesPic()) +
     AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>' + CHAPTER_PICS[i]()); }).join("") +
     trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';

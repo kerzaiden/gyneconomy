@@ -49,6 +49,7 @@ function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: stri
            growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1], annual:quartersPerStep === 4 };
 }
 export var QUARTER_END_MONTH: Record<string, string> = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
+export function quartersAhead(m: CycleModel){ return m.ongoing ? Math.max(0, Math.round((m.dialYears - m.elapsedYears) * 4)) : 0; }
 var SEASON_YEARS = 2;
 function closingReading(endYear: number){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();

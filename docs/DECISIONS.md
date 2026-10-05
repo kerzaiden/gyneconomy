@@ -473,6 +473,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   season strip, like the dial's track, and grey dots on the bull/bear strip, like the dots inside the ring.
   Keren: "make the season a gray line and the bull bear market with gray dots, like in the cycle dial. So it
   would be the same logic." (0.6.6)
+- **On the open cycle, Year by year runs on to the end of a typical cycle, so it carries exactly the dial's grey
+  dots: the year in progress fills its run quarters (the season since the last reading carries on, as on the dial)
+  and greys what is left, and each year still to come is a row of grey line and grey dots, with no figures and
+  nothing to open.** The count is one number, `quartersAhead`, read by the dial and the rows. Keren: "we have nine
+  gray dots left on the dial. So I would assume that we would have that number in the year by year analysis." It
+  is a typical length, not a forecast, as the legend says. (0.6.6)
+- **The AI Insights page opens its summary under "TL;DR", the usual spelling, not "In short".** Keren: "write TLDR
+  with the convention of how it's written." (0.6.6)
 
 ### Analysis
 

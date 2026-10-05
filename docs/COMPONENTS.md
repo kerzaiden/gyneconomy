@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `573e89b` on 2026-10-05. **94 components**, **35 shared patterns**.
+Generated from commit `f319a99` on 2026-10-05. **94 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -74,7 +74,7 @@ Generated from commit `573e89b` on 2026-10-05. **94 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`yearByYear`** | `.dx-sys` `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
-| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
+| **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:aheadRows`, `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
 
@@ -182,8 +182,8 @@ Generated from commit `573e89b` on 2026-10-05. **94 components**, **35 shared pa
 | **`headHtml`** | `.body-term` `.card-head` `.card-titles` `.econ-term` `.head-mark` `.head-mark-disc` | `render-core.ts:cardDetailHtml` |
 | **`metricSheet`** | `.metric-sheet` | `ai-insights.ts:buildAiPage`, `indicators.ts:catSheet`, `indicators.ts:mountSplit`, `pages-nav.ts:convertLeadingSigns`, `pages-nav.ts:renderSignsList`, `portfolio.ts:portfolioSheets` |
 | **`seatPageFoot`** | `.page-foot` | `pages-nav.ts:buildNav` |
-| **`stripDots`** | `.strip-dots` | `dial-cycle.ts:marketStripHtml` |
-| **`stripTrack`** | `.strip-track` | `dial-cycle.ts:seasonStripHtml` |
+| **`stripDots`** | `.strip-dots` | `diagnosis.ts:aheadStrips`, `dial-cycle.ts:marketStripHtml` |
+| **`stripTrack`** | `.strip-track` | `diagnosis.ts:aheadStrips`, `dial-cycle.ts:seasonStripHtml` |
 | **`subjectIcon`** | `.subject-icon` | `pages-nav.ts:renderSignsList` |
 | **`subjectRow`** | `.subject-more` `.subject-ring` `.subject-text` | `pages-nav.ts:renderSignsList` |
 | **`timingMark`** | `.tm-dot` `.tm-line` `.tm-now` `.tm-span` | `render-core.ts:timingPill` |
@@ -231,6 +231,7 @@ renderer speaks. Listed most-used first.
 | **`findOf`** | cycle-analysis.ts | 8 places |
 | **`fitLine`** | charts.ts | 8 places |
 | **`focusQuiet`** | dom.ts | 8 places |
+| **`strip`** | render-core.ts | 8 places |
 | **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
@@ -238,7 +239,6 @@ renderer speaks. Listed most-used first.
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
-| **`strip`** | render-core.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`fileRow`** | data.ts | 6 places |
@@ -298,10 +298,12 @@ renderer speaks. Listed most-used first.
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
+| **`runThisYear`** | diagnosis.ts | 3 places |
 | **`seasonGroup`** | model.ts | 3 places |
 | **`seasonTitle`** | model.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |
+| **`stripGap`** | diagnosis.ts | 3 places |
 | **`tier`** | cycle-analysis.ts | 3 places |
 | **`trendDoor`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |

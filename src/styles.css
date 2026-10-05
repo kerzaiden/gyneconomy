@@ -626,7 +626,7 @@
     color:var(--text-primary); text-align:left; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
   .dx-mark svg{ width:18px; height:18px; }
-  .dx-year{ display:grid; grid-template-columns:3.4em 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
+  .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
     font-family:"Public Sans",sans-serif; -webkit-tap-highlight-color:transparent; }
   .dx-sys-head + .dx-year{ border-top:0; padding-top:4px; }
@@ -635,6 +635,7 @@
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
   .dx-year .peek-chev{ align-self:center; color:var(--text-muted); }
+  .dx-chev-blank{ visibility:hidden; }
   .dx-year-n{ font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500; font-size:var(--type-section);
     line-height:1; color:var(--text-primary); font-variant-numeric:lining-nums; }
   .dx-year-v{ display:flex; flex-direction:column; gap:3px; min-width:0; }
@@ -675,8 +676,8 @@
   .ai-tiles{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
   .ai-tile{ display:flex; flex-direction:column; gap:2px; min-width:0; padding:9px 10px 8px; border-radius:calc(var(--radius) - 6px); background:var(--surface-2); }
   .ai-tile small{ font-size:var(--type-label); line-height:1.3; color:var(--text-muted); }
-  .ai-tile b{ font-size:var(--type-reading); color:var(--text-primary); }
-  .ai-tile .peek-chart{ margin-top:6px; }
+  .ai-tile b{ margin-bottom:6px; font-size:var(--type-reading); color:var(--text-primary); }
+  .ai-tile .peek-chart{ margin-top:auto; }
   .peek-chart.heat .ai-col{ stroke:var(--cat); vector-effect:non-scaling-stroke; }
   .ai-path{ display:grid; grid-template-columns:2.6em 1fr; align-items:center; column-gap:8px; margin-top:6px; }
   .ai-path .strip{ margin:0; }

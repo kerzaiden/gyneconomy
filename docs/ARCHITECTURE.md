@@ -641,9 +641,9 @@ emotion at the closing month, its years, and what followed a year later. Every l
 
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines, opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): the cycle's story (`moodDoor`, the same door a
-  closed cycle shows on its own page, opening Mood), then one `trendBox` per chapter (In short, The cycle,
+  closed cycle shows on its own page, opening Mood), then one `trendBox` per chapter (TL;DR, The cycle,
   The economy, The market, Closest moments), then the byline and More details. Each chapter carries a picture
-  drawn from the readings: In short ranks every reading's latest value against its own record (`rankToDate`) and shows
+  drawn from the readings: TL;DR ranks every reading's latest value against its own record (`rankToDate`) and shows
   the three highest and three lowest; The cycle draws its season and S&P 500 strips; The economy and The market draw
   `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season
   strip then and now. Its words are data, `src/data/ai-insights.json` (`lede`, `sections`, `echoIntro`, `asOf`), and every figure in
