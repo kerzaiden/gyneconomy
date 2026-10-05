@@ -179,16 +179,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
   (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
-- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and 10px above the bottom
-  edge (plus the safe-area inset), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
+- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and close to the bottom
+  edge, 12px inside the safe area (never under 10px), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
   open tab sits in a pale pill (`--glass-on`), icon and label in the accent ink.** Keren, with a cycle app's screen:
   "make the app bottom menu like the attached reference, meaning floating … when I scroll, it's liquid glass kind
   of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
-  the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. (0.6.9)
+  the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. Keren,
+  on her iPhone: "the bottom menu is not close enough to the bottom of the screen" (10px plus the 34px inset left a
+  44px gap; now 22px). (0.6.9, 0.6.11)
 - **The page's top bar no longer sticks: the open tab's title sits at the top of the page and scrolls away with
   it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
-  circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu.** Keren chose
+  circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu. The title's
+  row is the buttons' 44px, so the title centres on the menu button.** Keren chose
   this from the liquid-glass previews, after her reference: "Also option B, floating menu bar. So instead of A."
+  Keren, on her iPhone: "the page title is not aligned to the center of the menu button" (0.6.11).
   It overturns the sticky bar of Sep 19, 2026 (made with Clue's screens). The menu's own screens keep their
   sticky bar. (0.6.9)
 - **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
