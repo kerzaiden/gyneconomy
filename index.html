@@ -1586,7 +1586,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.5 (743)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.6 (744)</span></p>
     </div>
   </div>
 
@@ -34827,7 +34827,7 @@
     return tilesPic(ai_insights_default.tiles.market);
   } ];
   function aiPage() {
-    return '<div class="ai-page">' + trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(ai_insights_default.lede) + "</p>" + extremesPic()) + ai_insights_default.sections.map(function(s, i) {
+    return '<div class="ai-page">' + moodDoor(nowModel.era) + trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(ai_insights_default.lede) + "</p>" + extremesPic()) + ai_insights_default.sections.map(function(s, i) {
       return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + "</p>" + CHAPTER_PICS[i]());
     }).join("") + trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + ai_insights_default.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + "</ul>") + '<p class="ai-by">Written by ' + ai_insights_default.by + " from the app’s data of " + asOfWords() + ".</p>" + moreRow(aiDetail()) + "</div>";
   }
@@ -34837,6 +34837,12 @@
     sheetRenderers[AI_PAGE] = function() {
       sheet.innerHTML = aiPage();
     };
+  }
+  function moodDoor(era) {
+    var mood = CATEGORIES.filter(function(c) {
+      return c.key === "mood";
+    })[0];
+    return trendDoor("sheet-cat-mood", mood.title, bookSvg(), era.name, trendText(era.story));
   }
   function aiInsights() {
     return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
@@ -34851,7 +34857,7 @@
   function diagnosisHtml(m) {
     var after = m.ongoing ? null : yearAfter(m.endYear);
     if (m.ongoing && !diagnoseToday()) return "";
-    return moodDoor(m.era.name, trendText(m.era.story)) + (m.ongoing ? aiInsights() : "") + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+    return (m.ongoing ? aiInsights() : moodDoor(m.era)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var _a;
@@ -34886,12 +34892,6 @@
       from: y,
       to: y
     } ]) + stripGap(4 - q));
-  }
-  function moodDoor(head, body) {
-    var mood = CATEGORIES.filter(function(c) {
-      return c.key === "mood";
-    })[0];
-    return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");
@@ -35059,7 +35059,7 @@
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
     }).join("") + '</div><p class="caption">The seasons wear the temperature’s colours: periwinkle below the 1–3% range, orange above it — deep where a season sits wholly outside the range (Winter, Summer), light where it straddles it (Spring, Autumn). Tap a quarter to read which season it was in, and why, in the centre.</p><div class="legend-head">S&amp;P 500</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>positive return</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>negative return</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The ring’s span</div><p class="caption">An open cycle’s ring is scaled to <b>' + typicalCycleYears + " years</b>, and the pale dots are what is left of one: a typical full cycle — one bull market and the bear market that ends it — has run about five to six and a half years across the long record. A cycle that outlasts it extends the ring instead of overflowing it, which is why the Dot-Com ring spans twelve. It is a typical length, not a forecast.</p>" + srcBlock(typicalCycleSrc) + '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
     var idx = detailSlot(html);
-    put("cycle-kicker", 'Gyneconomy<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
+    put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
   }
   function hubSet(dateHtml, meta, y, open) {
     put("season-wheel-hub-date", dateHtml);
@@ -35285,8 +35285,12 @@
   }
   function renderCycleView(m) {
     drawDial(m);
-    ui.shownEra = m.era;
+    showEra(m.era);
     renderDiagnosis(m);
+  }
+  function showEra(era) {
+    ui.shownEra = era;
+    put("cycle-kicker-name", era.name);
   }
   function showCycle(era) {
     if (ui.shownEra !== era) renderCycleView(cycleModel(era));

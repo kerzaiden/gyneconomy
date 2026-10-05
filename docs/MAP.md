@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,131 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
+The source is **9,134 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `28a4807` on 2026-10-04.
+Generated from commit `bfb004f` on 2026-10-05.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `28a4807` on 2026-10-04.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **640** top-level functions, **109** top-level vars, **367** exported names, **19** boots.
+Counts: **31** modules, **641** top-level functions, **109** top-level vars, **368** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -39,14 +39,14 @@ Counts: **31** modules, **640** top-level functions, **109** top-level vars, **3
 | `js/roster.ts` | 148 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `live`, `marks`, `readings`, `refresh-season` |
 | `js/render-core.ts` | 595 | 44 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
-| `js/diagnosis.ts` | 82 | 12 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `roster` |
-| `js/dial-cycle.ts` | 382 | 20 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/diagnosis.ts` | 77 | 11 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core` |
+| `js/dial-cycle.ts` | 386 | 21 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 158 | 15 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/portfolio.ts` | 110 | 17 | `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
-| `js/ai-insights.ts` | 188 | 37 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 192 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
 | `js/cycle-analysis.ts` | 273 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
@@ -81,8 +81,8 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 10 | `bootRoster` | `js/roster.ts:135`–147 |
 | 11 | `bootRenderCore` | `js/render-core.ts:585`–594 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
-| 13 | `bootDiagnosis` | `js/diagnosis.ts:78`–81 |
-| 14 | `bootDialCycle` | `js/dial-cycle.ts:358`–381 |
+| 13 | `bootDiagnosis` | `js/diagnosis.ts:73`–76 |
+| 14 | `bootDialCycle` | `js/dial-cycle.ts:362`–385 |
 | 15 | `bootAnalysis` | `js/analysis.ts:153`–157 |
 | 16 | `bootPortfolio` | `js/portfolio.ts:109`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:206`–212 |
@@ -639,18 +639,17 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 15 | `DIAG_SRC` | `var DIAG_SRC =` |
-| 19 | `diagnosisHtml` | `function diagnosisHtml(` |
-| 25 | `yearByYear` | `function yearByYear(` |
-| 35 | `yearRow` | `function yearRow(` |
-| 41 | `yearStrip` | `function yearStrip(` |
-| 46 | `stripGap` | `function stripGap(` |
-| 49 | `yearMarket` | `function yearMarket(` |
-| 53 | `moodDoor` | `function moodDoor(` |
-| 57 | `renderDiagnosis` · export | `function renderDiagnosis(` |
-| 61 | `diagnosisHost` | `function diagnosisHost(` |
-| 66 | `buildDoors` | `function buildDoors(` |
-| 70 | `buildDiagnosis` | `function buildDiagnosis(` |
+| 14 | `DIAG_SRC` | `var DIAG_SRC =` |
+| 18 | `diagnosisHtml` | `function diagnosisHtml(` |
+| 24 | `yearByYear` | `function yearByYear(` |
+| 34 | `yearRow` | `function yearRow(` |
+| 40 | `yearStrip` | `function yearStrip(` |
+| 45 | `stripGap` | `function stripGap(` |
+| 48 | `yearMarket` | `function yearMarket(` |
+| 52 | `renderDiagnosis` · export | `function renderDiagnosis(` |
+| 56 | `diagnosisHost` | `function diagnosisHost(` |
+| 61 | `buildDoors` | `function buildDoors(` |
+| 65 | `buildDiagnosis` | `function buildDiagnosis(` |
 
 ### `js/dial-cycle.ts`
 
@@ -692,17 +691,18 @@ falls in. **export** marks a name other modules import.
 | Line | Name | Anchor |
 |---|---|---|
 | 278 | `renderCycleView` · export | `function renderCycleView(` |
-| 283 | `showCycle` · export | `function showCycle(` |
+| 283 | `showEra` | `function showEra(` |
+| 287 | `showCycle` · export | `function showCycle(` |
 
 #### A cycle's season strip (carried by the one cycle row)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 285 | `aheadWord` | `function aheadWord(` |
-| 286 | `seasonStripHtml` · export | `function seasonStripHtml(` |
-| 303 | `marketStripHtml` · export | `function marketStripHtml(` |
-| 329 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
-| 330 | `settleStrips` · export | `function settleStrips(` |
+| 289 | `aheadWord` | `function aheadWord(` |
+| 290 | `seasonStripHtml` · export | `function seasonStripHtml(` |
+| 307 | `marketStripHtml` · export | `function marketStripHtml(` |
+| 333 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
+| 334 | `settleStrips` · export | `function settleStrips(` |
 
 ### `js/analysis.ts`
 
@@ -871,7 +871,8 @@ falls in. **export** marks a name other modules import.
 | 172 | `CHAPTER_PICS` | `var CHAPTER_PICS =` |
 | 173 | `aiPage` | `function aiPage(` |
 | 180 | `buildAiPage` · export | `function buildAiPage(` |
-| 185 | `aiInsights` · export | `function aiInsights(` |
+| 185 | `moodDoor` · export | `function moodDoor(` |
+| 189 | `aiInsights` · export | `function aiInsights(` |
 
 ### `js/charts.ts`
 

@@ -136,7 +136,7 @@ function renderCycleKicker(){
     srcBlock(typicalCycleSrc) +
     '<p class="caption">Press and hold the year badge and drag round the ring to move between quarters; it stays where you leave it, and dragging it back past the last quarter — or tapping anywhere outside the dial — returns it to today. Hover or tap any quarter on the ring to read it in the centre.</p>';
   var idx = detailSlot(html);
-  put("cycle-kicker", "Gyneconomy" + '<button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
+  put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
 }
 // ---- the hub: the reading inside the circle ----
 function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, open: HubOpen){
@@ -277,8 +277,12 @@ function dialSay(){
 // ---- the whole view, for one cycle ----
 export function renderCycleView(m: CycleModel){
   drawDial(m);
-  ui.shownEra = m.era;
+  showEra(m.era);
   renderDiagnosis(m);
+}
+function showEra(era: Cycle){
+  ui.shownEra = era;
+  put("cycle-kicker-name", era.name);
 }
 export function showCycle(era: Cycle){ if (ui.shownEra !== era) renderCycleView(cycleModel(era)); }
 // ---- A cycle's season strip (carried by the one cycle row) ----

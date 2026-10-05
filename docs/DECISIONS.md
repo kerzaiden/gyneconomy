@@ -75,7 +75,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
-- **The Current Cycle page carries AI Insights, between the cycle's story and Cycle analysis, on the open cycle only.**
+- **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
+  opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
+  closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
   Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
   sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
   It is a door like the story (Keren: "three lines, maybe three dots and then a chevron") opening an AI Insights page
@@ -391,9 +393,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   seasons have, and the YEAR badge sits just after the last quarter that has a season (on the seam when the
   cycle fills the ring).** A season that has not been computed has not happened yet; Keren saw the bull bar
   run past the season bar. (V552, V554)
-- **The cycle card's title is "Gyneconomy", with an (i) that opens the one legend: the seasons' colours and
-  the market band's colours; no cycle name, season line or note sits beside the wheel.** The centre already
-  says the season, and the cycle is named elsewhere. (V176, undated, Sep 19, 2026)
+- **The cycle card's title is the cycle's name (the AI Cycle today, the cycle shown on a Herstory page), with an (i)
+  that opens the one legend: the seasons' colours and the market band's colours; no season line or note sits beside
+  the wheel.** The centre already says the season. It was "Gyneconomy" until Keren: "instead of Gyneconomy in the top
+  left of the cycle dial, make it the cycle name." (V176, Sep 19, 2026; 0.6.6)
 
 ### The market band and the peak
 

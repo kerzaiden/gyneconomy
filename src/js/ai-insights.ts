@@ -2,13 +2,13 @@ import AI from "../data/ai-insights.json" with { type: "json" };
 import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { marketPills, metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
-import { calendarSvg, clockSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { bookSvg, calendarSvg, clockSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
-import { keyed, ROSTER, ROSTER_BY } from "./roster.ts";
+import { CATEGORIES, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import { fmt, labs, listWords, yearsWord } from "./cycle-analysis.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
@@ -171,7 +171,7 @@ function pathStrip(label: string, end: number){
 }
 var CHAPTER_PICS = [cyclePic, function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function aiPage(){
-  return '<div class="ai-page">' +
+  return '<div class="ai-page">' + moodDoor(nowModel.era) +
     trendBox(sparkleSvg(), "In short", '<p class="ai-p">' + fill(AI.lede) + '</p>' + extremesPic()) +
     AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>' + CHAPTER_PICS[i]()); }).join("") +
     trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
@@ -181,6 +181,10 @@ export function buildAiPage(home: HTMLElement){
   var sheet = metricSheet(AI_PAGE);
   home.appendChild(sheet);
   sheetRenderers[AI_PAGE] = function(){ sheet.innerHTML = aiPage(); };
+}
+export function moodDoor(era: Cycle){
+  var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
+  return trendDoor("sheet-cat-mood", mood.title, bookSvg(), era.name, trendText(era.story));
 }
 export function aiInsights(){
   return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp"));

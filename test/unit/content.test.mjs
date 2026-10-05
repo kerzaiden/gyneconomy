@@ -9,6 +9,7 @@ import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, hor
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
 import { HIST_NOTE } from '../../src/js/history.ts';
+import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 
@@ -130,8 +131,13 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('today’s story card is titled by its cycle', () => {
-  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, nowModel.era.name);
+test('the dial is titled by its cycle, and today’s story opens AI Insights', () => {
+  assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
+  assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
+  sheetRenderers['sheet-ai-insights']();
+  const story = document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]');
+  assert.equal(story.querySelector('.trend-head').textContent, nowModel.era.name);
+  assert.equal(story.querySelector('.trend-text').textContent, nowModel.era.story);
 });
 
 test('a live Fed cut reaches every door, its tag and the policy facts', async () => {

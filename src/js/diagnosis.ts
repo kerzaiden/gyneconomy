@@ -1,15 +1,14 @@
 import { CHEV, fmtSigned } from "./format.ts";
-import { addSources, byId, detailSlot, trendDoor, trendText } from "./dom.ts";
+import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { bookSvg, calendarSvg } from "./marks.ts";
+import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
-import { CATEGORIES } from "./roster.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
-import { aiInsights, buildAiPage } from "./ai-insights.ts";
+import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
@@ -19,7 +18,7 @@ var DIAG_SRC = [
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return moodDoor(m.era.name, trendText(m.era.story)) + (m.ongoing ? aiInsights() : "") +
+  return (m.ongoing ? aiInsights() : moodDoor(m.era)) +
     chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
@@ -49,10 +48,6 @@ function stripGap(n: number){
 function yearMarket(y: number, ytd: boolean, q: number){
   var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
   return ret == null ? "" : strip(" mkt-strip", "S&P 500 " + dir + (ytd ? " so far" : ""), marketPills([{ dir: dir, ytd: ytd, q: q, from: y, to: y }]) + stripGap(4 - q));
-}
-function moodDoor(head: string, body: string){
-  var mood = CATEGORIES.filter(function(c){ return c.key === "mood"; })[0];
-  return trendDoor("sheet-cat-mood", mood.title, bookSvg(), head || mood.title, body);
 }
 export function renderDiagnosis(m: CycleModel){
   var host = document.getElementById("diagnosis");

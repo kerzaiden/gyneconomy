@@ -639,8 +639,9 @@ left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
-- **AI Insights** (0.6.5, `ai-insights`): the open cycle's second door, its lede clamped to three lines, opening the
-  page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (In short, The cycle,
+- **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines, opening the
+  page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): the cycle's story (`moodDoor`, the same door a
+  closed cycle shows on its own page, opening Mood), then one `trendBox` per chapter (In short, The cycle,
   The economy, The market, Closest moments), then the byline and More details. Each chapter carries a picture
   drawn from the readings: In short ranks every reading's latest value against its own record (`rankToDate`) and shows
   the three highest and three lowest; The cycle draws its season and S&P 500 strips; The economy and The market draw
