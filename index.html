@@ -52,8 +52,8 @@
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
-    --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.16), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.12), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.14), transparent 80%);
-    --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(246,196,190,0.34), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(246,196,190,0.28), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(246,196,190,0.30), transparent 80%);
+    --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.26), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.20), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.22), transparent 80%);
+    --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(246,196,190,0.44), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(246,196,190,0.38), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(246,196,190,0.40), transparent 80%);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -100,8 +100,8 @@
       --seg-track: #2b1d25; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
-      --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.07), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.05), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.06), transparent 80%);
-      --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(235,163,185,0.07), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(235,163,185,0.07), transparent 80%);
+      --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
+      --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
     }
   }
   :root[data-theme="dark"]{
@@ -150,8 +150,8 @@
       --seg-track: #2b1d25; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
-      --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.07), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.05), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.06), transparent 80%);
-      --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(235,163,185,0.07), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(235,163,185,0.07), transparent 80%);
+      --splash-a: radial-gradient(34% 18% at 86% 8%, rgba(248,179,121,0.10), transparent 80%), radial-gradient(28% 15% at 10% 54%, rgba(248,179,121,0.08), transparent 80%), radial-gradient(36% 18% at 76% 92%, rgba(248,179,121,0.08), transparent 80%);
+      --splash-b: radial-gradient(32% 17% at 8% 14%, rgba(235,163,185,0.11), transparent 80%), radial-gradient(26% 14% at 92% 44%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(34% 17% at 30% 80%, rgba(235,163,185,0.09), transparent 80%);
       --ff-blue: #86a3e0;
   }
 
@@ -1623,7 +1623,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.13 (750)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.14 (751)</span></p>
     </div>
   </div>
 
