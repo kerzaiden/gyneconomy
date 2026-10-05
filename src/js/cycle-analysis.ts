@@ -1,7 +1,7 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
 import { byId, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle } from "./history.ts";
-import { boltSvg, calendarSvg, circulationSvg, moodSvg, slidersSvg, stethoscopeSvg, weatherSvg } from "./marks.ts";
+import { boltSvg, calendarSvg, circulationSvg, moodSvg, slidersSvg, heartbeatSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
 import { cycLabel, cycleModel, openCycle } from "./model.ts";
@@ -225,7 +225,7 @@ function chartDetail(){
 }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
-  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', stethoscopeSvg(), "Cycle Health", trendText(visitNote(i)) + scoreBox(i));
+  return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', heartbeatSvg(), "Cycle Health", trendText(visitNote(i)) + scoreBox(i));
 }
 var HOME_ID = "chart-home";
 function drawChart(id: string){

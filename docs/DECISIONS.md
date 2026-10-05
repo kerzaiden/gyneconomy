@@ -157,9 +157,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
   want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
   containers for different cycles with the agreed upon margin". (0.6.3)
-- **Health's tab icon and Cycle Health's mark are a stethoscope, drawn in the tab icons' line.** Keren: "I want the
-  icon to be a stethoscope … Or another icon that represents health that you think would look good." It replaced
-  the rising graph of 0.6.3. (0.6.8)
+- **Health's tab icon and Cycle Health's mark are a heart with a pulse line through it, drawn in the tab icons'
+  line.** Keren first asked for a stethoscope, then sent a reference: "Can you manage a heart icon with a pulse in
+  it?" It replaced the rising graph of 0.6.3. (0.6.8)
 - **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
   against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
   low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.

@@ -45,8 +45,8 @@ export function umbrellaSvg(){ return markSvg('<path d="M3.5 12a8.5 8.5 0 0 1 17
   '<path d="M12 3.5V2.5M12 12v6.2a2.1 2.1 0 0 1-4.2 0" stroke-width="1.8"/>'); }
 export function slidersSvg(){ return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/>' +
   '<circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>'); }
-export function stethoscopeSvg(){ return markSvg('<path d="M3.7 4.3h2M12.7 4.3h2M4.7 4.3v5a4.5 4.5 0 0 0 9 0v-5M9.2 13.8v1.5a4.5 4.5 0 0 0 9 0V13" stroke-width="1.8"/>' +
-  '<circle cx="18.2" cy="10.8" r="2.2" stroke-width="1.8"/>'); }
+export function heartbeatSvg(){ return markSvg('<path d="M3.3 12.2C2.8 11.2 2.6 10.2 2.6 9.1 2.6 6.3 4.8 4.2 7.4 4.2c1.9 0 3.3.8 4.6 2.4 1.3-1.6 2.7-2.4 4.6-2.4 2.6 0 4.8 2.1 4.8 4.9 0 2.3-1.4 4.2-3 5.8L12 20.6l-2.4-2.2" stroke-width="1.8"/>' +
+  '<path d="M1.8 12.2h4.4l1.7-2.6 2.3 5.8 2.3-7 1.8 5.2 1.2-1.4h2" stroke-width="1.8"/>'); }
 export function ecgSvg(){ return markSvg(
   '<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>'); }
 export function weatherSvg(){ return markSvg('<path d="M15.8 3.4v1.3M19.3 5.1l-.95.95M20.9 8.6h-1.3M19.3 12.1l-.95-.95M12.3 5.1l.95.95" stroke-width="1.9"/>' +
