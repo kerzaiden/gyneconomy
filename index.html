@@ -335,7 +335,7 @@
   :root{
     --badge-fill:var(--surface); --badge-ink:var(--text-primary);
     --badge-edge:var(--border-strong); --badge-lift:drop-shadow(0 1px 2.5px rgba(30,20,30,0.18));
-    --season-winter:#6a74c2; --season-spring:#aab0d8; --season-summer:#d96d3e; --season-autumn:#f0b04a;
+    --season-winter:#6a74c2; --season-spring:#aab0d8; --season-summer:#d96d3e; --season-autumn:#f0b04a; --summer-ink:#b04f24;
 
     --mini-w:80px;
     --mini-h:42px;
@@ -348,8 +348,8 @@
     --type-label:11px; --type-meta:12.5px; --type-interface:14px; --type-reading:15px; --type-row:17px;
     --type-section:20px; --type-reading-head:26px; --type-page-title:30px; --type-display:40px;
   }
-  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; }
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; } }
+  :root[data-theme="dark"]{ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; --summer-ink:#f29a6e; }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --badge-fill:var(--surface); --badge-ink:var(--text-primary); --badge-edge:var(--border-strong); --badge-lift:none; --season-winter:#8f9be6; --season-spring:#b4bdeb; --season-summer:#f29a6e; --season-autumn:#fcc94d; --summer-ink:#f29a6e; } }
 
   .season-wheel-wrap{ --dial:min(calc(100vw - 76px), calc(100vh - 220px), 560px); width:100%; flex:none; display:flex; flex-direction:column; align-items:center; }
   .season-wheel{ position:relative; width:var(--dial); max-width:100%; height:var(--dial); }
@@ -631,6 +631,30 @@
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--text-primary); text-align:left; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
+  .fp-growth{ --line:var(--text-muted); --line-ink:var(--text-muted); } .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
+  .fp-marks{ position:relative; height:18px; margin-top:10px; }
+  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+  .fp-ov-label.fp-end{ transform:translateX(-100%); }
+  .fp-plot{ position:relative; height:150px; margin-top:8px; }
+  .fp-marks + .fp-plot{ margin-top:0; }
+  .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .fp-band{ position:absolute; top:0; bottom:0; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
+  .fp-band.fp-tight{ background:var(--accent-wash); } .fp-band.fp-ease{ background:var(--good-wash); }
+  .fp-years{ position:relative; height:16px; margin-top:4px; }
+  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
+  .fp-line{ fill:none; stroke:var(--line); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:0.9; }
+  .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
+  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; stroke-dasharray:3 3; }
+  .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
+  .fp-ov.fp-open{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--season-summer), 0 0 0 2px var(--surface); }
+  .fp-phases{ position:relative; height:18px; margin-top:2px; }
+  .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
+  .fp-ph.fp-tight{ color:var(--accent-ink); } .fp-ph.fp-ease{ color:var(--good-ink); }
+  .fp-levels{ margin:12px 0 0; padding:0; list-style:none; font-size:var(--type-meta); line-height:1.9; }
+  .fp-levels li{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fp-levels li.fp-so-far::before{ background:var(--surface); box-shadow:inset 0 0 0 2px var(--line); }
+  .fp-levels li::before{ content:""; display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; vertical-align:1px; background:var(--line); }
+  .fp-levels b{ color:var(--line-ink); font-weight:600; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -1599,7 +1623,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.11 (748)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.12 (749)</span></p>
     </div>
   </div>
 
@@ -24916,6 +24940,868 @@
       m: "2026-09",
       v: 1.01
     } ],
+    fedMoves: [ {
+      m: "1950-08",
+      v: .09
+    }, {
+      m: "1950-09",
+      v: .16
+    }, {
+      m: "1953-01",
+      v: .13
+    }, {
+      m: "1953-02",
+      v: .12
+    }, {
+      m: "1954-02",
+      v: -.21
+    }, {
+      m: "1954-03",
+      v: -.04
+    }, {
+      m: "1954-04",
+      v: -.12
+    }, {
+      m: "1954-05",
+      v: -.13
+    }, {
+      m: "1955-04",
+      v: .13
+    }, {
+      m: "1955-05",
+      v: .12
+    }, {
+      m: "1955-08",
+      v: .22
+    }, {
+      m: "1955-09",
+      v: .21
+    }, {
+      m: "1955-10",
+      v: .07
+    }, {
+      m: "1955-11",
+      v: .11
+    }, {
+      m: "1955-12",
+      v: .14
+    }, {
+      m: "1956-04",
+      v: .15
+    }, {
+      m: "1956-05",
+      v: .1
+    }, {
+      m: "1956-08",
+      v: .06
+    }, {
+      m: "1956-09",
+      v: .19
+    }, {
+      m: "1957-08",
+      v: .15
+    }, {
+      m: "1957-09",
+      v: .35
+    }, {
+      m: "1957-11",
+      v: -.27
+    }, {
+      m: "1957-12",
+      v: -.23
+    }, {
+      m: "1958-01",
+      v: -.06
+    }, {
+      m: "1958-02",
+      v: -.19
+    }, {
+      m: "1958-03",
+      v: -.4
+    }, {
+      m: "1958-04",
+      v: -.32
+    }, {
+      m: "1958-05",
+      v: -.28
+    }, {
+      m: "1958-09",
+      v: .16
+    }, {
+      m: "1958-10",
+      v: .09
+    }, {
+      m: "1958-11",
+      v: .4
+    }, {
+      m: "1958-12",
+      v: .1
+    }, {
+      m: "1959-03",
+      v: .42
+    }, {
+      m: "1959-04",
+      v: .08
+    }, {
+      m: "1959-05",
+      v: .05
+    }, {
+      m: "1959-06",
+      v: .45
+    }, {
+      m: "1959-09",
+      v: .33
+    }, {
+      m: "1959-10",
+      v: .17
+    }, {
+      m: "1960-06",
+      v: -.35
+    }, {
+      m: "1960-07",
+      v: -.15
+    }, {
+      m: "1960-08",
+      v: -.32
+    }, {
+      m: "1960-09",
+      v: -.18
+    }, {
+      m: "1963-07",
+      v: .24
+    }, {
+      m: "1963-08",
+      v: .26
+    }, {
+      m: "1964-11",
+      v: .12
+    }, {
+      m: "1964-12",
+      v: .38
+    }, {
+      m: "1965-12",
+      v: .42
+    }, {
+      m: "1966-01",
+      v: .08
+    }, {
+      m: "1967-04",
+      v: -.4
+    }, {
+      m: "1967-05",
+      v: -.1
+    }, {
+      m: "1967-11",
+      v: .18
+    }, {
+      m: "1967-12",
+      v: .32
+    }, {
+      m: "1968-03",
+      v: .16
+    }, {
+      m: "1968-04",
+      v: .54
+    }, {
+      m: "1968-05",
+      v: .3
+    }, {
+      m: "1968-08",
+      v: -.02
+    }, {
+      m: "1968-09",
+      v: -.23
+    }, {
+      m: "1968-12",
+      v: .11
+    }, {
+      m: "1969-01",
+      v: .14
+    }, {
+      m: "1969-04",
+      v: .45
+    }, {
+      m: "1969-05",
+      v: .05
+    }, {
+      m: "1970-11",
+      v: -.15
+    }, {
+      m: "1970-12",
+      v: -.33
+    }, {
+      m: "1971-01",
+      v: -.29
+    }, {
+      m: "1971-02",
+      v: -.32
+    }, {
+      m: "1971-03",
+      v: -.16
+    }, {
+      m: "1971-07",
+      v: .13
+    }, {
+      m: "1971-08",
+      v: .12
+    }, {
+      m: "1971-11",
+      v: -.1
+    }, {
+      m: "1971-12",
+      v: -.27
+    }, {
+      m: "1972-01",
+      v: -.13
+    }, {
+      m: "1973-01",
+      v: .27
+    }, {
+      m: "1973-02",
+      v: .28
+    }, {
+      m: "1973-03",
+      v: .45
+    }, {
+      m: "1973-05",
+      v: .4
+    }, {
+      m: "1973-06",
+      v: .43
+    }, {
+      m: "1973-07",
+      v: .65
+    }, {
+      m: "1973-08",
+      v: .31
+    }, {
+      m: "1973-09",
+      v: .21
+    }, {
+      m: "1974-04",
+      v: .1
+    }, {
+      m: "1974-05",
+      v: .4
+    }, {
+      m: "1974-12",
+      v: -.19
+    }, {
+      m: "1975-01",
+      v: -.41
+    }, {
+      m: "1975-02",
+      v: -.58
+    }, {
+      m: "1975-03",
+      v: -.42
+    }, {
+      m: "1975-04",
+      v: -.15
+    }, {
+      m: "1975-05",
+      v: -.13
+    }, {
+      m: "1975-06",
+      v: -.12
+    }, {
+      m: "1976-01",
+      v: -.21
+    }, {
+      m: "1976-02",
+      v: -.29
+    }, {
+      m: "1976-11",
+      v: -.07
+    }, {
+      m: "1976-12",
+      v: -.18
+    }, {
+      m: "1977-08",
+      v: .02
+    }, {
+      m: "1977-09",
+      v: .48
+    }, {
+      m: "1977-10",
+      v: .05
+    }, {
+      m: "1977-11",
+      v: .2
+    }, {
+      m: "1978-01",
+      v: .37
+    }, {
+      m: "1978-02",
+      v: .13
+    }, {
+      m: "1978-05",
+      v: .34
+    }, {
+      m: "1978-06",
+      v: .16
+    }, {
+      m: "1978-07",
+      v: .23
+    }, {
+      m: "1978-08",
+      v: .2
+    }, {
+      m: "1978-09",
+      v: .4
+    }, {
+      m: "1978-10",
+      v: .43
+    }, {
+      m: "1978-11",
+      v: 1.24
+    }, {
+      m: "1979-07",
+      v: .19
+    }, {
+      m: "1979-08",
+      v: .55
+    }, {
+      m: "1979-09",
+      v: .46
+    }, {
+      m: "1979-10",
+      v: 1.07
+    }, {
+      m: "1979-11",
+      v: .23
+    }, {
+      m: "1980-02",
+      v: .52
+    }, {
+      m: "1980-03",
+      v: .48
+    }, {
+      m: "1980-05",
+      v: -.06
+    }, {
+      m: "1980-06",
+      v: -1.54
+    }, {
+      m: "1980-07",
+      v: -.53
+    }, {
+      m: "1980-08",
+      v: -.87
+    }, {
+      m: "1980-09",
+      v: .17
+    }, {
+      m: "1980-10",
+      v: .83
+    }, {
+      m: "1980-11",
+      v: .47
+    }, {
+      m: "1980-12",
+      v: 1.4
+    }, {
+      m: "1981-01",
+      v: .13
+    }, {
+      m: "1981-05",
+      v: .87
+    }, {
+      m: "1981-06",
+      v: .13
+    }, {
+      m: "1981-11",
+      v: -.97
+    }, {
+      m: "1981-12",
+      v: -.93
+    }, {
+      m: "1982-01",
+      v: -.1
+    }, {
+      m: "1982-07",
+      v: -.19
+    }, {
+      m: "1982-08",
+      v: -1.13
+    }, {
+      m: "1982-09",
+      v: -.68
+    }, {
+      m: "1982-10",
+      v: -.75
+    }, {
+      m: "1982-11",
+      v: -.5
+    }, {
+      m: "1982-12",
+      v: -.5
+    }, {
+      m: "1983-03",
+      v: .13
+    }, {
+      m: "1983-05",
+      v: .13
+    }, {
+      m: "1983-06",
+      v: .25
+    }, {
+      m: "1983-07",
+      v: .44
+    }, {
+      m: "1983-08",
+      v: .06
+    }, {
+      m: "1983-09",
+      v: -.12
+    }, {
+      m: "1984-03",
+      v: 1.13
+    }, {
+      m: "1984-07",
+      v: .75
+    }, {
+      m: "1984-08",
+      v: .25
+    }, {
+      m: "1984-09",
+      v: -.5
+    }, {
+      m: "1984-10",
+      v: -1
+    }, {
+      m: "1984-11",
+      v: -1
+    }, {
+      m: "1984-12",
+      v: -.87
+    }, {
+      m: "1985-01",
+      v: .13
+    }, {
+      m: "1985-02",
+      v: .13
+    }, {
+      m: "1985-03",
+      v: .13
+    }, {
+      m: "1985-04",
+      v: -.25
+    }, {
+      m: "1985-05",
+      v: -.5
+    }, {
+      m: "1985-08",
+      v: .06
+    }, {
+      m: "1985-09",
+      v: .19
+    }, {
+      m: "1985-12",
+      v: -.25
+    }, {
+      m: "1986-03",
+      v: -.5
+    }, {
+      m: "1986-04",
+      v: -.5
+    }, {
+      m: "1986-05",
+      v: .06
+    }, {
+      m: "1986-06",
+      v: .06
+    }, {
+      m: "1986-07",
+      v: -.5
+    }, {
+      m: "1986-08",
+      v: -.5
+    }, {
+      m: "1987-01",
+      v: .13
+    }, {
+      m: "1987-04",
+      v: .5
+    }, {
+      m: "1987-05",
+      v: .25
+    }, {
+      m: "1987-07",
+      v: -.12
+    }, {
+      m: "1987-08",
+      v: .13
+    }, {
+      m: "1987-09",
+      v: .56
+    }, {
+      m: "1987-11",
+      v: -.5
+    }, {
+      m: "1988-01",
+      v: -.19
+    }, {
+      m: "1988-02",
+      v: -.12
+    }, {
+      m: "1988-03",
+      v: .25
+    }, {
+      m: "1988-05",
+      v: .5
+    }, {
+      m: "1988-06",
+      v: .19
+    }, {
+      m: "1988-07",
+      v: .25
+    }, {
+      m: "1988-08",
+      v: .44
+    }, {
+      m: "1988-11",
+      v: .25
+    }, {
+      m: "1988-12",
+      v: .31
+    }, {
+      m: "1989-01",
+      v: .31
+    }, {
+      m: "1989-02",
+      v: .75
+    }, {
+      m: "1989-05",
+      v: .06
+    }, {
+      m: "1989-06",
+      v: -.25
+    }, {
+      m: "1989-07",
+      v: -.5
+    }, {
+      m: "1989-10",
+      v: -.31
+    }, {
+      m: "1989-11",
+      v: -.25
+    }, {
+      m: "1989-12",
+      v: -.25
+    }, {
+      m: "1990-07",
+      v: -.25
+    }, {
+      m: "1990-10",
+      v: -.25
+    }, {
+      m: "1990-11",
+      v: -.25
+    }, {
+      m: "1990-12",
+      v: -.5
+    }, {
+      m: "1991-01",
+      v: -.25
+    }, {
+      m: "1991-02",
+      v: -.5
+    }, {
+      m: "1991-03",
+      v: -.25
+    }, {
+      m: "1991-04",
+      v: -.25
+    }, {
+      m: "1991-08",
+      v: -.25
+    }, {
+      m: "1991-09",
+      v: -.25
+    }, {
+      m: "1991-10",
+      v: -.25
+    }, {
+      m: "1991-11",
+      v: -.25
+    }, {
+      m: "1991-12",
+      v: -.75
+    }, {
+      m: "1992-04",
+      v: -.25
+    }, {
+      m: "1992-07",
+      v: -.5
+    }, {
+      m: "1992-09",
+      v: -.25
+    }, {
+      m: "1994-02",
+      v: .25
+    }, {
+      m: "1994-03",
+      v: .25
+    }, {
+      m: "1994-04",
+      v: .25
+    }, {
+      m: "1994-05",
+      v: .5
+    }, {
+      m: "1994-08",
+      v: .5
+    }, {
+      m: "1994-11",
+      v: .75
+    }, {
+      m: "1995-02",
+      v: .5
+    }, {
+      m: "1995-07",
+      v: -.25
+    }, {
+      m: "1995-12",
+      v: -.25
+    }, {
+      m: "1996-01",
+      v: -.25
+    }, {
+      m: "1997-03",
+      v: .25
+    }, {
+      m: "1998-09",
+      v: -.25
+    }, {
+      m: "1998-10",
+      v: -.25
+    }, {
+      m: "1998-11",
+      v: -.25
+    }, {
+      m: "1999-06",
+      v: .25
+    }, {
+      m: "1999-08",
+      v: .25
+    }, {
+      m: "1999-11",
+      v: .25
+    }, {
+      m: "2000-02",
+      v: .25
+    }, {
+      m: "2000-03",
+      v: .25
+    }, {
+      m: "2000-05",
+      v: .5
+    }, {
+      m: "2001-01",
+      v: -1
+    }, {
+      m: "2001-03",
+      v: -.5
+    }, {
+      m: "2001-04",
+      v: -.5
+    }, {
+      m: "2001-05",
+      v: -.5
+    }, {
+      m: "2001-06",
+      v: -.25
+    }, {
+      m: "2001-08",
+      v: -.25
+    }, {
+      m: "2001-09",
+      v: -.5
+    }, {
+      m: "2001-10",
+      v: -.5
+    }, {
+      m: "2001-11",
+      v: -.5
+    }, {
+      m: "2001-12",
+      v: -.25
+    }, {
+      m: "2002-11",
+      v: -.5
+    }, {
+      m: "2003-06",
+      v: -.25
+    }, {
+      m: "2004-06",
+      v: .25
+    }, {
+      m: "2004-08",
+      v: .25
+    }, {
+      m: "2004-09",
+      v: .25
+    }, {
+      m: "2004-11",
+      v: .25
+    }, {
+      m: "2004-12",
+      v: .25
+    }, {
+      m: "2005-02",
+      v: .25
+    }, {
+      m: "2005-03",
+      v: .25
+    }, {
+      m: "2005-05",
+      v: .25
+    }, {
+      m: "2005-06",
+      v: .25
+    }, {
+      m: "2005-08",
+      v: .25
+    }, {
+      m: "2005-09",
+      v: .25
+    }, {
+      m: "2005-11",
+      v: .25
+    }, {
+      m: "2005-12",
+      v: .25
+    }, {
+      m: "2006-01",
+      v: .25
+    }, {
+      m: "2006-03",
+      v: .25
+    }, {
+      m: "2006-05",
+      v: .25
+    }, {
+      m: "2006-06",
+      v: .25
+    }, {
+      m: "2007-09",
+      v: -.5
+    }, {
+      m: "2007-10",
+      v: -.25
+    }, {
+      m: "2007-12",
+      v: -.25
+    }, {
+      m: "2008-01",
+      v: -1.25
+    }, {
+      m: "2008-03",
+      v: -.75
+    }, {
+      m: "2008-04",
+      v: -.25
+    }, {
+      m: "2008-10",
+      v: -1
+    }, {
+      m: "2008-12",
+      v: -.75
+    }, {
+      m: "2015-12",
+      v: .25
+    }, {
+      m: "2016-12",
+      v: .25
+    }, {
+      m: "2017-03",
+      v: .25
+    }, {
+      m: "2017-06",
+      v: .25
+    }, {
+      m: "2017-12",
+      v: .25
+    }, {
+      m: "2018-03",
+      v: .25
+    }, {
+      m: "2018-06",
+      v: .25
+    }, {
+      m: "2018-09",
+      v: .25
+    }, {
+      m: "2018-12",
+      v: .25
+    }, {
+      m: "2019-08",
+      v: -.25
+    }, {
+      m: "2019-09",
+      v: -.25
+    }, {
+      m: "2019-10",
+      v: -.25
+    }, {
+      m: "2020-03",
+      v: -1.5
+    }, {
+      m: "2022-03",
+      v: .25
+    }, {
+      m: "2022-05",
+      v: .5
+    }, {
+      m: "2022-06",
+      v: .75
+    }, {
+      m: "2022-07",
+      v: .75
+    }, {
+      m: "2022-09",
+      v: .75
+    }, {
+      m: "2022-11",
+      v: .75
+    }, {
+      m: "2022-12",
+      v: .5
+    }, {
+      m: "2023-02",
+      v: .25
+    }, {
+      m: "2023-03",
+      v: .25
+    }, {
+      m: "2023-05",
+      v: .25
+    }, {
+      m: "2023-07",
+      v: .25
+    }, {
+      m: "2024-09",
+      v: -.5
+    }, {
+      m: "2024-11",
+      v: -.25
+    }, {
+      m: "2024-12",
+      v: -.25
+    }, {
+      m: "2025-09",
+      v: -.25
+    }, {
+      m: "2025-10",
+      v: -.25
+    }, {
+      m: "2025-12",
+      v: -.25
+    }, {
+      m: "2026-09",
+      v: .25
+    } ],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -27734,6 +28620,7 @@
   var confidenceHistory = fred_default.confidenceHistory;
   var durablesHistory = fred_default.durablesHistory;
   var premiumHistory = fred_default.premiumHistory;
+  var fedMoves = fred_default.fedMoves;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
@@ -28815,6 +29702,13 @@
       return i > to - 12 && i <= to;
     });
   }
+  function cpiDirectionOf(slope) {
+    return slope > .02 ? "rising" : slope < -.02 ? "falling" : "steady";
+  }
+  function cpiDirectionAt(endMonth) {
+    var c12 = cpiYear(endMonth);
+    return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
+  }
   var GROWTH_WINDOW = 8;
   function growthWindowWord() {
     return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW);
@@ -28822,7 +29716,7 @@
   function readSeason(cpi12, gdp8, prevRegime, quartersPerStep) {
     var cpiNow2 = cpi12[cpi12.length - 1].v;
     var cpiSlope = cpiTrend(cpi12);
-    var cpiDirection = cpiSlope > .02 ? "rising" : cpiSlope < -.02 ? "falling" : "steady";
+    var cpiDirection = cpiDirectionOf(cpiSlope);
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
     var growthSlopeQ = slopeOf(gdp8.map(function(d) {
       return d.v;
@@ -29051,10 +29945,10 @@
   var MOOD_TURN = 3;
   var MOOD_RISING = [ [ "Despair", 0 ], [ "Depression", 5 ], [ "Hope", 24 ], [ "Optimism", 51 ], [ "Excitement", 75 ], [ "Thrill", 92 ], [ "Euphoria", 100 ] ];
   var MOOD_FALLING = [ [ "Despair", 0 ], [ "Panic", 9 ], [ "Desperation", 30 ], [ "Fear", 52 ], [ "Denial", 74 ], [ "Anxiety", 91 ], [ "Euphoria", 100 ] ];
-  function moodWord(pct, change) {
-    if (pct == null || change == null) return null;
+  function moodWord(pct2, change) {
+    if (pct2 == null || change == null) return null;
     return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s) {
-      return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a;
+      return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
     })[0];
   }
   function moodRead(x, before) {
@@ -29712,9 +30606,9 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct, state2, label, cls) {
+  function vitalRingSvg(pct2, state2, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct, 0, 100) / 100);
+    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
@@ -30008,14 +30902,14 @@
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");
     var fr = svg.querySelector(".bt-frame");
-    var INSET = 6, PLATE_H = 15, PAD_X = 6;
+    var INSET2 = 6, PLATE_H = 15, PAD_X = 6;
     var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
     var frRight = fr ? attrNum(fr, "x") + attrNum(fr, "width") : g.R;
-    var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+    var y = frTop + INSET2 + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
     var plate = document.createElementNS(NS, "rect");
     plate.setAttribute("class", "chart-label-plate");
     plate.setAttribute("rx", "5");
-    plate.setAttribute("y", (frTop + INSET).toFixed(1));
+    plate.setAttribute("y", (frTop + INSET2).toFixed(1));
     plate.setAttribute("height", String(PLATE_H));
     grp.appendChild(plate);
     refs.forEach(function(r) {
@@ -30050,7 +30944,7 @@
       total += it.w;
     });
     total += GAP * (items.length - 1);
-    var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
+    var x = Math.max(g.L + PAD_X, frRight - INSET2 - PAD_X - total);
     plate.setAttribute("x", (x - PAD_X).toFixed(1));
     plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it) {
@@ -31467,6 +32361,9 @@
   }
   function markSvg(body, extra) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + "</svg>";
+  }
+  function hormoneSvg() {
+    return markSvg('<path d="M19.15 14.17L17.45 17.11M13.70 19.27L10.30 19.27M6.55 17.11L4.85 14.17M4.85 9.83L6.55 6.89M10.30 4.73L13.70 4.73M17.45 6.89L19.15 9.83" stroke-width="1.6"/><circle cx="20.40" cy="12.00" r="1.8" stroke-width="1.6"/><circle cx="16.20" cy="19.27" r="1.8" stroke-width="1.6"/><circle cx="7.80" cy="19.27" r="1.8" stroke-width="1.6"/><circle cx="3.60" cy="12.00" r="1.8" stroke-width="1.6"/><circle cx="7.80" cy="4.73" r="1.8" stroke-width="1.6"/><circle cx="16.20" cy="4.73" r="1.8" stroke-width="1.6"/>');
   }
   function heartSvg() {
     return markSvg('<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>');
@@ -33415,13 +34312,13 @@
     var cycAvg = inCycle.length ? mean(inCycle.map(function(d) {
       return d.v;
     })) : null;
-    var pct = function(v) {
+    var pct2 = function(v) {
       return v.toFixed(2) + "%";
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -34866,9 +35763,184 @@
   function aiInsights() {
     return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
   }
+  function monthIdx(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
+  }
+  function monthName(k) {
+    return MONTHS_SHORT[Number(k.slice(5, 7)) - 1] + " " + k.slice(0, 4);
+  }
+  function fedPhases() {
+    var out = [];
+    function add(m, v) {
+      var s = v > 0 ? 1 : -1;
+      if (!out.length || out[out.length - 1].s !== s) out.push({
+        m: m,
+        s: s
+      });
+    }
+    fedMoves.forEach(function(d) {
+      add(d.m, d.v);
+    });
+    var day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
+    var last = fedMoves.length ? fedMoves[fedMoves.length - 1].m : "";
+    if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
+    return out;
+  }
+  function phaseAt(phases, m) {
+    var at = null;
+    phases.forEach(function(p) {
+      if (p.m <= m) at = p;
+    });
+    return at;
+  }
+  function topOf(run) {
+    var top = run.length ? run.reduce(function(a, b) {
+      return b.v > a.v ? b : a;
+    }) : null;
+    return top && top !== run[0] ? top : null;
+  }
+  function priceRuns(from, to) {
+    var run = [], best = null, prev = "";
+    cpiYoYHistory.filter(function(c) {
+      return c.m >= from && c.m <= to;
+    }).forEach(function(c) {
+      var dir = cpiDirectionAt(c.m) || "", top = dir === "falling" && prev !== "falling" ? topOf(run) : null;
+      if (top && (!best || top.v > best.v)) best = top;
+      if (dir === "falling") run = []; else run.push(c);
+      prev = dir;
+    });
+    return {
+      best: best,
+      soFar: topOf(run)
+    };
+  }
+  function inflationPeak(from, to) {
+    return priceRuns(from, to).best;
+  }
+  function peakSoFar(from, to) {
+    return priceRuns(from, to).soFar;
+  }
+  var VIEW_W = 1e3;
+  var VIEW_H = 300;
+  var INSET = 18;
+  function growthPoints(from, to) {
+    var pts = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
+    Object.keys(usRealGdpGrowth).forEach(function(y) {
+      if (Number(y) < firstQ) pts.push({
+        i: Number(y) * 12 + 6,
+        v: usRealGdpGrowth[y]
+      });
+    });
+    gdpQuarterlyYoY.forEach(function(d) {
+      pts.push({
+        i: Number(d.q.slice(0, 4)) * 12 + (Number(d.q.slice(6)) - 1) * 3 + 1,
+        v: d.v
+      });
+    });
+    return pts.filter(function(p) {
+      return p.i >= from && p.i <= to;
+    }).sort(function(a, b) {
+      return a.i - b.i;
+    });
+  }
+  function monthPoints(list, from, to) {
+    var sums = {};
+    list.forEach(function(d) {
+      var i = monthIdx(d.m);
+      if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v);
+    });
+    return Object.keys(sums).map(Number).sort(function(a, b) {
+      return a - b;
+    }).map(function(q) {
+      return {
+        i: Math.min(Math.max(q * 3 + 1, from), to),
+        v: sums[q].reduce(function(a, b) {
+          return a + b;
+        }, 0) / sums[q].length
+      };
+    });
+  }
+  function curve(pts, x, y) {
+    var p = pts.map(function(d2) {
+      return [ x(d2.i), y(d2.v) ];
+    });
+    if (p.length < 2) return "";
+    var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+    for (var k = 0; k < p.length - 1; k++) {
+      var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
+      d += " C" + [ b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ].map(function(n) {
+        return n.toFixed(1);
+      }).join(" ");
+    }
+    return d;
+  }
+  function pct(n) {
+    return (n * 100).toFixed(2) + "%";
+  }
+  function bandsHtml(phases, from, to) {
+    var span = to - from + 1, bands = "", labels = "";
+    phases.forEach(function(p, k) {
+      var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
+      if (b <= from || a > to) return;
+      var cls = p.s > 0 ? "fp-tight" : "fp-ease", word2 = p.s > 0 ? "Tightening" : "Easing", w = (Math.min(b, to + 1) - a) / span;
+      bands += '<span class="fp-band ' + cls + '" style="left:' + pct((a - from) / span) + ";width:" + pct(w) + '"></span>';
+      if (w >= .18) labels += '<span class="fp-ph ' + cls + '" style="left:' + pct((a - from) / span + w / 2) + '">' + word2 + "</span>";
+    });
+    return {
+      bands: bands,
+      labels: labels
+    };
+  }
+  function yearsHtml(from, to) {
+    var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
+    for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
+    return out;
+  }
+  function plotSvg(lines, from, to, peak, open) {
+    var all = [].concat.apply([], lines).map(function(p) {
+      return p.v;
+    });
+    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
+    var x = function(i) {
+      return (i - from + .5) / span * VIEW_W;
+    }, y = function(v) {
+      return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
+    };
+    var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
+    var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
+    var paths = [ "fp-growth", "fp-prices", "fp-rate" ].map(function(cls, k) {
+      return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>';
+    }).join("");
+    var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + "</svg>" + dot;
+  }
+  function levelsHtml(m, at, soFar) {
+    var r = m.reading, word2 = growthWord(r);
+    var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
+    var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
+    return '<ul class="fp-levels">' + (at ? '<li class="fp-rate"><b>Federal funds rate:</b> ' + (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m) + "</li>" : "") + '<li class="fp-prices"><b>Prices:</b> ' + range + ", " + heat + " (" + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "−") + "%)</li>" + (soFar ? '<li class="fp-prices fp-so-far"><b>Peak so far:</b> ' + soFar.v.toFixed(1) + "% (" + monthName(soFar.m) + ")</li>" : "") + '<li class="fp-growth"><b>Growth:</b> ' + word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "%)</li></ul>";
+  }
+  function endMonthOf(m) {
+    if (!m.ongoing) return m.endMonth;
+    var ff = fedFundsHistory[fedFundsHistory.length - 1];
+    return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
+  }
+  function fedPhasesCard(m) {
+    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
+    var best = inflationPeak(fromM, toM), soFar = !best && m.ongoing ? peakSoFar(fromM, toM) : null, peak = best || soFar, b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
+    var lines = [ growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
+    var top = peak ? lines[1].filter(function(p) {
+      return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
+    })[0] || null : null;
+    var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > .5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + .5) / (to - from + 1)) + '">' + (best ? "Peak" : "Peak so far") + "</span>" : "";
+    return (ov ? '<div class="fp-marks">' + ov + "</div>" : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !best) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at, soFar);
+  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
+  }, {
+    t: "Federal Reserve via FRED — the Fed’s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)",
+    u: "https://fred.stlouisfed.org/series/DFEDTARU"
   }, {
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
@@ -34876,7 +35948,7 @@
   function diagnosisHtml(m) {
     var after = m.ongoing ? null : yearAfter(m.endYear);
     if (m.ongoing && !diagnoseToday()) return "";
-    return (m.ongoing ? aiInsights() : moodDoor(m.era)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+    return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var _a;
@@ -34889,7 +35961,13 @@
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
       rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
-    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join("") + "</section>";
+    return dxSys(" dx-years", dxHead(calendarSvg(), "Year by year") + after + rows.reverse().join(""));
+  }
+  function dxHead(mark, title) {
+    return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + title + "</div>";
+  }
+  function dxSys(cls, inner) {
+    return '<section class="dx-sys' + cls + '">' + inner + "</section>";
   }
   function yearRow(year, lead2, line, sheet, foot) {
     var tag = sheet != null ? "button" : "div";
@@ -36555,13 +37633,13 @@
     };
   }
   function desirePage() {
-    var r = desireReading, pct = function(v) {
+    var r = desireReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -36578,13 +37656,13 @@
     };
   }
   function premiumPage() {
-    var r = premiumReading, pct = function(v) {
+    var r = premiumReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No premium",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -36601,13 +37679,13 @@
     };
   }
   function marketPage() {
-    var r = marketReading, pct = function(v) {
+    var r = marketReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },

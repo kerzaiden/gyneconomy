@@ -18,7 +18,7 @@ function lift(file, names) {
   }
   return new Function(out + 'return { ' + names.join(', ') + ' };')();
 }
-const { slopeOf, readSeason, cpiTrend } = lift('src/js/model.ts', ['slopeOf', 'monthIndex', 'cpiTrend', 'readSeason']);
+const { slopeOf, readSeason, cpiTrend } = lift('src/js/model.ts', ['slopeOf', 'monthIndex', 'cpiTrend', 'cpiDirectionOf', 'readSeason']);
 
 let pass = 0, fail = 0;
 function ok(label, got, want) {

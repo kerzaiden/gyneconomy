@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `98e0a56` on 2026-10-05. **94 components**, **35 shared patterns**.
+Generated from commit `f58ba89` on 2026-10-05. **99 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -73,7 +73,7 @@ Generated from commit `98e0a56` on 2026-10-05. **94 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`yearByYear`** | `.dx-sys` `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
+| **`dxHead`** | `.dx-sys-head` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 | **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
@@ -92,6 +92,16 @@ Generated from commit `98e0a56` on 2026-10-05. **94 components**, **35 shared pa
 | **`trendCard`** | `.trend-card` | `dom.ts:trendDoor`, `dom.ts:trendJump`, `dom.ts:trendSoon` |
 | **`trendHead`** | `.trend-head` | `dom.ts:trendCard` |
 | **`trendSoon`** | `.soon-pill` | `portfolio.ts:homeHtml` |
+
+## fed-phases.ts
+
+| Component | Owns | Used by |
+|---|---|---|
+| **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
+| **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `diagnosis.ts:diagnosisHtml` |
+| **`levelsHtml`** | `.fp-growth` `.fp-levels` `.fp-prices` `.fp-rate` `.fp-so-far` | `fed-phases.ts:fedPhasesCard` |
+| **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts
 
@@ -214,7 +224,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 32 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 25 places |
-| **`fmtSigned`** | format.ts | 22 places |
+| **`fmtSigned`** | format.ts | 23 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |
 | **`pageCycle`** | history.ts | 11 places |
@@ -249,9 +259,11 @@ renderer speaks. Listed most-used first.
 | **`qAtIndex`** | format.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
+| **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
+| **`pct`** | fed-phases.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
 | **`side`** | cycle-analysis.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
@@ -262,7 +274,7 @@ renderer speaks. Listed most-used first.
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
-| **`isoDay`** | format.ts | 4 places |
+| **`growthWord`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`normOf`** | cycle-analysis.ts | 4 places |
@@ -276,19 +288,20 @@ renderer speaks. Listed most-used first.
 | **`trendText`** | dom.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
+| **`cpiYear`** | model.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
 | **`fill`** | ai-insights.ts | 3 places |
-| **`growthWord`** | model.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
 | **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
 | **`marketPills`** | render-core.ts | 3 places |
 | **`menuOf`** | cycle-analysis.ts | 3 places |
+| **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
 | **`mWindowFrom`** | history.ts | 3 places |
 | **`normAt`** | cycle-analysis.ts | 3 places |
@@ -338,7 +351,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
-| `.dx-mark` | 2 | `diagnosis.ts:yearByYear`, `dom.ts:trendHead` |
+| `.dx-mark` | 2 | `diagnosis.ts:dxHead`, `dom.ts:trendHead` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |
 | `.season-sw` | 2 | `dial-cycle.ts:renderCycleKicker`, `portfolio.ts:drawWeather` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |

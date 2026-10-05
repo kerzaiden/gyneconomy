@@ -24,6 +24,7 @@ export function sproutSvg(){
 function markSvg(body: string, extra?: string){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + body + '</svg>';
 }
+export function hormoneSvg(){ return markSvg('<path d="M19.15 14.17L17.45 17.11M13.70 19.27L10.30 19.27M6.55 17.11L4.85 14.17M4.85 9.83L6.55 6.89M10.30 4.73L13.70 4.73M17.45 6.89L19.15 9.83" stroke-width="1.6"/><circle cx="20.40" cy="12.00" r="1.8" stroke-width="1.6"/><circle cx="16.20" cy="19.27" r="1.8" stroke-width="1.6"/><circle cx="7.80" cy="19.27" r="1.8" stroke-width="1.6"/><circle cx="3.60" cy="12.00" r="1.8" stroke-width="1.6"/><circle cx="7.80" cy="4.73" r="1.8" stroke-width="1.6"/><circle cx="16.20" cy="4.73" r="1.8" stroke-width="1.6"/>'); }
 export function heartSvg(){ return markSvg(
   '<path d="M12 20.3 4.6 13.1C2.4 10.9 2.5 7.4 4.8 5.6c2.1-1.6 5-1.2 6.6.8l.6.8.6-.8c1.6-2 4.5-2.4 6.6-.8 2.3 1.8 2.4 5.3.2 7.5Z" stroke-width="1.8"/>'); }
 export function flameSvg(){ return markSvg(

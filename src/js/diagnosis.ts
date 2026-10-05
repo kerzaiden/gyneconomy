@@ -1,7 +1,7 @@
 import { CHEV, fmtSigned } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { calendarSvg } from "./marks.ts";
+import { calendarSvg, hormoneSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -9,16 +9,18 @@ import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFa
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
+import { fedPhasesCard } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
 
 var DIAG_SRC = [
   {t:"Cboe via FRED \u2014 CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986\u20131989 (VXOCLS)", u:"https://fred.stlouisfed.org/series/VIXCLS"},
+  {t:"Federal Reserve via FRED \u2014 the Fed\u2019s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)", u:"https://fred.stlouisfed.org/series/DFEDTARU"},
   {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
 ];
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return (m.ongoing ? aiInsights() : moodDoor(m.era)) +
+  return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) +
     chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
@@ -28,9 +30,11 @@ function yearByYear(m: CycleModel, after: string){
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
-  return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
-    after + rows.reverse().join("") + '</section>';
+  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by year") +
+    after + rows.reverse().join(""));
 }
+function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
+function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
   return '<' + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '">' +
