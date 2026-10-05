@@ -1,6 +1,6 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
-import { confidenceHistory, outputGapHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
 export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
@@ -67,17 +67,17 @@ function closingReading(endYear: number){
 }
 export function quarterRegime(d: QuarterPoint){ return regimeByQ[d.q] || (d.v >= 0 ? "expansion" : "contraction"); }
 function qIndex(q: string){ return +q.slice(0, 4) * 4 + +q.slice(6) - 1; }
-export function recessionRecord(byGap?: boolean){
+export function recessionRecord(){
   var inRec: Record<number, number> = {}, caught = 0, quarters = 0, total = 0;
   NBER_RECESSIONS.forEach(function(r, n){
     var hit = false;
-    for (var i = qIndex(r[0]) + 1; i <= qIndex(r[1]); i++){ inRec[i] = n + 1; total++; if (regimeAt(i, byGap) === "contraction"){ quarters++; hit = true; } }
+    for (var i = qIndex(r[0]) + 1; i <= qIndex(r[1]); i++){ inRec[i] = n + 1; total++; if (regimeAt(i) === "contraction"){ quarters++; hit = true; } }
     if (hit) caught++;
   });
   var first = qIndex(NBER_RECESSIONS[0][0]) - 4, last = qIndex(seasonTrack[seasonTrack.length - 1].q), runs = 0, alarms = 0;
   for (var i = first; i <= last; i++){
-    if (regimeAt(i, byGap) !== "contraction" || regimeAt(i - 1, byGap) === "contraction") continue;
-    var end = i; while (end < last && regimeAt(end + 1, byGap) === "contraction") end++;
+    if (regimeAt(i) !== "contraction" || regimeAt(i - 1) === "contraction") continue;
+    var end = i; while (end < last && regimeAt(end + 1) === "contraction") end++;
     runs++;
     var near = false; for (var j = i; j <= end + 4; j++) if (inRec[j]) near = true;
     if (!near) alarms++;
@@ -92,12 +92,7 @@ export function recessionRecord(byGap?: boolean){
   return { from:+NBER_RECESSIONS[0][0].slice(0, 4), recessions:NBER_RECESSIONS.length, caught:caught, quarters:quarters, total:total, runs:runs, alarms:alarms,
     autumn:inAW.autumn, winter:inAW.winter, share:Math.round(100 * base / n) };
 }
-function regimeAt(i: number, byGap?: boolean){
-  var q = Math.floor(i / 4) + " Q" + (i % 4 + 1);
-  if (!byGap) return regimeByQ[q];
-  var g = outputGapHistory.filter(function(d){ return d.q === q; })[0];
-  return g ? (g.v < 0 ? "contraction" : "expansion") : undefined;
-}
+function regimeAt(i: number){ return regimeByQ[Math.floor(i / 4) + " Q" + (i % 4 + 1)]; }
 export function seasonTitle(meta: { name: string; theme?: string | null }){ return meta.theme ? meta.name + " · " + meta.theme.toLowerCase() : meta.name; }
 export function cycleReturns(from: number, to: number){
   var level = 1, peakRet = -Infinity, peakYear: number | null = null, cumByYear: Record<string, number> = {};

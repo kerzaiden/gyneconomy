@@ -248,8 +248,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   growth gap, sensitivity, price level, direction (transition seasons only), and its table shows all 18
   combinations. The growth gap is growth against potential growth (the Investment Clock's growth above or below
   trend), not the output gap, which measures the level: tested on 1953–2026, the output gap put 31 of 39 recession
-  quarters in Autumn or Winter against the growth gap's 38 (season-model/output-gap-test.md). Keren: "Let's call it
-  growth gap." It closes on its record against NBER recessions since 1953, by season: the recession quarters
+  quarters in Autumn or Winter against the growth gap's 38 (season-model/output-gap-test.md), so the app does not
+  carry the output gap. Keren: "Let's call it growth gap." The (i) credits the Investment Clock (Merrill Lynch, 2004)
+  for the growth question; Keren: "for credibility's sake, we should say that this follows the investment clock
+  methodology." It closes on its record against NBER recessions since 1953, by season: the recession quarters
   that fell in Autumn or Winter against those seasons' share of all quarters, computed by `recessionRecord` from the
   app's own seasons. Contractions without a recession are not counted against it (Keren: "not every contraction is
   a recession"); Keren: "it adds a lot of credibility to the model … it's important to specify it." Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)

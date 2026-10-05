@@ -2,7 +2,7 @@ import { facts, ledeHtml, srcBlock, titleCase } from "./format.ts";
 import { byId, expandBtn, layer, need, put, rovingKeys, ui, viewMore } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
-import { frameworkRows, marketCycles } from "./data.ts";
+import { CLOCK_SRC, frameworkRows, marketCycles } from "./data.ts";
 import { cpiNow, currentEra, currentSeason, HOLD_BAND, PEAK_TREND, PEAK_YEARS, recessionRecord, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
@@ -26,13 +26,13 @@ function recessionLine(){
 }
 function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
-    "<b>Growth gap</b>: real GDP growth over a year against potential growth, the economy\u2019s speed against its speed limit; the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.",
+    "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock\u2019s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.",
     "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
     "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
     recessionLine(),
     seasonWhy
-  ]);
+  ]) + srcBlock([CLOCK_SRC[0]]);
 }
 function rangePos(v: number){
   if (v < 1) return 0.28 * Math.max(0, Math.min(1, (v + 1) / 2));
