@@ -179,10 +179,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
   (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
-- **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
-  colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
-  hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
-  and the page gets bottom padding so nothing hides behind the bar. (V550)
+- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and 10px above the bottom
+  edge (plus the safe-area inset), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
+  open tab sits in a pale pill (`--glass-on`), icon and label in the accent ink.** Keren, with a cycle app's screen:
+  "make the app bottom menu like the attached reference, meaning floating … when I scroll, it's liquid glass kind
+  of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
+  the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. (0.6.9)
 - **The top bar sticks to the top of the page: the open tab's title in the middle, a round menu button on the
   right, and the "Gyneconomy" title in the menu.** Keren's call, made with Clue's screens. (undated, Sep 19,
   2026)
