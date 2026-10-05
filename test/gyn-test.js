@@ -291,8 +291,8 @@ async function openPage(p, url, sheet) {
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 0 && today.told === '1:AI Cycle' && today.cards === 0 &&
      today.boxes === 'ai,trend,sys' && today.doors === 2 && !today.after && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it AI Insights, Cycle Analysis, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it AI Insights, Cycle Analysis, then the cycle year by year', JSON.stringify(today));
+      ? ok('the dial reads its cycle, and under it AI Insights, Cycle Health, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it AI Insights, Cycle Health, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -392,8 +392,8 @@ async function openPage(p, url, sheet) {
     const picked = await chartOf();
     (chart && chart.open && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
      risky.seen === chart.risk && picked && picked.picked === 'Nifty Fifty')
-      ? ok('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
-      : bad('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', JSON.stringify(chart));
+      ? ok('Cycle Health on a past cycle opens the Health tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
+      : bad('Cycle Health on a past cycle opens the Health tab on that cycle', JSON.stringify(chart));
   }
 
   {
@@ -459,9 +459,9 @@ async function openPage(p, url, sheet) {
     await p.goto('file://' + url); await ready(p);
     const tabs = await p.evaluate(() => [...document.querySelectorAll('.tab-btn')].map(b => b.dataset.tab + ':' + b.textContent.trim()).join(' '));
     const gone = await p.evaluate(() => !document.querySelector('.all-row, #search-list, .cat-analysis, .timing[data-ind-tab]') && !document.getElementById('sheet-indicators'));
-    (tabs === 'cycle:Cycle chart:Analysis analysis:Herstory portfolio:Portfolio' && gone)
-      ? ok('the tab bar reads Cycle, Analysis, Herstory, Portfolio', 'no Search page, timing filter or category analysis')
-      : bad('the tab bar reads Cycle, Analysis, Herstory, Portfolio', JSON.stringify({ tabs, gone }));
+    (tabs === 'cycle:Cycle chart:Health analysis:Herstory portfolio:Portfolio' && gone)
+      ? ok('the tab bar reads Cycle, Health, Herstory, Portfolio', 'no Search page, timing filter or category analysis')
+      : bad('the tab bar reads Cycle, Health, Herstory, Portfolio', JSON.stringify({ tabs, gone }));
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const tab = await p.evaluate(() => {
       const h = document.getElementById('chart-home'), rows = [...h.querySelectorAll('.lab-row[data-open]')];
@@ -471,10 +471,10 @@ async function openPage(p, url, sheet) {
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
         cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.open).join() };
     });
-    (tab.title === 'Analysis' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
+    (tab.title === 'Health' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
      tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
-      ? ok('Cycle Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
-      : bad('Cycle Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
+      ? ok('Health tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
+      : bad('Health tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
       await p.fill('#chart-home .lab-q', q); await settle(p);
       return p.evaluate(() => ({
@@ -515,9 +515,9 @@ async function openPage(p, url, sheet) {
     await p.click('#topbar-back'); await settle(p);
     const after = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       list: !document.getElementById('chart-home').hidden }));
-    (folded.title === 'Analysis' && folded.hid && head.title === 'Mood' && head.open && head.home && after.title === 'Analysis' && after.list)
-      ? ok('a category name opens its page and back returns to Analysis; its chevron only folds it')
-      : bad('a category name opens its page and back returns to Analysis; its chevron only folds it', JSON.stringify({ folded, head, after }));
+    (folded.title === 'Health' && folded.hid && head.title === 'Mood' && head.open && head.home && after.title === 'Health' && after.list)
+      ? ok('a category name opens its page and back returns to Health; its chevron only folds it')
+      : bad('a category name opens its page and back returns to Health; its chevron only folds it', JSON.stringify({ folded, head, after }));
     await p.click('#chart-home .lab-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromChart = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
@@ -525,8 +525,8 @@ async function openPage(p, url, sheet) {
       return { bar: document.getElementById('topbar-title').textContent, on: box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none' };
     });
     (fromChart && fromChart.bar === 'Confidence' && fromChart.on)
-      ? ok('a reading in Cycle Analysis opens its page, and its trend button works', fromChart.bar)
-      : bad('a reading in Cycle Analysis opens its page, and its trend button works', JSON.stringify(fromChart));
+      ? ok('a reading in Cycle Health opens its page, and its trend button works', fromChart.bar)
+      : bad('a reading in Cycle Health opens its page, and its trend button works', JSON.stringify(fromChart));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
     for (const cat of ['circulation', 'mood', 'energy']) {
