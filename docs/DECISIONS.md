@@ -72,6 +72,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   each period ("maybe will give us better cycle names"): Postwar became Baby Boom (1947–53), Go-Go became Great
   Society (1963–66), Go-Go moved to 1967–69 where the go-go funds and conglomerates peaked (was Conglomerate),
   Rebound became Bicentennial (1975–77) and Inflation became Volcker (1978–81). (V690)
+  Keren then renamed 1967–69 the Go-Stop Cycle: "the go-go cycle should be Go-Stop cycle." Its story keeps "go-go"
+  where it names the funds of the day. (0.6.17)
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
@@ -1363,7 +1365,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
   Taylor-rule line waits for potential GDP. (0.6.7)
 - **A peak belongs to the cycle of the month it peaked, even when prices turn down only after that cycle closed; a
-  closed cycle with no peak says so, with the peak that came after.** Keren saw no peak on the Go-Go Cycle (1967–69):
+  closed cycle with no peak says so, with the peak that came after.** Keren saw no peak on the Go-Stop Cycle (1967–69):
   prices rose through all three years and peaked in February 1970 (6.4%), so the card reads "Peak: After the close,
   6.4% (Feb 1970)", one line like the others, rather than invent one. Reading the trend over the whole record
   rather than inside each cycle also restored four peaks the cycle's edge had hidden: Second New Deal (May 1937),
