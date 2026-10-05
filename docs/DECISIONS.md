@@ -245,9 +245,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Framework's container holds only its table, full width; the paragraph on the seven signs is its (i)'s one
   line, with the leading, coincident and lagging examples as bullets.** Keren: "this paragraph should be in the
   info … check that we're not repeating ourselves." The Season Model's (i) uses the precise terms, concisely:
-  output growth vs potential, sensitivity, price level, direction (transition seasons only), and its table shows all 18
-  combinations. Not "output gap" (a gap in the level of output) nor "growth gap" (not a standard term); Keren
-  questioned both. It closes on its record against NBER recessions since 1953, by season: the recession quarters
+  growth gap, sensitivity, price level, direction (transition seasons only), and its table shows all 18
+  combinations. The growth gap is growth against potential growth (the Investment Clock's growth above or below
+  trend), not the output gap, which measures the level: tested on 1953–2026, the output gap put 31 of 39 recession
+  quarters in Autumn or Winter against the growth gap's 38 (season-model/output-gap-test.md). Keren: "Let's call it
+  growth gap." It closes on its record against NBER recessions since 1953, by season: the recession quarters
   that fell in Autumn or Winter against those seasons' share of all quarters, computed by `recessionRecord` from the
   app's own seasons. Contractions without a recession are not counted against it (Keren: "not every contraction is
   a recession"); Keren: "it adds a lot of credibility to the model … it's important to specify it." Keren: "more sophisticated words … but just try to be a little bit more concise." (0.8.1, Oct 5, 2026)
