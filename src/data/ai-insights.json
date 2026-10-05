@@ -1,12 +1,10 @@
 {
   "by": "Claude",
   "asOf": "2026-10-02",
-  "lede": "The AI Cycle is a market priced for a boom inside an economy that feels like a slowdown. Her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
+  "lede": "Born out of the 2022 correction, the AI Cycle rode the build-out of artificial intelligence, the story everyone wanted to own. It is a market priced for a boom inside an economy that feels like a slowdown: her valuations sit at the top of the record while her people’s confidence sits at the bottom of it, and the distance between the two is the story of this cycle so far.",
   "sections": [
-    { "title": "The cycle",
-      "text": "Born out of the 2022 correction, the cycle is {age} years old, with {bull} bull years and no bleed yet. It opened in Autumn, touched Summer at the start of 2024, cooled into Spring for the rest of that year, and has been in Autumn since 2025, stagflation since its third quarter: growth contracting while prices heat. Mrs. Market reached Optimism early in 2024, fell to Panic in the spring of 2025, and has climbed back to Hope." },
     { "title": "The economy",
-      "text": "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed has eased to {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP, the budget runs at {deficit}, and interest payments, at {interest} of GDP, are level with their 1991 record." },
+      "text": "Prices run at {cpi}, well below where the cycle began but heating again, while real growth is {growth} and unemployment has drifted up to {unemployment}. The Fed’s rate stands at {fed}. Households keep spending, with consumer demand growing at {demand}, even as their confidence, at {confidence}, sits near the lowest the record holds since 1960. The strain has moved to the state: federal debt is {debt} of GDP, the budget runs at {deficit}, and interest payments, at {interest} of GDP, are level with their 1991 record." },
     { "title": "The market",
       "text": "The S&P 500 has risen four years running and is up {sp} this year. Shiller CAPE stands at {cape}, a height the record reached only around 2000; the Buffett indicator, at {buffett}, is the highest it has ever been; and the equity risk premium has thinned to {premium}, so stocks now pay little more than bonds for their risk. Volatility is calm at {vix}. The market is not afraid; it is the economy beneath it that is tired." }
   ],

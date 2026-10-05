@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,306 lines** in 36 files, about 613 KB, roughly **174 thousand tokens**. No session can
+The source is **9,300 lines** in 36 files, about 614 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `f58ba89` on 2026-10-05.
+Generated from commit `7684ed3` on 2026-10-05.
 
 ## The page
 
@@ -18,12 +18,12 @@ Generated from commit `f58ba89` on 2026-10-05.
 | Part | Lines | What |
 |---|---|---|
 | `page-head.html` | 5 | doctype, meta, and a tiny inline stylesheet that sets the page colour before the real tokens exist |
-| `styles.css` | 1,437 | the whole stylesheet, every token and rule |
+| `styles.css` | 1,438 | the whole stylesheet, every token and rule |
 | `page-body.html` | 356 | the static DOM: tabs, cards, sheet hosts, slots the renderers fill |
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **665** top-level functions, **111** top-level vars, **376** exported names, **19** boots.
+Counts: **32** modules, **667** top-level functions, **110** top-level vars, **378** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -46,9 +46,9 @@ Counts: **32** modules, **665** top-level functions, **111** top-level vars, **3
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
 | `js/tabs-menu.ts` | 203 | 5 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 82 | 10 | `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
-| `js/ai-insights.ts` | 192 | 38 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
+| `js/ai-insights.ts` | 183 | 37 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
-| `js/cycle-analysis.ts` | 275 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
+| `js/cycle-analysis.ts` | 277 | 60 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
 | `js/fed-phases.ts` | 119 | 19 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
@@ -842,44 +842,43 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 18 | `MONTH_NAMES` | `var MONTH_NAMES =` |
-| 19 | `ECHO_FROM` | `var ECHO_FROM =` |
-| 21 | `openIdx` | `function openIdx(` |
-| 22 | `labOf` | `function labOf(` |
-| 23 | `figure` | `function figure(` |
-| 27 | `fill` | `function fill(` |
-| 31 | `quartersOf` | `function quartersOf(` |
-| 37 | `quarterly` | `function quarterly(` |
-| 47 | `lastQuarter` | `function lastQuarter(` |
-| 50 | `cycleOfYear` | `function cycleOfYear(` |
-| 51 | `qIdx` | `function qIdx(` |
-| 52 | `qName` | `function qName(` |
-| 53 | `carried` | `function carried(` |
-| 60 | `panel` | `function panel(` |
-| 61 | `buildPanel` | `function buildPanel(` |
-| 76 | `pathGap` | `function pathGap(` |
-| 86 | `echoes` · export | `function echoes(` |
-| 98 | `thenWords` | `function thenWords(` |
-| 105 | `pairWords` | `function pairWords(` |
-| 106 | `echoLine` | `function echoLine(` |
-| 114 | `asOfWords` | `function asOfWords(` |
-| 118 | `aiDetail` | `function aiDetail(` |
-| 124 | `AI_PAGE` | `var AI_PAGE =` |
-| 125 | `CHAPTER_MARKS` | `var CHAPTER_MARKS =` |
-| 126 | `EXTREMES` | `var EXTREMES =` |
-| 127 | `rankNow` | `function rankNow(` |
-| 131 | `pic` | `function pic(` |
-| 132 | `extremesPic` | `function extremesPic(` |
-| 139 | `cycleSegs` | `function cycleSegs(` |
-| 140 | `cyclePic` | `function cyclePic(` |
-| 149 | `tilesPic` | `function tilesPic(` |
-| 158 | `segAt` | `function segAt(` |
-| 166 | `pathStrip` | `function pathStrip(` |
-| 172 | `CHAPTER_PICS` | `var CHAPTER_PICS =` |
-| 173 | `aiPage` | `function aiPage(` |
-| 180 | `buildAiPage` · export | `function buildAiPage(` |
-| 185 | `moodDoor` · export | `function moodDoor(` |
-| 189 | `aiInsights` · export | `function aiInsights(` |
+| 17 | `MONTH_NAMES` | `var MONTH_NAMES =` |
+| 18 | `ECHO_FROM` | `var ECHO_FROM =` |
+| 20 | `openIdx` | `function openIdx(` |
+| 21 | `labOf` | `function labOf(` |
+| 22 | `figure` | `function figure(` |
+| 26 | `fill` | `function fill(` |
+| 30 | `quartersOf` | `function quartersOf(` |
+| 36 | `quarterly` | `function quarterly(` |
+| 46 | `lastQuarter` | `function lastQuarter(` |
+| 49 | `cycleOfYear` | `function cycleOfYear(` |
+| 50 | `qIdx` | `function qIdx(` |
+| 51 | `qName` | `function qName(` |
+| 52 | `carried` | `function carried(` |
+| 59 | `panel` | `function panel(` |
+| 60 | `buildPanel` | `function buildPanel(` |
+| 75 | `pathGap` | `function pathGap(` |
+| 85 | `echoes` · export | `function echoes(` |
+| 97 | `thenWords` | `function thenWords(` |
+| 104 | `pairWords` | `function pairWords(` |
+| 105 | `echoLine` | `function echoLine(` |
+| 113 | `asOfWords` | `function asOfWords(` |
+| 117 | `aiDetail` | `function aiDetail(` |
+| 123 | `AI_PAGE` | `var AI_PAGE =` |
+| 124 | `CHAPTER_MARKS` | `var CHAPTER_MARKS =` |
+| 125 | `rankNow` | `function rankNow(` |
+| 129 | `pic` | `function pic(` |
+| 130 | `risksPic` | `function risksPic(` |
+| 137 | `tilesPic` | `function tilesPic(` |
+| 146 | `segAt` | `function segAt(` |
+| 154 | `pathStrip` | `function pathStrip(` |
+| 160 | `CHAPTER_PICS` | `var CHAPTER_PICS =` |
+| 161 | `para` | `function para(` |
+| 162 | `leadBoxes` | `function leadBoxes(` |
+| 165 | `aiPage` | `function aiPage(` |
+| 171 | `buildAiPage` · export | `function buildAiPage(` |
+| 176 | `moodDoor` · export | `function moodDoor(` |
+| 180 | `aiInsights` · export | `function aiInsights(` |
 
 ### `js/charts.ts`
 
@@ -990,22 +989,24 @@ falls in. **export** marks a name other modules import.
 | 185 | `fillMenu` | `function fillMenu(` |
 | 192 | `openSub` | `function openSub(` |
 | 196 | `toggleMenu` | `function toggleMenu(` |
-| 201 | `judged` | `function judged(` |
-| 202 | `score` | `function score(` |
-| 203 | `outside` | `function outside(` |
-| 204 | `listWords` · export | `function listWords(` |
-| 205 | `word` | `function word(` |
-| 206 | `cap` | `function cap(` |
-| 208 | `visitNote` | `function visitNote(` |
-| 217 | `chartDetail` | `function chartDetail(` |
-| 226 | `chartDoor` · export | `function chartDoor(` |
-| 230 | `HOME_ID` | `var HOME_ID =` |
-| 231 | `drawChart` | `function drawChart(` |
-| 239 | `fold` | `function fold(` |
-| 243 | `wireFinder` | `function wireFinder(` |
-| 260 | `openMenus` | `function openMenus(` |
-| 261 | `shutMenus` | `function shutMenus(` |
-| 262 | `buildCycleChart` · export | `function buildCycleChart(` |
+| 201 | `riskLabs` · export | `function riskLabs(` |
+| 202 | `judged` | `function judged(` |
+| 203 | `score` | `function score(` |
+| 204 | `outside` | `function outside(` |
+| 205 | `listWords` · export | `function listWords(` |
+| 206 | `word` | `function word(` |
+| 207 | `cap` | `function cap(` |
+| 209 | `visitNote` | `function visitNote(` |
+| 218 | `chartDetail` | `function chartDetail(` |
+| 227 | `cycleScore` · export | `function cycleScore(` |
+| 228 | `chartDoor` · export | `function chartDoor(` |
+| 232 | `HOME_ID` | `var HOME_ID =` |
+| 233 | `drawChart` | `function drawChart(` |
+| 241 | `fold` | `function fold(` |
+| 245 | `wireFinder` | `function wireFinder(` |
+| 262 | `openMenus` | `function openMenus(` |
+| 263 | `shutMenus` | `function shutMenus(` |
+| 264 | `buildCycleChart` · export | `function buildCycleChart(` |
 
 ### `js/cycle-tab.ts`
 
@@ -1312,30 +1313,30 @@ _none found — if that is wrong, the pattern in `tools/make-map.py` needs updat
 
 | Line | Section |
 |---|---|
-| 179 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
-| 281 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
-| 313 | season strip |
-| 339 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
-| 403 | tab bar (app-style segmented navigation) |
-| 436 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
-| 451 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
-| 503 | journal (editorial content tab) |
-| 509 | content tab: reading companion |
-| 561 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
-| 815 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
-| 859 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
-| 931 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
-| 1,101 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
-| 1,110 | The symptoms: a cycle's years against today |
-| 1,209 | hero: yield curve |
-| 1,239 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
-| 1,258 | 10Y-3M spread history (quarterly, with recession bands) |
-| 1,286 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
-| 1,294 | long cycle (structural layer) |
-| 1,301 | indicator grid |
-| 1,327 | info icon + popover (progressive disclosure for longer notes) |
-| 1,341 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
-| 1,427 | footer |
+| 180 | top bar (Keren, Sep 19, 2026, with Clue's screens): the open tab's title in the middle, a round menu |
+| 282 | calendar tab (yearly view, one card per year grouped into five eras — see marketCycles below) |
+| 314 | season strip |
+| 340 | THE GAP (Keren, V385: "…so if one day I'll tell you I want the spacing to be 30, you would just change |
+| 404 | tab bar (app-style segmented navigation) |
+| 437 | vitals strip (health-app framing: two at-a-glance rings, Growth and Rates, built from data used |
+| 452 | temperature chart (Cycle tab), after Natural Cycles' temperature view: a column per month of the |
+| 504 | journal (editorial content tab) |
+| 510 | content tab: reading companion |
+| 562 | Analysis tab: subjects — each section is a collapsible card whose summary row carries the one |
+| 816 | Volume's red ramp (Keren, V389: "volume is, in gynaecology, blood — so it should be different shades of |
+| 860 | the maturity chart's columns wear the curve's three zones (Keren, V394: "a colour that represents the |
+| 932 | One gap between an inner page's containers (Keren, V381: "the spacing between containers in each inner |
+| 1,102 | Calendar tab: cycle drawers — one <details> per era, newest first, the current one open. The summary |
+| 1,111 | The symptoms: a cycle's years against today |
+| 1,210 | hero: yield curve |
+| 1,240 | the readout (Keren, from Apple Health): it never changes the page's height, which is why it beats a |
+| 1,259 | 10Y-3M spread history (quarterly, with recession bands) |
+| 1,287 | un-inversion-to-recession historical lag panel — reuses .spread-tile's card + .spread-history-head/ |
+| 1,295 | long cycle (structural layer) |
+| 1,302 | indicator grid |
+| 1,328 | info icon + popover (progressive disclosure for longer notes) |
+| 1,342 | detail modal: every indicator defaults to a minimal view; this is its "expand" |
+| 1,428 | footer |
 
 ## Markup landmarks
 

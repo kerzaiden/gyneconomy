@@ -8,17 +8,18 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `f58ba89` on 2026-10-05. **99 components**, **35 shared patterns**.
+Generated from commit `7684ed3` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`aiPage`** | `.ai-by` `.ai-echoes` `.ai-p` `.ai-page` | `ai-insights.ts:buildAiPage` |
+| **`aiPage`** | `.ai-by` `.ai-echoes` `.ai-page` | `ai-insights.ts:buildAiPage` |
 | **`echoLine`** | `.ai-echo` `.ai-echo-when` | — |
-| **`extremesPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:aiPage` |
+| **`para`** | `.ai-p` | `ai-insights.ts:aiPage`, `ai-insights.ts:leadBoxes` |
 | **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
-| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:cyclePic`, `ai-insights.ts:extremesPic`, `ai-insights.ts:tilesPic` |
+| **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:leadBoxes`, `ai-insights.ts:risksPic`, `ai-insights.ts:tilesPic` |
+| **`risksPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:leadBoxes` |
 | **`tilesPic`** | `.ai-tile` `.ai-tiles` | `ai-insights.ts:pathStrip` |
 
 ## analysis.ts
@@ -248,7 +249,6 @@ renderer speaks. Listed most-used first.
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
 | **`keyed`** | roster.ts | 7 places |
-| **`strip`** | render-core.ts | 7 places |
 | **`vhOpen`** | charts.ts | 7 places |
 | **`windowScale`** | history.ts | 7 places |
 | **`closedCount`** | cycle-analysis.ts | 6 places |
@@ -257,6 +257,7 @@ renderer speaks. Listed most-used first.
 | **`mean`** | format.ts | 6 places |
 | **`peekOf`** | roster.ts | 6 places |
 | **`qAtIndex`** | format.ts | 6 places |
+| **`strip`** | render-core.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
@@ -273,6 +274,7 @@ renderer speaks. Listed most-used first.
 | **`detailSlot`** | dom.ts | 4 places |
 | **`drawsPage`** | render-core.ts | 4 places |
 | **`fedFundsRange`** | data.ts | 4 places |
+| **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
 | **`growthWord`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
@@ -282,9 +284,6 @@ renderer speaks. Listed most-used first.
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
-| **`seasonPills`** | render-core.ts | 4 places |
-| **`seasonRuns`** | render-core.ts | 4 places |
-| **`seasonRunsLabel`** | render-core.ts | 4 places |
 | **`trendText`** | dom.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`byIdMaybe`** | dom.ts | 3 places |
@@ -294,12 +293,10 @@ renderer speaks. Listed most-used first.
 | **`cycleView`** | dial-cycle.ts | 3 places |
 | **`docValue`** | live.ts | 3 places |
 | **`expandBtn`** | dom.ts | 3 places |
-| **`fill`** | ai-insights.ts | 3 places |
 | **`headMoreBtn`** | history.ts | 3 places |
 | **`indOf`** | readings.ts | 3 places |
 | **`listWords`** | cycle-analysis.ts | 3 places |
 | **`liveInto`** | live.ts | 3 places |
-| **`marketPills`** | render-core.ts | 3 places |
 | **`menuOf`** | cycle-analysis.ts | 3 places |
 | **`monthIdx`** | fed-phases.ts | 3 places |
 | **`moodToday`** | model.ts | 3 places |
@@ -312,6 +309,9 @@ renderer speaks. Listed most-used first.
 | **`rankToDate`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`seasonGroup`** | model.ts | 3 places |
+| **`seasonPills`** | render-core.ts | 3 places |
+| **`seasonRuns`** | render-core.ts | 3 places |
+| **`seasonRunsLabel`** | render-core.ts | 3 places |
 | **`seasonTitle`** | model.ts | 3 places |
 | **`showCycle`** | dial-cycle.ts | 3 places |
 | **`stateOf`** | format.ts | 3 places |

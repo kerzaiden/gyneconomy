@@ -284,15 +284,16 @@ async function openPage(p, url, sheet) {
                    cards: document.querySelectorAll('.cat-row').length,
                    years: yrs ? [...yrs.querySelectorAll('.dx-year-n')].map(n => n.textContent.trim()).filter(t => /^\d{4}$/.test(t)).map(Number) : [],
                    opens: yrs ? yrs.querySelectorAll('button.dx-year[data-detail-idx]').length : 0,
+                   score: !!d.querySelector('[data-open="sheet-ai-insights"] .lab-score'),
                    after: yrs ? [...yrs.querySelectorAll('.dx-year-n')].some(n => n.textContent.trim() === 'After') : false,
                    boxes: [...d.children].map(c => c.matches('[data-open="sheet-ai-insights"]') ? 'ai' : c.classList.contains('trend-card') ? 'trend' : c.classList.contains('fp') && c.querySelector('.fp-band') ? 'fed' : c.classList.contains('dx-sys') ? 'sys' : c.querySelector('.labs') ? 'chart' : c.className).join() } : null;
     });
     const today = await read();
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 0 && today.told === '1:AI Cycle' && today.cards === 0 &&
-     today.boxes === 'fed,ai,trend,sys' && today.doors === 2 && !today.after && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Statistics, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Statistics, then the cycle year by year', JSON.stringify(today));
+     today.boxes === 'fed,ai,sys' && today.doors === 1 && today.score && !today.after && today.kicker === 'AI Cycle')
+      ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights with the health score, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -559,9 +560,12 @@ async function openPage(p, url, sheet) {
     await click(p, '#diagnosis [data-open="sheet-ai-insights"]'); await settle(p);
     const feel = await p.evaluate(() => {
       const card = document.querySelector('#sheet-ai-insights:not([hidden]) .trend-card');
-      return { head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open };
+      return { head: card && card.querySelector('.trend-head').textContent.trim(), opens: card && card.dataset.open,
+        doors: document.querySelectorAll('#sheet-ai-insights:not([hidden]) [data-open="sheet-cat-mood"]').length };
     });
-    await click(p, '#sheet-ai-insights:not([hidden]) .trend-card'); await settle(p);
+    await p.click('#topbar-back'); await settle(p);
+    await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
+    await p.click('#chart-home .lab-cat[data-open="sheet-cat-mood"]'); await settle(p);
     await click(p, '#sheet-cat-mood:not([hidden]) .cat-more .more-row'); await settle(p);
     const cyc = await p.evaluate(() => {
       const s = document.querySelector('#detail-modal-body .mood-curve'), card = document.querySelector('#detail-modal-body .hi-card .hi-name');
@@ -572,13 +576,13 @@ async function openPage(p, url, sheet) {
     });
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    await p.click('#topbar-back'); await settle(p);
-    (feel.head === 'AI Cycle' && feel.opens === 'sheet-cat-mood' && cyc && cyc.calls === 4 &&
+    await p.click('.tab-btn[data-tab="cycle"]'); await settle(p);
+    (feel.head === 'AI Cycle' && !feel.opens && feel.doors === 0 && cyc && cyc.calls === 4 &&
      cyc.labels === 'OPTIMISM+EXCITEMENT+THRILL+EUPHORIA+ANXIETY+DENIAL+FEAR+DESPERATION+PANIC+DESPAIR+DEPRESSION+HOPE+OPTIMISM' &&
      cyc.now.length >= 1 && cyc.now.every(w => w === cyc.now[0]) && cyc.card.toUpperCase() === 'SHE\u2019S IN ' + cyc.now[0] &&
      cyc.es === '0:1')
-      ? ok('the story in AI Insights opens the cycle of market emotions and her story this cycle, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
-      : bad('the story in AI Insights opens the cycle of market emotions and her story this cycle, one emotion everywhere', JSON.stringify({ feel, cyc }));
+      ? ok('AI Insights opens on the cycle\u2019s name, and Mood opens the cycle of market emotions, one emotion everywhere', feel.head + ' \u00b7 ' + cyc.now[0])
+      : bad('AI Insights opens on the cycle\u2019s name, and Mood opens the cycle of market emotions, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '#season-wheel-hub-open'); await settle(p);
     const wx = await p.evaluate(() => {
       const page = document.querySelector('#sheet-cat-weather:not([hidden])');
@@ -1012,4 +1016,18 @@ async function keyboardAndLayers(b, url) {
     ? ok('the Desire page fits a 320px screen', wide + 'px')
     : bad('the Desire page fits a 320px screen', wide + 'px');
   await n.close();
+
+  const ph = await b.newPage({ viewport: { width: 393, height: 852 }, isMobile: true, hasTouch: true });
+  watch(ph, 'iphone');
+  await ph.goto('file://' + url); await ready(ph);
+  await ph.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await settle(ph);
+  const end = await ph.evaluate(() => {
+    const bar = document.querySelector('.tabbar').getBoundingClientRect(), panel = document.querySelector('.tab-panel:not([hidden])');
+    const last = Math.max(...[...panel.children].filter(e => e.getClientRects().length).map(e => e.getBoundingClientRect().bottom));
+    return { gap: Math.round(bar.top - last), want: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap-top')) };
+  });
+  (end.gap === end.want)
+    ? ok('on a phone the page ends one top gap above the tab bar', end.gap + 'px')
+    : bad('on a phone the page ends one top gap above the tab bar', JSON.stringify(end));
+  await ph.close();
 }

@@ -80,13 +80,13 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   [cycle analysis], we can call it [cycle statistics]. And the analysis tab can stay the same with the page title
   being analysis" (0.6.8); "cycle analysis should be with capital letters at the beginning" (0.6.6).
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
-  opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
+  is told inside the AI Insights page's first container.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
   closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
   Keren: "it can become an AI insights container in the current cycle page … I don't want three pass scores. I want a
   sophisticated analysis, both of the narrative of that cycle and the economy and the market"; "Call it AI Insights".
   It is a door like the story (Keren: "three lines, maybe three dots and then a chevron") opening an AI Insights page
   with one container per chapter. Claude writes it (Keren chose "Claude, dated" over a live Generate button, which would change the artifact's grant,
-  and over rule-built sentences, which the name would oversell): a lede, The cycle, The economy, The market, dated
+  and over rule-built sentences, which the name would oversell): a lede, The economy, The market, dated
   "Written by Claude from the app's data of …", its figures read live and its words rewritten each release. Its
   Closest moments are computed: the last two years of today's eight market and economy readings matched against every
   two-year run since 1970 (analog matching on a path; the readings, equal weights and window are Claude's), one moment
@@ -186,7 +186,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
   the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. Keren,
   on her iPhone: "the bottom menu is not close enough to the bottom of the screen" (10px plus the 34px inset left a
-  44px gap; now 22px). (0.6.9, 0.6.11)
+  44px gap; now 22px). (0.6.9, 0.6.11) At the end of a page the last container stops one top gap (`--gap-top`, 20px)
+  above the bar, whatever the safe area: the padding is the bar's height plus its lift (`--tabbar-lift`) plus that
+  gap. Keren, on her iPhone: "there is a space in each page at the bottom that is too much … live within the range of
+  our spacing" (it was 54px with the 34px inset). (0.6.13)
 - **The page's top bar no longer sticks: the open tab's title sits at the top of the page and scrolls away with
   it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
   circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu. The title's
@@ -500,8 +503,19 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   is a quarter, so we have two dots left." (0.6.6)
 - **The health score's title is set in Cormorant Garamond 500, the top bar's serif.** Keren: "Make the health score
   in the same font as the top bar, the feminine font." (0.6.6)
-- **The AI Insights page opens its summary under "TL;DR", the usual spelling, not "In short".** Keren: "write TLDR
-  with the convention of how it's written." (0.6.6)
+- **The AI Insights page opens on one container titled by the cycle's name ("AI Cycle"), the cycle's story merged
+  into its summary; there is no separate story card and no door to Mood on the page.** Keren: "the text that belongs
+  to AI Cycle can be merged with the TLDR text. And we can remove the AI Cycle container at all" and "instead of
+  TLDR, just write AI cycle" (0.6.13, after "TL;DR" in 0.6.6 and "In short" before). Its text never names a Fed
+  direction, which goes stale with the next meeting: it gives the rate as it stands (the 0.6.12 review found "The Fed
+  has eased" after the Sep 16 hike). The cycle chapter is gone: "the cycle container is redundant because we still
+  haven't figured out how to analyze the emotional intelligence of each cycle"; its opening, "Born out of the 2022
+  correction", now opens the summary, as Keren liked it (0.6.13).
+- **Under the cycle's summary, a "Risk factors" container lists every result Cycle Statistics reads as Risk today,
+  each as a bar placing its latest value against its own record.** Keren: "I love the way you put the Buffett
+  indicator, interest payments, and all of that in bars. But I think it belongs in a new container named risk factors,
+  where we would see all the risk factors we detected in the analysis page." It replaces the summary's three highest
+  and three lowest readings, and reads the Analysis judgement, never its own. (0.6.13)
 
 ### Analysis
 
@@ -1200,8 +1214,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   and blush, that breathe slowly and flow apart as the page scrolls, never with the content.** Keren: "make the
   apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
   scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
-  animation keeps the slow breathing only. (0.6.3)
-- **The health chart's card, Cycle Statistics, on the Current Cycle page (and on a past cycle's page)
+  animation keeps the slow breathing only. (0.6.3) The apricot is about half as strong, and both layers also drift on
+  their own, a few percent of the screen over 96 and 120 seconds, too slowly to watch. Keren: "make the apricot
+  splashes in the background be much more delicate, feminine, and maybe kind of move in slow motion without the user
+  even seeing it." (0.6.13)
+- **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
+  top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
+  the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
+  inside the page as well with some kind of explanation, very short one." A past cycle's page keeps the card. (0.6.13)
+- **The health chart's card, Cycle Statistics, on a past cycle's page
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
   automatically to analysis page." (0.6.3)

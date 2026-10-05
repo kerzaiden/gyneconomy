@@ -198,6 +198,7 @@ function toggleMenu(host: HTMLElement, id: string){
   if (menu.hidden) fillMenu(host, id, "");
   showMenu(host, menu.hidden);
 }
+export function riskLabs(i: number){ return judged(i).filter(function(l){ return tier(l, i) === "abnormal"; }); }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 function outside(i: number){ return labs().filter(function(l){ var st = state(l, i); return st === "high" || st === "low"; }); }
@@ -223,6 +224,7 @@ function chartDetail(){
     "<b>History, not forecast:</b> it describes her past, not what comes next."
   ]) + srcBlock([FENCE_SRC]);
 }
+export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){
   var i = marketCycles.indexOf(m.era);
   return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(visitNote(i)) + scoreBox(i));
