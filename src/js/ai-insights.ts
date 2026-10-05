@@ -3,7 +3,7 @@ import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
 import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
 import { clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
 import { marketCycles } from "./data.ts";
-import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
+import { cycleModel, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
 import { wheelMeta } from "./refresh-season.ts";
@@ -12,6 +12,8 @@ import { cycleScore, fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-a
 import type { Lab } from "./cycle-analysis.ts";
 
 // ---- AI Insights: Claude's dated reading of the open cycle, with today's closest past moments ----
+var ECHO_WINDOW = 8;
+function echoWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][ECHO_WINDOW - 4] || String(ECHO_WINDOW); }
 type Echo = { q: string; i: number; cycle: Cycle; gap: number; per: number[]; then: number[] };
 
 var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -74,10 +76,10 @@ function buildPanel(){
 }
 function pathGap(p: ReturnType<typeof buildPanel>, k: number){
   var per = p.scale.map(function(){ return 0; });
-  for (var j = 0; j < GROWTH_WINDOW; j++){
+  for (var j = 0; j < ECHO_WINDOW; j++){
     var a = p.rows[k - j], b = p.rows[p.nowI - j];
     if (!a || !b) return null;
-    a.forEach(function(x, r){ var z = (x - b[r]) / p.scale[r]; per[r] += z * z / GROWTH_WINDOW; });
+    a.forEach(function(x, r){ var z = (x - b[r]) / p.scale[r]; per[r] += z * z / ECHO_WINDOW; });
   }
   return { gap:Math.sqrt(per.reduce(function(x, y){ return x + y; }, 0) / per.length), per:per.map(Math.sqrt) };
 }
@@ -90,7 +92,7 @@ export function echoes(){
     var g = pathGap(p, k);
     return g && { q:qName(k), i:k, cycle:cycleOfYear(Math.floor(k / 4)), gap:g.gap, per:g.per, then:p.rows[k] };
   }).filter(function(e): e is Echo { return !!e && !!e.cycle; }).sort(function(a, b){ return a.gap - b.gap; }).forEach(function(e){
-    if (seen.every(function(s){ return Math.abs(s.i - e.i) >= GROWTH_WINDOW; })) seen.push(e);
+    if (seen.every(function(s){ return Math.abs(s.i - e.i) >= ECHO_WINDOW; })) seen.push(e);
   });
   echoCache = seen;
   return echoCache;
@@ -118,7 +120,7 @@ function asOfWords(){
 function aiDetail(){
   var p = panel(), list = echoes().slice(0, 8), names = listWords(AI.echo.map(function(id){ return labOf(id).name; }));
   return '<p>' + AI.by + ' wrote this reading from the app’s own data of ' + asOfWords() + '. Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p>' +
-    '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + growthWindowWord() + ' quarters of ' + names + ', the same two years the season model reads growth over, against every run of ' + growthWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + growthWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
+    '<p>A moment is matched by how it got here, not by one quarter alone: the last ' + echoWindowWord() + ' quarters of ' + names + ', two years, against every run of ' + echoWindowWord() + ' quarters since ' + ECHO_FROM + ' that ends before this cycle began, ' + Object.keys(p.rows).filter(function(k){ return +k < p.open && pathGap(p, +k); }).length + ' in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than ' + echoWindowWord() + ' quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p>' +
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
 var AI_PAGE = "sheet-ai-insights";
@@ -154,7 +156,7 @@ function segAt(q: string){
 }
 function pathStrip(label: string, end: number){
   var segs: TrackSeg[] = [];
-  for (var i = end - GROWTH_WINDOW + 1; i <= end; i++){ var seg = segAt(qName(i)); if (seg) segs.push(seg); }
+  for (var i = end - ECHO_WINDOW + 1; i <= end; i++){ var seg = segAt(qName(i)); if (seg) segs.push(seg); }
   var runs = seasonRuns(segs);
   return '<span class="ai-path"><small>' + label + '</small>' + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + '</span>';
 }

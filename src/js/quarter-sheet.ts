@@ -15,7 +15,7 @@ function quarterCards(m: CycleModel, seg: QuarterSeg){
   var gq = gdpQuarterlyYoY.filter(function(d){ return parseInt(d.q, 10) >= m.era.from && d.q <= seg.q; });
   var cards: [string | null, string][] = [
     [tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c){ return c.m <= qEnd; })), monthLabel(qEnd)],
-    [gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)],
+    [gdpPeek(r, gq), (r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)) + " \u00b7 potential " + r.potential.toFixed(1) + "%"],
     [marketPeek(y, m.era.from), String(y)]
   ];
   return '<div class="cat-sheet cat-weather">' +

@@ -4,9 +4,7 @@ const { plainJs } = require('../tools/source');
 
 const SRC = plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/model.ts'), 'utf8'));
 function lift(names, env) {
-  const win = /\n(?:export )?(var GROWTH_WINDOW\s*= [^\n]*;)/.exec(SRC);
-  if (!win) throw new Error('the growth window is not in model.ts');
-  let out = win[1] + '\n' + Object.keys(env || {}).map(k => 'var ' + k + ' = __env.' + k + ';\n').join('');
+  let out = Object.keys(env || {}).map(k => 'var ' + k + ' = __env.' + k + ';\n').join('');
   for (const n of names) {
     const found = new RegExp('^(?:export )?function ' + n + '\\(', 'm').exec(SRC);
     const start = found ? SRC.indexOf('function ', found.index) : -1;
@@ -18,7 +16,7 @@ function lift(names, env) {
     }
     out += SRC.slice(start, j + 1) + '\n';
   }
-  return new Function('__env', out + 'return { ' + names.join(', ') + ', GROWTH_WINDOW };')(env || {});
+  return new Function('__env', out + 'return { ' + names.join(', ') + ' };')(env || {});
 }
 const { rankToDate } = lift(['rankToDate']);
 
@@ -60,15 +58,6 @@ console.log('\ncycleReturns — the peak is the best single year, never compound
   ok('the total compounds year by year', +r.cumByYear[2021].toFixed(2), 91.52);
 }
 
-console.log('\nThe growth window is said one way\n');
-{
-  const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
-  const text = fs.readdirSync(path.join(__dirname, '..', 'src/js')).map(n => fs.readFileSync(path.join(__dirname, '..', 'src/js', n), 'utf8')).join('\n') +
-               fs.readFileSync(path.join(__dirname, '..', 'src/page-body.html'), 'utf8');
-  const windows = [...text.matchAll(/(?:last|past|prior) (\w+) quarters/g)].map(m => m[1]);
-  ok('every sentence on growth\u2019s window says ' + words[GROWTH_WINDOW_OF(SRC)] + ' quarters',
-     windows.length > 0 && windows.every(w => w === words[GROWTH_WINDOW_OF(SRC)]), true);
-}
 console.log('\nProductivity\u2019s word follows the two BLS lines its note cites\n');
 {
   const consts = /\n(?:export )?(var PRODUCTIVITY_TREND\s*= [^\n]*;)/.exec(plainJs(fs.readFileSync(path.join(__dirname, '..', 'src/js/data.ts'), 'utf8')))[1];
@@ -105,7 +94,6 @@ console.log('\nmoodAt \u2014 each reading ranked against its own past, turned to
   const before = Array.from({ length: 12 }, (_, i) => ({ m: 'm' + i, score: i * 5 })), x = M.moodRead({ score: 30 }, before);
   ok('a month is ranked against her moods before it, and turns against three months back', [x.pct, x.change, x.ago.m, x.word], [50, -15, 'm9', 'Fear']);
 }
-function GROWTH_WINDOW_OF(src) { return +/var GROWTH_WINDOW\s*= (\d+);/.exec(src)[1]; }
 
 console.log('\n' + (fail ? fail + ' FAILED, ' : '') + pass + '/' + (pass + fail) + ' passed\n');
 process.exit(fail ? 1 : 0);

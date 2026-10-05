@@ -1,8 +1,8 @@
 import { fmtSigned, qLabel, yearOf } from "./format.ts";
 import { addSources } from "./dom.ts";
-import { confidenceHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
+import { confidenceHistory, potentialYoYHistory, sp500MonthlyHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, DATA_COMPILED, gdpQuarterlyYoY, seasonOverride } from "./refresh-season.ts";
-export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; growthSlopeQ: number; growthTrend: string; gdpLatest: QuarterPoint; annual: boolean };
+export type ModelReading = { season: Season; regime: string; cpiNow: number; cpiSlope: number; cpiDirection: string; cpiHot: boolean; cpiCold: boolean; potential: number; gdpLatest: QuarterPoint; annual: boolean };
 type TrackEntry = { i?: number; q: string; y: number; qn: string; reading: ModelReading };
 export type TrackSeg = { q: string; season: Season; from: number; to: number; reading: ModelReading; isNow?: boolean };
 type MoodPoint = { k: string; v: number | null };
@@ -32,29 +32,35 @@ export function cpiDirectionAt(endMonth: string){
   var c12 = cpiYear(endMonth);
   return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
 }
-export var GROWTH_WINDOW = 8;
-export function growthWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW); }
-function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: string, quartersPerStep?: number): ModelReading {
+export var HOLD_BAND = 0.47;
+export var PEAK_YEARS = [1929, 1948];
+export var PEAK_TREND: number;
+var potentialByQ: Record<string, number>;
+function regimeOf(g: number, p: number, prevRegime?: string | null){
+  return g > p + HOLD_BAND ? "expansion" : g < p - HOLD_BAND ? "contraction" : (prevRegime || (g >= p ? "expansion" : "contraction"));
+}
+function readSeason(cpi12: MonthPoint[], gdp: QuarterPoint, potential: number, prevRegime?: string | null, annual?: boolean): ModelReading {
   var cpiNow = cpi12[cpi12.length - 1].v;
   var cpiSlope = cpiTrend(cpi12);
   var cpiDirection = cpiDirectionOf(cpiSlope);
   var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
-  var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
-  var growthTrend = growthSlopeQ > 0.025 ? "rising" : growthSlopeQ < -0.025 ? "falling" : "flat";
-  var regime = gdp8[gdp8.length - 1].v < 0 || growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : (prevRegime || "expansion");
-  var cooling = cpiDirection === "falling", season: Season;
-  if (regime === "expansion"){
-    if (cpiHot) season = "summer";
-    else season = cooling ? "springdeflation" : "spring";
-  } else {
-    if (cpiCold) season = "winter";
-    else season = cooling ? "autumn" : "lateautumn";
-  }
+  var regime = regimeOf(gdp.v, potential, prevRegime), season: Season;
+  if (regime === "expansion") season = cpiHot ? "summer" : cpiDirection === "falling" ? "springdeflation" : "spring";
+  else season = cpiCold ? "winter" : cpiDirection === "rising" ? "lateautumn" : "autumn";
   return { season:season, regime:regime, cpiNow:cpiNow, cpiSlope:cpiSlope, cpiDirection:cpiDirection, cpiHot:cpiHot, cpiCold:cpiCold,
-           growthSlopeQ:growthSlopeQ, growthTrend:growthTrend, gdpLatest:gdp8[gdp8.length - 1], annual:quartersPerStep === 4 };
+           potential:potential, gdpLatest:gdp, annual:!!annual };
+}
+export function potentialOf(q: string){
+  if (potentialByQ[q] != null) return potentialByQ[q];
+  var first = potentialYoYHistory[0], last = potentialYoYHistory[potentialYoYHistory.length - 1];
+  return q < first.q ? PEAK_TREND : last.v;
+}
+function peakTrend(){
+  var level = 1, n = PEAK_YEARS[1] - PEAK_YEARS[0];
+  for (var y = PEAK_YEARS[0] + 1; y <= PEAK_YEARS[1]; y++) level *= 1 + usRealGdpGrowth[y] / 100;
+  return (Math.pow(level, 1 / n) - 1) * 100;
 }
 export var QUARTER_END_MONTH: Record<string, string> = {Q1:"03", Q2:"06", Q3:"09", Q4:"12"};
-var SEASON_YEARS = 2;
 function closingReading(endYear: number){
   var e = seasonTrack.filter(function(x){ return x.y <= endYear; }).pop();
   if (!e) throw new Error("no season reading by " + endYear); return e.reading;
@@ -82,10 +88,10 @@ export function cycleModel(era: Cycle){
   var cpi12 = cpiYear(endMonth);
   var gdpEnd = -1;
   gdpQuarterlyYoY.forEach(function(d, i){ if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i; });
-  var prevEntry = seasonTrackAll[gdpEnd - 1];
+  var prevEntry = seasonTrackAll[gdpEnd - 1], gq = gdpQuarterlyYoY[gdpEnd];
   var reading = ongoing
-    ? readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime)
-    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear) : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime));
+    ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime)
+    : (seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear));
   var season = (ongoing && seasonOverride) || reading.season;
   var track: TrackSeg[] = [];
   seasonTrack.forEach(function(entry){
@@ -103,26 +109,34 @@ export function cycleModel(era: Cycle){
            endMonth:endMonth, cpi:cpi, reading:reading, season:season, track:track, growth:eraGrowth(era) };
 }
 var seasonRuleSentence: Record<Season, string> = {
-  spring:"Expansion with prices heating, within or below the range, is reflation — Spring.",
+  spring:"Expansion with prices heating or steady, within or below the range, is reflation — Spring.",
   springdeflation:"Expansion with prices cooling, within or below the range, is Spring — deflation.",
   summer:"Expansion with prices above the range — hot — is inflation, Summer.",
-  autumn:"Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-  lateautumn:"Contraction with prices heating or steady, within or above the range, is Autumn — stagflation.",
+  autumn:"Contraction with prices cooling or steady, within or above the range, is disinflation — Autumn.",
+  lateautumn:"Contraction with prices heating, within or above the range, is Autumn — stagflation.",
   winter:"Contraction with prices below the range — cold — is deflation, Winter."
 };
+export function potentialGap(r: ModelReading){
+  var gap = r.gdpLatest.v - r.potential;
+  return Math.abs(gap) <= HOLD_BAND ? "within " + HOLD_BAND + " points of" : gap > 0 ? "above" : "below";
+}
 function seasonWhyFor(m: CycleModel){
   var r = m.reading;
-  return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " +
+  return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " +
     (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " +
     seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
 }
 export function growthWord(r: ModelReading){
   return r.regime === "contraction" ? "contracting" : "expanding";
 }
+function contractingClause(r: ModelReading){
+  if (r.gdpLatest.v < 0) return "the economy is contracting and output is shrinking";
+  return "the economy is contracting, though output is still growing " + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? "at about" : "more slowly than") + " its potential";
+}
 export function cycleNowNote(m: CycleModel){
   var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
   var years = (["Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years"][n] || n + " years");
-  var growth = w === "expanding" ? "the economy is expanding" : r.gdpLatest.v < 0 ? "the economy is contracting and output is shrinking" : "the economy is contracting, though output is still above a year earlier";
+  var growth = w === "expanding" ? "the economy is expanding" : contractingClause(r);
   var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") +
     (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
   return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
@@ -296,38 +310,37 @@ export type CycleModel = ReturnType<typeof cycleModel>;
 export var cycleYtdFraction: number, nowModel: CycleModel, cpiNow: number, currentSeason: Season, seasonWhy: string, currentEra: Cycle;
 var seasonTrackAll: TrackEntry[], seasonTrackYears: TrackEntry[], seasonTrack: TrackEntry[], regimeByQ: Record<string, string>, readingNow: ModelReading;
 
+function seasonYears(){
+  var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out: TrackEntry[] = [], prevRegime: string | undefined;
+  Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b){ return a - b; }).forEach(function(y){
+    var c12 = cpiYear(y + "-12");
+    if (y >= firstY || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
+    var r = readSeason(c12, { q:String(y), v:usRealGdpGrowth[y] }, PEAK_TREND, prevRegime, true);
+    prevRegime = r.regime;
+    ["Q1", "Q2", "Q3", "Q4"].forEach(function(qn){ out.push({ q:y + " " + qn, y:y, qn:qn, reading:r }); });
+  });
+  return out;
+}
+function seasonQuarters(prevRegime?: string){
+  var out: TrackEntry[] = [];
+  gdpQuarterlyYoY.forEach(function(d, i){
+    var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
+    var c12 = cpiYear(y + "-" + QUARTER_END_MONTH[qn]);
+    if (c12.length < 11) return;
+    var r = readSeason(c12, d, potentialOf(d.q), prevRegime);
+    prevRegime = r.regime;
+    out[i] = { i:i, q:d.q, y:y, qn:qn, reading:r };
+  });
+  return out;
+}
 export function bootModel(){
   currentEra = marketCycles.filter(function(c){ return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY); })[0] || marketCycles[marketCycles.length - 1];
-  seasonTrackAll = (function(){
-    var out: TrackEntry[] = [], prevRegime: string | undefined;
-    gdpQuarterlyYoY.forEach(function(d, i){
-      if (i < GROWTH_WINDOW - 1) return;
-      var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
-      var qEnd = y + "-" + QUARTER_END_MONTH[qn];
-      var c12 = cpiYear(qEnd);
-      if (c12.length < 11) return;
-      var r = readSeason(c12, gdpQuarterlyYoY.slice(i - GROWTH_WINDOW + 1, i + 1), prevRegime);
-      prevRegime = r.regime;
-      out[i] = { i:i, q:d.q, y:y, qn:qn, reading:r };
-    });
-    return out;
-  })();
-  seasonTrackYears = (function(){
-    var first = seasonTrackAll.filter(Boolean)[0], out: TrackEntry[] = [], prevRegime: string | undefined;
-    Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b){ return a - b; }).forEach(function(y){
-      if (y > first.y) return;
-      var g = [];
-      for (var k = y - SEASON_YEARS + 1; k <= y; k++) if (usRealGdpGrowth[k] != null) g.push({ q:String(k), v:usRealGdpGrowth[k] });
-      var c12 = cpiYear(y + "-12");
-      if (g.length < SEASON_YEARS || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
-      var r = readSeason(c12, g, prevRegime, 4);
-      prevRegime = r.regime;
-      ["Q1", "Q2", "Q3", "Q4"].forEach(function(qn){
-        if (y < first.y || qn < first.qn) out.push({ q:y + " " + qn, y:y, qn:qn, reading:r });
-      });
-    });
-    return out;
-  })();
+  potentialByQ = {};
+  potentialYoYHistory.forEach(function(d: QuarterPoint){ potentialByQ[d.q] = d.v; });
+  PEAK_TREND = peakTrend();
+  seasonTrackYears = seasonYears();
+  var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
+  seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
   seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
   regimeByQ = (function(){
     var out: Record<string, string> = {};

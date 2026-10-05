@@ -667,8 +667,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `labs()`, the same number the health chart shows. Rewrite the words and `asOf` when the data have moved enough
   to change a sentence. `echoes()` builds a quarterly panel of the `echo` readings (monthly readings averaged into
   quarters, annual ones held across their year, each carried to the newest quarter, which takes the labs' own figures),
-  scales each by its spread since 1970, and matches a path, not a point: the last `GROWTH_WINDOW` quarters (the season
-  model's two years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
+  scales each by its spread since 1970, and matches a path, not a point: the last `ECHO_WINDOW` quarters (two
+  years) against every run of as many quarters that ends before the open cycle, by root-mean-square gap.
   A single quarter matched COVID-19's 2021 Q1, which shared today's levels after a crash and a rescue; the path
   separates them (Keren: "COVID-19 is not the same … 1999 and 2018 is good"). Matches closer together than the window
   are one episode, shown once by its closest quarter. The card shows the top
@@ -737,38 +737,42 @@ two Autumns share names, so **every season is named through `seasonTitle(meta)`,
 `meta.name`**. Actions come from the manuscript's cycle figure (Springs Growing · Summer Ripening · Autumns
 Harvest · Winter Seeding); fertility names only where the book has one — don't invent one.
 
-`readSeason(cpi12, gdp8, prevRegime)` computes the season, **never set by hand** (`seasonOverride` exists
-and shouldn't be used). Growth = the least-squares slope of the last **eight** quarters (`GROWTH_WINDOW`; Keren chose eight
-at V687, after six from V664); a trend turns about a year after the line, by design. Temperature = CPI level
-against the band plus direction from a twelve-month fitted trend. The twelve months are calendar months
-(`cpiYear`) and the trend is fitted on their real positions (`cpiTrend`), because the record has a hole: BLS
-published no October 2025. A window may hold eleven readings; counting the last twelve entries would have
-stretched it to thirteen months and steepened the slope (V694).
+`readSeason(cpi12, gdp, potential, prevRegime, annual)` computes the season, **never set by hand** (`seasonOverride`
+exists and shouldn't be used). Growth = the latest reading of real GDP against a year earlier, set beside
+`potentialOf(q)`: CBO's potential growth (`potentialYoYHistory`, from FRED GDPPOT via the Backfill) from 1950 Q1,
+`PEAK_TREND` before it (real GDP's trend from the 1929 peak to the 1948 one, `PEAK_YEARS`, computed in `bootModel`
+from `usRealGdpGrowth`), and CBO's last estimate for a quarter after its data end. `regimeOf` reads expansion above
+potential + `HOLD_BAND` (0.47, BEA's mean absolute revision), contraction below potential − `HOLD_BAND`, and
+inside the band keeps `prevRegime`. Temperature = the price level against the band plus direction from a
+twelve-month fitted trend. The twelve months are calendar months (`cpiYear`) and the trend is fitted on their
+real positions (`cpiTrend`), because the record has a hole: BLS published no October 2025. A window may hold
+eleven readings; counting the last twelve entries would have stretched it to thirteen months and steepened the
+slope (V694).
 
 | Season | Growth | Temperature |
 |---|---|---|
 | Spring — Deflation | Expansion | Cooling, within or below |
-| Spring — Reflation | Expansion | Heating, within or below |
+| Spring — Reflation | Expansion | Heating or steady, within or below |
 | Summer — Inflation | Expansion | Hot |
-| Autumn — Disinflation | Contraction | Cooling, within or above |
-| Autumn — Stagflation | Contraction | Heating or steady, within or above |
+| Autumn — Disinflation | Contraction | Cooling or steady, within or above |
+| Autumn — Stagflation | Contraction | Heating, within or above |
 | Winter — Deflation | Contraction | Cold |
 
 Row order is Keren's. The tie-breaks, all stated in the (i): in expansion, hot is Summer regardless of
 direction, otherwise direction alone decides — **never re-add a Goldilocks Zone**. Contraction mirrors it:
 cold is Winter outright, otherwise direction alone. **Never redefine stagflation as contraction + hot
 regardless of direction** — it flips the Q4 2023 example (CPI 3.32%, hot and falling, reads
-Autumn–Disinflation). Within-range stagflation is real (17 quarters since 1990). **Shrinking is contraction**:
-a reading whose latest growth is below zero is contraction whatever the slope (1.6.0), so 1931 (−6.4% after
-−8.5%) reads Winter, not Spring. **Flat growth continues
-the prior regime**: never test `growthTrend !== "falling"`. `prevRegime` comes from `seasonTrackAll`,
-computed once over the full history, never per cycle.
+Autumn–Disinflation). Steady prices read Reflation in expansion and Disinflation in contraction (0.8.0).
+Shrinking needs no rule of its own: below zero is always further than the band below potential. **Inside the
+band the regime continues**: `prevRegime` comes from the track, computed once over the full history, never per
+cycle; the annual track runs first and seeds the quarterly one.
 
-**Two tracks, one reading.** `seasonTrackAll` is quarterly and indexed like `gdpQuarterlyYoY` (cycleModel finds
-a close by that index). `seasonTrackYears` reads the years before it from annual growth (`readSeason(..., 4)`:
-four quarters a step, so `growthSlopeQ` stays per quarter and the same thresholds hold) and spreads each year
-over its four quarters. `seasonTrack` joins them; the cycle strip, the dial and `regimeByQ` read it. A closed
-cycle with no quarterly close takes `closingReading`, and its (i) says the reading is annual. (V690)
+**Two tracks, one reading.** `seasonTrackYears` (`seasonYears`) reads each year before quarterly GDP (1948) from
+that year's annual growth against `PEAK_TREND`, with December's prices, and spreads the reading over its four
+quarters (`annual: true`). `seasonTrackAll` (`seasonQuarters`) is quarterly from 1948 Q1 and indexed like
+`gdpQuarterlyYoY` (cycleModel finds a close by that index). `seasonTrack` joins them; the cycle strip, the dial and
+`regimeByQ` read it. A closed cycle with no quarterly close takes `closingReading`, and its (i) says the reading is
+annual. (V690; 0.8.0)
 
 **One direction, one source.** Every expansion/contraction on screen comes from `r.regime`/`regimeByQ`.
 Growth's chart is coloured by regime, **never by the sign of growth**.

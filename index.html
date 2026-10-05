@@ -1612,7 +1612,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.7.1 (757)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.0 (758)</span></p>
     </div>
   </div>
 
@@ -1635,15 +1635,15 @@
 
       <h3 class="menu-section">The Six Seasons</h3>
       <div class="menu-card menu-prose">
-        <p>A season is computed from two readings, never set by hand. <b>Growth</b> is the direction of real GDP. Each quarter is measured against the same quarter a year earlier, and the season reads the trend through the last eight of those readings — two years of them: rising is expansion, falling is contraction, and a flat stretch continues whichever came before it; a quarter below a year earlier is always contraction. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
-        <p>In expansion, hot prices make <b>Summer — inflation</b>; otherwise the direction decides — heating is <b>Spring — reflation</b>, cooling is <b>Spring — deflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; otherwise cooling is <b>Autumn — disinflation</b> and heating or steady is <b>Autumn — stagflation</b>.</p>
+        <p>A season is computed from two readings, never set by hand. <b>Growth</b> is real GDP against a year earlier, set beside the economy's <b>potential</b>, how fast it can grow without overheating: at or above potential is expansion, below it is contraction, even while output still grows. Within half a point of potential the economy keeps the side it was on. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
+        <p>In expansion, hot prices make <b>Summer — inflation</b>; otherwise cooling is <b>Spring — deflation</b>, and heating or steady is <b>Spring — reflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; otherwise heating is <b>Autumn — stagflation</b>, and cooling or steady is <b>Autumn — disinflation</b>.</p>
         <p>The 1–3% band is part of the Season Model’s structure, a point either side of the Fed's 2% objective, read on CPI before 2000 and on PCE, the Fed’s own gauge, since. The full rule, with today's row marked, is on the Content tab under <b>The Season Model</b>.</p>
       </div>
 
       <h3 class="menu-section">Temperature and Growth</h3>
       <div class="menu-card menu-prose">
         <p><b>Temperature</b> is a line through the months of the cycle — inflation, year over year (PCE since 2000) — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
-        <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; the read-out at the end gives the latest quarter and whether the trend of the last eight quarters is rising or falling — the reading the season’s growth direction comes from.</p>
+        <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; its columns are gold where growth was at or above the economy's potential and periwinkle where it was below — the reading the season’s growth side comes from.</p>
       </div>
 
       <h3 class="menu-section">Sentiment and Rates</h3>
@@ -26769,6 +26769,928 @@
       m: "2026-08",
       v: 3.42
     } ],
+    potentialYoYHistory: [ {
+      q: "1950 Q1",
+      v: 5.72
+    }, {
+      q: "1950 Q2",
+      v: 5.7
+    }, {
+      q: "1950 Q3",
+      v: 5.58
+    }, {
+      q: "1950 Q4",
+      v: 5.54
+    }, {
+      q: "1951 Q1",
+      v: 5.44
+    }, {
+      q: "1951 Q2",
+      v: 5.34
+    }, {
+      q: "1951 Q3",
+      v: 5.35
+    }, {
+      q: "1951 Q4",
+      v: 5.43
+    }, {
+      q: "1952 Q1",
+      v: 5.53
+    }, {
+      q: "1952 Q2",
+      v: 5.7
+    }, {
+      q: "1952 Q3",
+      v: 5.69
+    }, {
+      q: "1952 Q4",
+      v: 5.53
+    }, {
+      q: "1953 Q1",
+      v: 5.22
+    }, {
+      q: "1953 Q2",
+      v: 4.77
+    }, {
+      q: "1953 Q3",
+      v: 4.32
+    }, {
+      q: "1953 Q4",
+      v: 3.86
+    }, {
+      q: "1954 Q1",
+      v: 3.49
+    }, {
+      q: "1954 Q2",
+      v: 3.14
+    }, {
+      q: "1954 Q3",
+      v: 2.87
+    }, {
+      q: "1954 Q4",
+      v: 2.72
+    }, {
+      q: "1955 Q1",
+      v: 2.6
+    }, {
+      q: "1955 Q2",
+      v: 2.6
+    }, {
+      q: "1955 Q3",
+      v: 2.62
+    }, {
+      q: "1955 Q4",
+      v: 2.64
+    }, {
+      q: "1956 Q1",
+      v: 2.68
+    }, {
+      q: "1956 Q2",
+      v: 2.67
+    }, {
+      q: "1956 Q3",
+      v: 2.7
+    }, {
+      q: "1956 Q4",
+      v: 2.75
+    }, {
+      q: "1957 Q1",
+      v: 2.85
+    }, {
+      q: "1957 Q2",
+      v: 3.01
+    }, {
+      q: "1957 Q3",
+      v: 3.18
+    }, {
+      q: "1957 Q4",
+      v: 3.35
+    }, {
+      q: "1958 Q1",
+      v: 3.45
+    }, {
+      q: "1958 Q2",
+      v: 3.54
+    }, {
+      q: "1958 Q3",
+      v: 3.59
+    }, {
+      q: "1958 Q4",
+      v: 3.66
+    }, {
+      q: "1959 Q1",
+      v: 3.74
+    }, {
+      q: "1959 Q2",
+      v: 3.83
+    }, {
+      q: "1959 Q3",
+      v: 3.96
+    }, {
+      q: "1959 Q4",
+      v: 4.05
+    }, {
+      q: "1960 Q1",
+      v: 4.15
+    }, {
+      q: "1960 Q2",
+      v: 4.19
+    }, {
+      q: "1960 Q3",
+      v: 4.17
+    }, {
+      q: "1960 Q4",
+      v: 4.12
+    }, {
+      q: "1961 Q1",
+      v: 4.04
+    }, {
+      q: "1961 Q2",
+      v: 3.94
+    }, {
+      q: "1961 Q3",
+      v: 3.87
+    }, {
+      q: "1961 Q4",
+      v: 3.83
+    }, {
+      q: "1962 Q1",
+      v: 3.81
+    }, {
+      q: "1962 Q2",
+      v: 3.88
+    }, {
+      q: "1962 Q3",
+      v: 3.97
+    }, {
+      q: "1962 Q4",
+      v: 4.1
+    }, {
+      q: "1963 Q1",
+      v: 4.21
+    }, {
+      q: "1963 Q2",
+      v: 4.29
+    }, {
+      q: "1963 Q3",
+      v: 4.34
+    }, {
+      q: "1963 Q4",
+      v: 4.37
+    }, {
+      q: "1964 Q1",
+      v: 4.38
+    }, {
+      q: "1964 Q2",
+      v: 4.39
+    }, {
+      q: "1964 Q3",
+      v: 4.4
+    }, {
+      q: "1964 Q4",
+      v: 4.39
+    }, {
+      q: "1965 Q1",
+      v: 4.42
+    }, {
+      q: "1965 Q2",
+      v: 4.4
+    }, {
+      q: "1965 Q3",
+      v: 4.4
+    }, {
+      q: "1965 Q4",
+      v: 4.4
+    }, {
+      q: "1966 Q1",
+      v: 4.39
+    }, {
+      q: "1966 Q2",
+      v: 4.41
+    }, {
+      q: "1966 Q3",
+      v: 4.42
+    }, {
+      q: "1966 Q4",
+      v: 4.43
+    }, {
+      q: "1967 Q1",
+      v: 4.46
+    }, {
+      q: "1967 Q2",
+      v: 4.48
+    }, {
+      q: "1967 Q3",
+      v: 4.5
+    }, {
+      q: "1967 Q4",
+      v: 4.53
+    }, {
+      q: "1968 Q1",
+      v: 4.54
+    }, {
+      q: "1968 Q2",
+      v: 4.53
+    }, {
+      q: "1968 Q3",
+      v: 4.53
+    }, {
+      q: "1968 Q4",
+      v: 4.51
+    }, {
+      q: "1969 Q1",
+      v: 4.47
+    }, {
+      q: "1969 Q2",
+      v: 4.4
+    }, {
+      q: "1969 Q3",
+      v: 4.27
+    }, {
+      q: "1969 Q4",
+      v: 4.1
+    }, {
+      q: "1970 Q1",
+      v: 3.94
+    }, {
+      q: "1970 Q2",
+      v: 3.78
+    }, {
+      q: "1970 Q3",
+      v: 3.63
+    }, {
+      q: "1970 Q4",
+      v: 3.49
+    }, {
+      q: "1971 Q1",
+      v: 3.38
+    }, {
+      q: "1971 Q2",
+      v: 3.3
+    }, {
+      q: "1971 Q3",
+      v: 3.25
+    }, {
+      q: "1971 Q4",
+      v: 3.23
+    }, {
+      q: "1972 Q1",
+      v: 3.23
+    }, {
+      q: "1972 Q2",
+      v: 3.24
+    }, {
+      q: "1972 Q3",
+      v: 3.25
+    }, {
+      q: "1972 Q4",
+      v: 3.28
+    }, {
+      q: "1973 Q1",
+      v: 3.32
+    }, {
+      q: "1973 Q2",
+      v: 3.38
+    }, {
+      q: "1973 Q3",
+      v: 3.43
+    }, {
+      q: "1973 Q4",
+      v: 3.49
+    }, {
+      q: "1974 Q1",
+      v: 3.54
+    }, {
+      q: "1974 Q2",
+      v: 3.56
+    }, {
+      q: "1974 Q3",
+      v: 3.56
+    }, {
+      q: "1974 Q4",
+      v: 3.53
+    }, {
+      q: "1975 Q1",
+      v: 3.47
+    }, {
+      q: "1975 Q2",
+      v: 3.39
+    }, {
+      q: "1975 Q3",
+      v: 3.3
+    }, {
+      q: "1975 Q4",
+      v: 3.23
+    }, {
+      q: "1976 Q1",
+      v: 3.17
+    }, {
+      q: "1976 Q2",
+      v: 3.14
+    }, {
+      q: "1976 Q3",
+      v: 3.13
+    }, {
+      q: "1976 Q4",
+      v: 3.14
+    }, {
+      q: "1977 Q1",
+      v: 3.19
+    }, {
+      q: "1977 Q2",
+      v: 3.24
+    }, {
+      q: "1977 Q3",
+      v: 3.29
+    }, {
+      q: "1977 Q4",
+      v: 3.34
+    }, {
+      q: "1978 Q1",
+      v: 3.39
+    }, {
+      q: "1978 Q2",
+      v: 3.44
+    }, {
+      q: "1978 Q3",
+      v: 3.5
+    }, {
+      q: "1978 Q4",
+      v: 3.55
+    }, {
+      q: "1979 Q1",
+      v: 3.6
+    }, {
+      q: "1979 Q2",
+      v: 3.61
+    }, {
+      q: "1979 Q3",
+      v: 3.54
+    }, {
+      q: "1979 Q4",
+      v: 3.39
+    }, {
+      q: "1980 Q1",
+      v: 3.14
+    }, {
+      q: "1980 Q2",
+      v: 2.85
+    }, {
+      q: "1980 Q3",
+      v: 2.53
+    }, {
+      q: "1980 Q4",
+      v: 2.29
+    }, {
+      q: "1981 Q1",
+      v: 2.2
+    }, {
+      q: "1981 Q2",
+      v: 2.22
+    }, {
+      q: "1981 Q3",
+      v: 2.37
+    }, {
+      q: "1981 Q4",
+      v: 2.53
+    }, {
+      q: "1982 Q1",
+      v: 2.67
+    }, {
+      q: "1982 Q2",
+      v: 2.77
+    }, {
+      q: "1982 Q3",
+      v: 2.86
+    }, {
+      q: "1982 Q4",
+      v: 2.92
+    }, {
+      q: "1983 Q1",
+      v: 2.95
+    }, {
+      q: "1983 Q2",
+      v: 2.98
+    }, {
+      q: "1983 Q3",
+      v: 3.01
+    }, {
+      q: "1983 Q4",
+      v: 3.05
+    }, {
+      q: "1984 Q1",
+      v: 3.13
+    }, {
+      q: "1984 Q2",
+      v: 3.22
+    }, {
+      q: "1984 Q3",
+      v: 3.31
+    }, {
+      q: "1984 Q4",
+      v: 3.39
+    }, {
+      q: "1985 Q1",
+      v: 3.45
+    }, {
+      q: "1985 Q2",
+      v: 3.47
+    }, {
+      q: "1985 Q3",
+      v: 3.48
+    }, {
+      q: "1985 Q4",
+      v: 3.47
+    }, {
+      q: "1986 Q1",
+      v: 3.45
+    }, {
+      q: "1986 Q2",
+      v: 3.42
+    }, {
+      q: "1986 Q3",
+      v: 3.38
+    }, {
+      q: "1986 Q4",
+      v: 3.35
+    }, {
+      q: "1987 Q1",
+      v: 3.32
+    }, {
+      q: "1987 Q2",
+      v: 3.28
+    }, {
+      q: "1987 Q3",
+      v: 3.24
+    }, {
+      q: "1987 Q4",
+      v: 3.19
+    }, {
+      q: "1988 Q1",
+      v: 3.14
+    }, {
+      q: "1988 Q2",
+      v: 3.1
+    }, {
+      q: "1988 Q3",
+      v: 3.06
+    }, {
+      q: "1988 Q4",
+      v: 3.01
+    }, {
+      q: "1989 Q1",
+      v: 2.98
+    }, {
+      q: "1989 Q2",
+      v: 2.94
+    }, {
+      q: "1989 Q3",
+      v: 2.91
+    }, {
+      q: "1989 Q4",
+      v: 2.89
+    }, {
+      q: "1990 Q1",
+      v: 2.86
+    }, {
+      q: "1990 Q2",
+      v: 2.83
+    }, {
+      q: "1990 Q3",
+      v: 2.79
+    }, {
+      q: "1990 Q4",
+      v: 2.75
+    }, {
+      q: "1991 Q1",
+      v: 2.7
+    }, {
+      q: "1991 Q2",
+      v: 2.65
+    }, {
+      q: "1991 Q3",
+      v: 2.6
+    }, {
+      q: "1991 Q4",
+      v: 2.58
+    }, {
+      q: "1992 Q1",
+      v: 2.58
+    }, {
+      q: "1992 Q2",
+      v: 2.6
+    }, {
+      q: "1992 Q3",
+      v: 2.63
+    }, {
+      q: "1992 Q4",
+      v: 2.66
+    }, {
+      q: "1993 Q1",
+      v: 2.7
+    }, {
+      q: "1993 Q2",
+      v: 2.74
+    }, {
+      q: "1993 Q3",
+      v: 2.78
+    }, {
+      q: "1993 Q4",
+      v: 2.81
+    }, {
+      q: "1994 Q1",
+      v: 2.83
+    }, {
+      q: "1994 Q2",
+      v: 2.85
+    }, {
+      q: "1994 Q3",
+      v: 2.87
+    }, {
+      q: "1994 Q4",
+      v: 2.89
+    }, {
+      q: "1995 Q1",
+      v: 2.91
+    }, {
+      q: "1995 Q2",
+      v: 2.93
+    }, {
+      q: "1995 Q3",
+      v: 2.95
+    }, {
+      q: "1995 Q4",
+      v: 2.97
+    }, {
+      q: "1996 Q1",
+      v: 3
+    }, {
+      q: "1996 Q2",
+      v: 3.06
+    }, {
+      q: "1996 Q3",
+      v: 3.17
+    }, {
+      q: "1996 Q4",
+      v: 3.31
+    }, {
+      q: "1997 Q1",
+      v: 3.48
+    }, {
+      q: "1997 Q2",
+      v: 3.64
+    }, {
+      q: "1997 Q3",
+      v: 3.78
+    }, {
+      q: "1997 Q4",
+      v: 3.9
+    }, {
+      q: "1998 Q1",
+      v: 4
+    }, {
+      q: "1998 Q2",
+      v: 4.1
+    }, {
+      q: "1998 Q3",
+      v: 4.17
+    }, {
+      q: "1998 Q4",
+      v: 4.22
+    }, {
+      q: "1999 Q1",
+      v: 4.27
+    }, {
+      q: "1999 Q2",
+      v: 4.3
+    }, {
+      q: "1999 Q3",
+      v: 4.32
+    }, {
+      q: "1999 Q4",
+      v: 4.33
+    }, {
+      q: "2000 Q1",
+      v: 4.32
+    }, {
+      q: "2000 Q2",
+      v: 4.28
+    }, {
+      q: "2000 Q3",
+      v: 4.19
+    }, {
+      q: "2000 Q4",
+      v: 4.06
+    }, {
+      q: "2001 Q1",
+      v: 3.87
+    }, {
+      q: "2001 Q2",
+      v: 3.66
+    }, {
+      q: "2001 Q3",
+      v: 3.43
+    }, {
+      q: "2001 Q4",
+      v: 3.19
+    }, {
+      q: "2002 Q1",
+      v: 2.96
+    }, {
+      q: "2002 Q2",
+      v: 2.76
+    }, {
+      q: "2002 Q3",
+      v: 2.59
+    }, {
+      q: "2002 Q4",
+      v: 2.47
+    }, {
+      q: "2003 Q1",
+      v: 2.4
+    }, {
+      q: "2003 Q2",
+      v: 2.37
+    }, {
+      q: "2003 Q3",
+      v: 2.37
+    }, {
+      q: "2003 Q4",
+      v: 2.39
+    }, {
+      q: "2004 Q1",
+      v: 2.43
+    }, {
+      q: "2004 Q2",
+      v: 2.48
+    }, {
+      q: "2004 Q3",
+      v: 2.53
+    }, {
+      q: "2004 Q4",
+      v: 2.57
+    }, {
+      q: "2005 Q1",
+      v: 2.59
+    }, {
+      q: "2005 Q2",
+      v: 2.58
+    }, {
+      q: "2005 Q3",
+      v: 2.55
+    }, {
+      q: "2005 Q4",
+      v: 2.5
+    }, {
+      q: "2006 Q1",
+      v: 2.45
+    }, {
+      q: "2006 Q2",
+      v: 2.39
+    }, {
+      q: "2006 Q3",
+      v: 2.32
+    }, {
+      q: "2006 Q4",
+      v: 2.23
+    }, {
+      q: "2007 Q1",
+      v: 2.16
+    }, {
+      q: "2007 Q2",
+      v: 2.1
+    }, {
+      q: "2007 Q3",
+      v: 2.07
+    }, {
+      q: "2007 Q4",
+      v: 2.06
+    }, {
+      q: "2008 Q1",
+      v: 2.05
+    }, {
+      q: "2008 Q2",
+      v: 2.01
+    }, {
+      q: "2008 Q3",
+      v: 1.94
+    }, {
+      q: "2008 Q4",
+      v: 1.85
+    }, {
+      q: "2009 Q1",
+      v: 1.72
+    }, {
+      q: "2009 Q2",
+      v: 1.59
+    }, {
+      q: "2009 Q3",
+      v: 1.46
+    }, {
+      q: "2009 Q4",
+      v: 1.36
+    }, {
+      q: "2010 Q1",
+      v: 1.29
+    }, {
+      q: "2010 Q2",
+      v: 1.27
+    }, {
+      q: "2010 Q3",
+      v: 1.29
+    }, {
+      q: "2010 Q4",
+      v: 1.33
+    }, {
+      q: "2011 Q1",
+      v: 1.39
+    }, {
+      q: "2011 Q2",
+      v: 1.44
+    }, {
+      q: "2011 Q3",
+      v: 1.49
+    }, {
+      q: "2011 Q4",
+      v: 1.54
+    }, {
+      q: "2012 Q1",
+      v: 1.59
+    }, {
+      q: "2012 Q2",
+      v: 1.63
+    }, {
+      q: "2012 Q3",
+      v: 1.68
+    }, {
+      q: "2012 Q4",
+      v: 1.71
+    }, {
+      q: "2013 Q1",
+      v: 1.74
+    }, {
+      q: "2013 Q2",
+      v: 1.77
+    }, {
+      q: "2013 Q3",
+      v: 1.8
+    }, {
+      q: "2013 Q4",
+      v: 1.83
+    }, {
+      q: "2014 Q1",
+      v: 1.85
+    }, {
+      q: "2014 Q2",
+      v: 1.88
+    }, {
+      q: "2014 Q3",
+      v: 1.91
+    }, {
+      q: "2014 Q4",
+      v: 1.94
+    }, {
+      q: "2015 Q1",
+      v: 1.97
+    }, {
+      q: "2015 Q2",
+      v: 2
+    }, {
+      q: "2015 Q3",
+      v: 2.02
+    }, {
+      q: "2015 Q4",
+      v: 2.04
+    }, {
+      q: "2016 Q1",
+      v: 2.05
+    }, {
+      q: "2016 Q2",
+      v: 2.06
+    }, {
+      q: "2016 Q3",
+      v: 2.06
+    }, {
+      q: "2016 Q4",
+      v: 2.05
+    }, {
+      q: "2017 Q1",
+      v: 2.03
+    }, {
+      q: "2017 Q2",
+      v: 2.02
+    }, {
+      q: "2017 Q3",
+      v: 2.01
+    }, {
+      q: "2017 Q4",
+      v: 2.01
+    }, {
+      q: "2018 Q1",
+      v: 2.01
+    }, {
+      q: "2018 Q2",
+      v: 2.03
+    }, {
+      q: "2018 Q3",
+      v: 2.05
+    }, {
+      q: "2018 Q4",
+      v: 2.07
+    }, {
+      q: "2019 Q1",
+      v: 2.09
+    }, {
+      q: "2019 Q2",
+      v: 2.11
+    }, {
+      q: "2019 Q3",
+      v: 2.12
+    }, {
+      q: "2019 Q4",
+      v: 2.11
+    }, {
+      q: "2020 Q1",
+      v: 2.08
+    }, {
+      q: "2020 Q2",
+      v: 2.03
+    }, {
+      q: "2020 Q3",
+      v: 1.95
+    }, {
+      q: "2020 Q4",
+      v: 1.9
+    }, {
+      q: "2021 Q1",
+      v: 1.88
+    }, {
+      q: "2021 Q2",
+      v: 1.89
+    }, {
+      q: "2021 Q3",
+      v: 1.97
+    }, {
+      q: "2021 Q4",
+      v: 2.07
+    }, {
+      q: "2022 Q1",
+      v: 2.18
+    }, {
+      q: "2022 Q2",
+      v: 2.28
+    }, {
+      q: "2022 Q3",
+      v: 2.38
+    }, {
+      q: "2022 Q4",
+      v: 2.46
+    }, {
+      q: "2023 Q1",
+      v: 2.54
+    }, {
+      q: "2023 Q2",
+      v: 2.61
+    }, {
+      q: "2023 Q3",
+      v: 2.66
+    }, {
+      q: "2023 Q4",
+      v: 2.69
+    }, {
+      q: "2024 Q1",
+      v: 2.7
+    }, {
+      q: "2024 Q2",
+      v: 2.69
+    }, {
+      q: "2024 Q3",
+      v: 2.66
+    }, {
+      q: "2024 Q4",
+      v: 2.62
+    }, {
+      q: "2025 Q1",
+      v: 2.57
+    }, {
+      q: "2025 Q2",
+      v: 2.48
+    }, {
+      q: "2025 Q3",
+      v: 2.39
+    }, {
+      q: "2025 Q4",
+      v: 2.32
+    }, {
+      q: "2026 Q1",
+      v: 2.27
+    }, {
+      q: "2026 Q2",
+      v: 2.22
+    }, {
+      q: "2026 Q3",
+      v: 2.2
+    } ],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -29593,6 +30515,7 @@
   var pceYoYHistory = fred_default.pceYoYHistory;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
   var gdpGrowthBefore = fred_default.gdpGrowthBefore;
+  var potentialYoYHistory = fred_default.potentialYoYHistory;
   function hubTodayHtml() {
     var d = new Date;
     return "<b>Today,</b> " + MONTHS_SHORT[d.getMonth()] + " " + d.getDate();
@@ -29907,6 +30830,15 @@
   }, {
     t: "MeasuringWorth (Johnston and Williamson) — What Was the U.S. GDP Then?, real GDP before 1930",
     u: "https://www.measuringworth.com/datasets/usgdp/"
+  }, {
+    t: "CBO via FRED — Real Potential Gross Domestic Product (GDPPOT), the potential growth the season reads from 1950",
+    u: "https://fred.stlouisfed.org/series/GDPPOT"
+  }, {
+    t: "Fixler, Greenaway-McGrevy, Grimm — Revisions to GDP, GDI, and Their Major Components, Survey of Current Business, January 2018 (Table 9, the 0.47-point margin)",
+    u: "https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"
+  }, {
+    t: "NBER — US Business Cycle Expansions and Contractions, the 1929 and 1948 peaks behind potential before 1950",
+    u: "https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions"
   } ];
   var labPanel = [ {
     sub: "gross federal debt ÷ GDP",
@@ -30275,29 +31207,29 @@
   var seasonReading = {
     summer: {
       body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
-      economy: "Overheat. The economy is still expanding but inflation sits above target, so the central bank is leaning against it.",
+      economy: "Overheat. The economy is still growing at or above its potential but inflation sits above target, so the central bank is leaning against it.",
       next: "Autumn — disinflation. Temperature (inflation) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
       watch: [ "Temperature (inflation) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)" ],
       fromTheBook: []
     },
     autumn: {
       body: "Early luteal. Progesterone takes over from estrogen; temperature is up and stays up, energy is steady but turns inward, and the body settles into consolidation rather than display.",
-      economy: "Disinflation. The economy is contracting and prices are cooling, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
-      next: "Autumn — stagflation, if prices turn back up while the economy keeps contracting; or Winter, if prices fall below target first.",
+      economy: "Disinflation. Growth has slipped below the economy’s potential and prices are cooling or holding steady, though still at or above target. Rates stop rising and eventually fall, and the curve steepens.",
+      next: "Autumn — stagflation, if prices turn back up while growth stays below potential; or Winter, if prices fall below target first.",
       watch: [ "Activity — unemployment starting to drift up", "Hormones — credit growth and lending standards", "Whether temperature keeps falling or gets stuck above target" ],
       fromTheBook: []
     },
     lateautumn: {
       body: "Late luteal. Energy is falling, mood tightens, temperature is still elevated, and the body is preparing to shed — the premenstrual stretch, uncomfortable and unmistakable.",
-      economy: "Stagflation. The economy is contracting while inflation stays sticky, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
+      economy: "Stagflation. Growth runs below the economy’s potential while inflation heats up, so policy is boxed in: easing feeds the heat, tightening deepens the slowdown.",
       next: "Winter — the bleed. Historically the leading signs have already turned by now (an inverted or un-inverting curve, widening credit spreads); the bleed itself confirms months later in prices and activity.",
       watch: [ "Cervical fluid — the curve un-inverting after an inversion (the Analysis tab's lag panel has the record)", "Desire — durable-goods spending falling below a year earlier", "Sentiment — cracking (VIX spikes)" ],
       fromTheBook: []
     },
     winter: {
       body: "Menstruation — groundation. Shedding, rest and the lowest energy of the cycle. The lining that was built up releases; the body is not failing, it is clearing the way.",
-      economy: "Deflation, or close to it. Output contracts, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market.",
-      next: "Spring, once policy has loosened enough for credit to begin flowing again and the economy turns to expansion — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as it turns.",
+      economy: "Deflation, or close to it. Growth runs below its potential, prices and rates fall, and the bleed shows up on the Calendar as a down year for the market.",
+      next: "Spring, once policy has loosened enough for credit to begin flowing again and growth climbs back to its potential — reflation if prices have already begun heating back up, or a further stretch of Spring – deflation if they are still cooling as it turns.",
       watch: [ "Hormones — money supply and lending growth turning up", "Cervical fluid — the curve steepening sharply as short rates fall", "The Calendar — the next year closing up after the down year" ],
       fromTheBook: []
     },
@@ -30310,7 +31242,7 @@
     },
     spring: {
       body: "Follicular. Estrogen rises, the lining rebuilds, and energy returns day by day. Nothing is at its peak yet, but the direction is unmistakable.",
-      economy: "Reflation. The economy is expanding and prices have begun to rise with it, still below or within target — the comfortable stretch before anything overheats.",
+      economy: "Reflation. The economy is growing at or above its potential and prices are rising with it or holding steady, still below or within target — the comfortable stretch before anything overheats.",
       next: "Summer — inflation, once prices rise through the top of the target range while the economy keeps expanding.",
       watch: [ "Temperature — inflation approaching the top of its range", "Cervical fluid — the curve steepening as growth is priced in", "Sentiment and valuation starting to stretch" ],
       fromTheBook: []
@@ -30693,26 +31625,20 @@
     var c12 = cpiYear(endMonth);
     return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
   }
-  var GROWTH_WINDOW = 8;
-  function growthWindowWord() {
-    return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW);
+  var HOLD_BAND = .47;
+  var PEAK_YEARS = [ 1929, 1948 ];
+  var PEAK_TREND;
+  var potentialByQ;
+  function regimeOf(g, p, prevRegime) {
+    return g > p + HOLD_BAND ? "expansion" : g < p - HOLD_BAND ? "contraction" : prevRegime || (g >= p ? "expansion" : "contraction");
   }
-  function readSeason(cpi12, gdp8, prevRegime, quartersPerStep) {
+  function readSeason(cpi12, gdp, potential, prevRegime, annual) {
     var cpiNow2 = cpi12[cpi12.length - 1].v;
     var cpiSlope = cpiTrend(cpi12);
     var cpiDirection = cpiDirectionOf(cpiSlope);
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
-    var growthSlopeQ = slopeOf(gdp8.map(function(d) {
-      return d.v;
-    })) / (quartersPerStep || 1);
-    var growthTrend = growthSlopeQ > .025 ? "rising" : growthSlopeQ < -.025 ? "falling" : "flat";
-    var regime = gdp8[gdp8.length - 1].v < 0 || growthTrend === "falling" ? "contraction" : growthTrend === "rising" ? "expansion" : prevRegime || "expansion";
-    var cooling = cpiDirection === "falling", season;
-    if (regime === "expansion") {
-      if (cpiHot) season = "summer"; else season = cooling ? "springdeflation" : "spring";
-    } else {
-      if (cpiCold) season = "winter"; else season = cooling ? "autumn" : "lateautumn";
-    }
+    var regime = regimeOf(gdp.v, potential, prevRegime), season;
+    if (regime === "expansion") season = cpiHot ? "summer" : cpiDirection === "falling" ? "springdeflation" : "spring"; else season = cpiCold ? "winter" : cpiDirection === "rising" ? "lateautumn" : "autumn";
     return {
       season: season,
       regime: regime,
@@ -30721,11 +31647,20 @@
       cpiDirection: cpiDirection,
       cpiHot: cpiHot,
       cpiCold: cpiCold,
-      growthSlopeQ: growthSlopeQ,
-      growthTrend: growthTrend,
-      gdpLatest: gdp8[gdp8.length - 1],
-      annual: quartersPerStep === 4
+      potential: potential,
+      gdpLatest: gdp,
+      annual: !!annual
     };
+  }
+  function potentialOf(q) {
+    if (potentialByQ[q] != null) return potentialByQ[q];
+    var first = potentialYoYHistory[0], last = potentialYoYHistory[potentialYoYHistory.length - 1];
+    return q < first.q ? PEAK_TREND : last.v;
+  }
+  function peakTrend() {
+    var level2 = 1, n = PEAK_YEARS[1] - PEAK_YEARS[0];
+    for (var y = PEAK_YEARS[0] + 1; y <= PEAK_YEARS[1]; y++) level2 *= 1 + usRealGdpGrowth[y] / 100;
+    return (Math.pow(level2, 1 / n) - 1) * 100;
   }
   var QUARTER_END_MONTH = {
     Q1: "03",
@@ -30733,7 +31668,6 @@
     Q3: "09",
     Q4: "12"
   };
-  var SEASON_YEARS = 2;
   function closingReading(endYear) {
     var e = seasonTrack.filter(function(x) {
       return x.y <= endYear;
@@ -30779,8 +31713,8 @@
     gdpQuarterlyYoY.forEach(function(d, i) {
       if (parseInt(d.q.slice(0, 4), 10) <= endYear) gdpEnd = i;
     });
-    var prevEntry = seasonTrackAll[gdpEnd - 1];
-    var reading = ongoing ? readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime) : seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : gdpEnd < GROWTH_WINDOW - 1 ? closingReading(endYear) : readSeason(cpi12, gdpQuarterlyYoY.slice(gdpEnd - GROWTH_WINDOW + 1, gdpEnd + 1), prevEntry && prevEntry.reading.regime);
+    var prevEntry = seasonTrackAll[gdpEnd - 1], gq = gdpQuarterlyYoY[gdpEnd];
+    var reading = ongoing ? readSeason(cpi12, gq, potentialOf(gq.q), prevEntry && prevEntry.reading.regime) : seasonTrackAll[gdpEnd] ? seasonTrackAll[gdpEnd].reading : closingReading(endYear);
     var season = ongoing && seasonOverride || reading.season;
     var track = [];
     seasonTrack.forEach(function(entry) {
@@ -30833,24 +31767,32 @@
     };
   }
   var seasonRuleSentence = {
-    spring: "Expansion with prices heating, within or below the range, is reflation — Spring.",
+    spring: "Expansion with prices heating or steady, within or below the range, is reflation — Spring.",
     springdeflation: "Expansion with prices cooling, within or below the range, is Spring — deflation.",
     summer: "Expansion with prices above the range — hot — is inflation, Summer.",
-    autumn: "Contraction with prices cooling, within or above the range, is disinflation — Autumn.",
-    lateautumn: "Contraction with prices heating or steady, within or above the range, is Autumn — stagflation.",
+    autumn: "Contraction with prices cooling or steady, within or above the range, is disinflation — Autumn.",
+    lateautumn: "Contraction with prices heating, within or above the range, is Autumn — stagflation.",
     winter: "Contraction with prices below the range — cold — is deflation, Winter."
   };
+  function potentialGap(r) {
+    var gap = r.gdpLatest.v - r.potential;
+    return Math.abs(gap) <= HOLD_BAND ? "within " + HOLD_BAND + " points of" : gap > 0 ? "above" : "below";
+  }
   function seasonWhyFor(m) {
     var r = m.reading;
-    return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
+    return "Today the economy is " + growthWord(r) + ": real GDP grew " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier (" + qLabel(r.gdpLatest.q) + "), " + potentialGap(r) + " its potential of " + r.potential.toFixed(1) + "%. Prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
   }
   function growthWord(r) {
     return r.regime === "contraction" ? "contracting" : "expanding";
   }
+  function contractingClause(r) {
+    if (r.gdpLatest.v < 0) return "the economy is contracting and output is shrinking";
+    return "the economy is contracting, though output is still growing " + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? "at about" : "more slowly than") + " its potential";
+  }
   function cycleNowNote(m) {
     var r = m.reading, w = growthWord(r), n = Math.round(m.elapsedYears);
     var years = [ "Less than a year", "One year", "Two years", "Three years", "Four years", "Five years", "Six years", "Seven years", "Eight years", "Nine years", "Ten years" ][n] || n + " years";
-    var growth = w === "expanding" ? "the economy is expanding" : r.gdpLatest.v < 0 ? "the economy is contracting and output is shrinking" : "the economy is contracting, though output is still above a year earlier";
+    var growth = w === "expanding" ? "the economy is expanding" : contractingClause(r);
     var prices = "prices are " + (r.cpiHot ? "running hot" : r.cpiCold ? "running cold" : "inside the range") + (r.cpiDirection === "rising" ? " and heating" : r.cpiDirection === "falling" ? " and cooling" : "");
     return years + " into an AI-driven bull run, " + growth + ", and " + prices + ".";
   }
@@ -31161,56 +32103,59 @@
   var seasonTrack;
   var regimeByQ;
   var readingNow;
+  function seasonYears() {
+    var firstY = parseInt(gdpQuarterlyYoY[0].q, 10), out = [], prevRegime;
+    Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b) {
+      return a - b;
+    }).forEach(function(y) {
+      var c12 = cpiYear(y + "-12");
+      if (y >= firstY || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
+      var r = readSeason(c12, {
+        q: String(y),
+        v: usRealGdpGrowth[y]
+      }, PEAK_TREND, prevRegime, true);
+      prevRegime = r.regime;
+      [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(qn) {
+        out.push({
+          q: y + " " + qn,
+          y: y,
+          qn: qn,
+          reading: r
+        });
+      });
+    });
+    return out;
+  }
+  function seasonQuarters(prevRegime) {
+    var out = [];
+    gdpQuarterlyYoY.forEach(function(d, i) {
+      var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
+      var c12 = cpiYear(y + "-" + QUARTER_END_MONTH[qn]);
+      if (c12.length < 11) return;
+      var r = readSeason(c12, d, potentialOf(d.q), prevRegime);
+      prevRegime = r.regime;
+      out[i] = {
+        i: i,
+        q: d.q,
+        y: y,
+        qn: qn,
+        reading: r
+      };
+    });
+    return out;
+  }
   function bootModel() {
     currentEra = marketCycles.filter(function(c) {
       return calendarTodayY >= c.from && calendarTodayY <= (c.to || calendarTodayY);
     })[0] || marketCycles[marketCycles.length - 1];
-    seasonTrackAll = function() {
-      var out = [], prevRegime;
-      gdpQuarterlyYoY.forEach(function(d, i) {
-        if (i < GROWTH_WINDOW - 1) return;
-        var y = parseInt(d.q.slice(0, 4), 10), qn = d.q.slice(5);
-        var qEnd = y + "-" + QUARTER_END_MONTH[qn];
-        var c12 = cpiYear(qEnd);
-        if (c12.length < 11) return;
-        var r = readSeason(c12, gdpQuarterlyYoY.slice(i - GROWTH_WINDOW + 1, i + 1), prevRegime);
-        prevRegime = r.regime;
-        out[i] = {
-          i: i,
-          q: d.q,
-          y: y,
-          qn: qn,
-          reading: r
-        };
-      });
-      return out;
-    }();
-    seasonTrackYears = function() {
-      var first = seasonTrackAll.filter(Boolean)[0], out = [], prevRegime;
-      Object.keys(usRealGdpGrowth).map(Number).sort(function(a, b) {
-        return a - b;
-      }).forEach(function(y) {
-        if (y > first.y) return;
-        var g = [];
-        for (var k = y - SEASON_YEARS + 1; k <= y; k++) if (usRealGdpGrowth[k] != null) g.push({
-          q: String(k),
-          v: usRealGdpGrowth[k]
-        });
-        var c12 = cpiYear(y + "-12");
-        if (g.length < SEASON_YEARS || c12.length < 11 || c12[c12.length - 1].m !== y + "-12") return;
-        var r = readSeason(c12, g, prevRegime, 4);
-        prevRegime = r.regime;
-        [ "Q1", "Q2", "Q3", "Q4" ].forEach(function(qn) {
-          if (y < first.y || qn < first.qn) out.push({
-            q: y + " " + qn,
-            y: y,
-            qn: qn,
-            reading: r
-          });
-        });
-      });
-      return out;
-    }();
+    potentialByQ = {};
+    potentialYoYHistory.forEach(function(d) {
+      potentialByQ[d.q] = d.v;
+    });
+    PEAK_TREND = peakTrend();
+    seasonTrackYears = seasonYears();
+    var lastYear = seasonTrackYears[seasonTrackYears.length - 1];
+    seasonTrackAll = seasonQuarters(lastYear && lastYear.reading.regime);
     seasonTrack = seasonTrackYears.concat(seasonTrackAll.filter(Boolean));
     regimeByQ = function() {
       var out = {};
@@ -32392,13 +33337,20 @@
     for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i];
     return null;
   }
+  function potentialSentence() {
+    var r = nowModel.reading;
+    return "And the economy’s <b>potential</b> growth — what it can sustain without overheating — is the line the Season Model reads growth against. The CBO puts it at " + r.potential.toFixed(1) + "% for " + qPretty(r.gdpLatest.q) + ", and at 2.1% a year through 2030, easing to 1.8% after that as the population ages. The latest quarter, " + fmtSigned(r.gdpLatest.v, 1) + "%, is " + potentialGap(r) + " potential, so the economy reads as " + growthWord(r) + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? ", the side it was already on" : "") + ".";
+  }
   function growthInfoHtml() {
-    return '<h4>Real GDP Growth</h4><p class="caption">The figure is real gross domestic product against the same quarter a year earlier (' + gdpNowQ.q + '), so it is already adjusted for inflation — this is output, not prices. The ends of the track are the record and they are the same event twice: −7.4% in 2020 Q2, the deepest quarter of the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p><p class="caption follow"><b>The 1.0–4.3% band is computed from this page’s own series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at 0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks like in that direction. There is no official normal rate of growth to point at instead, which is why it is drawn this way and said so.</p><p class="caption follow">Two other lines matter more than the edges. The dashed line on the chart is this series’ own long-run average, <b>' + GDP_NORM + '%</b> — the middle of the record rather than the edge of it, and the honest answer to "is this quick or slow". And the CBO puts the economy’s <b>potential</b> growth — what it can sustain without overheating — at 2.1% a year through 2030, easing to 1.8% after that as the population ages. Today’s reading sits inside the band, below the long-run average, and almost exactly at potential: the economy is growing about as fast as it can.</p>' + srcBlock([ {
+    return '<h4>Real GDP Growth</h4><p class="caption">The figure is real gross domestic product against the same quarter a year earlier (' + gdpNowQ.q + '), so it is already adjusted for inflation — this is output, not prices. The ends of the track are the record and they are the same event twice: −7.4% in 2020 Q2, the deepest quarter of the pandemic shutdown, and +12.4% a year later, which is that collapse being measured against itself.</p><p class="caption follow"><b>The 1.0–4.3% band is computed from this page’s own series, not chosen</b>: across the 154 quarters since 1988 the tenth and ninetieth percentiles fall at 0.96% and 4.34%. So roughly four quarters in five have sat inside it, and each end is what unusual looks like in that direction. There is no official normal rate of growth to point at instead, which is why it is drawn this way and said so.</p><p class="caption follow">Two other lines matter more than the edges. The dashed line on the chart is this series’ own long-run average, <b>' + GDP_NORM + '%</b> — the middle of the record rather than the edge of it, and the honest answer to "is this quick or slow". ' + potentialSentence() + "</p>" + srcBlock([ {
       t: "BEA — Gross Domestic Product",
       u: "https://www.bea.gov/data/gdp/gross-domestic-product"
     }, {
       t: "CBO — The Budget and Economic Outlook: 2026 to 2036",
       u: "https://www.cbo.gov/publication/62105"
+    }, {
+      t: "CBO via FRED — Real Potential Gross Domestic Product (GDPPOT)",
+      u: "https://fred.stlouisfed.org/series/GDPPOT"
     } ]);
   }
   function velocityVerdict(v) {
@@ -35949,7 +36901,7 @@
     });
     var cards = [ [ tempPeek(r, fmtSigned(r.cpiNow, 1).replace("+", "") + "%", m.cpi.filter(function(c) {
       return c.m <= qEnd;
-    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q) ], [ marketPeek(y, m.era.from), String(y) ] ];
+    })), monthLabel(qEnd) ], [ gdpPeek(r, gq), (r.annual ? String(r.gdpLatest.q) : qLabel(r.gdpLatest.q)) + " · potential " + r.potential.toFixed(1) + "%" ], [ marketPeek(y, m.era.from), String(y) ] ];
     return '<div class="cat-sheet cat-weather">' + catList(cards.map(function(c) {
       return c[0] ? catCard(peekEl(c[0]), c[1]).outerHTML : "";
     }).join("")) + "</div>";
@@ -36556,6 +37508,10 @@
     },
     echo: [ "sheet-metric-valuation", "sheet-metric-buffett", "sheet-sign-premium", "sheet-sign-market", "sheet-sign-hormones", "sheet-metric-temp", "sheet-sign-activity", "sheet-metric-gdp" ]
   };
+  var ECHO_WINDOW = 8;
+  function echoWindowWord() {
+    return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][ECHO_WINDOW - 4] || String(ECHO_WINDOW);
+  }
   var MONTH_NAMES = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
   var ECHO_FROM = 1970;
   function openIdx() {
@@ -36671,12 +37627,12 @@
     var per = p.scale.map(function() {
       return 0;
     });
-    for (var j = 0; j < GROWTH_WINDOW; j++) {
+    for (var j = 0; j < ECHO_WINDOW; j++) {
       var a = p.rows[k - j], b = p.rows[p.nowI - j];
       if (!a || !b) return null;
       a.forEach(function(x, r) {
         var z = (x - b[r]) / p.scale[r];
-        per[r] += z * z / GROWTH_WINDOW;
+        per[r] += z * z / ECHO_WINDOW;
       });
     }
     return {
@@ -36712,7 +37668,7 @@
       return a.gap - b.gap;
     }).forEach(function(e) {
       if (seen.every(function(s) {
-        return Math.abs(s.i - e.i) >= GROWTH_WINDOW;
+        return Math.abs(s.i - e.i) >= ECHO_WINDOW;
       })) seen.push(e);
     });
     echoCache = seen;
@@ -36752,9 +37708,9 @@
     var p = panel(), list = echoes().slice(0, 8), names = listWords(ai_insights_default.echo.map(function(id) {
       return labOf(id).name;
     }));
-    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + growthWindowWord() + " quarters of " + names + ", the same two years the season model reads growth over, against every run of " + growthWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
+    return "<p>" + ai_insights_default.by + " wrote this reading from the app’s own data of " + asOfWords() + ". Every figure in it is read live from the readings, so the numbers move with the data while the words wait for the next release.</p><p>A moment is matched by how it got here, not by one quarter alone: the last " + echoWindowWord() + " quarters of " + names + ", two years, against every run of " + echoWindowWord() + " quarters since " + ECHO_FROM + " that ends before this cycle began, " + Object.keys(p.rows).filter(function(k) {
       return +k < p.open && pathGap(p, +k);
-    }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + growthWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
+    }).length + " in all. Each reading is scaled by its own spread over the record and each counts equally; the run with the smallest average gap, quarter by quarter, is the closest. Moments closer together than " + echoWindowWord() + " quarters are one episode, so each episode shows once, by its closest quarter. This is analog matching on a path (nearest neighbours over a window); the readings, the equal weights and the window are Claude’s choices.</p><p>" + list.map(function(e) {
       return e.q + " · " + e.cycle.name + ": gap " + e.gap.toFixed(2);
     }).join("<br>") + "</p>";
   }
@@ -36812,7 +37768,7 @@
   }
   function pathStrip(label, end) {
     var segs = [];
-    for (var i = end - GROWTH_WINDOW + 1; i <= end; i++) {
+    for (var i = end - ECHO_WINDOW + 1; i <= end; i++) {
       var seg = segAt(qName(i));
       if (seg) segs.push(seg);
     }
@@ -37019,7 +37975,7 @@
     var r = m.reading, word2 = growthWord(r);
     var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
     var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
-    return '<ul class="fp-levels">' + (at ? level("fp-rate", "Federal funds rate", (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m)) : "") + level("fp-prices", "Prices", range + ", " + heat + " (" + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "−") + "%)") + peak + level("fp-growth", "Growth", word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "%)") + "</ul>";
+    return '<ul class="fp-levels">' + (at ? level("fp-rate", "Federal funds rate", (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m)) : "") + level("fp-prices", "Prices", range + ", " + heat + " (" + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "−") + "%)") + peak + level("fp-growth", "Growth", word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "%, potential " + r.potential.toFixed(1) + "%)") + "</ul>";
   }
   function endMonthOf(m) {
     if (!m.ongoing) return m.endMonth;
@@ -37615,7 +38571,7 @@
     detailTexts.push("");
     GYN.step("renderCycleDial", renderCycleDial, "wire");
     renderCycleDial();
-    growthDetail = "<h4>Growth per Cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading, the direction of the trend through the last eight quarters, the same colours as everywhere Growth appears.", "That trend turns about nine months after the line does, so a column can stay periwinkle while a quarter or two rise, or gold while one dips. A quarter below zero is always contraction. A season is a phase, not a print.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
+    growthDetail = "<h4>Growth per Cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading: growth at or above the economy’s potential is expansion, below it is contraction, the same colours as everywhere Growth appears.", "Within " + HOLD_BAND + " points of potential a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always contraction.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
       t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
       u: "https://fred.stlouisfed.org/series/GDPC1"
     } ]));
@@ -38214,7 +39170,7 @@
     return '<svg class="clock" viewBox="0 0 300 260" role="img" aria-label="The Investment Clock, at ' + now2.name + '">' + parts.join("") + axes + "</svg>";
   }
   function clockDetail() {
-    return "<h4>How the Clock Reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.", "Today’s phase is read from the Season Model, over the same windows: growth by its regime, expanding or contracting, and prices by the direction of inflation. Prices holding steady count with rising, since the clock has no steady phase; that is Claude’s call.", "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice." ]) + srcBlock(CLOCK_SRC);
+    return "<h4>How the Clock Reads</h4>" + facts([ "Merrill Lynch’s Investment Clock (2004) splits the economy into four phases by two questions: is growth above or below its trend, and are prices rising or falling? Across its record, each phase had an asset that led: bonds in Reflation, stocks in Recovery, commodities in Overheat and cash in Stagflation. The clock usually turns Reflation, Recovery, Overheat, Stagflation, but it can skip a phase or turn back.", "Today’s phase is read from the Season Model, over the same windows: growth by its regime, at or above its potential or below it, and prices by the direction of inflation. Prices holding steady count with rising, since the clock has no steady phase; that is Claude’s call.", "The clock names one asset for each phase, not a mix; a portfolio that follows it moves between them as the phases turn. This is a published method, not advice." ]) + srcBlock(CLOCK_SRC);
   }
   function drawClock() {
     var now2 = phaseOf(nowModel.reading);
@@ -38542,7 +39498,7 @@
     }).length;
     var cards = [ '<p class="hi-lede">Growth is the build-up: how much more the economy made this year than last. A body spends the first half of its cycle building something it has not used yet, and an economy does the same with output.</p>' ];
     cards.push(hiCard("Growth", phaseClass(r.regime), "Across the " + gq.length + " quarters of the " + currentEra.name + ", growth has averaged " + cycAvg.toFixed(1) + "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
-    cards.push(hiCard("The Latest Quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average, and the season model reads the economy as " + growthWord(r) + "."));
+    cards.push(hiCard("The Latest Quarter", phaseClass(r.regime), qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " + (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle’s own average and " + potentialGap(r) + " the economy’s potential of " + r.potential.toFixed(1) + "%, so the season model reads the economy as " + growthWord(r) + "."));
     put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
   }
   function shutPickers() {
@@ -39513,7 +40469,7 @@
     };
   }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is inflation against a 1–3% band, read on CPI before 2000 and on PCE, the Fed’s own gauge, since, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two questions set the season: is the economy growing faster or slower than it can, and how warm are prices?") + facts([ "<b>Growth</b> is real GDP against a year earlier, set beside the economy’s <b>potential</b>: how fast it can grow at full use without overheating. At or above potential is expansion; below it is contraction, even while output still grows.", "<b>Potential</b> is the Congressional Budget Office’s estimate from 1950. Before then it is the economy’s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.", "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the economy on the side it was on. That is how far a year’s growth moves, on average, between its first estimate and its latest (BEA, 2018), so a smaller gap is not yet a turn.", "<b>Temperature</b> is inflation against a 1–3% band, read on CPI before 2000 and on PCE, the Fed’s own gauge, since, hot above it and cold below it, and its trend over twelve months: heating, cooling or steady. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer — inflation; otherwise cooling is Spring — deflation, and heating or steady is Spring — reflation.", "<b>In contraction</b>, cold is Winter — deflation; otherwise heating is Autumn — stagflation, and cooling or steady is Autumn — disinflation.", "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.", seasonWhy ]);
   }
   function renderSeasonRows() {
     var seasonRules = [ {
@@ -39536,12 +40492,12 @@
     }, {
       key: "spring",
       growth: "Expansion",
-      temp: "Heating",
+      temp: "Heating or steady",
       zones: {
         within: 1,
         below: 1
       },
-      range: "Heating — within or below the range"
+      range: "Heating or steady — within or below the range"
     }, {
       key: "summer",
       growth: "Expansion",
@@ -39553,12 +40509,12 @@
     }, {
       key: "autumn",
       growth: "Contraction",
-      temp: "Cooling",
+      temp: "Cooling or steady",
       zones: {
         within: 1,
         above: 1
       },
-      range: "Cooling — within or above the range"
+      range: "Cooling or steady — within or above the range"
     }, {
       key: "lateautumn",
       growth: "Contraction",
@@ -39711,7 +40667,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|GDPPOT|0118-revisions-to-gdp|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
