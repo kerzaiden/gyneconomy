@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `7684ed3` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `5464c9e` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -19,7 +19,7 @@ Generated from commit `7684ed3` on 2026-10-05. **100 components**, **35 shared p
 | **`para`** | `.ai-p` | `ai-insights.ts:aiPage`, `ai-insights.ts:leadBoxes` |
 | **`pathStrip`** | `.ai-path` | `ai-insights.ts:echoLine` |
 | **`pic`** | `.ai-cap` `.ai-pic` | `ai-insights.ts:leadBoxes`, `ai-insights.ts:risksPic`, `ai-insights.ts:tilesPic` |
-| **`risksPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:leadBoxes` |
+| **`risksPic`** | `.ai-rank` `.ai-track` | `ai-insights.ts:aiPage` |
 | **`tilesPic`** | `.ai-tile` `.ai-tiles` | `ai-insights.ts:pathStrip` |
 
 ## analysis.ts

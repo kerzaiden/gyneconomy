@@ -653,8 +653,8 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines with the health
   score under it (`cycleScore`, Cycle Statistics' one box; the open cycle has no Cycle Statistics card), opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): one `trendBox` per chapter (the cycle's name,
-  holding the summary with the cycle's story in it, then Risk factors,
-  The economy, The market, Closest moments), then the byline and More details. The chapters after the summary carry a
+  holding the summary with the cycle's story in it, then
+  The economy, The market, Risk factors, Closest moments), then the byline and More details. The chapters after the summary carry a
   picture drawn from the readings: Risk factors takes every result Cycle Statistics reads as Risk (`riskLabs`, the one
   judgement) and places each reading's latest value against its own record (`rankToDate`); The economy and The market draw
   `colPeek` tiles of the last twelve quarters for the readings in `tiles`; each closest moment draws its two-year season

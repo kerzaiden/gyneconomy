@@ -47,8 +47,8 @@
     --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
     --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
     --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
-    --splash-a: radial-gradient(40% 28% at 88% 6%, rgba(248,179,121,0.34), transparent 72%), radial-gradient(36% 24% at 8% 52%, rgba(248,179,121,0.26), transparent 72%), radial-gradient(44% 28% at 78% 94%, rgba(248,179,121,0.30), transparent 72%);
-    --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(246,196,190,0.70), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(246,196,190,0.62), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(246,196,190,0.60), transparent 70%);
+    --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.16), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.12), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.14), transparent 80%);
+    --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(246,196,190,0.34), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(246,196,190,0.28), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(246,196,190,0.30), transparent 80%);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -95,8 +95,8 @@
       --seg-track: #2b1d25; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
-      --splash-a: radial-gradient(40% 28% at 88% 6%, rgba(248,179,121,0.13), transparent 72%), radial-gradient(36% 24% at 8% 52%, rgba(248,179,121,0.10), transparent 72%), radial-gradient(44% 28% at 78% 94%, rgba(248,179,121,0.11), transparent 72%);
-      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
+      --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.07), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.05), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.06), transparent 80%);
+      --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(235,163,185,0.07), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(235,163,185,0.07), transparent 80%);
     }
   }
   :root[data-theme="dark"]{
@@ -145,8 +145,8 @@
       --seg-track: #2b1d25; --seg-on: #4a3540;
       --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
       --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
-      --splash-a: radial-gradient(40% 28% at 88% 6%, rgba(248,179,121,0.13), transparent 72%), radial-gradient(36% 24% at 8% 52%, rgba(248,179,121,0.10), transparent 72%), radial-gradient(44% 28% at 78% 94%, rgba(248,179,121,0.11), transparent 72%);
-      --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
+      --splash-a: radial-gradient(30% 14% at 86% 8%, rgba(248,179,121,0.07), transparent 80%), radial-gradient(24% 12% at 10% 54%, rgba(248,179,121,0.05), transparent 80%), radial-gradient(32% 14% at 76% 92%, rgba(248,179,121,0.06), transparent 80%);
+      --splash-b: radial-gradient(28% 13% at 8% 14%, rgba(235,163,185,0.09), transparent 80%), radial-gradient(22% 11% at 92% 44%, rgba(235,163,185,0.07), transparent 80%), radial-gradient(30% 13% at 30% 80%, rgba(235,163,185,0.07), transparent 80%);
       --ff-blue: #86a3e0;
   }
 
@@ -163,7 +163,7 @@
   @keyframes splash-breathe{ to{ scale:1.1; } }
   @keyframes splash-flow-a{ to{ translate:6vw -20vh; rotate:7deg; } }
   @keyframes splash-flow-b{ to{ translate:-6vw 16vh; rotate:-6deg; } }
-  @keyframes splash-drift{ 0%{ transform:none; } 33%{ transform:translate(4vw, 3vh) rotate(2deg); } 66%{ transform:translate(-3vw, 5vh) rotate(-1.5deg); } 100%{ transform:translate(2vw, -3vh) rotate(1deg); } }
+  @keyframes splash-drift{ 0%{ transform:none; } 25%{ transform:translate(3vw, 4vh) rotate(4deg) skewX(2deg); } 50%{ transform:translate(-2vw, 7vh) rotate(-3deg); } 75%{ transform:translate(-4vw, 2vh) rotate(2deg) skewX(-2deg); } 100%{ transform:translate(2vw, -3vh) rotate(-1deg); } }
   @media (prefers-reduced-motion: no-preference){
     body::before{ animation:splash-breathe 34s ease-in-out infinite alternate, splash-drift 96s ease-in-out infinite alternate; }
     body::after{ animation:splash-breathe 42s ease-in-out infinite alternate-reverse, splash-drift 120s ease-in-out infinite alternate-reverse; }
@@ -635,8 +635,7 @@
   .dx{ display:flex; flex-direction:column; gap:var(--gap); }
   .dx-sys{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
   .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
-    font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-    color:var(--text-primary); text-align:left; }
+    font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:700; color:var(--accent); text-align:left; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
   .fp-growth{ --line:var(--text-muted); --line-ink:var(--text-muted); } .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
   .fp-marks{ position:relative; height:18px; margin-top:10px; }

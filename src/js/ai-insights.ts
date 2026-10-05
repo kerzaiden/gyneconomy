@@ -160,11 +160,11 @@ function pathStrip(label: string, end: number){
 var CHAPTER_PICS = [function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
 function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
 function leadBoxes(){
-  return trendBox(sparkleSvg(), nowModel.era.name, para(fill(AI.lede)) + pic(cycleScore(nowModel), "The share of her readings in their normal range, out of 100, judged against the scores of her closed cycles.")) + trendBox(umbrellaSvg(), "Risk factors", risksPic());
+  return trendBox(sparkleSvg(), nowModel.era.name, para(fill(AI.lede)) + pic(cycleScore(nowModel), "The share of her readings in their normal range, out of 100, judged against the scores of her closed cycles."));
 }
 function aiPage(){
   return '<div class="ai-page">' + leadBoxes() +
-    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") +
+    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") + trendBox(umbrellaSvg(), "Risk factors", risksPic()) +
     trendBox(clockSvg(), "Closest moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
 }

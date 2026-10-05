@@ -511,11 +511,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   has eased" after the Sep 16 hike). The cycle chapter is gone: "the cycle container is redundant because we still
   haven't figured out how to analyze the emotional intelligence of each cycle"; its opening, "Born out of the 2022
   correction", now opens the summary, as Keren liked it (0.6.13).
-- **Under the cycle's summary, a "Risk factors" container lists every result Cycle Statistics reads as Risk today,
+- **After The market, a "Risk factors" container lists every result Cycle Statistics reads as Risk today,
   each as a bar placing its latest value against its own record.** Keren: "I love the way you put the Buffett
   indicator, interest payments, and all of that in bars. But I think it belongs in a new container named risk factors,
   where we would see all the risk factors we detected in the analysis page." It replaces the summary's three highest
-  and three lowest readings, and reads the Analysis judgement, never its own. (0.6.13)
+  and three lowest readings, and reads the Analysis judgement, never its own. (0.6.13 Keren then put it after The market: "Put risk factors under the market container." (0.6.13)
 
 ### Analysis
 
@@ -1217,11 +1217,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   animation keeps the slow breathing only. (0.6.3) The apricot is about half as strong, and both layers also drift on
   their own, a few percent of the screen over 96 and 120 seconds, too slowly to watch. Keren: "make the apricot
   splashes in the background be much more delicate, feminine, and maybe kind of move in slow motion without the user
-  even seeing it." (0.6.13)
+  even seeing it." Still too dominant, so the blobs became narrow petals at about half that strength again, with a
+  slow sway: "They need to feel like hormones, like feminine, flowing. Delicate, like a flower." (0.6.13)
 - **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
   the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
   inside the page as well with some kind of explanation, very short one." A past cycle's page keeps the card. (0.6.13)
+- **Every container title on a cycle page reads like AI Insights: bold, deep purple, in sentence case.** Keren: "some
+  titles are in dark purple and some are in black. I think we need to be consistent and make all titles look like AI
+  insights… it should be deep purple and bold." Interest environment and Year by year lost their small black capitals.
+  (0.6.13)
 - **The health chart's card, Cycle Statistics, on a past cycle's page
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
