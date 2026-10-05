@@ -625,16 +625,18 @@
   .fp-marks{ position:relative; height:18px; margin-top:10px; }
   .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
   .fp-ov-label.fp-end{ transform:translateX(-100%); }
-  .fp-plot{ position:relative; height:150px; }
+  .fp-plot{ position:relative; height:150px; margin-top:12px; }
+  .fp-marks + .fp-plot{ margin-top:0; }
   .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
   .fp-band{ position:absolute; top:0; bottom:0; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
   .fp-band.fp-tight{ background:var(--good-wash); } .fp-band.fp-ease{ background:var(--accent-wash); }
-  .fp-year{ position:absolute; top:6px; margin-left:6px; font-size:var(--type-label); color:var(--text-muted); }
+  .fp-years{ position:relative; height:16px; margin-top:4px; }
+  .fp-year{ position:absolute; top:0; margin-left:4px; font-size:var(--type-label); color:var(--text-muted); }
   .fp-line{ fill:none; stroke:var(--line); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
   .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
   .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; stroke-dasharray:3 3; }
   .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
-  .fp-phases{ position:relative; height:18px; margin-top:6px; }
+  .fp-phases{ position:relative; height:18px; margin-top:2px; }
   .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
   .fp-ph.fp-tight{ color:var(--good-ink); } .fp-ph.fp-ease{ color:var(--accent-ink); }
   .fp-levels{ margin:12px 0 0; padding-left:18px; font-size:var(--type-reading); line-height:1.8; }
@@ -35784,7 +35786,7 @@
         var top = run.reduce(function(a, b) {
           return b.v > a.v ? b : a;
         });
-        if (top !== inWindow[0] && (!best || top.v > best.v)) best = top;
+        if (top !== run[0] && (!best || top.v > best.v)) best = top;
       }
       if (dir === "falling") run = []; else run.push(c);
       prev = dir;
@@ -35882,7 +35884,7 @@
     var r = m.reading, word2 = growthWord(r);
     var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
     var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
-    return '<ul class="fp-levels">' + (at ? "<li><b>Fed:</b> " + (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m) + "</li>" : "") + "<li><b>Prices:</b> " + range + ", " + heat + " (" + r.cpiNow.toFixed(1) + "%)</li><li><b>Growth:</b> " + word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier)</li></ul>";
+    return '<ul class="fp-levels">' + (at ? "<li><b>Fed:</b> " + (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m) + "</li>" : "") + "<li><b>Prices:</b> " + range + ", " + heat + " (" + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "−") + "%)</li><li><b>Growth:</b> " + word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "%)</li></ul>";
   }
   function endMonthOf(m) {
     if (!m.ongoing) return m.endMonth;
@@ -35894,7 +35896,7 @@
     var peak = inflationPeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
     var lines = [ growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
     var ov = peak ? '<span class="fp-ov-label' + ((monthIdx(peak.m) - from) / (to - from + 1) > .5 ? " fp-end" : "") + '" style="left:' + pct((monthIdx(peak.m) - from + .5) / (to - from + 1)) + '">Ovulation · inflation peak</span>' : "";
-    return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div><div class="fp-marks">' + ov + '</div><div class="fp-plot">' + b.bands + yearsHtml(from, to) + plotSvg(lines, from, to, peak) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at);
+    return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div>' + (ov ? '<div class="fp-marks">' + ov + "</div>" : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, peak) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at);
   }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",

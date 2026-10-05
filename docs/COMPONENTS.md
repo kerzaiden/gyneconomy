@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `1ec5cf1` on 2026-10-05. **99 components**, **35 shared patterns**.
+Generated from commit `adc2ceb` on 2026-10-05. **99 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -98,7 +98,7 @@ Generated from commit `1ec5cf1` on 2026-10-05. **99 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
-| **`fedPhasesCard`** | `.fp-growth` `.fp-k` `.fp-key` `.fp-marks` `.fp-phases` `.fp-plot` `.fp-prices` `.fp-rate` | `diagnosis.ts:diagnosisHtml` |
+| **`fedPhasesCard`** | `.fp-growth` `.fp-k` `.fp-key` `.fp-marks` `.fp-phases` `.fp-plot` `.fp-prices` `.fp-rate` `.fp-years` | `diagnosis.ts:diagnosisHtml` |
 | **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
 | **`plotSvg`** | `.fp-line` `.fp-ov` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |

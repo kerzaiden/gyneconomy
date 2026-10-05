@@ -93,8 +93,8 @@ function levelsHtml(m: CycleModel, at: Phase | null){
   var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
   var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
   return '<ul class="fp-levels">' + (at ? '<li><b>Fed:</b> ' + (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m) + '</li>' : "") +
-    '<li><b>Prices:</b> ' + range + ', ' + heat + ' (' + r.cpiNow.toFixed(1) + '%)</li>' +
-    '<li><b>Growth:</b> ' + word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '% on a year earlier)</li></ul>';
+    '<li><b>Prices:</b> ' + range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)</li>' +
+    '<li><b>Growth:</b> ' + word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%)</li></ul>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
@@ -107,6 +107,6 @@ export function fedPhasesCard(m: CycleModel){
   var lines = [growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to)];
   var ov = peak ? '<span class="fp-ov-label' + ((monthIdx(peak.m) - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((monthIdx(peak.m) - from + 0.5) / (to - from + 1)) + '">Ovulation · inflation peak</span>' : "";
   return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div>' +
-    '<div class="fp-marks">' + ov + '</div><div class="fp-plot">' + b.bands + yearsHtml(from, to) + plotSvg(lines, from, to, peak) + '</div>' +
+    (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, peak) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
     '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at);
 }

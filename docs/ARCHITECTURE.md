@@ -639,6 +639,15 @@ left in 1.8.0; `git show v1.7.0:src/js/diagnosis.ts` is its last copy.
 emotion at the closing month, its years, and what followed a year later. Every live reading repaints it
 (`applyLive` runs `repaintDiagnosis`), since today's emotion reads the VIX; a past cycle's is left as it is.
 
+- **The Fed's phases** (0.6.7, `fed-phases`): the first card, for today and any closed cycle. `fedPhases` turns
+  `fedMoves` (the Backfill's months with a Fed move, netted: the discount rate `INTDSRUSM193N` before 1982-09-27,
+  `DFEDTAR` to 2008-12-15, `DFEDTARU` since, the join a real cut) into alternating phases, and today's live move
+  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `inflationPeak` walks the cycle's
+  CPI months with `cpiDirectionAt` (the season model's own 12-month trend, ±0.02): a run that rises and then turns
+  to falling gives a peak, and the cycle's highest is ovulation; a run whose first month is its highest is no peak.
+  Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
+  so the card is fluid. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
+  its last month.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines, opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): the cycle's story (`moodDoor`, the same door a
   closed cycle shows on its own page, opening Mood), then one `trendBox` per chapter (TL;DR, The cycle,
