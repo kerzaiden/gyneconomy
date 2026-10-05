@@ -49,6 +49,9 @@
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
     --seg-track: #efecec; --seg-on: #ffffff;
+    --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
+    --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
+    --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
     --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.62), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.50), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.55), transparent 70%);
     --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(246,196,190,0.70), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(246,196,190,0.62), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(246,196,190,0.60), transparent 70%);
   }
@@ -95,6 +98,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
       --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
     }
@@ -143,6 +148,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
       --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
       --ff-blue: #86a3e0;
@@ -180,6 +187,13 @@
     background:color-mix(in srgb, var(--page) 86%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
     border-bottom:1px solid var(--border);
   }
+  .wrap > .topbar{ position:relative; z-index:auto; background:none; -webkit-backdrop-filter:none; backdrop-filter:none; border-bottom:0; }
+  .wrap > .topbar .menu-btn{
+    position:fixed; z-index:45; top:calc(10px + env(safe-area-inset-top, 0px)); right:max(16px, calc((100vw - 1180px) / 2 + 16px));
+    background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+    border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
+  }
+  .wrap > .topbar .back-btn{ right:auto; left:max(16px, calc((100vw - 1180px) / 2 + 16px)); }
   .topbar-title{
     grid-column:2; text-align:center; margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal;
     font-size:var(--type-section); font-weight:500; letter-spacing:0; line-height:1.15; color:var(--accent-ink);
@@ -402,17 +416,15 @@
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
   @media (max-width:640px){
     .tabbar{
-      position:fixed; left:0; right:0; bottom:0; z-index:40; margin:0;
-      border-radius:0; padding:6px 20px calc(6px + env(safe-area-inset-bottom, 0px)); gap:0;
-      background:color-mix(in srgb, var(--page) 86%, transparent);
-      -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-      border:0; border-top:1px solid var(--border);
+      position:fixed; left:16px; right:16px; bottom:calc(10px + env(safe-area-inset-bottom, 0px)); z-index:40; margin:0;
+      border-radius:999px; padding:5px; gap:2px;
+      background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+      border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
     }
-    .tab-btn{ padding:2px 0 5px; gap:2px; border-radius:var(--radius); font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
-    .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
-    .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; }
-    .tab-btn.active svg{ background:var(--accent); color:var(--on-accent); }
-    .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
+    .tab-btn{ padding:7px 0 6px; gap:3px; border-radius:999px; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+    .tab-btn svg{ width:22px; height:22px; opacity:0.9; }
+    .tab-btn.active{ background:var(--glass-on); border:none; margin:0; color:var(--accent-ink); font-weight:600; }
+    .wrap{ padding-bottom:calc(84px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }
   }
   .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
@@ -1310,18 +1322,18 @@
   .info-btn:hover, .info-btn[aria-expanded="true"]{ background:var(--accent-wash); color:var(--accent-ink); border-color:var(--accent); }
 
   .detail-backdrop{
-    position:fixed; inset:0; background:var(--overlay); z-index:80; display:flex;
+    position:fixed; inset:0; background:var(--glass-veil); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); z-index:80; display:flex;
     align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; visibility:hidden;
     transition:opacity 0.15s ease, visibility 0s linear 0.15s;
   }
   .detail-backdrop.show{ opacity:1; pointer-events:auto; visibility:visible; transition:opacity 0.15s ease; }
   .detail-modal{
-    background:var(--surface); border-radius:var(--radius); width:100%; max-width:520px; max-height:85vh;
-    overflow-y:auto; padding:26px 26px 22px; box-shadow:var(--shadow); position:relative;
+    background:var(--glass-sheet); -webkit-backdrop-filter:blur(24px) saturate(1.6); backdrop-filter:blur(24px) saturate(1.6);
+    border:1px solid var(--glass-edge); border-radius:var(--radius); width:100%; max-width:520px; max-height:85vh;
+    overflow-y:auto; padding:26px 26px 22px; box-shadow:var(--glass-lift); position:relative;
     transform:translateY(10px); transition:transform 0.15s ease;
   }
   .detail-backdrop.show .detail-modal{ transform:translateY(0); }
-  .detail-modal:has(.cat-sheet){ background:var(--page); }
   .detail-modal-close{
     position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%;
     border:1px solid var(--border-strong); background:var(--surface-2); color:var(--accent-ink);
@@ -1609,7 +1621,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.7 (745)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.10 (747)</span></p>
     </div>
   </div>
 
@@ -1651,7 +1663,7 @@
 
       <h3 class="menu-section">The tabs</h3>
       <div class="menu-card menu-prose">
-        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Analysis</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Energy — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
+        <p><b>Current Cycle</b> is the view above, for the cycle under way. <b>Calendar</b> lists the five named cycles since 1991; tap one to see it in the same view, computed from the same series. Below the wheel, the same tab carries today's readings — pressure and its recession record, power, sentiment and valuations, and the real-time and lagging signs — as drawers that open and close. <b>Cycle Statistics</b> lays every cycle flat, its seasons in order in the dial's colours, and says what usually comes after the season we are in. <b>Search</b> lists every reading by category — Weather, Mood, Circulation and Energy — with a filter by timing; the season model and the manuscript's framework table are under About Gyneconomy.</p>
       </div>
     </div>
   </div>
@@ -35330,11 +35342,11 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How Cycle Analysis reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (apricot) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result its tier is named, Normal, Attention or Risk, and the triangle by the figure points up when it is above its range, down when below. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The score itself is judged the same way against the scores of her closed cycles: Normal from the lowest quarter of them up, Attention below that, Risk past the lower fence. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her Cycle Analysis describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading.", "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health score</b> is the share of results that are Normal, out of 100.", "<b>History, not forecast:</b> it describes her past, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Analysis", trendText(visitNote(i)) + scoreBox(i));
+    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(visitNote(i)) + scoreBox(i));
   }
   var HOME_ID = "chart-home";
   function drawChart(id) {

@@ -44,6 +44,9 @@
     --tm-lag-wash:  color-mix(in srgb, var(--ylm-30y) 50%, var(--surface));
     --normal: #f8b379;
     --seg-track: #efecec; --seg-on: #ffffff;
+    --glass: color-mix(in srgb, var(--surface) 58%, transparent); --glass-on: color-mix(in srgb, var(--seg-track) 78%, transparent);
+    --glass-sheet: color-mix(in srgb, var(--surface) 72%, transparent); --glass-veil: color-mix(in srgb, var(--overlay) 45%, transparent);
+    --glass-edge: rgba(255,255,255,0.75); --glass-lift: 0 10px 30px rgba(124,40,68,0.12), 0 1px 3px rgba(124,40,68,0.08);
     --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.62), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.50), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.55), transparent 70%);
     --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(246,196,190,0.70), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(246,196,190,0.62), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(246,196,190,0.60), transparent 70%);
   }
@@ -90,6 +93,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
       --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
     }
@@ -138,6 +143,8 @@
       --tm-lag-wash:  color-mix(in srgb, var(--ylm-5y) 56%, var(--surface));
       --normal: #fbc195;
       --seg-track: #2b1d25; --seg-on: #4a3540;
+      --glass: color-mix(in srgb, var(--surface) 62%, transparent); --glass-on: color-mix(in srgb, var(--seg-on) 70%, transparent);
+      --glass-edge: rgba(255,255,255,0.10); --glass-lift: 0 10px 30px rgba(0,0,0,0.45);
       --splash-a: radial-gradient(42% 30% at 88% 6%, rgba(248,179,121,0.20), transparent 70%), radial-gradient(38% 26% at 8% 52%, rgba(248,179,121,0.15), transparent 70%), radial-gradient(46% 30% at 78% 94%, rgba(248,179,121,0.16), transparent 70%);
       --splash-b: radial-gradient(40% 28% at 6% 10%, rgba(235,163,185,0.18), transparent 70%), radial-gradient(36% 26% at 94% 46%, rgba(235,163,185,0.14), transparent 70%), radial-gradient(44% 28% at 32% 82%, rgba(235,163,185,0.14), transparent 70%);
       --ff-blue: #86a3e0;
@@ -176,6 +183,13 @@
     background:color-mix(in srgb, var(--page) 86%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
     border-bottom:1px solid var(--border);
   }
+  .wrap > .topbar{ position:relative; z-index:auto; background:none; -webkit-backdrop-filter:none; backdrop-filter:none; border-bottom:0; }
+  .wrap > .topbar .menu-btn{
+    position:fixed; z-index:45; top:calc(10px + env(safe-area-inset-top, 0px)); right:max(16px, calc((100vw - 1180px) / 2 + 16px));
+    background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+    border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
+  }
+  .wrap > .topbar .back-btn{ right:auto; left:max(16px, calc((100vw - 1180px) / 2 + 16px)); }
   .topbar-title{
     grid-column:2; text-align:center; margin:0; font-family:"Cormorant Garamond", Georgia, serif; font-style:normal;
     font-size:var(--type-section); font-weight:500; letter-spacing:0; line-height:1.15; color:var(--accent-ink);
@@ -403,17 +417,15 @@
   .tab-btn:hover:not(.active){ color:var(--text-primary); }
   @media (max-width:640px){
     .tabbar{
-      position:fixed; left:0; right:0; bottom:0; z-index:40; margin:0;
-      border-radius:0; padding:6px 20px calc(6px + env(safe-area-inset-bottom, 0px)); gap:0;
-      background:color-mix(in srgb, var(--page) 86%, transparent);
-      -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
-      border:0; border-top:1px solid var(--border);
+      position:fixed; left:16px; right:16px; bottom:calc(10px + env(safe-area-inset-bottom, 0px)); z-index:40; margin:0;
+      border-radius:999px; padding:5px; gap:2px;
+      background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.6); backdrop-filter:blur(18px) saturate(1.6);
+      border:1px solid var(--glass-edge); box-shadow:var(--glass-lift);
     }
-    .tab-btn{ padding:2px 0 5px; gap:2px; border-radius:var(--radius); font-size:var(--type-label); font-weight:600; color:var(--text-muted); }
-    .tab-btn svg{ width:22px; height:22px; padding:8px; box-sizing:content-box; border-radius:50%; opacity:0.9; transition:background 0.15s ease; }
-    .tab-btn.active{ background:transparent; border:none; margin:0; color:var(--text-primary); font-weight:600; }
-    .tab-btn.active svg{ background:var(--accent); color:var(--on-accent); }
-    .wrap{ padding-bottom:calc(72px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
+    .tab-btn{ padding:7px 0 6px; gap:3px; border-radius:999px; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+    .tab-btn svg{ width:22px; height:22px; opacity:0.9; }
+    .tab-btn.active{ background:var(--glass-on); border:none; margin:0; color:var(--accent-ink); font-weight:600; }
+    .wrap{ padding-bottom:calc(84px + var(--gap-top) + env(safe-area-inset-bottom, 0px)); }
     .tabnav{ margin-bottom:0; }
   }
   .tab-panel, #calendar-cycle{ display:flex; flex-direction:column; gap:var(--gap); }
@@ -1326,18 +1338,18 @@
 
   /* ---- detail modal: every indicator defaults to a minimal view; this is its "expand" ---- */
   .detail-backdrop{
-    position:fixed; inset:0; background:var(--overlay); z-index:80; display:flex;
+    position:fixed; inset:0; background:var(--glass-veil); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); z-index:80; display:flex;
     align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; visibility:hidden;
     transition:opacity 0.15s ease, visibility 0s linear 0.15s;
   }
   .detail-backdrop.show{ opacity:1; pointer-events:auto; visibility:visible; transition:opacity 0.15s ease; }
   .detail-modal{
-    background:var(--surface); border-radius:var(--radius); width:100%; max-width:520px; max-height:85vh;
-    overflow-y:auto; padding:26px 26px 22px; box-shadow:var(--shadow); position:relative;
+    background:var(--glass-sheet); -webkit-backdrop-filter:blur(24px) saturate(1.6); backdrop-filter:blur(24px) saturate(1.6);
+    border:1px solid var(--glass-edge); border-radius:var(--radius); width:100%; max-width:520px; max-height:85vh;
+    overflow-y:auto; padding:26px 26px 22px; box-shadow:var(--glass-lift); position:relative;
     transform:translateY(10px); transition:transform 0.15s ease;
   }
   .detail-backdrop.show .detail-modal{ transform:translateY(0); }
-  .detail-modal:has(.cat-sheet){ background:var(--page); }
   .detail-modal-close{
     position:absolute; top:14px; right:14px; width:44px; height:44px; border-radius:50%;
     border:1px solid var(--border-strong); background:var(--surface-2); color:var(--accent-ink);

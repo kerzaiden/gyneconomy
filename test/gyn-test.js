@@ -291,8 +291,8 @@ async function openPage(p, url, sheet) {
     await sweep(p);
     (today && today.visible && today.title === 'AI Insights' && today.lead === 0 && today.told === '1:AI Cycle' && today.cards === 0 &&
      today.boxes === 'fed,ai,trend,sys' && today.doors === 2 && !today.after && today.kicker === 'AI Cycle')
-      ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Analysis, then the cycle year by year', today.title)
-      : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Analysis, then the cycle year by year', JSON.stringify(today));
+      ? ok('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Statistics, then the cycle year by year', today.title)
+      : bad('the dial reads its cycle, and under it the Fed\'s phases, AI Insights, Cycle Statistics, then the cycle year by year', JSON.stringify(today));
     await p.evaluate(() => document.querySelector('.tab-btn[data-tab="analysis"]').click()); await settle(p);
     const mkt = await p.evaluate(() => [...document.querySelectorAll('.era-row .strip-run.mkt-up, .era-row .strip-run.mkt-down')]
       .map(e => getComputedStyle(e).backgroundColor));
@@ -392,8 +392,8 @@ async function openPage(p, url, sheet) {
     const picked = await chartOf();
     (chart && chart.open && chart.picked === 'Dot-Com' && chart.items > 10 && chart.risk > 0 && chart.seen === chart.items &&
      risky.seen === chart.risk && picked && picked.picked === 'Nifty Fifty')
-      ? ok('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
-      : bad('Cycle Analysis on a past cycle opens the Analysis tab on that cycle', JSON.stringify(chart));
+      ? ok('Cycle Statistics on a past cycle opens the Analysis tab on that cycle', chart.items + ' readings, ' + chart.risk + ' at risk')
+      : bad('Cycle Statistics on a past cycle opens the Analysis tab on that cycle', JSON.stringify(chart));
   }
 
   {
@@ -473,8 +473,8 @@ async function openPage(p, url, sheet) {
     });
     (tab.title === 'Analysis' && tab.first === 'lab-find' && tab.under && !tab.chips && tab.menu && tab.rows > 15 && tab.doors &&
      tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
-      ? ok('Cycle Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
-      : bad('Cycle Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
+      ? ok('Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
+      : bad('Analysis tab opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
       await p.fill('#chart-home .lab-q', q); await settle(p);
       return p.evaluate(() => ({
@@ -525,8 +525,8 @@ async function openPage(p, url, sheet) {
       return { bar: document.getElementById('topbar-title').textContent, on: box.classList.contains('trend-on') && !!fit && getComputedStyle(fit).display !== 'none' };
     });
     (fromChart && fromChart.bar === 'Confidence' && fromChart.on)
-      ? ok('a reading in Cycle Analysis opens its page, and its trend button works', fromChart.bar)
-      : bad('a reading in Cycle Analysis opens its page, and its trend button works', JSON.stringify(fromChart));
+      ? ok('a reading in Cycle Statistics opens its page, and its trend button works', fromChart.bar)
+      : bad('a reading in Cycle Statistics opens its page, and its trend button works', JSON.stringify(fromChart));
     await p.goto('file://' + url); await ready(p);
     const lists = {};
     for (const cat of ['circulation', 'mood', 'energy']) {

@@ -75,8 +75,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
-- **Cycle Analysis is written with a capital A wherever it is named.** Keren: "cycle analysis should be with
-  capital letters at the beginning." (0.6.6)
+- **The health chart's card is called Cycle Statistics, in Title Case wherever it is named; its tab stays
+  Analysis.** Keren: "I saw AI insights and [cycle analysis] being very closely related … instead of calling it
+  [cycle analysis], we can call it [cycle statistics]. And the analysis tab can stay the same with the page title
+  being analysis" (0.6.8); "cycle analysis should be with capital letters at the beginning" (0.6.6).
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
   opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
   closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
@@ -156,9 +158,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
   want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
   containers for different cycles with the agreed upon margin". (0.6.3)
-- **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
+- **Analysis's More details opens on one line, the way a cycle-tracking app says it ("Averages are based on her 18
+  closed cycles since 1928"), then the method as five short bold-led bullets, scannable in about 15 seconds.** Keren:
+  "when I open more details in the analysis page, it's so long … Averages are based on your last six cycles";
+  "Don't erase everything … Just summarize it in a way that the human can scan it in, like, say, 15 seconds." The
+  count and first year are read from the cycle record; the full method is in docs/ARCHITECTURE.md. (0.6.8)
+- **Analysis's tab icon and Cycle Statistics's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
-  goes up. This goes the same for the health chart." (0.6.3)
+  goes up. This goes the same for the health chart" (0.6.3); a stethoscope, a heart with a pulse and a bar chart were
+  tried in 0.6.8, and she kept the graph: "I actually liked the chart icon we had". (0.6.3, 0.6.8)
 - **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
   against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
   low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.
@@ -171,17 +179,26 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   current cycle selection bar in some way to the filter button. Maybe a sub menu." (0.6.3)
 - **Cycle analysis's search box reads "Search indicators", its placeholder in a light neutral grey
   (`--placeholder`).** Keren: "instead of search readings, say search indicators and make it a light gray." (0.6.3)
-- **On phones the tab bar sits flush on the bottom edge, full width, treated like the top bar: the page's
-  colour at 86% behind a 14px blur, one hairline on the edge facing the page.** Keren: "the bottom menu bar is
-  hovering over the content. I want it to look like the top bar"; the safe-area inset goes inside the padding,
-  and the page gets bottom padding so nothing hides behind the bar. (V550)
-- **The top bar sticks to the top of the page: the open tab's title in the middle, a round menu button on the
-  right, and the "Gyneconomy" title in the menu.** Keren's call, made with Clue's screens. (undated, Sep 19,
-  2026)
-- **The top bar sets the page name in Cormorant, in the plum ink, has a hairline on its bottom edge, and its
-  buttons are the plum mark alone, with no ring and no background.** Keren: "the title of the page should be in
-  feminine letters"; "all buttons in the top bar should not have a round border around it"; "it should be only
-  purple stroke"; the reference she chose sets its page title in plum (0.6.2). (V272, V275, 0.6.2)
+- **On phones the tab bar floats: a liquid-glass pill inset 16px from the sides and 10px above the bottom
+  edge (plus the safe-area inset), the surface at 58% behind an 18px blur with a light edge and a soft lift; the
+  open tab sits in a pale pill (`--glass-on`), icon and label in the accent ink.** Keren, with a cycle app's screen:
+  "make the app bottom menu like the attached reference, meaning floating … when I scroll, it's liquid glass kind
+  of effect that I can see the background blurred." The page keeps bottom padding so nothing ends hidden behind
+  the bar. The glass is the `--glass*` tokens, light and dark. This overturns V550's flush, full-width bar. (0.6.9)
+- **The page's top bar no longer sticks: the open tab's title sits at the top of the page and scrolls away with
+  it, while the round menu button (and the back arrow on a deeper page) float in the top corners as liquid-glass
+  circles, aligned to the page's edges on wide screens; the "Gyneconomy" title stays in the menu.** Keren chose
+  this from the liquid-glass previews, after her reference: "Also option B, floating menu bar. So instead of A."
+  It overturns the sticky bar of Sep 19, 2026 (made with Clue's screens). The menu's own screens keep their
+  sticky bar. (0.6.9)
+- **The top bar sets the page name in Cormorant, in the plum ink, and its buttons are the plum mark alone; the
+  menu's screens keep a hairline under their bar.** Keren: "the title of the page should be in feminine
+  letters"; "all buttons in the top bar should not have a round border around it"; "it should be only purple
+  stroke"; the reference she chose sets its page title in plum (0.6.2). The page's own menu and back buttons
+  are the exception since 0.6.9: they float on glass, as above. (V272, V275, 0.6.2, 0.6.9)
+- **Detail sheets (the (i) notes, the legend, a quarter, More details) are frosted glass: the sheet at 72% of the
+  surface behind a 24px blur, with the glass edge and lift, over a lighter veil that blurs the page by 10px.**
+  Keren picked it from the liquid-glass previews: "and the details sheet, option C". (0.6.9)
 - **The top bar's titles are Keren's names for the tabs: "Current Cycle", "Analysis", "Herstory", "Portfolio".**
   (undated, 0.6.1)
 - **The top bar names the page by its short name, and nothing inside the page repeats that title; the chart
@@ -1180,7 +1197,7 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   apricot splashes visible across the background, even if I scroll, and make it creative, make it move when I
   scroll or something like flow." With reduced motion the layers hold still; a browser without scroll-driven
   animation keeps the slow breathing only. (0.6.3)
-- **The health chart is called Cycle analysis, and its card on the Current Cycle page (and on a past cycle's page)
+- **The health chart's card, Cycle Statistics, on the Current Cycle page (and on a past cycle's page)
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
   automatically to analysis page." (0.6.3)
