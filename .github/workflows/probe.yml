@@ -1,0 +1,15 @@
+name: Probe
+on:
+  push:
+    branches: [claude/interest-environment-icon-fy95sg]
+    paths: [.github/workflows/probe.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: sudo apt-get install -y -qq poppler-utils >/dev/null
+      - run: |
+          for u in "https://apps.bea.gov/scb/pdf/2014/08%20August/0814_revisions_to_gdp_gdi_and_their_major_components.pdf" "https://apps.bea.gov/scb/pdf/2011/07%20July/0711_revisions.pdf" "https://apps.bea.gov/scb/pdf/2018/01-January/0118-revisions-to-gdp-gdi-and-their-major-components.pdf"; do
+            echo "=== $u"
+            curl -sSL -A "gyneconomy-probe" -o d.pdf "$u" && pdftotext -layout d.pdf - | grep -n -i -E "four-quarter|annual|year-to-year|year over year|MAR|mean absolute" | head -80
+          done
