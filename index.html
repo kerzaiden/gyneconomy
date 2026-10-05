@@ -1611,7 +1611,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.1 (759)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.3 (761)</span></p>
     </div>
   </div>
 
@@ -37093,6 +37093,20 @@
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
     u: "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm"
   };
+  var TRACKER_SRC = [ {
+    t: "Munro, Critchley & Fraser — The two FIGO systems for normal and abnormal uterine bleeding symptoms: 2018 revisions (normal length and regularity)",
+    u: "https://obgyn.onlinelibrary.wiley.com/doi/10.1002/ijgo.12666"
+  }, {
+    t: "Bull et al. — Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles, npj Digital Medicine 2019 (Natural Cycles)",
+    u: "https://www.nature.com/articles/s41746-019-0152-7"
+  }, {
+    t: "Li et al. — Menstrual cycle length variation by demographic characteristics from the Apple Women’s Health Study, npj Digital Medicine 2023",
+    u: "https://www.nature.com/articles/s41746-023-00848-1"
+  }, {
+    t: "Clue — How long would it take Clue to give accurate predictions? (three cycles)",
+    u: "https://support.helloclue.com/hc/en-us/articles/29049246302237-My-current-tracker-knows-my-cycle-already-How-long-would-it-take-Clue-to-give-accurate-predictions"
+  } ];
+  var BASELINE = 3;
   function quartile(vs, p) {
     var s = vs.slice().sort(function(a, b) {
       return a - b;
@@ -37130,7 +37144,49 @@
       return visitOf(cycleModel(c));
     }));
   }
-  function cycleLab(id, name, good, f) {
+  function sse(vs) {
+    var m = vs.reduce(function(a, b) {
+      return a + b;
+    }, 0) / vs.length;
+    return vs.reduce(function(s, v) {
+      return s + (v - m) * (v - m);
+    }, 0);
+  }
+  var splitCache = null;
+  function genSplit() {
+    if (splitCache != null) return splitCache;
+    var L = visits().slice(0, closedCount()).map(function(v) {
+      return v.years;
+    }), best = 0, err = Infinity;
+    for (var k = BASELINE; k <= L.length - BASELINE; k++) {
+      var e = sse(L.slice(0, k)) + sse(L.slice(k));
+      if (e < err) {
+        err = e;
+        best = k;
+      }
+    }
+    return splitCache = best;
+  }
+  function generationOf(i) {
+    return i < genSplit() ? 1 : 2;
+  }
+  function present(vs) {
+    return vs.filter(function(v) {
+      return v != null;
+    });
+  }
+  function genNorms(per) {
+    var closed = per.slice(0, closedCount()), k = genSplit();
+    return [ normOf(present(closed.slice(0, k))), normOf(present(closed.slice(k))) ];
+  }
+  function regularity(i) {
+    if (i < BASELINE) return null;
+    var ys = visits().slice(i - BASELINE, i).map(function(v) {
+      return v.years;
+    });
+    return Math.max.apply(null, ys) - Math.min.apply(null, ys);
+  }
+  function cycleLab(id, name, good, f, settled) {
     var per = visits().map(f), print = function(v) {
       return yearsWord(v) + " yr";
     };
@@ -37139,8 +37195,10 @@
       name: name,
       cat: "cycle",
       good: good,
+      settled: settled,
       per: per,
-      norm: normOf(per.slice(0, closedCount())),
+      norm: normOf(present(per.slice(0, closedCount()))),
+      norms: genNorms(per),
       now: null,
       print: print,
       span: spanOf(print)
@@ -37222,22 +37280,31 @@
   function forgetLabs() {
     labCache = null;
     visitCache = null;
+    splitCache = null;
   }
-  function labs() {
-    return labCache || (labCache = [ cycleLab("length", "Length", void 0, function(v) {
+  function cycleLabs() {
+    return [ cycleLab("length", "Length", void 0, function(v) {
       return v.years;
     }), cycleLab("bull", "Bull years", "up", function(v) {
       return v.bull;
     }), cycleLab("bleed", "Bleed", "down", function(v) {
       return v.bleed;
-    }) ].concat(ROSTER.map(readingLab)));
+    }), cycleLab("regularity", "Regularity", "down", function(_, i) {
+      return regularity(i);
+    }, true) ];
+  }
+  function labs() {
+    return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab)));
   }
   function normAt(l, i) {
-    return marketCycles[i].ongoing && l.now ? l.now : l.norm;
+    return marketCycles[i].ongoing && l.now ? l.now : l.norms ? l.norms[generationOf(i) - 1] : l.norm;
+  }
+  function unread(l, i) {
+    return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled;
   }
   function state(l, i) {
     var v = l.per[i], n = normAt(l, i);
-    if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
+    if (v == null || !n || unread(l, i)) return "";
     return v > n.fence ? "high" : v < n.floor ? "low" : "";
   }
   function yearsWord(v) {
@@ -37309,7 +37376,7 @@
   };
   function labSec(k, ls, i) {
     var title = catTitle(k);
-    var name = '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")</small>";
+    var name = '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")" + (k === "cycle" ? " · Generation " + generationOf(i) : "") + "</small>";
     return catHeadCard("lab-sec plain", k, {
       tag: "div",
       cls: "lab-head ",
@@ -37438,7 +37505,7 @@
   }
   function judged(i) {
     return labs().filter(function(l) {
-      return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing);
+      return l.per[i] != null && normAt(l, i) && !unread(l, i);
     });
   }
   function score(i) {
@@ -37475,8 +37542,22 @@
       return listWords(by[k]) + " on " + word(k);
     }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
   }
+  function genWords() {
+    var k = genSplit(), L = visits().slice(0, closedCount()).map(function(v) {
+      return v.years;
+    });
+    var avg = function(vs) {
+      return (vs.reduce(function(a, b) {
+        return a + b;
+      }, 0) / vs.length).toFixed(1);
+    };
+    return "<b>Generations:</b> her cycles changed in " + marketCycles[k].from + ", where splitting her closed cycles by length leaves the least spread on either side: Generation 1 ran " + avg(L.slice(0, k)) + " years on average, Generation 2 " + avg(L.slice(k)) + ". Cycle results are judged against the closed cycles of their own generation, as a cycle tracker compares a woman with others her age.";
+  }
+  function methodFacts() {
+    return [ genWords(), "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.", "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast." ];
+  }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100.", "<b>History, not forecast:</b> it describes her past, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC ].concat(TRACKER_SRC));
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
@@ -38651,7 +38732,7 @@
     detailTexts.push("");
     GYN.step("renderCycleDial", renderCycleDial, "wire");
     renderCycleDial();
-    growthDetail = "<h4>Growth per Cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading: growth at or above the economy’s potential is expansion, below it is contraction, the same colours as everywhere Growth appears.", "Within " + HOLD_BAND + " points of potential a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always contraction.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
+    growthDetail = "<h4>Growth per Cycle</h4>" + ledeHtml("Real GDP across this cycle, quarter by quarter.") + facts([ "Each point is a quarter against <b>the same quarter a year earlier</b> — the reading the OECD, Eurostat and the World Bank headline.", "US news usually quotes a different figure for “growth this quarter”: that quarter against the one before it, compounded to a year. The two can differ without either being wrong.", "<b>Gold is expansion, periwinkle is contraction</b> — the season model’s own reading: growth at or above the economy’s potential is expansion, below it is contraction, the same colours as everywhere Growth appears.", "Within " + HOLD_BAND + " points of potential, the margin for noise, a quarter keeps the colour before it, so a column can stay periwinkle while growth edges past potential. A quarter below zero is far below potential, so it is always contraction.", "The dashed line is the average over what is drawn; the badge is the latest quarter. Hover any quarter for its reading and its phase." ]) + srcBlock(gdpSrc.concat([ {
       t: "BEA via FRED — Real Gross Domestic Product, chained 2017 dollars (GDPC1)",
       u: "https://fred.stlouisfed.org/series/GDPC1"
     } ]));
@@ -40548,7 +40629,7 @@
     return "<b>Against the record</b>: since " + r.from + ", " + (r.autumn + r.winter) + " of the " + r.total + " quarters of the " + r.recessions + " NBER recessions fell in Autumn or Winter (" + r.autumn + " Autumn, " + r.winter + " Winter), seasons that hold " + r.share + "% of all quarters.";
   }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Sensitivity</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([ "<b>Growth gap</b>: real GDP growth over a year against potential growth, the Investment Clock’s question (Merrill Lynch, 2004): is growth above or below its trend? Potential is the Congressional Budget Office’s estimate since 1950 and the " + PEAK_YEARS[0] + "–" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it. Before 1948 GDP is annual, so seasons are read a year at a time.", "<b>Margin for noise</b>: a difference within ±" + HOLD_BAND + " points keeps the prior regime. It is the noise in the measurement, the average revision to a year’s growth (BEA, 2018).", "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model’s 1–3% band, a point either side of the Fed’s 2% target.", "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.", recessionLine(), seasonWhy ]) + srcBlock([ CLOCK_SRC[0] ]);
   }
   function rangePos(v) {
     if (v < 1) return .28 * Math.max(0, Math.min(1, (v + 1) / 2));

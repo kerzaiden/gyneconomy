@@ -12,11 +12,18 @@ import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
+export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; norms?: (Norm | null)[]; settled?: boolean; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 var FENCE_SRC: Src = { t:"NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)", u:"https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm" };
+var TRACKER_SRC: Src[] = [
+  { t:"Munro, Critchley & Fraser — The two FIGO systems for normal and abnormal uterine bleeding symptoms: 2018 revisions (normal length and regularity)", u:"https://obgyn.onlinelibrary.wiley.com/doi/10.1002/ijgo.12666" },
+  { t:"Bull et al. — Real-world menstrual cycle characteristics of more than 600,000 menstrual cycles, npj Digital Medicine 2019 (Natural Cycles)", u:"https://www.nature.com/articles/s41746-019-0152-7" },
+  { t:"Li et al. — Menstrual cycle length variation by demographic characteristics from the Apple Women’s Health Study, npj Digital Medicine 2023", u:"https://www.nature.com/articles/s41746-023-00848-1" },
+  { t:"Clue — How long would it take Clue to give accurate predictions? (three cycles)", u:"https://support.helloclue.com/hc/en-us/articles/29049246302237-My-current-tracker-knows-my-cycle-already-How-long-would-it-take-Clue-to-give-accurate-predictions" }
+];
+var BASELINE = 3;
 
 function quartile(vs: number[], p: number){
   var s = vs.slice().sort(function(a, b){ return a - b; }), i = (s.length - 1) * p, lo = Math.floor(i);
@@ -36,9 +43,34 @@ function visitOf(m: CycleModel): Visit {
 }
 var visitCache: Visit[] | null = null;
 function visits(){ return visitCache || (visitCache = marketCycles.map(function(c){ return visitOf(cycleModel(c)); })); }
-function cycleLab(id: string, name: string, good: "up" | "down" | undefined, f: (v: Visit) => number): Lab {
+function sse(vs: number[]){
+  var m = vs.reduce(function(a, b){ return a + b; }, 0) / vs.length;
+  return vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0);
+}
+var splitCache: number | null = null;
+export function genSplit(){
+  if (splitCache != null) return splitCache;
+  var L = visits().slice(0, closedCount()).map(function(v){ return v.years; }), best = 0, err = Infinity;
+  for (var k = BASELINE; k <= L.length - BASELINE; k++){
+    var e = sse(L.slice(0, k)) + sse(L.slice(k));
+    if (e < err){ err = e; best = k; }
+  }
+  return splitCache = best;
+}
+export function generationOf(i: number){ return i < genSplit() ? 1 : 2; }
+function present(vs: (number | null)[]){ return vs.filter(function(v): v is number { return v != null; }); }
+function genNorms(per: (number | null)[]){
+  var closed = per.slice(0, closedCount()), k = genSplit();
+  return [normOf(present(closed.slice(0, k))), normOf(present(closed.slice(k)))];
+}
+function regularity(i: number){
+  if (i < BASELINE) return null;
+  var ys = visits().slice(i - BASELINE, i).map(function(v){ return v.years; });
+  return Math.max.apply(null, ys) - Math.min.apply(null, ys);
+}
+function cycleLab(id: string, name: string, good: "up" | "down" | undefined, f: (v: Visit, i: number) => number | null, settled?: boolean): Lab {
   var per = visits().map(f), print = function(v: number){ return yearsWord(v) + " yr"; };
-  return { id:id, name:name, cat:"cycle", good:good, per:per, norm:normOf(per.slice(0, closedCount())), now:null, print:print, span:spanOf(print) };
+  return { id:id, name:name, cat:"cycle", good:good, settled:settled, per:per, norm:normOf(present(per.slice(0, closedCount()))), norms:genNorms(per), now:null, print:print, span:spanOf(print) };
 }
 function cycleReadings(R: RosterRow){
   var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
@@ -68,18 +100,21 @@ function readingLab(R: RosterRow): Lab {
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
-export function forgetLabs(){ labCache = null; visitCache = null; }
-export function labs(){
-  return labCache || (labCache = [
+export function forgetLabs(){ labCache = null; visitCache = null; splitCache = null; }
+function cycleLabs(){
+  return [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
     cycleLab("bull", "Bull years", "up", function(v){ return v.bull; }),
-    cycleLab("bleed", "Bleed", "down", function(v){ return v.bleed; })
-  ].concat(ROSTER.map(readingLab)));
+    cycleLab("bleed", "Bleed", "down", function(v){ return v.bleed; }),
+    cycleLab("regularity", "Regularity", "down", function(_, i){ return regularity(i); }, true)
+  ];
 }
-function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norm; }
+export function labs(){ return labCache || (labCache = cycleLabs().concat(ROSTER.map(readingLab))); }
+function normAt(l: Lab, i: number){ return marketCycles[i].ongoing && l.now ? l.now : l.norms ? l.norms[generationOf(i) - 1] : l.norm; }
+function unread(l: Lab, i: number){ return l.cat === "cycle" && !!marketCycles[i].ongoing && !l.settled; }
 function state(l: Lab, i: number){
   var v = l.per[i], n = normAt(l, i);
-  if (v == null || !n || l.cat === "cycle" && marketCycles[i].ongoing) return "";
+  if (v == null || !n || unread(l, i)) return "";
   return v > n.fence ? "high" : v < n.floor ? "low" : "";
 }
 export function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
@@ -120,7 +155,7 @@ function scoreBox(i: number){
 var CAT_MARK: Record<string, () => string> = { cycle:calendarSvg, weather:weatherSvg, mood:moodSvg, circulation:circulationSvg, energy:boltSvg };
 function labSec(k: string, ls: Lab[], i: number){
   var title = catTitle(k);
-  var name = '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')</small>';
+  var name = '<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')' + (k === "cycle" ? ' · Generation ' + generationOf(i) : '') + '</small>';
   return catHeadCard("lab-sec plain", k, { tag:"div", cls:"lab-head ", attrs:"",
     name:k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + '</button>',
     aside:'<button type="button" class="lab-fold" aria-expanded="true" aria-label="Fold ' + title + '">' + CHEV + '</button>' },
@@ -210,7 +245,7 @@ function toggleMenu(host: HTMLElement, id: string){
   showMenu(host, menu.hidden);
 }
 export function riskLabs(i: number){ return judged(i).filter(function(l){ return tier(l, i) === "abnormal"; }); }
-function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
+function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !unread(l, i); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
@@ -225,14 +260,22 @@ function depthWords(){
   var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
+function genWords(){
+  var k = genSplit(), L = visits().slice(0, closedCount()).map(function(v){ return v.years; });
+  var avg = function(vs: number[]){ return (vs.reduce(function(a, b){ return a + b; }, 0) / vs.length).toFixed(1); };
+  return "<b>Generations:</b> her cycles changed in " + marketCycles[k].from + ", where splitting her closed cycles by length leaves the least spread on either side: Generation 1 ran " + avg(L.slice(0, k)) + " years on average, Generation 2 " + avg(L.slice(k)) + ". Cycle results are judged against the closed cycles of their own generation, as a cycle tracker compares a woman with others her age.";
+}
+function methodFacts(){
+  return [genWords(), "<b>Regularity</b> is the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it, FIGO’s measure of how regular cycles are; " + word(BASELINE) + " is the fewest Clue builds a baseline on.",
+    "<b>As a cycle tracker reads her:</b> each range is her own record’s, as Clue and Natural Cycles judge a woman against her own cycles; Normal is a percentile band, as FIGO’s normal cycle length is; a season turns only past a margin for noise, as the temperature method waits for a sustained rise; and a peak is confirmed after the fact, never forecast."];
+}
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
     "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
-    "<b>Health Score</b> is the share of results that are Normal, out of 100.",
-    "<b>History, not forecast:</b> it describes her past, not what comes next."
-  ]) + srcBlock([FENCE_SRC]);
+    "<b>Health Score</b> is the share of results that are Normal, out of 100."
+  ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC].concat(TRACKER_SRC));
 }
 export function cycleScore(m: CycleModel){ var i = marketCycles.indexOf(m.era); return i < 0 ? "" : scoreBox(i); }
 export function chartDoor(m: CycleModel){

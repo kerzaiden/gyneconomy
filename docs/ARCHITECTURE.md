@@ -505,7 +505,10 @@ Rules that shape the pages:
   `wireFinder` gives the host a `page.cycles` key and its own search state (`finds`). Every roster reading is
   averaged over the cycle's years; its range is the middle half of the closed cycles that reading covers, Tukey's
   fences beyond it mark Risk, and between is Attention, except that a result on the reading's `good` side is Normal.
-  The cycle's length, bull years and bleed are judged only once it has closed. The health score is the share of judged
+  The cycle's length, bull years and bleed are judged only once it has closed; Regularity (`settled`) is read on the
+  open cycle too, since it measures the three cycles before it. The cycle results carry one range per generation
+  (`norms`, indexed by `generationOf`); `genSplit` finds the split from the closed cycles' lengths each time the labs
+  are rebuilt, so a closed cycle that changes the record can move it. The health score is the share of judged
   readings that are Normal. On top sits the search box, the filter button inside it opening a small menu of tiers
   (`.lab-menu`, closed by Escape through `layer` or a tap outside); `narrow` hides the rows that fail either and any
   category left empty. A tier pick redraws (the counts and the button's label change); typing only narrows, so the

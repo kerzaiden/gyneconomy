@@ -570,6 +570,26 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   payments, Households (debt service), the Unemployment rate and the Bleed. No side is good on its own for Temperature
   (the Fed aims at 2%, and deflation is a strain too), Interest rates, Pressure, Pulse, Volume or a cycle's Length, so
   those are flagged either way. (0.6.1)
+- **Her cycles come in generations, like an iPhone's: Generation 1 and Generation 2, and a cycle's Length, Bull
+  years, Bleed and Regularity are judged against the closed cycles of its own generation.** Cycle trackers never
+  judge a woman against other ages' cycles (the Apple Women's Health Study and Natural Cycles report cycle length
+  and variability by age), and her cycles aged too: about 4 years before 1982, about 8 since. Keren: "I agree with
+  your idea about an era baseline. Maybe we can call it generation. You know, like an iPhone." The split is the
+  record's, not set by hand: the year that leaves the least squared spread in closed-cycle length on either side,
+  with at least three cycles a side (Clue's minimum for a baseline). It falls at 1982 and cuts that spread in half; a
+  second split would cut it by only a further 4%, so there are two generations until the record shows a third. The
+  readings (Growth, CAPE and the rest) are still judged against every closed cycle. The Cycle drawer's heading names
+  the generation, "Cycle (4) · Generation 2". (0.8.3, Oct 5, 2026)
+- **Regularity is a cycle result: the spread from the shortest to the longest of the three cycles before it.** FIGO
+  measures how regular cycles are by the gap between the shortest and the longest (Munro, Critchley and Fraser,
+  2018); three is the fewest cycles Clue builds a baseline on. Lower is its good side. It is the one cycle result
+  read on the open cycle, since the three cycles before it have closed. Keren: "I think we should show track
+  regularity." (0.8.3, Oct 5, 2026)
+- **Cycle Statistics' (i) says how its statistics compare with a cycle tracker's, with the trackers' published
+  sources: her own record as the baseline (Clue, Natural Cycles), Normal as a percentile band (FIGO), a season
+  turning only past a margin for noise (the temperature method), a peak confirmed after the fact.** Keren: "We need
+  to somehow incorporate this data in our app … so people can have more reliable view on what we're doing." FIGO
+  here is its system for normal menstrual bleeding (System 1), not its cancer staging models. (0.8.3, Oct 5, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the
@@ -619,6 +639,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   a gap smaller than that is inside what BEA itself later revises. Keren left the margin to Claude ("do it
   yourself"). Without it the side switched 58 times since 1950, with 82 quarters within half a point of
   potential; with it, 42. (0.8.0, Oct 5, 2026)
+- **The 0.47 points is called the margin for noise, in the Season Model's (i) and under the dial.** Keren: "I love
+  the term margin for noise … when we explain the sensitivity I think noise is a better terminology" (0.8.3, Oct 5,
+  2026; "Sensitivity" until then).
 
 - **The price direction's flat tolerance (±0.02 pp a month) is Keren's call under the rule that cut-offs come
   from convention or the record.** A 95% significance test on the same slopes was measured first; it asks whether a

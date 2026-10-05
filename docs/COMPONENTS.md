@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `36542fd` on 2026-10-05. **101 components**, **35 shared patterns**.
+Generated from commit `bed4068` on 2026-10-05. **101 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -233,6 +233,7 @@ renderer speaks. Listed most-used first.
 | **`pageCycle`** | history.ts | 11 places |
 | **`publishGeom`** | charts.ts | 11 places |
 | **`addSources`** | dom.ts | 10 places |
+| **`closedCount`** | cycle-analysis.ts | 10 places |
 | **`colPath`** | charts.ts | 10 places |
 | **`colWidth`** | charts.ts | 10 places |
 | **`lede`** | format.ts | 10 places |
@@ -247,7 +248,6 @@ renderer speaks. Listed most-used first.
 | **`windowYears`** | charts.ts | 8 places |
 | **`yearOf`** | format.ts | 8 places |
 | **`atMonth`** | format.ts | 7 places |
-| **`closedCount`** | cycle-analysis.ts | 7 places |
 | **`colScale`** | history-charts.ts | 7 places |
 | **`cycleSlice`** | model.ts | 7 places |
 | **`histNote`** | history.ts | 7 places |
@@ -266,6 +266,7 @@ renderer speaks. Listed most-used first.
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
+| **`normOf`** | cycle-analysis.ts | 5 places |
 | **`openCycle`** | model.ts | 5 places |
 | **`pct`** | fed-phases.ts | 5 places |
 | **`qWindowFrom`** | history.ts | 5 places |
@@ -283,13 +284,14 @@ renderer speaks. Listed most-used first.
 | **`fmt`** | cycle-analysis.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
-| **`normOf`** | cycle-analysis.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
 | **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`seasonGroup`** | model.ts | 4 places |
+| **`visits`** | cycle-analysis.ts | 4 places |
+| **`word`** | cycle-analysis.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
@@ -322,7 +324,6 @@ renderer speaks. Listed most-used first.
 | **`trendText`** | dom.ts | 3 places |
 | **`unempState`** | readings.ts | 3 places |
 | **`volatilityTag`** | readings.ts | 3 places |
-| **`word`** | cycle-analysis.ts | 3 places |
 | **`yearTicks`** | history-charts.ts | 3 places |
 
 ## Shared patterns
