@@ -586,6 +586,7 @@
     "levelHeadings": 8,
     "wireDetailModal": 32,
     "strip": 3,
+    "stripDots": 3,
     "stripTrack": 3,
     "seasonRuns": 9,
     "seasonPills": 7,

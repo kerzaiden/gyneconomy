@@ -5,7 +5,7 @@ import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-se
 import { gdpSrc, sp500AnnualReturns, typicalCycleSrc, typicalCycleYears } from "./data.ts";
 import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
-import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripTrack } from "./render-core.ts";
+import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
 import { renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -326,7 +326,7 @@ export function marketStripHtml(cyc: Cycle, spanQ?: number, doneQ?: number){
   var span = Math.max(spanQ || 0, done);
   var ahead = Math.max(0, span - done);
   var pills = marketPills(runs);
-  pills += stripTrack(ahead, aheadWord(cyc));
+  pills += stripDots(ahead, aheadWord(cyc));
   return strip(" mkt-strip", "S&P 500 by year: " +
     runs.map(function(r){ return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir; }).join(", "), pills);
 }

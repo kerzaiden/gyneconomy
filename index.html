@@ -293,6 +293,8 @@
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
   .strip-run.settled{ flex:none; }
+  .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
+  .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-track{ height:12px; border-radius:var(--radius); background:color-mix(in srgb, var(--border) 60%, transparent); }
 
   .season-card{
@@ -1074,7 +1076,7 @@
   .method-card .more-row, .labs .more-row{ margin-top:20px; }
   .cat-more:empty{ display:none; }
   .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:var(--surface-2); border-radius:var(--radius-inner); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:color-mix(in srgb, var(--border) 60%, transparent); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
@@ -32824,6 +32826,9 @@
   function strip(cls, label, inner) {
     return '<span class="strip' + cls + '" role="img" aria-label="' + label + '">' + inner + "</span>";
   }
+  function stripDots(n, title) {
+    return n ? '<span class="strip-dots" style="flex:' + n + ' 1 0" title="' + title + '">' + new Array(n + 1).join("<i></i>") + "</span>" : "";
+  }
   function stripTrack(n, title) {
     return n ? '<span class="strip-track" style="flex:' + n + ' 1 0" title="' + title + '"></span>' : "";
   }
@@ -34225,10 +34230,6 @@
       return c.key === key;
     })[0].title;
   }
-  function where(l, i) {
-    var v = l.per[i], n = normAt(l, i), side2 = v > n.hi ? "above" : v < n.lo ? "below" : "";
-    return !side2 ? "In range" : state(l, i) ? "Outlier, " + side2 + " range" : cap(side2) + " range";
-  }
   function side(l, i) {
     var v = l.per[i], n = normAt(l, i);
     return v > n.hi ? "to-up" : v < n.lo ? "to-down" : "to-level";
@@ -34241,18 +34242,24 @@
     return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"';
   }
   function labItem(l, i) {
-    var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div";
-    return '<li class="lab-item ' + side(l, i) + " " + TIERS.filter(function(t) {
-      return t.key === tier(l, i);
-    })[0].cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + where(l, i) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></" + tag + "></li>";
+    var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
+      return t2.key === tier(l, i);
+    })[0];
+    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + '<i class="lab-to" aria-hidden="true"></i></b><small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
     return '<svg class="lab-ring" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="' + r + '"/><circle class="on" cx="26" cy="26" r="' + r + '" stroke-dasharray="' + (c * v / 100).toFixed(1) + " " + c.toFixed(1) + '"/></svg>';
   }
+  function scoreTier(v) {
+    var past = [];
+    for (var k = 0; k < closedCount(); k++) past.push(score(k).v);
+    var n = normOf(past);
+    return v >= n.lo ? "Normal" : v >= n.floor ? "Attention" : "Risk";
+  }
   function scoreBox(i) {
     var s = score(i);
-    return '<span class="lab-score"><span><b>Health score</b><small>Against ' + word(closedCount()) + ' closed cycles</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
+    return '<span class="lab-score"><span><b>Health score</b><small>' + scoreTier(s.v) + " against " + word(closedCount()) + ' closed cycles</small></span><span class="lab-score-v">' + ring(s.v) + "<span>" + s.v + "</span></span></span>";
   }
   var CAT_MARK = {
     cycle: calendarSvg,
@@ -34430,7 +34437,7 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How Cycle Analysis reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (green) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result, as on a lab report, In range, Above range, Below range or Outlier says where it sits, and the triangle by the figure points the same way. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her Cycle Analysis describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<h4>How Cycle Analysis reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (apricot) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result its tier is named, Normal, Attention or Risk, and the triangle by the figure points up when it is above its range, down when below. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The score itself is judged the same way against the scores of her closed cycles: Normal from the lowest quarter of them up, Attention below that, Risk past the lower fence. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her Cycle Analysis describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
@@ -34877,10 +34884,10 @@
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
-    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
+    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
   }
-  function stripGap(n, ytd) {
-    return n <= 0 ? "" : ytd ? stripTrack(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
+  function stripGap(n, ytd, fill2) {
+    return n <= 0 ? "" : ytd ? fill2(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
   }
   function yearMarket(y, ytd, q) {
     var ret = sp500AnnualReturns[y], dir = ret >= 0 ? "up" : "down";
@@ -34890,7 +34897,7 @@
       q: q,
       from: y,
       to: y
-    } ]) + stripGap(4 - q, ytd));
+    } ]) + stripGap(4 - q, ytd, stripDots));
   }
   function renderDiagnosis(m) {
     var host = document.getElementById("diagnosis");
@@ -35349,7 +35356,7 @@
     var span = Math.max(spanQ || 0, done);
     var ahead = Math.max(0, span - done);
     var pills = marketPills(runs);
-    pills += stripTrack(ahead, aheadWord(cyc));
+    pills += stripDots(ahead, aheadWord(cyc));
     return strip(" mkt-strip", "S&P 500 by year: " + runs.map(function(r) {
       return (r.from === r.to ? r.from : r.from + " to " + r.to) + " " + r.dir;
     }).join(", "), pills);

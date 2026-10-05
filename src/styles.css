@@ -292,6 +292,8 @@
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
   .strip-run.settled{ flex:none; }
+  .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
+  .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-track{ height:12px; border-radius:var(--radius); background:color-mix(in srgb, var(--border) 60%, transparent); }
 
   /* ---- season strip ---- */
@@ -1081,7 +1083,7 @@
   .method-card .more-row, .labs .more-row{ margin-top:20px; }
   .cat-more:empty{ display:none; }
   .labs{ font-family:"Public Sans",sans-serif; }
-  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:var(--surface-2); border-radius:var(--radius-inner); }
+  .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 12px 10px 14px; background:color-mix(in srgb, var(--border) 60%, transparent); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
   .lab-score b{ display:block; font-size:var(--type-section); font-weight:600; color:var(--text-primary); }
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }

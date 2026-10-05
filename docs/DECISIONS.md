@@ -159,9 +159,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Analysis's tab icon and Cycle analysis's mark are the rising graph (a line climbing in a frame), the icon
   Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
   goes up. This goes the same for the health chart." (0.6.3)
-- **The health score sits on `--surface-2`, the pale apricot of the Analysis page's result rows, and its line names
-  the cycles its ranges come from: "Against 18 closed cycles".** Keren chose the apricot over the dial's light grey
-  from two previews (0.6.4; a stronger apricot, `--normal` at 34%, before). Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
+- **The health score sits on the dial's light grey (its track's colour), and its line says how the score itself reads
+  against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
+  low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.
+  Keren: "When you give a health score and you say against 18 closed cycles, what does that mean? Is it high? Is it
+  low? Are we at risk?" and "the apricot background is too much apricot … Make it bright gray, like the gray we have
+  in the cycle dial" (0.6.6, overturning 0.6.4's apricot, chosen then over this grey; a stronger apricot before). Keren asked for "19 cycles" in place of "19 readings"; 19 was the count
   of readings judged, so the line counts the closed cycles instead, which is true on every cycle. (0.6.3)
 - **Cycle analysis picks its cycle from the filter in its search box, under a Cycle sub-menu, not from a
   picker bar on the page; the filter button names a past cycle and a tier when either is set.** Keren: "add the
@@ -450,10 +453,12 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **Tapping the current, open cycle in Analysis opens the Cycle tab itself, through its own tab button, never
   a frozen copy.** Keren: "the cycle is not ended yet"; a frozen view would say the AI Cycle is over. (V616)
 - **Each cycle's strips in Herstory are drawn against the typical cycle length: a shorter cycle shows
-  a grey line for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
+  grey for what it lacks, a cycle at or past it fills the row, and inside a row the seasons keep their
   true proportions.** Keren: "The dots can represent the average that is left, not compared to the longest
-  cycle." (V517) What is not yet run, in Herstory and in Year by year, is a grey line like the dial's track,
-  not dots. Keren: "Instead of dots, gray dots, make it gray line. Like in the cycle dial." (0.6.6)
+  cycle." (V517) What is not yet run, in Herstory and in Year by year, follows the dial: a grey line on the
+  season strip, like the dial's track, and grey dots on the bull/bear strip, like the dots inside the ring.
+  Keren: "make the season a gray line and the bull bear market with gray dots, like in the cycle dial. So it
+  would be the same logic." (0.6.6)
 
 ### Analysis
 
@@ -467,8 +472,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **A Cycle analysis result is judged by whether its side is good for that reading, not only by its side.** Keren: "if
   unemployment rate goes down, it's a good thing. So the bottom facing triangle should be green … We need to judge if
   it's good or bad, not only by direction, but also by parameter." A result outside its range on its good side is
-  Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before; the words
-  under it stay literal. Each reading's good side is declared once, as `good` in the
+  Normal (apricot) and counts toward the health score; on the other side it is Attention or Risk as before. Under
+  each result its tier is named, Normal, Attention or Risk, the triangle carrying the side. Keren: "I would want the
+  same terminology being used under each category … if it's in range, it's normal. If it's an outlier, then we're at
+  risk. And if it's above or below, but not an outlier, then it would be attention." (0.6.6, replacing 0.6.0's In
+  range, Above range, Below range and Outlier.) Each reading's good side is declared once, as `good` in the
   roster. Claude's calls, by economic convention, for Keren to overturn: higher is good for Growth, the S&P 500,
   Consumer demand, the Equity risk premium (stocks cheap against bonds), Confidence, the Federal budget (a smaller
   deficit), Productivity growth and Bull years; lower is good for Shiller CAPE and the Buffett indicator (Shiller's and

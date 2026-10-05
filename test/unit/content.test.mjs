@@ -131,11 +131,10 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('the open year fills its row, the quarters not yet run as a grey line', () => {
+test('the open year fills its row, as the dial does: a grey line for its seasons, grey dots for its market', () => {
   const open = document.querySelector('#diagnosis .dx-year .dx-year-lead');
   const strips = [...open.querySelectorAll('.strip')];
-  assert.equal(strips.length, 2);
-  strips.forEach(s => assert.ok(s.lastElementChild.classList.contains('strip-track')));
+  assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
 test('the dial is titled by its cycle, and today’s story opens AI Insights', () => {
@@ -334,14 +333,17 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.notEqual(horizonRead.word, 'Pessimistic');
 });
 
-test('a Cycle Analysis result outside its range is Normal on its good side and flagged on the other', () => {
+test('a Cycle Analysis result is named by its tier, Normal on its good side and flagged on the other', () => {
   const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
   rows.forEach(({ R, li }) => {
     const way = li.classList.contains('to-up') ? 'up' : li.classList.contains('to-down') ? 'down' : null;
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
+    const word = { 't-optimal': 'Normal', 't-borderline': 'Attention', 't-abnormal': 'Risk' }[[...li.classList].find(c => c.startsWith('t-'))];
+    assert.equal(li.querySelector('.lab-where').textContent, word, R.name);
   });
+  assert.match(document.querySelector('#diagnosis .lab-score small').textContent, /^(Normal|Attention|Risk) against \d+ closed cycles$/);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
