@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
-import { ui } from '../../src/js/dom.ts';
+import { detailTexts, ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
@@ -137,8 +137,10 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, and today’s story opens AI Insights', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and today’s story opens AI Insights', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
+  const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
+  ['CPI &lt; 1%', 'CPI \u2264 3%', 'CPI &gt; 3%', 'CPI \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
   sheetRenderers['sheet-ai-insights']();
   const story = document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]');

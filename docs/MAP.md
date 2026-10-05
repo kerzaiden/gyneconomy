@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,140 lines** in 35 files, about 602 KB, roughly **171 thousand tokens**. No session can
+The source is **9,140 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `d4b2ab4` on 2026-10-05.
+Generated from commit `573e89b` on 2026-10-05.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `d4b2ab4` on 2026-10-05.
 | `js/main.ts` | 31 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **31** modules, **642** top-level functions, **109** top-level vars, **369** exported names, **19** boots.
+Counts: **31** modules, **642** top-level functions, **110** top-level vars, **370** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -32,7 +32,7 @@ Counts: **31** modules, **642** top-level functions, **109** top-level vars, **3
 | `js/dom.ts` | 160 | 25 | `format` |
 | `js/live.ts` | 207 | 22 | `format` |
 | `js/refresh-season.ts` | 38 | 4 | `format`, `history-fred` |
-| `js/data.ts` | 555 | 74 | `format`, `history-fred`, `live` |
+| `js/data.ts` | 556 | 75 | `format`, `history-fred`, `live` |
 | `js/model.ts` | 345 | 46 | `data`, `dom`, `format`, `history-fred`, `refresh-season` |
 | `js/history.ts` | 470 | 40 | `charts`, `data`, `dom`, `format`, `live`, `model` |
 | `js/readings.ts` | 809 | 70 | `charts`, `data`, `dom`, `format`, `history`, `history-fred`, `live`, `model`, `refresh-season` |
@@ -40,7 +40,7 @@ Counts: **31** modules, **642** top-level functions, **109** top-level vars, **3
 | `js/render-core.ts` | 598 | 45 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `live`, `model`, `readings`, `refresh-season`, `roster` |
 | `js/render-pages.ts` | 450 | 11 | `charts`, `data`, `dom`, `format`, `history`, `history-charts`, `history-fred`, `live`, `model`, `readings`, `refresh-season`, `render-core` |
 | `js/diagnosis.ts` | 77 | 11 | `ai-insights`, `cycle-analysis`, `data`, `dom`, `format`, `live`, `marks`, `model`, `quarter-sheet`, `refresh-season`, `render-core` |
-| `js/dial-cycle.ts` | 386 | 21 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
+| `js/dial-cycle.ts` | 385 | 21 | `data`, `diagnosis`, `dom`, `format`, `live`, `model`, `quarter-sheet`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/analysis.ts` | 158 | 15 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/portfolio.ts` | 110 | 17 | `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
@@ -73,7 +73,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 2 | `bootDone` | `js/live.ts:198`–200 |
 | 3 | `bootLive` | `js/live.ts:201`–206 |
 | 4 | `bootRefreshSeason` | `js/refresh-season.ts:29`–37 |
-| 5 | `bootData` | `js/data.ts:503`–554 |
+| 5 | `bootData` | `js/data.ts:504`–555 |
 | 6 | `bootModel` | `js/model.ts:298`–344 |
 | 7 | `bootHistory` | `js/history.ts:446`–469 |
 | 8 | `bootReadings` | `js/readings.ts:632`–700 |
@@ -82,7 +82,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 11 | `bootRenderCore` | `js/render-core.ts:588`–597 |
 | 12 | `bootRenderPages` | `js/render-pages.ts:432`–449 |
 | 13 | `bootDiagnosis` | `js/diagnosis.ts:73`–76 |
-| 14 | `bootDialCycle` | `js/dial-cycle.ts:362`–385 |
+| 14 | `bootDialCycle` | `js/dial-cycle.ts:361`–384 |
 | 15 | `bootAnalysis` | `js/analysis.ts:153`–157 |
 | 16 | `bootPortfolio` | `js/portfolio.ts:109`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:206`–212 |
@@ -270,22 +270,23 @@ falls in. **export** marks a name other modules import.
 | 271 | `checkFedFundsHistory` | `function checkFedFundsHistory(` |
 | 278 | `ACT_BAND_LO` · export | `var ACT_BAND_LO =` |
 | 279 | `CPI_TARGET` · export | `var CPI_TARGET =` |
-| 280 | `TEMP_BAND_LO` · export | `var TEMP_BAND_LO =` |
-| 281 | `GDP_NORM` · export | `var GDP_NORM =` |
-| 282 | `checkMoneyStock` | `function checkMoneyStock(` |
-| 345 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
-| 346 | `dsrHistory` · export | `var dsrHistory =` |
-| 347 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
-| 348 | `savHistory` · export | `var savHistory =` |
-| 349 | `SAV_THIN` · export | `var SAV_THIN =` |
-| 350 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
-| 358 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
-| 359 | `dsrNow` · export | `var dsrNow =` |
-| 360 | `savNow` · export | `var savNow =` |
-| 361 | `DSR_MEAN` · export | `var DSR_MEAN =` |
-| 362 | `curveNoteFull` · export | `var curveNoteFull =` |
-| 373 | `VOL_JOIN` · export | `var VOL_JOIN =` |
-| 495 | `typicalCycleYears` · export | `var typicalCycleYears =` |
+| 280 | `FED_TARGET_SRC` · export | `var FED_TARGET_SRC =` |
+| 281 | `TEMP_BAND_LO` · export | `var TEMP_BAND_LO =` |
+| 282 | `GDP_NORM` · export | `var GDP_NORM =` |
+| 283 | `checkMoneyStock` | `function checkMoneyStock(` |
+| 346 | `DSR_FROM_YEAR` · export | `var DSR_FROM_YEAR =` |
+| 347 | `dsrHistory` · export | `var dsrHistory =` |
+| 348 | `SAV_FROM_YEAR` · export | `var SAV_FROM_YEAR =` |
+| 349 | `savHistory` · export | `var savHistory =` |
+| 350 | `SAV_THIN` · export | `var SAV_THIN =` |
+| 351 | `checkHouseholdHistories` | `function checkHouseholdHistories(` |
+| 359 | `SAV_OFFSET` · export | `var SAV_OFFSET =` |
+| 360 | `dsrNow` · export | `var dsrNow =` |
+| 361 | `savNow` · export | `var savNow =` |
+| 362 | `DSR_MEAN` · export | `var DSR_MEAN =` |
+| 363 | `curveNoteFull` · export | `var curveNoteFull =` |
+| 374 | `VOL_JOIN` · export | `var VOL_JOIN =` |
+| 496 | `typicalCycleYears` · export | `var typicalCycleYears =` |
 
 ### `js/model.ts`
 
@@ -676,34 +677,34 @@ falls in. **export** marks a name other modules import.
 
 | Line | Name | Anchor |
 |---|---|---|
-| 142 | `hubSet` | `function hubSet(` |
-| 150 | `hubOpen` | `function hubOpen(` |
-| 157 | `hubShowDefault` | `function hubShowDefault(` |
-| 164 | `hubShowQuarter` | `function hubShowQuarter(` |
-| 169 | `hubShowYear` | `function hubShowYear(` |
-| 179 | `one` · export | `function one(` |
-| 180 | `cycleView` · export | `function cycleView(` |
-| 181 | `renderCycleDial` | `function renderCycleDial(` |
-| 264 | `dialKeyStep` | `function dialKeyStep(` |
-| 272 | `dialSay` | `function dialSay(` |
+| 141 | `hubSet` | `function hubSet(` |
+| 149 | `hubOpen` | `function hubOpen(` |
+| 156 | `hubShowDefault` | `function hubShowDefault(` |
+| 163 | `hubShowQuarter` | `function hubShowQuarter(` |
+| 168 | `hubShowYear` | `function hubShowYear(` |
+| 178 | `one` · export | `function one(` |
+| 179 | `cycleView` · export | `function cycleView(` |
+| 180 | `renderCycleDial` | `function renderCycleDial(` |
+| 263 | `dialKeyStep` | `function dialKeyStep(` |
+| 271 | `dialSay` | `function dialSay(` |
 
 #### the whole view, for one cycle
 
 | Line | Name | Anchor |
 |---|---|---|
-| 278 | `renderCycleView` · export | `function renderCycleView(` |
-| 283 | `showEra` | `function showEra(` |
-| 287 | `showCycle` · export | `function showCycle(` |
+| 277 | `renderCycleView` · export | `function renderCycleView(` |
+| 282 | `showEra` | `function showEra(` |
+| 286 | `showCycle` · export | `function showCycle(` |
 
 #### A cycle's season strip (carried by the one cycle row)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 289 | `aheadWord` | `function aheadWord(` |
-| 290 | `seasonStripHtml` · export | `function seasonStripHtml(` |
-| 307 | `marketStripHtml` · export | `function marketStripHtml(` |
-| 333 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
-| 334 | `settleStrips` · export | `function settleStrips(` |
+| 288 | `aheadWord` | `function aheadWord(` |
+| 289 | `seasonStripHtml` · export | `function seasonStripHtml(` |
+| 306 | `marketStripHtml` · export | `function marketStripHtml(` |
+| 332 | `STRIP_MIN_RATIO` | `var STRIP_MIN_RATIO =` |
+| 333 | `settleStrips` · export | `function settleStrips(` |
 
 ### `js/analysis.ts`
 

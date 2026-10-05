@@ -329,6 +329,20 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The ring wears the temperature's own colours: periwinkle below the range (Winter deep, Spring a tint),
   orange above it (Summer deep, Autumn a yellow-orange tint).** Keren's choice, so a season's colour says
   where prices sat. (V180)
+- **The dial's legend states each range in plain mathematical signs: Winter CPI < 1%, Spring CPI ≤ 3%, Summer
+  CPI > 3%, Autumn CPI ≥ 1%; a bull year's return ≥ 0%, a bear year's < 0%.** The signs are the model's own tests
+  (`readSeason`, `TEMP_BAND_LO`/`TEMP_BAND_HI`). Keren: "all ranges should use some kind of mathematical signaling,
+  basic mathematical signaling." (0.6.6)
+- **Under the seasons the legend explains only the 1–3% range (a point either side of the Fed's 2% target, its
+  width this app's choice), and it carries no how-to paragraph.** Keren: "All I need is the one to three range
+  explained" and "The whole point of good UI is that you don't need to explain it." (0.6.6)
+- **The legend's last section is "The market cycle": a typical market cycle, a bull market and the bear market that
+  ends it, has run about 5 to 6½ years across the long record (First Trust about 5.2, Fisher about 6.4); a typical
+  length, not a forecast.** It replaced "The ring's span" and its notes on scaling. Keren: "call it the market
+  cycle … use numbers … It is a typical length, not a forecast. And that's it." (0.6.6)
+- **The legend opens on its sections with no introduction: "Seasons (Q)", drawn by quarter, and "S&P 500 (YoY)", each
+  year's calendar return.** Keren: "YOY for the S&P 500." Keren: "a paragraph that is unneeded. What we need basically is seasons by quarters and S&P 500 by years …
+  Like seasons, parentheses Q, and S&P 500, parentheses Y." (0.6.6)
 - **The ring closes on itself but for a small seam at 12 o'clock; don't re-add the coral drop in the seam
   (Clue's day-1 mark).** Keren: "close the cycle — a small gap between the start and the end"; with the drop,
   "a lot going on". (V199, V200)

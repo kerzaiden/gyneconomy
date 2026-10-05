@@ -277,6 +277,7 @@ function checkFedFundsHistory(){
 }
 export var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
 export var CPI_TARGET = 2;
+export var FED_TARGET_SRC = {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"};
 export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
 export var GDP_NORM = 2.6;
 function checkMoneyStock(){
