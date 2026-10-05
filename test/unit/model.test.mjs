@@ -101,7 +101,7 @@ test('a cycle’s story opens before it closes, its high is above its low, and i
   assert.ok(told >= 6, told + ' cycles have a story');
 });
 
-test('ovulation is the inflation peak, marked only once the price trend has turned to falling', () => {
+test('peak inflation is marked only once the price trend has turned to falling', () => {
   assert.deepEqual(inflationPeak('2019-01', '2022-12'), { m: '2022-06', v: 8.98 });
   assert.equal(inflationPeak('2023-01', '2026-09'), null);
 });

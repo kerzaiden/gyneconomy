@@ -1143,10 +1143,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 ### Colour
 
-- **The Fed's phases are light green for tightening and light pink for easing, the app's own washes (`--good-wash`,
-  `--accent-wash`).** Keren: "light pink and light green in the color palette of our app … green is tightening …
-  tightening is like the luteal phase", matching her tracker. This is the one place green marks something other
-  than market movement. (0.6.7)
+- **The Fed's phases are light pink for tightening and light green for easing, the app's own washes (`--accent-wash`,
+  `--good-wash`).** Keren: "tightening would be like making the market be bearish, right? And easing would make the
+  market be bullish. So maybe the colors should be reverse" (she had first put green on tightening, after her
+  tracker's luteal phase). Green and red keep their market meaning: easing is the bullish side. (0.6.7)
 - **The seasons' colours are one token each, read by the legend, the Season Model table and the ring alike.**
   Keren: "one change fixes the entire app". (V182)
 - **Growth's phase takes the dial's seasons, not the severity palette: expanding in Autumn's gold, contracting
@@ -1280,14 +1280,16 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 
 - **The Diagnosis opens on the Fed's phases, the economy's hormone chart: two phases, Tightening and Easing, as
   the follicular and luteal phases are in her cycle-tracking app, with growth, prices and the Fed funds rate as the
-  curves and the inflation peak as ovulation.** Keren: "I want to see two phases, like the follicular and luteal
-  phases … tightening or easing, and ovulation would be like inflation peak." A phase is the direction of the Fed's
-  last move (Jensen, Mercer & Johnson, 1996), so a pause stays in its phase and there are only two; the moves are
-  the discount rate before September 1982 and the target since. Ovulation is the highest price reading before the
-  season model's own price trend turns to falling, drawn only once it has turned, so it never forecasts. The curves
-  stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title: "I'm already
-  seeing it in the chart." The Fed's stance is the only rate reading beside the seasons for now; a Taylor-rule
-  line waits for potential GDP. (0.6.7)
+  curves and peak inflation marked where ovulation sits in the tracker.** Keren: "I want to see two phases, like the
+  follicular and luteal phases … tightening or easing, and ovulation would be like inflation peak." The mark reads
+  "Peak", on the prices curve, never "ovulation": "I don't think we should say ovulation in this app … We don't need
+  inflation peak. Only peak because the orange legend says prices." A phase is the direction
+  of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays in its phase and there are only two; the
+  moves are the discount rate before September 1982 and the target since. The peak is the highest price reading
+  before the season model's own price trend turns to falling, drawn only once it has turned, so it never forecasts.
+  The curves stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title:
+  "I'm already seeing it in the chart." The Fed's stance is the only rate reading beside the seasons for now; a
+  Taylor-rule line waits for potential GDP. (0.6.7)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
   names how Mrs. Market feels now.** Keren: "Like a doctor would analyze a patient … I want to have emotional
   intelligence in this analysis … I want to understand how Mrs. Market is feeling at this present time."

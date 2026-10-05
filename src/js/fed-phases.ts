@@ -49,7 +49,11 @@ function growthPoints(from: number, to: number){
   return pts.filter(function(p){ return p.i >= from && p.i <= to; }).sort(function(a, b){ return a.i - b.i; });
 }
 function monthPoints(list: MonthPoint[], from: number, to: number){
-  return list.map(function(d){ return { i: monthIdx(d.m), v: d.v }; }).filter(function(p){ return p.i >= from && p.i <= to; });
+  var sums: Record<number, number[]> = {};
+  list.forEach(function(d){ var i = monthIdx(d.m); if (i >= from && i <= to) (sums[Math.floor(i / 3)] = sums[Math.floor(i / 3)] || []).push(d.v); });
+  return Object.keys(sums).map(Number).sort(function(a, b){ return a - b; }).map(function(q){
+    return { i: Math.min(Math.max(q * 3 + 1, from), to), v: sums[q].reduce(function(a, b){ return a + b; }, 0) / sums[q].length };
+  });
 }
 function curve(pts: Pt[], x: (i: number) => number, y: (v: number) => number){
   var p = pts.map(function(d){ return [x(d.i), y(d.v)]; });
@@ -78,14 +82,14 @@ function yearsHtml(from: number, to: number){
   for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + '</span>';
   return out;
 }
-function plotSvg(lines: Pt[][], from: number, to: number, peak: MonthPoint | null){
+function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null){
   var all = ([] as Pt[]).concat.apply([], lines).map(function(p){ return p.v; });
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
   var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
-  var mark = peak ? '<line class="fp-ov-line" x1="' + x(monthIdx(peak.m)).toFixed(1) + '" x2="' + x(monthIdx(peak.m)).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
+  var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
   var paths = ["fp-growth", "fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  var dot = peak ? '<span class="fp-ov" style="left:' + pct(x(monthIdx(peak.m)) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
+  var dot = peak ? '<span class="fp-ov" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + '</svg>' + dot;
 }
 function levelsHtml(m: CycleModel, at: Phase | null){
@@ -105,8 +109,9 @@ export function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
   var peak = inflationPeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
   var lines = [growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to)];
-  var ov = peak ? '<span class="fp-ov-label' + ((monthIdx(peak.m) - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((monthIdx(peak.m) - from + 0.5) / (to - from + 1)) + '">Ovulation · inflation peak</span>' : "";
+  var top = peak ? lines[1].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
+  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">Peak</span>' : "";
   return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div>' +
-    (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, peak) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
+    (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
     '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at);
 }

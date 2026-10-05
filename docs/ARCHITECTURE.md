@@ -644,9 +644,10 @@ emotion at the closing month, its years, and what followed a year later. Every l
   `DFEDTAR` to 2008-12-15, `DFEDTARU` since, the join a real cut) into alternating phases, and today's live move
   (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `inflationPeak` walks the cycle's
   CPI months with `cpiDirectionAt` (the season model's own 12-month trend, ±0.02): a run that rises and then turns
-  to falling gives a peak, and the cycle's highest is ovulation; a run whose first month is its highest is no peak.
+  to falling gives a peak, and the cycle's highest is the one marked ("Peak", on the prices curve); a run whose first month is its highest is no peak.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
-  so the card is fluid. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
+  so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
+  the lines flow as in her tracker (Keren: "make the chart lines a bit more feminine"); the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at
   its last month.
 - **AI Insights** (0.6.5, `ai-insights`): the open cycle's first door, its lede clamped to three lines, opening the
   page `sheet-ai-insights` (built by `buildAiPage`, drawn on open): the cycle's story (`moodDoor`, the same door a

@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,283 lines** in 36 files, about 611 KB, roughly **174 thousand tokens**. No session can
+The source is **9,288 lines** in 36 files, about 612 KB, roughly **174 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `adc2ceb` on 2026-10-05.
+Generated from commit `343da31` on 2026-10-05.
 
 ## The page
 
@@ -51,7 +51,7 @@ Counts: **32** modules, **660** top-level functions, **111** top-level vars, **3
 | `js/cycle-analysis.ts` | 275 | 58 | `data`, `dom`, `format`, `history`, `marks`, `model`, `render-core`, `roster` |
 | `js/cycle-tab.ts` | 97 | 4 | `data`, `dom`, `format`, `history-charts`, `indicators`, `insights`, `model`, `readings`, `refresh-season`, `render-core`, `roster` |
 | `js/era.ts` | 42 | 6 | `format`, `roster` |
-| `js/fed-phases.ts` | 113 | 16 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
+| `js/fed-phases.ts` | 118 | 16 | `data`, `format`, `history-fred`, `model`, `refresh-season` |
 | `js/format.ts` | 77 | 35 | — |
 | `js/history-charts.ts` | 406 | 13 | `charts`, `data`, `format`, `history`, `history-fred`, `model`, `readings`, `refresh-season` |
 | `js/history-fred.ts` | 18 | 14 | — |
@@ -1049,14 +1049,14 @@ falls in. **export** marks a name other modules import.
 | 44 | `VIEW_W` | `var VIEW_W =` |
 | 45 | `growthPoints` | `function growthPoints(` |
 | 51 | `monthPoints` | `function monthPoints(` |
-| 54 | `curve` | `function curve(` |
-| 64 | `pct` | `function pct(` |
-| 65 | `bandsHtml` | `function bandsHtml(` |
-| 76 | `yearsHtml` | `function yearsHtml(` |
-| 81 | `plotSvg` | `function plotSvg(` |
-| 91 | `levelsHtml` | `function levelsHtml(` |
-| 99 | `endMonthOf` | `function endMonthOf(` |
-| 104 | `fedPhasesCard` · export | `function fedPhasesCard(` |
+| 58 | `curve` | `function curve(` |
+| 68 | `pct` | `function pct(` |
+| 69 | `bandsHtml` | `function bandsHtml(` |
+| 80 | `yearsHtml` | `function yearsHtml(` |
+| 85 | `plotSvg` | `function plotSvg(` |
+| 95 | `levelsHtml` | `function levelsHtml(` |
+| 103 | `endMonthOf` | `function endMonthOf(` |
+| 108 | `fedPhasesCard` · export | `function fedPhasesCard(` |
 
 ### `js/format.ts`
 
