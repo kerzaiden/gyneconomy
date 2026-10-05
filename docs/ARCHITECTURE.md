@@ -640,14 +640,13 @@ emotion at the closing month, its years, and what followed a year later. Every l
 - **The Fed's phases** (0.6.7, `fed-phases`): the first card, for today and any closed cycle. `fedPhases` turns
   `fedMoves` (the Backfill's months with a Fed move, netted: the discount rate `INTDSRUSM193N` before 1982-09-27,
   `DFEDTAR` to 2008-12-15, `DFEDTARU` since, the join a real cut) into alternating phases, and today's live move
-  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `priceRuns` walks every CPI month
-  of the record once (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own
-  12-month trend, ±0.02): a run that rises and then turns to falling gives a peak; a run whose first month is its
-  highest is no peak. `inflationPeak` marks the highest peak whose month falls inside the cycle ("Peak", on the
-  prices curve). The walk is over the whole record, not the cycle's window, because a window cut the run at its
-  edges (0.6.17): a peak whose turn came after the close was lost, and a run entering the window looked like it began
-  there. An open cycle without one marks `peakSoFar`, the top of the run still going, hollow; a closed cycle without
-  one reads "After the close" with `nextPeak`, the first peak after its close.
+  (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `cyclePeak` marks every cycle's peak, its highest CPI
+  reading once the decline it inherited from the cycle before has passed. `findRuns` walks the whole record once
+  (cached on the history's length and last value) with `cpiDirectionAt` (the season model's own 12-month trend,
+  ±0.02) and gives each month that is not falling the top of its run; the cycle's opening months are skipped while
+  they are falling or belong to a run that topped before the cycle began, and the highest of the rest is the peak
+  ("Peak", on the prices curve and as a level line; "Peak so far", hollow, on the open cycle). The walk is over the
+  whole record because a run crosses cycle edges.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
   so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
   the lines flow as in her tracker (Keren: "make the chart lines a bit more feminine"); the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at

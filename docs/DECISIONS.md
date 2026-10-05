@@ -1249,7 +1249,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   interest environment should be with a capital E. And year by year … year capital Y, by it's fine to be lower caps,
   and year another capital Y. I think that is the convention." It covers container and card titles and the section
   headings; `titleCase` (format) applies it where the title is drawn, so a new title cannot miss it. Reading names
-  are names, not titles, and stay as written. (0.6.17)
+  are names, not titles, and stay as written. One exception, Keren's: "The market this cycle" stays in small
+  letters (`hiCard`'s `phrase`). (0.6.17)
 - **The health chart's card, Cycle Statistics, on a past cycle's page
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
@@ -1355,8 +1356,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Peak", on the prices curve, never "ovulation": "I don't think we should say ovulation in this app … We don't need
   inflation peak. Only peak because the orange legend says prices." A phase is the direction
   of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays in its phase and there are only two; the
-  moves are the discount rate before September 1982 and the target since. The peak is the highest price reading
-  before the season model's own price trend turns to falling, drawn only once it has turned, so it never forecasts.
+  moves are the discount rate before September 1982 and the target since. The peak is the cycle's highest price reading
+  (0.6.17, below; until then the highest before the price trend turned to falling).
   The curves stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title:
   "I'm already seeing it in the chart," then a head like the page's other cards, "Interest environment" ("environment
   would be better") with a hormone mark (a steroid ring, `hormoneSvg`). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
@@ -1364,13 +1365,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   bit smaller, then do it"). An open cycle with no confirmed peak shows its peak so far, hollow, and names it
   on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
   Taylor-rule line waits for potential GDP. (0.6.7)
-- **A peak belongs to the cycle of the month it peaked, even when prices turn down only after that cycle closed; a
-  closed cycle with no peak says so, with the peak that came after.** Keren saw no peak on the Go-Stop Cycle (1967–69):
-  prices rose through all three years and peaked in February 1970 (6.4%), so the card reads "Peak: After the close,
-  6.4% (Feb 1970)", one line like the others, rather than invent one. Reading the trend over the whole record
-  rather than inside each cycle also restored four peaks the cycle's edge had hidden: Second New Deal (May 1937),
-  Great Society (Oct 1966), Nifty Fifty (Nov 1974, 12.2%, not Feb 1970) and Bicentennial (Apr 1977); the Buyout
-  Cycle's moved from Mar 1984 to Oct 1990. (0.6.17)
+- **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
+  cycle before has passed.** Keren: "how can it be that a cycle has no peak? I mean, the relative range is the cycle
+  length, so it has to have a peak and a trough. By definition." The Go-Stop Cycle's is Nov 1969 (5.9%), at its close.
+  The inherited decline is skipped because a cycle's opening months are often the tail of the last one's peak (the
+  AI Cycle's highest month is Jan 2023, 6.3%, still falling from June 2022); "inherited" uses the season model's own
+  price trend: months falling, or in a rise that topped before the cycle began. Claude's reading of her rule. The
+  open cycle's is its peak so far, hollow; every cycle names its peak on its own level line. This replaced the
+  turning-point rule of 0.6.7, under which a peak counted only once prices turned down. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
   names how Mrs. Market feels now.** Keren: "Like a doctor would analyze a patient … I want to have emotional
   intelligence in this analysis … I want to understand how Mrs. Market is feeling at this present time."

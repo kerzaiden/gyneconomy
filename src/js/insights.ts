@@ -96,9 +96,9 @@ function marketCycleCard(m: CycleModel){
     return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%"; }).join(", ");
   var n = function(k: number, what: string){ return (k ? (["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"][k - 1] || k) : "no") + " " + what + (k === 1 || !k ? " year" : " years"); };
   var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
-  return hiCard("The Market This Cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
+  return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list +
     ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" +
-    (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."));
+    (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
 }
 var MOOD_CHART = [
   ["Optimism", 168, 290, "cream", -23, 7, "end"], ["Excitement", 211, 221, "amber", -23, 0, "end"], ["Thrill", 279, 158, "orange", -21, 0, "end"],

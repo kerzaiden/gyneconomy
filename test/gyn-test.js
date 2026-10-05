@@ -595,7 +595,7 @@ async function openPage(p, url, sheet) {
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
     (wx && wx.bar === 'Weather' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
-     wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The Market This Cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
+     wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
       ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
       : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
     await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);

@@ -25,32 +25,25 @@ function phaseAt(phases: Phase[], m: string){
   phases.forEach(function(p){ if (p.m <= m) at = p; });
   return at as Phase | null;
 }
-function topOf(run: MonthPoint[]){
-  var top = run.length ? run.reduce(function(a, b){ return b.v > a.v ? b : a; }) : null;
-  return top && top !== run[0] ? top : null;
-}
-var runsCache: { key: string; peaks: MonthPoint[]; open: MonthPoint | null } | null = null;
-function priceRuns(){
+function topOf(run: MonthPoint[]){ return run.reduce(function(a, b){ return b.v > a.v ? b : a; }).m; }
+var runsCache: { key: string; tops: Record<string, string> } | null = null;
+function runTops(){
   var last = cpiYoYHistory[cpiYoYHistory.length - 1], key = cpiYoYHistory.length + ":" + (last ? last.m + last.v : "");
-  if (!runsCache || runsCache.key !== key) runsCache = Object.assign({ key: key }, findRuns());
-  return runsCache;
+  if (!runsCache || runsCache.key !== key) runsCache = { key: key, tops: findRuns() };
+  return runsCache.tops;
 }
 function findRuns(){
-  var run: MonthPoint[] = [], peaks: MonthPoint[] = [], prev = "";
-  cpiYoYHistory.forEach(function(c){
-    var dir = cpiDirectionAt(c.m) || "", top = dir === "falling" && prev !== "falling" ? topOf(run) : null;
-    if (top) peaks.push(top);
-    if (dir === "falling") run = []; else run.push(c);
-    prev = dir;
-  });
-  return { peaks: peaks, open: topOf(run) };
+  var run: MonthPoint[] = [], tops: Record<string, string> = {};
+  function close(){ if (run.length){ var top = topOf(run); run.forEach(function(c){ tops[c.m] = top; }); } run = []; }
+  cpiYoYHistory.forEach(function(c){ if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c); });
+  close();
+  return tops;
 }
-function within(p: MonthPoint | null, from: string, to: string){ return !!p && p.m >= from && p.m <= to; }
-export function inflationPeak(from: string, to: string){
-  return priceRuns().peaks.filter(function(p){ return within(p, from, to); }).reduce(function(a: MonthPoint | null, b){ return !a || b.v > a.v ? b : a; }, null);
+export function cyclePeak(from: string, to: string){
+  var tops = runTops(), months = cpiYoYHistory.filter(function(c){ return c.m >= from && c.m <= to; }), k = 0;
+  while (k < months.length - 1 && !(tops[months[k].m] >= from)) k++;
+  return months.slice(k).reduce(function(a: MonthPoint | null, b){ return !a || b.v > a.v ? b : a; }, null);
 }
-export function peakSoFar(from: string, to: string){ var o = priceRuns().open; return within(o, from, to) ? o : null; }
-export function nextPeak(after: string){ return priceRuns().peaks.filter(function(p){ return p.m > after; })[0] || null; }
 
 // ---- The phases chart ----
 var VIEW_W = 1000, VIEW_H = 300, INSET = 18;
@@ -105,10 +98,8 @@ function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open:
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + '</svg>' + dot;
 }
 function level(cls: string, label: string, text: string){ return '<li class="' + cls + '"><b>' + label + ':</b> ' + text + '</li>'; }
-function peakLevel(m: CycleModel, best: MonthPoint | null, soFar: MonthPoint | null){
-  var next = m.ongoing || best ? null : nextPeak(m.endMonth);
-  return soFar ? level("fp-prices fp-so-far", "Peak so far", soFar.v.toFixed(1) + '% (' + monthName(soFar.m) + ')') :
-    next ? level("fp-prices", "Peak", "After the close, " + next.v.toFixed(1) + "% (" + monthName(next.m) + ")") : "";
+function peakLevel(m: CycleModel, peak: MonthPoint | null){
+  return peak ? level("fp-prices" + (m.ongoing ? " fp-so-far" : ""), m.ongoing ? "Peak so far" : "Peak", peak.v.toFixed(1) + '% (' + monthName(peak.m) + ')') : "";
 }
 function levelsHtml(m: CycleModel, at: Phase | null, peak: string){
   var r = m.reading, word = growthWord(r);
@@ -125,10 +116,10 @@ function endMonthOf(m: CycleModel){
 }
 export function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
-  var best = inflationPeak(fromM, toM), soFar = !best && m.ongoing ? peakSoFar(fromM, toM) : null, peak = best || soFar, b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
+  var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
   var lines = [growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to)];
   var top = peak ? lines[1].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (best ? "Peak" : "Peak so far") + '</span>' : "";
-  return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !best) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
-    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, peakLevel(m, best, soFar));
+  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + '</span>' : "";
+  return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
+    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, peakLevel(m, peak));
 }

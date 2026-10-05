@@ -40,8 +40,8 @@ export function titleCase(html?: string){
     return i % 2 ? p : p.replace(/[^\s]+/g, function(w){ n++; return capWord(w, n === 1 || n === words.length); });
   }).join("");
 }
-export function hiCard(name: string, state: Tone, text?: string | null, body?: string){
-  return '<div class="hi-card"><span class="hi-name ' + state + '">' + titleCase(name) + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
+export function hiCard(name: string, state: Tone, text?: string | null, body?: string, phrase?: boolean){
+  return '<div class="hi-card"><span class="hi-name ' + state + '">' + (phrase ? name : titleCase(name)) + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
 }
 export function dropWhatIsShown(full: string | null | undefined, shown: string | null | undefined){
   if (!full || !shown) return full || "";
