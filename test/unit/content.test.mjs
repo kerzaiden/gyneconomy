@@ -334,7 +334,7 @@ test('Horizon turns Pessimistic exactly when the curve inverts', async () => {
   assert.notEqual(horizonRead.word, 'Pessimistic');
 });
 
-test('a Cycle analysis result outside its range is Normal on its good side and flagged on the other', () => {
+test('a Cycle Analysis result outside its range is Normal on its good side and flagged on the other', () => {
   const rows = [...document.querySelectorAll('#chart-home .lab-row[data-open]')].map(r => ({ R: ROSTER_BY[r.dataset.open], li: r.closest('.lab-item') }));
   assert.equal(rows.length, ROSTER.length);
   rows.forEach(({ R, li }) => {

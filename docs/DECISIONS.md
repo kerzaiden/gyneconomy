@@ -75,6 +75,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
+- **Cycle Analysis is written with a capital A wherever it is named.** Keren: "cycle analysis should be with
+  capital letters at the beginning." (0.6.6)
 - **The Current Cycle page carries AI Insights above Cycle analysis, on the open cycle only, and the cycle's story
   opens the AI Insights page.** Keren: "the story, the narrative, I think it belongs to the AI insights" (0.6.6). A
   closed cycle, which has no AI Insights, keeps its story above Cycle analysis.
