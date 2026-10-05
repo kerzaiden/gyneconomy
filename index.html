@@ -629,7 +629,6 @@
   button.dx-year:hover .dx-year-n, button.dx-year:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
   button.dx-year:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
   .dx-year .peek-chev{ align-self:center; color:var(--text-muted); }
-  .dx-chev-blank{ visibility:hidden; }
   .dx-year-n{ font-family:"Cormorant Garamond", Georgia, serif; font-style:normal; font-weight:500; font-size:var(--type-section);
     line-height:1; color:var(--text-primary); font-variant-numeric:lining-nums; }
   .dx-year-v{ display:flex; flex-direction:column; gap:3px; min-width:0; }
@@ -28844,9 +28843,6 @@
     Q3: "09",
     Q4: "12"
   };
-  function quartersAhead(m) {
-    return m.ongoing ? Math.max(0, Math.round((m.dialYears - m.elapsedYears) * 4)) : 0;
-  }
   var SEASON_YEARS = 2;
   function closingReading(endYear) {
     var e = seasonTrack.filter(function(x) {
@@ -32873,11 +32869,11 @@
       return stripGroupName[r.g] + " " + r.n + (r.n === 1 ? " quarter" : " quarters");
     }).join(", ");
   }
-  function econChips(growth, prices, market, digits, soFar2, cls) {
+  function econChips(growth, prices, market, digits, soFar, cls) {
     function chip(label, v, unit) {
       return v == null ? "" : '<span class="chip"><i>' + label + "</i>" + fmtSigned(v, digits) + "%" + unit + "</span>";
     }
-    return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar2 ? '<span class="unit"> so far</span>' : "") + "</span></span>";
+    return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + "</span></span>";
   }
   function subjectRow(o) {
     return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
@@ -34879,30 +34875,9 @@
       var inYear = segs.filter(function(seg) {
         return parseInt(seg.q, 10) === y;
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
-      rows.push(yearRow(String(y), yearStrip(ytd ? soFar(m, inYear) : inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
+      rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
-    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + aheadRows(m) + rows.reverse().join("") + "</section>";
-  }
-  function runThisYear() {
-    return Math.min(4, Math.max(1, Math.round(cycleYtdFraction * 4)));
-  }
-  function soFar(m, inYear) {
-    var last = m.track.filter(function(seg) {
-      return seg.isNow;
-    })[0] || inYear[inYear.length - 1], out = inYear.slice();
-    while (last && out.length < runThisYear()) out.push(Object.assign({}, last, {
-      q: calendarTodayY + " Q" + (out.length + 1),
-      isNow: false
-    }));
-    return out;
-  }
-  function aheadRows(m) {
-    var left = quartersAhead(m) - (4 - runThisYear()), rows = [];
-    for (var y = calendarTodayY + 1; left > 0; y++, left -= 4) rows.unshift(yearRow(String(y), aheadStrips(Math.min(4, left)), "", void 0, CHEV.replace('"peek-chev"', '"peek-chev dx-chev-blank"')));
-    return rows.join("");
-  }
-  function aheadStrips(n) {
-    return strip("", "not yet run", stripTrack(n, "not yet run") + stripGap(4 - n, false, stripTrack)) + strip(" mkt-strip", "not yet run", stripDots(n, "not yet run") + stripGap(4 - n, false, stripDots));
+    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join("") + "</section>";
   }
   function yearRow(year, lead2, line, sheet, foot) {
     var tag = sheet != null ? "button" : "div";
@@ -34910,7 +34885,7 @@
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
-    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? runThisYear() : 4);
+    return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) + yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
   }
   function stripGap(n, ytd, fill2) {
     return n <= 0 ? "" : ytd ? fill2(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';
@@ -35034,9 +35009,10 @@
     var bp = polar(BADGE_AT, badgeDeg);
     parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + " " + bp[1] + ')" style="pointer-events:auto"><circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + "</text></g>");
     if (m.ongoing) {
+      var degPerQ = degPerYear / 4;
       var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
       var dotTo = SEAM_END - 1;
-      var dotN = quartersAhead(m);
+      var dotN = Math.round((dotTo - dotFrom) / degPerQ);
       for (var q = 0; q < dotN; q++) {
         var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + .5) / dotN);
         parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');

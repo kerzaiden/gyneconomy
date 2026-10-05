@@ -131,13 +131,10 @@ test('the Fed card prints the one Fed funds range', () => {
   assert.equal(tag('sheet-sign-hormones'), 'Tightening');
 });
 
-test('Year by year runs on to the end of a typical cycle, as the dial does: a grey line for seasons, grey dots for the market, as many as the dial’s', () => {
+test('the open year fills its row, as the dial does: a grey line for its seasons, grey dots for its market', () => {
   const open = document.querySelector('#diagnosis .dx-year .dx-year-lead');
   const strips = [...open.querySelectorAll('.strip')];
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
-  const ahead = document.querySelectorAll('#diagnosis .dx-years .mkt-strip .strip-dots i').length;
-  assert.ok(ahead > 0);
-  assert.equal(ahead, document.querySelectorAll('#cycle-dial .dial-dot').length);
 });
 
 test('the dial is titled by its cycle, its legend speaks in signs, and today’s story opens AI Insights', () => {

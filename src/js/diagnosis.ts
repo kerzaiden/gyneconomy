@@ -5,7 +5,7 @@ import { calendarSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
-import { cycleYtdFraction, diagnoseToday, nowModel, quartersAhead, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
+import { diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
 import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
@@ -25,26 +25,11 @@ function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
-    rows.push(yearRow(String(y), yearStrip(ytd ? soFar(m, inYear) : inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
+    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
   return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
-    after + aheadRows(m) + rows.reverse().join("") + '</section>';
-}
-function runThisYear(){ return Math.min(4, Math.max(1, Math.round(cycleYtdFraction * 4))); }
-function soFar(m: CycleModel, inYear: CycleModel["track"]){
-  var last = m.track.filter(function(seg){ return seg.isNow; })[0] || inYear[inYear.length - 1], out = inYear.slice();
-  while (last && out.length < runThisYear()) out.push(Object.assign({}, last, { q:calendarTodayY + " Q" + (out.length + 1), isNow:false }));
-  return out;
-}
-function aheadRows(m: CycleModel){
-  var left = quartersAhead(m) - (4 - runThisYear()), rows: string[] = [];
-  for (var y = calendarTodayY + 1; left > 0; y++, left -= 4) rows.unshift(yearRow(String(y), aheadStrips(Math.min(4, left)), "", undefined, CHEV.replace('"peek-chev"', '"peek-chev dx-chev-blank"')));
-  return rows.join("");
-}
-function aheadStrips(n: number){
-  return strip("", "not yet run", stripTrack(n, "not yet run") + stripGap(4 - n, false, stripTrack)) +
-    strip(" mkt-strip", "not yet run", stripDots(n, "not yet run") + stripGap(4 - n, false, stripDots));
+    after + rows.reverse().join("") + '</section>';
 }
 function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
@@ -55,7 +40,7 @@ function yearRow(year: string, lead: string, line: string, sheet?: string, foot?
 function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);
   return strip("", seasonRunsLabel(runs), seasonPills(runs, true) + stripGap(4 - inYear.length, ytd, stripTrack)) +
-    yearMarket(y, ytd, ytd ? runThisYear() : 4);
+    yearMarket(y, ytd, ytd ? Math.max(1, inYear.length) : 4);
 }
 function stripGap(n: number, ytd: boolean, fill: (n: number, title: string) => string){
   return n <= 0 ? "" : ytd ? fill(n, "not yet run") : '<span style="flex:' + n + ' 1 0"></span>';

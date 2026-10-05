@@ -3,7 +3,7 @@ import { byId, detailSlot, detailTexts, need, put, rovingKeys, ui } from "./dom.
 import { GYN } from "./live.ts";
 import { asOfLabel, calendarTodayY, hubTodayHtml, wheelMeta } from "./refresh-season.ts";
 import { CPI_TARGET, FED_TARGET_SRC, gdpSrc, sp500AnnualReturns, TEMP_BAND_HI, TEMP_BAND_LO, typicalCycleSrc, typicalCycleYears } from "./data.ts";
-import { cycleModel, cycleYtdFraction, quartersAhead, seasonGroup } from "./model.ts";
+import { cycleModel, cycleYtdFraction, seasonGroup } from "./model.ts";
 import { CATEGORIES } from "./roster.ts";
 import { marketPills, seasonPills, strip, seasonRuns, seasonRunsLabel, stripDots, stripTrack } from "./render-core.ts";
 import type { MarketRun } from "./render-core.ts";
@@ -82,9 +82,10 @@ function drawDial(m: CycleModel){
   parts.push('<g class="dial-today-badge" transform="translate(' + bp[0] + ' ' + bp[1] + ')" style="pointer-events:auto">' +
     '<circle r="' + BADGE_R + '"></circle><text class="lbl" y="-3.6">YEAR</text><text class="num" y="7.4">' + m.yearIndex + '</text></g>');
   if (m.ongoing){
+    var degPerQ = degPerYear / 4;
     var dotFrom = ORIGIN + m.elapsedYears * degPerYear;
     var dotTo = SEAM_END - 1;
-    var dotN = quartersAhead(m);
+    var dotN = Math.round((dotTo - dotFrom) / degPerQ);
     for (var q = 0; q < dotN; q++){
       var qp = polar(RM, dotFrom + (dotTo - dotFrom) * (q + 0.5) / dotN);
       parts.push('<circle class="dial-dot" cx="' + qp[0] + '" cy="' + qp[1] + '" r="1.7"></circle>');
