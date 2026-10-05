@@ -1398,7 +1398,7 @@
   <nav class="tabnav" aria-label="Sections">
     <div class="tabbar" role="tablist" aria-label="Dashboard sections">
       <button type="button" class="tab-btn active" data-tab="cycle" role="tab" id="tab-cycle" aria-controls="panel-cycle" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="3.5" r="2.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2"/></svg><span>Cycle</span></button>
-      <button type="button" class="tab-btn" data-tab="chart" role="tab" id="tab-chart" aria-controls="panel-chart" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v16h16"/><path d="M8.5 16v-4M12.5 16V7.5M16.5 16v-6.5"/></svg><span>Analysis</span></button>
+      <button type="button" class="tab-btn" data-tab="chart" role="tab" id="tab-chart" aria-controls="panel-chart" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5"/><path d="M14.5 9H17v2.5"/></svg><span>Analysis</span></button>
       <button type="button" class="tab-btn" data-tab="analysis" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.2 4.6v4h4"/><path d="M12 7.7V12l3 1.8"/></svg><span>Herstory</span></button>
       <button type="button" class="tab-btn" data-tab="portfolio" role="tab" id="tab-portfolio" aria-controls="panel-portfolio" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg><span>Portfolio</span></button>
     </div>
@@ -31486,8 +31486,8 @@
   function slidersSvg() {
     return markSvg('<path d="M5 6h14M5 12h14M5 18h14" stroke-width="1.8"/><circle cx="9" cy="6" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--surface)" stroke-width="1.8"/><circle cx="8" cy="18" r="2" fill="var(--surface)" stroke-width="1.8"/>');
   }
-  function statisticsSvg() {
-    return markSvg('<path d="M4 4v16h16" stroke-width="1.8"/><path d="M8.5 16v-4M12.5 16V7.5M16.5 16v-6.5" stroke-width="1.8"/>');
+  function chartSvg() {
+    return markSvg('<rect x="3.5" y="4" width="17" height="16" rx="2.5" stroke-width="1.8"/><path d="M7 15.5l3-3.5 2.5 2.5 4.5-5.5M14.5 9H17v2.5" stroke-width="1.8"/>');
   }
   function ecgSvg() {
     return markSvg('<path d="M1.8 12H5.4L8.0 6.9L10.5 17.9L12.6 3.8L14.7 18.2L17.2 6.9L19.0 12H22.2" stroke-width="1.9"/>');
@@ -34438,11 +34438,11 @@
     return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
   }
   function chartDetail() {
-    return "<h4>How Cycle Statistics reads</h4>" + facts([ "For a closed cycle each reading is its average over the cycle’s years, from its first bull year to its last bear year. For the cycle in progress it is the latest reading, judged against every reading of her closed cycles rather than their averages, because a single reading swings wider than an average does. Bull years are the calendar years the S&amp;P&nbsp;500’s total return closed up; the bleed is the run of bear years that closes the cycle.", "Each reading is sorted the way a blood test is. Normal (apricot) is the middle half of her closed cycles. Attention (yellow) is outside that middle half but within Tukey’s fences, one and a half times its span beyond it. Risk (red) is past a fence, the standard rule for an outlier. Under each result its tier is named, Normal, Attention or Risk, and the triangle by the figure points up when it is above its range, down when below. A result outside its range on the side that is good for that reading stays Normal: higher is good for growth, the S&amp;P&nbsp;500, consumer demand, the equity risk premium, confidence, the federal budget, productivity growth and bull years; lower is good for Shiller CAPE, the Buffett indicator, volatility, federal debt, interest payments, households’ debt service, the unemployment rate and the bleed. Temperature, interest rates, pressure, pulse, volume and a cycle’s length are judged on both sides, because either way can be a strain.", "Each normal range rests on the closed cycles that have the reading: a reading that begins late, like Volatility (1986) or Pressure and Households (2005), has only a few, and its range weighs less for it.", "Her health score is the share of the readings judged in a cycle that are normal, out of 100; each reading counts once. The score itself is judged the same way against the scores of her closed cycles: Normal from the lowest quarter of them up, Attention below that, Risk past the lower fence. The cycle’s own length, bull years and bleed are judged only once it has closed.", "Her Cycle Statistics describes her history, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading.", "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health score</b> is the share of results that are Normal, out of 100.", "<b>History, not forecast:</b> it describes her past, not what comes next." ]) + srcBlock([ FENCE_SRC ]);
   }
   function chartDoor(m) {
     var i = marketCycles.indexOf(m.era);
-    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', statisticsSvg(), "Cycle Statistics", trendText(visitNote(i)) + scoreBox(i));
+    return i < 0 ? "" : trendJump(' data-chart-cycle="' + m.era.name + '"', chartSvg(), "Cycle Statistics", trendText(visitNote(i)) + scoreBox(i));
   }
   var HOME_ID = "chart-home";
   function drawChart(id) {

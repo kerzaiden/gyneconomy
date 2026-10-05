@@ -158,9 +158,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Cycle history" heading: each cycle is its own white container, `--gap` apart.** Keren: "in her story page, I
   want the icon to be the icon that you have next to cycle history and drop the cycle history"; "make different
   containers for different cycles with the agreed upon margin". (0.6.3)
-- **Analysis's tab icon and Cycle Statistics's mark are a bar chart (three bars rising on an axis), drawn in the
-  tab icons' line.** Keren: "the icon needs to fit the description" (0.6.8). It replaced the rising graph of 0.6.3,
-  after a stethoscope and a heart with a pulse were tried for a "Cycle Health" name she then dropped.
+- **Analysis's More details opens on one line, the way a cycle-tracking app says it ("Averages are based on her 18
+  closed cycles since 1928"), then the method as five short bold-led bullets, scannable in about 15 seconds.** Keren:
+  "when I open more details in the analysis page, it's so long … Averages are based on your last six cycles";
+  "Don't erase everything … Just summarize it in a way that the human can scan it in, like, say, 15 seconds." The
+  count and first year are read from the cycle record; the full method is in docs/ARCHITECTURE.md. (0.6.8)
+- **Analysis's tab icon and Cycle Statistics's mark are the rising graph (a line climbing in a frame), the icon
+  Herstory wore before 0.6.3.** Keren: "make the analysis icon the current her story icon, meaning a graph that
+  goes up. This goes the same for the health chart" (0.6.3); a stethoscope, a heart with a pulse and a bar chart were
+  tried in 0.6.8, and she kept the graph: "I actually liked the chart icon we had". (0.6.3, 0.6.8)
 - **The health score sits on a grey a step lighter than the dial's track (Keren: "a bit lighter"), and its line says how the score itself reads
   against the scores of the closed cycles: "Attention against 18 closed cycles".** The score is judged like a result,
   low side bad: Normal from the closed cycles' lower quartile up, Attention below it, Risk past the lower fence.

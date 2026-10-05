@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,140 lines** in 35 files, about 601 KB, roughly **171 thousand tokens**. No session can
+The source is **9,140 lines** in 35 files, about 600 KB, roughly **170 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `ecfa5f8` on 2026-10-05.
+Generated from commit `98e0a56` on 2026-10-05.
 
 ## The page
 
@@ -1224,7 +1224,7 @@ falls in. **export** marks a name other modules import.
 | 41 | `bookSvg` · export | `function bookSvg(` |
 | 44 | `umbrellaSvg` · export | `function umbrellaSvg(` |
 | 46 | `slidersSvg` · export | `function slidersSvg(` |
-| 48 | `statisticsSvg` · export | `function statisticsSvg(` |
+| 48 | `chartSvg` · export | `function chartSvg(` |
 | 50 | `ecgSvg` · export | `function ecgSvg(` |
 | 52 | `weatherSvg` · export | `function weatherSvg(` |
 | 54 | `moodSvg` · export | `function moodSvg(` |
