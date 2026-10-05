@@ -536,7 +536,7 @@
   .range-bar b.below{ flex:0 0 28%; } .range-bar b.within{ flex:0 0 40%; } .range-bar b.above{ flex:0 0 28%; }
   .range-bar b.on{ background:var(--season, var(--text-muted)); }
   .range-bar i{ position:absolute; top:50%; width:11px; height:11px; margin:-5.5px 0 0 -5.5px; border-radius:50%; background:var(--surface); border:2.5px solid var(--text-primary); box-sizing:border-box; }
-  .seasons-rows .lag-row.now{ background:var(--accent-wash); }
+  .seasons-rows .lag-row.now{ background:var(--surface-2); }
   .seasons-rows .lag-row em{ font-style:normal; font-family:"Public Sans",sans-serif; font-size:var(--type-label); text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-ink); margin-left:6px; }
   .framework-rows .lag-row{ grid-template-columns: 0.9fr 1.2fr 1.5fr 0.8fr; padding:10px 12px; }
   .season-grid{ display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:4px; margin:16px 0 18px; }
