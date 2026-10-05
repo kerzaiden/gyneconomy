@@ -1,14 +1,14 @@
-import { CHEV, fmtSigned } from "./format.ts";
+import { CHEV, titleCase } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { calendarSvg, hormoneSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
-import { cycleYtdFraction, diagnoseToday, nowModel, yearAfter, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
+import { cycleYtdFraction, diagnoseToday, nowModel, yearGrowth, yearInflation, yearSoFar } from "./model.ts";
 import { econChips, marketPills, strip, stripDots, stripTrack, seasonPills, seasonRuns, seasonRunsLabel } from "./render-core.ts";
 import { buildCycleChart, chartDoor } from "./cycle-analysis.ts";
-import { aiInsights, buildAiPage, moodDoor } from "./ai-insights.ts";
+import { aiInsights, buildAiPage } from "./ai-insights.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
 import type { CycleModel } from "./model.ts";
 
@@ -18,28 +18,26 @@ var DIAG_SRC = [
   {t:"Robert Shiller \u2014 U.S. stock market data: the S&P 500\u2019s monthly average and the CAPE ratio", u:"https://shillerdata.com/"}
 ];
 function diagnosisHtml(m: CycleModel){
-  var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era) +
-    chartDoor(m)) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+  return dxSys(" fp", dxHead(hormoneSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
 }
-function yearByYear(m: CycleModel, after: string){
+function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
+function yearByYear(m: CycleModel){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];
   for (var y = m.era.from; y <= m.endYear; y++){
     var inYear = segs.filter(function(seg){ return parseInt(seg.q, 10) === y; }), ytd = m.ongoing && y === calendarTodayY, now = yearSoFar(y);
-    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
+    rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
-  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by year") +
-    after + rows.reverse().join(""));
+  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
 }
-function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
+function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title) + '</div>'; }
 function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
-function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
+function yearRow(year: string, lead: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
   return '<' + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '">' +
     '<span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + '</span>' : "") +
-    (line ? '<span class="dx-year-line">' + line + '</span>' : "") + '</span>' + (sheet != null ? CHEV : "") + (foot || "") + '</' + tag + '>';
+    '</span>' + (sheet != null ? CHEV : "") + (foot || "") + '</' + tag + '>';
 }
 function yearStrip(inYear: CycleModel["track"], y: number, ytd: boolean){
   var runs = seasonRuns(inYear);

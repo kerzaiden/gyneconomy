@@ -133,10 +133,6 @@ export function rankToDate(prior: (number | null)[], v: number | null | undefine
   if (v == null || prior.length < 12) return null;
   return 100 * prior.filter(function(x){ return x != null && x < v; }).length / prior.length;
 }
-export function yearAfter(endYear: number){
-  var v = sp500AnnualReturns[endYear + 1];
-  return v != null ? v : null;
-}
 export function diagnoseToday(){
   var x = moodToday();
   return x && x.word ? { stage:x.word, season:currentSeason, month:x.m } : null;

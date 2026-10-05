@@ -134,7 +134,7 @@ test('AI Insights opens from the open cycle only, every figure filled, its momen
   const page = document.getElementById('sheet-ai-insights');
   assert.deepEqual(broken(page.innerHTML), []);
   assert.ok(!/[{}]|—/.test([...page.querySelectorAll('.ai-p')].map(p => p.textContent).join('')));
-  assert.deepEqual([...page.querySelectorAll('.trend-card .trend-head')].map(h => h.textContent), [nowModel.era.name, 'The economy', 'The market', 'Risk factors', 'Closest moments']);
+  assert.deepEqual([...page.querySelectorAll('.trend-card .trend-head')].map(h => h.textContent), [nowModel.era.name, 'The Economy', 'The Market', 'Risk Factors', 'Closest Moments']);
   assert.equal(page.querySelectorAll('.ai-echo').length, 3);
   const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
   const { marketCycles } = await import('../../src/js/data.ts');
@@ -146,4 +146,17 @@ test('AI Insights opens from the open cycle only, every figure filled, its momen
   renderDiagnosis(cycleModel(cycleByName('Dot-Com Cycle')));
   assert.equal(document.querySelector('#diagnosis [data-open="sheet-ai-insights"]'), null);
   renderDiagnosis(nowModel);
+});
+
+test('every cycle page, open or closed, is built in one shape', async () => {
+  const { renderDiagnosis } = await import('../../src/js/diagnosis.ts');
+  const { cycleModel, nowModel } = await import('../../src/js/model.ts');
+  const { marketCycles } = await import('../../src/js/data.ts');
+  const shape = () => [...document.getElementById('diagnosis').children].map(c => c.tagName + '.' + c.className + '>' +
+    [...c.children].filter(k => !k.matches('.dx-year, .fp-marks')).map(k => k.tagName + '.' + k.className).join(','));
+  const today = shape();
+  const off = marketCycles.filter(c => !c.ongoing).filter(c => { renderDiagnosis(cycleModel(c)); return shape().join('|') !== today.join('|'); });
+  renderDiagnosis(nowModel);
+  assert.equal(today.length, 3);
+  assert.deepEqual(off.map(c => c.name), []);
 });

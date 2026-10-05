@@ -30,8 +30,18 @@ export function mean(a: number[]){ return a.reduce(function(x: number, y: number
 export function atQuarter(d: { q: string }){ return d.q; }
 export function atMonth(d: { m: string }){ return MONTHS_SHORT[parseInt(d.m.slice(5, 7), 10) - 1] + " " + d.m.slice(0, 4); }
 export function ordinal(n: number){ var t = n % 100, o = ["th","st","nd","rd"][(t - 20) % 10] || ["th","st","nd","rd"][t] || "th"; return n + o; }
-export function hiCard(name: string, state: Tone, text?: string | null, body?: string){
-  return '<div class="hi-card"><span class="hi-name ' + state + '">' + name + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
+var MINOR = ["a", "an", "and", "as", "at", "but", "by", "for", "in", "nor", "of", "on", "or", "per", "the", "to", "via", "vs"];
+function capWord(w: string, edge: boolean){
+  return !edge && MINOR.indexOf(w) >= 0 ? w : w.split("-").map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join("-");
+}
+export function titleCase(html?: string){
+  var parts = (html || "").split(/(<[^>]*>)/), words = parts.filter(function(p, i){ return i % 2 === 0; }).join(" ").split(/\s+/).filter(Boolean), n = 0;
+  return parts.map(function(p, i){
+    return i % 2 ? p : p.replace(/[^\s]+/g, function(w){ n++; return capWord(w, n === 1 || n === words.length); });
+  }).join("");
+}
+export function hiCard(name: string, state: Tone, text?: string | null, body?: string, phrase?: boolean){
+  return '<div class="hi-card"><span class="hi-name ' + state + '">' + (phrase ? name : titleCase(name)) + '</span>' + (text ? '<p>' + text + '</p>' : "") + (body || "") + '</div>';
 }
 export function dropWhatIsShown(full: string | null | undefined, shown: string | null | undefined){
   if (!full || !shown) return full || "";
@@ -42,7 +52,7 @@ export function dropWhatIsShown(full: string | null | undefined, shown: string |
 }
 export function highlightsHtml(cards: string[], cyclesHtml?: string, moreHtml?: string, head?: string){
   if (!cards.length && !cyclesHtml && !moreHtml) return "";
-  return '<section class="highlights insights"><div class="hi-head">' + (head || "Insights") + '</div>' + cards.join("") +
+  return '<section class="highlights insights"><div class="hi-head">' + titleCase(head || "Insights") + '</div>' + cards.join("") +
     (cyclesHtml || "") + (moreHtml || "") + '</section>';
 }
 export function maxIn<P extends Point & { v: number }>(series: P[], from: number, to: number){
@@ -70,7 +80,7 @@ export function factsFrom(text: unknown){
 export function srcBlock(list: Src[]){ return '<div class="src">' + srcHtml(list) + '</div>'; }
 function srcHtml(list: Src[]){ return list.map(function(s: Src){ return '<a href="' + s.u + '" target="_blank" rel="noopener">' + s.t + '</a>'; }).join(" · "); }
 export function fmtSigned(v: number, dp: number){ var a = Math.abs(v).toFixed(dp); return (+a === 0 ? "" : v > 0 ? "+" : "\u2212") + a; }
-export function popHead(title: string, sub: string){ return '<h4>' + title + '</h4><span class="marker-sub">' + sub + '</span>'; }
+export function popHead(title: string, sub: string){ return '<h4>' + titleCase(title) + '</h4><span class="marker-sub">' + sub + '</span>'; }
 export function hubLine(html: string){ return '<span class="hub-line">' + html + '</span>'; }
 export function qPretty(q: unknown){ var p = String(q).split(" "); return p.length > 1 ? p[1] + " " + p[0] : String(q); }
 export function capeFmt1(v: number){ return v.toFixed(1) + "\u00d7"; }

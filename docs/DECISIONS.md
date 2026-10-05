@@ -72,6 +72,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   each period ("maybe will give us better cycle names"): Postwar became Baby Boom (1947–53), Go-Go became Great
   Society (1963–66), Go-Go moved to 1967–69 where the go-go funds and conglomerates peaked (was Conglomerate),
   Rebound became Bicentennial (1975–77) and Inflation became Volcker (1978–81). (V690)
+  Keren then renamed 1967–69 the Go-Stop Cycle: "the go-go cycle should be Go-Stop cycle." Its story keeps "go-go"
+  where it names the funds of the day. (0.6.17)
 - **The health score ring's unfilled track is the container white (`--surface`), not the apricot box's own colour.**
   Keren: "the rest of the ring, you can't see it, so make it white or whatever would be visible on the apricot
   background." (0.6.5)
@@ -1225,11 +1227,30 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
 - **The Current Cycle page has no Cycle Statistics card; its health score sits in the AI Insights card and at the
   top of the AI Insights page, with one line saying what it is.** Keren: "we don't need the cycle statistics card on
   the current cycle. What we do need is the health score moved to the AI Insights container in the preview and be put
-  inside the page as well with some kind of explanation, very short one." A past cycle's page keeps the card. (0.6.13)
-- **Every container title on a cycle page reads like AI Insights: bold, deep purple, in sentence case.** Keren: "some
+  inside the page as well with some kind of explanation, very short one." (0.6.13)
+- **A past cycle's page is laid out like the current one: Interest Environment, one card, Year by Year. Its card is
+  Cycle Statistics, the cycle's story (three lines) and its health score, a shortcut to the Analysis tab set to that
+  cycle; the separate story card is gone.** Keren: "looking at past cycles, I see that we still have cycle statistics
+  and cycle story, meaning it's not up to date with recent changes … you should have cycle statistics just as a
+  shortcut because the analysis tab shows the current cycle … there should be some kind of a gateway to the historic
+  cycle statistic." (0.6.17)
+- **Every cycle page, today's and each past one, is one page built once: a change to one is a change to all.**
+  Keren: "all current cycle pages are supposed to be updated just one time." 0.6.13 changed only today's: the
+  Diagnosis branched on whether the cycle is open, the change went into the open branch, and the browser suite had
+  the past cycle's old layout written down as expected. Now the page is one sequence (Interest Environment, the
+  cycle's card, Year by Year) with a single slot, `cycleCard`, that differs only in what its card opens, and a unit
+  test fails if any closed cycle's page differs in shape from today's. (0.6.17)
+- **Every container title on a cycle page reads like AI Insights: bold, deep purple.** Keren: "some
   titles are in dark purple and some are in black. I think we need to be consistent and make all titles look like AI
   insights… it should be deep purple and bold." Interest environment and Year by year lost their small black capitals.
   (0.6.13)
+- **Every title is in title case: each word capitalised, short joining words (a, an, the, and, or, by, of, in, on,
+  to, for, at, as…) lower case unless first or last.** Keren: "every word in a title starts with a capital letter. So
+  interest environment should be with a capital E. And year by year … year capital Y, by it's fine to be lower caps,
+  and year another capital Y. I think that is the convention." It covers container and card titles and the section
+  headings; `titleCase` (format) applies it where the title is drawn, so a new title cannot miss it. Reading names
+  are names, not titles, and stay as written. One exception, Keren's: "The market this cycle" stays in small
+  letters (`hiCard`'s `phrase`). (0.6.17)
 - **The health chart's card, Cycle Statistics, on a past cycle's page
   goes straight to the Analysis tab, set to that cycle, rather than opening a page of its own.** Keren: "instead of
   health chart, call it cycle analysis … when I click on cycle analysis on the current cycle page, I move
@@ -1335,8 +1356,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   "Peak", on the prices curve, never "ovulation": "I don't think we should say ovulation in this app … We don't need
   inflation peak. Only peak because the orange legend says prices." A phase is the direction
   of the Fed's last move (Jensen, Mercer & Johnson, 1996), so a pause stays in its phase and there are only two; the
-  moves are the discount rate before September 1982 and the target since. The peak is the highest price reading
-  before the season model's own price trend turns to falling, drawn only once it has turned, so it never forecasts.
+  moves are the discount rate before September 1982 and the target since. The peak is the cycle's highest price reading
+  (0.6.17, below; until then the highest before the price trend turned to falling).
   The curves stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title:
   "I'm already seeing it in the chart," then a head like the page's other cards, "Interest environment" ("environment
   would be better") with a hormone mark (a steroid ring, `hormoneSvg`). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
@@ -1344,6 +1365,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   bit smaller, then do it"). An open cycle with no confirmed peak shows its peak so far, hollow, and names it
   on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a
   Taylor-rule line waits for potential GDP. (0.6.7)
+- **Every cycle has a peak: its highest price reading within the cycle, once the decline it inherited from the
+  cycle before has passed.** Keren: "how can it be that a cycle has no peak? I mean, the relative range is the cycle
+  length, so it has to have a peak and a trough. By definition." The Go-Stop Cycle's is Nov 1969 (5.9%), at its close.
+  The inherited decline is skipped because a cycle's opening months are often the tail of the last one's peak (the
+  AI Cycle's highest month is Jan 2023, 6.3%, still falling from June 2022); "inherited" uses the season model's own
+  price trend: months falling, or in a rise that topped before the cycle began. Claude's reading of her rule. The
+  open cycle's is its peak so far, hollow; every cycle names its peak on its own level line. This replaced the
+  turning-point rule of 0.6.7, under which a peak counted only once prices turned down. (0.6.17)
 - **The Diagnosis reads the patient from all of the app's readings (weather, mood, circulation, energy) and
   names how Mrs. Market feels now.** Keren: "Like a doctor would analyze a patient … I want to have emotional
   intelligence in this analysis … I want to understand how Mrs. Market is feeling at this present time."
@@ -1364,11 +1393,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   stands in the serif on the left; beside it the year's seasons in order, and under them Mrs. Market's emotion at
   its first and last month (one word when they agree; none before her mood can be read) and the S&P 500's return
   for the year ("so far" for the year in progress), all from the app's own record, nothing written by hand. The
-  year opens the sheet of its last quarter, the one the dial's centre opens. A closed cycle ends on "After": the
-  S&P 500 a year after the close. That figure is the S&P 500's return in the calendar year after the close, from
-  the yearly record the rows above it print, so every cycle back to 1928 ends on one; Claude's call, replacing the
-  monthly average twelve months on, which opens in 1948 and left the five cycles before 1947 without it. (1.8.0,
-  0.1.1)
+  year opens the sheet of its last quarter, the one the dial's centre opens. (1.8.0)
+  A closed cycle no longer ends on "After" (the S&P 500 the year after the close, 1.8.0 to 0.6.16). Keren: "I don't
+  need the after in the year by year component. I would just look at the next cycle." (0.6.17)
 - **The Mood page has one Insights box (since 1.5.0, the sheet behind Mood analysis's More details): the cycle of market emotions, then "She's in …" with the cycle on screen
   (its name and years) and its story as the card's text, and one details button; the figures behind her stage (her
   score, its rank, and each reading's rank) are the first fact behind that button.** Keren: "you have two containers

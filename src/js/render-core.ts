@@ -1,4 +1,4 @@
-import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, tagFor } from "./format.ts";
+import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, tagFor, titleCase } from "./format.ts";
 import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
@@ -185,7 +185,7 @@ export function cardDetailHtml(ind: Indicator, opts?: IndicatorPage){
     (function(){
       if (opts.bare || ind.info) return ind.info && !opts.bare ? moreRow(ind.info()) : "";
       var rest = dropWhatIsShown(ind.caption, ind.lead || ind.shortCaption || "");
-      return rest ? moreRow('<h4>' + ind.bodyTerm + '</h4><div class="marker-sub">' + ind.econTerm + '</div>' + factsFrom(rest)) : "";
+      return rest ? moreRow('<h4>' + titleCase(ind.bodyTerm) + '</h4><div class="marker-sub">' + ind.econTerm + '</div>' + factsFrom(rest)) : "";
     })();
 }
 // ---- RENDER: Pressure — U.S. Treasury yields, one maturity at a time ----
@@ -462,7 +462,7 @@ function renderPressurePage(){
         { rising:"climbing", falling:"easing" });
     }
   }
-  function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + matTitle() + '</h4>' + factsFrom(matDetail())); }
+  function drawPressureHead(){ pressureHead(maturities, matOf(matPick), matTitle(), '<h4>' + titleCase(matTitle()) + '</h4>' + factsFrom(matDetail())); }
   function drawPressure(){
     var spread = pressureView === "spread" && GYN.has("drawSpreadView");
     showPressureView(spread);
@@ -490,21 +490,21 @@ function renderPressureInsights(){
   cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ ' +
     'downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one ' +
     'risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-  cards.push(hiCard("The risk-free loan", "",
+  cards.push(hiCard("The Risk-Free Loan", "",
     "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives " +
     "seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate " +
     "a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" +
     (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") +
     "; this is that rate as the market re-prices it ten years out" +
     (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
-  cards.push(hiCard("Pressure on the borrower", "",
+  cards.push(hiCard("Pressure on the Borrower", "",
     "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls " +
     "its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest " +
     "payments card, on the Energy page. " +
     (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") +
     "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q +
     " to " + pct(hi.v) + " in " + hi.q + "."));
-  cards.push(hiCard("Level, not slope", "",
+  cards.push(hiCard("Level, Not Slope", "",
     "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the \u22ef menu, " +
     "because that gap is the market’s forecast of the next few years rather than a pressure it is under " +
     "now. Read them together: a high level with a flat or inverted curve is a body under strain that expects " +

@@ -42,7 +42,8 @@ rules below are the ones that matter most.
 
 - **The history component is one component.** A change to one history page is a change to all twelve;
   a page that cannot take it is a finding to report, not a page to skip. The same holds for the head menu
-  (one menu shape for every history, Keren, V602) and the history frame.
+  (one menu shape for every history, Keren, V602) and the history frame. **Every cycle page is one page** too
+  (Keren, 0.6.17): today's and each past cycle's share one layout, and a unit test fails if they part.
 - **A parent owns what its children share** (Keren, V662). One frame (`histFrame`: height and margins) for
   every history chart, one type scale (`--type-*`, from the Lovable DSM), options on components instead of
   page-scoped styles, a reading's page described by `ind.page` instead of branches on its name, and nothing

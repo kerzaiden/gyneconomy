@@ -7,8 +7,7 @@ import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
 import { ROSTER } from '../../src/js/roster.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
-import { chartDoor, labs } from '../../src/js/cycle-analysis.ts';
-import { cycleModel } from '../../src/js/model.ts';
+import { labs } from '../../src/js/cycle-analysis.ts';
 
 const open = marketCycles.findIndex(c => c.ongoing);
 const lab = id => labs().find(l => l.id === id);
@@ -24,19 +23,9 @@ test('the open cycle’s results are its cards’ figures, printed as the cards 
   assert.match(row('sheet-sign-market').querySelector('.lab-res b').textContent, / so far$/);
 });
 
-test('a cycle counts only its closed years as bull years, and names the year so far', () => {
+test('a cycle counts only its closed years as bull years', () => {
   const closed = Object.keys(sp500AnnualReturns).map(Number).filter(y => y >= marketCycles[open].from && y < calendarTodayY && sp500AnnualReturns[y] >= 0).length;
   assert.equal(lab('bull').per[open], closed);
-  const door = document.createElement('div');
-  door.innerHTML = chartDoor(cycleModel(marketCycles[open]));
-  assert.match(door.textContent, new RegExp('with ' + calendarTodayY + ' (up|down) so far'));
-});
-
-test('a note names only results far out on their bad side', () => {
-  const i = marketCycles.findIndex(c => c.name === 'Big Tech Cycle'), door = document.createElement('div');
-  door.innerHTML = chartDoor(cycleModel(marketCycles[i]));
-  assert.ok(lab('bull').per[i] > lab('bull').norm.fence);
-  assert.doesNotMatch(door.textContent, /Bull years ran far/);
 });
 
 test('the (i) says how many closed cycles each short range rests on', () => {

@@ -1,4 +1,4 @@
-import { atMonth, factsFrom, hiCard, highlightsHtml, metered, qLabel, srcBlock, stateOf } from "./format.ts";
+import { atMonth, factsFrom, hiCard, highlightsHtml, metered, qLabel, srcBlock, stateOf, titleCase } from "./format.ts";
 import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, need, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
@@ -20,7 +20,7 @@ function spreadSeries(): Record<string, SpreadSeries>{
       title: "10-Year minus 3-Month spread since 2005",
       lede: "Every U.S. recession since the late 1960s has followed an inversion of this spread — the Fed's own preferred near-term recession gauge. History says the recession tends to start only after the curve un-inverts, not while it's still inverted.",
       data: t10y3mHistory,
-      detail: '<h4>10-Year minus 3-Month spread, 2005–2026</h4>' +
+      detail: '<h4>10-Year Minus 3-Month Spread, 2005–2026</h4>' +
         '<p class="caption">Quarterly averages, not daily — so a very brief inversion (like the single-day dip on Mar 22, 2019) can be smoothed away. The point is each cycle’s shape, not every daily wiggle. Gray bands are NBER-dated recessions.</p>' +
         '<p class="caption follow">One episode often described as a false alarm, September 1998 (the Russia default/LTCM crisis), is a closer call than that: the spread came down to +0.12 points but never actually crossed zero, so it isn’t a true exception — the popular “1998 near-miss” story more likely refers to other spreads or to credit markets, not this one. The current cycle inverted in October 2022 — the deepest (−1.89 points on May 4, 2023) and longest in the daily series’ record, which starts in 1982 — and un-inverted in a choppy transition: the monthly average first reached zero in December 2024, dipped negative again in March–April and June–August 2025, and has held positive since September 2025 (the last negative daily close was October 16, 2025). See “Time from un-inversion to recession, historically” below for what past cycles suggest happens next.</p>' +
         srcBlock([
@@ -41,7 +41,7 @@ function spreadSeries(): Record<string, SpreadSeries>{
       title: "10-Year minus 2-Year spread since 2005",
       lede: "The version of this signal most widely quoted in financial media — it inverted about three months before the 3-month version did.",
       data: t10y2yHistory,
-      detail: '<h4>10-Year minus 2-Year spread, 2005–2026</h4>' +
+      detail: '<h4>10-Year Minus 2-Year Spread, 2005–2026</h4>' +
         '<p class="caption">Quarterly averages of the FRED T10Y2Y series, recomputed and cross-checked against the underlying 10-year and 2-year constant-maturity series (GS10, GS2). Gray bands are NBER-dated recessions.</p>' +
         '<p class="caption follow">It inverted July 6, 2022 (first negative daily close on FRED’s series) — about three months before the 3-month version did — and un-inverted in early September 2024 (touched zero on August 27, then held positive from September 6), its first sustained positive reading in over two years. It has preceded the same recessions the 3-month spread has, though exact inversion and un-inversion dates differ slightly between the two, cycle to cycle. The “Time from un-inversion to recession” panel below uses the 3-month spread specifically, since it has the longer, more rigorously documented track record.</p>' +
         srcBlock([
@@ -160,7 +160,7 @@ function deriveUninversionDetail(){
       return '<div class="lag-row"><span>' + c.cycle + '</span><span>' + c.uninv + '</span><span>' + c.recession + '</span><span>' + c.lag + '</span></div>';
     }).join('') + '</div>';
 
-  var detail = '<h4>Time from un-inversion to recession: the historical record</h4>' +
+  var detail = '<h4>Time From Un-Inversion to Recession: the Historical Record</h4>' +
     '<p class="caption">Not a model and not a survey — this is what actually happened in each of the last four comparable U.S. cycles, read straight off the Federal Reserve’s own 10-year-minus-3-month spread series on FRED (daily closes and monthly averages) and dated against NBER’s official recession start months. Where the daily and monthly series disagree on the exact month, a range is shown: from the first month the monthly average turned positive to the month of the last negative daily close.</p>' +
     rowsHtml +
     '<p class="caption">Range: 1–10 months. Average and median: about 4–5 months.</p>' +
@@ -218,7 +218,7 @@ function spreadInsights(){
     (fromLong ? "long end, which is growth being priced rather than relief about the Fed."
               : "short end, which is a central bank cutting into a slowdown rather than confidence in growth.") +
     " Which end moved is the reading: on a chart the two look identical."));
-  cards.push(hiCard("The short end", "",
+  cards.push(hiCard("The Short End", "",
     "Against the 2-year the curve averages " + sgn(r.q2.v) + "; against 3-month cash, " + sgn(r.q.v) +
     ". Both subtract from the same 10-year, so the difference is the short end alone — the 2-year " +
     "prices where the Fed is going, the bill only where it has been."));
@@ -233,7 +233,7 @@ function spreadInsights(){
 // ---- RENDER: Valuation (slow) ----
 function renderValuationTag(){
   var cape = fileRow("cape");
-  histNote("sheet-metric-valuation", '<h4>' + cape.marker + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
+  histNote("sheet-metric-valuation", '<h4>' + titleCase(cape.marker) + '</h4><div class="marker-sub">' + cape.sub + '</div>' + factsFrom(cape.note));
   addSources(now.valuation.src);
 }
 // ---- RENDER: Hormones ----
@@ -271,7 +271,7 @@ function renderHormones(){
   drawsPage("sheet-sign-hormones", draw);
   draw();
 
-  HIST_NOTE["hormones-range"] = function(){ return '<h4>Effective federal funds rate</h4>' + factsFrom(
+  HIST_NOTE["hormones-range"] = function(){ return '<h4>Effective Federal Funds Rate</h4>' + factsFrom(
     "The rate banks actually charge each other overnight, averaged by month. It is the price the whole " +
     "yield curve is quoted against, which is why it reads first on this page and the Treasury levels below " +
     "read second. The FOMC does not set this number; it sets a TARGET RANGE and steers the rate into it, " +
@@ -310,12 +310,12 @@ function renderHormones(){
     cards.push('<p class="hi-lede">Interest rates are the hormone: one signal, secreted on purpose, that the ' +
       'whole body then runs at the tempo of. Nothing on this page is measured off the economy \u2014 this is the ' +
       'instruction it was given.</p>');
-    cards.push(hiCard("Two clocks", "",
+    cards.push(hiCard("Two Clocks", "",
       "The rate climbs through an expansion, peaks at the top and collapses at the turn, which is the CYCLE: " +
       pk.length + " peaks since " + yOf(pk[0]) + ". Underneath runs a second clock \u2014 from the " +
       top.v.toFixed(2) + "% of " + yOf(top) + ", " + run + " peaks in a row came in lower than the one before, " +
       "until " + yOf(last) + " broke the run at " + last.v.toFixed(2) + "% against " + prev.v.toFixed(2) + "%."));
-    cards.push(hiCard("Rise, peak, withdraw", "",
+    cards.push(hiCard("Rise, Peak, Withdraw", "",
       "That shape is progesterone\u2019s: it rises through the second half of a cycle, peaks, and then falls \u2014 " +
       "and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal " +
       "rather than the level, because the cuts come after the top, never before it."));
@@ -399,9 +399,9 @@ function volatilityHighlights(y0: number){
         ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like \u2014 and inversions cluster near bottoms."
         : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
   hl.innerHTML = highlightsHtml([lede,
-    hiCard("Where it sits" + expandBtn(factsFrom(now.vixRow!.note)), stateOf(tag), nowTxt),
-    hiCard("Against the record", "", recTxt),
-    hiCard("What the shape is saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt)]);
+    hiCard("Where It Sits" + expandBtn(factsFrom(now.vixRow!.note)), stateOf(tag), nowTxt),
+    hiCard("Against the Record", "", recTxt),
+    hiCard("What the Shape Is Saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt)]);
 }
 // ---- RENDER: Analysis subjects — one headline figure per collapsible section ----
 function renderSubjectRows(){

@@ -1,4 +1,4 @@
-import { CHEV } from "./format.ts";
+import { CHEV, titleCase } from "./format.ts";
 
 export type Layer = { rank?: number; open(): boolean; close(): void; box?: () => Element | null };
 export type UiStore = {
@@ -70,7 +70,7 @@ export function rovingKeys(box: Element, sel: string, onAttr: string, vertical?:
   sync();
 }
 export function trendText(t: string, cls?: string){ return '<span class="trend-text' + (cls ? " " + cls : "") + '">' + t + '</span>'; }
-function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + head + end + '</span>'; }
+function trendHead(mark: string, head: string, end: string){ return '<span class="trend-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(head) + end + '</span>'; }
 function trendCard(tag: string, cls: string, attrs: string, mark: string, head: string, end: string, body: string){
   return '<' + tag + ' class="trend-card cat-mood' + cls + '"' + attrs + '>' + trendHead(mark, head, end) + body + '</' + tag + '>';
 }
