@@ -654,11 +654,12 @@ async function openPage(p, url, sheet) {
       return { title: sheet.querySelector('.topbar-title').textContent, seasons: sheet.querySelectorAll('#seasons-rows .lag-row').length,
         framework: sheet.querySelectorAll('#framework-rows .lag-row').length, cycle: /The Cycle Model/.test(sheet.textContent),
         row: /About Gyneconomy/.test(document.querySelector('[data-sheet="book"]').textContent),
+        line: /completed \d+ cycles, \d+\.\d years long on average/.test(document.getElementById('cycle-model-line').textContent),
         titles: [...sheet.querySelectorAll('.menu-section')].every(h => h.parentElement.classList.contains('model-card')),
         idea: (() => { const shown = () => [...document.querySelectorAll('#idea-prose p')].filter(x => !x.hidden).length, a = shown();
           document.getElementById('idea-more').click(); const b = shown(); document.getElementById('idea-more').click(); return a + '/' + b + '/' + shown(); })() };
     });
-    (about.title === 'About Gyneconomy' && about.seasons === 6 && about.framework > 1 && about.cycle && about.row && about.titles && about.idea === '1/4/1')
+    (about.title === 'About Gyneconomy' && about.seasons === 6 && about.framework > 1 && about.cycle && about.row && about.titles && about.line && about.idea === '1/4/1')
       ? ok('About Gyneconomy carries the models the Content tab held', about.seasons + ' seasons, ' + (about.framework - 1) + ' signs')
       : bad('About Gyneconomy carries the models the Content tab held', JSON.stringify(about));
   }

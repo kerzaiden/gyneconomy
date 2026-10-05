@@ -2,13 +2,13 @@
 
 **Generated. Do not hand-edit** — run `python3 tools/make-map.py` (or `npm run map`).
 
-The source is **9,392 lines** in 36 files, about 620 KB, roughly **176 thousand tokens**. No session can
+The source is **9,397 lines** in 36 files, about 621 KB, roughly **176 thousand tokens**. No session can
 read it whole, so this file exists to get you to the right two hundred lines.
 
 > **Line numbers go stale; anchors do not.** Use the **anchor** column with grep —
 > `grep -rn 'function curveVerdict(' src/` — and treat `file:line` as rough orientation only.
 
-Generated from commit `7144964` on 2026-10-05.
+Generated from commit `c8176c2` on 2026-10-05.
 
 ## The page
 
@@ -23,7 +23,7 @@ Generated from commit `7144964` on 2026-10-05.
 | `js/main.ts` | 32 modules | the entry: imports every module and calls their boots in order |
 | `page-tail.html` | 45 | the bundle's closing tag, the service-worker registration, </body></html> |
 
-Counts: **32** modules, **690** top-level functions, **114** top-level vars, **386** exported names, **19** boots.
+Counts: **32** modules, **692** top-level functions, **114** top-level vars, **386** exported names, **19** boots.
 
 ## Modules, in boot order
 
@@ -44,7 +44,7 @@ Counts: **32** modules, **690** top-level functions, **114** top-level vars, **3
 | `js/analysis.ts` | 151 | 15 | `charts`, `data`, `dial-cycle`, `dom`, `era`, `format`, `history`, `insights`, `live`, `model`, `refresh-season`, `render-core`, `render-pages`, `roster` |
 | `js/portfolio.ts` | 110 | 17 | `dom`, `format`, `marks`, `model`, `render-core` |
 | `js/pages-nav.ts` | 213 | 18 | `cycle-tab`, `data`, `dial-cycle`, `dom`, `inner-pages`, `live`, `readings`, `render-core`, `render-pages`, `roster` |
-| `js/tabs-menu.ts` | 215 | 7 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
+| `js/tabs-menu.ts` | 220 | 9 | `data`, `dial-cycle`, `dom`, `format`, `live`, `model`, `pages-nav`, `refresh-season` |
 | `js/repaint.ts` | 89 | 11 | `ai-insights`, `cycle-analysis`, `data`, `diagnosis`, `dom`, `insights`, `live`, `model`, `readings`, `render-core`, `roster` |
 | `js/ai-insights.ts` | 182 | 39 | `charts`, `cycle-analysis`, `data`, `dom`, `marks`, `model`, `refresh-season`, `render-core`, `roster` |
 | `js/charts.ts` | 300 | 39 | `format` |
@@ -87,7 +87,7 @@ this order. `tools/load-order.js` proves no shared value is read before somethin
 | 15 | `bootAnalysis` | `js/analysis.ts:146`–150 |
 | 16 | `bootPortfolio` | `js/portfolio.ts:109`–? |
 | 17 | `bootPagesNav` | `js/pages-nav.ts:206`–212 |
-| 18 | `bootTabsMenu` | `js/tabs-menu.ts:203`–214 |
+| 18 | `bootTabsMenu` | `js/tabs-menu.ts:208`–219 |
 | 19 | `bootRepaint` | `js/repaint.ts:72`–88 |
 
 ## Script, module by module
@@ -819,21 +819,23 @@ falls in. **export** marks a name other modules import.
 |---|---|---|
 | 13 | `seasonGrid` | `function seasonGrid(` |
 | 23 | `seasonModelNote` | `function seasonModelNote(` |
-| 33 | `wireIdea` | `function wireIdea(` |
-| 36 | `renderSeasonRows` | `function renderSeasonRows(` |
+| 33 | `rangePos` | `function rangePos(` |
+| 38 | `cycleModelLine` | `function cycleModelLine(` |
+| 42 | `wireIdea` | `function wireIdea(` |
+| 45 | `renderSeasonRows` | `function renderSeasonRows(` |
 
 #### TAB NAVIGATION (Cycle / Analysis / Herstory / Portfolio)
 
 | Line | Name | Anchor |
 |---|---|---|
-| 82 | `renderTopbar` | `function renderTopbar(` |
-| 111 | `wireTabKeys` | `function wireTabKeys(` |
+| 87 | `renderTopbar` | `function renderTopbar(` |
+| 116 | `wireTabKeys` | `function wireTabKeys(` |
 
 #### MENU (the top bar's hamburger): a full-screen sheet, closed by its back arrow or Escape
 
 | Line | Name | Anchor |
 |---|---|---|
-| 113 | `wireMenu` | `function wireMenu(` |
+| 118 | `wireMenu` | `function wireMenu(` |
 
 ### `js/repaint.ts`
 
@@ -1372,7 +1374,7 @@ Banner comments in `page-body.html`:
 | Line | Section |
 |---|---|
 
-Every `id` in the static DOM (108), which is what the renderers fill:
+Every `id` in the static DOM (109), which is what the renderers fill:
 
 | Line | id |
 |---|---|
@@ -1465,6 +1467,7 @@ Every `id` in the static DOM (108), which is what the renderers fill:
 | 254 | `sheet-book` |
 | 264 | `idea-prose` |
 | 270 | `idea-more` |
+| 275 | `cycle-model-line` |
 | 283 | `seasons-kicker` |
 | 284 | `seasons-rows` |
 | 288 | `framework-kicker` |

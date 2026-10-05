@@ -238,6 +238,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   visible and then view more"; the "Season" header "is unnecessary". Its (i) opens on one plain line and a
   two-by-three table (growth against potential by cold, in range and hot), so the model can be told word for word.
   (0.8.1, Oct 5, 2026)
+- **The Cycle Model speaks in bull and bear years, and says how many cycles the record holds and how long they
+  run on average, computed from the app's own closed cycles.** Keren: "A cycle runs from its first bull year to the
+  bear year that ends it … another sentence saying the average market cycle is …, so a user would have some kind
+  of notion of how we built this entire app." (0.8.1, Oct 5, 2026)
 - **Contact hands the note to the visitor's own mail app with the title and message filled in; the address
   never appears in the markup and is assembled only when Send is pressed.** A published page has no server,
   and an address in the markup can be scraped. (undated, Sep 19, 2026)
