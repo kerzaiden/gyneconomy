@@ -223,7 +223,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -244,6 +244,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (premium) out.premiumHistory = m(premium);
   if (moves) out.fedMoves = m(moves);
   if (pce) out.pceYoYHistory = m(pce);
+  if (potential) out.potentialYoYHistory = q(potential);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -324,7 +325,12 @@ async function main() {
   if (!pce.length || pce[0].m !== '2000-01') throw new Error('PCEPI: expected year-over-year months from 2000-01');
   say('PCEPI YoY     ' + pce.length + ' months, ' + pce[0].m + ' → ' + pce[pce.length - 1].m);
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce));
+  const today = new Date(), nowQ = today.getUTCFullYear() + ' Q' + (Math.floor(today.getUTCMonth() / 3) + 1);
+  const potential = yoyQuarterly2(quarterly(await fredSeries('GDPPOT', '1949-01-01'), 1, 1e6), 0, 10).filter(d => d.q < nowQ);
+  if (!potential.length || potential[0].q !== '1950 Q1') throw new Error('GDPPOT: expected year-over-year quarters from 1950 Q1');
+  say('GDPPOT YoY    ' + potential.length + ' quarters, ' + potential[0].q + ' → ' + potential[potential.length - 1].q + ' (CBO, through the last full quarter)');
+
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves, pce, potential));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 

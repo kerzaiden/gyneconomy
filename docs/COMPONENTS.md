@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `3f44bce` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `4728620` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -225,7 +225,7 @@ renderer speaks. Listed most-used first.
 | **`byId`** | dom.ts | 32 places |
 | **`need`** | dom.ts | 26 places |
 | **`put`** | dom.ts | 25 places |
-| **`fmtSigned`** | format.ts | 22 places |
+| **`fmtSigned`** | format.ts | 23 places |
 | **`titleCase`** | format.ts | 18 places |
 | **`metered`** | format.ts | 13 places |
 | **`histFrame`** | charts.ts | 11 places |
@@ -261,6 +261,7 @@ renderer speaks. Listed most-used first.
 | **`strip`** | render-core.ts | 6 places |
 | **`tagFor`** | format.ts | 6 places |
 | **`bandEnds`** | format.ts | 5 places |
+| **`growthWord`** | model.ts | 5 places |
 | **`isoDay`** | format.ts | 5 places |
 | **`labRow`** | data.ts | 5 places |
 | **`meanRule`** | charts.ts | 5 places |
@@ -270,6 +271,7 @@ renderer speaks. Listed most-used first.
 | **`side`** | cycle-analysis.ts | 5 places |
 | **`timelineSpan`** | history.ts | 5 places |
 | **`byIdMaybe`** | dom.ts | 4 places |
+| **`cpiYear`** | model.ts | 4 places |
 | **`curveAt`** | data.ts | 4 places |
 | **`cycLabel`** | model.ts | 4 places |
 | **`cycleModel`** | model.ts | 4 places |
@@ -278,16 +280,15 @@ renderer speaks. Listed most-used first.
 | **`fedFundsRange`** | data.ts | 4 places |
 | **`fill`** | ai-insights.ts | 4 places |
 | **`fmt`** | cycle-analysis.ts | 4 places |
-| **`growthWord`** | model.ts | 4 places |
 | **`labOf`** | ai-insights.ts | 4 places |
 | **`moodTrack`** | model.ts | 4 places |
 | **`normOf`** | cycle-analysis.ts | 4 places |
 | **`paintReading`** | repaint.ts | 4 places |
 | **`panel`** | ai-insights.ts | 4 places |
 | **`pctl`** | format.ts | 4 places |
+| **`qPretty`** | format.ts | 4 places |
 | **`refitHistory`** | history.ts | 4 places |
 | **`attrNum`** | history.ts | 3 places |
-| **`cpiYear`** | model.ts | 3 places |
 | **`curveAsOf`** | data.ts | 3 places |
 | **`cycleQtrIdx`** | model.ts | 3 places |
 | **`cycleView`** | dial-cycle.ts | 3 places |
@@ -304,9 +305,10 @@ renderer speaks. Listed most-used first.
 | **`normAt`** | cycle-analysis.ts | 3 places |
 | **`onScreen`** | dom.ts | 3 places |
 | **`openOf`** | render-core.ts | 3 places |
-| **`qPretty`** | format.ts | 3 places |
+| **`potentialGap`** | model.ts | 3 places |
 | **`quarterSheet`** | quarter-sheet.ts | 3 places |
 | **`rankToDate`** | model.ts | 3 places |
+| **`readSeason`** | model.ts | 3 places |
 | **`renderDiagnosis`** | diagnosis.ts | 3 places |
 | **`seasonGroup`** | model.ts | 3 places |
 | **`seasonPills`** | render-core.ts | 3 places |

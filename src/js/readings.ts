@@ -5,7 +5,7 @@ import { colPeek, histBar, histTip, PULSE_WINDOW, pulseTraceSvg, vitalRingSvg } 
 import { confidenceHistory, durablesHistory, premiumHistory, productivityHistory } from "./history-fred.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { ACT_BAND_HI, ACT_BAND_LO, FED_TARGET_SRC, PCE_SRC, PCE_SWITCH_SRC, capeAsOf, CAPE_FAIR, CONFIDENCE_LINE, CONFIDENCE_SRC, curveAsOf, curveSpread, DEF_FROM_YEAR, DEF_MEAN, deficitHistory, deriveUninvLag, DESIRE_LINE, DESIRE_SRC, PREMIUM_LINE, PREMIUM_SRC, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, fedFundsRange, fileRow, GDP_NORM, labRow, M2_PACE_HI, M2_PACE_LO, now, PRODUCTIVITY_SLOWDOWN, PRODUCTIVITY_SRC, PRODUCTIVITY_TREND, PULSE_PRE2008, PULSE_STEADY_HI, PULSE_STEADY_LO, savHistory, savNow, sp500AnnualReturnSource, sp500Years, t10y2yHistory, t10y3mHistory, t10yYieldHistory, t3mYieldHistory, TEMP_BAND_HI, TEMP_BAND_LO, unempHistory, valRow, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN, M2_FLOOD, PULSE_FLOOR, PULSE_CEIL, SAHM_TRIGGER, unempSahm, sahmOf, SAV_THIN, SAV_LOW, SAV_MID } from "./data.ts";
-import { cpiNow, growthWord } from "./model.ts";
+import { cpiNow, growthWord, HOLD_BAND, nowModel, potentialGap } from "./model.ts";
 import { HIST_NOTE, histHead, histNote } from "./history.ts";
 
 export type SeriesRecord<P> = { now: P; lo: P; hi: P };
@@ -275,6 +275,14 @@ export function unempState(v: number, sahm: number | null){
        : sahm != null && sahm >= SAHM_TRIGGER ? "serious" : "warning";
 }
 export function sahmNow(){ for (var i = unempSahm.length - 1; i >= 0; i--) if (unempSahm[i] != null) return unempSahm[i]; return null; }
+function potentialSentence(){
+  var r = nowModel.reading;
+  return 'And the economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 is the line the Season Model ' +
+    'reads growth against. The CBO puts it at ' + r.potential.toFixed(1) + '% for ' + qPretty(r.gdpLatest.q) +
+    ', and at 2.1% a year through 2030, easing to 1.8% after that as the population ages. The latest quarter, ' +
+    fmtSigned(r.gdpLatest.v, 1) + '%, is ' + potentialGap(r) + ' potential, so the economy reads as ' +
+    growthWord(r) + (Math.abs(r.gdpLatest.v - r.potential) <= HOLD_BAND ? ', the side it was already on' : '') + '.';
+}
 export function growthInfoHtml(){
   return '<h4>Real GDP Growth</h4>' +
     '<p class="caption">The figure is real gross domestic product against the same quarter a year earlier ' +
@@ -288,13 +296,11 @@ export function growthInfoHtml(){
       'is drawn this way and said so.</p>' +
     '<p class="caption follow">Two other lines matter more than the edges. The dashed line on ' +
       'the chart is this series\u2019 own long-run average, <b>' + GDP_NORM + '%</b> \u2014 the middle of the record ' +
-      'rather than the edge of it, and the honest answer to "is this quick or slow". And the CBO puts the ' +
-      'economy\u2019s <b>potential</b> growth \u2014 what it can sustain without overheating \u2014 at 2.1% a year through ' +
-      '2030, easing to 1.8% after that as the population ages. Today\u2019s reading sits inside the band, below the ' +
-      'long-run average, and almost exactly at potential: the economy is growing about as fast as it can.</p>' +
+      'rather than the edge of it, and the honest answer to "is this quick or slow". ' + potentialSentence() + '</p>' +
     srcBlock([
       {t:"BEA \u2014 Gross Domestic Product", u:"https://www.bea.gov/data/gdp/gross-domestic-product"},
-      {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"}
+      {t:"CBO \u2014 The Budget and Economic Outlook: 2026 to 2036", u:"https://www.cbo.gov/publication/62105"},
+      {t:"CBO via FRED \u2014 Real Potential Gross Domestic Product (GDPPOT)", u:"https://fred.stlouisfed.org/series/GDPPOT"}
     ]);
 }
 function velocityVerdict(v: number): Tag {

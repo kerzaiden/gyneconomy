@@ -572,25 +572,43 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   confirmed both at V668. (V193, V668)
 - **The season is computed and never set by hand; `seasonOverride` stays null.** It follows Keren's rule:
   inflation rising while growth falls is stagflation. (undated)
-- **Growth's direction is the trend of real GDP year over year across the last eight quarters (±0.025 pp a
-  quarter counts as flat); prices are hot above 3% and cold below 1%, their direction a trend fitted to the
-  last twelve monthly readings (±0.02 pp a month counts as flat).** Keren first chose six quarters after seeing
-  what each window does (four would change season 34 times in 37 years), then eight in V687, on seeing growth
-  slow from 3.1% to 2.1% over two years while six quarters still read rising off one 2.7% quarter (Q1 2026):
-  "so would you say that 8 quarters is the more conservative view?" Eight needs two years of evidence, so one
-  odd quarter cannot swing the season; it turns later at real turns and changes season about as often (63
-  seasons since 1989 against 62). It moved today from Summer to Autumn–Stagflation (since Q3 2025), changed 33
-  of 147 past quarters, and took the Summers from 8 to 11. The inputs sit on screen so the reader can check the
-  call. (V221, Sep 18, 2026; V687)
-- **The season model's flat tolerances (±0.025 pp a quarter, ±0.02 pp a month, ±0.1 pp a year before 1949) are
-  Keren's call under the rule that cut-offs come from convention or the record.** A 95% significance test on the
-  same slopes was measured first and would have moved 123 of 382 quarters: it cannot run on the two annual figures
-  before 1950 (1932 read Spring), and eight quarters seldom clear 95% until a turn is well under way (2020 Q2 read
-  Spring). The test asks whether a trend is certain; a season has to say it has turned before certainty arrives.
-  Keren: "Keep mine". (1.2.2; the full list is in code-review/trends-1.3.0.md in the project files)
-- **In expansion, hot is Summer, and otherwise heating is Spring–Reflation and cooling is Spring–Deflation. In
-  contraction, cold is Winter, and otherwise cooling is Autumn–Disinflation and heating or steady is
-  Autumn–Stagflation, within or above the range.** Keren's season table. (undated, Sep 18–19, 2026)
+- **Growth's side is real GDP against a year earlier set beside the economy's potential growth: at or above
+  potential is expansion, below it is contraction. Prices are hot above 3% and cold below 1%, their direction a
+  trend fitted to the last twelve monthly readings (±0.02 pp a month counts as flat).** Keren: Autumn's growth is
+  usually positive, so calling it "contracting" by direction alone was wrong; "stagflation is a stagnant growth
+  economy". She asked for an improved Season Model, not the Investment Clock, and chose potential as the line. It
+  replaced the eight-quarter trend of V687. Measured on 1950 Q1–2026 Q2 before shipping: it caught all 11 NBER
+  recessions (38 of 39 recession quarters), turned with the recession quarter rather than three quarters after it,
+  and left today Autumn–Stagflation (growth 2.1%, potential 2.2%, prices 3.4% and heating). The report is
+  season-model/potential-test.md in the project files. (0.8.0, Oct 5, 2026)
+- **Potential is CBO's real potential GDP (FRED GDPPOT), year over year, from 1950; before 1950 it is the trend
+  of real GDP from the 1929 business-cycle peak to the 1948 one (NBER), 3.46% a year, computed from the app's own
+  annual GDP.** CBO's estimates begin in 1949, so its first year-over-year reading is 1950 Q1, and only its
+  estimates through the last full quarter are kept, never its projection. Measuring trend from peak to peak is the
+  standard way to keep a slump from dragging the line down; an HP filter was tried and failed (−4.5% in 1931,
+  +12.7% in 1941). Keren asked for a calculated potential for 1928–49; Claude chose the peak trend and told her.
+  With it the contraction years are 1930–33, 1938, 1945–47 and 1949, every NBER recession of the span; 1928 reads
+  contraction (Winter). (0.8.0, Oct 5, 2026)
+- **Within 0.47 points of potential, the economy keeps the side it was on, from one continuous sequence across all
+  of history, never reset at a cycle's start; at the very start of the series, at or above potential is
+  expansion.** 0.47 points is the mean absolute revision of real GDP's annual growth from its earliest estimate to
+  its latest, 1993–2015 (Fixler, Greenaway-McGrevy and Grimm, Survey of Current Business, January 2018, Table 9):
+  a gap smaller than that is inside what BEA itself later revises. Keren left the margin to Claude ("do it
+  yourself"). Without it the side switched 58 times since 1950, with 82 quarters within half a point of
+  potential; with it, 42. (0.8.0, Oct 5, 2026)
+
+- **The price direction's flat tolerance (±0.02 pp a month) is Keren's call under the rule that cut-offs come
+  from convention or the record.** A 95% significance test on the same slopes was measured first; it asks whether a
+  trend is certain, and a season has to say it has turned before certainty arrives. Keren: "Keep mine". The growth
+  tolerances it stood beside went with the eight-quarter trend in 0.8.0. (1.2.2; the full list is in
+  code-review/trends-1.3.0.md in the project files)
+
+- **In expansion, hot is Summer–Inflation; otherwise cooling is Spring–Deflation and heating or steady is
+  Spring–Reflation, within or below the range. In contraction, cold is Winter–Deflation; otherwise heating is
+  Autumn–Stagflation and cooling or steady is Autumn–Disinflation, within or above the range.** Keren's season
+  table. Steady moved from Stagflation to Disinflation in 0.8.0, when she set the table out again: stagflation is
+  prices heating while growth stagnates. (Sep 18–19, 2026; 0.8.0, Oct 5, 2026)
+
 - **Stagflation does not need prices above the range; it mirrors expansion.** Keren made the two sides
   symmetric "even though heating-within-range is empirically rare". (undated, Sep 19, 2026)
 - **Spring–Deflation (expansion, prices cooling, within or below the range) replaced the Goldilocks Zone;
@@ -600,28 +618,23 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   Keren's choice. (undated, Sep 18, 2026)
 - **The second Autumn is "Autumn–Stagflation", with no "Late"; its key stays `lateautumn`.** Keren dropped
   "Late", and the key stays so nothing downstream moves. (undated, Sep 19, 2026)
-- **Shrinking real GDP is contraction, whatever its direction.** When the latest growth reading (a quarter
-  against the same quarter a year earlier, or a year before 1949) is below zero, the regime is contraction even if
-  the trend is rising. Zero is the line between growing and shrinking, so no cut-off is set. It moved 13 quarters,
-  none after 1982: 1931 and 1933 from Spring to Winter, 1947 and 1982 Q1 from Summer to Autumn. Keren: 1931 "is
-  cold and cooling and growth is contracting, I would think it is winter"; chose "Shrinking is contraction".
-  (1.6.0, Oct 3, 2026)
-- **Flat growth keeps whichever regime the economy was already in, from one continuous season sequence across
-  all of history, never reset at a cycle's start; flat falls back to expansion only at the very start of the
-  series.** Keren: flat growth with prices still falling from a contraction should keep reading as
-  contraction. (undated, Sep 18, 2026)
+- **Shrinking real GDP is contraction.** Below zero is always more than 0.47 points below potential, so the
+  potential rule gives it without a rule of its own. It was a separate rule from 1.6.0 (Oct 3, 2026), when growth's
+  side was a direction; Keren: 1931 "is cold and cooling and growth is contracting, I would think it is winter".
+  (1.6.0; 0.8.0)
+
+
 - **The model's own values stay "expansion" and "contraction"; only the on-screen label changes.** Renaming a
   value to change a label turns a display tweak into a data bug. (V304)
 - **The Investment Clock lives on the Portfolio tab only, read from the Season Model's regime and the direction of
   inflation; no season page points to an asset class.** The tilt on the season pages was dropped at Keren's
   instruction (Sep 17, 2026); she brought the clock back as a portfolio method (0.5.0, Oct 4, 2026). Steady prices
   count with rising, since the clock has no steady phase (Claude's call).
-- **Before quarterly GDP (1947), a season is read from annual real GDP growth: the trend across the last two
-  years, ±0.1 pp a year counting as flat (the quarterly ±0.025 pp a quarter, at a year's scale), with prices
-  read monthly as always (CPIAUCNS before 1948).** Keren chose annual seasons for the older cycles (V690). Two
-  years is the window nearest eight quarters in the span of GDP it reads; it fills every quarter of a year, and
-  the quarters before the first quarterly reading (1949 Q4). Like the quarterly rule it reads direction, not level: 1931 reads Spring — deflation, because
-  growth rose from −8.5% to −6.4%. (V690)
+- **Before quarterly GDP (1948), a season is read a year at a time: that year's real GDP growth against the
+  1929–48 peak trend, with prices read monthly as always (CPIAUCNS before 1948), the December reading standing for
+  the year.** Keren chose annual seasons for the older cycles (V690). From 1948 Q1 every quarter is read, against
+  the peak trend until 1950 and CBO's potential after. (V690; 0.8.0)
+
 - **Before BEA's annual growth (1930), growth is MeasuringWorth's real GDP (Johnston and Williamson), joined to
   BEA at 1930, so the Great Depression Cycle has a season in every year from 1928.** Keren chose "Extend GDP"
   over reading the 1920s–40s from industrial production or leaving 1928–30 blank. Claude chose MeasuringWorth over

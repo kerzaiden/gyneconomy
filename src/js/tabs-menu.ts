@@ -3,7 +3,7 @@ import { byId, expandBtn, layer, need, put, rovingKeys, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
 import { wheelMeta } from "./refresh-season.ts";
 import { frameworkRows } from "./data.ts";
-import { cpiNow, currentEra, currentSeason, growthWindowWord, seasonGroup, seasonWhy } from "./model.ts";
+import { cpiNow, currentEra, currentSeason, HOLD_BAND, PEAK_TREND, PEAK_YEARS, seasonGroup, seasonWhy } from "./model.ts";
 import { cycleView, one, settleAll, showCycle } from "./dial-cycle.ts";
 import { sourceIndex } from "./pages-nav.ts";
 
@@ -11,14 +11,14 @@ type SourceGroup = [string, RegExp | null];
 
 // ---- RENDER: About Gyneconomy — the season model and the framework ----
 function seasonModelNote(){
-  return '<h4>The Season Model</h4>' + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([
-    "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.",
-    "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.",
-    "<b>Temperature</b> is inflation against a 1\u20133% band, read on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
-    "<b>In expansion</b>, hot is Summer; otherwise heating is Spring \u2014 reflation and cooling is Spring \u2014 deflation.",
-    "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn \u2014 disinflation and heating or steady is Autumn \u2014 stagflation.",
-    "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.",
-    "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.",
+  return '<h4>The Season Model</h4>' + ledeHtml("Two questions set the season: is the economy growing faster or slower than it can, and how warm are prices?") + facts([
+    "<b>Growth</b> is real GDP against a year earlier, set beside the economy\u2019s <b>potential</b>: how fast it can grow at full use without overheating. At or above potential is expansion; below it is contraction, even while output still grows.",
+    "<b>Potential</b> is the Congressional Budget Office\u2019s estimate from 1950. Before then it is the economy\u2019s own trend from its " + PEAK_YEARS[0] + " peak to its " + PEAK_YEARS[1] + " peak, " + PEAK_TREND.toFixed(1) + "% a year.",
+    "<b>A margin of " + HOLD_BAND + " points</b> either side of potential keeps the economy on the side it was on. That is how far a year\u2019s growth moves, on average, between its first estimate and its latest (BEA, 2018), so a smaller gap is not yet a turn.",
+    "<b>Temperature</b> is inflation against a 1\u20133% band, read on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since, hot above it and cold below it, and its trend over twelve months: heating, cooling or steady. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
+    "<b>In expansion</b>, hot is Summer \u2014 inflation; otherwise cooling is Spring \u2014 deflation, and heating or steady is Spring \u2014 reflation.",
+    "<b>In contraction</b>, cold is Winter \u2014 deflation; otherwise heating is Autumn \u2014 stagflation, and cooling or steady is Autumn \u2014 disinflation.",
+    "<b>Before 1948</b> GDP is counted once a year, so the earliest seasons are read a year at a time.",
     seasonWhy
   ]);
 }
@@ -27,9 +27,9 @@ function renderSeasonRows(){
   var seasonRules = [
     {key:"winter",          growth:"Contraction", temp:"Cold",    zones:{below:1},  range:"Below the range — cold"},
     {key:"springdeflation", growth:"Expansion",  temp:"Cooling", zones:{within:1, below:1}, range:"Cooling — within or below the range"},
-    {key:"spring",          growth:"Expansion",  temp:"Heating", zones:{within:1, below:1}, range:"Heating — within or below the range"},
+    {key:"spring",          growth:"Expansion",  temp:"Heating or steady", zones:{within:1, below:1}, range:"Heating or steady — within or below the range"},
     {key:"summer",          growth:"Expansion",  temp:"Hot",     zones:{above:1},  range:"Above the range — hot"},
-    {key:"autumn",          growth:"Contraction", temp:"Cooling", zones:{within:1, above:1}, range:"Cooling — within or above the range"},
+    {key:"autumn",          growth:"Contraction", temp:"Cooling or steady", zones:{within:1, above:1}, range:"Cooling or steady — within or above the range"},
     {key:"lateautumn",      growth:"Contraction", temp:"Heating", zones:{within:1, above:1}, range:"Heating — within or above the range"}
   ];
   function rangePos(v: number){

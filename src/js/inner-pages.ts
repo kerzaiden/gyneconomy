@@ -3,7 +3,7 @@ import { byId, byIdMaybe, focusQuiet, layer, moreRow, need, put } from "./dom.ts
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
 import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
-import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.ts";
+import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, potentialGap, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.ts";
 import { deficitBlock, dsrInfoHtml, growthInfoHtml, householdsNow, phaseClass, savInfoHtml, tempCaptionFull, tempInfo, tempLeadShown } from "./readings.ts";
 import { cpiHistoryChart, deficitChart, gdpHistoryChart, householdsChart, unempHistoryChart } from "./history-charts.ts";
@@ -245,7 +245,7 @@ function gdpHighlights(r: typeof nowModel.reading, gq: QuarterPoint[]){
     "% a year" + (contractions ? " and turned negative in " + contractions + " of them." : ", and has not turned negative in any of them.")));
   cards.push(hiCard("The Latest Quarter", phaseClass(r.regime),
     qLabel(r.gdpLatest.q) + " came in at " + r.gdpLatest.v.toFixed(1) + "%, " +
-    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average, and the season model reads the economy as " +
+    (r.gdpLatest.v >= cycAvg ? "above" : "below") + " this cycle\u2019s own average and " + potentialGap(r) + " the economy\u2019s potential of " + r.potential.toFixed(1) + "%, so the season model reads the economy as " +
     growthWord(r) + "."));
   put("gdp-highlights", highlightsHtml(cards, "", moreRow(growthDetail)));
 }

@@ -107,7 +107,7 @@ function levelsHtml(m: CycleModel, at: Phase | null, peak: string){
   var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
   return '<ul class="fp-levels">' + (at ? level("fp-rate", "Federal funds rate", (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m)) : "") +
     level("fp-prices", "Prices", range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)') + peak +
-    level("fp-growth", "Growth", word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%)') + '</ul>';
+    level("fp-growth", "Growth", word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%, potential ' + r.potential.toFixed(1) + '%)') + '</ul>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
