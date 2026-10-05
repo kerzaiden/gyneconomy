@@ -1375,7 +1375,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   (0.6.17, below; until then the highest before the price trend turned to falling).
   The curves stop at today: an economic cycle has no known length, so no typical cycle is drawn ahead. No title:
   "I'm already seeing it in the chart," then a head like the page's other cards, "Interest environment" ("environment
-  would be better") with a hormone mark (a steroid ring, `hormoneSvg`). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
+  would be better") with an orbit mark (`orbitSvg`: a hollow centre, a ring, three hollow dots on it), redrawn from Keren's own drawing:
+  "Make this the interest environment icon" (0.7.1; a steroid ring, `hormoneSvg`, until then). No legend: each level line carries its curve's colour as a dot and on its label, and the rate's
   line is named "Federal funds rate"; every line fits on one line at the meta size ("if you need to make the text a
   bit smaller, then do it"). An open cycle with no confirmed peak shows its peak so far, hollow, and names it
   on its own line: "I do want to see what is the highest points of prices in that current cycle." The Fed's stance is the only rate reading beside the seasons for now; a

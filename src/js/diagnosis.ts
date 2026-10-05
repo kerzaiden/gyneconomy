@@ -1,7 +1,7 @@
 import { CHEV, titleCase } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { calendarSvg, hormoneSvg } from "./marks.ts";
+import { calendarSvg, orbitSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns, typicalCycleYears } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -19,7 +19,7 @@ var DIAG_SRC = [
 ];
 function diagnosisHtml(m: CycleModel){
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(hormoneSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
+  return dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(m)) + cycleCard(m) + yearByYear(m);
 }
 function cycleCard(m: CycleModel){ return m.ongoing ? aiInsights() : chartDoor(m); }
 function yearByYear(m: CycleModel){
