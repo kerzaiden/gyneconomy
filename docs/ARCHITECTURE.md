@@ -645,6 +645,7 @@ emotion at the closing month, its years, and what followed a year later. Every l
   (`now.fedFunds.lastMove` on `asOf`) opens a new one before the next Backfill. `inflationPeak` walks the cycle's
   CPI months with `cpiDirectionAt` (the season model's own 12-month trend, ±0.02): a run that rises and then turns
   to falling gives a peak, and the cycle's highest is the one marked ("Peak", on the prices curve); a run whose first month is its highest is no peak.
+  An open cycle without one marks `peakSoFar`, the top of the run still going, hollow.
   Bands, dot and labels are HTML laid over an SVG drawn with `preserveAspectRatio="none"` and non-scaling strokes,
   so the card is fluid. Prices and the Fed funds rate are drawn as quarterly means through a Catmull-Rom curve, so
   the lines flow as in her tracker (Keren: "make the chart lines a bit more feminine"); the peak sits on its quarter. The levels read `m.reading` (prices and growth at the cycle's last quarter) and the phase at

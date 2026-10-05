@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `343da31` on 2026-10-05. **99 components**, **35 shared patterns**.
+Generated from commit `7890b26` on 2026-10-05. **99 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 
@@ -73,7 +73,7 @@ Generated from commit `343da31` on 2026-10-05. **99 components**, **35 shared pa
 
 | Component | Owns | Used by |
 |---|---|---|
-| **`yearByYear`** | `.dx-sys-head` | `diagnosis.ts:diagnosisHtml` |
+| **`dxHead`** | `.dx-sys-head` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 | **`yearRow`** | `.details-link` `.dx-year-lead` `.dx-year-line` `.dx-year-n` `.dx-year-v` | `diagnosis.ts:diagnosisHtml`, `diagnosis.ts:yearByYear` |
 
 ## dial-cycle.ts
@@ -98,9 +98,9 @@ Generated from commit `343da31` on 2026-10-05. **99 components**, **35 shared pa
 | Component | Owns | Used by |
 |---|---|---|
 | **`bandsHtml`** | `.fp-band` `.fp-ph` | `fed-phases.ts:fedPhasesCard` |
-| **`fedPhasesCard`** | `.fp-growth` `.fp-k` `.fp-key` `.fp-marks` `.fp-phases` `.fp-plot` `.fp-prices` `.fp-rate` `.fp-years` | `diagnosis.ts:diagnosisHtml` |
-| **`levelsHtml`** | `.fp-levels` | `fed-phases.ts:fedPhasesCard` |
-| **`plotSvg`** | `.fp-line` `.fp-ov` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
+| **`fedPhasesCard`** | `.fp-marks` `.fp-phases` `.fp-plot` `.fp-years` | `diagnosis.ts:diagnosisHtml` |
+| **`levelsHtml`** | `.fp-growth` `.fp-levels` `.fp-prices` `.fp-rate` | `fed-phases.ts:fedPhasesCard` |
+| **`plotSvg`** | `.fp-line` `.fp-ov-line` `.fp-zero` | `fed-phases.ts:fedPhasesCard` |
 | **`yearsHtml`** | `.fp-year` | `fed-phases.ts:fedPhasesCard` |
 
 ## format.ts
@@ -351,7 +351,7 @@ records these counts and `npm run check` fails if any of them grows. This list c
 | `.vh-svg` | 2 | `charts.ts:vhOpen`, `history-charts.ts:householdsChart` |
 | `.on` | 2 | `cycle-analysis.ts:ring`, `insights.ts:moodCycleSvg` |
 | `.cat-list` | 2 | `cycle-tab.ts:buildCategories`, `render-core.ts:catList` |
-| `.dx-mark` | 2 | `diagnosis.ts:yearByYear`, `dom.ts:trendHead` |
+| `.dx-mark` | 2 | `diagnosis.ts:dxHead`, `dom.ts:trendHead` |
 | `.dx` | 2 | `diagnosis.ts:diagnosisHost`, `portfolio.ts:buildPortfolio` |
 | `.season-sw` | 2 | `dial-cycle.ts:renderCycleKicker`, `portfolio.ts:drawWeather` |
 | `.expand-btn` | 2 | `dial-cycle.ts:renderCycleKicker`, `dom.ts:expandBtn` |

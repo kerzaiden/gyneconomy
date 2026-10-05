@@ -25,20 +25,22 @@ function phaseAt(phases: Phase[], m: string){
   phases.forEach(function(p){ if (p.m <= m) at = p; });
   return at as Phase | null;
 }
-export function inflationPeak(from: string, to: string){
-  var inWindow = cpiYoYHistory.filter(function(c){ return c.m >= from && c.m <= to; });
+function topOf(run: MonthPoint[]){
+  var top = run.length ? run.reduce(function(a, b){ return b.v > a.v ? b : a; }) : null;
+  return top && top !== run[0] ? top : null;
+}
+function priceRuns(from: string, to: string){
   var run: MonthPoint[] = [], best: MonthPoint | null = null, prev = "";
-  inWindow.forEach(function(c){
-    var dir = cpiDirectionAt(c.m) || "";
-    if (dir === "falling" && prev !== "falling" && run.length){
-      var top = run.reduce(function(a, b){ return b.v > a.v ? b : a; });
-      if (top !== run[0] && (!best || top.v > best.v)) best = top;
-    }
+  cpiYoYHistory.filter(function(c){ return c.m >= from && c.m <= to; }).forEach(function(c){
+    var dir = cpiDirectionAt(c.m) || "", top = dir === "falling" && prev !== "falling" ? topOf(run) : null;
+    if (top && (!best || top.v > best.v)) best = top;
     if (dir === "falling") run = []; else run.push(c);
     prev = dir;
   });
-  return best as MonthPoint | null;
+  return { best: best as MonthPoint | null, soFar: topOf(run) };
 }
+export function inflationPeak(from: string, to: string){ return priceRuns(from, to).best; }
+export function peakSoFar(from: string, to: string){ return priceRuns(from, to).soFar; }
 
 // ---- The phases chart ----
 var VIEW_W = 1000, VIEW_H = 300, INSET = 18;
@@ -82,23 +84,23 @@ function yearsHtml(from: number, to: number){
   for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + '</span>';
   return out;
 }
-function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null){
+function plotSvg(lines: Pt[][], from: number, to: number, peak: Pt | null, open: boolean){
   var all = ([] as Pt[]).concat.apply([], lines).map(function(p){ return p.v; });
   var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
   var x = function(i: number){ return (i - from + 0.5) / span * VIEW_W; }, y = function(v: number){ return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / ((hi - lo) || 1)); };
   var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
   var mark = peak ? '<line class="fp-ov-line" x1="' + x(peak.i).toFixed(1) + '" x2="' + x(peak.i).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
   var paths = ["fp-growth", "fp-prices", "fp-rate"].map(function(cls, k){ return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>'; }).join("");
-  var dot = peak ? '<span class="fp-ov" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
+  var dot = peak ? '<span class="fp-ov' + (open ? " fp-open" : "") + '" style="left:' + pct(x(peak.i) / VIEW_W) + ';top:' + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
   return '<svg viewBox="0 0 ' + VIEW_W + ' ' + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + '</svg>' + dot;
 }
-function levelsHtml(m: CycleModel, at: Phase | null){
+function levelsHtml(m: CycleModel, at: Phase | null, soFar: MonthPoint | null){
   var r = m.reading, word = growthWord(r);
   var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
   var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
-  return '<ul class="fp-levels">' + (at ? '<li><b>Fed:</b> ' + (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m) + '</li>' : "") +
-    '<li><b>Prices:</b> ' + range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)</li>' +
-    '<li><b>Growth:</b> ' + word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%)</li></ul>';
+  return '<ul class="fp-levels">' + (at ? '<li class="fp-rate"><b>Federal funds rate:</b> ' + (at.s > 0 ? "Tightening" : "Easing") + ' since ' + monthName(at.m) + '</li>' : "") +
+    '<li class="fp-prices"><b>Prices:</b> ' + range + ', ' + heat + ' (' + (Math.round(r.cpiNow * 10) / 10 || 0).toFixed(1).replace("-", "\u2212") + '%)' + (soFar ? ', peak so far ' + soFar.v.toFixed(1) + '% (' + monthName(soFar.m) + ')' : "") + '</li>' +
+    '<li class="fp-growth"><b>Growth:</b> ' + word.charAt(0).toUpperCase() + word.slice(1) + ' (' + fmtSigned(r.gdpLatest.v, 1) + '%)</li></ul>';
 }
 function endMonthOf(m: CycleModel){
   if (!m.ongoing) return m.endMonth;
@@ -107,11 +109,10 @@ function endMonthOf(m: CycleModel){
 }
 export function fedPhasesCard(m: CycleModel){
   var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
-  var peak = inflationPeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
+  var best = inflationPeak(fromM, toM), soFar = !best && m.ongoing ? peakSoFar(fromM, toM) : null, peak = best || soFar, b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
   var lines = [growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to)];
   var top = peak ? lines[1].filter(function(p){ return Math.floor(p.i / 3) === Math.floor(monthIdx((peak as MonthPoint).m) / 3); })[0] || null : null;
-  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">Peak</span>' : "";
-  return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div>' +
-    (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
-    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at);
+  var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > 0.5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + 0.5) / (to - from + 1)) + '">' + (best ? "Peak" : "Peak so far") + '</span>' : "";
+  return (ov ? '<div class="fp-marks">' + ov + '</div>' : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !best) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div>' +
+    '<div class="fp-phases">' + b.labels + '</div>' + levelsHtml(m, at, soFar);
 }

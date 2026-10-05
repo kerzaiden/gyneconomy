@@ -1,7 +1,7 @@
 import { CHEV, fmtSigned } from "./format.ts";
 import { addSources, byId, detailSlot } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { calendarSvg } from "./marks.ts";
+import { calendarSvg, heartSvg } from "./marks.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { sp500AnnualReturns } from "./data.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
@@ -20,7 +20,7 @@ var DIAG_SRC = [
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) +
+  return dxSys(" fp", dxHead(heartSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) +
     chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
@@ -30,9 +30,10 @@ function yearByYear(m: CycleModel, after: string){
     rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : undefined,
       econChips(ytd ? now.growth : yearGrowth(y), ytd ? now.prices : yearInflation(y), sp500AnnualReturns[y] ?? null, 0, false, " dx-year-foot")));
   }
-  return dxSys(" dx-years", '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + '</span>Year by year</div>' +
+  return dxSys(" dx-years", dxHead(calendarSvg(), "Year by year") +
     after + rows.reverse().join(""));
 }
+function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
 function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 function yearRow(year: string, lead: string, line: string, sheet?: string, foot?: string){
   var tag = sheet != null ? "button" : "div";
