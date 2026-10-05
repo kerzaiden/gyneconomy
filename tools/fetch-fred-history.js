@@ -110,6 +110,22 @@ function monthlyLevels(rows, lo, hi) {
   return rows.filter(r => band(r.v, lo, hi)).map(r => ({ m: r.date.slice(0, 7), v: r.v }));
 }
 
+const TARGET_FROM = '1982-09-27', UPPER_FROM = '2008-12-16';
+function fedMoves(discount, target, upper) {
+  const net = new Map();
+  const walk = (rows, from, to, prev) => {
+    for (const r of rows) {
+      if (r.date < from || r.date >= to) continue;
+      if (prev != null && r.v !== prev) net.set(r.date.slice(0, 7), (net.get(r.date.slice(0, 7)) || 0) + r.v - prev);
+      prev = r.v;
+    }
+    return prev;
+  };
+  walk(discount, '1950-01-01', TARGET_FROM, null);
+  walk(upper, UPPER_FROM, '9999-12-31', walk(target, TARGET_FROM, UPPER_FROM, null));
+  return [...net].map(([m, v]) => ({ m, v: Math.round(v * 100) / 100 })).filter(d => d.v !== 0).sort((a, b) => (a.m < b.m ? -1 : 1));
+}
+
 const QMONTH = { '01': 1, '04': 2, '07': 3, '10': 4 };
 function quarterly(rows, lo, hi) {
   return rows.filter(r => band(r.v, lo, hi)).map(r => {
@@ -207,7 +223,7 @@ function fiscalYears(rows, lo, hi) {
   });
 }
 
-function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium) {
+function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves) {
   const m = a => a.map(d => ({ m: d.m, v: d.v }));
   const q = a => a.map(d => ({ q: d.q, v: d.v }));
   const y = a => a.map(d => ({ y: d.y, v: d.v }));
@@ -226,6 +242,7 @@ function emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confi
   if (confidence) out.confidenceHistory = m(confidence);
   if (durables) out.durablesHistory = m(durables);
   if (premium) out.premiumHistory = m(premium);
+  if (moves) out.fedMoves = m(moves);
   Object.assign(out, { gdpYoYBefore: q(e.gdp), cpiYoYBefore: m(e.cpi), sp500ReturnsBefore: e.returns, gdpGrowthBefore: e.growth || {} });
   return '{\n' + Object.keys(out).map(k => '  ' + JSON.stringify(k) + ': ' + JSON.stringify(out[k])).join(',\n') + '\n}\n';
 }
@@ -234,6 +251,10 @@ async function main() {
   const ff = await fredSeries('FEDFUNDS', '1954-07-01');
   const fedFunds = monthlyLevels(ff, 0, 25);
   say('FEDFUNDS      ' + fedFunds.length + ' months, ' + fedFunds[0].m + ' → ' + fedFunds[fedFunds.length - 1].m);
+
+  const moves = fedMoves(await fredSeries('INTDSRUSM193N', '1950-01-01'), await fredSeries('DFEDTAR', TARGET_FROM), await fredSeries('DFEDTARU', UPPER_FROM));
+  if (!moves.length || moves[0].m > '1951-12' || !moves.some(d => d.m === '2008-12' && d.v < 0)) throw new Error('Fed moves: expected discount-rate moves from the 1950s and the December 2008 cut');
+  say('Fed moves     ' + moves.length + ' months with a move, ' + moves[0].m + ' → ' + moves[moves.length - 1].m + ' (discount rate before ' + TARGET_FROM + ', then the target)');
 
   const vix = await fredSeries('VIXCLS', '1990-01-01');
 
@@ -298,7 +319,7 @@ async function main() {
   const premium = await shillerSheet(rows => premiumFromRows(rows, PREMIUM_FROM));
   say('Excess CAPE Yield ' + premium.length + ' months, ' + premium[0].m + ' → ' + premium[premium.length - 1].m + ' (Shiller)');
 
-  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium));
+  fs.writeFileSync(OUT, emit(fedFunds, volatility, fiscal, treasury, productivity, sp500, confidence, early, durables, premium, moves));
   say('wrote ' + path.relative(path.join(__dirname, '..'), OUT));
 }
 
@@ -333,5 +354,5 @@ async function earlySeasons() {
 if (require.main === module) {
   main().catch(e => { console.error('::error::' + e.message); process.exit(1); });
 } else {
-  module.exports = { premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
+  module.exports = { fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, yoyQuarterly2, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit };
 }

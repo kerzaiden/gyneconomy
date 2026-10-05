@@ -619,6 +619,25 @@
     font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--text-primary); text-align:left; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
+  .fp-key{ display:flex; flex-wrap:wrap; gap:4px 14px; font-size:var(--type-meta); color:var(--text-secondary); }
+  .fp-k::before{ content:""; display:inline-block; width:14px; height:3px; border-radius:2px; margin-right:6px; vertical-align:middle; background:var(--line); }
+  .fp-growth{ --line:var(--text-muted); } .fp-prices{ --line:var(--season-summer); } .fp-rate{ --line:var(--ff-blue); }
+  .fp-marks{ position:relative; height:18px; margin-top:10px; }
+  .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
+  .fp-ov-label.fp-end{ transform:translateX(-100%); }
+  .fp-plot{ position:relative; height:150px; }
+  .fp-plot svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .fp-band{ position:absolute; top:0; bottom:0; border-radius:10px; box-shadow:inset 0 0 0 1.5px var(--surface); }
+  .fp-band.fp-tight{ background:var(--good-wash); } .fp-band.fp-ease{ background:var(--accent-wash); }
+  .fp-year{ position:absolute; top:6px; margin-left:6px; font-size:var(--type-label); color:var(--text-muted); }
+  .fp-line{ fill:none; stroke:var(--line); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .fp-zero{ stroke:var(--border-strong); stroke-width:1; stroke-dasharray:2 3; }
+  .fp-ov-line{ stroke:var(--season-summer); stroke-width:1.5; stroke-dasharray:3 3; }
+  .fp-ov{ position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--season-summer); box-shadow:0 0 0 2px var(--surface); }
+  .fp-phases{ position:relative; height:18px; margin-top:6px; }
+  .fp-ph{ position:absolute; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; }
+  .fp-ph.fp-tight{ color:var(--good-ink); } .fp-ph.fp-ease{ color:var(--accent-ink); }
+  .fp-levels{ margin:12px 0 0; padding-left:18px; font-size:var(--type-reading); line-height:1.8; }
   .dx-mark svg{ width:18px; height:18px; }
   .dx-year{ display:grid; grid-template-columns:45px 1fr auto; align-items:baseline; column-gap:12px; width:100%; box-sizing:border-box;
     margin:0; padding:13px 0; border:0; border-top:1px solid var(--border); background:none; text-align:left; color:var(--text-primary);
@@ -1587,7 +1606,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.6 (744)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.6.7 (745)</span></p>
     </div>
   </div>
 
@@ -24904,6 +24923,7 @@
       m: "2026-09",
       v: 1.01
     } ],
+    fedMoves: [],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -27722,6 +27742,7 @@
   var confidenceHistory = fred_default.confidenceHistory;
   var durablesHistory = fred_default.durablesHistory;
   var premiumHistory = fred_default.premiumHistory;
+  var fedMoves = fred_default.fedMoves;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
@@ -28803,6 +28824,13 @@
       return i > to - 12 && i <= to;
     });
   }
+  function cpiDirectionOf(slope) {
+    return slope > .02 ? "rising" : slope < -.02 ? "falling" : "steady";
+  }
+  function cpiDirectionAt(endMonth) {
+    var c12 = cpiYear(endMonth);
+    return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
+  }
   var GROWTH_WINDOW = 8;
   function growthWindowWord() {
     return [ "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW);
@@ -28810,7 +28838,7 @@
   function readSeason(cpi12, gdp8, prevRegime, quartersPerStep) {
     var cpiNow2 = cpi12[cpi12.length - 1].v;
     var cpiSlope = cpiTrend(cpi12);
-    var cpiDirection = cpiSlope > .02 ? "rising" : cpiSlope < -.02 ? "falling" : "steady";
+    var cpiDirection = cpiDirectionOf(cpiSlope);
     var cpiHot = cpiNow2 > 3, cpiCold = cpiNow2 < 1;
     var growthSlopeQ = slopeOf(gdp8.map(function(d) {
       return d.v;
@@ -29039,10 +29067,10 @@
   var MOOD_TURN = 3;
   var MOOD_RISING = [ [ "Despair", 0 ], [ "Depression", 5 ], [ "Hope", 24 ], [ "Optimism", 51 ], [ "Excitement", 75 ], [ "Thrill", 92 ], [ "Euphoria", 100 ] ];
   var MOOD_FALLING = [ [ "Despair", 0 ], [ "Panic", 9 ], [ "Desperation", 30 ], [ "Fear", 52 ], [ "Denial", 74 ], [ "Anxiety", 91 ], [ "Euphoria", 100 ] ];
-  function moodWord(pct, change) {
-    if (pct == null || change == null) return null;
+  function moodWord(pct2, change) {
+    if (pct2 == null || change == null) return null;
     return (change > 0 ? MOOD_RISING : MOOD_FALLING).reduce(function(a, s) {
-      return Math.abs(+s[1] - pct) < Math.abs(+a[1] - pct) ? s : a;
+      return Math.abs(+s[1] - pct2) < Math.abs(+a[1] - pct2) ? s : a;
     })[0];
   }
   function moodRead(x, before) {
@@ -29700,9 +29728,9 @@
     var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
   }
-  function vitalRingSvg(pct, state2, label, cls) {
+  function vitalRingSvg(pct2, state2, label, cls) {
     var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct, 0, 100) / 100);
+    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
     return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
@@ -29996,14 +30024,14 @@
     grp.setAttribute("class", "hist-legend");
     grp.setAttribute("aria-hidden", "true");
     var fr = svg.querySelector(".bt-frame");
-    var INSET = 6, PLATE_H = 15, PAD_X = 6;
+    var INSET2 = 6, PLATE_H = 15, PAD_X = 6;
     var frTop = fr ? attrNum(fr, "y") : g.T - AXIS.LEG;
     var frRight = fr ? attrNum(fr, "x") + attrNum(fr, "width") : g.R;
-    var y = frTop + INSET + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
+    var y = frTop + INSET2 + PLATE_H / 2, MARK = 12, PAD = 5, GAP = 13, items = [];
     var plate = document.createElementNS(NS, "rect");
     plate.setAttribute("class", "chart-label-plate");
     plate.setAttribute("rx", "5");
-    plate.setAttribute("y", (frTop + INSET).toFixed(1));
+    plate.setAttribute("y", (frTop + INSET2).toFixed(1));
     plate.setAttribute("height", String(PLATE_H));
     grp.appendChild(plate);
     refs.forEach(function(r) {
@@ -30038,7 +30066,7 @@
       total += it.w;
     });
     total += GAP * (items.length - 1);
-    var x = Math.max(g.L + PAD_X, frRight - INSET - PAD_X - total);
+    var x = Math.max(g.L + PAD_X, frRight - INSET2 - PAD_X - total);
     plate.setAttribute("x", (x - PAD_X).toFixed(1));
     plate.setAttribute("width", (total + PAD_X * 2).toFixed(1));
     items.forEach(function(it) {
@@ -33403,13 +33431,13 @@
     var cycAvg = inCycle.length ? mean(inCycle.map(function(d) {
       return d.v;
     })) : null;
-    var pct = function(v) {
+    var pct2 = function(v) {
       return v.toFixed(2) + "%";
     };
     var cards = [];
     cards.push('<p class="hi-lede">Blood pressure is what the flow meets in the vessels — the force every organ downstream lives under. Here it is the yield on the ten-year Treasury: the price the economy’s one risk-free borrower pays for a decade of money, and the level everything else is priced off.</p>');
-    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct(y10) + " today" : "") + "."));
-    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct(cycAvg) + (y10 != null ? " against " + pct(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct(lo.v) + " in " + lo.q + " to " + pct(hi.v) + " in " + hi.q + "."));
+    cards.push(hiCard("The risk-free loan", "", "A thirty-year mortgage prices off this yield, because between moves and refinances a mortgage lives seven to ten years; investment-grade companies borrow at it plus a spread; and it is the discount rate a stock’s future earnings are measured against. Interest rates are the overnight rate the Fed sets" + (now.fedFunds && now.fedFunds.lo != null ? " (" + fedFundsRange() + ")" : "") + "; this is that rate as the market re-prices it ten years out" + (y10 != null ? " — " + pct2(y10) + " today" : "") + "."));
+    cards.push(hiCard("Pressure on the borrower", "", "When it rises, every borrower feels it, and the Treasury first: this is the rate the government rolls its debt over at, so a higher ten-year today is a higher interest burden a year from now — the Interest payments card, on the Energy page. " + (cycAvg != null ? "This cycle has averaged " + pct2(cycAvg) + (y10 != null ? " against " + pct2(y10) + " today" : "") + ". " : "") + "Since " + t10yYieldHistory[0].q.slice(0, 4) + " the quarterly record runs from " + pct2(lo.v) + " in " + lo.q + " to " + pct2(hi.v) + " in " + hi.q + "."));
     cards.push(hiCard("Level, not slope", "", "This page opens on the LEVEL. The gap between this yield and the three-month bill is under Treasury spreads in the ⋯ menu, because that gap is the market’s forecast of the next few years rather than a pressure it is under now. Read them together: a high level with a flat or inverted curve is a body under strain that expects relief; a low level with a steep curve is one at rest that expects to work."));
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + "</section>";
   }
@@ -34854,9 +34882,165 @@
   function aiInsights() {
     return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(ai_insights_default.lede), "ai-clamp"));
   }
+  function monthIdx(k) {
+    return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
+  }
+  function monthName(k) {
+    return MONTHS_SHORT[Number(k.slice(5, 7)) - 1] + " " + k.slice(0, 4);
+  }
+  function fedPhases() {
+    var out = [];
+    function add(m, v) {
+      var s = v > 0 ? 1 : -1;
+      if (!out.length || out[out.length - 1].s !== s) out.push({
+        m: m,
+        s: s
+      });
+    }
+    fedMoves.forEach(function(d) {
+      add(d.m, d.v);
+    });
+    var day = isoDay(now.fedFunds.asOf), move = Number(String(now.fedFunds.lastMove).replace("−", "-"));
+    var last = fedMoves.length ? fedMoves[fedMoves.length - 1].m : "";
+    if (day && move && day.slice(0, 7) > last) add(day.slice(0, 7), move);
+    return out;
+  }
+  function phaseAt(phases, m) {
+    var at = null;
+    phases.forEach(function(p) {
+      if (p.m <= m) at = p;
+    });
+    return at;
+  }
+  function inflationPeak(from, to) {
+    var inWindow = cpiYoYHistory.filter(function(c) {
+      return c.m >= from && c.m <= to;
+    });
+    var run = [], best = null, prev = "";
+    inWindow.forEach(function(c) {
+      var dir = cpiDirectionAt(c.m) || "";
+      if (dir === "falling" && prev !== "falling" && run.length) {
+        var top = run.reduce(function(a, b) {
+          return b.v > a.v ? b : a;
+        });
+        if (top !== inWindow[0] && (!best || top.v > best.v)) best = top;
+      }
+      if (dir === "falling") run = []; else run.push(c);
+      prev = dir;
+    });
+    return best;
+  }
+  var VIEW_W = 1e3;
+  var VIEW_H = 300;
+  var INSET = 18;
+  function growthPoints(from, to) {
+    var pts = [], firstQ = gdpQuarterlyYoY.length ? Number(gdpQuarterlyYoY[0].q.slice(0, 4)) : Infinity;
+    Object.keys(usRealGdpGrowth).forEach(function(y) {
+      if (Number(y) < firstQ) pts.push({
+        i: Number(y) * 12 + 6,
+        v: usRealGdpGrowth[y]
+      });
+    });
+    gdpQuarterlyYoY.forEach(function(d) {
+      pts.push({
+        i: Number(d.q.slice(0, 4)) * 12 + (Number(d.q.slice(6)) - 1) * 3 + 1,
+        v: d.v
+      });
+    });
+    return pts.filter(function(p) {
+      return p.i >= from && p.i <= to;
+    }).sort(function(a, b) {
+      return a.i - b.i;
+    });
+  }
+  function monthPoints(list, from, to) {
+    return list.map(function(d) {
+      return {
+        i: monthIdx(d.m),
+        v: d.v
+      };
+    }).filter(function(p) {
+      return p.i >= from && p.i <= to;
+    });
+  }
+  function curve(pts, x, y) {
+    var p = pts.map(function(d2) {
+      return [ x(d2.i), y(d2.v) ];
+    });
+    if (p.length < 2) return "";
+    var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+    for (var k = 0; k < p.length - 1; k++) {
+      var a = p[Math.max(k - 1, 0)], b = p[k], c = p[k + 1], e = p[Math.min(k + 2, p.length - 1)];
+      d += " C" + [ b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6, c[0], c[1] ].map(function(n) {
+        return n.toFixed(1);
+      }).join(" ");
+    }
+    return d;
+  }
+  function pct(n) {
+    return (n * 100).toFixed(2) + "%";
+  }
+  function bandsHtml(phases, from, to) {
+    var span = to - from + 1, bands = "", labels = "";
+    phases.forEach(function(p, k) {
+      var a = Math.max(monthIdx(p.m), from), b = k + 1 < phases.length ? monthIdx(phases[k + 1].m) : to + 1;
+      if (b <= from || a > to) return;
+      var cls = p.s > 0 ? "fp-tight" : "fp-ease", word2 = p.s > 0 ? "Tightening" : "Easing", w = (Math.min(b, to + 1) - a) / span;
+      bands += '<span class="fp-band ' + cls + '" style="left:' + pct((a - from) / span) + ";width:" + pct(w) + '"></span>';
+      if (w >= .18) labels += '<span class="fp-ph ' + cls + '" style="left:' + pct((a - from) / span + w / 2) + '">' + word2 + "</span>";
+    });
+    return {
+      bands: bands,
+      labels: labels
+    };
+  }
+  function yearsHtml(from, to) {
+    var span = to - from + 1, y0 = Math.floor(from / 12), y1 = Math.floor(to / 12), step = Math.ceil((y1 - y0 + 1) / 6), out = "";
+    for (var y = y0; y <= y1; y += step) out += '<span class="fp-year" style="left:' + pct(Math.max(0, y * 12 - from) / span) + '">' + y + "</span>";
+    return out;
+  }
+  function plotSvg(lines, from, to, peak) {
+    var all = [].concat.apply([], lines).map(function(p) {
+      return p.v;
+    });
+    var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max.apply(null, all), span = to - from + 1;
+    var x = function(i) {
+      return (i - from + .5) / span * VIEW_W;
+    }, y = function(v) {
+      return INSET + (VIEW_H - 2 * INSET) * (1 - (v - lo) / (hi - lo || 1));
+    };
+    var zero = lo < 0 ? '<line class="fp-zero" x1="0" x2="' + VIEW_W + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" vector-effect="non-scaling-stroke"/>' : "";
+    var mark = peak ? '<line class="fp-ov-line" x1="' + x(monthIdx(peak.m)).toFixed(1) + '" x2="' + x(monthIdx(peak.m)).toFixed(1) + '" y1="0" y2="' + VIEW_H + '" vector-effect="non-scaling-stroke"/>' : "";
+    var paths = [ "fp-growth", "fp-prices", "fp-rate" ].map(function(cls, k) {
+      return '<path class="fp-line ' + cls + '" d="' + curve(lines[k], x, y) + '" vector-effect="non-scaling-stroke"/>';
+    }).join("");
+    var dot = peak ? '<span class="fp-ov" style="left:' + pct(x(monthIdx(peak.m)) / VIEW_W) + ";top:" + pct(y(peak.v) / VIEW_H) + '"></span>' : "";
+    return '<svg viewBox="0 0 ' + VIEW_W + " " + VIEW_H + '" preserveAspectRatio="none" aria-hidden="true">' + zero + mark + paths + "</svg>" + dot;
+  }
+  function levelsHtml(m, at) {
+    var r = m.reading, word2 = growthWord(r);
+    var range = r.cpiHot ? "Above range" : r.cpiCold ? "Below range" : "In range";
+    var heat = r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady";
+    return '<ul class="fp-levels">' + (at ? "<li><b>Fed:</b> " + (at.s > 0 ? "Tightening" : "Easing") + " since " + monthName(at.m) + "</li>" : "") + "<li><b>Prices:</b> " + range + ", " + heat + " (" + r.cpiNow.toFixed(1) + "%)</li><li><b>Growth:</b> " + word2.charAt(0).toUpperCase() + word2.slice(1) + " (" + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier)</li></ul>";
+  }
+  function endMonthOf(m) {
+    if (!m.ongoing) return m.endMonth;
+    var ff = fedFundsHistory[fedFundsHistory.length - 1];
+    return ff && ff.m > m.endMonth ? ff.m : m.endMonth;
+  }
+  function fedPhasesCard(m) {
+    var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
+    var peak = inflationPeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
+    var lines = [ growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
+    var ov = peak ? '<span class="fp-ov-label' + ((monthIdx(peak.m) - from) / (to - from + 1) > .5 ? " fp-end" : "") + '" style="left:' + pct((monthIdx(peak.m) - from + .5) / (to - from + 1)) + '">Ovulation · inflation peak</span>' : "";
+    return '<div class="fp-key"><span class="fp-k fp-growth">Growth</span><span class="fp-k fp-prices">Prices</span><span class="fp-k fp-rate">Fed funds rate</span></div><div class="fp-marks">' + ov + '</div><div class="fp-plot">' + b.bands + yearsHtml(from, to) + plotSvg(lines, from, to, peak) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at);
+  }
   var DIAG_SRC = [ {
     t: "Cboe via FRED — CBOE Volatility Index, daily closes since 1990 (VIXCLS), and the VXO for 1986–1989 (VXOCLS)",
     u: "https://fred.stlouisfed.org/series/VIXCLS"
+  }, {
+    t: "Federal Reserve via FRED — the Fed’s moves: the discount rate before September 1982 (INTDSRUSM193N), the federal funds target to December 2008 (DFEDTAR) and its upper limit since (DFEDTARU)",
+    u: "https://fred.stlouisfed.org/series/DFEDTARU"
   }, {
     t: "Robert Shiller — U.S. stock market data: the S&P 500’s monthly average and the CAPE ratio",
     u: "https://shillerdata.com/"
@@ -34864,7 +35048,7 @@
   function diagnosisHtml(m) {
     var after = m.ongoing ? null : yearAfter(m.endYear);
     if (m.ongoing && !diagnoseToday()) return "";
-    return (m.ongoing ? aiInsights() : moodDoor(m.era)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+    return dxSys(" fp", fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) + chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
   }
   function yearByYear(m, after) {
     var _a;
@@ -34877,7 +35061,10 @@
       }), ytd = m.ongoing && y === calendarTodayY, now2 = yearSoFar(y);
       rows.push(yearRow(String(y), yearStrip(inYear, y, !!ytd), "", inYear.length ? quarterSheet(m, inYear[inYear.length - 1], false) : void 0, econChips(ytd ? now2.growth : yearGrowth(y), ytd ? now2.prices : yearInflation(y), (_a = sp500AnnualReturns[y]) != null ? _a : null, 0, false, " dx-year-foot")));
     }
-    return '<section class="dx-sys dx-years"><div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join("") + "</section>";
+    return dxSys(" dx-years", '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + calendarSvg() + "</span>Year by year</div>" + after + rows.reverse().join(""));
+  }
+  function dxSys(cls, inner) {
+    return '<section class="dx-sys' + cls + '">' + inner + "</section>";
   }
   function yearRow(year, lead2, line, sheet, foot) {
     var tag = sheet != null ? "button" : "div";
@@ -36543,13 +36730,13 @@
     };
   }
   function desirePage() {
-    var r = desireReading, pct = function(v) {
+    var r = desireReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -36566,13 +36753,13 @@
     };
   }
   function premiumPage() {
-    var r = premiumReading, pct = function(v) {
+    var r = premiumReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No premium",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },
@@ -36589,13 +36776,13 @@
     };
   }
   function marketPage() {
-    var r = marketReading, pct = function(v) {
+    var r = marketReading, pct2 = function(v) {
       return v ? fmtSigned(v, 1) + "%" : "0%";
     };
     return {
       goodAbove: true,
       line: "No change",
-      fmt: pct,
+      fmt: pct2,
       tick: function(v) {
         return Math.round(v) + "%";
       },

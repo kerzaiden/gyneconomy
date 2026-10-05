@@ -27,12 +27,17 @@ function cpiYear(endMonth: string){
   var to = monthIndex(endMonth);
   return cpiYoYHistory.filter(function(c){ var i = monthIndex(c.m); return i > to - 12 && i <= to; });
 }
+function cpiDirectionOf(slope: number){ return slope > 0.02 ? "rising" : slope < -0.02 ? "falling" : "steady"; }
+export function cpiDirectionAt(endMonth: string){
+  var c12 = cpiYear(endMonth);
+  return c12.length < 11 ? null : cpiDirectionOf(cpiTrend(c12));
+}
 export var GROWTH_WINDOW = 8;
 export function growthWindowWord(){ return ["four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][GROWTH_WINDOW - 4] || String(GROWTH_WINDOW); }
 function readSeason(cpi12: MonthPoint[], gdp8: QuarterPoint[], prevRegime?: string, quartersPerStep?: number): ModelReading {
   var cpiNow = cpi12[cpi12.length - 1].v;
   var cpiSlope = cpiTrend(cpi12);
-  var cpiDirection = cpiSlope > 0.02 ? "rising" : cpiSlope < -0.02 ? "falling" : "steady";
+  var cpiDirection = cpiDirectionOf(cpiSlope);
   var cpiHot = cpiNow > 3.0, cpiCold = cpiNow < 1.0;
   var growthSlopeQ = slopeOf(gdp8.map(function(d){ return d.v; })) / (quartersPerStep || 1);
   var growthTrend = growthSlopeQ > 0.025 ? "rising" : growthSlopeQ < -0.025 ? "falling" : "flat";

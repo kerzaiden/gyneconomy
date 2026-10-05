@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
+const { fedMoves, premiumFromRows, damodaranReturns, worthLevels, worthGrowth, yoyMonthly, oecdRows, monthlyMean, volatilityMonthly, VOL_JOIN, monthlyLevels, quarterly, yoyQuarterly, quarterlyMean, spreadQuarterly, withoutGap, fiscalYears, band, emit } = require('../tools/fetch-fred-history.js');
 const J = t => JSON.parse(t);
 
 let pass = 0, fail = 0;
@@ -113,6 +113,11 @@ ok('durable-goods spending is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, [{ m: '2026-08', v: 3.1 }])).durablesHistory, [{ m: '2026-08', v: 3.1 }]);
 ok('the equity risk premium is written as the app reads it',
    J(emit([], [], null, null, null, null, null, null, null, [{ m: '2026-08', v: 1.2 }])).premiumHistory, [{ m: '2026-08', v: 1.2 }]);
+ok('the Fed\'s moves are the discount rate, then the target, then its upper bound, netted by month',
+   fedMoves([{ date: '1950-07-01', v: 1.5 }, { date: '1950-08-01', v: 1.75 }],
+            [{ date: '1982-09-27', v: 10.25 }, { date: '1982-10-01', v: 9.5 }],
+            [{ date: '2008-12-16', v: 8.75 }, { date: '2015-12-17', v: 9 }]),
+   [{ m: '1950-08', v: 0.25 }, { m: '1982-10', v: -0.75 }, { m: '2008-12', v: -0.75 }, { m: '2015-12', v: 0.25 }]);
 const shiller = [['Stock Market Data'], ['', '', '', '', 'Excess CAPE'], ['Date', 'P', 'E', 'CAPE', 'Yield'],
   [1927.12, 17.5, 1.1, 14, 0.04], [1928.01, 17.53, 1.11, 14.1, 0.0412], [1928.1, 20, 1.2, 16, -0.0051], [1928.11, 21, '', '', '']];
 ok('the Excess CAPE Yield is read from Shiller in percent, from its first month',
