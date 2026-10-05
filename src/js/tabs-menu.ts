@@ -16,14 +16,14 @@ function seasonGrid(){
   };
   var head = function(name: string, sub: string){ return '<div class="sg-head"><b>' + name + '</b><small>' + sub + '</small></div>'; };
   return '<div class="season-grid">' + '<span></span>' + head("Cold", "below 1%") + head("In range", "1\u20133%") + head("Hot", "above 3%") +
-    head("Expansion", "gap \u2265 0") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating, steady", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation \u00b7 any"]) +
-    head("Contraction", "gap < 0") + cell("winter", 1, "Winter", ["Deflation \u00b7 any"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
+    head("Expansion", "at or above potential") + cell("spring", 2, "Spring", ["Reflation \u00b7 heating, steady", "Deflation \u00b7 cooling"]) + cell("summer", 1, "Summer", ["Inflation \u00b7 any"]) +
+    head("Contraction", "below potential") + cell("winter", 1, "Winter", ["Deflation \u00b7 any"]) + cell("autumn", 2, "Autumn", ["Stagflation \u00b7 heating", "Disinflation \u00b7 cooling, steady"]) +
   '</div>';
 }
 function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two growth regimes, three price levels and three price directions: 18 combinations, six seasons.") + seasonGrid() + facts([
-    "<b>Growth gap</b>: real GDP growth over a year minus potential growth, the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it.",
-    "<b>Sensitivity</b>: a gap within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
+    "<b>Growth vs potential</b>: real GDP growth over a year against potential growth, the Congressional Budget Office\u2019s estimate since 1950 and the " + PEAK_YEARS[0] + "\u2013" + PEAK_YEARS[1] + " peak-to-peak trend (" + PEAK_TREND.toFixed(1) + "% a year) before it.",
+    "<b>Sensitivity</b>: a difference within \u00b1" + HOLD_BAND + " points keeps the prior regime, the average revision to a year\u2019s growth (BEA, 2018).",
     "<b>Price level</b>: inflation on CPI before 2000 and PCE since, against the model\u2019s 1\u20133% band, a point either side of the Fed\u2019s 2% target.",
     "<b>Direction</b>: the twelve-month trend of inflation. It decides only the transition seasons, Spring and Autumn.",
     "<b>Before 1948</b>: GDP is annual, so seasons are read a year at a time.",
