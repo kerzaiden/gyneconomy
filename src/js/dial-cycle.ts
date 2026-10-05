@@ -121,10 +121,10 @@ function wireThemeChoice(){
 function renderCycleKicker(){
   var html = '<h4>Legend</h4>' +
     '<div class="legend-head">Seasons (Q)</div><div class="legend-rows">' +
-    [["winter","Winter","CPI &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","CPI \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","CPI &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","CPI \u2265 " + TEMP_BAND_LO + "%"]].map(function(r){
+    [["winter","Winter","Prices &lt; " + TEMP_BAND_LO + "%"],["spring","Spring","Prices \u2264 " + TEMP_BAND_HI + "%"],["summer","Summer","Prices &gt; " + TEMP_BAND_HI + "%"],["autumn","Autumn","Prices \u2265 " + TEMP_BAND_LO + "%"]].map(function(r){
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + '<small>' + r[2] + '</small></div>';
     }).join("") + '</div>' +
-    '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% CPI, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
+    '<p class="caption">The range is ' + TEMP_BAND_LO + '–' + TEMP_BAND_HI + '% inflation, CPI before 2000 and PCE since, a point either side of the Fed\u2019s ' + CPI_TARGET + '% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model\u2019s structure.</p>' + srcBlock([FED_TARGET_SRC]) +
     '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows">' +
     '<div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return \u2265 0%</small></div>' +
     '<div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div>' +

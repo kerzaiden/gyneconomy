@@ -627,6 +627,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   over reading the 1920s–40s from industrial production or leaving 1928–30 blank. Claude chose MeasuringWorth over
   Balke and Gordon (1989) because it is the series kept current and published year by year; the Backfill refuses
   the join if MeasuringWorth's 1930 growth misses BEA's by more than half a point. (1.4.0; 1928–30 blank in V690.)
+- **Prices are read on the Fed's own gauge for each era: CPI through December 1999, the PCE price index from
+  January 2000.** The FOMC moved its inflation projections from the CPI to the PCE chain-type price index in its
+  Monetary Policy Report of February 17, 2000, and its 2% target is written on PCE. Keren: "let's follow the Fed
+  because that would match the times"; she chose "From 2000" over PCE from 1960 or keeping CPI, after the count.
+  The 1–3% band and the twelve-month direction are unchanged. Measured first: 21 quarters change, all since 2000,
+  11 of them across a season (7 Summer to Spring); Dot-Com and Housing move 4 each, Big Tech 2; no cycle closes in
+  a different season, and today stays Autumn–Stagflation. Peaks move with it: COVID-19 to 7.2% (Jun 2022), AI to
+  3.8% (May 2026), Dot-Com to 3.4% (Dec 1996). PCE from 1960 would have moved 39 quarters, 19 across a season.
+  The PCE months come from FRED (PCEPI) through the Backfill. (0.7.0, Oct 5, 2026)
 
 ## Readings and bands
 

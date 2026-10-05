@@ -14,7 +14,7 @@ function seasonModelNote(){
   return '<h4>The Season Model</h4>' + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([
     "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.",
     "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.",
-    "<b>Temperature</b> is CPI against a 1\u20133% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
+    "<b>Temperature</b> is inflation against a 1\u20133% band, read on CPI before 2000 and on PCE, the Fed\u2019s own gauge, since, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model\u2019s structure, a point either side of the Fed\u2019s 2% target, which is a point, not a range.",
     "<b>In expansion</b>, hot is Summer; otherwise heating is Spring \u2014 reflation and cooling is Spring \u2014 deflation.",
     "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn \u2014 disinflation and heating or steady is Autumn \u2014 stagflation.",
     "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.",
@@ -45,14 +45,14 @@ function renderSeasonRows(){
         var w = zones[z as keyof typeof zones] || 0;
         return '<b class="' + z + (w ? ' on' : '') + '"></b>';
       }).join("") +
-      (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : '') +
+      (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : '') +
     '</span>';
   }
   put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' +
     seasonRules.map(function(r){
       var m = wheelMeta[r.key as Season], now = r.key === currentSeason;
       return '<div class="lag-row ' + seasonGroup(r.key) + (now ? ' now' : '') + '"><span>' + m.name + (m.theme ? ' — ' + m.theme : '') + (now ? ' <em>now</em>' : '') + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + ' · ' + r.temp + '</span>' +
-        '<span class="range-cell" title="' + r.range + (now ? ' · CPI ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
+        '<span class="range-cell" title="' + r.range + (now ? ' · PCE ' + cpiNow.toFixed(1) + '% today' : '') + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now ? cpiNow : null) + FLAME + '</span></div>';
     }).join(""));
   put("seasons-kicker", "The Season Model" + expandBtn(
     seasonModelNote()));
@@ -131,7 +131,7 @@ function wireMenu(){
   // ---- the Sources screen, built on first open from sourceIndex (the same grouping as sources.html) ----
   var built = false;
   var groups: SourceGroup[] = [
-    ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/],
+    ["Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/],
     ["Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/],
     ["Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/],
     ["Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/],

@@ -8,7 +8,7 @@ name on this page is a name you can use — in a request, a commit, a conversati
 one function. **Owns** is the classes no other function emits. **Used by** is every top-level function that
 calls it, by file.
 
-Generated from commit `2ded4a9` on 2026-10-05. **100 components**, **35 shared patterns**.
+Generated from commit `3f44bce` on 2026-10-05. **100 components**, **35 shared patterns**.
 
 ## ai-insights.ts
 

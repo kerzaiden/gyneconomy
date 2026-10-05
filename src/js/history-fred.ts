@@ -13,5 +13,6 @@ export var premiumHistory = FRED.premiumHistory;
 export var fedMoves: MonthPoint[] = FRED.fedMoves;
 export var gdpYoYBefore = FRED.gdpYoYBefore;
 export var cpiYoYBefore = FRED.cpiYoYBefore;
+export var pceYoYHistory: MonthPoint[] = FRED.pceYoYHistory;
 export var sp500ReturnsBefore = FRED.sp500ReturnsBefore;
 export var gdpGrowthBefore = FRED.gdpGrowthBefore;

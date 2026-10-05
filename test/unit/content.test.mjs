@@ -4,7 +4,7 @@ import { errors, window } from './dom.mjs';
 import { detailTexts, ui } from '../../src/js/dom.ts';
 import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
 import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
-import { cpiYoYHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
+import { inflationHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
 import { grossDebtQuarterly, productivityHistory, confidenceHistory, durablesHistory, premiumHistory } from '../../src/js/history-fred.ts';
@@ -34,7 +34,7 @@ const r1 = v => (Math.round(v * 10) / 10).toFixed(1);
 
 test('each card prints the last value of its own record', () => {
   const want = {
-    'sheet-metric-temp': r1(last(cpiYoYHistory).v) + '%',
+    'sheet-metric-temp': r1(last(inflationHistory).v) + '%',
     'sheet-metric-gdp': (last(gdpQuarterlyYoY).v >= 0 ? '+' : '\u2212') + r1(Math.abs(last(gdpQuarterlyYoY).v)) + '%',
     'sheet-sign-pulse': last(m2vHistory).toFixed(2) + '\u00d7',
     'sheet-sign-activity': r1(last(unempHistory).v) + '%',
@@ -92,7 +92,7 @@ test('the labor and temperature words turn at their bands, and the cards follow 
   assert.deepEqual([0.9, 1, 3, 3.1].map(v => temperatureWord(v).text), ['Running cold', 'Warm', 'Warm', 'Running hot']);
   const u = unempHistory.filter(d => d.v != null);
   assert.equal(tag('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
-  assert.equal(rowReadings().find(r => r.bodyTerm === 'Temperature').tag.text, temperatureWord(cpiYoYHistory[cpiYoYHistory.length - 1].v).text);
+  assert.equal(rowReadings().find(r => r.bodyTerm === 'Temperature').tag.text, temperatureWord(inflationHistory[inflationHistory.length - 1].v).text);
 });
 
 test('every derived cut-off is computed from its own record (Keren: convention or the cycle data)', () => {
@@ -140,7 +140,7 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
 test('the dial is titled by its cycle, its legend speaks in signs, and AI Insights opens on the cycle’s name, its story in it', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
-  ['CPI &lt; 1%', 'CPI \u2264 3%', 'CPI &gt; 3%', 'CPI \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
+  ['Prices &lt; 1%', 'Prices \u2264 3%', 'Prices &gt; 3%', 'Prices \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
   sheetRenderers['sheet-ai-insights']();
   assert.equal(document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]'), null);

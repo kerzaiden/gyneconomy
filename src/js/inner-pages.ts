@@ -1,7 +1,7 @@
 import { capeFmt1, dropWhatIsShown, factsFrom, fmtSigned, hiCard, highlightsHtml, mean, monthLabel, ordinal, qAtIndex, qLabel, stateOf, tagFor, yearOf } from "./format.ts";
 import { byId, byIdMaybe, focusQuiet, layer, moreRow, need, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill } from "./charts.ts";
-import { calendarTodayY, cpiYoYHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
+import { calendarTodayY, inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
 import { CAPE_FAIR, capeHistory, DEF_FROM_YEAR, deficitHistory, DSR_FROM_YEAR, DSR_MEAN, dsrHistory, dsrNow, now, SAV_FROM_YEAR, SAV_OFFSET, savHistory, savNow, unempHistory } from "./data.ts";
 import { currentEra, cycleMonths, cycleQtrIdx, cycleSlice, growthWord, nowModel, totalGrowthYears, totalRiseIn } from "./model.ts";
 import { attachHistory, controlKeys, defFrom, headSigma, histControls, histHead, histNote, mWindowFrom, page, pageCycle, pickerOpen, qWindowFrom, refitHistory, timelineSpan, timelineWindow } from "./history.ts";
@@ -51,20 +51,20 @@ function redrawSheet(id: string){
 function registerTempGdpPages(){
   sheetRenderers["sheet-metric-temp"] = function(W = 0){
     var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
-    put("temp-rangebar", histControls("sheet-metric-temp", { series:cpiYoYHistory }));
+    put("temp-rangebar", histControls("sheet-metric-temp", { series:inflationHistory }));
     put("temp-head", histHead("sheet-metric-temp"));
     var hist = need("temp-history"); hist.hidden = false;
     var win;
     if (cyc){
       var span = cycleMonths(cyc);
-      win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
+      win = span ? inflationHistory.slice(span[0], span[1]) : [];
       hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0,
                                        { to:span ? span[1] : undefined, cycle:true });
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
                   { rising:"heating", falling:"cooling" }));
     } else {
-      var from = mWindowFrom(cpiYoYHistory.length, r); win = cpiYoYHistory.slice(from);
+      var from = mWindowFrom(inflationHistory.length, r); win = inflationHistory.slice(from);
       hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
       attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
       put("temp-trend", trendPill(trendOf(win.map(function(d){ return d.v; }), "points", "month"), null, true,
@@ -224,7 +224,7 @@ function tempHighlights(tempInd: Indicator | undefined, r: typeof nowModel.readi
     'running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only ' +
     'means anything measured against the level the system is meant to hold.</p>'];
   cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning",
-    "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot +
+    "Across the " + cyc.length + " months of the " + currentEra.name + ", prices have run above 3% in " + hot +
     " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
   cards.push(hiCard("Where It Sits Now", tempInd ? stateOf(tagFor(tempInd)) : "warning",
     "The current cycle\u2019s average is " + mean(cyc.map(function(d){ return d.v; })).toFixed(1) + "%, against a 2% target. Today\u2019s " +

@@ -279,6 +279,8 @@ export var ACT_BAND_LO = 3.5, ACT_BAND_HI = 5;
 export var CPI_TARGET = 2;
 export var FED_TARGET_SRC = {t:"Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy", u:"https://www.federalreserve.gov/monetarypolicy/monetary-policy-strategy-tools-and-communications-statement-on-longer-run-goals-monetary-policy-strategy-2025.htm"};
 export var TEMP_BAND_LO = 1, TEMP_BAND_HI = 3;
+export var PCE_SWITCH_SRC = {t:"Federal Reserve — Monetary Policy Report to the Congress, February 17, 2000: the FOMC frames its inflation projections on the PCE chain-type price index rather than the CPI", u:"https://www.federalreserve.gov/boarddocs/hh/2000/february/ReportSection1.htm"};
+export var PCE_SRC = {t:"BEA via FRED — Personal Consumption Expenditures: Chain-type Price Index (PCEPI), monthly", u:"https://fred.stlouisfed.org/series/PCEPI"};
 export var GDP_NORM = 2.6;
 function checkMoneyStock(){
   var g = m2Yoy.filter(function(x){ return x != null; });
@@ -290,8 +292,8 @@ export var seasonReading: Record<Season, SeasonReading> = {
   summer: {
     body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
     economy: "Overheat. The economy is still expanding but inflation sits above target, so the central bank is leaning against it.",
-    next: "Autumn — disinflation. Temperature (CPI) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
-    watch: ["Temperature (CPI) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)"],
+    next: "Autumn — disinflation. Temperature (inflation) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
+    watch: ["Temperature (inflation) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)"],
     fromTheBook: []
   },
   autumn: {

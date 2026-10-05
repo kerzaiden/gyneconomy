@@ -1612,7 +1612,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.6.18 (755)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.7.0 (756)</span></p>
     </div>
   </div>
 
@@ -1637,12 +1637,12 @@
       <div class="menu-card menu-prose">
         <p>A season is computed from two readings, never set by hand. <b>Growth</b> is the direction of real GDP. Each quarter is measured against the same quarter a year earlier, and the season reads the trend through the last eight of those readings — two years of them: rising is expansion, falling is contraction, and a flat stretch continues whichever came before it; a quarter below a year earlier is always contraction. <b>Temperature</b> is where inflation sits against a 1–3% band — hot above it, cold below it, warm within it — and which way it is heading over the last twelve months.</p>
         <p>In expansion, hot prices make <b>Summer — inflation</b>; otherwise the direction decides — heating is <b>Spring — reflation</b>, cooling is <b>Spring — deflation</b>. In contraction, cold prices make <b>Winter — deflation</b>; otherwise cooling is <b>Autumn — disinflation</b> and heating or steady is <b>Autumn — stagflation</b>.</p>
-        <p>The 1–3% band is the board's own fixed tolerance around the Fed's 2% point objective, read on CPI. The full rule, with today's row marked, is on the Content tab under <b>The Season Model</b>.</p>
+        <p>The 1–3% band is part of the Season Model’s structure, a point either side of the Fed's 2% objective, read on CPI before 2000 and on PCE, the Fed’s own gauge, since. The full rule, with today's row marked, is on the Content tab under <b>The Season Model</b>.</p>
       </div>
 
       <h3 class="menu-section">Temperature and Growth</h3>
       <div class="menu-card menu-prose">
-        <p><b>Temperature</b> is a line through the months of the cycle — CPI, year over year — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
+        <p><b>Temperature</b> is a line through the months of the cycle — inflation, year over year (PCE since 2000) — red where it runs above the band, teal inside it, blue below, with the 2% target drawn through it. Tap either chart to read a month on both at once; tap again, or anywhere else, to dismiss.</p>
         <p><b>Growth</b> sits directly beneath on the same axis: a line through the quarters of real GDP growth, teal above zero and red below, the dashed line its average over the closed years; the read-out at the end gives the latest quarter and whether the trend of the last eight quarters is rising or falling — the reading the season’s growth direction comes from.</p>
       </div>
 
@@ -25808,6 +25808,967 @@
       m: "2026-09",
       v: .25
     } ],
+    pceYoYHistory: [ {
+      m: "2000-01",
+      v: 2.19
+    }, {
+      m: "2000-02",
+      v: 2.57
+    }, {
+      m: "2000-03",
+      v: 2.93
+    }, {
+      m: "2000-04",
+      v: 2.35
+    }, {
+      m: "2000-05",
+      v: 2.37
+    }, {
+      m: "2000-06",
+      v: 2.68
+    }, {
+      m: "2000-07",
+      v: 2.67
+    }, {
+      m: "2000-08",
+      v: 2.48
+    }, {
+      m: "2000-09",
+      v: 2.55
+    }, {
+      m: "2000-10",
+      v: 2.51
+    }, {
+      m: "2000-11",
+      v: 2.57
+    }, {
+      m: "2000-12",
+      v: 2.48
+    }, {
+      m: "2001-01",
+      v: 2.7
+    }, {
+      m: "2001-02",
+      v: 2.54
+    }, {
+      m: "2001-03",
+      v: 2.11
+    }, {
+      m: "2001-04",
+      v: 2.37
+    }, {
+      m: "2001-05",
+      v: 2.56
+    }, {
+      m: "2001-06",
+      v: 2.39
+    }, {
+      m: "2001-07",
+      v: 2.1
+    }, {
+      m: "2001-08",
+      v: 2.1
+    }, {
+      m: "2001-09",
+      v: 1.31
+    }, {
+      m: "2001-10",
+      v: 1.53
+    }, {
+      m: "2001-11",
+      v: 1.32
+    }, {
+      m: "2001-12",
+      v: 1.06
+    }, {
+      m: "2002-01",
+      v: .67
+    }, {
+      m: "2002-02",
+      v: .68
+    }, {
+      m: "2002-03",
+      v: .94
+    }, {
+      m: "2002-04",
+      v: 1.19
+    }, {
+      m: "2002-05",
+      v: .99
+    }, {
+      m: "2002-06",
+      v: .94
+    }, {
+      m: "2002-07",
+      v: 1.19
+    }, {
+      m: "2002-08",
+      v: 1.4
+    }, {
+      m: "2002-09",
+      v: 1.93
+    }, {
+      m: "2002-10",
+      v: 1.76
+    }, {
+      m: "2002-11",
+      v: 1.93
+    }, {
+      m: "2002-12",
+      v: 2.13
+    }, {
+      m: "2003-01",
+      v: 2.35
+    }, {
+      m: "2003-02",
+      v: 2.6
+    }, {
+      m: "2003-03",
+      v: 2.59
+    }, {
+      m: "2003-04",
+      v: 1.99
+    }, {
+      m: "2003-05",
+      v: 1.8
+    }, {
+      m: "2003-06",
+      v: 1.79
+    }, {
+      m: "2003-07",
+      v: 1.86
+    }, {
+      m: "2003-08",
+      v: 2.01
+    }, {
+      m: "2003-09",
+      v: 2.14
+    }, {
+      m: "2003-10",
+      v: 1.97
+    }, {
+      m: "2003-11",
+      v: 2
+    }, {
+      m: "2003-12",
+      v: 2.12
+    }, {
+      m: "2004-01",
+      v: 2.21
+    }, {
+      m: "2004-02",
+      v: 2
+    }, {
+      m: "2004-03",
+      v: 1.9
+    }, {
+      m: "2004-04",
+      v: 2.26
+    }, {
+      m: "2004-05",
+      v: 2.71
+    }, {
+      m: "2004-06",
+      v: 2.89
+    }, {
+      m: "2004-07",
+      v: 2.68
+    }, {
+      m: "2004-08",
+      v: 2.39
+    }, {
+      m: "2004-09",
+      v: 2.27
+    }, {
+      m: "2004-10",
+      v: 2.7
+    }, {
+      m: "2004-11",
+      v: 2.97
+    }, {
+      m: "2004-12",
+      v: 2.79
+    }, {
+      m: "2005-01",
+      v: 2.53
+    }, {
+      m: "2005-02",
+      v: 2.6
+    }, {
+      m: "2005-03",
+      v: 2.75
+    }, {
+      m: "2005-04",
+      v: 2.84
+    }, {
+      m: "2005-05",
+      v: 2.57
+    }, {
+      m: "2005-06",
+      v: 2.34
+    }, {
+      m: "2005-07",
+      v: 2.68
+    }, {
+      m: "2005-08",
+      v: 3.04
+    }, {
+      m: "2005-09",
+      v: 3.83
+    }, {
+      m: "2005-10",
+      v: 3.55
+    }, {
+      m: "2005-11",
+      v: 2.94
+    }, {
+      m: "2005-12",
+      v: 2.88
+    }, {
+      m: "2006-01",
+      v: 3.25
+    }, {
+      m: "2006-02",
+      v: 3.02
+    }, {
+      m: "2006-03",
+      v: 2.91
+    }, {
+      m: "2006-04",
+      v: 3.1
+    }, {
+      m: "2006-05",
+      v: 3.32
+    }, {
+      m: "2006-06",
+      v: 3.51
+    }, {
+      m: "2006-07",
+      v: 3.43
+    }, {
+      m: "2006-08",
+      v: 3.34
+    }, {
+      m: "2006-09",
+      v: 2.08
+    }, {
+      m: "2006-10",
+      v: 1.68
+    }, {
+      m: "2006-11",
+      v: 1.92
+    }, {
+      m: "2006-12",
+      v: 2.29
+    }, {
+      m: "2007-01",
+      v: 2.13
+    }, {
+      m: "2007-02",
+      v: 2.39
+    }, {
+      m: "2007-03",
+      v: 2.56
+    }, {
+      m: "2007-04",
+      v: 2.33
+    }, {
+      m: "2007-05",
+      v: 2.35
+    }, {
+      m: "2007-06",
+      v: 2.32
+    }, {
+      m: "2007-07",
+      v: 2.12
+    }, {
+      m: "2007-08",
+      v: 1.87
+    }, {
+      m: "2007-09",
+      v: 2.53
+    }, {
+      m: "2007-10",
+      v: 3.09
+    }, {
+      m: "2007-11",
+      v: 3.6
+    }, {
+      m: "2007-12",
+      v: 3.47
+    }, {
+      m: "2008-01",
+      v: 3.39
+    }, {
+      m: "2008-02",
+      v: 3.27
+    }, {
+      m: "2008-03",
+      v: 3.19
+    }, {
+      m: "2008-04",
+      v: 3.14
+    }, {
+      m: "2008-05",
+      v: 3.28
+    }, {
+      m: "2008-06",
+      v: 3.81
+    }, {
+      m: "2008-07",
+      v: 4.14
+    }, {
+      m: "2008-08",
+      v: 3.98
+    }, {
+      m: "2008-09",
+      v: 3.67
+    }, {
+      m: "2008-10",
+      v: 2.67
+    }, {
+      m: "2008-11",
+      v: .93
+    }, {
+      m: "2008-12",
+      v: .13
+    }, {
+      m: "2009-01",
+      v: -.11
+    }, {
+      m: "2009-02",
+      v: -.13
+    }, {
+      m: "2009-03",
+      v: -.53
+    }, {
+      m: "2009-04",
+      v: -.57
+    }, {
+      m: "2009-05",
+      v: -.89
+    }, {
+      m: "2009-06",
+      v: -1.02
+    }, {
+      m: "2009-07",
+      v: -1.47
+    }, {
+      m: "2009-08",
+      v: -1.1
+    }, {
+      m: "2009-09",
+      v: -1.02
+    }, {
+      m: "2009-10",
+      v: .01
+    }, {
+      m: "2009-11",
+      v: 1.46
+    }, {
+      m: "2009-12",
+      v: 2.09
+    }, {
+      m: "2010-01",
+      v: 2.3
+    }, {
+      m: "2010-02",
+      v: 2.12
+    }, {
+      m: "2010-03",
+      v: 2.37
+    }, {
+      m: "2010-04",
+      v: 2.28
+    }, {
+      m: "2010-05",
+      v: 2.21
+    }, {
+      m: "2010-06",
+      v: 1.56
+    }, {
+      m: "2010-07",
+      v: 1.64
+    }, {
+      m: "2010-08",
+      v: 1.48
+    }, {
+      m: "2010-09",
+      v: 1.42
+    }, {
+      m: "2010-10",
+      v: 1.36
+    }, {
+      m: "2010-11",
+      v: 1.31
+    }, {
+      m: "2010-12",
+      v: 1.48
+    }, {
+      m: "2011-01",
+      v: 1.56
+    }, {
+      m: "2011-02",
+      v: 1.85
+    }, {
+      m: "2011-03",
+      v: 2.11
+    }, {
+      m: "2011-04",
+      v: 2.49
+    }, {
+      m: "2011-05",
+      v: 2.77
+    }, {
+      m: "2011-06",
+      v: 2.79
+    }, {
+      m: "2011-07",
+      v: 2.88
+    }, {
+      m: "2011-08",
+      v: 2.98
+    }, {
+      m: "2011-09",
+      v: 3.02
+    }, {
+      m: "2011-10",
+      v: 2.69
+    }, {
+      m: "2011-11",
+      v: 2.7
+    }, {
+      m: "2011-12",
+      v: 2.53
+    }, {
+      m: "2012-01",
+      v: 2.57
+    }, {
+      m: "2012-02",
+      v: 2.51
+    }, {
+      m: "2012-03",
+      v: 2.3
+    }, {
+      m: "2012-04",
+      v: 2
+    }, {
+      m: "2012-05",
+      v: 1.58
+    }, {
+      m: "2012-06",
+      v: 1.55
+    }, {
+      m: "2012-07",
+      v: 1.41
+    }, {
+      m: "2012-08",
+      v: 1.51
+    }, {
+      m: "2012-09",
+      v: 1.68
+    }, {
+      m: "2012-10",
+      v: 1.98
+    }, {
+      m: "2012-11",
+      v: 1.7
+    }, {
+      m: "2012-12",
+      v: 1.62
+    }, {
+      m: "2013-01",
+      v: 1.47
+    }, {
+      m: "2013-02",
+      v: 1.6
+    }, {
+      m: "2013-03",
+      v: 1.28
+    }, {
+      m: "2013-04",
+      v: 1.04
+    }, {
+      m: "2013-05",
+      v: 1.23
+    }, {
+      m: "2013-06",
+      v: 1.51
+    }, {
+      m: "2013-07",
+      v: 1.6
+    }, {
+      m: "2013-08",
+      v: 1.4
+    }, {
+      m: "2013-09",
+      v: 1.14
+    }, {
+      m: "2013-10",
+      v: .98
+    }, {
+      m: "2013-11",
+      v: 1.2
+    }, {
+      m: "2013-12",
+      v: 1.39
+    }, {
+      m: "2014-01",
+      v: 1.41
+    }, {
+      m: "2014-02",
+      v: 1.09
+    }, {
+      m: "2014-03",
+      v: 1.39
+    }, {
+      m: "2014-04",
+      v: 1.67
+    }, {
+      m: "2014-05",
+      v: 1.77
+    }, {
+      m: "2014-06",
+      v: 1.65
+    }, {
+      m: "2014-07",
+      v: 1.67
+    }, {
+      m: "2014-08",
+      v: 1.51
+    }, {
+      m: "2014-09",
+      v: 1.5
+    }, {
+      m: "2014-10",
+      v: 1.33
+    }, {
+      m: "2014-11",
+      v: 1.09
+    }, {
+      m: "2014-12",
+      v: .73
+    }, {
+      m: "2015-01",
+      v: .04
+    }, {
+      m: "2015-02",
+      v: .17
+    }, {
+      m: "2015-03",
+      v: .2
+    }, {
+      m: "2015-04",
+      v: .11
+    }, {
+      m: "2015-05",
+      v: .19
+    }, {
+      m: "2015-06",
+      v: .27
+    }, {
+      m: "2015-07",
+      v: .22
+    }, {
+      m: "2015-08",
+      v: .24
+    }, {
+      m: "2015-09",
+      v: .07
+    }, {
+      m: "2015-10",
+      v: .1
+    }, {
+      m: "2015-11",
+      v: .25
+    }, {
+      m: "2015-12",
+      v: .35
+    }, {
+      m: "2016-01",
+      v: .87
+    }, {
+      m: "2016-02",
+      v: .64
+    }, {
+      m: "2016-03",
+      v: .69
+    }, {
+      m: "2016-04",
+      v: .93
+    }, {
+      m: "2016-05",
+      v: .85
+    }, {
+      m: "2016-06",
+      v: .83
+    }, {
+      m: "2016-07",
+      v: .76
+    }, {
+      m: "2016-08",
+      v: .89
+    }, {
+      m: "2016-09",
+      v: 1.22
+    }, {
+      m: "2016-10",
+      v: 1.43
+    }, {
+      m: "2016-11",
+      v: 1.4
+    }, {
+      m: "2016-12",
+      v: 1.66
+    }, {
+      m: "2017-01",
+      v: 2.01
+    }, {
+      m: "2017-02",
+      v: 2.2
+    }, {
+      m: "2017-03",
+      v: 1.91
+    }, {
+      m: "2017-04",
+      v: 1.77
+    }, {
+      m: "2017-05",
+      v: 1.56
+    }, {
+      m: "2017-06",
+      v: 1.47
+    }, {
+      m: "2017-07",
+      v: 1.49
+    }, {
+      m: "2017-08",
+      v: 1.57
+    }, {
+      m: "2017-09",
+      v: 1.76
+    }, {
+      m: "2017-10",
+      v: 1.68
+    }, {
+      m: "2017-11",
+      v: 1.79
+    }, {
+      m: "2017-12",
+      v: 1.77
+    }, {
+      m: "2018-01",
+      v: 1.76
+    }, {
+      m: "2018-02",
+      v: 1.84
+    }, {
+      m: "2018-03",
+      v: 2
+    }, {
+      m: "2018-04",
+      v: 2.05
+    }, {
+      m: "2018-05",
+      v: 2.27
+    }, {
+      m: "2018-06",
+      v: 2.27
+    }, {
+      m: "2018-07",
+      v: 2.34
+    }, {
+      m: "2018-08",
+      v: 2.18
+    }, {
+      m: "2018-09",
+      v: 2.01
+    }, {
+      m: "2018-10",
+      v: 2.05
+    }, {
+      m: "2018-11",
+      v: 1.94
+    }, {
+      m: "2018-12",
+      v: 1.86
+    }, {
+      m: "2019-01",
+      v: 1.43
+    }, {
+      m: "2019-02",
+      v: 1.4
+    }, {
+      m: "2019-03",
+      v: 1.52
+    }, {
+      m: "2019-04",
+      v: 1.57
+    }, {
+      m: "2019-05",
+      v: 1.47
+    }, {
+      m: "2019-06",
+      v: 1.43
+    }, {
+      m: "2019-07",
+      v: 1.45
+    }, {
+      m: "2019-08",
+      v: 1.43
+    }, {
+      m: "2019-09",
+      v: 1.28
+    }, {
+      m: "2019-10",
+      v: 1.29
+    }, {
+      m: "2019-11",
+      v: 1.36
+    }, {
+      m: "2019-12",
+      v: 1.56
+    }, {
+      m: "2020-01",
+      v: 1.79
+    }, {
+      m: "2020-02",
+      v: 1.69
+    }, {
+      m: "2020-03",
+      v: 1.17
+    }, {
+      m: "2020-04",
+      v: .46
+    }, {
+      m: "2020-05",
+      v: .49
+    }, {
+      m: "2020-06",
+      v: .76
+    }, {
+      m: "2020-07",
+      v: .92
+    }, {
+      m: "2020-08",
+      v: 1.16
+    }, {
+      m: "2020-09",
+      v: 1.28
+    }, {
+      m: "2020-10",
+      v: 1.19
+    }, {
+      m: "2020-11",
+      v: 1.19
+    }, {
+      m: "2020-12",
+      v: 1.33
+    }, {
+      m: "2021-01",
+      v: 1.51
+    }, {
+      m: "2021-02",
+      v: 1.79
+    }, {
+      m: "2021-03",
+      v: 2.64
+    }, {
+      m: "2021-04",
+      v: 3.58
+    }, {
+      m: "2021-05",
+      v: 3.97
+    }, {
+      m: "2021-06",
+      v: 4.22
+    }, {
+      m: "2021-07",
+      v: 4.38
+    }, {
+      m: "2021-08",
+      v: 4.51
+    }, {
+      m: "2021-09",
+      v: 4.66
+    }, {
+      m: "2021-10",
+      v: 5.28
+    }, {
+      m: "2021-11",
+      v: 5.87
+    }, {
+      m: "2021-12",
+      v: 6.04
+    }, {
+      m: "2022-01",
+      v: 6.23
+    }, {
+      m: "2022-02",
+      v: 6.51
+    }, {
+      m: "2022-03",
+      v: 6.92
+    }, {
+      m: "2022-04",
+      v: 6.63
+    }, {
+      m: "2022-05",
+      v: 6.78
+    }, {
+      m: "2022-06",
+      v: 7.22
+    }, {
+      m: "2022-07",
+      v: 6.86
+    }, {
+      m: "2022-08",
+      v: 6.68
+    }, {
+      m: "2022-09",
+      v: 6.69
+    }, {
+      m: "2022-10",
+      v: 6.51
+    }, {
+      m: "2022-11",
+      v: 6.09
+    }, {
+      m: "2022-12",
+      v: 5.61
+    }, {
+      m: "2023-01",
+      v: 5.56
+    }, {
+      m: "2023-02",
+      v: 5.2
+    }, {
+      m: "2023-03",
+      v: 4.49
+    }, {
+      m: "2023-04",
+      v: 4.53
+    }, {
+      m: "2023-05",
+      v: 4.1
+    }, {
+      m: "2023-06",
+      v: 3.35
+    }, {
+      m: "2023-07",
+      v: 3.36
+    }, {
+      m: "2023-08",
+      v: 3.44
+    }, {
+      m: "2023-09",
+      v: 3.49
+    }, {
+      m: "2023-10",
+      v: 3.1
+    }, {
+      m: "2023-11",
+      v: 2.89
+    }, {
+      m: "2023-12",
+      v: 2.86
+    }, {
+      m: "2024-01",
+      v: 2.75
+    }, {
+      m: "2024-02",
+      v: 2.81
+    }, {
+      m: "2024-03",
+      v: 2.95
+    }, {
+      m: "2024-04",
+      v: 2.84
+    }, {
+      m: "2024-05",
+      v: 2.7
+    }, {
+      m: "2024-06",
+      v: 2.57
+    }, {
+      m: "2024-07",
+      v: 2.6
+    }, {
+      m: "2024-08",
+      v: 2.44
+    }, {
+      m: "2024-09",
+      v: 2.26
+    }, {
+      m: "2024-10",
+      v: 2.41
+    }, {
+      m: "2024-11",
+      v: 2.49
+    }, {
+      m: "2024-12",
+      v: 2.65
+    }, {
+      m: "2025-01",
+      v: 2.63
+    }, {
+      m: "2025-02",
+      v: 2.57
+    }, {
+      m: "2025-03",
+      v: 2.26
+    }, {
+      m: "2025-04",
+      v: 2.33
+    }, {
+      m: "2025-05",
+      v: 2.46
+    }, {
+      m: "2025-06",
+      v: 2.61
+    }, {
+      m: "2025-07",
+      v: 2.59
+    }, {
+      m: "2025-08",
+      v: 2.69
+    }, {
+      m: "2025-09",
+      v: 2.78
+    }, {
+      m: "2025-10",
+      v: 2.66
+    }, {
+      m: "2025-11",
+      v: 2.71
+    }, {
+      m: "2025-12",
+      v: 2.78
+    }, {
+      m: "2026-01",
+      v: 2.73
+    }, {
+      m: "2026-02",
+      v: 2.8
+    }, {
+      m: "2026-03",
+      v: 3.37
+    }, {
+      m: "2026-04",
+      v: 3.57
+    }, {
+      m: "2026-05",
+      v: 3.82
+    }, {
+      m: "2026-06",
+      v: 3.45
+    }, {
+      m: "2026-07",
+      v: 3.36
+    }, {
+      m: "2026-08",
+      v: 3.42
+    } ],
     gdpYoYBefore: [ {
       q: "1948 Q1",
       v: 2.61
@@ -28629,6 +29590,7 @@
   var fedMoves = fred_default.fedMoves;
   var gdpYoYBefore = fred_default.gdpYoYBefore;
   var cpiYoYBefore = fred_default.cpiYoYBefore;
+  var pceYoYHistory = fred_default.pceYoYHistory;
   var sp500ReturnsBefore = fred_default.sp500ReturnsBefore;
   var gdpGrowthBefore = fred_default.gdpGrowthBefore;
   function hubTodayHtml() {
@@ -28672,15 +29634,23 @@
     }
   };
   var seasonOverride = null;
-  var cpiYoYHistory = series_default.cpiYoYHistory;
+  var PCE_FROM = "2000-01";
+  var inflationHistory = series_default.cpiYoYHistory;
   var gdpQuarterlyYoY = series_default.gdpQuarterlyYoY;
   var DATA_COMPILED;
   var dataCompiledLabel;
   var calendarTodayY;
+  function fedGauge(cpi) {
+    return cpi.filter(function(d) {
+      return d.m < PCE_FROM;
+    }).concat(pceYoYHistory.filter(function(d) {
+      return d.m >= PCE_FROM;
+    }));
+  }
   function bootRefreshSeason() {
     DATA_COMPILED = new Date(2026, 8, 25);
     dataCompiledLabel = MONTHS_SHORT[DATA_COMPILED.getMonth()] + " " + DATA_COMPILED.getDate() + ", " + DATA_COMPILED.getFullYear();
-    cpiYoYHistory = cpiYoYBefore.concat(cpiYoYHistory);
+    inflationHistory = fedGauge(cpiYoYBefore.concat(inflationHistory));
     gdpQuarterlyYoY = gdpYoYBefore.concat(gdpQuarterlyYoY);
     calendarTodayY = DATA_COMPILED.getFullYear();
   }
@@ -29286,6 +30256,14 @@
   };
   var TEMP_BAND_LO = 1;
   var TEMP_BAND_HI = 3;
+  var PCE_SWITCH_SRC = {
+    t: "Federal Reserve — Monetary Policy Report to the Congress, February 17, 2000: the FOMC frames its inflation projections on the PCE chain-type price index rather than the CPI",
+    u: "https://www.federalreserve.gov/boarddocs/hh/2000/february/ReportSection1.htm"
+  };
+  var PCE_SRC = {
+    t: "BEA via FRED — Personal Consumption Expenditures: Chain-type Price Index (PCEPI), monthly",
+    u: "https://fred.stlouisfed.org/series/PCEPI"
+  };
   var GDP_NORM = 2.6;
   function checkMoneyStock() {
     var g = m2Yoy.filter(function(x) {
@@ -29298,8 +30276,8 @@
     summer: {
       body: "Peak fertility. Estrogen has crested and the LH surge has done its work; energy and desire are at their highest and everything in the body is built for going out and taking chances. Temperature dips briefly at ovulation and only then begins to climb.",
       economy: "Overheat. The economy is still expanding but inflation sits above target, so the central bank is leaning against it.",
-      next: "Autumn — disinflation. Temperature (CPI) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
-      watch: [ "Temperature (CPI) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)" ],
+      next: "Autumn — disinflation. Temperature (inflation) rolls over and the pressure comes off. The turn shows up first in the leading signs (credit, the curve, sentiment) and is confirmed months later by the lagging ones (temperature, activity).",
+      watch: [ "Temperature (inflation) and whether the Fed moves at its next meeting", "Cervical fluid — the 10Y–3M curve flattening or re-inverting", "Sentiment and valuation stretched at the same time (VIX calm, CAPE rich)" ],
       fromTheBook: []
     },
     autumn: {
@@ -29703,7 +30681,7 @@
   }
   function cpiYear(endMonth) {
     var to = monthIndex(endMonth);
-    return cpiYoYHistory.filter(function(c) {
+    return inflationHistory.filter(function(c) {
       var i = monthIndex(c.m);
       return i > to - 12 && i <= to;
     });
@@ -29792,8 +30770,8 @@
     var elapsedYears = era.ongoing ? calendarTodayY - era.from + cycleYtdFraction : era.to - era.from + 1;
     var yearIndex = era.ongoing ? Math.floor(elapsedYears) + 1 : era.to - era.from + 1;
     var dialYears = Math.max(typicalCycleYears, Math.ceil(elapsedYears));
-    var endMonth = ongoing ? cpiYoYHistory[cpiYoYHistory.length - 1].m : era.to + "-12";
-    var cpi = cpiYoYHistory.filter(function(c) {
+    var endMonth = ongoing ? inflationHistory[inflationHistory.length - 1].m : era.to + "-12";
+    var cpi = inflationHistory.filter(function(c) {
       return c.m >= era.from + "-01" && c.m <= endMonth;
     });
     var cpi12 = cpiYear(endMonth);
@@ -29864,7 +30842,7 @@
   };
   function seasonWhyFor(m) {
     var r = m.reading;
-    return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (CPI " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
+    return "Today the economy is " + growthWord(r) + " (real GDP " + fmtSigned(r.gdpLatest.v, 1) + "% on a year earlier, " + qLabel(r.gdpLatest.q) + ") and prices are " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady") + " " + (r.cpiHot ? "above" : r.cpiCold ? "below" : "within") + " the range (inflation " + r.cpiNow.toFixed(1) + "%). " + seasonRuleSentence[m.season] + (seasonOverride ? " (Season pinned by hand this build.)" : "");
   }
   function growthWord(r) {
     return r.regime === "contraction" ? "contracting" : "expanding";
@@ -30053,7 +31031,7 @@
   }
   function cycleMonths(c) {
     var to = c.to || calendarTodayY, a = -1, b = -1;
-    cpiYoYHistory.forEach(function(d, i) {
+    inflationHistory.forEach(function(d, i) {
       var y = parseInt(d.m.slice(0, 4), 10);
       if (y >= c.from && y <= to) {
         if (a === -1) a = i;
@@ -30092,7 +31070,7 @@
     };
   }
   function yearInflation(y) {
-    var dec = y === calendarTodayY ? null : cpiYoYHistory.filter(function(d) {
+    var dec = y === calendarTodayY ? null : inflationHistory.filter(function(d) {
       return d.m === y + "-12";
     })[0];
     return dec ? dec.v : null;
@@ -30103,7 +31081,7 @@
   function yearSoFar(y) {
     var g = gdpQuarterlyYoY.filter(function(d) {
       return yearOf(d) === y;
-    }), c = cpiYoYHistory.filter(function(d) {
+    }), c = inflationHistory.filter(function(d) {
       return +d.m.slice(0, 4) === y;
     });
     return {
@@ -31367,13 +32345,15 @@
       u: "https://fred.stlouisfed.org/series/UNRATE"
     } ]);
   }
+  function bandMonths() {
+    return inflationHistory.filter(function(d) {
+      return d.v >= TEMP_BAND_LO && d.v <= TEMP_BAND_HI;
+    }).length;
+  }
   function temperatureInfoHtml(ind) {
-    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is headline consumer prices, year over year (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it as part of the Season Model’s structure, not taken from a source. And the months inside it are not evidence that the band is normal — 258 of the 451 months this page can draw, since 1989, have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">And the needle is not measured on the same index as the target. The Fed’s 2% is the <b>PCE</b> price index; this reading is the <b>CPI</b>, which since 2000 has run 0.39 points higher on average — it covers only urban out-of-pocket spending, leans harder on shelter, and reweights annually rather than monthly, so it catches less of the substitution people do when a price rises. So the gap this bar draws is a little wider than the one the Fed is acting on: 3.4% here is nearer 3% on the Fed’s own gauge.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, {
+    return "<h4>" + titleCase(ind.econTerm) + '</h4><p class="caption">The reading is <b>' + (ind.tag ? ind.tag.text : "") + "</b>. The figure is consumer prices, year over year (" + ind.metricSub + '). The ends of the track are the record, and they are further apart than a modern reader expects: −15.8% in 1921 and +23.7% in 1920, two years apart.</p><p class="caption follow"><b>1–3% is a target band, not a normal range</b> — the one band in this app that describes where prices <i>ought</i> to be rather than where they have been. The Fed publishes a point target of 2%, reaffirmed in the August 2025 revision of its Statement on Longer-Run Goals, and has done since January 2012. It does not publish a band. The point is the Fed’s; the two edges are set a point either side of it as part of the Season Model’s structure, not taken from a source. And the months inside it are not evidence that the band is normal — ' + bandMonths() + " of the " + inflationHistory.length + " months this page can draw, since " + inflationHistory[0].m.slice(0, 4) + ', have sat inside 1–3%, which is a fact about how often the Fed has hit its target rather than about where prices naturally sit. Widen the window and the band stops describing anything: the ends of this same track are −15.8% and +23.7%.</p><p class="caption follow">The needle is read on the gauge the Fed used in each era. Since January 2000 it is the <b>PCE</b> price index: the FOMC moved its inflation projections to it in its February 2000 Monetary Policy Report, and its 2% target is written on it. Before 2000 it is the <b>CPI</b>, the measure the Fed worked from then. The two are not the same index: the CPI covers only urban out-of-pocket spending, leans harder on shelter and reweights less often, so it usually runs a little higher.</p><p class="caption follow">The two ends are not mirror images. <b>Hot</b> erodes what money buys. <b>Cold</b> sounds like relief and is not: falling prices raise the real weight of every debt already owed and give every buyer a reason to wait, which is why a central bank aims above zero rather than at it.</p>' + srcBlock([ FED_TARGET_SRC, PCE_SWITCH_SRC, PCE_SRC, {
       t: "Cleveland Fed — The CPI versus the PCE price index",
       u: "https://www.clevelandfed.org/collections/infographics/2024/infogr-20241205-cpi-versus-pce-price-index"
-    }, {
-      t: "BLS — Consumer Price Index, August 2026",
-      u: "https://www.bls.gov/news.release/PDF/cpi.PDF"
     }, {
       t: "BLS Monthly Labor Review — One hundred years of price change",
       u: "https://www.bls.gov/opub/mlr/2014/article/one-hundred-years-of-price-change-the-consumer-price-index-and-the-american-inflation-experience.htm"
@@ -31464,7 +32444,7 @@
   function deriveLaggingTags() {
     var u = unempHistory.filter(function(d) {
       return d.v != null;
-    }), c = cpiYoYHistory[cpiYoYHistory.length - 1];
+    }), c = inflationHistory[inflationHistory.length - 1];
     var act = lagging.filter(function(x) {
       return x.bodyTerm === "Activity";
     })[0], temp = lagging.filter(function(x) {
@@ -31546,7 +32526,7 @@
     get metric() {
       return cpiNow.toFixed(1) + "%";
     },
-    metricSub: "CPI, YoY, Aug 2026",
+    metricSub: "PCE, YoY, Aug 2026",
     meter: {
       min: -15.8,
       max: 23.7,
@@ -31562,13 +32542,10 @@
       }
     },
     shortCaption: "",
-    caption: "Basal body temperature rises only after ovulation has already happened — CPI works the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
+    caption: "Basal body temperature rises only after ovulation has already happened — prices work the same way, confirming heat that built up earlier rather than predicting it. A touch above target; tame next to the full sweep of U.S. price history, which has run from outright deflation to the 1920 postwar spike and a 14.8% peak in 1980. The Fed's response — the lever pulled after her temperature, not ahead of it — raised the funds rate a quarter point to 3.75–4.00% at the Sep 16 meeting (12–0, unanimous) — its first hike in three years, with the dot plot signaling one more before year-end. Next decision Oct 28, 2026.",
     facts: [],
     aux: [],
-    src: [ {
-      t: "BLS — Consumer Price Index, August 2026",
-      u: "https://www.bls.gov/news.release/PDF/cpi.PDF"
-    }, {
+    src: [ PCE_SRC, {
       t: "Federal Reserve — FOMC statement, Sep 16 2026",
       u: "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
     }, {
@@ -32075,7 +33052,7 @@
     derivePulseTag();
     GYN.step("deriveLaggingTags", deriveLaggingTags, "derive");
     deriveLaggingTags();
-    tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: CPI against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> around it is part of the Season Model’s structure, drawn on CPI because that is the series most readers know.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
+    tempInfo = "<h4>Temperature</h4>" + ledeHtml("Her basal temperature: inflation against the 2% the Fed aims at, month by month through this cycle.") + facts([ "<b>Hot above the band, warm inside it, cold below</b> — red, teal, blue.", "The Fed’s goal is a single point, 2% on the PCE index. The <b>1–3% band</b> around it is part of the Season Model’s structure. It is read on PCE since 2000, the Fed’s own gauge, and on CPI before it, the gauge the Fed watched then.", "One of the two readings a season is computed from: the level, and the direction of the last twelve months.", "It confirms heat that has already built rather than predicting it." ]);
     liveInto("vix3mClose");
     GYN.step("deriveHorizon", deriveHorizon, "derive");
     deriveHorizon();
@@ -32564,13 +33541,13 @@
       door: "peek",
       slot: "temp",
       term: "Temperature",
-      head: "CPI",
+      head: "CPI and PCE Inflation",
       hist: {
-        s: cpiYoYHistory,
+        s: inflationHistory,
         k: "m"
       },
       when: lastDate,
-      cardUnit: "CPI, YoY"
+      cardUnit: "PCE, YoY"
     }, {
       id: "sheet-metric-gdp",
       name: "Growth",
@@ -33388,7 +34365,7 @@
     o = o || {};
     var F = histFrame(Wpx), W = F.W, narrow2 = F.narrow, H = F.H, L = F.L, R = F.R, T = F.T, B = F.B;
     from = from || 0;
-    var vals = cpiYoYHistory.slice(from, o.to == null ? void 0 : o.to), n = vals.length;
+    var vals = inflationHistory.slice(from, o.to == null ? void 0 : o.to), n = vals.length;
     if (!n) return "";
     var y0 = parseInt(vals[0].m.slice(0, 4), 10), y1 = parseInt(vals[n - 1].m.slice(0, 4), 10);
     var sc = windowScale(vals.map(function(d) {
@@ -33631,7 +34608,7 @@
   var heatTop = [];
   function heatEdges() {
     if (!heatTop.length) {
-      var all = cpiYoYHistory.map(function(d) {
+      var all = inflationHistory.map(function(d) {
         return d.v;
       });
       heatTop = [ pctl(all, .9), pctl(all, .95) ];
@@ -35905,7 +36882,7 @@
   }
   var runsCache = null;
   function runTops() {
-    var last = cpiYoYHistory[cpiYoYHistory.length - 1], key = cpiYoYHistory.length + ":" + (last ? last.m + last.v : "");
+    var last = inflationHistory[inflationHistory.length - 1], key = inflationHistory.length + ":" + (last ? last.m + last.v : "");
     if (!runsCache || runsCache.key !== key) runsCache = {
       key: key,
       tops: findRuns()
@@ -35923,14 +36900,14 @@
       }
       run = [];
     }
-    cpiYoYHistory.forEach(function(c) {
+    inflationHistory.forEach(function(c) {
       if (cpiDirectionAt(c.m) === "falling") close(); else run.push(c);
     });
     close();
     return tops;
   }
   function cyclePeak(from, to) {
-    var tops = runTops(), months = cpiYoYHistory.filter(function(c) {
+    var tops = runTops(), months = inflationHistory.filter(function(c) {
       return c.m >= from && c.m <= to;
     }), k = 0;
     while (k < months.length - 1 && !(tops[months[k].m] >= from)) k++;
@@ -36052,7 +37029,7 @@
   function fedPhasesCard(m) {
     var fromM = m.era.from + "-01", toM = endMonthOf(m), from = monthIdx(fromM), to = monthIdx(toM), phases = fedPhases();
     var peak = cyclePeak(fromM, toM), b = bandsHtml(phases, from, to), at = phaseAt(phases, toM);
-    var lines = [ growthPoints(from, to), monthPoints(cpiYoYHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
+    var lines = [ growthPoints(from, to), monthPoints(inflationHistory, from, to), monthPoints(fedFundsHistory, from, to) ];
     var top = peak ? lines[1].filter(function(p) {
       return Math.floor(p.i / 3) === Math.floor(monthIdx(peak.m) / 3);
     })[0] || null : null;
@@ -36295,9 +37272,9 @@
     rovingKeys(group, "[data-theme-choice]", "aria-checked", true);
   }
   function renderCycleKicker() {
-    var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div><div class="legend-rows">' + [ [ "winter", "Winter", "CPI &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "CPI ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "CPI &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "CPI ≥ " + TEMP_BAND_LO + "%" ] ].map(function(r) {
+    var html = '<h4>Legend</h4><div class="legend-head">Seasons (Q)</div><div class="legend-rows">' + [ [ "winter", "Winter", "Prices &lt; " + TEMP_BAND_LO + "%" ], [ "spring", "Spring", "Prices ≤ " + TEMP_BAND_HI + "%" ], [ "summer", "Summer", "Prices &gt; " + TEMP_BAND_HI + "%" ], [ "autumn", "Autumn", "Prices ≥ " + TEMP_BAND_LO + "%" ] ].map(function(r) {
       return '<div class="legend-row"><span class="season-sw ' + r[0] + '"></span>' + r[1] + "<small>" + r[2] + "</small></div>";
-    }).join("") + '</div><p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% CPI, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return ≥ 0%</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
+    }).join("") + '</div><p class="caption">The range is ' + TEMP_BAND_LO + "–" + TEMP_BAND_HI + "% inflation, CPI before 2000 and PCE since, a point either side of the Fed’s " + CPI_TARGET + "% inflation target, in force since January 2012. The Fed publishes the point, not a band; the range is part of the Season Model’s structure.</p>" + srcBlock([ FED_TARGET_SRC ]) + '<div class="legend-head">S&amp;P 500 (YoY)</div><div class="legend-rows"><div class="legend-row"><span class="bar" style="background:var(--ovulate)"></span>Bull year<small>return ≥ 0%</small></div><div class="legend-row"><span class="bar" style="background:var(--bleed-mid)"></span>Bear year<small>return &lt; 0%</small></div><div class="legend-row"><span class="bar ytd" style="background:var(--ovulate)"></span>Year in progress<small>in progress</small></div><div class="legend-row"><svg viewBox="-7 -7 14 14" aria-hidden="true"><circle r="5.2" fill="var(--surface)" stroke="var(--ovulate)" stroke-width="2"></circle><circle r="1.9" fill="var(--ovulate)"></circle></svg>Peak year<small>highest return</small></div></div><div class="legend-head">The market cycle</div><p class="caption">A typical market cycle, a bull market and the bear market that ends it, has run about 5 to 6½ years across the long record. It is a typical length, not a forecast.</p>' + srcBlock(typicalCycleSrc);
     var idx = detailSlot(html);
     put("cycle-kicker", '<span id="cycle-kicker-name">' + (ui.shownEra ? ui.shownEra.name : "Gyneconomy") + '</span><button type="button" class="info-btn expand-btn" data-detail-idx="' + idx + '" aria-label="Legend" title="Legend">i</button>');
   }
@@ -36682,8 +37659,8 @@
     var rows = marketCycles.map(function(c) {
       var to = c.to || calendarTodayY;
       var g = totalGrowthYears(c.from, to);
-      var sp = cycleSlice(cpiYoYHistory, c);
-      var p = sp ? totalRiseIn(cpiYoYHistory.slice(sp[0], sp[1])) : null;
+      var sp = cycleSlice(inflationHistory, c);
+      var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
       if (!g || !p) return null;
       return {
         name: c.name,
@@ -37317,7 +38294,7 @@
     sheetRenderers["sheet-metric-temp"] = function(W = 0) {
       var r = page.range["sheet-metric-temp"], cyc = pageCycle("sheet-metric-temp");
       put("temp-rangebar", histControls("sheet-metric-temp", {
-        series: cpiYoYHistory
+        series: inflationHistory
       }));
       put("temp-head", histHead("sheet-metric-temp"));
       var hist = need("temp-history");
@@ -37325,7 +38302,7 @@
       var win;
       if (cyc) {
         var span = cycleMonths(cyc);
-        win = span ? cpiYoYHistory.slice(span[0], span[1]) : [];
+        win = span ? inflationHistory.slice(span[0], span[1]) : [];
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, span ? span[0] : 0, {
           to: span ? span[1] : void 0,
           cycle: true
@@ -37338,8 +38315,8 @@
           falling: "cooling"
         }));
       } else {
-        var from = mWindowFrom(cpiYoYHistory.length, r);
-        win = cpiYoYHistory.slice(from);
+        var from = mWindowFrom(inflationHistory.length, r);
+        win = inflationHistory.slice(from);
         hist.innerHTML = cpiHistoryChart(hist.clientWidth || W, from);
         attachHistory(hist, "temp-hist-tooltip", "cpiHistoryChart");
         put("temp-trend", trendPill(trendOf(win.map(function(d) {
@@ -37548,7 +38525,7 @@
       return b.v > a.v ? b : a;
     });
     var cards = [ '<p class="hi-lede">A temperature is the one number that says whether something inside is running too hot, and in an economy that number is prices. 2% is its 37°C — the reading only means anything measured against the level the system is meant to hold.</p>' ];
-    cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning", "Across the " + cyc.length + " months of the " + currentEra.name + ", CPI has run above 3% in " + hot + " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
+    cards.push(hiCard("Temperature", tempInd ? stateOf(tagFor(tempInd)) : "warning", "Across the " + cyc.length + " months of the " + currentEra.name + ", prices have run above 3% in " + hot + " of them, and peaked at " + peak.v.toFixed(1) + "% in " + monthLabel(peak.m) + "."));
     cards.push(hiCard("Where It Sits Now", tempInd ? stateOf(tagFor(tempInd)) : "warning", "The current cycle’s average is " + mean(cyc.map(function(d) {
       return d.v;
     })).toFixed(1) + "%, against a 2% target. Today’s " + r.cpiNow.toFixed(1) + "% is " + (r.cpiNow > 3 ? "above" : r.cpiNow < 1 ? "below" : "inside") + " the 1–3% range."));
@@ -38537,7 +39514,7 @@
     };
   }
   function seasonModelNote() {
-    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is CPI against a 1–3% band, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
+    return "<h4>The Season Model</h4>" + ledeHtml("Two readings set the season: which side growth is on, and how warm prices are.") + facts([ "<b>Growth</b> is real GDP against a year earlier. Its trend over the last " + growthWindowWord() + " quarters sets the side: rising is expansion, falling is contraction, and a flat stretch stays on the side it was.", "<b>Below zero is always contraction.</b> Contraction is not the same as shrinking: growth can still be positive while it falls, and in most contraction quarters it is.", "<b>Temperature</b> is inflation against a 1–3% band, read on CPI before 2000 and on PCE, the Fed’s own gauge, since, hot above it and cold below it, and its trend over twelve months, heating or cooling. The band is part of the Season Model’s structure, a point either side of the Fed’s 2% target, which is a point, not a range.", "<b>In expansion</b>, hot is Summer; otherwise heating is Spring — reflation and cooling is Spring — deflation.", "<b>In contraction</b>, cold is Winter; otherwise cooling is Autumn — disinflation and heating or steady is Autumn — stagflation.", "<b>A season turns late.</b> A trend over " + growthWindowWord() + " quarters turns about nine months after growth itself does, so a season is a phase, not a single print.", "<b>Before 1947</b> the GDP record is annual, so the earliest seasons are read a year at a time.", seasonWhy ]);
   }
   function renderSeasonRows() {
     var seasonRules = [ {
@@ -38604,11 +39581,11 @@
       return '<span class="range-bar">' + [ "below", "within", "above" ].map(function(z) {
         var w = zones[z] || 0;
         return '<b class="' + z + (w ? " on" : "") + '"></b>';
-      }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="CPI ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
+      }).join("") + (dotValue != null ? '<i style="left:' + (rangePos(dotValue) * 100).toFixed(1) + '%" title="PCE ' + dotValue.toFixed(1) + '% today"></i>' : "") + "</span>";
     }
     put("seasons-rows", '<div class="lag-row lag-row-head"><span>Season</span><span class="cell">Growth</span><span class="cell">Temperature</span><span class="meta"></span><span>Target range</span></div>' + seasonRules.map(function(r) {
       var m = wheelMeta[r.key], now2 = r.key === currentSeason;
-      return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · CPI " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
+      return '<div class="lag-row ' + seasonGroup(r.key) + (now2 ? " now" : "") + '"><span>' + m.name + (m.theme ? " — " + m.theme : "") + (now2 ? " <em>now</em>" : "") + '</span><span class="cell">' + r.growth + '</span><span class="cell">' + r.temp + '</span><span class="meta">' + r.growth + " · " + r.temp + '</span><span class="range-cell" title="' + r.range + (now2 ? " · PCE " + cpiNow.toFixed(1) + "% today" : "") + '">' + SNOWFLAKE + rangeBarHtml(r.zones, now2 ? cpiNow : null) + FLAME + "</span></div>";
     }).join(""));
     put("seasons-kicker", "The Season Model" + expandBtn(seasonModelNote()));
     put("framework-rows", '<div class="lag-row lag-row-head"><span>Sign</span><span>In the body</span><span>In the economy</span><span>Timing</span></div>' + frameworkRows.map(function(r) {
@@ -38735,7 +39712,7 @@
     fromHash();
     window.addEventListener("hashchange", fromHash);
     var built = false;
-    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
+    var groups = [ [ "Season, growth & the cycle", /CPIAUC(?:SL|NS)|PCEPI|DFEDTARU|worldbank|spglobal|slickcharts|stern\.nyu|GDPC1|A191RL1A225NBEA|measuringworth|eurostat|ftportfolios|fisherinvestments|yardeni/ ], [ "Yield curve & recession record", /treasury\.gov\/resource|T10Y2Y|T10Y3M|series\/GS\d|TB3MS|nber\.org\/research|newyorkfed|bostonfed/ ], [ "Labor, inflation & the Fed", /empsit|dol\.gov|cpi\.PDF|monetary2026|UNRATE|census\.gov|fomccalendars|opub\/mlr/ ], [ "Real-time signs — credit, industry, money", /prnewswire|ismworld|tradingeconomics|ice\.com|series\/M2V|series\/M2SL/ ], [ "Sentiment", /oecd\.org|DDURRA3M086SBEA|bea\.gov\/data\/income|VIXCLS|VXOCLS|chase\.com|td\.com\/ca|VXVCLS|cboe\.com|series\/SP500|series\/DJIA|DGS10/ ], [ "Valuations", /NCBEILQ027S|series\/GDP$|shillerdata|multpl|fortune\.com|berkshirehathaway/ ], [ "Financial resilience", /cbo\.gov|GFDEGDQ188S|GFDGDPA188S|FYPUGDA188S|FYOIGDA188S|FYFSGDA188S|whitehouse\.gov|fiscaldata|prod2_|PRS85006092|OPHNFB|bls\.gov\/productivity/ ] ];
     function buildSources() {
       var src = sourceIndex, seen = {}, items = [];
       function add(x) {
