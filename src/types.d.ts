@@ -138,5 +138,6 @@ type RosterRow = {
   flip?: boolean;
   pair?: HistSpec;
   peek?: "pair";
+  soFar?: boolean;
 };
 type PeekCardOpts = { value?: string; word?: string; state?: Tone; ring?: number | null; pulse?: { rate: number | null; ref: number | null }; meter?: Meter; cols?: (number | null)[]; colClass?: (v: number, i: number) => string; colBase?: number; colRule?: boolean; target?: string; title?: string; kicker?: string; mark?: string; unit?: string };

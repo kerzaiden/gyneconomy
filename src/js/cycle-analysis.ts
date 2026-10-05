@@ -4,13 +4,15 @@ import { page, pageCycle } from "./history.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
+import { cardFace, cardValue, eraFig } from "./era.ts";
+import { calendarTodayY } from "./refresh-season.ts";
 import { cycLabel, cycleModel, openCycle } from "./model.ts";
 import { categoriesShown, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
 import type { CycleModel } from "./model.ts";
 
 // ---- Her chart: every reading, cycle by cycle, against her own normal ranges ----
 type Norm = { lo: number; hi: number; fence: number; floor: number };
-export type Lab = { id: string; name: string; cat: string; unit: string; good?: "up" | "down"; per: (number | null)[]; norm: Norm | null; now: Norm | null };
+export type Lab = { id: string; name: string; cat: string; good?: "up" | "down"; soFar?: boolean; per: (number | null)[]; norm: Norm | null; now: Norm | null; print: (v: number) => string; span: (lo: number, hi: number) => string };
 type Visit = { years: number; bull: number; bleed: number };
 
 var NUM = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
@@ -28,15 +30,15 @@ function normOf(vs: number[]): Norm | null {
 function closedCount(){ return marketCycles.filter(function(c){ return !c.ongoing; }).length; }
 function visitOf(m: CycleModel): Visit {
   var c = m.era, signs: boolean[] = [], bleed = 0;
-  for (var y = c.from; y <= m.endYear; y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
+  for (var y = c.from; y <= (m.ongoing ? Math.min(m.endYear, calendarTodayY - 1) : m.endYear); y++) if (sp500AnnualReturns[y] != null) signs.push(sp500AnnualReturns[y] >= 0);
   while (bleed < signs.length && !signs[signs.length - 1 - bleed]) bleed++;
   return { years:m.elapsedYears, bull:signs.filter(Boolean).length, bleed:bleed };
 }
 var visitCache: Visit[] | null = null;
 function visits(){ return visitCache || (visitCache = marketCycles.map(function(c){ return visitOf(cycleModel(c)); })); }
 function cycleLab(id: string, name: string, good: "up" | "down" | undefined, f: (v: Visit) => number): Lab {
-  var per = visits().map(f);
-  return { id:id, name:name, cat:"cycle", unit:" yr", good:good, per:per, norm:normOf(per.slice(0, closedCount())), now:null };
+  var per = visits().map(f), print = function(v: number){ return yearsWord(v) + " yr"; };
+  return { id:id, name:name, cat:"cycle", good:good, per:per, norm:normOf(per.slice(0, closedCount())), now:null, print:print, span:spanOf(print) };
 }
 function cycleReadings(R: RosterRow){
   var h = keyed(R.hist).filter(function(d){ return d.v != null; }), first = +h[0].k.slice(0, 4);
@@ -47,14 +49,26 @@ function cycleReadings(R: RosterRow){
 function readingsNorm(seen: number[][]){
   return normOf(([] as number[]).concat.apply([], seen.slice(0, closedCount())));
 }
+function spanOf(print: (v: number) => string){
+  return function(lo: number, hi: number){ return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi); };
+}
+function cardPrint(R: RosterRow){
+  var g = eraFig(cardFace(R.id).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
+  if (!R.flip) return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
+  var word = function(v: number){ return v > 0 ? " surplus" : " deficit"; }, print = function(v: number){ return f(Math.abs(v)) + word(v); };
+  return { print:print, span:function(lo: number, hi: number){
+    var a = [Math.abs(lo), Math.abs(hi)].sort(function(x, y){ return x - y; });
+    return (lo > 0) !== (hi > 0) ? print(lo) + " – " + print(hi) : f(a[0]) === f(a[1]) ? print(lo) : f(a[0]) + " – " + f(a[1]) + word(hi);
+  } };
+}
 function readingLab(R: RosterRow): Lab {
-  var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; };
-  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? vs[vs.length - 1] : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
-  var unit = /velocity|index|CAPE/.test(R.cardUnit || "") ? "" : "%";
-  return { id:R.id, name:R.name, cat:R.cat, unit:unit, good:R.good, per:per, now:readingsNorm(seen),
+  var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);
+  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
+  return { id:R.id, name:R.name, cat:R.cat, good:R.good, soFar:R.soFar, per:per, now:readingsNorm(seen), print:p.print, span:p.span,
     norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
 }
 var labCache: Lab[] | null = null;
+export function forgetLabs(){ labCache = null; visitCache = null; }
 export function labs(){
   return labCache || (labCache = [
     cycleLab("length", "Length", undefined, function(v){ return v.years; }),
@@ -69,10 +83,7 @@ function state(l: Lab, i: number){
   return v > n.fence ? "high" : v < n.floor ? "low" : "";
 }
 export function yearsWord(v: number){ var q = Math.round(v * 4); return (Math.floor(q / 4) || q % 4 === 0 ? String(Math.floor(q / 4)) : "") + ["", "¼", "½", "¾"][q % 4]; }
-export function fmt(l: Lab, v: number){
-  var a = Math.abs(v), dp = a >= 100 ? 0 : !l.unit && a < 3 ? 2 : 1;
-  return l.cat === "cycle" ? yearsWord(v) + l.unit : (v < 0 ? "−" : "") + a.toFixed(dp) + l.unit;
-}
+export function fmt(l: Lab, v: number){ return l.print(v); }
 var TIERS = [{ key:"abnormal", title:"Risk", cls:"t-abnormal" }, { key:"borderline", title:"Attention", cls:"t-borderline" }, { key:"optimal", title:"Normal", cls:"t-optimal" }];
 function tier(l: Lab, i: number){
   var v = l.per[i] as number, n = normAt(l, i) as Norm, up = v > n.hi, down = v < n.lo;
@@ -88,8 +99,8 @@ function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="
 function labItem(l: Lab, i: number){
   var n = normAt(l, i) as Norm, tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t){ return t.key === tier(l, i); })[0];
   return '<li class="lab-item ' + side(l, i) + ' ' + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + '><div><b>' + l.name + '</b><small class="lab-where">' + t.title + '</small></div>' +
-    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + '<i class="lab-to" aria-hidden="true"></i></b>' +
-    '<small>' + (fmt(l, n.lo) === fmt(l, n.hi) ? fmt(l, n.lo) : fmt(l, n.lo) + " – " + fmt(l, n.hi)) + '</small></div></' + tag + '></li>';
+    '<div class="lab-res"><b>' + fmt(l, l.per[i] as number) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b>' +
+    '<small>' + l.span(n.lo, n.hi) + '</small></div></' + tag + '></li>';
 }
 function ring(v: number){
   var r = 21, c = 2 * Math.PI * r;
@@ -201,23 +212,34 @@ function toggleMenu(host: HTMLElement, id: string){
 export function riskLabs(i: number){ return judged(i).filter(function(l){ return tier(l, i) === "abnormal"; }); }
 function judged(i: number){ return labs().filter(function(l){ return l.per[i] != null && normAt(l, i) && !(l.cat === "cycle" && marketCycles[i].ongoing); }); }
 function score(i: number){ var j = judged(i), ok = j.filter(function(l){ return tier(l, i) === "optimal"; }).length; return { v:Math.round(100 * ok / j.length), ok:ok, of:j.length }; }
-function outside(i: number){ return labs().filter(function(l){ var st = state(l, i); return st === "high" || st === "low"; }); }
+function outside(i: number){ return judged(i).filter(function(l){ var st = state(l, i); return (st === "high" || st === "low") && tier(l, i) !== "optimal"; }); }
 export function listWords(xs: string[]){ return xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || ""; }
 function word(n: number){ return NUM[n] || String(n); }
 function cap(t: string){ return t.charAt(0).toUpperCase() + t.slice(1); }
 
 function visitNote(i: number){
-  var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm as Norm;
+  var c = marketCycles[i], v = visits()[i], open = !!c.ongoing, len = labs()[0], n = len.norm as Norm, ytd = open ? sp500AnnualReturns[calendarTodayY] : null;
   var head = "The " + c.name + (open ? " is " + yearsWord(v.years) + " years old: " : " ran " + yearsWord(v.years) + " years: ") + word(v.bull) + " bull year" + (v.bull === 1 ? "" : "s") +
-    (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
+    (v.bleed ? " and a bleed of " + word(v.bleed) : open ? ", no bleed yet" : "") + (ytd != null ? ", with " + calendarTodayY + " " + (ytd >= 0 ? "up" : "down") + " so far" : "") +
+    ". Her normal cycle runs " + yearsWord(n.lo) + " to " + yearsWord(n.hi) + " years. ";
   var named = function(st: string){ return outside(i).filter(function(l){ return state(l, i) === st; }).map(function(l){ return l.name; }); };
   var high = named("high"), low = named("low");
   var parts = (high.length ? [listWords(high) + " ran far above her normal"] : []).concat(low.length ? [listWords(low) + " far below it"] : []);
   return head + (parts.length ? cap(parts.join("; ")) + "." : "Nothing ran far outside her normal" + (open ? " so far." : "."));
 }
+function depthWords(){
+  var all = closedCount(), by: Record<number, string[]> = {};
+  labs().forEach(function(l){
+    var k = l.per.slice(0, all).filter(function(v){ return v != null; }).length;
+    if (k < all) (by[k] = by[k] || []).push(l.name);
+  });
+  var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
+  return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
+}
 function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
-    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading.",
+    "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.",
+    depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
     "<b>Health score</b> is the share of results that are Normal, out of 100.",

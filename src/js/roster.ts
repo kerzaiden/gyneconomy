@@ -84,7 +84,7 @@ function declareRoster(): RosterRow[] {
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, when:lastDate, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",
-      head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return" },
+      head:"S&P 500, Total Return by Year", hist:{ s:sp500Years, k:"y" }, mid:0, when:lastDate, cardUnit:"total return", soFar:true },
     { id:"sheet-sign-hormones", name:"Interest rates", cat:"circulation", timing:"leading", mark:heartSvg, door:"subject", hk:"hormones-range",
       head:"Federal Funds Rate", hist:{ s:fedFundsHistory, k:"m" }, rule:true, eraUnit:"Fed funds rate",
       when:function(){ return now.fedFunds.asOf; }, live:["fedFunds"] },
