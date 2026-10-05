@@ -137,15 +137,17 @@ test('the open year fills its row, as the dial does: a grey line for its seasons
   assert.deepEqual(strips.map(s => s.lastElementChild.className), ['strip-track', 'strip-dots']);
 });
 
-test('the dial is titled by its cycle, its legend speaks in signs, and today’s story opens AI Insights', () => {
+test('the dial is titled by its cycle, its legend speaks in signs, and AI Insights opens on the cycle’s name, its story in it', () => {
   assert.equal(document.getElementById('cycle-kicker-name').textContent, nowModel.era.name);
   const legend = detailTexts[+document.querySelector('#cycle-kicker .info-btn').dataset.detailIdx];
   ['CPI &lt; 1%', 'CPI \u2264 3%', 'CPI &gt; 3%', 'CPI \u2265 1%'].forEach(t => assert.ok(legend.includes(t), t));
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'AI Insights');
   sheetRenderers['sheet-ai-insights']();
-  const story = document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]');
-  assert.equal(story.querySelector('.trend-head').textContent, nowModel.era.name);
-  assert.equal(story.querySelector('.trend-text').textContent, nowModel.era.story);
+  assert.equal(document.querySelector('#sheet-ai-insights [data-open="sheet-cat-mood"]'), null);
+  const first = document.querySelector('#sheet-ai-insights .trend-card');
+  assert.equal(first.querySelector('.trend-head').textContent, nowModel.era.name);
+  assert.match(first.textContent, /2022 correction.*priced for a boom/);
+  assert.doesNotMatch(document.getElementById('sheet-ai-insights').textContent, /has eased/);
 });
 
 test('a live Fed cut reaches every door, its tag and the policy facts', async () => {

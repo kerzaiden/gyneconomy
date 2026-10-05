@@ -20,8 +20,8 @@ var DIAG_SRC = [
 function diagnosisHtml(m: CycleModel){
   var after = m.ongoing ? null : yearAfter(m.endYear);
   if (m.ongoing && !diagnoseToday()) return "";
-  return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era)) +
-    chartDoor(m) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
+  return dxSys(" fp", dxHead(hormoneSvg(), "Interest environment") + fedPhasesCard(m)) + (m.ongoing ? aiInsights() : moodDoor(m.era) +
+    chartDoor(m)) + yearByYear(m, after != null ? yearRow("After", "The S&amp;P&nbsp;500 the year after the close", "<b>" + fmtSigned(after, 1) + "%</b>") : "");
 }
 function yearByYear(m: CycleModel, after: string){
   var segs = m.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }), rows: string[] = [];

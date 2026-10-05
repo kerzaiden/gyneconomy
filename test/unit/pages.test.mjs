@@ -134,9 +134,13 @@ test('AI Insights opens from the open cycle only, every figure filled, its momen
   const page = document.getElementById('sheet-ai-insights');
   assert.deepEqual(broken(page.innerHTML), []);
   assert.ok(!/[{}]|—/.test([...page.querySelectorAll('.ai-p')].map(p => p.textContent).join('')));
-  assert.equal(page.querySelectorAll('.trend-card').length, 6);
+  assert.deepEqual([...page.querySelectorAll('.trend-card .trend-head')].map(h => h.textContent), [nowModel.era.name, 'The economy', 'The market', 'Risk factors', 'Closest moments']);
   assert.equal(page.querySelectorAll('.ai-echo').length, 3);
-  assert.equal(page.querySelectorAll('.ai-rank').length, 6);
+  const { riskLabs } = await import('../../src/js/cycle-analysis.ts');
+  const { marketCycles } = await import('../../src/js/data.ts');
+  const risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(l => l.name).sort();
+  assert.ok(risks.length > 0);
+  assert.deepEqual([...page.querySelectorAll('.ai-rank span:first-child')].map(s => s.textContent).sort(), risks);
   assert.equal(page.querySelectorAll('.ai-tile').length, 6);
   assert.ok(echoes().every(e => !e.cycle.ongoing));
   renderDiagnosis(cycleModel(cycleByName('Dot-Com Cycle')));

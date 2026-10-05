@@ -1,15 +1,14 @@
 import AI from "../data/ai-insights.json" with { type: "json" };
 import { moreRow, trendBox, trendDoor, trendText } from "./dom.ts";
-import { marketPills, metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
-import type { MarketRun } from "./render-core.ts";
-import { bookSvg, calendarSvg, clockSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
-import { marketCycles, sp500AnnualReturns } from "./data.ts";
+import { metricSheet, seasonPills, seasonRuns, seasonRunsLabel, sheetRenderers, strip } from "./render-core.ts";
+import { bookSvg, clockSvg, umbrellaSvg, marketSvg, sparkleSvg, weatherSvg } from "./marks.ts";
+import { marketCycles } from "./data.ts";
 import { cycleModel, GROWTH_WINDOW, growthWindowWord, moodTrack, nowModel, QUARTER_END_MONTH, rankToDate, seasonTitle } from "./model.ts";
 import type { TrackSeg } from "./model.ts";
 import { colPeek } from "./charts.ts";
-import { calendarTodayY, wheelMeta } from "./refresh-season.ts";
-import { CATEGORIES, keyed, ROSTER, ROSTER_BY } from "./roster.ts";
-import { fmt, labs, listWords, yearsWord } from "./cycle-analysis.ts";
+import { wheelMeta } from "./refresh-season.ts";
+import { CATEGORIES, keyed, ROSTER_BY } from "./roster.ts";
+import { cycleScore, fmt, labs, listWords, riskLabs, yearsWord } from "./cycle-analysis.ts";
 import type { Lab } from "./cycle-analysis.ts";
 
 // ---- AI Insights: Claude's dated reading of the open cycle, with today's closest past moments ----
@@ -122,29 +121,18 @@ function aiDetail(){
     '<p>' + list.map(function(e){ return e.q + ' · ' + e.cycle.name + ': gap ' + e.gap.toFixed(2); }).join('<br>') + '</p>';
 }
 var AI_PAGE = "sheet-ai-insights";
-var CHAPTER_MARKS = [calendarSvg, weatherSvg, marketSvg];
-var EXTREMES = 3;
+var CHAPTER_MARKS = [weatherSvg, marketSvg];
 function rankNow(R: RosterRow){
   var h = keyed(R.hist).filter(function(d){ return d.v != null; }).map(function(d){ return d.v as number; });
   return { R:R, pct:rankToDate(h.slice(0, -1), h[h.length - 1]) };
 }
 function pic(inner: string, cap: string){ return '<div class="ai-pic">' + inner + '<small class="ai-cap">' + cap + '</small></div>'; }
-function extremesPic(){
-  var all = ROSTER.map(rankNow).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
-  var rows = all.slice(0, EXTREMES).concat(all.slice(-EXTREMES));
-  return pic(rows.map(function(x){
+function risksPic(){
+  var risks = riskLabs(marketCycles.indexOf(nowModel.era)).map(function(l){ return ROSTER_BY[l.id]; }).filter(Boolean);
+  var rows = risks.map(rankNow).filter(function(x): x is { R: RosterRow; pct: number } { return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
+  return !rows.length ? pic("", "Nothing in Cycle Statistics reads as Risk today.") : pic(rows.map(function(x){
     return '<div class="ai-rank"><span>' + x.R.name + '</span><span class="ai-track"><i style="left:' + x.pct.toFixed(1) + '%"></i></span><b>' + Math.round(x.pct) + '%</b></div>';
-  }).join(""), "Today against each reading’s whole record: the share of past readings below it. The three highest and the three lowest.");
-}
-function cycleSegs(){ return nowModel.track.filter(function(seg){ return !seg.isNow && seg.to > seg.from; }); }
-function cyclePic(){
-  var segs = cycleSegs(), runs = seasonRuns(segs), from = nowModel.era.from, mkt: MarketRun[] = [];
-  for (var y = from; y <= calendarTodayY; y++) if (sp500AnnualReturns[y] != null){
-    var ytd = y === calendarTodayY, q = ytd ? Math.max(1, segs.filter(function(s){ return parseInt(s.q, 10) === y; }).length) : 4;
-    mkt.push({ dir:sp500AnnualReturns[y] >= 0 ? "up" : "down", ytd:ytd, q:q, from:y, to:y });
-  }
-  return pic(strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + strip(" mkt-strip", "S&P 500 by year", marketPills(mkt)),
-    "Her seasons, quarter by quarter, and the S&amp;P&nbsp;500 year by year, " + from + " to today.");
+  }).join(""), "Every result Cycle Statistics reads as Risk today, past a fence of her closed cycles, placed against its own whole record: the share of past readings below it.");
 }
 function tilesPic(ids: string[]){
   var p = panel();
@@ -169,12 +157,15 @@ function pathStrip(label: string, end: number){
   var runs = seasonRuns(segs);
   return '<span class="ai-path"><small>' + label + '</small>' + strip("", seasonRunsLabel(runs), seasonPills(runs, true)) + '</span>';
 }
-var CHAPTER_PICS = [cyclePic, function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
+var CHAPTER_PICS = [function(){ return tilesPic(AI.tiles.economy); }, function(){ return tilesPic(AI.tiles.market); }];
+function para(html: string){ return '<p class="ai-p">' + html + '</p>'; }
+function leadBoxes(){
+  return trendBox(sparkleSvg(), nowModel.era.name, para(fill(AI.lede)) + pic(cycleScore(nowModel), "The share of her readings in their normal range, out of 100, judged against the scores of her closed cycles."));
+}
 function aiPage(){
-  return '<div class="ai-page">' + moodDoor(nowModel.era) +
-    trendBox(sparkleSvg(), "TL;DR", '<p class="ai-p">' + fill(AI.lede) + '</p>' + extremesPic()) +
-    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, '<p class="ai-p">' + fill(s.text) + '</p>' + CHAPTER_PICS[i]()); }).join("") +
-    trendBox(clockSvg(), "Closest moments", '<p class="ai-p">' + AI.echoIntro + '</p><ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
+  return '<div class="ai-page">' + leadBoxes() +
+    AI.sections.map(function(s, i){ return trendBox(CHAPTER_MARKS[i](), s.title, para(fill(s.text)) + CHAPTER_PICS[i]()); }).join("") + trendBox(umbrellaSvg(), "Risk factors", risksPic()) +
+    trendBox(clockSvg(), "Closest moments", para(AI.echoIntro) + '<ul class="ai-echoes">' + echoes().slice(0, 3).map(echoLine).join("") + '</ul>') +
     '<p class="ai-by">Written by ' + AI.by + ' from the app’s data of ' + asOfWords() + '.</p>' + moreRow(aiDetail()) + '</div>';
 }
 export function buildAiPage(home: HTMLElement){
@@ -187,5 +178,5 @@ export function moodDoor(era: Cycle){
   return trendDoor("sheet-cat-mood", mood.title, bookSvg(), era.name, trendText(era.story));
 }
 export function aiInsights(){
-  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp"));
+  return trendDoor(AI_PAGE, "AI Insights", sparkleSvg(), "AI Insights", trendText(fill(AI.lede), "ai-clamp") + cycleScore(nowModel));
 }
