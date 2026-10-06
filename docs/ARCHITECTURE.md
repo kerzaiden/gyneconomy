@@ -590,7 +590,8 @@ Prices and S&P 500 chips (`econChips`), read from `yearGrowth`, `yearInflation` 
 cards' own figures; the bar's blank end says the year is not done, so the row carries no "so far", which would not
 fit on a phone. Its grey dots are laid out after layout, not in the markup (`fitYearDots`, run by `renderDiagnosis` and
 `settleAll` on every tab switch and resize): their pitch is one quarter of the open cycle's Herstory row, a width
-only the page knows, so they sit exactly as far apart as Herstory's (Keren, 0.6.18). The emotions and the season names left the row in 0.4.1. A row is a
+only the page knows, so they sit exactly as far apart as Herstory's (Keren, 0.6.18), the first one gap from the market bar, so the
+gaps read even (0.8.8). The emotions and the season names left the row in 0.4.1. A row is a
 `details-link` to `quarterSheet` for the year's last quarter, the sheet the dial's centre opens; `quarter-sheet`
 sits below both so neither imports the other. A closed cycle's card opened on **After** (the S&P 500 the year after
 the close, `yearAfter`) from 1.8.0 until 0.6.17, when Keren dropped it for the next cycle's own page. The systems card (Circulation and Energy with their Analysis lines, `analysisFor`, `acrossCycle`)

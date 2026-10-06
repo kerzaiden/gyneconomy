@@ -42,7 +42,7 @@ const watch = (pg, tag) => {
   });
   return mine;
 };
-const openFind = async p => { await p.click('#chart-home .lab-door'); await settle(p); };
+const openFind = async p => { await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p); };
 const toInd = async (p, c) => { await openFind(p); await click(p, '#sheet-find .ind-cats [data-ind-cat="' + c + '"]'); await settle(p); };
 const settle = pg => pg.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
   Promise.all(document.getAnimations().filter(a => a.effect && isFinite(a.effect.getComputedTiming().endTime)).map(a => a.finished.catch(() => null))).then(() => done())))));
@@ -432,7 +432,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
-    await p.click('#chart-home button.dx-sys-head[data-open]'); await settle(p);
+    await p.click('#chart-home button.dx-sys-head[data-open="sheet-find"]'); await settle(p);
     const all = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join() }));
     (all.title === 'Indicators' && all.shown === 'weather,mood,circulation,energy')
@@ -443,7 +443,7 @@ async function openPage(p, url, sheet) {
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.querySelector('.ind-cat-name').textContent + ' ' + h.querySelector('.lab-n').textContent).join() }));
-    (door.first === 'search-field lab-door' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather' &&
+    (door.first === 'home-secs' && door.rows === 'weather,mood,circulation,energy' && weather.title === 'Indicators' && weather.shown === 'weather' &&
      weather.subs === 'Economic Season 2,Market 1')
       ? ok('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', door.rows + '; ' + weather.subs)
       : bad('Insights lists the categories, each opening Indicators on its own, grouped by subcategory', JSON.stringify({ door, weather }));
@@ -695,7 +695,7 @@ async function openPage(p, url, sheet) {
   await p.close();
 
   const readLive = () => {
-    document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home .lab-door').click();
+    document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]').click();
     const fig = id => { const b = document.querySelector('#sheet-find .lab-row[data-open="' + id + '"] .lab-res b'); return b ? b.textContent.trim() : null; };
     return { fgNum: fig('sheet-sign-sentiment'), yld: fig('sheet-sign-pressure') };
   };
@@ -752,7 +752,7 @@ async function openPage(p, url, sheet) {
     const roster = await g.evaluate(() => {
       const G = window.__GYN, R = G.ROSTER, step = G.steps.filter(s => s.name === 'checkRoster')[0];
       if (!R || !step) return null;
-      document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home .lab-door').click();
+      document.querySelector('.tab-btn[data-tab="chart"]').click(); document.querySelector('#chart-home button.dx-sys-head[data-open="sheet-find"]').click();
       const cards = [...document.querySelectorAll('#sheet-find .lab-row[data-open]')].map(c => c.dataset.open).sort();
       const warned = [], warn = console.warn;
       console.warn = m => warned.push(String(m));

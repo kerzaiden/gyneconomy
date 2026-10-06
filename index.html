@@ -307,7 +307,7 @@
   .strip-run.one, .strip-run.settled{ min-width:0; background:none; display:flex; align-items:center; justify-content:center; }
   .strip-run.one::before, .strip-run.settled::before{ content:""; width:12px; max-width:100%; aspect-ratio:1; border-radius:50%; background:var(--season); }
   .strip-run.settled{ flex:none; }
-  .strip-dots{ display:flex; align-items:center; justify-content:space-around; }
+  .strip-dots{ display:flex; align-items:center; justify-content:space-around; min-width:0; overflow:hidden; }
   .strip-dots i{ width:5px; height:5px; border-radius:50%; background:var(--text-muted); opacity:0.45; }
   .strip-track{ height:12px; border-radius:var(--radius); background:color-mix(in srgb, var(--border) 60%, transparent); }
 
@@ -1029,8 +1029,6 @@
   button.insight-row .stat-main{ border-right:0; }
   button.insight-row b{ font-size:var(--type-reading); font-weight:500; }
   button.insight-row .stat-side{ width:auto; }
-  .lab-door{ width:100%; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
-  .lab-door span{ flex:1; }
   .rangebar.ind-cats{ margin:0 0 var(--gap); flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
   .ind-cats .range-seg{ flex:1 0 auto; }
   .lab-cat.cat-head:hover{ text-decoration:none; }
@@ -1499,7 +1497,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.7 (765)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.8 (766)</span></p>
     </div>
   </div>
 
@@ -38154,7 +38152,7 @@
       return l.cat !== "cycle";
     });
     if (id === HOME_ID) {
-      host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
+      host.innerHTML = '<div class="home-secs">' + homeSections(i) + "</div>";
       return;
     }
     host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
@@ -38162,9 +38160,6 @@
   }
   var IND = "sheet-find";
   var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
-  function searchDoor(i, j) {
-    return searchShell("button", " lab-door", ' type="button"' + IND_ALL, "<span>Search indicators</span>" + filterTags(HOME_ID, i, j));
-  }
   function searchShell(tag, cls, attrs, inner) {
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
   }
@@ -38654,9 +38649,9 @@
       var box = d.closest(".dx-sys"), cs = getComputedStyle(row || box || d);
       var pitch = box ? (box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / span : 0;
       if (!d.clientWidth || !(pitch > 5)) return;
-      d.style.justifyContent = "flex-end";
+      d.style.justifyContent = "flex-start";
       d.style.gap = pitch - 5 + "px";
-      d.innerHTML = new Array(Math.max(1, Math.floor((d.clientWidth - 8) / pitch) + 1) + 1).join("<i></i>");
+      d.innerHTML = '<i style="margin-left:' + (pitch - 5) + 'px"></i>' + new Array(Math.max(1, Math.floor(d.clientWidth / pitch))).join("<i></i>");
     });
   }
   function diagnosisHost(home) {

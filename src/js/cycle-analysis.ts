@@ -346,15 +346,12 @@ function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i).filter(function(l){ return l.cat !== "cycle"; });
-  if (id === HOME_ID){ host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
+  if (id === HOME_ID){ host.innerHTML = '<div class="home-secs">' + homeSections(i) + '</div>'; return; }
   host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + '</div>';
   narrow(host, id);
 }
 export var IND = "sheet-find";
 var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
-function searchDoor(i: number, j: Lab[]){
-  return searchShell("button", " lab-door", ' type="button"' + IND_ALL, '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
-}
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function catBar(j: Lab[]){
   var keys = categoriesShown().map(function(c){ return c.key; }).filter(function(k){ return j.some(function(l){ return l.cat === k; }); });

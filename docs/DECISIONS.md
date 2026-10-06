@@ -287,6 +287,8 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   still folds it. The box matches a reading's name, its series, its group or its category. There is no timing filter:
   "the division of Structural, leading, coincident, lagging … It's not something that I would filter by", so timing
   lives only in each reading's (i). Search, its grouped rows and its icons are gone with it. (V657, V660, V692, 0.6.1, 0.8.6)
+  **The search box lives only in Indicators; Analysis has none, and the Insights head is its way in.** Keren: "in the
+  analysis page, I don't need the search indicators because I already have this in the insight page." (0.8.8)
 - **The category pages and their group pages are gone, with every design that came before Indicators; Indicators
   holds every reading, by category and subcategory, and each category's insights behind its More details.** Keren:
   "All the previous designs we made, we can throw them out." A closed cycle's figures are Cycle Statistics'. This
@@ -528,7 +530,9 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   is a quarter, so we have two dots left." (0.6.6) **The year in progress's grey dots are spaced like Herstory's, one
   quarter of the open cycle's Herstory row apart, so they fill what is left of the year; they are no longer one dot
   per quarter.** Keren: "I want the year by year container in the current season 2026 to have gray dots in the
-  same spacing as the history or herstory page, just for aesthetics." (0.6.18)
+  same spacing as the history or herstory page, just for aesthetics." (0.6.18) **The first dot sits one dot-gap
+  from the market bar, the same gap as between the dots,** not right-aligned with a wider gap after the bar. Keren:
+  "there's a gap between the green bar and the gray dots that I don't like. Like it needs to be more even." (0.8.8)
 - **The health score's title is set in Cormorant Garamond 500, the top bar's serif.** Keren: "Make the health score
   in the same font as the top bar, the feminine font." (0.6.6)
 - **The AI Insights page opens on one container titled by the cycle's name ("AI Cycle"), the cycle's story merged
