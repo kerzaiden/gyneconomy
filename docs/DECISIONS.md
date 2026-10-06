@@ -622,6 +622,10 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
+- **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one grey
+  tile per category with its mark, its name, its count of indicators and a chevron.** Keren: "make the insight
+  section designed like cycle statistics, meaning you have a dark purple headline with an icon next to it inside a
+  container and everything sits below it … I want a consistent design system." (0.8.5, Oct 6, 2026)
 - **Each cycle's Cycle analysis is a row with a chevron under the cycle story that previews the visit note and the
   health score, and opens its own page with the cycle picker every history page wears.** The page holds only that
   picker, the app's tab bar below it (All, Risk, Attention, Normal) and the results by category (Cycle, then the

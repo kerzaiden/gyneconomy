@@ -468,7 +468,7 @@ async function openPage(p, url, sheet) {
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await sweep(p);
     const door = await p.evaluate(() => ({ first: document.getElementById('chart-home').firstElementChild.className,
       rows: [...document.querySelectorAll('#chart-home .insight-row')].map(b => b.dataset.indCat).join() }));
-    await p.click('#chart-home .cat-weather .insight-row'); await settle(p);
+    await p.click('#chart-home .insight-row[data-ind-cat="weather"]'); await settle(p);
     const weather = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
       subs: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-head')].map(h => h.textContent.trim()).join() }));

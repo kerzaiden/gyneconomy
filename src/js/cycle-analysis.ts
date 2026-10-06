@@ -269,9 +269,12 @@ export function chartDoor(m: CycleModel){
 }
 var HOME_ID = "chart-home";
 function statRow(name: string, v: number, of: number, side: string, page: string, cls?: string){
-  var inner = scoreRing(Math.min(100, 100 * v / of), "") + '<span class="stat-main"><small>' + name + '</small><b>' + yearsWord(v) + ' years</b></span>';
+  var inner = statBody(scoreRing(Math.min(100, 100 * v / of), ""), '<small>' + name + '</small><b>' + yearsWord(v) + ' years</b>', page ? side : null);
   var c = " stat-row" + (cls ? " " + cls : "");
-  return page ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page) + '"', inner + '<span class="stat-side">' + side + CHEV + '</span>') : scoreTile("span", c, "", inner);
+  return page ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page) + '"', inner) : scoreTile("span", c, "", inner);
+}
+function statBody(lead: string, main: string, side: string | null){
+  return lead + '<span class="stat-main">' + main + '</span>' + (side == null ? "" : '<span class="stat-side">' + side + CHEV + '</span>');
 }
 function closedVisits(){ return visits().slice(0, closedCount()); }
 function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
@@ -310,7 +313,7 @@ function statsHome(){
     statRow("Period flow", meanOf(B), Math.max.apply(null, B), "", "", "flow"));
 }
 function insightSec(k: string, ls: Lab[]){
-  return catHeadCard("lab-sec plain", k, { tag:"button", cls:"insight-row ", attrs:' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', name:catName(k, ls.length), aside:CHEV }, "");
+  return scoreTile("button", " stat-row insight-row", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat="' + k + '"', statBody('<span class="insight-mark">' + CAT_MARK[k]() + '</span>', '<b>' + catTitle(k) + '</b><small>' + ls.length + ' indicators</small>', ""));
 }
 function catName(k: string, n: number){ return markName(CAT_MARK[k], catTitle(k), n); }
 function markName(mark: () => string, name: string, n: number){ return '<span class="lab-mark">' + mark() + '</span>' + name + ' <small>(' + n + ')</small>'; }
@@ -323,7 +326,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
-    '<h2 class="stat-title">Insights</h2>' + insightsHome(i);
+    dxSys("", dxHead(chartSvg(), "Insights") + insightsHome(i));
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
