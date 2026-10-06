@@ -5,16 +5,17 @@ import { detailTexts } from '../../src/js/dom.ts';
 import { refreshLiveData } from '../../src/js/live.ts';
 import { marketCycles, sp500AnnualReturns } from '../../src/js/data.ts';
 import { calendarTodayY } from '../../src/js/refresh-season.ts';
-import { ROSTER } from '../../src/js/roster.ts';
+import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
+import { todayFace } from '../../src/js/era.ts';
 import { sheetRenderers } from '../../src/js/render-core.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
 
 const open = marketCycles.findIndex(c => c.ongoing);
 const lab = id => labs().find(l => l.id === id);
-const cardText = id => document.querySelector('#today-analysis .cat-item[data-open="' + id + '"] .ci-value').firstChild.nodeValue.trim().replace('≈', '');
+const cardText = id => todayFace(ROSTER_BY[id]).text.trim().replace('≈', '');
 const row = id => document.querySelector('#sheet-find .lab-row[data-open="' + id + '"]');
 
-test('the open cycle’s results are its cards’ figures, printed as the cards print them', () => {
+test('the open cycle’s results are today’s figures, printed as the model prints them', () => {
   ROSTER.filter(R => !R.flip && !R.pair).forEach(R => {
     const l = lab(R.id);
     if (l.per[open] != null && !/–/.test(cardText(R.id))) assert.equal(l.print(l.per[open]), cardText(R.id), R.name);
@@ -30,10 +31,10 @@ test('a cycle counts only its closed years as bull years', () => {
 
 test('the (i) says how many closed cycles each short range rests on', () => {
   const all = detailTexts.join(' ').replace(/<[^>]+>/g, '');
-  assert.match(all, /Depth: a range rests[^.]*\. Pressure[^;]* on two/);
+  assert.match(all, /Depth: a range rests[^.]*\. US 10-year Treasury[^;]* on two/);
 });
 
-test('a live reading moves Cycle Statistics and AI Insights with its card', async () => {
+test('a live reading moves Cycle Statistics and AI Insights with its figure', async () => {
   const docs = { capeValue: { kind: 'scalar', value: 33.3, asOf: '2026-10-03' } };
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => docs[path.slice(5)] ? Promise.resolve({ data: docs[path.slice(5)] }) : Promise.reject(new Error('none')) }) }) };
   refreshLiveData();
@@ -44,4 +45,11 @@ test('a live reading moves Cycle Statistics and AI Insights with its card', asyn
   assert.equal(row('sheet-metric-valuation').querySelector('.lab-res b').textContent, '33.3×');
   sheetRenderers['sheet-ai-insights']();
   assert.match(document.getElementById('sheet-ai-insights').textContent, /CAPE stands at 33\.3×/);
+});
+
+test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the fence of its own record', () => {
+  const l = lab('sheet-metric-temp'), v = l.per[open];
+  [l.now, l.norm].forEach(n => { assert.equal(n.lo, 1); assert.equal(n.hi, 3); assert.ok(n.fence > 3); });
+  const tier = row('sheet-metric-temp').closest('.lab-item').className.match(/t-(\w+)/)[1];
+  assert.equal(tier, v >= 1 && v <= 3 ? 'optimal' : v > l.now.fence || v < l.now.floor ? 'abnormal' : 'borderline');
 });

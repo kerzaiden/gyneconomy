@@ -1,16 +1,15 @@
 import { auxStat, CHEV, dropWhatIsShown, factsFrom, fmtAsOf, fmtSigned, hiCard, mean, qLabel, srcBlock, tagFor, titleCase } from "./format.ts";
 import { addSources, byId, detailTexts, focusQuiet, layer, moreRow, need, onScreen, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { AXIS, chartAxes, colPeek, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
+import { AXIS, chartAxes, colWidth, crossLine, fitGroup, histFrame, publishGeom, trendOf, trendPill } from "./charts.ts";
 import { dataCompiledLabel, wheelMeta } from "./refresh-season.ts";
 import { curveAsOf, curveAt, curveSpread, fedFundsRange, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, now, sp500AnnualReturns, sp500Years, t10y3mHistory, t10yYieldHistory, t2yYieldHistory, t30yYieldHistory, t3mYieldHistory, t5yYieldHistory } from "./data.ts";
 import { cycleQtrIdx, cycleSlice, openCycle, quarterRegime, seasonGroup, seasonTitle } from "./model.ts";
 import { attachHistory, headPickRow, HIST_NOTE, histControls, histHead, page, pageCycle, qWindowFrom } from "./history.ts";
 import { DATED_UNIT, growthShownCap, horizonInfoHtml, indOf, marketCol, marketWord, phaseClass, pressureZone } from "./readings.ts";
 import { heatStep, m2GrowthChart, velocityHistoryChart } from "./history-charts.ts";
-import { cardDate, peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
+import { peekOf, ROSTER_BY, rosterFor, TIMING } from "./roster.ts";
 import type { ModelReading, TrackSeg } from "./model.ts";
-export type SubjectRowOpts = { cls?: string; subject?: string; open: string; title: string; icon?: string; text: string };
 type YieldPt = { q: string; v: number | null; latest?: boolean };
 type Maturity = { code: string; name: string; data: YieldPt[]; on: boolean; detail: string };
 type Plot = (i: number) => number;
@@ -111,24 +110,15 @@ export function econChips(growth: number | null, prices: number | null, market: 
   return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") +
     chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + '</span></span>';
 }
-// ---- THE SUBJECT ROW ----
-export function subjectRow(o: SubjectRowOpts){
-  return '<div class="subject sign-row' + (o.cls ? ' ' + o.cls : '') + '"' +
-    (o.subject ? ' data-subject="' + o.subject + '"' : '') +
-    ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '">' +
-    '<div class="subject-summary">' +
-      '<div class="subject-ring">' + (o.icon || '') + '</div>' +
-      '<div class="subject-text">' + o.text + '</div>' +
-      '<div class="subject-more">' + CHEV + '</div>' +
-    '</div></div>';
+export function dxHead(mark: string, title: string, open?: string){
+  var inner = '<span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title);
+  return open ? '<button type="button" class="dx-sys-head"' + open + '>' + inner + CHEV + '</button>' : '<div class="dx-sys-head">' + inner + '</div>';
 }
-export function dxHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + titleCase(title) + '</div>'; }
 export function dxSys(cls: string, inner: string){ return '<section class="dx-sys' + cls + '">' + inner + '</section>'; }
 export function catHeadCard(cls: string, key: string, head: { tag: string; cls: string; attrs: string; name: string; aside: string }, body: string){
   return '<section class="' + cls + ' ind-card cat-' + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + '</span>' +
     head.aside + '</' + head.tag + '>' + body + '</section>';
 }
-export function subjectIcon(state: string, svg: string){ return '<div class="subject-icon"><span class="' + state + '">' + svg + '</span></div>'; }
 function timingMark(kind: string){
   var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
   return '<svg viewBox="0 0 20 12" aria-hidden="true">' +
@@ -266,14 +256,6 @@ function registerFlowPages(){
       clearTimeout(t); t = setTimeout(function(){ drawVelocityRecord(); drawM2Record(); }, 150);
     });
   })();
-}
-function renderPressureRow(){
-  var y10 = curveAt("10Y");
-  put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") +
-    '<span class="unit">10-year Treasury</span>');
-  var rowSay = byId("subj-say-pressure");
-  if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d){ return d.v; }),
-                                         function(){ return "yl-col normal"; }, 0, true);
 }
 function ylmYearMarks(svg: Element, quarters: string[], ylmFrom: number, ylmTo: number, x: Plot, padT: number, H: number, padB: number){
   var el = svgEl;
@@ -474,8 +456,6 @@ function renderPressurePage(){
   drawsPage("sheet-sign-pressure", drawPressure);
 
   maturities.forEach(function(m){ m.on = (m.code === matPick); });
-
-  renderPressureRow();
 }
 // ---- Pressure's Insights ----
 function renderPressureInsights(){
@@ -526,20 +506,13 @@ function spreadLabel(key: string){
   return r ? r.label : HZN_SPREADS[0].label;
 }
 function peekArt(src: Element){ return src.querySelector(".peek-chart"); }
-export function catItem(src: Element, key: string){
-  var open = openOf(src);
-  var page = document.getElementById(open); if (page) page.classList.add("cat-" + key);
-  var item = catCard(src, cardDate(ROSTER_BY[open]));
-  if (src.parentNode) src.parentNode.removeChild(src);
-  return item;
-}
 export function catCard(src: Element, when: string){
   var open = openOf(src), item = document.createElement("button");
   item.type = "button"; item.className = "cat-item";
   item.setAttribute("data-open", open);
   item.setAttribute("data-title", src.getAttribute("data-title") || "");
   var head = document.createElement("div"); head.className = "ci-head";
-  var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
+  var glyph = src.querySelector(".peek-mark svg"), holder = document.createElement("span");
   holder.className = "peek-mark"; if (glyph) holder.appendChild(glyph);
   head.appendChild(holder);
   var nm = document.createElement("span"); nm.className = "ci-name";
@@ -549,7 +522,7 @@ export function catCard(src: Element, when: string){
   head.appendChild(nm);
   var body = document.createElement("div"); body.className = "ci-body";
   var read = document.createElement("div"); read.className = "ci-read";
-  var val = src.querySelector(".peek-value, .subject-value");
+  var val = src.querySelector(".peek-value");
   if (val){
     var unit = val.querySelector(".peek-unit, .unit");
     if (unit){
@@ -560,11 +533,11 @@ export function catCard(src: Element, when: string){
     if (unit) unit.className = "ci-unit";
     read.appendChild(val);
   }
-  var word = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+  var word = src.querySelector(".peek-word");
   if (!word || !word.textContent!.trim()) word = (val && val.querySelector(".tag")) || document.createElement("span");
   word.classList.add("ci-word"); read.appendChild(word);
   body.appendChild(read);
-  var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
+  var mini = peekArt(src);
   if (mini){ var slot = document.createElement("div"); slot.className = "ci-mini";
              slot.appendChild(mini); body.appendChild(slot); }
   var wh = document.createElement("span"); wh.className = "ci-when"; wh.textContent = when;
@@ -575,14 +548,17 @@ export function catCard(src: Element, when: string){
   item.appendChild(head); item.appendChild(body);
   return item;
 }
-export function tempPeek(r: ModelReading, value: string, cpi: MonthPoint[]){
-  var word = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +
+export function tempWord(r: ModelReading){
+  return (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " \u00b7 " +
     (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
-  return peekOf("sheet-metric-temp", { value:value, word:word, state:heatStep(r.cpiNow),
+}
+export function gdpFigure(r: ModelReading){ return fmtSigned(r.gdpLatest.v, 1) + "%"; }
+export function tempPeek(r: ModelReading, value: string, cpi: MonthPoint[]){
+  return peekOf("sheet-metric-temp", { value:value, word:tempWord(r), state:heatStep(r.cpiNow),
     cols:cpi.map(function(d){ return d.v; }), colClass:function(v: number){ return "temp-col " + heatStep(v); } });
 }
 export function gdpPeek(r: ModelReading, gq: QuarterPoint[]){
-  return peekOf("sheet-metric-gdp", { value:fmtSigned(r.gdpLatest.v, 1) + "%",
+  return peekOf("sheet-metric-gdp", { value:gdpFigure(r),
     word:growthShownCap(r), state:phaseClass(r.regime), cols:gq.map(function(d){ return d.v; }),
     colClass:function(v: number, i: number){ return "gdp-col " + (v < 0 ? "below" : quarterRegime(gq[i]) === "contraction" ? "neg" : "pos"); } });
 }

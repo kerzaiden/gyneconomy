@@ -52,8 +52,8 @@ rules below are the ones that matter most.
   which. A target is never relabelled "normal".
 - **One figure, one number.** Computed in one place, read everywhere else.
 - **A reading is declared once** (Keren, V670), in `ROSTER` (`src/js/roster.ts`): its name, category, card order,
-  timing, mark, group, history and card date. The cards, category pages, Search, the Diagnosis, past cycles and
-  history heads all read it; a new reading is one row there plus its page renderer. `checkRoster` keeps it in
+  subcategory, timing, mark, group, history and unit. Indicators, today's figure (`todayFace`), the Diagnosis,
+  Cycle Statistics and the history heads all read it; a new reading is one row there plus its page renderer. `checkRoster` keeps it in
   step with the live registry.
 - **Edit `src/`, never `index.html`.** The script is strict TypeScript modules in `src/js/` (V702), bundled by
   esbuild into the one file (V695); types are syntax, never comments, and erasable only. A module's top level holds only declarations; whatever runs at load and reads another module

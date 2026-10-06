@@ -13,7 +13,7 @@ export function asOfLabel(){
 }
 // ---- SEASON ----
 export var wheelMeta: Record<Season, { name: string; theme: string; altName: string | null }> = {
-  summer:{name:"Summer", theme:"Inflation", altName:"Ovulation"},
+  summer:{name:"Summer", theme:"Inflation", altName:null},
   autumn:{name:"Autumn", theme:"Disinflation", altName:null},
   lateautumn:{name:"Autumn", theme:"Stagflation", altName:null},
   winter:{name:"Winter", theme:"Deflation", altName:"Groundation"},

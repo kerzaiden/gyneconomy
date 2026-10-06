@@ -5,7 +5,7 @@ import { histFrame } from "./charts.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, dxHead, dxSys, metricSheet, sheetRenderers } from "./render-core.ts";
 import { marketCycles, sp500AnnualReturns } from "./data.ts";
-import { cardFace, cardValue, eraFig } from "./era.ts";
+import { eraFig, todayFace, todayValue } from "./era.ts";
 import { calendarTodayY } from "./refresh-season.ts";
 import { cycLabel, cycleModel, nowModel, openCycle } from "./model.ts";
 import { fedPhasesCard } from "./fed-phases.ts";
@@ -64,7 +64,7 @@ function spanOf(print: (v: number) => string){
   return function(lo: number, hi: number){ return print(lo) === print(hi) ? print(lo) : print(lo) + " – " + print(hi); };
 }
 function cardPrint(R: RosterRow){
-  var g = eraFig(cardFace(R.id).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
+  var g = eraFig(todayFace(R).text), pc = R.pair ? "%" : "", f = function(v: number){ return g(v) + pc; };
   if (!R.flip) return { print:function(v: number){ return f(v); }, span:spanOf(function(v){ return f(v); }) };
   var word = function(v: number){ return v > 0 ? " surplus" : " deficit"; }, print = function(v: number){ return f(Math.abs(v)) + word(v); };
   return { print:print, span:function(lo: number, hi: number){
@@ -74,9 +74,10 @@ function cardPrint(R: RosterRow){
 }
 function readingLab(R: RosterRow): Lab {
   var seen = cycleReadings(R), open = function(i: number){ return !!marketCycles[i].ongoing; }, p = cardPrint(R);
-  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
-  return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:readingsNorm(seen), print:p.print, span:p.span,
-    norm:normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; })) };
+  var per = seen.map(function(vs, i){ return !vs.length ? null : open(i) ? todayValue(R) : vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; });
+  var pin = function(n: Norm | null){ return n && R.normal ? { lo:R.normal.lo, hi:R.normal.hi, fence:n.fence, floor:n.floor } : n; };
+  return { id:R.id, name:R.name, cat:R.cat, good:R.good, per:per, now:pin(readingsNorm(seen)), print:p.print, span:p.span,
+    norm:pin(normOf(per.slice(0, closedCount()).filter(function(v): v is number { return v != null; }))) };
 }
 var labCache: Lab[] | null = null;
 export function forgetLabs(){ labCache = null; visitCache = null; }
@@ -111,7 +112,7 @@ function findWords(l: Lab){
 }
 function rowTag(l: Lab){ return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"'; }
 function cardWord(l: Lab, i: number){
-  var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
+  var R = ROSTER_BY[l.id], t = R && marketCycles[i].ongoing ? todayFace(R).word : "";
   return t ? t + " \u00b7 " : "";
 }
 function labItem(l: Lab, i: number){
@@ -256,6 +257,12 @@ function depthWords(){
   var ks = Object.keys(by).map(Number).sort(function(a, b){ return a - b; });
   return "<b>Depth:</b> a range rests on the closed cycles its record reaches. " + (ks.length ? cap(ks.map(function(k){ return listWords(by[k]) + " on " + word(k); }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
 }
+function pinnedFacts(){
+  return ROSTER.filter(function(R){ return R.normal; }).map(function(R){
+    var b = R.normal as { lo: number; hi: number; why: string };
+    return "<b>" + R.name + "</b>\u2019s Normal is " + b.lo + "\u2013" + b.hi + "%, " + b.why + "; its Risk still lies past the fence of its own record.";
+  }).join(" ");
+}
 function methodFacts(){
   return ["<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it."];
 }
@@ -263,6 +270,7 @@ function chartDetail(){
   return '<p>Averages are based on her ' + closedCount() + ' closed cycles since ' + marketCycles[0].from + '.</p>' + facts([
     "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(),
     "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.",
+    pinnedFacts(),
     "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.",
     "<b>Health Score</b> is the share of results that are Normal, out of 100."
   ].concat(methodFacts(), ["<b>History, not forecast:</b> it describes her past, not what comes next."])) + srcBlock([FENCE_SRC, FIGO_SRC]);
@@ -332,7 +340,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
-    dxSys("", dxHead(chartSvg(), "Insights") + insightsHome(i));
+    dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
@@ -343,8 +351,9 @@ function drawChart(id: string){
   narrow(host, id);
 }
 export var IND = "sheet-find";
+var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
 function searchDoor(i: number, j: Lab[]){
-  return searchShell("button", " lab-door", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat=""', '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
+  return searchShell("button", " lab-door", ' type="button"' + IND_ALL, '<span>Search indicators</span>' + filterTags(HOME_ID, i, j));
 }
 function searchShell(tag: string, cls: string, attrs: string, inner: string){ return '<' + tag + ' class="search-field' + cls + '"' + attrs + '>' + LENS + inner + '</' + tag + '>'; }
 function catBar(j: Lab[]){

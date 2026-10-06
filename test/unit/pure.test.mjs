@@ -4,7 +4,7 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { trendOf, histFrame, colPath, colWidth, AXIS } from '../../src/js/charts.ts';
 import { curveVerdict, valuationVerdict } from '../../src/js/readings.ts';
-import { titleCase, ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, isoDay, prettyKey, monthLabel } from '../../src/js/format.ts';
+import { titleCase, ordinal, yearOf, atMonth, maxIn, mean, dropWhatIsShown, fmtAsOf, isoDay, monthLabel } from '../../src/js/format.ts';
 import { CAPE_FAIR, fedFundsRange } from '../../src/js/data.ts';
 import { merge, plainText } from '../../src/js/live.ts';
 import { seasonGroup, seasonTitle } from '../../src/js/model.ts';
@@ -58,7 +58,6 @@ test('ordinals, years and months read the way the app writes them', () => {
   assert.deepEqual([yearOf({ y: 2001 }), yearOf({ q: '2002 Q1' }), yearOf({ m: '2003-04' })], [2001, 2002, 2003]);
   assert.equal(atMonth({ m: '2024-03' }), 'Mar 2024');
   assert.equal(monthLabel('2024-12'), 'Dec 2024');
-  assert.equal(prettyKey('2024 Q1'), 'Q1 2024');
 });
 
 test('maxIn and mean', () => {

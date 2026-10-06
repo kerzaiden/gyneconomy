@@ -1,5 +1,5 @@
 import { facts, fmtSigned, hiCard, lede, monthLabel, srcBlock } from "./format.ts";
-import { moreRow, ui } from "./dom.ts";
+import { ui } from "./dom.ts";
 import { calendarTodayY, inflationHistory, wheelMeta } from "./refresh-season.ts";
 import { M2V_FROM_YEAR, m2vHistory, marketCycles, seasonReading, sp500Years } from "./data.ts";
 import { currentEra, cycleNowNote, cycleSlice, cycleStory, MOOD_TURN, moodToday, moodTrack, nowModel, openCycle, seasonTitle, totalGrowthYears, totalRiseIn } from "./model.ts";
@@ -179,8 +179,3 @@ function storyText(s: Story, open: boolean | undefined){
 }
 var INSIGHT: Record<string, () => string> = { weather:insightWeather, circulation:insightCirculation, mood:insightMood };
 export function catInsight(key: string){ return INSIGHT[key] ? INSIGHT[key]() : ""; }
-export function insightRow(key: string){ return '<div class="cat-more">' + moreRow(catInsight(key)) + '</div>'; }
-export function replaceInsight(c: { key: string }){
-  var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
-  if (box) box.outerHTML = insightRow(c.key);
-}

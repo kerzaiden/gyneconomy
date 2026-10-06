@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { errors, window } from './dom.mjs';
 import { detailTexts, ui } from '../../src/js/dom.ts';
-import { refreshLiveData, liveApplied, forgetLive, READINGS } from '../../src/js/live.ts';
-import { now, capeHistory, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
+import { refreshLiveData, liveApplied, liveIsoOf, forgetLive, READINGS } from '../../src/js/live.ts';
+import { now, capeHistory, curveAsOf, fedFundsRange, labRow, m2vHistory, m2Yoy, unempHistory, unempSahm, sahmOf, M2_PACE_LO, M2_PACE_HI, M2_FLOOD, PULSE_PRE2008, PULSE_STEADY_LO, PULSE_STEADY_HI, PULSE_FLOOR, PULSE_CEIL, SAV_THIN, SAV_LOW, SAV_MID, SAHM_TRIGGER } from '../../src/js/data.ts';
 import { inflationHistory, gdpQuarterlyYoY } from '../../src/js/refresh-season.ts';
 import { rowReadings, volumeVerdict, laborWord, temperatureWord, unempState, horizonRead } from '../../src/js/readings.ts';
 import { ROSTER, ROSTER_BY } from '../../src/js/roster.ts';
@@ -13,13 +13,12 @@ import { sheetRenderers } from '../../src/js/render-core.ts';
 import { nowModel, growthWord, cycleNowNote } from '../../src/js/model.ts';
 import { fmtSigned } from '../../src/js/format.ts';
 import { labs } from '../../src/js/cycle-analysis.ts';
+import { todayFace } from '../../src/js/era.ts';
+import { catInsight } from '../../src/js/insights.ts';
 import { marketCycles } from '../../src/js/data.ts';
 
-const card = sheet => document.querySelector('[data-open="' + sheet + '"]');
-const value = sheet => card(sheet).querySelector('.ci-value').firstChild.nodeValue;
-const tag = sheet => card(sheet).querySelector('.tag').textContent;
-const when = sheet => card(sheet).querySelector('.ci-when').textContent;
-const word = sheet => card(sheet).querySelector('.ci-word').textContent;
+const value = sheet => todayFace(ROSTER_BY[sheet]).text;
+const word = sheet => todayFace(ROSTER_BY[sheet]).word;
 
 async function deliver(docs) {
   window.claude = { use: () => Promise.resolve({ doc: path => ({ get: () => {
@@ -52,7 +51,7 @@ test('each card prints the last value of its own record', () => {
 const BANDS = {
   'CBOE VIX': { lte: 20 }, 'Shiller CAPE': { lte: 17 }, 'Buffett indicator': { lte: 80 },
   Desire: { gte: 0 }, 'Equity risk premium': { gte: 0 }, Pulse: { from: 1.6975, to: 2.1365 }, Volume: { from: 3.4, to: 10.3 }, Activity: { from: 3.5, to: 5 },
-  Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 }, 'Real interest rate': { lte: 2 },
+  Temperature: { from: 1, to: 3 }, 'Productivity growth': { gte: 1.3 }, Confidence: { gte: 100 }, 'S&P 500': { gte: 0 },
   'sheet-metric-debt': { lte: 70 }, 'sheet-metric-interest': { lte: 2 }, 'sheet-marker-deficit': { lte: 3.8 }
 };
 
@@ -93,7 +92,7 @@ test('the labor and temperature words turn at their bands, and the cards follow 
   assert.deepEqual([[4.5, 0.9], [5.1, 0.49], [5.1, 0.5], [9, null]].map(([v, s]) => unempState(v, s)), ['good', 'warning', 'serious', 'warning']);
   assert.deepEqual([0.9, 1, 3, 3.1].map(v => temperatureWord(v).text), ['Running cold', 'Warm', 'Warm', 'Running hot']);
   const u = unempHistory.filter(d => d.v != null);
-  assert.equal(tag('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
+  assert.equal(word('sheet-sign-activity'), laborWord(u[u.length - 1].v).text);
   assert.equal(rowReadings().find(r => r.bodyTerm === 'Temperature').tag.text, temperatureWord(inflationHistory[inflationHistory.length - 1].v).text);
 });
 
@@ -130,7 +129,7 @@ const FED = { kind: 'object', lo: 3.75, hi: 4, lastMove: '+0.25', lastMoveLabel:
 
 test('the Fed card prints the one Fed funds range', () => {
   assert.equal(value('sheet-sign-hormones'), fedFundsRange());
-  assert.equal(tag('sheet-sign-hormones'), 'Tightening');
+  assert.equal(word('sheet-sign-hormones'), 'Tightening');
 });
 
 test('the open year fills its row, as the dial does: a grey line for its seasons, grey dots for its market', () => {
@@ -152,13 +151,11 @@ test('the dial is titled by its cycle, its legend speaks in signs, and AI Insigh
   assert.doesNotMatch(document.getElementById('sheet-ai-insights').textContent, /has eased/);
 });
 
-test('a live Fed cut reaches every door, its tag and the policy facts', async () => {
+test('a live Fed cut reaches the figure, its word and the policy facts', async () => {
   await deliver({ fedFunds: { ...FED, lo: 3.5, hi: 3.75, lastMove: '-0.25', lastMoveLabel: 'cut a quarter point' } });
   assert.equal(now.fedFunds.lo, 3.5);
-  const doors = [...document.querySelectorAll('[data-open="sheet-sign-hormones"]:not(.lab-row)')];
-  assert.ok(doors.length >= 1);
-  doors.forEach(d => assert.match(d.textContent, /3\.50–3\.75%/));
-  assert.equal(tag('sheet-sign-hormones'), 'Easing');
+  assert.equal(value('sheet-sign-hormones'), '3.50–3.75%');
+  assert.equal(word('sheet-sign-hormones'), 'Easing');
   assert.match(document.getElementById('policy-facts').textContent, /3\.50–3\.75%/);
 });
 
@@ -173,7 +170,7 @@ test('a live VIX close reaches the Volatility card; one outside its band is refu
   await deliver({ vixClose: { kind: 'scalar', value: 31.7, asOf: '2026-10-01' } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
   assert.equal(String(now.vixRow.flagValue), '31.7');
-  assert.equal(tag('sheet-sign-sentiment'), 'Fearful');
+  assert.equal(word('sheet-sign-sentiment'), 'Fearful');
   await deliver({ vixClose: { kind: 'scalar', value: 9999, asOf: '2026-10-02' } });
   assert.equal(value('sheet-sign-sentiment'), '31.7');
 });
@@ -202,16 +199,16 @@ test('the debt card reads the last backfilled quarter', () => {
   assert.ok(!/\{\w+\}/.test(row.note));
 });
 
-test('a newer live document dates its card with its own day', async () => {
+test('a newer live document dates its reading with its own day', async () => {
   const next = new Date(Date.parse(READINGS.yieldCurve.fileAsOf()) + 3 * 864e5), iso = next.toISOString().slice(0, 10);
   await deliver({ yieldCurve: { kind: 'series', rows: now.yieldCurve, asOf: iso } });
-  assert.equal(when('sheet-sign-pressure'), next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }));
+  assert.equal(curveAsOf(), iso);
 });
 
 test('a dated document whose day is not ISO is refused', async () => {
-  const before = when('sheet-sign-sentiment');
+  const before = liveIsoOf('vixClose');
   await deliver({ vixClose: { kind: 'scalar', value: 20, asOf: 'Dec 31, 2099' } });
-  assert.equal(when('sheet-sign-sentiment'), before);
+  assert.equal(liveIsoOf('vixClose'), before);
   assert.notEqual(liveApplied.vixClose && JSON.parse(liveApplied.vixClose).asOf, 'Dec 31, 2099');
 });
 
@@ -240,13 +237,12 @@ test('a good boot clears the one-reload guard', () => {
   assert.equal(sessionStorage.getItem('gyn.forgot'), null);
 });
 
-test('a live CAPE reaches every Valuations door with its verdict word', async () => {
-  const doors = () => [...document.querySelectorAll('[data-open="sheet-metric-valuation"]:not(.lab-row)')].map(d => (d.querySelector('.ci-value, .subject-value') || {}).firstChild?.nodeValue.trim());
+test('a live CAPE reaches the Valuations figure with its verdict word', async () => {
   await deliver({ capeValue: { kind: 'scalar', value: 18, asOf: '2026-10-05' } });
   assert.equal(word('sheet-metric-valuation'), 'Fair');
   await deliver({ capeValue: { kind: 'scalar', value: 35.2, asOf: '2026-10-06' } });
   assert.equal(word('sheet-metric-valuation'), 'Rich');
-  assert.ok(doors().length >= 1 && doors().every(t => /^35\.2/.test(t)), JSON.stringify(doors()));
+  assert.match(value('sheet-metric-valuation'), /^35\.2/);
 });
 
 test('a new Fed range without its move clears the old move and the next date, and the note follows', async () => {
@@ -275,37 +271,22 @@ test('a boot failure with no stored documents is not swallowed', () => {
   assert.throws(() => forgetLive(new Error('boot')), /boot/);
 });
 
-test('a cycle older than a record leaves that card blank and says why', () => {
-  document.querySelector('#cycle-list .era-row[data-era="1928"]').click();
-  const items = [...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')].map(n => ({
-    open: n.dataset.open, val: n.querySelector('.ci-value').textContent.trim(), word: (n.querySelector('.ci-word') || {}).textContent || '' }));
-  const blank = items.filter(i => i.val === '\u2014');
-  ui.eraPageBack();
-  assert.ok(blank.length > 0 && blank.some(i => i.open === 'sheet-sign-confidence'), JSON.stringify(blank));
-  assert.ok(blank.every(i => /^Not measured before |^No history in the app$/.test(i.word)), JSON.stringify(blank));
-  assert.deepEqual(errors, []);
-});
-
-test('a past cycle shows its own record on the cards and the Diagnosis, and Back restores today', () => {
-  const temp = () => document.querySelector('.cat-sheet .cat-item[data-open="sheet-metric-temp"]').textContent;
-  const today = temp(), head = document.querySelector('#diagnosis .trend-head').textContent;
+test('a past cycle shows its own record on the Diagnosis, and Back restores today', () => {
+  const head = document.querySelector('#diagnosis .trend-head').textContent;
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.equal(ui.eraOpen.name, 'Big Tech Cycle');
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, 'Cycle Statistics');
-  assert.match(temp(), /Dec 2018/);
   ui.eraPageBack();
   assert.equal(ui.eraOpen, null);
   assert.equal(document.querySelector('#diagnosis .trend-head').textContent, head);
-  assert.equal(temp(), today);
   assert.deepEqual(errors, []);
 });
 
-test('each category page lists its readings, then its insights behind More details, for the cycle on screen', async () => {
-  const more = key => document.querySelector('#sheet-cat-' + key + ' .cat-list > .cat-more:last-child');
-  const mood = () => { more('mood').querySelector('.more-row').click(); const t = document.getElementById('detail-modal-body').textContent; document.getElementById('detail-modal-close').click(); return t; };
-  assert.equal(document.querySelectorAll('.cat-analysis').length, 0);
-  for (const key of ['weather', 'mood', 'circulation']) assert.ok(more(key).querySelector('.more-row'), key);
-  assert.equal(more('energy').children.length, 0);
+test('each category’s insights follow the cycle on screen, and the old category pages are gone', async () => {
+  const mood = () => catInsight('mood');
+  assert.equal(document.querySelectorAll('.cat-sheet .cat-item, [id^="sheet-cat-"], .sign-row, .peek').length, 0);
+  for (const key of ['weather', 'mood', 'circulation']) assert.ok(catInsight(key), key);
+  assert.equal(catInsight('energy'), '');
   assert.match(mood(), /She\u2019s in .+AI Cycle/);
   document.querySelector('#cycle-list .era-row[data-era="2009"]').click();
   assert.match(mood(), /She\u2019s in .+Big Tech Cycle/);
@@ -314,9 +295,8 @@ test('each category page lists its readings, then its insights behind More detai
   assert.deepEqual(errors, []);
 });
 
-test('a live figure repaints exactly the cards whose roster row declares it', async () => {
-  const cards = () => Object.fromEntries([...document.querySelectorAll('.cat-sheet .cat-item[data-open]:not([data-preview])')]
-    .map(n => [n.dataset.open, n.querySelector('.ci-value').textContent]));
+test('a live figure moves exactly the readings whose roster row declares it', async () => {
+  const cards = () => Object.fromEntries(ROSTER.map(R => [R.id, value(R.id)]));
   const docs = {
     fedFunds: { ...FED, lo: 4.25, hi: 4.5, lastMove: '+0.50', asOf: 'Dec 9, 2026' },
     yieldCurve: { kind: 'series', rows: now.yieldCurve.map(r => r.m === '10Y' ? { ...r, y: 4.77 } : r), asOf: '2026-12-09' },

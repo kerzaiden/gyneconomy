@@ -1,24 +1,22 @@
 import { atMonth, factsFrom, fmtSigned, hiCard, highlightsHtml, lede, maxIn, metered, qPretty, srcBlock, yearOf, titleCase } from "./format.ts";
-import { addSources, byId, need, put } from "./dom.ts";
+import { addSources, byId, put } from "./dom.ts";
 import { divergeChart, histBar, histTip, trendOf, trendPill, windowYears } from "./charts.ts";
 import { fiscalHistory, grossDebtQuarterly } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, NEUTRAL_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
+import { buffettHistory, CONFIDENCE_SRC, DESIRE_SRC, PREMIUM_SRC, fileRow, labRow, longCycleSrc, now, PRODUCTIVITY_SRC, sp500AnnualReturnSource } from "./data.ts";
 import { currentEra, cycleSlice } from "./model.ts";
 import { attachHistory, histControls, histHead, histNote, page, pageCycle, refitHistory, timelineWindow } from "./history.ts";
-import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading, realRateReading, realRateRecord } from "./readings.ts";
-import { GROUP_MARK, keyed, peekOf, periodOf, ROSTER } from "./roster.ts";
-import { catItem, catList, metricSheet, openOf, sheetRenderers, timingPill } from "./render-core.ts";
+import { confidenceReading, confidenceRecord, desireReading, desireRecord, marketReading, meterFlagged, premiumReading, premiumRecord, productivityReading } from "./readings.ts";
+import { periodOf, ROSTER } from "./roster.ts";
+import { metricSheet, sheetRenderers, timingPill } from "./render-core.ts";
 
 type SeriesPt = Point & { v: number };
 type SplitRow = { sub: string; note: string; meter: Meter; flagValue: string; flagState?: Tone; shortNote?: string };
 type SplitPage = { after?: string; row: SplitRow; line: string; fmt: (v: number) => string; tick?: (v: number) => string; at?: (d: SeriesPt) => string;
   src: Src[]; band?: string; goodAbove?: boolean; info?: () => string; insight: (s: SplitSpec) => string[] };
 type SplitSpec = SplitPage & { id: string; name: string; mid: number; timing: string; series: SeriesPt[]; midLabel: string };
-type CatGroup = { group: string; mark: (() => string) | undefined; picks: string[] };
-type CatPick = string | CatGroup;
 
-// ---- The split indicators: one card and one page each ----
+// ---- The split indicators: one page each ----
 var BUFFETT_2001 = [
   { t:"Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
     u:"https://fortune.com/2001/12/10/warren-buffett-stock-market/" },
@@ -26,7 +24,7 @@ var BUFFETT_2001 = [
     u:"https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf" }
 ];
 function midOf(R: RosterRow): number { if (R.mid == null) throw new Error(R.id + " has no middle line"); return R.mid; }
-function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
+export function meterWord(m: Meter){ return meterFlagged(m) ? (m.ends && m.ends.high) || "High" : (m.ends && m.ends.zone) || "In range"; }
 function splitPages(): Record<string, SplitPage> {
   var tenth = function(v: number){ return v.toFixed(1) + "%"; };
   return {
@@ -41,7 +39,7 @@ function splitPages(): Record<string, SplitPage> {
       fmt:tenth, src:[longCycleSrc[0], longCycleSrc[4]], insight:interestInsight },
     "sheet-sign-productivity-growth": productivityPage(tenth),
     "sheet-sign-desire": desirePage(), "sheet-sign-premium": premiumPage(), "sheet-sign-confidence": confidencePage(),
-    "sheet-sign-market": marketPage(), "sheet-sign-real-rate": realRatePage()
+    "sheet-sign-market": marketPage()
   };
 }
 function confidencePage(): SplitPage {
@@ -62,12 +60,6 @@ function premiumPage(): SplitPage {
     src:PREMIUM_SRC, insight:premiumInsight, info:r.info,
     row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
 }
-function realRatePage(): SplitPage {
-  var r = realRateReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
-  return { line:"Neutral rate", fmt:pct, tick:function(v){ return Math.round(v) + "%"; },
-    src:NEUTRAL_SRC, insight:realRateInsight, info:r.info,
-    row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
-}
 function marketPage(): SplitPage {
   var r = marketReading, pct = function(v: number){ return v ? fmtSigned(v, 1) + "%" : "0%"; };
   return { goodAbove:true, line:"No change", fmt:pct, tick:function(v){ return Math.round(v) + "%"; }, at:function(d){ return String(d.y); },
@@ -79,6 +71,7 @@ function productivityPage(tenth: (v: number) => string): SplitPage {
   return { goodAbove:true, line:"slowdown average", fmt:tenth, src:PRODUCTIVITY_SRC, insight:productivityInsight, info:r.info,
     row:{ sub:r.metricSub, note:r.caption, meter:r.meter, flagValue:r.metric, flagState:r.tag.state } };
 }
+export function splitRow(R: RosterRow): SplitRow { var P = splitPages()[R.id]; return P ? P.row : labRow(R.id); }
 function splitSpec(R: RosterRow, P: SplitPage): SplitSpec {
   var s: SplitSpec = Object.create(R);
   for (var k in P) (s as Record<string, unknown>)[k] = P[k as keyof SplitPage];
@@ -125,62 +118,10 @@ function mountSplit(s: SplitSpec){
   put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
   addSources(s.src);
 }
-function splitPeek(R: RosterRow, row: SplitRow){
-  return peekOf(R.id, { value:row.flagValue, word:meterWord(row.meter), state:row.flagState || "norm", colBase:R.mid,
-    cols:keyed(R.hist).map(function(d){ return R.flip ? -(d.v || 0) : d.v; }), colClass:function(v: number){ return "dv-bar " + (v > midOf(R) ? "over" : "under"); } });
-}
-export function indicatorPeeks(){
-  var pages = splitPages(), alone = ROSTER.filter(function(R){ return R.door === "split" && !pages[R.id]; });
-  return ROSTER.map(function(R){
-    var s = pages[R.id] && splitSpec(R, pages[R.id]);
-    if (s) mountSplit(s);
-    return s && R.door === "split" ? splitPeek(R, s.row) : "";
-  }).join("") + alone.map(deficitPeek).join("");
-}
-function deficitPeek(R: RosterRow){
-  addSources(longCycleSrc);
-  return splitPeek(R, labRow(R.id));
-}
-export function catSheet(id: string, key: string){
-  var sheet = metricSheet(id);
-  sheet.className += " cat-sheet cat-" + key;
-  return sheet;
-}
-export function groupId(name: string){ return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-"); }
-function groupCard(grp: Element, name: string){
-  var first = grp.firstChild as Element, card = first.cloneNode(true) as Element;
-  card.setAttribute("data-preview", openOf(first));
-  card.setAttribute("data-open", groupId(name)); card.setAttribute("data-title", name);
-  var nm = card.querySelector(".ci-name"), mk = card.querySelector(".peek-mark"); if (nm) nm.textContent = name;
-  if (grp.__mark && mk) mk.innerHTML = grp.__mark();
-  return card;
-}
-function groupSheet(grp: Element, name: string, key: string, items: Element){
-  items.appendChild(groupCard(grp, name));
-  var sheet = catSheet(groupId(name), key);
-  sheet.innerHTML = catList("");
-  var list = sheet.firstChild; if (list) list.appendChild(grp);
-  need("today-analysis").appendChild(sheet);
-}
-export function appendPicks(items: Element, picks: CatPick[], key: string){
-  picks.forEach(function(p){
-    if (typeof p === "string"){ var el = document.querySelector(p); if (el) items.appendChild(catItem(el, key)); return; }
-    var grp = document.createElement("div"); grp.className = "cat-group"; grp.setAttribute("data-group", p.group); grp.__mark = p.mark;
-    p.picks.forEach(function(sel){ var el = document.querySelector(sel); if (el) grp.appendChild(catItem(el, key)); });
-    if (grp.children.length) groupSheet(grp, p.group, key, items);
-  });
-}
-function doorSel(R: RosterRow){ return (R.door === "subject" || R.door === "row" ? ".sign-row" : ".peek") + '[data-open="' + R.id + '"]'; }
-export function catPicks(c: { key: string }){
-  var picks: CatPick[] = [];
-  ROSTER.forEach(function(R){
-    if (R.cat !== c.key) return;
-    var last = picks[picks.length - 1] as CatGroup | undefined;
-    if (!R.group) picks.push(doorSel(R));
-    else if (last && last.group === R.group) last.picks.push(doorSel(R));
-    else picks.push({ group:R.group, mark:GROUP_MARK[R.group as keyof typeof GROUP_MARK], picks:[doorSel(R)] });
-  });
-  return picks;
+export function mountSplits(){
+  var pages = splitPages();
+  ROSTER.forEach(function(R){ if (pages[R.id]) mountSplit(splitSpec(R, pages[R.id])); });
+  if (ROSTER.some(function(R){ return R.door === "split" && !pages[R.id]; })) addSources(longCycleSrc);
 }
 // ---- The split indicators' insights ----
 function buffettInsight(s: SplitSpec){
@@ -257,16 +198,6 @@ function premiumInsight(s: SplitSpec){
     hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " +
       fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " +
       above + " sat at or above zero.")];
-}
-function realRateInsight(s: SplitSpec){
-  var h = s.series, last = h[h.length - 1], above = h.filter(function(d){ return d.v >= s.mid; }).length;
-  var side = function(d: SeriesPt){ return d.v >= s.mid; }, cross: SeriesPt | null = null;
-  for (var i = h.length - 1; i > 0 && !cross; i--) if (side(h[i]) !== side(h[i - 1])) cross = h[i];
-  return [lede('The policy rate after inflation, the rate that actually bites. Above the ' + s.mid + '% neutral rate policy is restrictive; below it, accommodative.'),
-    hiCard("The Latest Month", s.row.flagState || "", atMonth(last as MonthPoint) + " read " + fmtSigned(last.v, 1) + "%, " +
-      (side(last) ? "restrictive" : "accommodative") + (cross ? ", as it has been since " + atMonth(cross as MonthPoint) + "." : ".")),
-    hiCard("Against the Record", "", "The series runs from " + fmtSigned(realRateRecord.lo.v, 1) + "% (" + atMonth(realRateRecord.lo) + ") to " +
-      fmtSigned(realRateRecord.hi.v, 1) + "% (" + atMonth(realRateRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above neutral.")];
 }
 var ORDINAL = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
 function marketInsight(s: SplitSpec){

@@ -22,7 +22,6 @@
     --on-accent: #ffffff;
     --overlay: rgba(43,21,32,0.38);
     --track: #f3e3dd;
-    --mark-wash: #ead2ca;
     --good: #2a9488;
     --good-ink: #16675f;
     --good-wash: color-mix(in srgb, var(--good) 14%, var(--surface));
@@ -73,7 +72,7 @@
       --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
       --on-accent: #170d13;
       --overlay: rgba(0,0,0,0.62);
-      --track: #3a2530; --mark-wash: #4a3040;
+      --track: #3a2530;
       --good: #4cc2b4;
       --good-ink: #6fd6ca;
       --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
@@ -120,7 +119,7 @@
     --accent-ink: #f5c6d3;
     --accent-wash: color-mix(in srgb, var(--accent) 14%, var(--surface));
     --on-accent: #170d13;
-    --track: #3a2530; --mark-wash: #4a3040;
+    --track: #3a2530;
     --good: #4cc2b4;
     --good-ink: #6fd6ca;
     --good-wash: color-mix(in srgb, var(--good) 16%, var(--surface));
@@ -425,19 +424,6 @@
   #signs-list:not(:has(> :not([hidden]))){ display:none; }
   .tab-panel[hidden]{ display:none; }
 
-  .vital-ring{ width:100%; height:100%; }
-  .vital-ring-track{ fill:none; stroke:var(--track); stroke-width:9; }
-  .vital-ring-fill{
-    fill:none; stroke-width:9; stroke-linecap:round; transform-origin:60px 60px; transform:rotate(-90deg);
-    transition:stroke-dashoffset 0.6s ease;
-  }
-  .vital-ring-fill.accent{ stroke:var(--accent); }
-  .vital-ring.mark .vital-ring-track{ stroke-width:15; stroke:var(--border); }
-  .vital-ring.mark .vital-ring-fill{ stroke-width:15; stroke:currentColor; }
-  .sign-row .subject-label{ display:inline-flex; align-items:center; }
-  .vital-ring-fill.good{ stroke:var(--good); } .vital-ring-fill.warning{ stroke:var(--warning); }
-  .vital-ring-fill.serious{ stroke:var(--serious); } .vital-ring-fill.critical{ stroke:var(--critical); }
-
   .cv-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 
   .cv-kicker{ font-size:var(--type-meta); text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); font-weight:600; display:inline-flex; align-items:center; gap:2px; }
@@ -565,63 +551,17 @@
   .tm-now{ stroke:var(--text-muted); stroke-width:1.4; stroke-linecap:round; fill:none; opacity:0.8; }
   .tm-dot{ fill:var(--text-primary); }
   .tm-span{ stroke:var(--text-primary); stroke-width:4.4; stroke-linecap:round; fill:none; }
-
-  .sign-row{ cursor:pointer; }
-  .sign-row:hover{ border-color:var(--border-strong); }
-  .sign-row:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .metric-sheet[hidden]{ display:none; }
-
-  .subject{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
   .spark{ display:flex; align-items:center; gap:9px; margin:9px 0 0; }
   .spark svg{ display:block; width:108px; height:26px; flex:none; overflow:visible; }
-
-  .subject[open] .spark{ display:none; }
   @media (max-width:560px){ .spark svg{ width:96px; height:24px; } }
-
-  .subject-say{ font-size:var(--type-meta); line-height:1.55; color:var(--text-secondary); margin:7px 0 0; max-width:54ch; }
-  .subject[open] .subject-say{ display:none; }
-  .subject-summary{
-    list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:var(--pad);
-    user-select:none;
-  }
-  .subject-summary::-webkit-details-marker{ display:none; }
-  .subject-verdict{ margin-top:6px; }
-  .subject-ring{ position:relative; width:64px; height:64px; flex:none; }
-  .subject-ring svg{ width:100%; height:100%; display:block; }
-  .subject-ring .vital-ring-track{ stroke-width:10; }
-  .subject-ring .vital-ring-fill{ stroke-width:10; }
-  .subject-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .subject-icon span{ width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-  .subject-icon svg{ width:27px; height:27px; }
-  .subject-icon .good{ background:var(--good-wash); color:var(--good-ink); }
-  .subject-icon .warning{ background:var(--warning-wash); color:var(--warning-ink); }
-  .subject-icon .serious{ background:var(--serious-wash); color:var(--serious-ink); }
-  .subject-icon .critical{ background:var(--critical-wash); color:var(--critical-ink); }
-  .subject-icon .norm{ background:var(--mark-wash); color:var(--text-secondary); }
-  .subject-icon span:empty{ background:none; }
-  @media (max-width:560px){ .subject-icon span{ width:42px; height:42px; } .subject-icon svg{ width:24px; height:24px; } }
-  .subject-text{ flex:1; min-width:0; }
-  .subject-label{ font-size:var(--type-meta); color:var(--text-muted); margin-bottom:3px; }
-  .subject-label b{ font-weight:600; color:var(--text-secondary); }
-
-  .subject-value{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-section); font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; line-height:1.15; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
-  .subject-value .unit{ font-family:"Public Sans",sans-serif; font-size:var(--type-interface); font-weight:600; letter-spacing:0; color:var(--text-muted); }
-  .subject-value .tag{ transform:translateY(-2px); }
-  .subject-value .chip{ font-size:var(--type-reading); font-weight:700; }
-  .subject-value .chip i{ font-family:"Public Sans",sans-serif; font-style:normal; font-weight:400; font-size:var(--type-meta); letter-spacing:0; color:var(--text-muted); margin-right:4px; }
-  .subject-value .chip + .chip::before{ content:"\00b7"; color:var(--text-muted); margin:0 8px 0 0; font-weight:400; }
-  .subject-more{ flex:none; display:flex; align-items:center; padding:0 4px; color:var(--text-muted); }
-  .subject-more .peek-chev{ margin-right:4px; transition:transform 0.15s ease; }
-  .subject[open] .subject-more .peek-chev{ transform:rotate(90deg); }
-  .subject-summary:hover .subject-more .peek-chev{ color:var(--accent-ink); opacity:1; }
-  .subject-body{ padding:0 var(--pad) 20px; border-top:1px solid var(--border); }
-  .peek-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:stretch; }
-  .peek-row > .peek:only-child{ grid-column:1 / -1; }
   .dx{ display:flex; flex-direction:column; gap:var(--gap); }
   .dx-sys{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
   .dx-sys-head{ display:flex; align-items:center; gap:7px; width:100%; margin:0 0 8px; padding:0; border:0; background:none;
     font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:700; color:var(--accent); text-align:left; }
   .dx-mark{ display:inline-flex; color:var(--cat); }
+  button.dx-sys-head{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  button.dx-sys-head .peek-chev{ margin-left:auto; }
   .fp-growth{ --line:var(--text-muted); --line-ink:var(--text-muted); } .fp-prices{ --line:var(--season-summer); --line-ink:var(--summer-ink); } .fp-rate{ --line:var(--ff-blue); --line-ink:var(--ff-blue); }
   .fp-marks{ position:relative; height:18px; margin-top:10px; }
   .fp-ov-label{ position:absolute; bottom:2px; transform:translateX(-50%); white-space:nowrap; font-size:var(--type-label); font-weight:600; color:var(--text-secondary); }
@@ -731,36 +671,14 @@
   .ci-mini > *{ flex:1 1 auto; min-width:0; max-height:var(--mini-h); }
   .ci-mini > .peek-chart{ width:100%; margin:0; }
   .ci-mini > svg{ flex:none; height:var(--mini-h); width:auto; display:block; }
-  .ci-mini > .peek-ring{ width:auto; height:var(--mini-h); flex:none; }
-  .peek-ring{ display:block; width:var(--mini-h); height:var(--mini-h); margin:11px 0 0; }
   .ci-mini .peek-chart.heat .past{ stroke:var(--border-strong) !important; opacity:0.5; }
   .ci-mini .peek-chart.heat .now{ stroke:var(--accent-ink) !important; opacity:1; }
   .ci-mini .peek-base{ stroke:var(--border-strong) !important; opacity:0.6; }
-  .ci-mini .vital-ring-track{ stroke:var(--border-strong) !important; opacity:0.45; }
-  .ci-mini .vital-ring-fill{ stroke:var(--accent-ink) !important; opacity:1; }
-  .ci-mini .pt-ref{ stroke:var(--border-strong) !important; opacity:0.6; }
-  .ci-mini .pt-now{ stroke:var(--accent-ink) !important; opacity:1; }
-  .cat-item .subject-value .unit{ margin-left:4px; }
-  .cat-item .subject-say{ margin:3px 0 0; }
-  @media (min-width:900px){ .peek-row{ grid-template-columns:repeat(4, 1fr); } }
-  .peek{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 14px 13px;
-    display:flex; flex-direction:column; align-items:flex-start; text-align:left; width:100%;
-    font:inherit; color:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; }
-  .peek-kicker{ display:inline-flex; align-items:center; gap:4px; }
   .peek-mark{ flex:none; width:15px; height:15px; color:var(--text-secondary); }
   .peek-mark svg{ display:block; width:100%; height:100%; }
   .peek-chev{ display:inline-block; width:6px; height:10px; color:var(--text-muted); opacity:0.62; flex:none; }
   .peek-chev svg{ display:block; width:100%; height:100%; fill:none; stroke:currentColor; stroke-width:1.4;
     stroke-linecap:round; stroke-linejoin:round; }
-  .peek:hover .peek-chev{ color:var(--accent-ink); opacity:1; }
-  .peek:hover{ border-color:var(--border-strong); }
-  .peek:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .peek-kicker{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--text-muted); }
-  .peek-value{ font-family:"IBM Plex Mono",monospace; font-size:var(--type-section); font-weight:700; line-height:1;
-    color:var(--text-primary); margin-top:9px; }
-  .peek-unit{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:600; color:var(--text-muted);
-    letter-spacing:0.01em; margin-left:4px; }
   .peek-word{ font-family:"Public Sans",sans-serif; font-size:var(--type-label); font-weight:700; margin-top:6px;
     letter-spacing:0.01em; color:var(--text-secondary); }
   .hh-bill{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
@@ -770,10 +688,6 @@
   .hh-col.kept{ stroke:var(--text-secondary); opacity:0.85; }
   .pv-col{ fill:none; stroke-linecap:round; stroke:var(--warning); opacity:0.9; }
   .pv-col.over{ stroke:var(--good); }
-
-  .peek-text{ display:flex; flex-direction:column; align-items:stretch; width:100%; }
-  .peek-text > .peek-chart{ margin:12px 0 13px; }
-  .peek-text > .peek-value{ margin-top:0; }
   .peek-chart{ width:100%; margin-top:12px; }
   .peek-chart.heat .temp-col, .peek-chart.heat .temp-avg, .peek-chart.heat .gdp-col, .peek-chart.heat .dv-bar, .peek-chart.heat .m2-col, .peek-chart.heat .hzn-col, .peek-chart.heat .unemp-col{ vector-effect:non-scaling-stroke; }
   .peek-chart.heat .temp-avg{ stroke-width:1.6; }
@@ -843,25 +757,9 @@
   .yl-col{ fill:none; stroke-linecap:round; }
   .yl-col.inverted{ stroke:var(--critical); }
   .yl-col.normal{ stroke:var(--season-autumn); }
-  .meterpeek .mp-track, .meterpeek .mp-band{ fill:none; stroke-linecap:round; vector-effect:non-scaling-stroke; }
-  .meterpeek .mp-track{ stroke:var(--border); opacity:0.6; }
-  .meterpeek .mp-band{ stroke:var(--good); opacity:0.85; }
-  .meterpeek .mp-here{ fill:var(--surface); stroke-width:3; vector-effect:non-scaling-stroke; }
-  .meterpeek .mp-here.good{ stroke:var(--good); } .meterpeek .mp-here.warning{ stroke:var(--warning); }
-  .meterpeek .mp-here.serious{ stroke:var(--serious); } .meterpeek .mp-here.critical{ stroke:var(--critical); }
-  .meterpeek .mp-core.good{ fill:var(--good); } .meterpeek .mp-core.warning{ fill:var(--warning); }
-  .meterpeek .mp-core.serious{ fill:var(--serious); } .meterpeek .mp-core.critical{ fill:var(--critical); }
-  @media (max-width:400px){ .peek{ padding:13px 12px 12px; } .peek-value{ font-size:var(--type-section); } }
   .metric-sheet{ display:flex; flex-direction:column; }
-  .metric-sheet .subject{ border:0; border-radius:0; background:transparent; box-shadow:none; }
-  .metric-sheet .subject:not(.sign-row) .subject-summary{ display:none; }
-  .metric-sheet .sign-row{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); }
-  .metric-sheet .sign-row + .sign-row{ margin-top:10px; }
 
   .metric-sheet > .timing-row{ margin-bottom:16px; }
-  .metric-sheet .subject-body{ padding:0; border-top:0; }
-  .metric-sheet .subject-body > *{ margin-top:0; }
 
   .metric-sheet .sign-detail > .card{ border:0; background:transparent; padding:0; box-shadow:none; }
   :root{ --ctl-h:40px; --btn-h:40px; }
@@ -914,8 +812,8 @@
 
   .metric-sheet{ --page-gap:var(--gap); }
   .metric-sheet .page-chart{ margin-top:var(--page-gap); }
-  .metric-sheet > .subject, .metric-sheet > .sign-detail{ margin-top:var(--page-gap); }
-  .metric-sheet > .sign-detail:empty, .metric-sheet > .subject:empty{ display:none; }
+  .metric-sheet > .sign-detail{ margin-top:var(--page-gap); }
+  .metric-sheet > .sign-detail:empty{ display:none; }
   .metric-sheet .page-foot{ margin-top:var(--page-gap); }
   .metric-sheet .page-chart:has(.band-head){ margin-top:0; }
   .band-head{ display:flex; align-items:center; gap:10px; }
@@ -1064,20 +962,7 @@
   .metric-sheet > *:first-child > .card-head{ margin-top:2px; }
 
   @media (min-width:760px){
-    .peek{ padding:var(--pad); }
-    .peek-value{ font-size:var(--type-section); }
     .peek-chart svg{ height:calc(var(--mini-h) + 11px); }
-  }
-
-  .subject-body > *{ margin-top:var(--gap); }
-
-  .subject-body .hero, .subject-body .longcycle{ background:transparent; border:none; box-shadow:none; padding:0; }
-  .subject-body .grid{ margin-top:var(--gap); }
-
-  @media (max-width:560px){
-    .subject-summary{ gap:13px; padding:var(--pad); }
-    .subject-ring{ width:54px; height:54px; }
-    .subject-value{ font-size:var(--type-section); }
   }
 
   .cyc-more{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;
@@ -1092,7 +977,6 @@
   .cat-weather{ --cat:var(--season-summer); } .cat-circulation{ --cat:var(--ff-blue); }
   .cat-mood{ --cat:var(--accent); } .cat-energy{ --cat:var(--good); }
   .cat-sheet .cat-list{ display:flex; flex-direction:column; gap:14px; }
-  .cat-sheet .cat-group{ display:flex; flex-direction:column; gap:14px; }
   .cat-sheet .cat-item, .method-card{ margin:0; padding:18px 20px 20px; border-radius:24px; }
   .method-card{ background:var(--surface); border:1px solid var(--border); font-family:"Public Sans",sans-serif; }
   .method-say{ margin:10px 0 4px; font-size:var(--type-reading); font-weight:600; line-height:1.45; color:var(--text-primary); }
@@ -1101,7 +985,6 @@
   .labs .more-row{ margin-top:0; }
   .lab-sec{ margin-top:-1px; border:0; border-top:1px solid var(--border); border-radius:0; }
   .lab-box:not(:has(.lab-sec:not([hidden]))){ display:none; }
-  .cat-more:empty{ display:none; }
   .labs{ display:flex; flex-direction:column; gap:var(--gap); font-family:"Public Sans",sans-serif; }
   .lab-score{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:10px 14px; background:color-mix(in srgb, var(--border) 40%, transparent); border-radius:var(--radius-inner); }
   .lab-score small{ display:block; font-size:var(--type-meta); color:var(--text-primary); }
@@ -1116,7 +999,7 @@
   .lab-score-box .lab-ring circle.on{ stroke:var(--normal); }
   .lab-score-box .lab-score{ margin:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
   .stat-row{ justify-content:flex-start; gap:12px; margin-top:10px; }
-  .stat-row b{ font-family:"Public Sans",sans-serif; font-size:var(--type-section); font-weight:700; }
+  .stat-row b{ font-family:"Public Sans",sans-serif; font-size:var(--type-row); font-weight:600; }
   .stat-row.flow .lab-ring circle.on{ stroke:var(--bleed-mid); }
   button.stat-row{ width:100%; font:inherit; color:inherit; text-align:left; border:0; cursor:pointer; }
   .stat-main{ flex:1; min-width:0; padding-right:12px; }
@@ -1125,7 +1008,6 @@
   .stat-side{ display:flex; align-items:center; gap:4px; flex:none; font-size:var(--type-meta); color:var(--text-primary); }
   .stat-side > svg, .stat-tick svg{ width:16px; height:16px; }
   button.stat-row .stat-side{ flex:0 0 auto; width:8em; }
-  @media (max-width:380px){ .stat-row b{ font-size:var(--type-row); } }
   .stat-row .lab-score-v{ width:46px; height:46px; }
   .stat-side .peek-chev{ margin-left:auto; }
   .stat-tick{ display:inline-flex; color:var(--normal); }
@@ -1139,10 +1021,14 @@
   .len-key i:first-child{ margin-left:0; }
   .len-key i.ok{ background:var(--normal); }
   .len-key i.odd{ background:var(--critical); }
-  .insight-mark{ display:flex; flex:none; padding:6px 0; color:var(--text-primary); }
-  .insight-mark svg{ width:24px; height:24px; }
+  .insight-mark{ display:flex; flex:none; color:var(--accent); }
+  .insight-mark svg{ width:18px; height:18px; }
   small.lab-n{ display:inline; margin-right:4px; font-size:var(--type-meta); font-weight:400; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+  button.insight-row{ margin:0; padding:12px 2px; gap:10px; background:none; border-top:1px solid var(--border); border-radius:0; }
+  .dx-sys-head + button.insight-row{ border-top:0; padding-top:4px; }
+  button.insight-row:last-child{ padding-bottom:0; }
   button.insight-row .stat-main{ border-right:0; }
+  button.insight-row b{ font-size:var(--type-reading); font-weight:500; }
   button.insight-row .stat-side{ width:auto; }
   .lab-door{ width:100%; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
   .lab-door span{ flex:1; }
@@ -1219,9 +1105,7 @@
     letter-spacing:0; text-transform:none; }
   .cat-sheet .ci-word:empty::before{ content:"\00a0"; }
   .cat-sheet .ci-mini{ flex:0 0 64px; width:64px; }
-  .cat-sheet .ci-mini .peek-chart.heat .now, .cat-sheet .ci-mini .pt-now{ stroke:var(--cat) !important; }
-  .cat-sheet .ci-mini .vital-ring-fill{ stroke:var(--cat) !important; }
-  .tab-panel[data-tab="analysis"] .cat-sheet .highlights{ display:none; }
+  .cat-sheet .ci-mini .peek-chart.heat .now{ stroke:var(--cat) !important; }
   .era-row[hidden]{ display:none; }
 
   .era-row{ padding:13px 14px 12px; }
@@ -1312,7 +1196,6 @@
   .metric-sheet .longcycle{ padding:0; border:0; background:transparent; border-radius:0; }
   .metric-sheet .hero{ padding:0; border:0; background:transparent; border-radius:0; box-shadow:none; }
   .metric-sheet .hero > .spread-history:first-child{ margin-top:0; }
-  .metric-sheet > .subject{ margin-top:var(--page-gap); }
 
   .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap:16px; }
   .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:var(--pad); display:flex; flex-direction:column; box-shadow: var(--shadow); }
@@ -1331,8 +1214,6 @@
   .tag.phase-up{ background:var(--phase-up-wash); color:var(--phase-up-ink); }
   .tag.phase-down{ background:var(--phase-down-wash); color:var(--phase-down-ink); }
   .hi-name.phase-up{ color:var(--phase-up-ink); } .hi-name.phase-down{ color:var(--phase-down-ink); }
-  .subject-summary .tag{ background:transparent; padding:3px 0 3px 2px; font-weight:700; letter-spacing:0.01em; }
-  .subject-summary .tag.norm{ color:var(--text-muted); }
 
   .card .metric-row{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:2px;}
   .metric-row > .tag{ margin-left:auto; }
@@ -1495,7 +1376,6 @@
   </div>
 
   <div id="today-analysis">
-    <div class="peek-row" id="peek-row"></div>
     <div class="metric-sheet" id="sheet-metric-temp" hidden>
     <div id="temp-timing"></div>
       <div id="temp-chart">
@@ -1536,33 +1416,14 @@
     <div id="valuation-highlights"></div>
     </div>
 
-<details class="subject" data-subject="hormones">
-    <summary class="subject-summary">
-      <div class="subject-text">
-        <div class="subject-label">Interest rates</div>
-        <div class="subject-value" id="subj-value-hormones"></div>
-        <p class="subject-say" id="subj-say-hormones"></p>
-      </div>
-      <div class="subject-more"><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></div>
-    </summary>
-    <div class="subject-body">
+<div class="subject" data-subject="hormones">
     <section class="hero" aria-label="Interest rates — the policy rate and the U.S. Treasury yield curve">
       <div id="hormones-history"></div>
       <div id="hormones-insights"></div>
     </section>
-    </div>
-  </details>
+  </div>
 
-<details class="subject" data-subject="pressure">
-    <summary class="subject-summary">
-      <div class="subject-text">
-        <div class="subject-label">Pressure</div>
-        <div class="subject-value" id="subj-value-pressure"></div>
-        <p class="subject-say" id="subj-say-pressure"></p>
-      </div>
-      <div class="subject-more"><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></div>
-    </summary>
-    <div class="subject-body">
+<div class="subject" data-subject="pressure">
     <section class="hero" aria-label="Pressure — U.S. Treasury yields by maturity">
       <div class="hist-bar" id="pressure-timeline"></div>
       <div class="spread-history">
@@ -1579,28 +1440,15 @@
       </div>
       <div id="pressure-insights"></div>
     </section>
-    </div>
-  </details>
+  </div>
 
-  <details class="subject" data-subject="sentiment">
-    <summary class="subject-summary">
-      <div class="subject-ring" id="subj-ring-sentiment"></div>
-      <div class="subject-text">
-        <div class="subject-label">Fear</div>
-        <div class="subject-value" id="subj-value-sentiment"></div>
-        <p class="subject-say" id="subj-say-sentiment"></p>
-        <div id="subj-spark-sentiment"></div>
-      </div>
-      <div class="subject-more"><span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span></div>
-    </summary>
-    <div class="subject-body">
+  <div class="subject" data-subject="sentiment">
     <section class="longcycle" aria-labelledby="psych-title">
       <div id="fear-history"></div>
       <div id="curve-highlights"></div>
 
     </section>
-    </div>
-    </details>
+  </div>
 
     <div id="signs-list"></div>
 
@@ -1652,7 +1500,7 @@
         <button type="button" class="menu-row" data-sheet="appearance"><span class="menu-label">Theme<small id="appearance-current">Use system setting</small></span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="menu-version"><span id="app-version">Version 0.8.5 (763)</span></p>
+      <p class="menu-version"><span id="app-version">Version 0.8.6 (764)</span></p>
     </div>
   </div>
 
@@ -1914,20 +1762,12 @@
     }) : null;
   }
   var CHEV = '<span class="peek-chev" aria-hidden="true"><svg viewBox="0 0 6 10"><path d="M1.1 1 L4.9 5 L1.1 9"/></svg></span>';
-  function prettyKey(k) {
-    if (/^\d{4}-\d{2}$/.test(k)) return MONTHS_SHORT[+k.slice(5) - 1] + " " + k.slice(0, 4);
-    if (/^\d{4} Q[1-4]$/.test(k)) return k.slice(5) + " " + k.slice(0, 4);
-    return k;
-  }
   function qLabel(q) {
     var m = /^(\d{4}) (Q[1-4])$/.exec(q);
     return m ? m[2] + " " + m[1] : q;
   }
   function monthLabel(m) {
     return MONTHS_SHORT[parseInt(m.slice(5, 7), 10) - 1] + " " + m.slice(0, 4);
-  }
-  function clampPct(v, lo, hi) {
-    return Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
   }
   function ledeHtml(text) {
     return '<p class="lede">' + text + "</p>";
@@ -30585,7 +30425,7 @@
     summer: {
       name: "Summer",
       theme: "Inflation",
-      altName: "Ovulation"
+      altName: null
     },
     autumn: {
       name: "Autumn",
@@ -31243,14 +31083,6 @@
   var CLOCK_SRC = [ {
     t: "Merrill Lynch — The Investment Clock: Making Money from Macro (T. Greetham and M. Hartnett, 10 November 2004), as summarised in Introduction and Applications of the Investment Clock Theory (2024); the original report is not public",
     u: "https://www.researchgate.net/publication/377733341_Introduction_and_Applications_of_the_Investment_Clock_Theory"
-  } ];
-  var NEUTRAL_RATE = 2;
-  var NEUTRAL_SRC = [ {
-    t: "John B. Taylor — Discretion versus Policy Rules in Practice, Carnegie-Rochester Conference Series on Public Policy 39 (1993): the 2% equilibrium real rate",
-    u: "https://web.stanford.edu/~johntayl/Papers/Discretion.PDF"
-  }, {
-    t: "Federal Reserve H.15 via FRED — Federal Funds Effective Rate (FEDFUNDS), monthly",
-    u: "https://fred.stlouisfed.org/series/FEDFUNDS"
   } ];
   var FED_TARGET_SRC = {
     t: "Federal Reserve — 2025 Statement on Longer-Run Goals and Monetary Policy Strategy",
@@ -32589,17 +32421,6 @@
     });
     return '<span class="peek-chart heat"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">' + out.join("") + "</svg></span>";
   }
-  function meterPeek(m, state2) {
-    var W = PEEK_W, H = PEEK_H, sw = 13, cy = H / 2, x0 = sw / 2, x1 = W - sw / 2;
-    function at(v) {
-      return x0 + (x1 - x0) * Math.max(0, Math.min(1, (v - m.min) / (m.max - m.min || 1)));
-    }
-    var ends = bandEnds(m.optimal, m.min, m.max);
-    var a = at(ends[0]), c = at(ends[1]);
-    if (c - a < sw) c = a + sw;
-    var hx = at(m.value);
-    return '<span class="peek-chart meterpeek"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><path class="mp-track" stroke-width="' + sw + '" d="M' + x0 + "," + cy + "H" + x1 + '"/><path class="mp-band" stroke-width="' + sw + '" d="M' + a.toFixed(1) + "," + cy + "H" + c.toFixed(1) + '"/><circle class="mp-here ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="7.5"/><circle class="mp-core ' + state2 + '" cx="' + hx.toFixed(1) + '" cy="' + cy + '" r="3"/></svg></span>';
-  }
   function windowYears(fromYear, toYear, want) {
     if (toYear <= fromYear) return [ fromYear ];
     var raw = (toYear - fromYear) / Math.max(1, want - 1);
@@ -32615,7 +32436,6 @@
     return w.charAt(0).toUpperCase() + w.slice(1);
   }
   var PULSE_WINDOW = 5;
-  var PULSE_WINDOW_PEEK = 3;
   var pulseClipN = 0;
   function beatPath(x0, x1, y, period, amp) {
     var f = function(n) {
@@ -32658,17 +32478,9 @@
     }).join("");
     return '<svg class="pt-svg ' + (cls || "") + '" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="' + id + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs><g clip-path="url(#' + id + ')">' + paths + "</g></svg>";
   }
-  function pulsePeek(rate, ref) {
-    return '<span class="peek-chart pulsepeek">' + pulseTraceSvg(rate, ref, PEEK_W, PEEK_H, 8, "", PULSE_WINDOW_PEEK) + "</span>";
-  }
   function peekCard(o) {
-    var art = o.ring != null ? vitalRingSvg(o.ring, o.state, null, "peek-chart peek-ring") : o.pulse ? pulsePeek(o.pulse.rate, o.pulse.ref) : o.meter ? meterPeek(o.meter, o.state) : o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
+    var art = o.cols && o.colClass ? colPeek(o.cols, o.colClass, o.colBase, o.colRule) : "";
     return '<button type="button" class="peek ' + o.state + '" data-open="' + o.target + '" data-title="' + (o.title || o.kicker) + '" aria-label="' + (o.title || o.kicker) + ", " + o.value + " " + o.unit + ' — open"><span class="peek-text"><span class="peek-kicker">' + (o.mark ? '<span class="peek-mark ' + o.state + '">' + o.mark + "</span>" : "") + o.kicker + CHEV + "</span>" + art + '<span class="peek-value">' + o.value + '<span class="peek-unit">' + o.unit + '</span></span><span class="peek-word">' + o.word + "</span></span></button>";
-  }
-  function vitalRingSvg(pct2, state2, label, cls) {
-    var r = 46, c = 2 * Math.PI * r;
-    var offset = c * (1 - clampPct(pct2, 0, 100) / 100);
-    return '<svg class="vital-ring' + (cls ? " " + cls : "") + '" viewBox="0 0 120 120"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><circle class="vital-ring-track" cx="60" cy="60" r="' + r + '"></circle><circle class="vital-ring-fill ' + state2 + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + offset.toFixed(1) + '"></circle></svg>';
   }
   var page = {
     mode: void 0,
@@ -33111,11 +32923,11 @@
       var i = e.key === "Home" ? 0 : e.key === "End" ? g.n - 1 : Math.max(0, Math.min(g.n - 1, host.__keyI == null ? g.n - 1 : host.__keyI + step));
       host.__keyI = i;
       if (!histShow(host, svg, i)) return;
-      var read = histReadEnsure(host), part2 = function(s) {
+      var read = histReadEnsure(host), part = function(s) {
         var n = read && read.querySelector(s);
         return n ? n.textContent : "";
       };
-      histLive(host).textContent = [ part2(".hr-label"), part2(".hr-value") ].filter(Boolean).join(", ");
+      histLive(host).textContent = [ part(".hr-label"), part(".hr-value") ].filter(Boolean).join(", ");
     });
   }
   function mWindowFrom(len, key) {
@@ -33280,18 +33092,6 @@
       says: "below the OECD’s long-term average of 100, the side on which households lean towards saving more and spending less"
     };
   }
-  function realRateWord(v) {
-    if (v >= NEUTRAL_RATE) return {
-      state: "norm",
-      text: "Restrictive",
-      says: "at or above the " + NEUTRAL_RATE + "% neutral rate, where policy leans on the economy"
-    };
-    return {
-      state: "norm",
-      text: "Accommodative",
-      says: "below the " + NEUTRAL_RATE + "% neutral rate, where policy leaves the economy room"
-    };
-  }
   function desireWord(v) {
     if (v >= DESIRE_LINE) return {
       state: "good",
@@ -33326,7 +33126,6 @@
       bare: true,
       noHead: true,
       chartFirst: true,
-      peeked: true,
       chart: function(ind) {
         return pulseBlock(metered(ind.meter), PULSE_PRE2008, ind);
       }
@@ -33369,7 +33168,6 @@
       bare: true,
       noHead: true,
       chartFirst: true,
-      peeked: true,
       chart: function(ind) {
         return volumeBlock(ind);
       }
@@ -33423,80 +33221,6 @@
   }
   function premiumInfoHtml(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">' + f.metric + " (" + f.metricSub + "): " + f.side + ". The record, month by month, runs " + f.span + '.</p><p class="caption follow">The equity risk premium is what stocks earn over safe bonds. This is Robert Shiller’s Excess CAPE Yield: the CAPE’s earnings yield (one over the CAPE, ten years of real earnings against today’s price) less the real 10-year Treasury yield (the yield less the inflation of the ten years before). A thin premium is investors asking little for the risk of owning stocks; a wide one is investors asking a lot.</p><p class="caption follow"><b>Zero is the only line</b>, where stocks stop earning more than bonds. No other band is drawn, and the reading carries no word.</p>' + srcBlock(PREMIUM_SRC);
-  }
-  function realRateInfoHtml(f) {
-    return "<h4>" + titleCase(f.econTerm) + "</h4>" + ledeHtml("The Fed funds rate less inflation, against the " + NEUTRAL_RATE + "% neutral rate.") + facts([ "<b>Neutral</b> is the real rate that neither cools nor heats the economy: " + NEUTRAL_RATE + "%, John Taylor’s equilibrium real rate (1993).", "<b>Restrictive</b> above it, <b>accommodative</b> below it. The line is the only one drawn.", "<b>Inflation</b> is the Season Model’s own: CPI before 2000, PCE since.", "<b>Today</b>, " + f.metricSub.replace(/^.*, /, "") + ": " + f.metric + ", " + f.wordSays + ". The record runs " + f.span + "." ]) + srcBlock(NEUTRAL_SRC);
-  }
-  function deriveRealRate() {
-    var inf = {};
-    inflationHistory.forEach(function(d) {
-      inf[d.m] = d.v;
-    });
-    realRateHistory = fedFundsHistory.filter(function(d) {
-      return inf[d.m] != null;
-    }).map(function(d) {
-      return {
-        m: d.m,
-        v: Math.round((d.v - inf[d.m]) * 100) / 100
-      };
-    });
-    var h = realRateHistory;
-    realRateRecord = {
-      now: h[h.length - 1],
-      lo: h.reduce(function(a, d) {
-        return d.v < a.v ? d : a;
-      }),
-      hi: h.reduce(function(a, d) {
-        return d.v > a.v ? d : a;
-      })
-    };
-    realRateReading = function(R) {
-      var word2 = realRateWord(R.now.v), at = monthLabel(R.now.m);
-      var span = fmtSigned(R.lo.v, 1) + "% (" + monthLabel(R.lo.m) + ") to " + fmtSigned(R.hi.v, 1) + "% (" + monthLabel(R.hi.m) + ")";
-      return {
-        bodyTerm: "Real interest rate",
-        info: function() {
-          return realRateInfoHtml(realRateReading);
-        },
-        page: {
-          bare: true,
-          chart: function() {
-            return '<div id="sheet-sign-real-rate-chart"></div><div id="sheet-sign-real-rate-highlights"></div>';
-          }
-        },
-        econTerm: "Real interest rate",
-        metricSub: "Fed funds less inflation, " + at,
-        metric: fmtSigned(R.now.v, 1) + "%",
-        tag: {
-          state: word2.state,
-          text: word2.text
-        },
-        wordSays: word2.says,
-        meter: {
-          min: R.lo.v,
-          max: R.hi.v,
-          value: R.now.v,
-          optimal: {
-            lte: NEUTRAL_RATE,
-            label: "≤ " + NEUTRAL_RATE + "%"
-          },
-          ends: {
-            zone: "Accommodative",
-            high: "Restrictive"
-          }
-        },
-        span: span,
-        get peek() {
-          return colPeek(realRateHistory.map(function(d) {
-            return d.v - NEUTRAL_RATE;
-          }), function(v) {
-            return "dv-bar " + (v > 0 ? "over" : "under");
-          }, 0, true);
-        },
-        lead: "",
-        caption: at + ", the Fed funds rate less inflation at " + fmtSigned(R.now.v, 1) + "%, " + word2.says + ". The track runs over the monthly record since " + monthLabel(h[0].m) + ": " + span + "."
-      };
-    }(realRateRecord);
   }
   function productivityInfoHtml(f) {
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>. Output per hour worked in the nonfarm business sector, against the same quarter a year earlier (" + f.metricSub + "). The record for that series, quarter by quarter, runs " + f.span + '.</p><p class="caption follow"><b>The 1.3% line is the BLS’s own figure for the slowdown era</b> — since 2005 productivity has grown at an average of just 1.3% a year, against 2.1% a year across 1947–2018. So the band says something narrower than it looks: above the line is <i>better than the slowdown</i>, not <i>at trend</i>. Today’s ' + f.metric + " " + f.wordWhy + '.</p><p class="caption follow">This is the reading that says whether capacity is being rebuilt or only borrowed against: an economy can grow by working more hours or by getting more from each one, and only the second kind compounds.</p>' + srcBlock(PRODUCTIVITY_SRC);
@@ -33891,14 +33615,6 @@
       u: "https://fred.stlouisfed.org/series/PSAVERT"
     } ]);
   }
-  function vixPct(v) {
-    var m = now.vixRow.meter;
-    return v == null ? 0 : Math.max(0, Math.min(100, 100 * Math.log(v / m.min) / Math.log(m.max / m.min)));
-  }
-  function volatilityRing() {
-    var m = now.vixRow.meter;
-    return vitalRingSvg(vixPct(m.value), "accent", "VIX at " + metered(m).toFixed(2) + ", between its record low of " + m.min + " and its record high of " + m.max);
-  }
   function volatilityDetailHtml() {
     var m = now.vixRow.meter;
     return '<h4>Fear</h4><div class="marker-sub">Cboe, ' + now.vixRow.sub + "</div>" + facts([ "The <b>VIX</b> is Cboe’s volatility index: what options traders pay to insure the S&amp;P 500 against a fall over the next thirty days, as an annual rate.", "It climbs when the market is frightened and sinks when it is calm, so it reads contrarian: panic gathers near bottoms, complacency near tops.", "The chart is the <b>monthly average of daily closes</b>. Before " + monthLabel(VOL_JOIN) + " it is the <b>VXO</b>, Cboe’s original VIX, computed on the S&amp;P 100; the VIX takes over from its first month.", "By market convention a VIX <b>below " + VIX_CALM + "</b> reads calm, <b>" + VIX_CALM + " to " + VIX_FEAR + "</b> elevated, and <b>above " + VIX_FEAR + "</b> fearful; the chart hangs from " + VIX_CALM + ". The lines are the convention’s, not ours.", "Daily record on the VIX since 1990: <b>" + m.min + "</b> low, <b>" + m.max + "</b> high." ]) + srcBlock(now.sentiment.src.concat(VIX_CONVENTION));
@@ -33922,7 +33638,7 @@
     return "<h4>" + titleCase(f.econTerm) + '</h4><p class="caption">The reading is <b>' + f.tag.text + "</b>: " + f.metric + " in " + f.now.y + (f.open ? " so far" : "") + ", " + f.wordSays + ". The record, year by year, runs " + f.span + '.</p><p class="caption follow"><b>The zero line is the definition, not a band</b>: a year the index ends higher, dividends included, is a bull year and one it ends lower is a bear year. These are the same years the dial’s inner band colours, so the card, this chart and the cycle read one number.' + (f.open ? " " + f.now.y + " is still open, so its bar is the year so far." : "") + "</p>" + srcBlock(sp500AnnualReturnSource);
   }
   function rowReadings() {
-    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading, realRateReading ]);
+    return [].concat(coincident, lagging, [ productivityReading, desireReading, premiumReading, confidenceReading, marketReading ]);
   }
   function indOf(R) {
     return rowReadings().filter(function(x) {
@@ -33969,10 +33685,6 @@
     if (prev) sheet.replaceChild(fresh, prev); else sheet.appendChild(fresh);
   }
   var DATED_UNIT = /^(.*?),\s*((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[^,]*|Q[1-4]\s+\d{4})$/;
-  function indPeriod(R) {
-    var ind = indOf(R), m = ind && DATED_UNIT.exec(String(ind.metricSub || "").trim());
-    return m ? m[2] : "";
-  }
   var productivityReading;
   var confidenceRecord;
   var confidenceReading;
@@ -33980,9 +33692,6 @@
   var desireReading;
   var premiumRecord;
   var premiumReading;
-  var realRateHistory;
-  var realRateRecord;
-  var realRateReading;
   var tempInfo;
   var horizonRead;
   var householdsNow;
@@ -34217,7 +33926,6 @@
       };
     }(productivityRecord);
     deriveFeelingReadings();
-    deriveRealRate();
     now.valuation.tag = valuationVerdict(metered(fileRow("cape").meter));
     liveInto("capeValue");
     liveInto("coincident");
@@ -34443,7 +34151,8 @@
           }) : v);
           var cape = valRow("cape");
           if (cape) now.valuation.tag = valuationVerdict(metered(cape.meter));
-        }
+        },
+        onOpen: true
       },
       coincident: {
         kind: "series",
@@ -34467,7 +34176,8 @@
           row.meter.value = v;
           row.flagValue = v.toFixed(1);
           if (liveAsOf.vixClose) row.sub = liveAsOf.vixClose;
-        }
+        },
+        onOpen: true
       },
       vix3mClose: {
         kind: "scalar",
@@ -34603,8 +34313,7 @@
   }, {
     key: "mood",
     title: "Mood",
-    shown: 1,
-    inTrend: true
+    shown: 1
   }, {
     key: "energy",
     title: "Activity",
@@ -34636,27 +34345,6 @@
       };
     });
   }
-  function lastDate(R) {
-    var h = keyed(R.hist);
-    return prettyKey(h[h.length - 1].k);
-  }
-  function compiledDay() {
-    return dataCompiledLabel;
-  }
-  function isoLabel(iso) {
-    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
-    return m ? MONTHS_SHORT[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1] : "";
-  }
-  function paintWhen(sheet) {
-    var R = ROSTER_BY[sheet], when = cardDate(R);
-    if (!when) return;
-    Array.prototype.forEach.call(document.querySelectorAll('[data-open="' + sheet + '"] .ci-when'), function(w) {
-      w.textContent = when;
-    });
-  }
-  function labPeriod(R) {
-    return periodOf(labRow(R.id));
-  }
   function rosterFor(ind) {
     return ROSTER.filter(function(R) {
       return R.term === ind.bodyTerm;
@@ -34669,9 +34357,6 @@
     o.unit = R.cardUnit;
     o.target = id;
     return peekCard(o);
-  }
-  function cardDate(R) {
-    return R && R.when ? R.when(R) : "";
   }
   function checkRoster() {
     var bad = [], seen = {}, live = {}, groups = [];
@@ -34723,8 +34408,12 @@
         s: inflationHistory,
         k: "m"
       },
-      when: lastDate,
-      cardUnit: "PCE, YoY"
+      cardUnit: "PCE, YoY",
+      normal: {
+        lo: TEMP_BAND_LO,
+        hi: TEMP_BAND_HI,
+        why: "the Season Model’s band, a point either side of the Fed’s 2% target"
+      }
     }, {
       id: "sheet-metric-gdp",
       name: "Growth",
@@ -34740,7 +34429,6 @@
         s: gdpQuarterlyYoY,
         k: "q"
       },
-      when: lastDate,
       cardUnit: "YoY"
     }, {
       id: "sheet-sign-market",
@@ -34758,13 +34446,12 @@
         k: "y"
       },
       mid: 0,
-      when: lastDate,
       cardUnit: "total return"
     }, {
       id: "sheet-sign-hormones",
       name: "Interest rates",
       cat: "circulation",
-      sub: "Rates",
+      sub: "Pressure",
       timing: "leading",
       mark: heartSvg,
       door: "subject",
@@ -34774,34 +34461,13 @@
         s: fedFundsHistory,
         k: "m"
       },
-      rule: true,
-      eraUnit: "Fed funds rate",
-      when: function() {
-        return now.fedFunds.asOf;
-      },
+      cardUnit: "Fed funds target",
       live: [ "fedFunds" ]
     }, {
-      id: "sheet-sign-real-rate",
-      name: "Real interest rate",
-      cat: "circulation",
-      sub: "Rates",
-      timing: "leading",
-      mark: heartSvg,
-      door: "row",
-      term: "Real interest rate",
-      head: "Real Federal Funds Rate",
-      hist: {
-        s: realRateHistory,
-        k: "m"
-      },
-      mid: NEUTRAL_RATE,
-      when: lastDate,
-      cardUnit: "after inflation"
-    }, {
       id: "sheet-sign-pressure",
-      name: "Pressure",
+      name: "US 10-year Treasury",
       cat: "circulation",
-      sub: "Rates",
+      sub: "Pressure",
       timing: "leading",
       mark: gaugeSvg,
       door: "subject",
@@ -34812,10 +34478,7 @@
         s: t10yYieldHistory,
         k: "q"
       },
-      rule: true,
-      when: function() {
-        return isoLabel(curveAsOf());
-      },
+      cardUnit: "10-year Treasury",
       live: [ "yieldCurve" ]
     }, {
       id: "sheet-sign-pulse",
@@ -34833,8 +34496,6 @@
         k: "qi",
         y0: M2V_FROM_YEAR
       },
-      pulse: PULSE_PRE2008,
-      when: lastDate,
       cardUnit: "M2 velocity",
       live: [ "coincident" ]
     }, {
@@ -34852,10 +34513,6 @@
         s: m2Yoy,
         k: "qi",
         y0: M2_FROM_YEAR
-      },
-      rule: true,
-      when: function(R) {
-        return indPeriod(R) || lastDate(R);
       },
       cardUnit: "M2, YoY",
       live: [ "coincident" ]
@@ -34875,10 +34532,7 @@
         s: capeHistory,
         k: "y"
       },
-      pre: "Jan ",
-      last: "today",
       mid: CAPE_FAIR,
-      when: lastDate,
       cardUnit: "CAPE",
       live: [ "valuation", "capeValue" ]
     }, {
@@ -34897,7 +34551,6 @@
         k: "q"
       },
       mid: BUFFETT_LINE,
-      when: lastDate,
       cardUnit: "of GDP",
       live: [ "valuation" ]
     }, {
@@ -34915,11 +34568,7 @@
         s: volatilityHistory,
         k: "m"
       },
-      ring: vixPct,
-      miniSel: ".subject-ring > svg",
-      when: function() {
-        return isoLabel(liveIsoOf("vixClose")) || compiledDay();
-      },
+      cardUnit: "VIX",
       live: [ "sentiment", "vixClose", "vix3mClose" ]
     }, {
       id: "sheet-sign-desire",
@@ -34938,7 +34587,6 @@
         k: "m"
       },
       mid: DESIRE_LINE,
-      when: lastDate,
       cardUnit: "demand, YoY"
     }, {
       id: "sheet-sign-premium",
@@ -34957,7 +34605,6 @@
         k: "m"
       },
       mid: PREMIUM_LINE,
-      when: lastDate,
       cardUnit: "over bonds"
     }, {
       id: "sheet-sign-confidence",
@@ -34975,7 +34622,6 @@
         k: "m"
       },
       mid: CONFIDENCE_LINE,
-      when: lastDate,
       cardUnit: "OECD index"
     }, {
       id: "sheet-metric-debt",
@@ -34993,7 +34639,6 @@
         k: "q"
       },
       mid: DEBT_LINE,
-      when: labPeriod,
       cardUnit: "of GDP"
     }, {
       id: "sheet-metric-interest",
@@ -35011,7 +34656,6 @@
         k: "y"
       },
       mid: INTEREST_LINE,
-      when: labPeriod,
       cardUnit: "of GDP"
     }, {
       id: "sheet-marker-deficit",
@@ -35033,7 +34677,6 @@
       },
       flip: true,
       mid: DEFICIT_LINE,
-      when: labPeriod,
       cardUnit: "deficit, of GDP"
     }, {
       id: "sheet-metric-households",
@@ -35058,8 +34701,6 @@
         k: "qi",
         y0: SAV_FROM_YEAR
       },
-      peek: "pair",
-      when: lastDate,
       cardUnit: "% paid / kept"
     }, {
       id: "sheet-sign-activity",
@@ -35091,8 +34732,7 @@
         s: productivityHistory,
         k: "q"
       },
-      mid: PRODUCTIVITY_SLOWDOWN,
-      when: lastDate
+      mid: PRODUCTIVITY_SLOWDOWN
     } ];
   }
   function bootRoster() {
@@ -35972,20 +35612,15 @@
     }
     return '<span class="era-foot' + cls + '"><span class="era-econ">' + chip("Growth", growth, "") + chip("Prices", prices, "") + chip("S&amp;P 500", market, soFar ? '<span class="unit"> so far</span>' : "") + "</span></span>";
   }
-  function subjectRow(o) {
-    return '<div class="subject sign-row' + (o.cls ? " " + o.cls : "") + '"' + (o.subject ? ' data-subject="' + o.subject + '"' : "") + ' role="button" tabindex="0" data-open="' + o.open + '" data-title="' + o.title + '"><div class="subject-summary"><div class="subject-ring">' + (o.icon || "") + '</div><div class="subject-text">' + o.text + '</div><div class="subject-more">' + CHEV + "</div></div></div>";
-  }
-  function dxHead(mark, title) {
-    return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + titleCase(title) + "</div>";
+  function dxHead(mark, title, open) {
+    var inner = '<span class="dx-mark" aria-hidden="true">' + mark + "</span>" + titleCase(title);
+    return open ? '<button type="button" class="dx-sys-head"' + open + ">" + inner + CHEV + "</button>" : '<div class="dx-sys-head">' + inner + "</div>";
   }
   function dxSys(cls, inner) {
     return '<section class="dx-sys' + cls + '">' + inner + "</section>";
   }
   function catHeadCard(cls, key, head, body) {
     return '<section class="' + cls + " ind-card cat-" + key + '"><' + head.tag + ' class="' + head.cls + 'cat-head"' + head.attrs + '><span class="ind-cat-name">' + head.name + "</span>" + head.aside + "</" + head.tag + ">" + body + "</section>";
-  }
-  function subjectIcon(state2, svg) {
-    return '<div class="subject-icon"><span class="' + state2 + '">' + svg + "</span></div>";
   }
   function timingMark(kind) {
     var cx = kind === "lagging" ? 4.4 : kind === "leading" ? 15.6 : 10;
@@ -36169,16 +35804,6 @@
         }, 150);
       });
     })();
-  }
-  function renderPressureRow() {
-    var y10 = curveAt("10Y");
-    put("subj-value-pressure", (y10 == null ? "—" : y10.toFixed(2) + "%") + '<span class="unit">10-year Treasury</span>');
-    var rowSay = byId("subj-say-pressure");
-    if (rowSay) rowSay.outerHTML = colPeek(t10yYieldHistory.map(function(d) {
-      return d.v;
-    }), function() {
-      return "yl-col normal";
-    }, 0, true);
   }
   function ylmYearMarks(svg, quarters, ylmFrom, ylmTo, x, padT, H, padB) {
     var el = svgEl;
@@ -36484,7 +36109,6 @@
     maturities.forEach(function(m) {
       m.on = m.code === matPick;
     });
-    renderPressureRow();
   }
   function renderPressureInsights() {
     var ins = byId("pressure-insights");
@@ -36553,14 +36177,6 @@
   function peekArt(src) {
     return src.querySelector(".peek-chart");
   }
-  function catItem(src, key) {
-    var open = openOf(src);
-    var page2 = document.getElementById(open);
-    if (page2) page2.classList.add("cat-" + key);
-    var item = catCard(src, cardDate(ROSTER_BY[open]));
-    if (src.parentNode) src.parentNode.removeChild(src);
-    return item;
-  }
   function catCard(src, when) {
     var open = openOf(src), item = document.createElement("button");
     item.type = "button";
@@ -36569,7 +36185,7 @@
     item.setAttribute("data-title", src.getAttribute("data-title") || "");
     var head = document.createElement("div");
     head.className = "ci-head";
-    var glyph = src.querySelector(".peek-mark svg, .subject-icon svg"), holder = document.createElement("span");
+    var glyph = src.querySelector(".peek-mark svg"), holder = document.createElement("span");
     holder.className = "peek-mark";
     if (glyph) holder.appendChild(glyph);
     head.appendChild(holder);
@@ -36582,7 +36198,7 @@
     body.className = "ci-body";
     var read = document.createElement("div");
     read.className = "ci-read";
-    var val = src.querySelector(".peek-value, .subject-value");
+    var val = src.querySelector(".peek-value");
     if (val) {
       var unit = val.querySelector(".peek-unit, .unit");
       if (unit) {
@@ -36596,12 +36212,12 @@
       if (unit) unit.className = "ci-unit";
       read.appendChild(val);
     }
-    var word2 = src.querySelector(".peek-word, .subject-say, .subject-verdict");
+    var word2 = src.querySelector(".peek-word");
     if (!word2 || !word2.textContent.trim()) word2 = val && val.querySelector(".tag") || document.createElement("span");
     word2.classList.add("ci-word");
     read.appendChild(word2);
     body.appendChild(read);
-    var R = ROSTER_BY[open], mini = R && R.miniSel ? src.querySelector(R.miniSel) : peekArt(src);
+    var mini = peekArt(src);
     if (mini) {
       var slot = document.createElement("div");
       slot.className = "ci-mini";
@@ -36620,11 +36236,16 @@
     item.appendChild(body);
     return item;
   }
+  function tempWord(r) {
+    return (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
+  }
+  function gdpFigure(r) {
+    return fmtSigned(r.gdpLatest.v, 1) + "%";
+  }
   function tempPeek(r, value, cpi) {
-    var word2 = (r.cpiHot ? "Hot" : r.cpiCold ? "Cold" : "Warm") + " · " + (r.cpiDirection === "rising" ? "heating" : r.cpiDirection === "falling" ? "cooling" : "steady");
     return peekOf("sheet-metric-temp", {
       value: value,
-      word: word2,
+      word: tempWord(r),
       state: heatStep(r.cpiNow),
       cols: cpi.map(function(d) {
         return d.v;
@@ -36636,7 +36257,7 @@
   }
   function gdpPeek(r, gq) {
     return peekOf("sheet-metric-gdp", {
-      value: fmtSigned(r.gdpLatest.v, 1) + "%",
+      value: gdpFigure(r),
       word: growthShownCap(r),
       state: phaseClass(r.regime),
       cols: gq.map(function(d) {
@@ -37031,13 +36652,6 @@
       cards.push(hiCard("Rise, Peak, Withdraw", "", "That shape is progesterone’s: it rises through the second half of a cycle, peaks, and then falls — and it is the FALLING that starts the shedding, not the height. Read the chart for the withdrawal rather than the level, because the cuts come after the top, never before it."));
       ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' + cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + "</div></section>";
     }
-    put("subj-value-hormones", fedFundsRange() + '<span class="unit">Fed funds target</span><span class="tag norm">' + policyDirection() + "</span>");
-    var rowSay = byId("subj-say-hormones");
-    if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d) {
-      return d.v;
-    }), function() {
-      return "ff-col";
-    }, 0, true);
   }
   function renderVolatility() {
     HIST_NOTE["fear-range"] = volatilityDetailHtml;
@@ -37114,25 +36728,6 @@
     var shapeTxt = r == null ? "No reading today — the three-month leg is missing, so the shape cannot be computed." : "The next month is priced at " + v.toFixed(2) + " against " + now.vix3mClose.toFixed(2) + " three months out, a ratio of " + r.toFixed(2) + ". " + (r >= 1 ? "Inverted: insuring the next month costs more than insuring the next quarter, which is what a market braced for something immediate looks like — and inversions cluster near bottoms." : "That is the ordinary shape, the far month dearer than the near one; the further below 1.00, the less the market is paying to be wrong about the weeks just ahead.");
     hl.innerHTML = highlightsHtml([ lede2, hiCard("Where It Sits" + expandBtn(factsFrom(now.vixRow.note)), stateOf(tag), nowTxt), hiCard("Against the Record", "", recTxt), hiCard("What the Shape Is Saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt) ]);
   }
-  function renderSubjectRows() {
-    function spark(key, html) {
-      put("subj-spark-" + key, html || "");
-    }
-    function say2(key, text) {
-      var el = byId("subj-say-" + key);
-      if (el) el.textContent = text || "";
-    }
-    function set(key, valueHtml, contextHtml) {
-      put("subj-value-" + key, valueHtml);
-      var c = byIdMaybe("subj-ctx-" + key);
-      if (c) c.innerHTML = contextHtml || "";
-    }
-    put("subj-ring-sentiment", volatilityRing());
-    var volTag = volatilityTag();
-    set("sentiment", now.vixRow.flagValue + '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + "</span>", "");
-    say2("sentiment", "");
-    spark("sentiment", "");
-  }
   function setTopbar(title, onBack) {
     need("topbar-title").textContent = title;
     ui.topbarBack = onBack || null;
@@ -37152,8 +36747,6 @@
     renderHormones();
     GYN.step("renderVolatility", renderVolatility, "build");
     renderVolatility();
-    GYN.step("renderSubjectRows", renderSubjectRows, "build");
-    renderSubjectRows();
     cycleViewEl = byId("cycle-view");
     need("topbar-back").addEventListener("click", function() {
       if (ui.topbarBack) ui.topbarBack();
@@ -37192,18 +36785,345 @@
     if (!n) throw new Error("a peek drew nothing");
     return n;
   }
-  function rosterRows() {
-    return readingRoster().byId;
+  var BUFFETT_2001 = [ {
+    t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
+    u: "https://fortune.com/2001/12/10/warren-buffett-stock-market/"
+  }, {
+    t: "Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
+    u: "https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf"
+  } ];
+  function midOf(R) {
+    if (R.mid == null) throw new Error(R.id + " has no middle line");
+    return R.mid;
   }
-  function kT(k) {
-    var s = String(k), m = /-(\d\d)/.exec(s), q = /Q([1-4])/.exec(s);
-    return +s.slice(0, 4) + (m ? (+m[1] - 1) / 12 : q ? (+q[1] - 1) / 4 : 0);
+  function meterWord(m) {
+    return meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
   }
-  function upTo(list, k) {
-    var t = kT(k) + 1e-6;
-    return list.filter(function(d) {
-      return d.v != null && kT(d.k) <= t;
+  function splitPages() {
+    var tenth = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    return {
+      "sheet-metric-buffett": {
+        after: "sheet-metric-valuation",
+        row: fileRow("buffett"),
+        line: "Buffett’s line",
+        fmt: function(v) {
+          return Math.round(v) + "%";
+        },
+        src: BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
+        band: "The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
+        insight: buffettInsight
+      },
+      "sheet-metric-debt": {
+        after: "sheet-metric-buffett",
+        row: labRow("sheet-metric-debt"),
+        line: "50-year average",
+        fmt: tenth,
+        tick: function(v) {
+          return Math.round(v) + "%";
+        },
+        src: longCycleSrc.slice(0, 3),
+        insight: debtInsight
+      },
+      "sheet-metric-interest": {
+        after: "sheet-metric-debt",
+        row: labRow("sheet-metric-interest"),
+        line: "50-year average",
+        fmt: tenth,
+        src: [ longCycleSrc[0], longCycleSrc[4] ],
+        insight: interestInsight
+      },
+      "sheet-sign-productivity-growth": productivityPage(tenth),
+      "sheet-sign-desire": desirePage(),
+      "sheet-sign-premium": premiumPage(),
+      "sheet-sign-confidence": confidencePage(),
+      "sheet-sign-market": marketPage()
+    };
+  }
+  function confidencePage() {
+    var r = confidenceReading;
+    return {
+      goodAbove: true,
+      line: "OECD average",
+      fmt: function(v) {
+        return v.toFixed(1);
+      },
+      tick: function(v) {
+        return String(Math.round(v));
+      },
+      src: CONFIDENCE_SRC,
+      insight: confidenceInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function desirePage() {
+    var r = desireReading, pct2 = function(v) {
+      return v ? fmtSigned(v, 1) + "%" : "0%";
+    };
+    return {
+      goodAbove: true,
+      line: "No change",
+      fmt: pct2,
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: DESIRE_SRC,
+      insight: desireInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function premiumPage() {
+    var r = premiumReading, pct2 = function(v) {
+      return v ? fmtSigned(v, 1) + "%" : "0%";
+    };
+    return {
+      goodAbove: true,
+      line: "No premium",
+      fmt: pct2,
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      src: PREMIUM_SRC,
+      insight: premiumInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function marketPage() {
+    var r = marketReading, pct2 = function(v) {
+      return v ? fmtSigned(v, 1) + "%" : "0%";
+    };
+    return {
+      goodAbove: true,
+      line: "No change",
+      fmt: pct2,
+      tick: function(v) {
+        return Math.round(v) + "%";
+      },
+      at: function(d) {
+        return String(d.y);
+      },
+      src: sp500AnnualReturnSource,
+      insight: marketInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function productivityPage(tenth) {
+    var r = productivityReading;
+    return {
+      goodAbove: true,
+      line: "slowdown average",
+      fmt: tenth,
+      src: PRODUCTIVITY_SRC,
+      insight: productivityInsight,
+      info: r.info,
+      row: {
+        sub: r.metricSub,
+        note: r.caption,
+        meter: r.meter,
+        flagValue: r.metric,
+        flagState: r.tag.state
+      }
+    };
+  }
+  function splitRow(R) {
+    var P = splitPages()[R.id];
+    return P ? P.row : labRow(R.id);
+  }
+  function splitSpec(R, P) {
+    var s = Object.create(R);
+    for (var k in P) s[k] = P[k];
+    s.series = R.hist.s;
+    s.midLabel = P.line + ", " + (P.tick || P.fmt)(midOf(R));
+    return s;
+  }
+  function splitInfo(s) {
+    return s.info ? s.info() : "<h4>" + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
+  }
+  function periodTicks(vals) {
+    if (!vals.length || !(vals[0].q || vals[0].m)) return null;
+    var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
+    return function(d) {
+      var k = d.q || d.m || "";
+      return /(Q1|-01)$/.test(k) && ys.indexOf(yearOf(d)) !== -1 ? "’" + k.slice(2, 4) : "";
+    };
+  }
+  function periodOfSeries(d) {
+    return d.m ? "month" : d.q ? "quarter" : "year";
+  }
+  function drawSplit(s, W) {
+    var id = s.id, cyc = pageCycle(id);
+    var span = cyc ? cycleSlice(s.series, cyc) : null;
+    var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
+    var tr = trendOf(vals.map(function(d) {
+      return d.v;
+    }), "points", periodOfSeries(s.series[0]));
+    var chart = function(w) {
+      return divergeChart({
+        vals: vals,
+        mid: s.mid,
+        midLabel: s.midLabel,
+        fmt: s.fmt,
+        tickFmt: s.tick || s.fmt,
+        fit: tr.fit,
+        goodAbove: s.goodAbove,
+        xLabel: periodTicks(vals),
+        at: s.at || function(d) {
+          return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y;
+        },
+        alt: s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view"
+      }, w);
+    };
+    put(id + "-chart", histBar(histControls(id, {
+      series: s.series
+    })) + '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) + histTip(id + "-tip") + "</div>");
+    var box = document.querySelector("#" + id + "-chart .page-chart");
+    refitHistory(box, chart);
+    attachHistory(box, id + "-tip", "divergeChart");
+  }
+  function mountSplit(s) {
+    if (!document.getElementById(s.id)) {
+      var sheet = metricSheet(s.id);
+      sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill(s.timing) + '</div><div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
+      var after = s.after ? byId(s.after) : null;
+      if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
+    }
+    histNote(s.id, splitInfo(s));
+    sheetRenderers[s.id] = function(W) {
+      drawSplit(s, W);
+    };
+    put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
+    addSources(s.src);
+  }
+  function mountSplits() {
+    var pages = splitPages();
+    ROSTER.forEach(function(R) {
+      if (pages[R.id]) mountSplit(splitSpec(R, pages[R.id]));
     });
+    if (ROSTER.some(function(R) {
+      return R.door === "split" && !pages[R.id];
+    })) addSources(longCycleSrc);
+  }
+  function buffettInsight(s) {
+    var now2 = metered(s.row.meter), bv = buffettHistory.map(function(d) {
+      return d.v;
+    });
+    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1), bDot = maxIn(buffettHistory, 2e3, 2007);
+    var richer = bv.filter(function(v) {
+      return v > now2;
+    }).length;
+    var above = buffettHistory.filter(function(d) {
+      return d.v > s.mid;
+    });
+    return [ lede("The price of the whole stock market set against the size of the economy that has to earn it. A reading far above the line is a body valued for more than it produces."), hiCard("Where It Sits", s.row.flagState || "serious", richer === 0 && bPrev && bDot ? "At " + Math.round(now2) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(now2) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."), hiCard("Against Buffett’s Line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length + " quarters, the last time below it in " + (buffettHistory.filter(function(d) {
+      return d.v <= s.mid;
+    }).pop() || {}).q + ".") ];
+  }
+  function debtInsight(s) {
+    var now2 = metered(s.row.meter), rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
+    if (!rec) throw new Error("no gross debt record");
+    var under = grossDebtQuarterly.filter(function(d) {
+      return d.v <= s.mid;
+    }).pop();
+    var era = grossDebtQuarterly.filter(function(d) {
+      return yearOf(d) === currentEra.from;
+    })[0];
+    var cards = [ lede("What the government owes, measured against what the whole economy makes in a year. The larger the debt, the less room the body has to borrow when something goes wrong."), hiCard("Against the Record", s.row.flagState || "serious", "At " + now2.toFixed(1) + "% of GDP, " + (now2 >= rec.v ? "the highest reading since the quarterly series began in 1966." : (rec.v - now2).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")), hiCard("Against the 70% Line", "warning", under ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.") ];
+    if (era) cards.push(hiCard("Since This Cycle Opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) + "% (" + era.q + "); the change since is " + fmtSigned(now2 - era.v, 1) + " points."));
+    return cards;
+  }
+  function productivityInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var hi = h.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    }), lo = h.reduce(function(a, d) {
+      return d.v < a.v ? d : a;
+    });
+    return [ lede("Output per hour worked, against the same quarter a year earlier. An economy can grow by working more hours or by getting more from each one, and only the second kind compounds."), hiCard("The Latest Quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " + (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."), hiCard("Against the Record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " + fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.") ];
+  }
+  function confidenceInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var side2 = function(d) {
+      return d.v >= s.mid;
+    }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    return [ lede("How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " + (side2(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " + confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.") ];
+  }
+  function desireInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var side2 = function(d) {
+      return d.v >= s.mid;
+    }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
+  }
+  function premiumInsight(s) {
+    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
+      return d.v >= s.mid;
+    }).length;
+    var side2 = function(d) {
+      return d.v >= s.mid;
+    }, cross = null;
+    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
+    var thinner = h.filter(function(d) {
+      return d.v < last.v;
+    }).length;
+    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
+  }
+  var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
+  function marketInsight(s) {
+    var h = s.series, last = h[h.length - 1], bull = h.filter(function(d) {
+      return d.v >= 0;
+    }), r = marketReading;
+    var bear = h.filter(function(d) {
+      return d.v < 0;
+    }), lastBear = bear[bear.length - 1], run = 0;
+    for (var i = h.length - 1; i >= 0 && h[i].v >= 0; i--) run++;
+    return [ lede("What the whole stock market returned each year, dividends included. A year above the line is a bull year and one below it a bear year, the same years the dial’s inner band colours."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " + (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") + (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")), hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " + bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ];
+  }
+  function interestInsight(s) {
+    var now2 = metered(s.row.meter), hist = fiscalHistory.interest, last = hist[hist.length - 1];
+    var rec = hist.reduce(function(a, d) {
+      return d.v > a.v ? d : a;
+    });
+    var above = hist.filter(function(d) {
+      return d.v > s.mid;
+    }).length;
+    return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has already used, paid again every year."), hiCard("Against the Record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now2.toFixed(1) + "% " + (now2 > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The Last Actual Year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
   }
   function eraFig(today) {
     var tok = /[+\-\u2212]?\d[\d,]*(?:\.(\d+))?/.exec(today) || [ "", "" ];
@@ -37217,61 +37137,62 @@
       return pre + one2(x) + (y != null ? "/" + one2(y) : suf);
     };
   }
-  function cardFace(id) {
-    var item = document.querySelector('#today-analysis .cat-item[data-open="' + id + '"]'), val = item && item.querySelector(".ci-value");
-    if (!item || !val) throw new Error("the reading " + id + " has no card");
-    var box = document.createElement("span");
-    box.innerHTML = item.__today ? item.__today.value : val.innerHTML;
-    var unit = box.querySelector(".ci-unit"), lead2 = box.firstChild;
+  var OWN_FACE = {
+    "sheet-metric-temp": function() {
+      return [ needInd("sheet-metric-temp").metric, tempWord(nowModel.reading) ];
+    },
+    "sheet-metric-gdp": function() {
+      return [ gdpFigure(nowModel.reading), growthShownCap(nowModel.reading) ];
+    },
+    "sheet-metric-valuation": function() {
+      return [ fileRow("cape").flagValue, (now.valuation.tag || {
+        text: ""
+      }).text ];
+    },
+    "sheet-metric-households": function() {
+      return [ dsrNow.toFixed(1) + "/" + savNow.toFixed(1), householdsNow.word ];
+    },
+    "sheet-sign-hormones": function() {
+      return [ fedFundsRange(), policyDirection() ];
+    },
+    "sheet-sign-pressure": function() {
+      var y = curveAt("10Y");
+      return [ y == null ? "—" : y.toFixed(2) + "%", "" ];
+    },
+    "sheet-sign-sentiment": function() {
+      return [ now.vixRow.flagValue, volatilityTag().text ];
+    }
+  };
+  function todayFace(R) {
+    var own = OWN_FACE[R.id];
+    if (own) {
+      var f = own();
+      return {
+        text: f[0],
+        unit: R.cardUnit || "",
+        word: f[1]
+      };
+    }
+    if (R.door === "split") {
+      var row = splitRow(R);
+      return {
+        text: row.flagValue,
+        unit: R.cardUnit || "",
+        word: meterWord(row.meter)
+      };
+    }
+    var ind = needInd(R.id), sub = String(ind.metricSub || "").trim(), m = DATED_UNIT.exec(sub);
     return {
-      text: lead2 && lead2.nodeType === 3 ? (lead2.nodeValue || "").trim() : "",
-      unit: unit ? (unit.textContent || "").trim() : ""
+      text: ind.metric,
+      unit: R.door === "pair" ? R.cardUnit || "" : m ? m[1] : sub,
+      word: ind.tag ? ind.tag.text : ""
     };
   }
-  function cardValue(R) {
-    var face = cardFace(R.id), m = /[+\-\u2212]?\d[\d,]*(?:\.\d+)?/.exec(face.text);
-    if (!m) throw new Error("the card " + R.id + " shows no figure");
+  function todayValue(R) {
+    var face = todayFace(R), m = /[+\-\u2212]?\d[\d,]*(?:\.\d+)?/.exec(face.text);
+    if (!m) throw new Error("the reading " + R.id + " shows no figure");
     var v = +m[0].replace("−", "-").replace(/,/g, "");
     return R.flip ? /surplus/.test(face.unit) ? Math.abs(v) : -Math.abs(v) : v;
-  }
-  function rosterRow(R) {
-    var r = Object.create(R), seen = keyed(R.hist).filter(function(d) {
-      return d.v != null;
-    });
-    var sorted = seen.map(function(d) {
-      return d.v;
-    }).sort(function(a, b) {
-      return a - b;
-    });
-    r.place = function(v) {
-      var lo = 0, hi = sorted.length;
-      while (lo < hi) {
-        var mid = lo + hi >> 1;
-        if (sorted[mid] < v) lo = mid + 1; else hi = mid;
-      }
-      return sorted.length > 1 ? 100 * lo / (sorted.length - 1) : 50;
-    };
-    r.first = seen[0];
-    r.now = seen[seen.length - 1];
-    r.seen = seen;
-    if (R.pair) r.pair = keyed(R.pair);
-    if (R.peek) r.peek = r.pair;
-    return r;
-  }
-  var __roster = null;
-  function readingRoster() {
-    if (__roster) return __roster;
-    var all = ROSTER.filter(function(R) {
-      return R.hist;
-    }).map(rosterRow);
-    all.byId = {};
-    all.forEach(function(r) {
-      all.byId[r.id] = r;
-    });
-    return __roster = all;
-  }
-  function prettyK(r, k) {
-    return r.pre ? r.pre + k : prettyKey(k);
   }
   function monthIdx(k) {
     return Number(k.slice(0, 4)) * 12 + Number(k.slice(5, 7)) - 1;
@@ -37533,8 +37454,8 @@
     var spell = function(n) {
       return NUM2[n] || String(n);
     };
-    var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
-    var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
+    var lead = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
+    var txt = lead + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
       return absGap(r).toFixed(1);
     }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
     if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
@@ -37660,13 +37581,6 @@
   function catInsight(key) {
     return INSIGHT[key] ? INSIGHT[key]() : "";
   }
-  function insightRow(key) {
-    return '<div class="cat-more">' + moreRow(catInsight(key)) + "</div>";
-  }
-  function replaceInsight(c) {
-    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
-    if (box) box.outerHTML = insightRow(c.key);
-  }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
@@ -37765,7 +37679,7 @@
     };
   }
   function cardPrint(R) {
-    var g = eraFig(cardFace(R.id).text), pc = R.pair ? "%" : "", f = function(v) {
+    var g = eraFig(todayFace(R).text), pc = R.pair ? "%" : "", f = function(v) {
       return g(v) + pc;
     };
     if (!R.flip) return {
@@ -37796,22 +37710,30 @@
       return !!marketCycles[i].ongoing;
     }, p = cardPrint(R);
     var per = seen.map(function(vs, i) {
-      return !vs.length ? null : open(i) ? cardValue(R) : vs.reduce(function(a, b) {
+      return !vs.length ? null : open(i) ? todayValue(R) : vs.reduce(function(a, b) {
         return a + b;
       }, 0) / vs.length;
     });
+    var pin = function(n) {
+      return n && R.normal ? {
+        lo: R.normal.lo,
+        hi: R.normal.hi,
+        fence: n.fence,
+        floor: n.floor
+      } : n;
+    };
     return {
       id: R.id,
       name: R.name,
       cat: R.cat,
       good: R.good,
       per: per,
-      now: readingsNorm(seen),
+      now: pin(readingsNorm(seen)),
       print: p.print,
       span: p.span,
-      norm: normOf(per.slice(0, closedCount()).filter(function(v) {
+      norm: pin(normOf(per.slice(0, closedCount()).filter(function(v) {
         return v != null;
-      }))
+      })))
     };
   }
   var labCache = null;
@@ -37885,7 +37807,7 @@
     return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"';
   }
   function cardWord(l, i) {
-    var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
+    var R = ROSTER_BY[l.id], t = R && marketCycles[i].ongoing ? todayFace(R).word : "";
     return t ? t + " · " : "";
   }
   function labItem(l, i) {
@@ -38106,11 +38028,19 @@
       return listWords(by[k]) + " on " + word(k);
     }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
   }
+  function pinnedFacts() {
+    return ROSTER.filter(function(R) {
+      return R.normal;
+    }).map(function(R) {
+      var b = R.normal;
+      return "<b>" + R.name + "</b>’s Normal is " + b.lo + "–" + b.hi + "%, " + b.why + "; its Risk still lies past the fence of its own record.";
+    }).join(" ");
+  }
   function methodFacts() {
     return [ "<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it." ];
   }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
@@ -38126,8 +38056,8 @@
     var c = " stat-row" + (cls ? " " + cls : "");
     return page2 ? scoreTile("button", c + " details-link", ' type="button" data-detail-idx="' + detailSlot(page2) + '"', inner) : scoreTile("span", c, "", inner);
   }
-  function statBody(lead2, main, side2) {
-    return lead2 + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
+  function statBody(lead, main, side2) {
+    return lead + '<span class="stat-main">' + main + "</span>" + (side2 == null ? "" : '<span class="stat-side">' + side2 + CHEV + "</span>");
   }
   function closedVisits() {
     return visits().slice(0, closedCount());
@@ -38216,7 +38146,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights") + insightsHome(i));
+    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + dxSys("", dxHead(chartSvg(), "Insights", IND_ALL) + insightsHome(i));
   }
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
@@ -38232,8 +38162,9 @@
     narrow(host, id);
   }
   var IND = "sheet-find";
+  var IND_ALL = ' data-open="' + IND + '" data-title="Indicators" data-ind-cat=""';
   function searchDoor(i, j) {
-    return searchShell("button", " lab-door", ' type="button" data-open="' + IND + '" data-title="Indicators" data-ind-cat=""', "<span>Search indicators</span>" + filterTags(HOME_ID, i, j));
+    return searchShell("button", " lab-door", ' type="button"' + IND_ALL, "<span>Search indicators</span>" + filterTags(HOME_ID, i, j));
   }
   function searchShell(tag, cls, attrs, inner) {
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
@@ -38688,9 +38619,9 @@
     }
     return dxSys(" dx-years", dxHead(calendarSvg(), "Year by Year") + rows.reverse().join(""));
   }
-  function yearRow(year, lead2, sheet, foot) {
+  function yearRow(year, lead, sheet, foot) {
     var tag = sheet != null ? "button" : "div";
-    return "<" + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead2 ? '<span class="dx-year-lead">' + lead2 + "</span>" : "") + "</span>" + (sheet != null ? CHEV : "") + (foot || "") + "</" + tag + ">";
+    return "<" + tag + ' class="dx-year' + (sheet != null ? ' details-link" type="button" data-detail-idx="' + detailSlot(sheet) : "") + '"><span class="dx-year-n">' + year + '</span><span class="dx-year-v">' + (lead ? '<span class="dx-year-lead">' + lead + "</span>" : "") + "</span>" + (sheet != null ? CHEV : "") + (foot || "") + "</" + tag + ">";
   }
   function yearStrip(inYear, y, ytd) {
     var runs = seasonRuns(inYear);
@@ -39136,17 +39067,17 @@
       var m = cycleModel(cyc), segs = m.track.filter(function(seg) {
         return !seg.isNow && seg.to > seg.from;
       }), runs = seasonRuns(segs);
-      var lead2 = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead2 + segs.length;
+      var lead = segs.length ? Math.round(segs[0].from * 4) : 0, done = lead + segs.length;
       var span = Math.max(spanOverride || 0, typicalCycleYears * 4, cyc.ongoing ? Math.ceil(m.elapsedYears * 4) : done);
       var ahead = Math.max(0, span - done);
-      var pills = stripTrack(lead2, "no season read before " + (lead2 ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripTrack(ahead, aheadWord(cyc));
+      var pills = stripTrack(lead, "no season read before " + (lead ? qLabel(segs[0].q) : "")) + seasonPills(runs, false) + stripTrack(ahead, aheadWord(cyc));
       var lastSeg = segs[segs.length - 1];
       var foot = cyc.ongoing ? "Year <b>" + m.yearIndex + "</b> · now <b>" + wheelMeta[m.season].name + "</b>" : "<b>" + Math.round(m.elapsedYears) + " years</b> · ended in <b>" + wheelMeta[lastSeg.season].name + "</b>";
       return {
         span: span,
         done: done,
         years: cyc.ongoing ? m.yearIndex : Math.round(m.elapsedYears),
-        strip: strip("", (lead2 ? "No season " + lead2 + " quarters, " : "") + seasonRunsLabel(runs), pills),
+        strip: strip("", (lead ? "No season " + lead + " quarters, " : "") + seasonRunsLabel(runs), pills),
         foot: foot
       };
     }();
@@ -39329,115 +39260,12 @@
   }
   var taHome = null;
   var modeHome = null;
-  function eraReading(r, era) {
-    var from = era.from, to = era.to || calendarTodayY;
-    var span = r.seen.filter(function(d) {
-      var y = +d.k.slice(0, 4);
-      return y >= from && y <= to;
-    });
-    if (!span.length) return {
-      none: true,
-      word: "Not measured before " + prettyK(r, r.first.k)
-    };
-    var end = span[span.length - 1], sign = r.flip ? -1 : 1, vs = span.map(function(d) {
-      return sign * d.v;
-    });
-    var second = r.pair ? upTo(r.pair, end.k).pop() : null;
-    return {
-      row: r,
-      v: sign * end.v,
-      raw: end.v,
-      lo: Math.min.apply(null, vs),
-      hi: Math.max.apply(null, vs),
-      when: prettyK(r, end.k),
-      second: second && kT(second.k) >= from ? second.v : null,
-      peek: upTo(r.peek || r.seen, end.k).map(function(d) {
-        return sign * d.v;
-      })
-    };
-  }
-  function eraValue(val, t, r, e) {
-    val.innerHTML = t.value;
-    var unit = val.querySelector(".ci-unit"), surplus = r.flip && e.v < 0;
-    lead(val).nodeValue = figOf(t)(surplus ? -e.v : e.v, r.pair ? e.second : null);
-    if (unit && (r.eraUnit || surplus)) unit.textContent = surplus ? "surplus, of GDP" : r.eraUnit;
-  }
-  function eraRange(t, r, e) {
-    if (e.lo === e.hi) return "Flat all cycle";
-    var f = figOf(t), pc = r.pair ? "%" : "";
-    return (r.pair ? "Paid " : "") + f(e.lo) + pc + " to " + f(e.hi) + pc + " over the cycle";
-  }
-  function eraMini(t, r, e) {
-    if (r.ring && /vital-ring/.test(t.mini)) return vitalRingSvg(r.ring(e.v), "accent", r.name + " at " + e.v.toFixed(2));
-    if (r.pulse && /pulsepeek/.test(t.mini)) return pulsePeek(e.v, r.pulse);
-    return colPeek(e.peek, function() {
-      return "era-col";
-    }, r.mid, r.rule);
-  }
-  function lead(val) {
-    var n = val.firstChild;
-    if (!n) throw new Error("a card's value is empty");
-    return n;
-  }
-  function figOf(t) {
-    if (t.text == null) throw new Error("a card had no figure text");
-    return eraFig(t.text);
-  }
-  function part(item, sel) {
-    var n = item.querySelector(sel);
-    if (!n) throw new Error("the card " + item.getAttribute("data-open") + " has no " + sel);
-    return n;
-  }
   function parentOf(n) {
     var p = n.parentNode;
     if (!p) throw new Error("a node sits outside the page");
     return p;
   }
-  function eraCard(item, r, era) {
-    var val = part(item, ".ci-value"), when = part(item, ".ci-when"), mini = item.querySelector(".ci-mini");
-    var word2 = item.querySelector(".ci-word");
-    var t = item.__today || (item.__today = {
-      value: val.innerHTML,
-      text: lead(val).nodeValue,
-      word: word2 ? word2.innerHTML : null,
-      when: when.textContent,
-      mini: mini ? mini.innerHTML : ""
-    });
-    if (!era) {
-      val.innerHTML = t.value;
-      when.textContent = t.when;
-      item.__today = null;
-      if (mini) mini.innerHTML = t.mini;
-      if (word2 && t.word == null) word2.remove(); else if (word2 && t.word != null) word2.innerHTML = t.word;
-      return;
-    }
-    var e = r ? eraReading(r, era) : {
-      none: true,
-      word: "No history in the app"
-    };
-    if (!word2) {
-      word2 = document.createElement("span");
-      word2.className = "ci-word";
-      parentOf(val).appendChild(word2);
-    }
-    when.textContent = e.none ? "" : e.when;
-    if (mini) mini.innerHTML = e.none ? "" : eraMini(t, e.row, e);
-    if (e.none) {
-      val.innerHTML = "—";
-      word2.textContent = e.word;
-      return;
-    }
-    eraValue(val, t, e.row, e);
-    word2.textContent = eraRange(t, e.row, e);
-  }
-  function eraCards(era) {
-    var rows = rosterRows();
-    Array.prototype.forEach.call(document.querySelectorAll(".cat-sheet .cat-item[data-open]"), function(item) {
-      eraCard(item, rows[item.getAttribute("data-preview") || item.getAttribute("data-open") || ""], era);
-    });
-  }
   function eraShow(era) {
-    eraCards(era);
     if (era && !modeHome) {
       modeHome = {};
       for (var k in page.mode) modeHome[k] = page.mode[k];
@@ -39447,7 +39275,6 @@
       page.mode[id] = era ? "cycles" : modeHome ? modeHome[id] : page.mode[id];
     }
     if (!era) modeHome = null;
-    CATEGORIES.forEach(replaceInsight);
   }
   function enterEra(era, page2) {
     var ta = need("today-analysis");
@@ -40013,538 +39840,13 @@
     tempHighlights(ctx.tempInd, ctx.r);
     gdpHighlights(ctx.r, ctx.gq);
   }
-  var BUFFETT_2001 = [ {
-    t: "Warren Buffett — Warren Buffett on the Stock Market, Fortune, Dec 10 2001 (the 70–80% line)",
-    u: "https://fortune.com/2001/12/10/warren-buffett-stock-market/"
-  }, {
-    t: "Berkshire Hathaway — the same Fortune article, Dec 10 2001 (PDF)",
-    u: "https://www.berkshirehathaway.com/2001ar/FortuneMagazine%20DEC%2010%202001.pdf"
-  } ];
-  function midOf(R) {
-    if (R.mid == null) throw new Error(R.id + " has no middle line");
-    return R.mid;
-  }
-  function meterWord(m) {
-    return meterFlagged(m) ? m.ends && m.ends.high || "High" : m.ends && m.ends.zone || "In range";
-  }
-  function splitPages() {
-    var tenth = function(v) {
-      return v.toFixed(1) + "%";
-    };
-    return {
-      "sheet-metric-buffett": {
-        after: "sheet-metric-valuation",
-        row: fileRow("buffett"),
-        line: "Buffett’s line",
-        fmt: function(v) {
-          return Math.round(v) + "%";
-        },
-        src: BUFFETT_2001.concat(now.valuation.src.slice(0, 2)),
-        band: "The line at 80% is Buffett’s own: “If the percentage relationship falls to the 70% or 80% area, buying stocks is likely to work very well for you” (Fortune, Dec 10 2001).",
-        insight: buffettInsight
-      },
-      "sheet-metric-debt": {
-        after: "sheet-metric-buffett",
-        row: labRow("sheet-metric-debt"),
-        line: "50-year average",
-        fmt: tenth,
-        tick: function(v) {
-          return Math.round(v) + "%";
-        },
-        src: longCycleSrc.slice(0, 3),
-        insight: debtInsight
-      },
-      "sheet-metric-interest": {
-        after: "sheet-metric-debt",
-        row: labRow("sheet-metric-interest"),
-        line: "50-year average",
-        fmt: tenth,
-        src: [ longCycleSrc[0], longCycleSrc[4] ],
-        insight: interestInsight
-      },
-      "sheet-sign-productivity-growth": productivityPage(tenth),
-      "sheet-sign-desire": desirePage(),
-      "sheet-sign-premium": premiumPage(),
-      "sheet-sign-confidence": confidencePage(),
-      "sheet-sign-market": marketPage(),
-      "sheet-sign-real-rate": realRatePage()
-    };
-  }
-  function confidencePage() {
-    var r = confidenceReading;
-    return {
-      goodAbove: true,
-      line: "OECD average",
-      fmt: function(v) {
-        return v.toFixed(1);
-      },
-      tick: function(v) {
-        return String(Math.round(v));
-      },
-      src: CONFIDENCE_SRC,
-      insight: confidenceInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function desirePage() {
-    var r = desireReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
-      line: "No change",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
-      src: DESIRE_SRC,
-      insight: desireInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function premiumPage() {
-    var r = premiumReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
-      line: "No premium",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
-      src: PREMIUM_SRC,
-      insight: premiumInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function realRatePage() {
-    var r = realRateReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      line: "Neutral rate",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
-      src: NEUTRAL_SRC,
-      insight: realRateInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function marketPage() {
-    var r = marketReading, pct2 = function(v) {
-      return v ? fmtSigned(v, 1) + "%" : "0%";
-    };
-    return {
-      goodAbove: true,
-      line: "No change",
-      fmt: pct2,
-      tick: function(v) {
-        return Math.round(v) + "%";
-      },
-      at: function(d) {
-        return String(d.y);
-      },
-      src: sp500AnnualReturnSource,
-      insight: marketInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function productivityPage(tenth) {
-    var r = productivityReading;
-    return {
-      goodAbove: true,
-      line: "slowdown average",
-      fmt: tenth,
-      src: PRODUCTIVITY_SRC,
-      insight: productivityInsight,
-      info: r.info,
-      row: {
-        sub: r.metricSub,
-        note: r.caption,
-        meter: r.meter,
-        flagValue: r.metric,
-        flagState: r.tag.state
-      }
-    };
-  }
-  function splitSpec(R, P) {
-    var s = Object.create(R);
-    for (var k in P) s[k] = P[k];
-    s.series = R.hist.s;
-    s.midLabel = P.line + ", " + (P.tick || P.fmt)(midOf(R));
-    return s;
-  }
-  function splitInfo(s) {
-    return s.info ? s.info() : "<h4>" + titleCase(s.name) + '</h4><div class="marker-sub">' + s.row.sub + "</div>" + factsFrom(s.row.note) + (s.band ? "<p>" + s.band + "</p>" : "") + srcBlock(s.src);
-  }
-  function periodTicks(vals) {
-    if (!vals.length || !(vals[0].q || vals[0].m)) return null;
-    var ys = windowYears(yearOf(vals[0]), yearOf(vals[vals.length - 1]), 5);
-    return function(d) {
-      var k = d.q || d.m || "";
-      return /(Q1|-01)$/.test(k) && ys.indexOf(yearOf(d)) !== -1 ? "’" + k.slice(2, 4) : "";
-    };
-  }
-  function periodOfSeries(d) {
-    return d.m ? "month" : d.q ? "quarter" : "year";
-  }
-  function drawSplit(s, W) {
-    var id = s.id, cyc = pageCycle(id);
-    var span = cyc ? cycleSlice(s.series, cyc) : null;
-    var vals = span ? s.series.slice(span[0], span[1]) : timelineWindow(s.series, page.range[id]);
-    var tr = trendOf(vals.map(function(d) {
-      return d.v;
-    }), "points", periodOfSeries(s.series[0]));
-    var chart = function(w) {
-      return divergeChart({
-        vals: vals,
-        mid: s.mid,
-        midLabel: s.midLabel,
-        fmt: s.fmt,
-        tickFmt: s.tick || s.fmt,
-        fit: tr.fit,
-        goodAbove: s.goodAbove,
-        xLabel: periodTicks(vals),
-        at: s.at || function(d) {
-          return d.m ? atMonth(d) : d.q ? qPretty(d.q) : "FY" + d.y;
-        },
-        alt: s.name + " against " + s.midLabel + ", with the fitted trend across the readings in view"
-      }, w);
-    };
-    put(id + "-chart", histBar(histControls(id, {
-      series: s.series
-    })) + '<div class="page-chart">' + histHead(id) + chart(W) + trendPill(tr, null, true) + histTip(id + "-tip") + "</div>");
-    var box = document.querySelector("#" + id + "-chart .page-chart");
-    refitHistory(box, chart);
-    attachHistory(box, id + "-tip", "divergeChart");
-  }
-  function mountSplit(s) {
-    if (!document.getElementById(s.id)) {
-      var sheet = metricSheet(s.id);
-      sheet.innerHTML = '<div id="' + s.id + '-timing">' + timingPill(s.timing) + '</div><div id="' + s.id + '-chart"></div><div id="' + s.id + '-highlights"></div>';
-      var after = s.after ? byId(s.after) : null;
-      if (after && after.parentNode) after.parentNode.insertBefore(sheet, after.nextSibling);
-    }
-    histNote(s.id, splitInfo(s));
-    sheetRenderers[s.id] = function(W) {
-      drawSplit(s, W);
-    };
-    put(s.id + "-highlights", highlightsHtml(s.insight(s), "", ""));
-    addSources(s.src);
-  }
-  function splitPeek(R, row) {
-    return peekOf(R.id, {
-      value: row.flagValue,
-      word: meterWord(row.meter),
-      state: row.flagState || "norm",
-      colBase: R.mid,
-      cols: keyed(R.hist).map(function(d) {
-        return R.flip ? -(d.v || 0) : d.v;
-      }),
-      colClass: function(v) {
-        return "dv-bar " + (v > midOf(R) ? "over" : "under");
-      }
-    });
-  }
-  function indicatorPeeks() {
-    var pages = splitPages(), alone = ROSTER.filter(function(R) {
-      return R.door === "split" && !pages[R.id];
-    });
-    return ROSTER.map(function(R) {
-      var s = pages[R.id] && splitSpec(R, pages[R.id]);
-      if (s) mountSplit(s);
-      return s && R.door === "split" ? splitPeek(R, s.row) : "";
-    }).join("") + alone.map(deficitPeek).join("");
-  }
-  function deficitPeek(R) {
-    addSources(longCycleSrc);
-    return splitPeek(R, labRow(R.id));
-  }
-  function catSheet(id, key) {
-    var sheet = metricSheet(id);
-    sheet.className += " cat-sheet cat-" + key;
-    return sheet;
-  }
-  function groupId(name) {
-    return "sheet-grp-" + name.toLowerCase().replace(/\s+/g, "-");
-  }
-  function groupCard(grp, name) {
-    var first = grp.firstChild, card = first.cloneNode(true);
-    card.setAttribute("data-preview", openOf(first));
-    card.setAttribute("data-open", groupId(name));
-    card.setAttribute("data-title", name);
-    var nm = card.querySelector(".ci-name"), mk = card.querySelector(".peek-mark");
-    if (nm) nm.textContent = name;
-    if (grp.__mark && mk) mk.innerHTML = grp.__mark();
-    return card;
-  }
-  function groupSheet(grp, name, key, items) {
-    items.appendChild(groupCard(grp, name));
-    var sheet = catSheet(groupId(name), key);
-    sheet.innerHTML = catList("");
-    var list = sheet.firstChild;
-    if (list) list.appendChild(grp);
-    need("today-analysis").appendChild(sheet);
-  }
-  function appendPicks(items, picks, key) {
-    picks.forEach(function(p) {
-      if (typeof p === "string") {
-        var el = document.querySelector(p);
-        if (el) items.appendChild(catItem(el, key));
-        return;
-      }
-      var grp = document.createElement("div");
-      grp.className = "cat-group";
-      grp.setAttribute("data-group", p.group);
-      grp.__mark = p.mark;
-      p.picks.forEach(function(sel) {
-        var el2 = document.querySelector(sel);
-        if (el2) grp.appendChild(catItem(el2, key));
-      });
-      if (grp.children.length) groupSheet(grp, p.group, key, items);
-    });
-  }
-  function doorSel(R) {
-    return (R.door === "subject" || R.door === "row" ? ".sign-row" : ".peek") + '[data-open="' + R.id + '"]';
-  }
-  function catPicks(c) {
-    var picks = [];
+  function wearCategories() {
     ROSTER.forEach(function(R) {
-      if (R.cat !== c.key) return;
-      var last = picks[picks.length - 1];
-      if (!R.group) picks.push(doorSel(R)); else if (last && last.group === R.group) last.picks.push(doorSel(R)); else picks.push({
-        group: R.group,
-        mark: GROUP_MARK[R.group],
-        picks: [ doorSel(R) ]
-      });
-    });
-    return picks;
-  }
-  function buffettInsight(s) {
-    var now2 = metered(s.row.meter), bv = buffettHistory.map(function(d) {
-      return d.v;
-    });
-    var bPrev = maxIn(buffettHistory, 1970, currentEra.from - 1), bDot = maxIn(buffettHistory, 2e3, 2007);
-    var richer = bv.filter(function(v) {
-      return v > now2;
-    }).length;
-    var above = buffettHistory.filter(function(d) {
-      return d.v > s.mid;
-    });
-    return [ lede("The price of the whole stock market set against the size of the economy that has to earn it. A reading far above the line is a body valued for more than it produces."), hiCard("Where It Sits", s.row.flagState || "serious", richer === 0 && bPrev && bDot ? "At " + Math.round(now2) + "% of GDP it is the highest of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " — above the previous record of " + Math.round(bPrev.v) + "% (" + bPrev.q + ") and far above the dot-com peak of " + Math.round(bDot.v) + "% (" + bDot.q + ")." : "At " + Math.round(now2) + "% of GDP, " + richer + " of the " + bv.length + " quarters since " + yearOf(buffettHistory[0]) + " ran higher."), hiCard("Against Buffett’s Line", "warning", "It has sat above " + s.mid + "% in " + above.length + " of the " + bv.length + " quarters, the last time below it in " + (buffettHistory.filter(function(d) {
-      return d.v <= s.mid;
-    }).pop() || {}).q + ".") ];
-  }
-  function debtInsight(s) {
-    var now2 = metered(s.row.meter), rec = maxIn(grossDebtQuarterly, 1966, calendarTodayY);
-    if (!rec) throw new Error("no gross debt record");
-    var under = grossDebtQuarterly.filter(function(d) {
-      return d.v <= s.mid;
-    }).pop();
-    var era = grossDebtQuarterly.filter(function(d) {
-      return yearOf(d) === currentEra.from;
-    })[0];
-    var cards = [ lede("What the government owes, measured against what the whole economy makes in a year. The larger the debt, the less room the body has to borrow when something goes wrong."), hiCard("Against the Record", s.row.flagState || "serious", "At " + now2.toFixed(1) + "% of GDP, " + (now2 >= rec.v ? "the highest reading since the quarterly series began in 1966." : (rec.v - now2).toFixed(1) + " points below the record of " + rec.v.toFixed(1) + "% in " + rec.q + ".")), hiCard("Against the 70% Line", "warning", under ? "Last at or under " + s.mid + "% in " + under.q + "; every quarter since has run above it." : "Above " + s.mid + "% throughout.") ];
-    if (era) cards.push(hiCard("Since This Cycle Opened", "serious", "The " + currentEra.name + " began at " + era.v.toFixed(1) + "% (" + era.q + "); the change since is " + fmtSigned(now2 - era.v, 1) + " points."));
-    return cards;
-  }
-  function productivityInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var hi = h.reduce(function(a, d) {
-      return d.v > a.v ? d : a;
-    }), lo = h.reduce(function(a, d) {
-      return d.v < a.v ? d : a;
-    });
-    return [ lede("Output per hour worked, against the same quarter a year earlier. An economy can grow by working more hours or by getting more from each one, and only the second kind compounds."), hiCard("The Latest Quarter", s.row.flagState || "", qPretty(last.q) + " ran at " + fmtSigned(last.v, 1) + "%, " + (last.v >= s.mid ? "above" : "below") + " the " + s.mid.toFixed(1) + "% line."), hiCard("Against the Record", "", "The series runs from " + fmtSigned(lo.v, 1) + "% (" + qPretty(lo.q) + ") to " + fmtSigned(hi.v, 1) + "% (" + qPretty(hi.q) + "); " + above + " of its " + h.length + " quarters sat at or above the line.") ];
-  }
-  function confidenceInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    return [ lede("How households feel about their own finances, jobs and the economy ahead, scaled by the OECD so that 100 is the long-term average. Confident households spend; worried ones save."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + last.v.toFixed(1) + ", " + (side2(last) ? "above" : "below") + " the 100 line" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + confidenceRecord.lo.v.toFixed(1) + " (" + atMonth(confidenceRecord.lo) + ") to " + confidenceRecord.hi.v.toFixed(1) + " (" + atMonth(confidenceRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above 100.") ];
-  }
-  function desireInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    return [ lede("What households spend on the things they could put off: cars, furniture, appliances, electronics. Demand against the same month a year earlier, after prices, so above the line her appetite is high, below it low."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " ran at " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(desireRecord.lo.v, 1) + "% (" + atMonth(desireRecord.lo) + ") to " + fmtSigned(desireRecord.hi.v, 1) + "% (" + atMonth(desireRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above zero.") ];
-  }
-  function premiumInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    var thinner = h.filter(function(d) {
-      return d.v < last.v;
-    }).length;
-    return [ lede("What stocks earn over safe bonds: the earnings yield of the CAPE less the real 10-year Treasury yield. The thinner the premium, the less investors ask for the risk of owning stocks, and the stronger their appetite for it."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "above" : "below") + " zero" + (cross ? ", where it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(premiumRecord.lo.v, 1) + "% (" + atMonth(premiumRecord.lo) + ") to " + fmtSigned(premiumRecord.hi.v, 1) + "% (" + atMonth(premiumRecord.hi) + "); " + thinner + " of its " + h.length + " months ran thinner, and " + above + " sat at or above zero.") ];
-  }
-  function realRateInsight(s) {
-    var h = s.series, last = h[h.length - 1], above = h.filter(function(d) {
-      return d.v >= s.mid;
-    }).length;
-    var side2 = function(d) {
-      return d.v >= s.mid;
-    }, cross = null;
-    for (var i = h.length - 1; i > 0 && !cross; i--) if (side2(h[i]) !== side2(h[i - 1])) cross = h[i];
-    return [ lede("The policy rate after inflation, the rate that actually bites. Above the " + s.mid + "% neutral rate policy is restrictive; below it, accommodative."), hiCard("The Latest Month", s.row.flagState || "", atMonth(last) + " read " + fmtSigned(last.v, 1) + "%, " + (side2(last) ? "restrictive" : "accommodative") + (cross ? ", as it has been since " + atMonth(cross) + "." : ".")), hiCard("Against the Record", "", "The series runs from " + fmtSigned(realRateRecord.lo.v, 1) + "% (" + atMonth(realRateRecord.lo) + ") to " + fmtSigned(realRateRecord.hi.v, 1) + "% (" + atMonth(realRateRecord.hi) + "); " + above + " of its " + h.length + " months sat at or above neutral.") ];
-  }
-  var ORDINAL = [ "", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth" ];
-  function marketInsight(s) {
-    var h = s.series, last = h[h.length - 1], bull = h.filter(function(d) {
-      return d.v >= 0;
-    }), r = marketReading;
-    var bear = h.filter(function(d) {
-      return d.v < 0;
-    }), lastBear = bear[bear.length - 1], run = 0;
-    for (var i = h.length - 1; i >= 0 && h[i].v >= 0; i--) run++;
-    return [ lede("What the whole stock market returned each year, dividends included. A year above the line is a bull year and one below it a bear year, the same years the dial’s inner band colours."), hiCard(last.y + (r.open ? " so far" : ""), s.row.flagState || "", fmtSigned(last.v, 1) + "%, " + (last.v >= 0 ? "a bull year" : "a bear year") + (run > 1 ? ", the " + (ORDINAL[run] || run + "th") + " bull year in a row." : ".") + (lastBear && last.v >= 0 ? " The last bear year was " + lastBear.y + ", at " + fmtSigned(lastBear.v, 1) + "%." : "")), hiCard("Against the Record", "", "Of the " + h.length + " years since " + h[0].y + ", " + bull.length + " were bull years and " + bear.length + " bear years. The best was " + r.hi.y + " at " + fmtSigned(r.hi.v, 1) + "%, the worst " + r.lo.y + " at " + fmtSigned(r.lo.v, 1) + "%.") ];
-  }
-  function interestInsight(s) {
-    var now2 = metered(s.row.meter), hist = fiscalHistory.interest, last = hist[hist.length - 1];
-    var rec = hist.reduce(function(a, d) {
-      return d.v > a.v ? d : a;
-    });
-    var above = hist.filter(function(d) {
-      return d.v > s.mid;
-    }).length;
-    return [ lede("The yearly cost of carrying the debt. Money spent on interest is energy the body has already used, paid again every year."), hiCard("Against the Record", s.row.flagState || "critical", "The " + (periodOf(s.row) || "latest") + " reading of " + now2.toFixed(1) + "% " + (now2 > rec.v ? "is above every fiscal year since FY" + hist[0].y + "; the previous peak was " + rec.v.toFixed(1) + "% in FY" + rec.y + "." : "compares with a record of " + rec.v.toFixed(1) + "% in FY" + rec.y + ".")), hiCard("The Last Actual Year", "warning", "FY" + last.y + " closed at " + last.v.toFixed(1) + "% of GDP. Of the " + hist.length + " fiscal years on record, " + above + " ran above the " + s.mid.toFixed(1) + "% line.") ];
-  }
-  var PAIR_ART = {
-    "sheet-sign-pulse": function(ind) {
-      return {
-        pulse: {
-          rate: ind.meter.value,
-          ref: PULSE_PRE2008
-        }
-      };
-    },
-    "sheet-sign-volume": function() {
-      return {
-        cols: m2Yoy.filter(function(x) {
-          return x != null;
-        }),
-        colBase: 0,
-        colRule: true,
-        colClass: function(v) {
-          return "m2-col " + m2Step(v);
-        }
-      };
-    }
-  };
-  function placeSignPair() {
-    var pair = ROSTER.filter(function(R) {
-      return R.door === "pair";
-    }).map(function(R) {
-      var ind = indOf(R);
-      if (!ind) return "";
-      var card = PAIR_ART[R.id](ind);
-      card.value = ind.metric;
-      card.word = tagFor(ind).text;
-      card.state = tagFor(ind).state;
-      return peekOf(R.id, card);
-    }).join("");
-    if (!pair) return;
-    var after = byId("sheet-sign-sentiment"), box = after && after.parentNode;
-    if (!after || !box) return;
-    var row = document.createElement("div");
-    row.className = "peek-row";
-    row.id = "peek-row-signs";
-    row.innerHTML = pair;
-    box.insertBefore(row, after.nextSibling);
-    var horm = document.querySelector('.sign-row[data-subject="hormones"]');
-    var hormSheet = byId("sheet-sign-hormones");
-    if (horm && hormSheet && horm.parentNode === box) {
-      box.insertBefore(horm, row);
-      box.insertBefore(hormSheet, horm.nextSibling);
-    }
-  }
-  function swapSentimentActivity() {
-    var sent = document.querySelector('.sign-row[data-open="sheet-sign-sentiment"]');
-    var act = document.querySelector('.sign-row[data-open="sheet-sign-activity"]');
-    var sentSheet = byId("sheet-sign-sentiment");
-    var actSheet = byId("sheet-sign-activity"), sp = sent && sent.parentNode, ap = act && act.parentNode;
-    if (!sent || !act || !sentSheet || !actSheet || !sp || !ap) return;
-    var mSent = document.createComment("sentiment slot"), mAct = document.createComment("activity slot");
-    sp.insertBefore(mSent, sent);
-    ap.insertBefore(mAct, act);
-    sp.insertBefore(act, mSent);
-    sp.insertBefore(actSheet, act.nextSibling);
-    ap.insertBefore(sent, mAct);
-    ap.insertBefore(sentSheet, sent.nextSibling);
-    sp.removeChild(mSent);
-    ap.removeChild(mAct);
-  }
-  function buildCategories() {
-    var host = need("today-analysis");
-    CATEGORIES.forEach(function(c) {
-      var sheet = catSheet("sheet-cat-" + c.key, c.key);
-      var items = document.createElement("div");
-      items.className = "cat-list";
-      appendPicks(items, catPicks(c), c.key);
-      items.insertAdjacentHTML("beforeend", insightRow(c.key));
-      sheet.appendChild(items);
-      host.appendChild(sheet);
-    });
-    [ "peek-row", "peek-row-signs", "signs-list" ].forEach(function(id) {
-      var el = byId(id);
-      if (el && !el.querySelector("*") && el.parentNode) el.parentNode.removeChild(el);
+      var page2 = byId(R.id);
+      if (page2) page2.classList.add("cat-" + R.cat);
     });
   }
-  function renderPeekAndCategories() {
-    var host = byId("peek-row");
-    if (!host) return null;
+  function renderReadingPages() {
     var tempInd = needInd("sheet-metric-temp");
     var r = nowModel.reading, era = nowModel.era;
     var gq = gdpQuarterlyYoY.filter(function(d) {
@@ -40552,32 +39854,9 @@
     });
     var capeNow = metered(fileRow("cape").meter), buffNow = fileRow("buffett").meter.value;
     syncCapeHistory();
-    host.innerHTML = tempPeek(r, tempInd.metric, nowModel.cpi) + gdpPeek(r, gq) + peekOf("sheet-metric-valuation", {
-      value: capeNow.toFixed(1) + "×",
-      word: tagFor(now.valuation).text,
-      state: tagFor(now.valuation).state,
-      cols: capeHistory.map(function(d) {
-        return d.v;
-      }),
-      colBase: CAPE_FAIR,
-      colClass: function(v) {
-        return "dv-bar " + (v > CAPE_FAIR ? "over" : "under");
-      }
-    }) + peekOf("sheet-metric-households", {
-      value: dsrNow.toFixed(1) + "/" + savNow.toFixed(1),
-      word: householdsNow.word,
-      state: householdsNow.state,
-      cols: savHistory.slice(SAV_OFFSET),
-      colBase: 0,
-      colClass: function() {
-        return "hh-col";
-      }
-    }) + indicatorPeeks();
-    placeSignPair();
-    swapSentimentActivity();
-    buildCategories();
+    mountSplits();
+    wearCategories();
     return {
-      host: host,
       tempInd: tempInd,
       r: r,
       gq: gq,
@@ -40597,26 +39876,10 @@
     }).forEach(function(R) {
       var key = R.id.replace("sheet-sign-", ""), det = document.querySelector('.subject[data-subject="' + key + '"]');
       if (!det) return;
-      var sum = det.querySelector(".subject-summary"), body = det.querySelector(".subject-body");
-      if (!sum || !body) throw new Error("the subject " + key + " lacks its summary or body");
-      var id = R.id;
-      var row = document.createElement("div");
-      row.className = "subject sign-row";
-      row.setAttribute("data-subject", key);
-      row.setAttribute("role", "button");
-      row.tabIndex = 0;
-      row.setAttribute("data-open", id);
-      row.setAttribute("data-title", R.name);
-      var face = document.createElement("div");
-      face.className = "subject-summary";
-      while (sum.firstChild) face.appendChild(sum.firstChild);
-      var lab = face.querySelector(".subject-label");
-      if (lab) lab.innerHTML = '<span class="peek-mark">' + R.mark() + "</span>" + lab.innerHTML;
-      row.appendChild(face);
-      var sheet = metricSheet(id);
+      var sheet = metricSheet(R.id);
       sheet.innerHTML = timingPill(R.timing);
-      while (body.firstChild) sheet.appendChild(body.firstChild);
-      det.before(row, sheet);
+      while (det.firstChild) sheet.appendChild(det.firstChild);
+      det.before(sheet);
       det.remove();
     });
   }
@@ -40640,19 +39903,6 @@
     }).forEach(function(x) {
       sheet.appendChild(x.el);
     });
-  }
-  function rowFrom(html) {
-    var n = elFrom(html);
-    if (!n) throw new Error("a subject row drew nothing");
-    return n;
-  }
-  function tagOf(ind) {
-    var t = ind.tag;
-    if (!t || t.state === void 0) throw new Error("the reading " + ind.bodyTerm + " has no tag state");
-    return {
-      text: t.text,
-      state: t.state
-    };
   }
   function openTarget(el) {
     var id = el.getAttribute("data-open");
@@ -40690,30 +39940,15 @@
   function renderSignsList() {
     var host = need("signs-list");
     function signSubject(ind) {
-      var R = rosterFor(ind), id = R.id, key = id.replace("sheet-sign-", ""), pg = ind.page || {}, timing = R.timing;
-      var svg = R.mark(), tag = tagOf(ind);
-      var row = rowFrom(subjectRow({
-        subject: "sign-" + key,
-        open: id,
-        title: R.name,
-        icon: subjectIcon(tag.state, svg),
-        text: '<div class="subject-label">' + ind.bodyTerm + " · " + ind.econTerm + '</div><div class="subject-value">' + ind.metric + '<span class="unit">' + ind.metricSub + '</span></div><div class="subject-verdict">' + (tag.text ? '<span class="tag ' + tag.state + '">' + tag.text + "</span>" : "") + "</div>" + (ind.peek || "")
-      }));
-      var d = metricSheet(id);
+      var R = rosterFor(ind), pg = ind.page || {}, timing = R.timing;
+      var d = metricSheet(R.id);
       d.innerHTML = (timing ? timingPill(timing) : "") + '<div class="sign-detail"></div>';
       put(d.querySelector(".sign-detail"), cardDetailHtml(ind, pg) + (pg.after ? pg.after(ind) : "") + function() {
         var h = ui.heldHighlights;
         ui.heldHighlights = "";
         return h;
       }());
-      if (pg.peeked) {
-        host.appendChild(d);
-        return d;
-      }
-      if (pg.seat) pg.seat(ind, d); else {
-        host.appendChild(row);
-        host.appendChild(d);
-      }
+      if (pg.seat) pg.seat(ind, d); else host.appendChild(d);
       return d;
     }
     rowReadings().forEach(function(ind) {
@@ -40915,7 +40150,7 @@
     });
     cyclePanel.addEventListener("keydown", function(e) {
       if (e.key !== "Enter" && e.key !== " ") return;
-      var row = e.target.closest && e.target.closest(".sign-row, tr[data-open]");
+      var row = e.target.closest && e.target.closest("tr[data-open]");
       if (!row) return;
       e.preventDefault();
       openMetricPage(openTarget(row), row.getAttribute("data-title"));
@@ -40924,15 +40159,13 @@
     NAV.panel = analysisPanel;
   }
   function renderPagesAndNav() {
-    var ctx = renderPeekAndCategories();
-    if (!ctx) return;
-    renderMetricPages(ctx);
+    renderMetricPages(renderReadingPages());
     buildNav();
   }
   function bootPagesNav() {
     GYN.step("renderSignsList", renderSignsList, "build");
     renderSignsList();
-    GYN.step("renderPagesAndNav", renderPagesAndNav, "render");
+    GYN.step("renderPagesAndNav", renderPagesAndNav, "build");
     renderPagesAndNav();
     sourceIndex = {
       all: allSources,
@@ -41291,45 +40524,6 @@
     GYN.step("wireMenu", wireMenu, "wire");
     wireMenu();
   }
-  function paintReading(sheet, value, tag) {
-    var doors = document.querySelectorAll('[data-open="' + sheet + '"], [data-preview="' + sheet + '"]'), painted = 0;
-    Array.prototype.forEach.call(doors, function(d) {
-      if (d.__today) {
-        painted++;
-        return;
-      }
-      var v = d.querySelector(".ci-value, .subject-value");
-      if (v && v.firstChild && v.firstChild.nodeType === 3) {
-        v.firstChild.nodeValue = String(value);
-        painted++;
-      }
-      if (tag) paintTag(d, tag);
-    });
-    paintWhen(sheet);
-    if (doors.length && !painted) (window.__paintMiss = window.__paintMiss || []).push(sheet + ": " + doors.length + " doors, none printed");
-    return painted;
-  }
-  function repaintVolatilityRing() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-open="sheet-sign-sentiment"]'), function(d) {
-      var m = d.__today ? null : d.querySelector(".ci-mini, .subject-ring");
-      if (m) m.innerHTML = volatilityRing();
-    });
-  }
-  function paintTag(d, tag) {
-    var t = d.querySelector(".tag") || d.querySelector(".ci-word");
-    if (!t) return;
-    t.textContent = tag.text;
-    if (tag.state != null && /\btag\b/.test(t.className)) t.className = "tag " + tag.state + (/\bci-word\b/.test(t.className) ? " ci-word" : "");
-  }
-  function repaintVolatility() {
-    repaintVolatilityRing();
-    paintReading("sheet-sign-sentiment", now.vixRow.flagValue, volatilityTag());
-  }
-  function repaintPressureRow() {
-    var y10 = curveAt("10Y");
-    if (y10 == null) return;
-    paintReading("sheet-sign-pressure", y10.toFixed(2) + "%", null);
-  }
   function repaintPressureChart() {
     var s = byIdMaybe("sheet-sign-pressure");
     if (s && !s.hidden && sheetRenderers["pressure-range"]) sheetRenderers["pressure-range"]();
@@ -41338,20 +40532,11 @@
     syncCapeHistory();
     forgetMood();
   }
-  function repaintValuationRow() {
-    var row = valRow("cape");
-    if (!row) return;
-    paintReading("sheet-metric-valuation", row.flagValue, now.valuation.tag || null);
-  }
   function repaintPolicy() {
     put("policy-facts", policyFactRows());
-    paintReading("sheet-sign-hormones", fedFundsRange(), {
-      text: policyDirection()
-    });
   }
   function repaintDiagnosis() {
     if (!ui.eraOpen) renderDiagnosis(nowModel);
-    CATEGORIES.forEach(replaceInsight);
   }
   function repaintDerived() {
     forgetLabs();
@@ -41364,11 +40549,7 @@
   }
   function bootRepaint() {
     onLive("fedFunds", repaintPolicy);
-    onLive("yieldCurve", repaintPressureRow);
     onLive("yieldCurve", repaintPressureChart);
-    onLive("valuation", repaintValuationRow);
-    onLive("vixClose", repaintVolatility);
-    onLive("capeValue", repaintValuationRow);
     onLive("capeValue", syncCape);
     onLive("*", repaintDerived);
     exposeLive();

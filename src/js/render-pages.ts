@@ -1,13 +1,13 @@
 import { atMonth, factsFrom, hiCard, highlightsHtml, metered, qLabel, srcBlock, stateOf, titleCase } from "./format.ts";
-import { addSources, appendSvgMarkup, byId, byIdMaybe, expandBtn, need, put, svgEl, ui } from "./dom.ts";
+import { addSources, appendSvgMarkup, byId, expandBtn, need, put, svgEl, ui } from "./dom.ts";
 import { GYN } from "./live.ts";
-import { AXIS, chartAxes, colPath, colPeek, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
+import { AXIS, chartAxes, colPath, colWidth, divergeChart, fitLine, histBar, histFrame, histTip, publishGeom, trendOf, trendPill, vGrid, windowYears, xLabel } from "./charts.ts";
 import { fedFundsHistory, volatilityHistory } from "./history-fred.ts";
 import { calendarTodayY } from "./refresh-season.ts";
-import { curveNoteFull, fedFundsRange, fileRow, now, policyDirection, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
+import { curveNoteFull, fedFundsRange, fileRow, now, t10y2yHistory, t10y3mHistory, t10y3mRecessions, uninvLagCycles, uninvLagToday, VIX_CALM, VIX_CONVENTION, VIX_FEAR, VOL_JOIN } from "./data.ts";
 import { cycleQtrIdx, cycleSlice } from "./model.ts";
 import { attachHistory, HIST_NOTE, histControls, histHead, histNote, mWindowFrom, page, pageCycle, qWindowFrom, refitHistory, timelineWindow } from "./history.ts";
-import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityRing, volatilityTag } from "./readings.ts";
+import { curveVerdict, fearCurve, horizonRead, policyFactRows, volatilityDetailHtml, volatilityTag } from "./readings.ts";
 import { fedFundsHistoryChart } from "./history-charts.ts";
 import { drawsPage, spreadPick } from "./render-core.ts";
 type SpreadSeries = { title: string; lede: string; data: typeof t10y3mHistory; detail: string; sources: Src[] };
@@ -322,12 +322,6 @@ function renderHormones(){
     ins.innerHTML = '<section class="highlights insights"><div class="hi-head">Insights</div>' +
       cards.join("") + '<div id="policy-facts" class="aux-group">' + policyFactRows() + '</div></section>';
   }
-
-  put("subj-value-hormones", fedFundsRange() +
-    '<span class="unit">Fed funds target</span><span class="tag norm">' + policyDirection() + '</span>');
-  var rowSay = byId("subj-say-hormones");
-  if (rowSay) rowSay.outerHTML = colPeek(fedFundsHistory.map(function(d){ return d.v; }),
-                                         function(){ return "ff-col"; }, 0, true);
 }
 // ---- RENDER: Volatility — the VIX since 1986, and the shape of its curve today ----
 function renderVolatility(){
@@ -403,23 +397,6 @@ function volatilityHighlights(y0: number){
     hiCard("Against the Record", "", recTxt),
     hiCard("What the Shape Is Saying" + expandBtn(factsFrom(curveNoteFull)), stateOf(shape), shapeTxt)]);
 }
-// ---- RENDER: Analysis subjects — one headline figure per collapsible section ----
-function renderSubjectRows(){
-  function spark(key: string, html: string){ put("subj-spark-" + key, html || ""); }
-  function say(key: string, text: string){ var el = byId("subj-say-" + key); if (el) el.textContent = text || ""; }
-  function set(key: string, valueHtml: string, contextHtml: string){
-    put("subj-value-" + key, valueHtml);
-    var c = byIdMaybe("subj-ctx-" + key); if (c) c.innerHTML = contextHtml || "";
-  }
-
-  put("subj-ring-sentiment", volatilityRing());
-  var volTag = volatilityTag();
-  set("sentiment", now.vixRow!.flagValue +
-    '<span class="unit">VIX</span><span class="tag ' + volTag.state + '">' + volTag.text + '</span>', "");
-  say("sentiment", "");
-  spark("sentiment", "");
-
-}
 // ---- Per-cycle growth helpers (the cycle view and the Calendar list both use them) ----
 export function setTopbar(title: string, onBack?: (() => void) | null){
   need("topbar-title").textContent = title;
@@ -442,8 +419,6 @@ export function bootRenderPages(){
   renderHormones();
   GYN.step("renderVolatility", renderVolatility, "build");
   renderVolatility();
-  GYN.step("renderSubjectRows", renderSubjectRows, "build");
-  renderSubjectRows();
   cycleViewEl = byId("cycle-view");
   need("topbar-back").addEventListener("click", function(){ if (ui.topbarBack) ui.topbarBack(); });
 }
