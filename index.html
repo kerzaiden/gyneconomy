@@ -1182,9 +1182,10 @@
   .lab-mark{ display:inline-flex; vertical-align:-3px; margin-right:8px; color:var(--cat); }
   .lab-mark svg{ width:22px; height:22px; }
   .plain{ --cat:var(--text-muted); }
-  .plain .cat-head{ padding:16px 16px 4px; background:none; border-bottom:0; }
+  .plain .cat-head{ padding:12px 16px; background:var(--surface); border-bottom:1px solid color-mix(in srgb, var(--normal) 55%, var(--surface)); }
+  .plain ul{ background:var(--surface-2); }
   .plain .ind-cat-name{ font-family:"Public Sans",sans-serif; font-style:normal; font-size:var(--type-meta); font-weight:600; color:var(--text-muted); }
-  .plain .lab-mark{ vertical-align:-3px; margin-right:6px; }
+  .plain .lab-mark{ vertical-align:-3px; margin-right:6px; color:var(--normal); }
   .plain .lab-mark svg{ width:16px; height:16px; }
   .lab-sec ul{ list-style:none; margin:0; padding:0; }
   .lab-item{ --tier:var(--normal); border-bottom:1px solid var(--border); }
@@ -37463,6 +37464,209 @@
     var ov = top ? '<span class="fp-ov-label' + ((top.i - from) / (to - from + 1) > .5 ? " fp-end" : "") + '" style="left:' + pct((top.i - from + .5) / (to - from + 1)) + '">' + (m.ongoing ? "Peak so far" : "Peak") + "</span>" : "";
     return (ov ? '<div class="fp-marks">' + ov + "</div>" : "") + '<div class="fp-plot">' + b.bands + plotSvg(lines, from, to, top, !!m.ongoing) + '</div><div class="fp-years">' + yearsHtml(from, to) + '</div><div class="fp-phases">' + b.labels + "</div>" + levelsHtml(m, at, peakLevel(m, peak));
   }
+  function insightCirculation() {
+    var vel = m2vHistory, n = vel.length;
+    if (!vel || n < 5) return "";
+    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
+    var run = 0;
+    for (var i = n - 1; i >= 4; i--) {
+      if (vel[i] / vel[i - 4] > 1) run++; else break;
+    }
+    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
+    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
+    var offLow = (vel[n - 1] / lo - 1) * 100;
+    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
+    if (!volInd || !volInd.meter || volInd.meter.value == null) return "";
+    var volPct = volInd.meter.value;
+    var up = volPct > 0, vup = velChg > 0;
+    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
+    var f1 = function(v) {
+      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
+    };
+    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
+    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
+    if (run >= 8) {
+      var oc = openCycle();
+      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
+    }
+    return circLede + hiCard(name, "", txt);
+  }
+  function insightWeather() {
+    var rows = marketCycles.map(function(c) {
+      var to = c.to || calendarTodayY;
+      var g = totalGrowthYears(c.from, to);
+      var sp = cycleSlice(inflationHistory, c);
+      var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
+      if (!g || !p) return null;
+      return {
+        name: c.name,
+        from: c.from,
+        closed: !c.ongoing,
+        g: g.total,
+        p: p.total,
+        gap: p.total - g.total
+      };
+    }).filter(Boolean);
+    if (rows.length < 3) return "";
+    var now2 = rows[rows.length - 1];
+    var past = rows.slice(0, -1);
+    if (!past.length) return "";
+    var f1 = function(v) {
+      return v.toFixed(1) + "%";
+    };
+    var absGap = function(r) {
+      return Math.abs(r.gap);
+    };
+    var tightest = past.reduce(function(a, b) {
+      return absGap(b) < absGap(a) ? b : a;
+    });
+    var widest = rows.reduce(function(a, b) {
+      return absGap(b) > absGap(a) ? b : a;
+    });
+    var GAP_BAND = 1.5;
+    var run = 0;
+    for (var i = rows.length - 1; i >= 0; i--) {
+      if (rows[i].gap > GAP_BAND) run++; else break;
+    }
+    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
+    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
+    var spell = function(n) {
+      return NUM2[n] || String(n);
+    };
+    var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
+    var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
+      return absGap(r).toFixed(1);
+    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
+    if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
+    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
+  }
+  function seasonCards(m) {
+    var r = seasonReading[m.season] || {};
+    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the Body", "", r.body) : "");
+  }
+  function marketCycleCard(m) {
+    var years = sp500Years.filter(function(d) {
+      return d.y >= m.era.from && d.y <= m.endYear;
+    });
+    if (!years.length) return "";
+    var bear = years.filter(function(d) {
+      return d.v < 0;
+    }), before = sp500Years.filter(function(d) {
+      return d.y < m.era.from && d.v < 0;
+    }).pop();
+    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
+      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
+    }).join(", ");
+    var n = function(k, what) {
+      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
+    };
+    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
+    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
+  }
+  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
+  var MOOD_SRC = [ {
+    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
+    u: "https://rulerapproach.org/"
+  }, {
+    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
+    u: "https://www.cnn.com/markets/fear-and-greed"
+  }, {
+    t: "Russell Investments — the cycle of market emotions",
+    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
+  } ];
+  function curvePath(pts) {
+    var f = function(p) {
+      return p[0].toFixed(1) + "," + p[1].toFixed(1);
+    };
+    return pts.map(function(p, i) {
+      if (!i) return "M" + f(p);
+      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
+      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
+    }).join("");
+  }
+  function moodCallout(x, y, lines, from, to) {
+    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
+      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
+    }).join("");
+  }
+  function moodCycleSvg(now2) {
+    var pts = MOOD_CHART.map(function(s) {
+      return [ +s[1], +s[2] ];
+    });
+    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
+    MOOD_CHART.forEach(function(s) {
+      var on = s[0] === now2 ? " now" : "";
+      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
+      out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + "</text>");
+    });
+    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
+  }
+  function isRead(d) {
+    return !!d.word && d.pct != null && d.change != null;
+  }
+  function moodInfo(d) {
+    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
+  }
+  function moodFigures(d) {
+    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
+    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
+  }
+  function moodCard(d) {
+    var c = ui.eraOpen || currentEra, s = cycleStory(c);
+    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
+  }
+  function insightMood() {
+    var d = moodToday();
+    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
+    if (!d || !isRead(d)) return intro;
+    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
+  }
+  function storyBeats(s, open) {
+    var ev = [ {
+      x: s.first,
+      verb: "opened in"
+    }, {
+      x: s.last,
+      verb: open ? "is now in" : "closed in"
+    } ];
+    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
+      var same = ev.filter(function(e) {
+        return e.x.m === p[0].m;
+      })[0];
+      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
+        x: p[0],
+        verb: p[0] === s.hi ? "rose to" : "fell to",
+        tag: p[1]
+      });
+    });
+    ev.sort(function(a, b) {
+      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
+    });
+    var parts = ev.map(function(e) {
+      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
+    });
+    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  }
+  function storyText(s, open) {
+    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
+      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
+    }).join(" and ") + ".";
+  }
+  var INSIGHT = {
+    weather: insightWeather,
+    circulation: insightCirculation,
+    mood: insightMood
+  };
+  function catInsight(key) {
+    return INSIGHT[key] ? INSIGHT[key]() : "";
+  }
+  function insightRow(key) {
+    return '<div class="cat-more">' + moreRow(catInsight(key)) + "</div>";
+  }
+  function replaceInsight(c) {
+    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
+    if (box) box.outerHTML = insightRow(c.key);
+  }
   var NUM = [ "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" ];
   var FENCE_SRC = {
     t: "NIST/SEMATECH e-Handbook of Statistical Methods — What are outliers in the data? (Tukey’s fences)",
@@ -37666,7 +37870,7 @@
     return !up && !down || up && l.good === "up" || down && l.good === "down" ? "optimal" : state(l, i) ? "abnormal" : "borderline";
   }
   function catTitle(key) {
-    return key === "cycle" ? "Regularity" : categoriesShown().filter(function(c) {
+    return categoriesShown().filter(function(c) {
       return c.key === key;
     })[0].title;
   }
@@ -37681,11 +37885,15 @@
   function rowTag(l) {
     return ROSTER_BY[l.id] ? 'button class="lab-row" type="button" data-open="' + l.id + '" data-title="' + l.name + '"' : 'div class="lab-row"';
   }
+  function cardWord(l, i) {
+    var w = marketCycles[i].ongoing ? document.querySelector('.cat-item[data-open="' + l.id + '"] .ci-word') : null, t = w ? (w.textContent || "").trim() : "";
+    return t ? " · " + t : "";
+  }
   function labItem(l, i) {
     var n = normAt(l, i), tag = ROSTER_BY[l.id] ? "button" : "div", t = TIERS.filter(function(t2) {
       return t2.key === tier(l, i);
     })[0];
-    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
+    return '<li class="lab-item ' + side(l, i) + " " + t.cls + '" data-find="' + findWords(l) + '"><' + rowTag(l) + "><div><b>" + l.name + '</b><small class="lab-where">' + t.title + cardWord(l, i) + '</small></div><div class="lab-res"><b>' + fmt(l, l.per[i]) + (l.soFar && marketCycles[i].ongoing ? " so far" : "") + '<i class="lab-to" aria-hidden="true"></i></b><small>' + l.span(n.lo, n.hi) + "</small></div></" + tag + "></li>";
   }
   function ring(v) {
     var r = 21, c = 2 * Math.PI * r;
@@ -37708,7 +37916,6 @@
     return "<" + tag + ' class="lab-score' + cls + '"' + attrs + ">" + inner + "</" + tag + ">";
   }
   var CAT_MARK = {
-    cycle: calendarSvg,
     weather: weatherSvg,
     mood: moodSvg,
     circulation: circulationSvg,
@@ -37727,7 +37934,7 @@
   }
   function labSec(k, ls, i) {
     var title = catTitle(k), name = catName(k);
-    return foldSec(k, title, k === "cycle" ? name : '<button type="button" class="lab-cat" data-open="sheet-cat-' + k + '" data-title="' + title + '">' + name + "</button>", ls, i);
+    return foldSec(k, title, '<button type="button" class="lab-cat" data-ind-cat="' + k + '">' + name + "</button>", ls, i);
   }
   function subSec(k, sub, ls, i) {
     return foldSec(k, sub, markName(GROUP_MARK[sub] || ROSTER_BY[ls[0].id].mark, sub), ls, i);
@@ -37748,15 +37955,15 @@
     var rank = TIERS.map(function(t) {
       return t.key;
     });
-    return [ "cycle" ].concat(categoriesShown().map(function(c) {
+    return categoriesShown().map(function(c) {
       return c.key;
-    })).map(function(k) {
+    }).map(function(k) {
       var ls = j.filter(function(l) {
         return l.cat === k;
       }).sort(function(a, b) {
         return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
       });
-      return !ls.length ? "" : k === cat && k !== "cycle" ? bySub(k, ls, i) : labSec(k, ls, i);
+      return !ls.length ? "" : k === cat ? bySub(k, ls, i) : labSec(k, ls, i);
     }).join("");
   }
   var finds = {};
@@ -38015,12 +38222,14 @@
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
-    var i = marketCycles.indexOf(c), j = judged(i);
+    var i = marketCycles.indexOf(c), j = judged(i).filter(function(l) {
+      return l.cat !== "cycle";
+    });
     if (id === HOME_ID) {
       host.innerHTML = searchDoor(i, j) + '<div class="home-secs">' + homeSections(i) + "</div>";
       return;
     }
-    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + catBar(j) + '<div class="labs"><div class="lab-box">' + bySystem(i, j, findOf(id).cat) + '</div><p class="search-none" hidden>No reading matches.</p>' + moreRow(catInsight(findOf(id).cat) || chartDetail()) + "</div>";
     narrow(host, id);
   }
   var IND = "sheet-find";
@@ -38031,9 +38240,9 @@
     return "<" + tag + ' class="search-field' + cls + '"' + attrs + ">" + LENS + inner + "</" + tag + ">";
   }
   function catBar(j) {
-    var keys = [ "cycle" ].concat(categoriesShown().map(function(c) {
+    var keys = categoriesShown().map(function(c) {
       return c.key;
-    })).filter(function(k) {
+    }).filter(function(k) {
       return j.some(function(l) {
         return l.cat === k;
       });
@@ -38078,6 +38287,12 @@
       narrow(host, id);
     });
   }
+  function wireCatDoors() {
+    document.addEventListener("click", function(e) {
+      var t = e.target, door = t.closest && t.closest('[data-open="' + IND + '"][data-ind-cat]');
+      if (door && !door.closest("#" + HOME_ID)) pickCat(door, IND);
+    });
+  }
   function openMenus() {
     return Array.prototype.filter.call(document.querySelectorAll(".lab-menu"), function(m) {
       return !m.hidden;
@@ -38092,6 +38307,7 @@
   function buildCycleChart() {
     wireFinder(need(HOME_ID), HOME_ID);
     buildFind();
+    wireCatDoors();
     layer(0, {
       open: function() {
         return openMenus().length > 0;
@@ -38688,14 +38904,15 @@
   }
   function hubOpen(open) {
     var b = byId("season-wheel-hub-open");
-    [ "data-open", "data-title", "data-detail-idx" ].forEach(function(a) {
+    [ "data-open", "data-title", "data-ind-cat", "data-detail-idx" ].forEach(function(a) {
       b.removeAttribute(a);
     });
     b.disabled = !open;
     b.classList.toggle("details-link", !!(open && open.html));
     if (open && open.cat) {
-      b.setAttribute("data-open", "sheet-cat-" + open.cat.key);
-      b.setAttribute("data-title", open.cat.title);
+      b.setAttribute("data-open", IND);
+      b.setAttribute("data-title", "Indicators");
+      b.setAttribute("data-ind-cat", open.cat.key);
     }
     if (open && open.html) {
       detailTexts[hubDetailIdx] = open.html;
@@ -39027,206 +39244,6 @@
         t = setTimeout(settleAll, 120);
       };
     }());
-  }
-  function insightCirculation() {
-    var vel = m2vHistory, n = vel.length;
-    if (!vel || n < 5) return "";
-    var velChg = (vel[n - 1] / vel[n - 5] - 1) * 100;
-    var run = 0;
-    for (var i = n - 1; i >= 4; i--) {
-      if (vel[i] / vel[i - 4] > 1) run++; else break;
-    }
-    var runFromY = M2V_FROM_YEAR + Math.floor((n - run) / 4);
-    var lo = Math.min.apply(null, vel), loI = vel.indexOf(lo);
-    var offLow = (vel[n - 1] / lo - 1) * 100;
-    var volInd = indOf(ROSTER_BY["sheet-sign-volume"]);
-    if (!volInd || !volInd.meter || volInd.meter.value == null) return "";
-    var volPct = volInd.meter.value;
-    var up = volPct > 0, vup = velChg > 0;
-    var name = up && vup ? "Growing and moving faster" : up && !vup ? "Added faster than it is used" : !up && vup ? "Circulating faster on a smaller stock" : "Draining and slowing";
-    var f1 = function(v) {
-      return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + "%";
-    };
-    var circLede = '<p class="hi-lede">Volume is the blood and Pulse is the heart rate; multiplied they are cardiac output — how much money there is times how hard each unit works. Pressure is the resistance that flow meets, and Interest rates are the signal that sets all three.</p>';
-    var txt = "M2 is " + f1(volPct) + " over the year and each dollar turns over " + f1(velChg).replace("+", "") + " " + (vup ? "more" : "less") + " often than a year ago, so " + (up === vup ? "both are pushing the same way." : "they are pulling against each other.");
-    if (run >= 8) {
-      var oc = openCycle();
-      txt += " Velocity has risen for " + run + " straight quarters" + (oc && runFromY === oc.from ? ", every quarter of this cycle," : ",") + " and sits " + offLow.toFixed(0) + "% above its " + (M2V_FROM_YEAR + Math.floor(loI / 4)) + " low.";
-    }
-    return circLede + hiCard(name, "", txt);
-  }
-  function insightWeather() {
-    var rows = marketCycles.map(function(c) {
-      var to = c.to || calendarTodayY;
-      var g = totalGrowthYears(c.from, to);
-      var sp = cycleSlice(inflationHistory, c);
-      var p = sp ? totalRiseIn(inflationHistory.slice(sp[0], sp[1])) : null;
-      if (!g || !p) return null;
-      return {
-        name: c.name,
-        from: c.from,
-        closed: !c.ongoing,
-        g: g.total,
-        p: p.total,
-        gap: p.total - g.total
-      };
-    }).filter(Boolean);
-    if (rows.length < 3) return "";
-    var now2 = rows[rows.length - 1];
-    var past = rows.slice(0, -1);
-    if (!past.length) return "";
-    var f1 = function(v) {
-      return v.toFixed(1) + "%";
-    };
-    var absGap = function(r) {
-      return Math.abs(r.gap);
-    };
-    var tightest = past.reduce(function(a, b) {
-      return absGap(b) < absGap(a) ? b : a;
-    });
-    var widest = rows.reduce(function(a, b) {
-      return absGap(b) > absGap(a) ? b : a;
-    });
-    var GAP_BAND = 1.5;
-    var run = 0;
-    for (var i = rows.length - 1; i >= 0; i--) {
-      if (rows[i].gap > GAP_BAND) run++; else break;
-    }
-    var ORD = [ "", "", "second", "third", "fourth", "fifth", "sixth" ];
-    var NUM2 = [ "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ];
-    var spell = function(n) {
-      return NUM2[n] || String(n);
-    };
-    var lead2 = now2.gap > GAP_BAND ? "Prices are running ahead of output" : now2.gap < -GAP_BAND ? "The economy is growing into its prices" : "Prices and output are keeping pace";
-    var txt = lead2 + ". Since " + now2.from + " prices are up " + f1(now2.p) + " and the economy is up " + f1(now2.g) + " — " + absGap(now2).toFixed(1) + " points apart. Over a whole cycle these two normally finish close together: the " + spell(past.length) + " closed cycles since " + rows[0].from + " came in " + past.map(function(r) {
-      return absGap(r).toFixed(1);
-    }).join(", ") + " points apart, the " + tightest.name + " almost exactly level at " + f1(tightest.g) + " against " + f1(tightest.p) + ".";
-    if (widest === now2) txt += " This is the widest gap in the record, and " + (run > 1 ? "the " + (ORD[run] || run + "th") + " cycle running with prices ahead" : "prices are ahead") + " — the economy costing more faster than it is growing bigger."; else txt += " Today's " + absGap(now2).toFixed(1) + " points sits inside that range.";
-    return lede(cycleNowNote(nowModel)) + seasonCards(nowModel) + marketCycleCard(nowModel) + hiCard("The Barometer", "", txt);
-  }
-  function seasonCards(m) {
-    var r = seasonReading[m.season] || {};
-    return (r.economy ? hiCard(seasonTitle(wheelMeta[m.season]), "", r.economy) : "") + (r.body ? hiCard("In the Body", "", r.body) : "");
-  }
-  function marketCycleCard(m) {
-    var years = sp500Years.filter(function(d) {
-      return d.y >= m.era.from && d.y <= m.endYear;
-    });
-    if (!years.length) return "";
-    var bear = years.filter(function(d) {
-      return d.v < 0;
-    }), before = sp500Years.filter(function(d) {
-      return d.y < m.era.from && d.v < 0;
-    }).pop();
-    var all = m.cumByYear[years[years.length - 1].y], list = years.map(function(d) {
-      return d.y + (d.y === calendarTodayY ? " so far" : "") + " " + fmtSigned(d.v, 1) + "%";
-    }).join(", ");
-    var n = function(k, what) {
-      return (k ? [ "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" ][k - 1] || k : "no") + " " + what + (k === 1 || !k ? " year" : " years");
-    };
-    var count = n(years.length - bear.length, "bull") + " and " + n(bear.length, "bear");
-    return hiCard("The market this cycle", bear.length ? "" : "good", "Since the " + m.era.name + " opened in " + m.era.from + ": " + list + ". That is " + count + ", " + fmtSigned(all, 1) + "% in all with dividends" + (before ? ". The last bear year before it was " + before.y + ", at " + fmtSigned(before.v, 1) + "%." : "."), "", true);
-  }
-  var MOOD_CHART = [ [ "Optimism", 168, 290, "cream", -23, 7, "end" ], [ "Excitement", 211, 221, "amber", -23, 0, "end" ], [ "Thrill", 279, 158, "orange", -21, 0, "end" ], [ "Euphoria", 362, 135, "red", 0, -25, "middle" ], [ "Anxiety", 438, 163, "wine", 24, -3, "start" ], [ "Denial", 500, 222, "slate", -23, 7, "end" ], [ "Fear", 548, 296, "cream", -21, 8, "end" ], [ "Desperation", 594, 374, "amber", -24, 7, "end" ], [ "Panic", 656, 443, "orange", -23, 13, "end" ], [ "Despair", 744, 475, "red", 0, 41, "middle" ], [ "Depression", 838, 458, "wine", 24, 14, "start" ], [ "Hope", 925, 393, "slate", 25, 9, "start" ], [ "Optimism", 978, 310, "cream", -28, -3, "end" ] ];
-  var MOOD_SRC = [ {
-    t: "Yale Center for Emotional Intelligence — the Mood Meter (RULER): feelings placed by pleasantness and energy",
-    u: "https://rulerapproach.org/"
-  }, {
-    t: "CNN Business — Fear &amp; Greed Index: one 0–100 reading from extreme fear to extreme greed",
-    u: "https://www.cnn.com/markets/fear-and-greed"
-  }, {
-    t: "Russell Investments — the cycle of market emotions",
-    u: "https://russellinvestments.com/content/dam/ri/files/au/en-br/financial-professional/insights/cycle-of-market-emotions-poster_AU_NZ.pdf"
-  } ];
-  function curvePath(pts) {
-    var f = function(p) {
-      return p[0].toFixed(1) + "," + p[1].toFixed(1);
-    };
-    return pts.map(function(p, i) {
-      if (!i) return "M" + f(p);
-      var a = pts[Math.max(0, i - 2)], b = pts[i - 1], d = pts[Math.min(pts.length - 1, i + 1)];
-      return "C" + f([ b[0] + (p[0] - a[0]) / 6, b[1] + (p[1] - a[1]) / 6 ]) + " " + f([ p[0] - (d[0] - b[0]) / 6, p[1] - (d[1] - b[1]) / 6 ]) + " " + f(p);
-    }).join("");
-  }
-  function moodCallout(x, y, lines, from, to) {
-    return '<path class="mood-arrow" d="M' + x + "," + from + "V" + to + "M" + (x - 7) + "," + (to + (to < from ? 12 : -12)) + "L" + x + "," + to + "L" + (x + 7) + "," + (to + (to < from ? 12 : -12)) + '"/>' + lines.map(function(t, i) {
-      return '<text class="mood-call" x="' + x + '" y="' + (y + i * 34) + '" text-anchor="middle">' + t + "</text>";
-    }).join("");
-  }
-  function moodCycleSvg(now2) {
-    var pts = MOOD_CHART.map(function(s) {
-      return [ +s[1], +s[2] ];
-    });
-    var out = [ '<path class="mood-line" d="' + curvePath([ [ 156, 322 ] ].concat(pts, [ [ 995, 272 ] ])) + '"/>', moodCallout(362, 430, [ "Point of maximum", "financial risk" ], 400, 160), moodCallout(745, 195, [ "Point of maximum", "financial opportunity" ], 245, 452) ];
-    MOOD_CHART.forEach(function(s) {
-      var on = s[0] === now2 ? " now" : "";
-      out.push('<circle class="mood-dot ' + s[3] + on + '" cx="' + s[1] + '" cy="' + s[2] + '" r="' + (on ? 19 : 15) + '"/>');
-      out.push('<text class="mood-lab' + on + '" x="' + (+s[1] + +s[4]) + '" y="' + (+s[2] + +s[5]) + '" text-anchor="' + s[6] + '">' + String(s[0]).toUpperCase() + "</text>");
-    });
-    return '<svg class="mood-curve" viewBox="20 80 1060 460" role="img" aria-label="The cycle of market emotions, from optimism through euphoria and despair back to optimism' + (now2 ? ", with today at " + now2 : "") + '.">' + out.join("") + "</svg>";
-  }
-  function isRead(d) {
-    return !!d.word && d.pct != null && d.change != null;
-  }
-  function moodInfo(d) {
-    return "<h4>Her Mood</h4>" + facts([ moodFigures(d), "Each reading is ranked against its own history to that month, from 0 (its lowest) to 100 (its highest), turned so that a high rank always means more appetite: valuations (the average of the CAPE and Buffett ranks), calm (the VIX, upside down) and consumer confidence. Her mood is the average of the three.", "That mood is then ranked against her own moods before it, since " + monthLabel(moodTrack()[0].m) + ": one investor’s euphoria is not another’s, so the stage is hers. Rising over " + MOOD_TURN + " months, she is on the climbing side of the chart (despair, depression, hope, optimism, excitement, thrill, euphoria); falling, on the descending side (euphoria, anxiety, denial, fear, desperation, panic, despair). Her stage is the one on that side whose height on the chart is nearest her rank.", "The chart, its stages and their heights are the cycle of market emotions’, the reference Keren chose; the heights are read off the drawing, 0 at despair and 100 at euphoria. Reading the side by direction is Keren’s call; the three months are Claude’s default.", "Desire and the Treasury spread are left out: consumer demand measures what households spend rather than how they feel, the equity risk premium shares its earnings yield with the CAPE the valuations already count, and the yield curve steepens when the Fed cuts into a crash, so its level does not sort mood. This is a description, not a forecast.", "Under her stage is the story of the cycle on screen, told from her emotion month by month: where she opened, her high and her low (the months her mood ranked highest and lowest), where she closed or is now, in the order they came, and the two emotions she spent most months in. An open cycle is told to the latest month." ]) + srcBlock(MOOD_SRC);
-  }
-  function moodFigures(d) {
-    var r = Math.round, ago = d.ago ? ", " + (d.change > 0 ? "up" : "down") + " from " + r(d.ago.score) + " in " + monthLabel(d.ago.m) : "";
-    return "Today her mood reads " + r(d.score) + ago + ". Against her own moods since " + monthLabel(moodTrack()[0].m) + " that ranks " + r(d.pct) + " of 100. Valuations rank " + r(d.valuations) + ", calm " + r(d.calm) + " and confidence " + r(d.confidence) + ": the market alone reads " + r(d.market) + ", households " + r(d.confidence) + ".";
-  }
-  function moodCard(d) {
-    var c = ui.eraOpen || currentEra, s = cycleStory(c);
-    return hiCard("She’s in " + d.word, "", s ? c.name + ", " + c.from + "–" + (c.to || "now") + ". " + storyText(s, c.ongoing) : moodFigures(d));
-  }
-  function insightMood() {
-    var d = moodToday();
-    var intro = lede("Markets move through feelings in a familiar order: optimism rising to euphoria, the point of most financial risk, then down through anxiety and fear to despair, the point of most opportunity, and back through hope. Her mood is read against her own history, because one investor’s euphoria is not another’s.");
-    if (!d || !isRead(d)) return intro;
-    return intro + '<figure class="mood-fig">' + moodCycleSvg(d.word) + "</figure>" + moodCard(d) + moodInfo(d);
-  }
-  function storyBeats(s, open) {
-    var ev = [ {
-      x: s.first,
-      verb: "opened in"
-    }, {
-      x: s.last,
-      verb: open ? "is now in" : "closed in"
-    } ];
-    [ [ s.hi, "her high" ], [ s.lo, "her low" ] ].forEach(function(p) {
-      var same = ev.filter(function(e) {
-        return e.x.m === p[0].m;
-      })[0];
-      if (same) same.tag = (same.tag ? same.tag + " and " : "") + p[1]; else ev.push({
-        x: p[0],
-        verb: p[0] === s.hi ? "rose to" : "fell to",
-        tag: p[1]
-      });
-    });
-    ev.sort(function(a, b) {
-      return a.x.m < b.x.m ? -1 : a.x.m > b.x.m ? 1 : 0;
-    });
-    var parts = ev.map(function(e) {
-      return e.verb + " " + e.x.word + " (" + monthLabel(e.x.m) + (e.tag ? ", " + e.tag : "") + ")";
-    });
-    return "She " + parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
-  }
-  function storyText(s, open) {
-    return storyBeats(s, open) + " Most of it she spent in " + s.most.map(function(m) {
-      return m.word + " (" + m.n + (m.n === 1 ? " month)" : " months)");
-    }).join(" and ") + ".";
-  }
-  var INSIGHT = {
-    weather: insightWeather,
-    circulation: insightCirculation,
-    mood: insightMood
-  };
-  function insightRow(key) {
-    return '<div class="cat-more">' + moreRow(INSIGHT[key] ? INSIGHT[key]() : "") + "</div>";
-  }
-  function replaceInsight(c) {
-    var box = document.querySelector("#sheet-cat-" + c.key + " .cat-more");
-    if (box) box.outerHTML = insightRow(c.key);
   }
   function cycleRowsHtml() {
     var strips = {};

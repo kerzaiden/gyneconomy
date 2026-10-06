@@ -347,20 +347,17 @@ test('a Cycle Statistics result is named by its tier, Normal on its good side an
     const normal = li.classList.contains('t-optimal');
     assert.equal(normal, !way || way === R.good, R.name + ' ' + way + ' ' + li.className);
     const word = { 't-optimal': 'Normal', 't-borderline': 'Attention', 't-abnormal': 'Risk' }[[...li.classList].find(c => c.startsWith('t-'))];
-    assert.equal(li.querySelector('.lab-where').textContent, word, R.name);
+    assert.equal(li.querySelector('.lab-where').textContent.split(' \u00b7 ')[0], word, R.name);
   });
   assert.match(document.querySelector('#diagnosis .lab-score small').textContent, /^(Normal|Attention|Risk) against \d+ closed cycles$/);
   assert.equal(ROSTER_BY['sheet-sign-activity'].good, 'down');
   assert.equal(ROSTER_BY['sheet-metric-temp'].good, undefined);
 });
 
-test('Variation is the spread of the three cycles before each one, and is read on the open cycle too', () => {
+test('Variation is the spread of the three cycles before each one, read on the open cycle too, and left to Cycle Statistics rather than Indicators', () => {
   const L = marketCycles.filter(c => !c.ongoing).map(c => c.to - c.from + 1);
   const open = marketCycles.length - 1, reg = labs().find(l => l.id === 'regularity'), three = L.slice(-3);
   assert.equal(reg.per[open], Math.max(...three) - Math.min(...three));
   assert.equal(reg.per[2], null);
-  assert.ok([...document.querySelectorAll('#sheet-find .cat-cycle .lab-item b')].some(b => b.textContent === 'Variation'));
-  const head = document.querySelector('#sheet-find .cat-cycle .lab-head');
-  assert.equal(head.querySelector('.ind-cat-name').textContent, 'Regularity');
-  assert.match(head.querySelector('.lab-n').textContent, /^\d+$/);
+  assert.equal(document.querySelector('#sheet-find .cat-cycle, #sheet-find [data-ind-cat="cycle"]'), null);
 });

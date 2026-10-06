@@ -616,8 +616,11 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   category", and "indicator page needs some work, but for now it would be fine." (0.8.3, Oct 6, 2026)
 - **On one category, Indicators groups its readings by subcategory: each subcategory is a quiet heading (the
   first member's mark and its name, small and grey) over its results, in place of the category's heading, which the
-  bar already names.** All keeps one heading per category. Every heading sits in one white container, divided by a
-  line, with its count in light grey beside its fold chevron. Keren: "I want it all to be some kind of a single
+  bar already names.** All keeps one heading per category. Every heading sits in one container, white over its
+  apricot-tinted results with an apricot line between, its mark in apricot and its count in light grey beside its
+  fold chevron. Keren: "titles … with white background and the indicators have an apricot background … it reminds
+  me of financial newsletters." The apricot is on the mark and the line, not the title's words, which stay grey to
+  stay readable. Keren: "I want it all to be some kind of a single
   container that you have like very delicate titles … the category titles are too big. They need to blend in with
   the data that they present." Weather: Season (Temperature, Growth) and Market (S&P 500);
   Mood: Valuations, Sentiment (Volatility, Confidence) and Desire; Circulation: Rates (Interest rates, Real interest
@@ -625,6 +628,14 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   names beyond Valuations, Desire, Stress and Keren's Season and Market are Claude's draft. Keren: "I have the menu
   bar showing me weather, and then I'm seeing weather again … use this real estate to basically divide and
   subcategorize each indicator", and "temperature and growth is the season, S&P is the market". (0.8.5, Oct 6, 2026)
+- **A category opens in Indicators, never on its old page of chart cards.** Its heading on Indicators and the
+  dial's season both open Indicators on that category, and its More details is that category's insights. Each
+  result on the open cycle carries its card's verdict word beside its tier ("Attention · Highly overvalued",
+  "Normal · Calm"). Regularity is not an indicator: it belongs to Cycle Statistics on Analysis. The old category
+  pages are still built, unreached, as the home of the reading cards the words, the quarter sheet and the reading
+  pages draw on, until a release retires them. Keren: "we should get rid of the old design … but we should keep the
+  conclusions … these are words that can integrate well next to risk, attention, normal", and "in terms of
+  regularity, we don't need it. We have it in the analysis page." (0.8.5, Oct 6, 2026)
 - **Insights is one container built like Cycle Statistics: a purple title with its mark (the chart), then one grey
   tile per category with its mark, its name, and its count of indicators in light grey beside the chevron. In every
   tile with a chevron, the chevron sits as far from the right edge as the mark or ring does from the left.** Keren:

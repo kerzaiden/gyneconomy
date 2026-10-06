@@ -57,8 +57,8 @@ const tap = async (p, sel, until) => {
       else skipped.push(at + ' tab:' + t);
     }
     await open(p, FILE);
-    if (await tap(p, '[data-open="sheet-cat-weather"]') &&
-        await tap(p, '.cat-item[data-open="sheet-metric-temp"]', () => document.querySelector('#metric-page .page-chart'))) {
+    if (await tap(p, '[data-open="sheet-find"][data-ind-cat="weather"]') &&
+        await tap(p, '.lab-row[data-open="sheet-metric-temp"]', () => document.querySelector('#metric-page .page-chart'))) {
       await audit(p, at + ' page:Temperature');
       if (await tap(p, '#metric-page .expand-btn, #metric-page .more-row, .more-row', () => document.querySelector('#detail-backdrop.show')))
         await audit(p, at + ' modal');

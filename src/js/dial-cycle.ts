@@ -10,6 +10,7 @@ import type { MarketRun } from "./render-core.ts";
 import { fitYearDots, renderDiagnosis } from "./diagnosis.ts";
 import { quarterSheet } from "./quarter-sheet.ts";
 import { cycleViewEl } from "./render-pages.ts";
+import { IND } from "./cycle-analysis.ts";
 import type { TrackSeg } from "./model.ts";
 
 type CycleModel = ReturnType<typeof cycleModel>;
@@ -148,9 +149,9 @@ function hubSet(dateHtml: string, meta: (typeof wheelMeta)[Season], y: number, o
 }
 function hubOpen(open: HubOpen){
   var b = byId("season-wheel-hub-open") as HTMLButtonElement;
-  ["data-open", "data-title", "data-detail-idx"].forEach(function(a){ b.removeAttribute(a); });
+  ["data-open", "data-title", "data-ind-cat", "data-detail-idx"].forEach(function(a){ b.removeAttribute(a); });
   b.disabled = !open; b.classList.toggle("details-link", !!(open && open.html));
-  if (open && open.cat){ b.setAttribute("data-open", "sheet-cat-" + open.cat.key); b.setAttribute("data-title", open.cat.title); }
+  if (open && open.cat){ b.setAttribute("data-open", IND); b.setAttribute("data-title", "Indicators"); b.setAttribute("data-ind-cat", open.cat.key); }
   if (open && open.html){ detailTexts[hubDetailIdx] = open.html; b.setAttribute("data-detail-idx", hubDetailIdx as unknown as string); }
 }
 function hubShowDefault(){

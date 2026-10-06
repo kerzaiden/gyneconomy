@@ -43,7 +43,8 @@ const watch = (pg, tag) => {
   return mine;
 };
 const openFind = async p => { await p.click('#chart-home .lab-door'); await settle(p); };
-const toCat = async (p, c) => { await openFind(p); await click(p, '#sheet-find .lab-cat[data-open="sheet-cat-' + c + '"]'); await settle(p); };
+const toCat = async (p, c) => { await p.click('.tab-btn[data-tab="cycle"]'); await settle(p); await p.evaluate(c => { const d = document.createElement('button'); d.dataset.open = 'sheet-cat-' + c; d.dataset.title = c; document.getElementById('today-analysis').appendChild(d); d.click(); d.remove(); }, c); await settle(p); };
+const toInd = async (p, c) => { await openFind(p); await click(p, '#sheet-find .ind-cats [data-ind-cat="' + c + '"]'); await settle(p); };
 const settle = pg => pg.evaluate(() => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() =>
   Promise.all(document.getAnimations().filter(a => a.effect && isFinite(a.effect.getComputedTiming().endTime)).map(a => a.finished.catch(() => null))).then(() => done())))));
 const ready = pg => pg.waitForFunction(() => window.__GYN && document.getElementById('diagnosis')).then(() => settle(pg));
@@ -56,16 +57,8 @@ async function goHome(p, url) {
 }
 async function openPage(p, url, sheet) {
   await goHome(p, url);
-  const home = s => p.evaluate(s => { const c = document.querySelector('.cat-sheet .cat-item[data-open="' + s + '"]');
-    return c ? c.closest('.cat-sheet').id : null; }, s);
-  const cat = await home(sheet), up = cat && cat.indexOf('sheet-grp-') === 0 ? await home(cat) : null;
-  const first = up || cat, shown = s => p.evaluate(s => [...document.querySelectorAll('[data-open="' + s + '"]')].some(x => x.offsetParent !== null), s);
-  if (first && !await shown(first)) { await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await openFind(p); }
-  if (up && !await click(p, '[data-open="' + up + '"]')) return false;
-  if (up) await settle(p);
-  if (!cat || !await click(p, (up ? '.cat-item' : '') + '[data-open="' + cat + '"]')) return false;
-  await settle(p);
-  if (!await click(p, '.cat-item[data-open="' + sheet + '"]')) return false;
+  await p.click('.tab-btn[data-tab="chart"]'); await settle(p); await openFind(p);
+  if (!await click(p, '#sheet-find .lab-row[data-open="' + sheet + '"]')) return false;
   await settle(p); return true;
 }
 
@@ -420,8 +413,8 @@ async function openPage(p, url, sheet) {
       for (const t of ['cycle', 'chart', 'analysis', 'portfolio']) { tab(t); window.scrollTo(0, 0); await frame(); out['tab ' + t] = gapNow(); }
       tab('analysis'); await frame(); document.querySelector('#cycle-list .era-row').click(); await frame(); window.scrollTo(0, 0); await frame();
       out['a past cycle'] = gapNow();
-      const opener = (id, shown) => [...document.querySelectorAll('[data-open="' + id + '"]')].find(x => x.closest('.tab-panel') && (!shown || x.offsetParent));
-      for (const id of [...new Set([...document.querySelectorAll('.metric-sheet')].map(s => s.id))]) {
+      const opener = (id, shown) => [...document.querySelectorAll('[data-open="' + id + '"]')].find(x => x.closest('.tab-panel') && !x.closest('.cat-sheet') && !x.dataset.indCat && (!shown || x.offsetParent));
+      for (const id of [...new Set([...document.querySelectorAll('.metric-sheet:not(.cat-sheet)')].map(s => s.id))]) {
         window.__GYN.fire('metricPageReset');
         const chain = []; let cur = id;
         while (cur && chain.length < 5) { const o = opener(cur); if (!o) { chain.length = 0; break; } chain.unshift(cur); const host = o.closest('.metric-sheet'); cur = host ? host.id : null; }
@@ -435,7 +428,7 @@ async function openPage(p, url, sheet) {
       return out;
     });
     const off = Object.keys(gaps).filter(k => gaps[k] !== 20);
-    (Object.keys(gaps).length > 30 && !off.length)
+    (Object.keys(gaps).length > 25 && !off.length)
       ? ok('every tab and page opens 20px under the top bar', Object.keys(gaps).length + ' screens, whatever their first element (Keren, 0.5.0)')
       : bad('every tab and page opens 20px under the top bar', JSON.stringify(off.reduce((o, k) => (o[k] = gaps[k], o), {})));
   }
@@ -483,10 +476,10 @@ async function openPage(p, url, sheet) {
         under: !h.querySelector('.cycsel') && !!h.querySelector('.lab-menu [data-lab-sub="cycle"]'),
         chips: h.querySelectorAll('.rangebar').length, menu: h.querySelector('.lab-menu').hidden,
         rows: rows.length, doors: rows.every(r => document.getElementById(r.dataset.open)),
-        cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.open).join() };
+        cats: [...h.querySelectorAll('.lab-cat')].map(b => b.dataset.indCat).join(), regularity: !!h.querySelector('.cat-cycle, [data-ind-cat="cycle"]') };
     });
     (tab.title === 'Indicators' && tab.first === 'lab-find' && tab.under && tab.chips === 1 && tab.menu && tab.rows > 15 && tab.doors &&
-     tab.cats === 'sheet-cat-weather,sheet-cat-mood,sheet-cat-circulation,sheet-cat-energy')
+     tab.cats === 'weather,mood,circulation,energy' && !tab.regularity)
       ? ok('Indicators opens on its search box, the cycle in its filter, every reading and category a door', tab.rows + ' readings')
       : bad('Indicators opens on its search box, the cycle in its filter, every reading and category a door', JSON.stringify(tab));
     const shown = async q => {
@@ -522,16 +515,16 @@ async function openPage(p, url, sheet) {
     const folded = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       hid: !document.querySelector('#sheet-find .cat-mood .lab-item').offsetParent }));
     await p.click('#sheet-find .cat-mood .lab-fold'); await settle(p);
-    await p.click('#sheet-find .lab-cat[data-open="sheet-cat-mood"]'); await settle(p);
+    await p.click('#sheet-find .lab-cat[data-ind-cat="mood"]'); await settle(p);
     const head = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
-      open: !document.getElementById('sheet-cat-mood').hidden,
-      home: document.querySelector('.tab-panel[data-tab="chart"]').contains(document.getElementById('metric-page')) }));
-    await p.click('#topbar-back'); await settle(p);
+      shown: [...new Set([...document.querySelectorAll('#sheet-find .lab-sec:not([hidden])')].map(c => c.className.match(/cat-(\w+)/)[1]))].join(),
+      words: [...document.querySelectorAll('#sheet-find .lab-sec:not([hidden]) .lab-where')].map(w => w.textContent).join('|') }));
+    await p.click('#sheet-find .ind-cats [data-ind-cat=""]'); await settle(p);
     const after = await p.evaluate(() => ({ title: document.getElementById('topbar-title').textContent,
       list: !document.getElementById('sheet-find').hidden }));
-    (folded.title === 'Indicators' && folded.hid && head.title === 'Mood' && head.open && head.home && after.title === 'Indicators' && after.list)
-      ? ok('a category name opens its page and back returns to Indicators; its chevron only folds it')
-      : bad('a category name opens its page and back returns to Indicators; its chevron only folds it', JSON.stringify({ folded, head, after }));
+    (folded.title === 'Indicators' && folded.hid && head.title === 'Indicators' && head.shown === 'mood' && / \u00b7 /.test(head.words) && after.title === 'Indicators' && after.list)
+      ? ok('a category name narrows Indicators to it, its verdict words beside each tier; its chevron only folds it')
+      : bad('a category name narrows Indicators to it, its verdict words beside each tier; its chevron only folds it', JSON.stringify({ folded, head, after }));
     await p.click('#sheet-find .lab-row[data-open="sheet-sign-confidence"]'); await settle(p);
     const fromChart = await p.evaluate(() => {
       const b = document.querySelector('#metric-page .trendpill.can-toggle'); if (!b) return null;
@@ -578,13 +571,13 @@ async function openPage(p, url, sheet) {
     });
     await p.click('#topbar-back'); await settle(p);
     await p.click('.tab-btn[data-tab="chart"]'); await settle(p);
-    await toCat(p, 'mood');
-    await click(p, '#sheet-cat-mood:not([hidden]) .cat-more .more-row'); await settle(p);
+    await toInd(p, 'mood');
+    await click(p, '#sheet-find .labs > .more-row'); await settle(p);
     const cyc = await p.evaluate(() => {
       const s = document.querySelector('#detail-modal-body .mood-curve'), card = document.querySelector('#detail-modal-body .hi-card .hi-name');
       return s && { labels: [...s.querySelectorAll('.mood-lab')].map(t => t.textContent).join('+'), calls: s.querySelectorAll('.mood-call').length,
         now: [...s.querySelectorAll('.mood-lab.now')].map(t => t.textContent), card: card && card.textContent,
-        es: document.querySelectorAll('#sheet-cat-mood:not([hidden]) .hi-head, #detail-modal-body .hi-head').length + ':' +
+        es: document.querySelectorAll('#sheet-find .hi-head, #detail-modal-body .hi-head').length + ':' +
           document.querySelectorAll('#detail-modal-body .hi-card').length };
     });
     await p.keyboard.press('Escape'); await settle(p);
@@ -598,19 +591,19 @@ async function openPage(p, url, sheet) {
       : bad('AI Insights opens on the cycle\u2019s name, and Mood opens the cycle of market emotions, one emotion everywhere', JSON.stringify({ feel, cyc }));
     await click(p, '#season-wheel-hub-open'); await settle(p);
     const wx = await p.evaluate(() => {
-      const page = document.querySelector('#sheet-cat-weather:not([hidden])');
+      const page = document.querySelector('#sheet-find:not([hidden])');
       return page && { bar: document.getElementById('topbar-title').textContent.trim(),
-        names: [...page.querySelectorAll('.cat-item .ci-name')].map(n => n.textContent.trim()).join('+'),
+        names: [...page.querySelectorAll('.lab-sec:not([hidden]) .lab-row > div:first-child > b')].map(n => n.textContent.trim()).join('+'),
         modal: !document.getElementById('detail-modal') || document.getElementById('detail-modal').hidden !== false ? false : true };
     });
-    await click(p, '#sheet-cat-weather:not([hidden]) .cat-more .more-row'); await settle(p);
+    await click(p, '#sheet-find:not([hidden]) .labs > .more-row'); await settle(p);
     if (wx) wx.cards = await p.evaluate(() => [...document.querySelectorAll('#detail-modal-body .hi-name')].map(n => n.textContent.trim()));
     await p.keyboard.press('Escape'); await settle(p);
     await p.click('#topbar-back'); await settle(p);
-    (wx && wx.bar === 'Weather' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
+    (wx && wx.bar === 'Indicators' && wx.names === 'Temperature+Growth+S&P 500' && !wx.modal &&
      wx.cards.indexOf('In the Body') > 0 && wx.cards.indexOf('The market this cycle') > 0 && wx.cards.indexOf('The Barometer') > 0)
-      ? ok('the season in the dial opens Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
-      : bad('the season in the dial opens Weather, with the market and what the season means', JSON.stringify(wx));
+      ? ok('the season in the dial opens Indicators on Weather, with the market and what the season means', wx.names + ' · ' + wx.cards.join(', '))
+      : bad('the season in the dial opens Indicators on Weather, with the market and what the season means', JSON.stringify(wx));
     await p.evaluate(() => document.querySelector('.dial-moon[data-q="0"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))); await settle(p);
     const qhub = await p.evaluate(() => ({ date: document.getElementById('season-wheel-hub-date').textContent.trim(),
       ret: (document.querySelector('#season-wheel-hub-detail .hub-line b') || {}).textContent }));
@@ -995,7 +988,7 @@ async function keyboardAndLayers(b, url) {
 
   await g.goto('file://' + url); await ready(g);
   const card = await g.evaluate(() => {
-    const c = [...document.querySelectorAll('.tab-panel[data-tab="cycle"] [data-open^="sheet-cat-"]')].filter(x => x.offsetParent)[0];
+    const c = [...document.querySelectorAll('.tab-panel[data-tab="cycle"] [data-open="sheet-find"]')].filter(x => x.offsetParent)[0];
     if (!c) return null; c.focus(); return c.getAttribute('data-open');
   });
   await g.keyboard.press('Enter'); await settle(g);

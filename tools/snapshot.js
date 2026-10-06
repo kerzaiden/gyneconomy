@@ -63,7 +63,6 @@ async function capture(file, out) {
     p.on('pageerror', e => errs.push(w + ': ' + String(e).slice(0, 140)));
     await p.goto('file://' + file); await p.waitForTimeout(1500);
     const sheets = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet .cat-item[data-open]')].map(c => c.dataset.open));
-    const cats = await p.evaluate(() => [...document.querySelectorAll('.cat-sheet[id^="sheet-cat-"]')].map(c => c.id));
     snaps.push(await grab(p, w + '/home'));
     for (const t of TABS) {
       await p.evaluate(x => { const el = document.querySelector('.tab-btn[data-tab="' + x + '"]'); if (el) el.click(); }, t);
@@ -74,13 +73,9 @@ async function capture(file, out) {
     }
     for (const sheet of sheets) {
       await p.goto('file://' + file); await p.waitForTimeout(1100);
-      let opened = false;
-      for (const c of cats) {
-        if (!await click(p, '[data-open="' + c + '"]')) continue;
-        await p.waitForTimeout(380);
-        if (await click(p, '.cat-item[data-open="' + sheet + '"]')) { opened = true; break; }
-        await p.goto('file://' + file); await p.waitForTimeout(900);
-      }
+      await click(p, '.tab-btn[data-tab="chart"]'); await p.waitForTimeout(300);
+      await click(p, '.lab-door'); await p.waitForTimeout(380);
+      const opened = await click(p, '.lab-row[data-open="' + sheet + '"]');
       if (opened) {
         await p.waitForTimeout(800);
         const g = await grab(p, w + '/page:' + sheet);
