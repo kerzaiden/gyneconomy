@@ -1140,7 +1140,7 @@
   .insight-row .ind-cat-name{ display:flex; align-items:center; gap:10px; font-family:"Public Sans",sans-serif; font-size:var(--type-reading); font-weight:600; }
   .insight-row .ind-cat-name small{ font-size:var(--type-interface); color:var(--text-muted); }
   .lab-door{ width:100%; border-radius:999px; font:inherit; font-size:var(--type-row); text-align:left; cursor:pointer; }
-  .lab-door span{ flex:1; color:var(--placeholder); }
+  .lab-door span{ flex:1; }
   .rangebar.ind-cats{ margin:0 0 12px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
   .ind-cats .range-seg{ flex:none; }
   .lab-cat.cat-head:hover{ text-decoration:none; }
@@ -37851,7 +37851,7 @@
     }).join("");
   }
   function homeSections(i) {
-    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + '<h3 class="stat-title">Insights</h3>' + insightsHome(i);
+    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) + '<h2 class="stat-title">Insights</h2>' + insightsHome(i);
   }
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);

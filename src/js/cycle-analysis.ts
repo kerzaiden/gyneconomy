@@ -310,7 +310,7 @@ function insightsHome(i: number){
 }
 function homeSections(i: number){
   return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + dxSys(" fp", dxHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel)) +
-    '<h3 class="stat-title">Insights</h3>' + insightsHome(i);
+    '<h2 class="stat-title">Insights</h2>' + insightsHome(i);
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
