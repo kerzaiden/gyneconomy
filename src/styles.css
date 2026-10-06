@@ -1115,18 +1115,18 @@
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
   .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
   .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
-  .stat-row{ justify-content:flex-start; gap:16px; }
+  .home-secs{ display:flex; flex-direction:column; gap:var(--gap); }
+  .home-secs > *{ margin-top:0; margin-bottom:0; }
+  .lab-score-box .lab-ring circle{ stroke:var(--border); }
+  .lab-score-box .lab-ring circle.on{ stroke:var(--normal); }
+  .lab-score-box .lab-score{ margin:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+  .stat-row{ justify-content:flex-start; gap:16px; margin-top:10px; }
   .stat-row b{ font-family:"Public Sans",sans-serif; font-size:var(--type-reading-head); font-weight:700; }
-  .stat-lede{ margin:0 0 4px; font-size:var(--type-interface); color:var(--text-secondary); }
-  .stat-title{ margin:22px 4px 10px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
-  .flow-rows{ list-style:none; margin:12px 0 0; padding:0; }
-  .flow-rows li{ display:flex; align-items:center; gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-secondary); }
-  .flow-rows li > span:first-child{ width:112px; flex:none; text-align:right; }
-  .flow-bar{ display:flex; gap:2px; }
-  .flow-bar i{ width:34px; height:14px; background:var(--bleed-mid); }
-  .flow-bar i:first-child{ border-radius:7px 0 0 7px; }
-  .flow-bar i:last-child{ border-radius:0 7px 7px 0; }
-  .flow-bar i:only-child{ border-radius:7px; }
+  .stat-row.flow .lab-ring circle.on{ stroke:var(--bleed-mid); }
+  .plain .lab-cat.cat-head{ width:100%; justify-content:space-between; padding:23px 16px; }
+  .lab-cat.cat-head:hover{ text-decoration:none; }
+  .stat-lede{ margin:0; font-size:var(--type-interface); color:var(--text-secondary); }
+  .home-secs > .stat-title{ margin:12px 4px 0; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }

@@ -1,5 +1,5 @@
 import { CHEV, facts, srcBlock } from "./format.ts";
-import { byId, layer, moreRow, need, trendDoor, trendJump, trendText } from "./dom.ts";
+import { byId, layer, moreRow, need, trendJump, trendText } from "./dom.ts";
 import { page, pageCycle } from "./history.ts";
 import { boltSvg, calendarSvg, chartSvg, circulationSvg, moodSvg, orbitSvg, slidersSvg, weatherSvg } from "./marks.ts";
 import { catHeadCard, sheetRenderers } from "./render-core.ts";
@@ -257,42 +257,41 @@ export function chartDoor(m: CycleModel){
 }
 var HOME_ID = "chart-home";
 function homeHead(mark: string, title: string){ return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + '</span>' + title + '</div>'; }
-function statRow(name: string, v: number, of: number, note: string){
-  return '<span class="lab-score stat-row"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span><small>' + name + '</small><b>' + yearsWord(v) + ' years</b>' + (note ? '<small>' + note + '</small>' : '') + '</span></span>';
+function statRow(name: string, v: number, of: number, note: string, cls?: string){
+  return '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + '</span><span><small>' + name + '</small><b>' + yearsWord(v) + ' years</b>' + (note ? '<small>' + note + '</small>' : '') + '</span></span>';
 }
 function closedVisits(){ return visits().slice(0, closedCount()); }
 function sdOf(vs: number[]){ var m = vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; return Math.sqrt(vs.reduce(function(s, v){ return s + (v - m) * (v - m); }, 0) / (vs.length - 1)); }
+function meanOf(vs: number[]){ return vs.reduce(function(a, b){ return a + b; }, 0) / vs.length; }
 function statsHome(){
-  var L = closedVisits().map(function(v){ return v.years; }), longest = Math.max.apply(null, L), avg = L.reduce(function(a, b){ return a + b; }, 0) / L.length;
-  var open = visits()[marketCycles.length - 1];
+  var vs = closedVisits(), L = vs.map(function(v){ return v.years; }), B = vs.map(function(v){ return v.bleed; }), longest = Math.max.apply(null, L);
   return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + ' closed cycles since ' + marketCycles[0].from + '.</p>' +
-    statRow("Cycle length", avg, longest, "This cycle: " + yearsWord(open.years) + " years so far") +
-    statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") + '</section>';
+    statRow("Cycle length", meanOf(L), longest, "This cycle: " + yearsWord(visits()[marketCycles.length - 1].years) + " years so far") +
+    statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") +
+    statRow("Period flow", meanOf(B), Math.max.apply(null, B), "Average bear years that close a cycle", "flow") + '</section>';
 }
-function flowCells(c: Cycle, n: number, worst: number){
-  var end = c.to as number;
-  var out = "";
-  for (var y = end - n + 1; y <= end; y++){ var r = sp500AnnualReturns[y] || 0; out += '<i style="opacity:' + (0.35 + 0.65 * Math.min(1, -r / worst)).toFixed(2) + '" title="' + y + ' ' + r.toFixed(1) + '%"></i>'; }
-  return out;
+function insightSec(k: string, ls: Lab[], i: number){
+  var title = catTitle(k);
+  return catHeadCard("lab-sec plain", k, { tag:"button", cls:"lab-head lab-cat ", attrs:' type="button" data-open="sheet-cat-' + k + '" data-title="' + title + '"',
+    name:'<span class="lab-mark">' + CAT_MARK[k]() + '</span>' + title + ' <small>(' + ls.length + ')</small>', aside:CHEV },
+    '<ul>' + ls.map(function(l){ return labItem(l, i); }).join("") + '</ul>');
 }
-function flowHome(){
-  var vs = closedVisits(), avg = vs.reduce(function(a, v){ return a + v.bleed; }, 0) / vs.length, worst = 0;
-  Object.keys(sp500AnnualReturns).forEach(function(k){ worst = Math.max(worst, -(sp500AnnualReturns[+k] || 0)); });
-  var rows = vs.map(function(v, i){ var c = marketCycles[i]; return '<li><span>' + cycLabel(c).name.replace(/ Cycle$/, "") + '</span><span class="flow-bar">' + flowCells(c, v.bleed, worst) + '</span></li>'; }).reverse().join("");
-  return '<section class="dx-sys">' + homeHead(circulationSvg(), "Period Flow") + statRow("Average period length", avg, Math.max.apply(null, vs.map(function(v){ return v.bleed; })), "Bear years that close a cycle") +
-    '<ul class="flow-rows">' + rows + '</ul></section>';
+function insightsHome(i: number){
+  var j = judged(i), rank = TIERS.map(function(t){ return t.key; });
+  return categoriesShown().map(function(c){
+    var ls = j.filter(function(l){ return l.cat === c.key; }).sort(function(a, b){ return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i)); });
+    return ls.length ? insightSec(c.key, ls, i) : "";
+  }).join("");
 }
-function insightsHome(){
-  return '<h3 class="stat-title">Insights</h3>' + categoriesShown().map(function(c){ return trendDoor("sheet-cat-" + c.key, c.title, CAT_MARK[c.key](), c.title, ""); }).join("");
-}
-function homeSections(){
-  return statsHome() + flowHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + '</section>' + insightsHome();
+function homeSections(i: number){
+  return '<div class="lab-score-box">' + scoreBox(i) + '</div>' + statsHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + '</section>' +
+    '<h3 class="stat-title">Insights</h3>' + insightsHome(i);
 }
 function drawChart(id: string){
   var host = byId(id), c = pageCycle(id);
   if (!host || !c) return;
   var i = marketCycles.indexOf(c), j = judged(i);
-  host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + scoreBox(i) + homeSections() + '</div>' : '') +
+  host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + homeSections(i) + '</div>' : '') +
     '<div class="labs"' + (id === HOME_ID ? ' hidden' : '') + '>' + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + '</div>';
   narrow(host, id);
 }

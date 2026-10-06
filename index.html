@@ -1106,18 +1106,18 @@
   .lab-score-v{ position:relative; width:56px; height:56px; flex:none; }
   .lab-score-v span{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:var(--type-row); font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
   .lab-ring{ width:100%; height:100%; transform:rotate(-90deg); }
-  .stat-row{ justify-content:flex-start; gap:16px; }
+  .home-secs{ display:flex; flex-direction:column; gap:var(--gap); }
+  .home-secs > *{ margin-top:0; margin-bottom:0; }
+  .lab-score-box .lab-ring circle{ stroke:var(--border); }
+  .lab-score-box .lab-ring circle.on{ stroke:var(--normal); }
+  .lab-score-box .lab-score{ margin:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+  .stat-row{ justify-content:flex-start; gap:16px; margin-top:10px; }
   .stat-row b{ font-family:"Public Sans",sans-serif; font-size:var(--type-reading-head); font-weight:700; }
-  .stat-lede{ margin:0 0 4px; font-size:var(--type-interface); color:var(--text-secondary); }
-  .stat-title{ margin:22px 4px 10px; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
-  .flow-rows{ list-style:none; margin:12px 0 0; padding:0; }
-  .flow-rows li{ display:flex; align-items:center; gap:10px; padding:4px 0; font-size:var(--type-meta); color:var(--text-secondary); }
-  .flow-rows li > span:first-child{ width:112px; flex:none; text-align:right; }
-  .flow-bar{ display:flex; gap:2px; }
-  .flow-bar i{ width:34px; height:14px; background:var(--bleed-mid); }
-  .flow-bar i:first-child{ border-radius:7px 0 0 7px; }
-  .flow-bar i:last-child{ border-radius:0 7px 7px 0; }
-  .flow-bar i:only-child{ border-radius:7px; }
+  .stat-row.flow .lab-ring circle.on{ stroke:var(--bleed-mid); }
+  .plain .lab-cat.cat-head{ width:100%; justify-content:space-between; padding:23px 16px; }
+  .lab-cat.cat-head:hover{ text-decoration:none; }
+  .stat-lede{ margin:0; font-size:var(--type-interface); color:var(--text-secondary); }
+  .home-secs > .stat-title{ margin:12px 4px 0; font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:var(--type-section); color:var(--text-primary); }
   .lab-ring circle{ fill:none; stroke:var(--surface); stroke-width:5; }
   .lab-ring circle.on{ stroke:var(--normal); stroke-linecap:round; }
   :where(.lab-sec){ --cat:var(--text-muted); }
@@ -37727,8 +37727,8 @@
   function homeHead(mark, title) {
     return '<div class="dx-sys-head"><span class="dx-mark" aria-hidden="true">' + mark + "</span>" + title + "</div>";
   }
-  function statRow(name, v, of, note) {
-    return '<span class="lab-score stat-row"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + "</span><span><small>" + name + "</small><b>" + yearsWord(v) + " years</b>" + (note ? "<small>" + note + "</small>" : "") + "</span></span>";
+  function statRow(name, v, of, note, cls) {
+    return '<span class="lab-score stat-row' + (cls ? " " + cls : "") + '"><span class="lab-score-v">' + ring(Math.min(100, 100 * v / of)) + "</span><span><small>" + name + "</small><b>" + yearsWord(v) + " years</b>" + (note ? "<small>" + note + "</small>" : "") + "</span></span>";
   }
   function closedVisits() {
     return visits().slice(0, closedCount());
@@ -37741,52 +37741,52 @@
       return s + (v - m) * (v - m);
     }, 0) / (vs.length - 1));
   }
-  function statsHome() {
-    var L = closedVisits().map(function(v) {
-      return v.years;
-    }), longest = Math.max.apply(null, L), avg = L.reduce(function(a, b) {
+  function meanOf(vs) {
+    return vs.reduce(function(a, b) {
       return a + b;
-    }, 0) / L.length;
-    var open = visits()[marketCycles.length - 1];
-    return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + " closed cycles since " + marketCycles[0].from + ".</p>" + statRow("Cycle length", avg, longest, "This cycle: " + yearsWord(open.years) + " years so far") + statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") + "</section>";
+    }, 0) / vs.length;
   }
-  function flowCells(c, n, worst) {
-    var end = c.to;
-    var out = "";
-    for (var y = end - n + 1; y <= end; y++) {
-      var r = sp500AnnualReturns[y] || 0;
-      out += '<i style="opacity:' + (.35 + .65 * Math.min(1, -r / worst)).toFixed(2) + '" title="' + y + " " + r.toFixed(1) + '%"></i>';
-    }
-    return out;
-  }
-  function flowHome() {
-    var vs = closedVisits(), avg = vs.reduce(function(a, v) {
-      return a + v.bleed;
-    }, 0) / vs.length, worst = 0;
-    Object.keys(sp500AnnualReturns).forEach(function(k) {
-      worst = Math.max(worst, -(sp500AnnualReturns[+k] || 0));
-    });
-    var rows = vs.map(function(v, i) {
-      var c = marketCycles[i];
-      return "<li><span>" + cycLabel(c).name.replace(/ Cycle$/, "") + '</span><span class="flow-bar">' + flowCells(c, v.bleed, worst) + "</span></li>";
-    }).reverse().join("");
-    return '<section class="dx-sys">' + homeHead(circulationSvg(), "Period Flow") + statRow("Average period length", avg, Math.max.apply(null, vs.map(function(v) {
+  function statsHome() {
+    var vs = closedVisits(), L = vs.map(function(v) {
+      return v.years;
+    }), B = vs.map(function(v) {
       return v.bleed;
-    })), "Bear years that close a cycle") + '<ul class="flow-rows">' + rows + "</ul></section>";
+    }), longest = Math.max.apply(null, L);
+    return '<section class="dx-sys">' + homeHead(calendarSvg(), "Cycle Statistics") + '<p class="stat-lede">Averages are based on her ' + L.length + " closed cycles since " + marketCycles[0].from + ".</p>" + statRow("Cycle length", meanOf(L), longest, "This cycle: " + yearsWord(visits()[marketCycles.length - 1].years) + " years so far") + statRow("Cycle variation", sdOf(L), longest, "Standard deviation of her cycle lengths") + statRow("Period flow", meanOf(B), Math.max.apply(null, B), "Average bear years that close a cycle", "flow") + "</section>";
   }
-  function insightsHome() {
-    return '<h3 class="stat-title">Insights</h3>' + categoriesShown().map(function(c) {
-      return trendDoor("sheet-cat-" + c.key, c.title, CAT_MARK[c.key](), c.title, "");
+  function insightSec(k, ls, i) {
+    var title = catTitle(k);
+    return catHeadCard("lab-sec plain", k, {
+      tag: "button",
+      cls: "lab-head lab-cat ",
+      attrs: ' type="button" data-open="sheet-cat-' + k + '" data-title="' + title + '"',
+      name: '<span class="lab-mark">' + CAT_MARK[k]() + "</span>" + title + " <small>(" + ls.length + ")</small>",
+      aside: CHEV
+    }, "<ul>" + ls.map(function(l) {
+      return labItem(l, i);
+    }).join("") + "</ul>");
+  }
+  function insightsHome(i) {
+    var j = judged(i), rank = TIERS.map(function(t) {
+      return t.key;
+    });
+    return categoriesShown().map(function(c) {
+      var ls = j.filter(function(l) {
+        return l.cat === c.key;
+      }).sort(function(a, b) {
+        return rank.indexOf(tier(a, i)) - rank.indexOf(tier(b, i));
+      });
+      return ls.length ? insightSec(c.key, ls, i) : "";
     }).join("");
   }
-  function homeSections() {
-    return statsHome() + flowHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + "</section>" + insightsHome();
+  function homeSections(i) {
+    return '<div class="lab-score-box">' + scoreBox(i) + "</div>" + statsHome() + '<section class="dx-sys fp">' + homeHead(orbitSvg(), "Interest Environment") + fedPhasesCard(nowModel) + '</section><h3 class="stat-title">Insights</h3>' + insightsHome(i);
   }
   function drawChart(id) {
     var host = byId(id), c = pageCycle(id);
     if (!host || !c) return;
     var i = marketCycles.indexOf(c), j = judged(i);
-    host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + scoreBox(i) + homeSections() + "</div>" : "") + '<div class="labs"' + (id === HOME_ID ? " hidden" : "") + ">" + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
+    host.innerHTML = finder(id, i, j) + (id === HOME_ID ? '<div class="home-secs">' + homeSections(i) + "</div>" : "") + '<div class="labs"' + (id === HOME_ID ? " hidden" : "") + ">" + bySystem(i, j) + '<p class="search-none" hidden>No reading matches.</p>' + moreRow(chartDetail()) + "</div>";
     narrow(host, id);
   }
   function fold(t) {
