@@ -46,3 +46,10 @@ test('a live reading moves Cycle Statistics and AI Insights with its figure', as
   sheetRenderers['sheet-ai-insights']();
   assert.match(document.getElementById('sheet-ai-insights').textContent, /CAPE stands at 33\.3×/);
 });
+
+test('Temperature’s Normal is the Season Model’s 1–3% band, its Risk the fence of its own record', () => {
+  const l = lab('sheet-metric-temp'), v = l.per[open];
+  [l.now, l.norm].forEach(n => { assert.equal(n.lo, 1); assert.equal(n.hi, 3); assert.ok(n.fence > 3); });
+  const tier = row('sheet-metric-temp').closest('.lab-item').className.match(/t-(\w+)/)[1];
+  assert.equal(tier, v >= 1 && v <= 3 ? 'optimal' : v > l.now.fence || v < l.now.floor ? 'abnormal' : 'borderline');
+});

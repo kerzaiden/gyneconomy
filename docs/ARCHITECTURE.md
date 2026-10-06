@@ -556,7 +556,7 @@ provenance in the (i), or it does not ship.**
 
 **Temperature's band is the one target in the app.** The Fed publishes a point, 2% on PCE, no band; the
 1–3% edges are part of the Season Model's structure, a point either side of it (Keren, 0.6.18: name it the model's structure, never "Keren's call"), the same control range the Bank of Canada and the Reserve Bank of New Zealand set around 2%, read on CPI, which has run 0.39 points higher on
-average since 2000. The (i) says both. **Never relabel this band "normal."** Nothing is fetched from the
+average since 2000. The (i) says both. Since 0.8.6 Analysis also judges Temperature against it (Keren chose it over the record's middle half): the roster row's `normal` pins a reading's Normal range while its Risk stays past its own record's fence, and the Analysis (i) names the band. The reading page still never calls the band "normal." Nothing is fetched from the
 Fed; the courier checks monthly that the objective is still 2% and, if it changed, notifies rather than
 moving anything — only Keren moves the band.
 

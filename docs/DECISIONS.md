@@ -863,11 +863,15 @@ code, is in doubt is marked "(check: …)" until Keren settles it; none is open 
   components from the app". (V480, V486, V661)
 - **Temperature has one reading, headline CPI year over year; core CPI is not shown.** Keren: "drop the core
   CPI year over year, we don't need it — we are only looking at the formal inflation rate." (V378)
-- **Temperature's note keeps explaining that 1–3% is a target band, not a normal range, and that the Fed's 2%
-  is PCE while this reading is CPI.** It is the only place the app says so. (V582)
 - **The 1–3% band stays, and the app names it part of the Season Model's structure, never Keren's call or
   "this app's choice".** Keren: "Make the margin, the range, 1 to 3%. I wouldn't call it Keren's call. I would
   say seasonal model structure or something." (0.6.18)
+- **The 1–3% band is also Temperature's Normal range in Analysis: inside it Normal, outside it Attention, and Risk
+  only past the Tukey fence of Temperature's own record.** Keren: "It's now 3.4, which is above our 1 to 3% band,
+  meaning it should at least be on our attention, right?", then chose the band over the record's middle half
+  (1.3–4.4%). The band is declared on the roster row (`normal`), and the Analysis (i) says where it comes from.
+  This overturns V582's "a target band, not a normal range" and 2026-10-05's "the season switch, not a
+  Normal/Attention/Risk scale". (0.8.6)
 - **The Temperature page answers how hot prices are; the Fed's policy-calendar facts live with the policy rate
   (in Hormones' Insights), while Temperature's prose keeps the relationship.** Keren reopened this: the facts
   were in the wrong drawer. (V240, V609)

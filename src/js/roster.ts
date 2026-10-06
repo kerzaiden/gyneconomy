@@ -4,7 +4,7 @@ import { bagSvg, boltSvg, budgetSvg, circulationSvg, clockSvg, debtSvg, diamondS
 import { peekCard } from "./charts.ts";
 import { confidenceHistory, durablesHistory, fedFundsHistory, premiumHistory, fiscalHistory, grossDebtQuarterly, productivityHistory, volatilityHistory } from "./history-fred.ts";
 import { inflationHistory, gdpQuarterlyYoY } from "./refresh-season.ts";
-import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory } from "./data.ts";
+import { BUFFETT_LINE, buffettHistory, CAPE_FAIR, capeHistory, CONFIDENCE_LINE, DEBT_LINE, DEF_FROM_YEAR, DEFICIT_LINE, deficitHistory, DESIRE_LINE, DSR_FROM_YEAR, dsrHistory, INTEREST_LINE, M2_FROM_YEAR, M2V_FROM_YEAR, m2vHistory, m2Yoy, PREMIUM_LINE, PRODUCTIVITY_SLOWDOWN, SAV_FROM_YEAR, savHistory, sp500Years, t10yYieldHistory, unempHistory, TEMP_BAND_HI, TEMP_BAND_LO } from "./data.ts";
 import { page } from "./history.ts";
 
 // ---- The roster: every reading, declared once ----
@@ -66,7 +66,8 @@ export var ROSTER: RosterRow[];
 function declareRoster(): RosterRow[] {
   return [
     { id:"sheet-metric-temp", name:"Temperature", cat:"weather", sub:"Economic Season", timing:"lagging", mark:thermoSvg, door:"peek", slot:"temp", term:"Temperature",
-      head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, cardUnit:"PCE, YoY" },
+      head:"CPI and PCE Inflation", hist:{ s:inflationHistory, k:"m" }, cardUnit:"PCE, YoY",
+      normal:{ lo:TEMP_BAND_LO, hi:TEMP_BAND_HI, why:"the Season Model\u2019s band, a point either side of the Fed\u2019s 2% target" } },
     { id:"sheet-metric-gdp", name:"Growth", cat:"weather", sub:"Economic Season", good:"up", timing:"coincident", mark:sproutSvg, door:"peek", slot:"gdp",
       head:"Real GDP", hist:{ s:gdpQuarterlyYoY, k:"q" }, cardUnit:"YoY" },
     { id:"sheet-sign-market", name:"S&P 500", cat:"weather", sub:"Market", good:"up", timing:"leading", mark:marketSvg, door:"row", term:"S&P 500",

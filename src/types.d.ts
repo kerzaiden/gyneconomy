@@ -122,6 +122,7 @@ type RosterRow = {
   group?: string;
   sub: string;
   cardUnit?: string;
+  normal?: { lo: number; hi: number; why: string };
   live?: string[];
   stops?: string[];
   range?: string;

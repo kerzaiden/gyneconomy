@@ -34408,7 +34408,12 @@
         s: inflationHistory,
         k: "m"
       },
-      cardUnit: "PCE, YoY"
+      cardUnit: "PCE, YoY",
+      normal: {
+        lo: TEMP_BAND_LO,
+        hi: TEMP_BAND_HI,
+        why: "the Season Model’s band, a point either side of the Fed’s 2% target"
+      }
     }, {
       id: "sheet-metric-gdp",
       name: "Growth",
@@ -37709,18 +37714,26 @@
         return a + b;
       }, 0) / vs.length;
     });
+    var pin = function(n) {
+      return n && R.normal ? {
+        lo: R.normal.lo,
+        hi: R.normal.hi,
+        fence: n.fence,
+        floor: n.floor
+      } : n;
+    };
     return {
       id: R.id,
       name: R.name,
       cat: R.cat,
       good: R.good,
       per: per,
-      now: readingsNorm(seen),
+      now: pin(readingsNorm(seen)),
       print: p.print,
       span: p.span,
-      norm: normOf(per.slice(0, closedCount()).filter(function(v) {
+      norm: pin(normOf(per.slice(0, closedCount()).filter(function(v) {
         return v != null;
-      }))
+      })))
     };
   }
   var labCache = null;
@@ -38015,11 +38028,19 @@
       return listWords(by[k]) + " on " + word(k);
     }).join("; ")) + "; the rest on all " + word(all) + "." : "Every range rests on all " + word(all) + ".");
   }
+  function pinnedFacts() {
+    return ROSTER.filter(function(R) {
+      return R.normal;
+    }).map(function(R) {
+      var b = R.normal;
+      return "<b>" + R.name + "</b>’s Normal is " + b.lo + "–" + b.hi + "%, " + b.why + "; its Risk still lies past the fence of its own record.";
+    }).join(" ");
+  }
   function methodFacts() {
     return [ "<b>Regularity</b> follows FIGO’s two measures of a regular cycle: its length, and its variation, the spread from the shortest to the longest of the " + word(BASELINE) + " cycles before it." ];
   }
   function chartDetail() {
-    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
+    return "<p>Averages are based on her " + closedCount() + " closed cycles since " + marketCycles[0].from + ".</p>" + facts([ "<b>Each result</b> is a closed cycle’s average, or the open cycle’s latest reading, the figure on its card. Bull years and bleed count only calendar years that have closed.", depthWords(), "<b>Normal</b> is the middle half of her closed cycles, <b>Attention</b> lies outside it, <b>Risk</b> lies past Tukey’s fence, the standard outlier rule.", pinnedFacts(), "<b>Good side:</b> a result outside its range on its good side stays Normal, such as high growth or low debt.", "<b>Health Score</b> is the share of results that are Normal, out of 100." ].concat(methodFacts(), [ "<b>History, not forecast:</b> it describes her past, not what comes next." ])) + srcBlock([ FENCE_SRC, FIGO_SRC ]);
   }
   function cycleScore(m) {
     var i = marketCycles.indexOf(m.era);
